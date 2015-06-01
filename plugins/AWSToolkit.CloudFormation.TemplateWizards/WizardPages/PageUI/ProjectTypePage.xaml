@@ -1,0 +1,88 @@
+﻿<commonUi:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CloudFormation.TemplateWizards.WizardPages.PageUI.ProjectTypePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d"
+             xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             xmlns:commoncomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
+             d:DesignHeight="300" d:DesignWidth="300"
+             >
+
+    <commonUi:BaseAWSUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonUi:BaseAWSUserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <RadioButton Margin="5,5,5,5" Grid.Row="0" Grid.Column="0" Name="_ctlCreateEmptyProject" GroupName="StackOperation" IsChecked="True" Style="{DynamicResource awsRadioButtonBaseStyle}">
+            <Label Style="{DynamicResource awsLabelBaseStyle}" FontWeight="SemiBold">Create with empty template</Label>
+        </RadioButton>
+        <RadioButton Margin="5,5,5,5" Grid.Row="1" Grid.Column="0" Name="_ctlCreateFromStack" GroupName="StackOperation" IsChecked="False" Style="{DynamicResource awsRadioButtonBaseStyle}">
+            <Label Style="{DynamicResource awsLabelBaseStyle}" FontWeight="SemiBold">Create from existing AWS CloudFormation Stack</Label>
+        </RadioButton>
+
+        <Grid Grid.Row="2" IsEnabled="{Binding ElementName=_ctlCreateFromStack, Path=IsChecked}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+
+            <commoncomponents:AccountAndRegionPicker Grid.Row="0" Margin="20,5,20,5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="_ctlAccountAndRegionPicker"/>
+
+            <Label Style="{DynamicResource awsWizardFieldLabelStyle}" 
+                   Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" 
+                   Margin="25,5,5,5"
+                   Foreground="{DynamicResource awsDialogTextBrushKey}">
+                Stack:
+            </Label>
+            <ComboBox IsEnabled="{Binding ElementName=_ctlUpdateStack, Path=IsChecked}" 
+                      Name="_ctlExistingStacks" Margin="5,5,20,5" Grid.Row="1" Grid.Column="1" 
+                      VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                      Style="{DynamicResource awsComboBoxStyle}"
+                      Width="200"/>
+        </Grid>
+
+        <RadioButton Margin="5,20,5,5" Grid.Row="3" Grid.Column="0" Name="_ctlCreateFromSample" GroupName="StackOperation" IsChecked="False" Style="{DynamicResource awsRadioButtonBaseStyle}">
+            <Label Style="{DynamicResource awsLabelBaseStyle}" FontWeight="SemiBold">Select Sample Template</Label>
+        </RadioButton>
+        <Grid Grid.Row="4" IsEnabled="{Binding ElementName=_ctlCreateFromSample, Path=IsChecked}">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            
+            <Label Style="{DynamicResource awsWizardFieldLabelStyle}" 
+                   Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" 
+                   Margin="25,5,5,5"
+                   Foreground="{DynamicResource awsDialogTextBrushKey}">
+                Sample:
+            </Label>
+            <ComboBox IsEnabled="{Binding ElementName=_ctlUpdateStack, Path=IsChecked}" 
+                      Name="_ctlSampleTemplate" Margin="5,5,20,5" Grid.Row="1" Grid.Column="1" VerticalAlignment="Bottom" 
+                      DisplayMemberPath="Description"
+                      Style="{DynamicResource awsComboBoxStyle}"/>
+        </Grid>
+    </Grid>
+</commonUi:BaseAWSUserControl>

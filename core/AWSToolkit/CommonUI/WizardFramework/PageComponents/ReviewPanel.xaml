@@ -1,0 +1,25 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CommonUI.WizardFramework.PageComponents.ReviewPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"                      
+    >
+
+    <UserControl.Resources>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" x:Name="_reviewSectionHeader"
+                   Style="{DynamicResource awsWizardReviewPanelSectionHeaderStyle}"/>
+        <ContentControl Grid.Row="1" x:Name="_reviewSectionContent" 
+                        Style="{DynamicResource awsWizardReviewPanelSectionTextStyle}"/>
+        <Border Grid.Row="1"
+                Style="{DynamicResource awsWizardReviewPanelDividerStyle}"
+                />        
+    </Grid>
+</commonui:BaseAWSUserControl>

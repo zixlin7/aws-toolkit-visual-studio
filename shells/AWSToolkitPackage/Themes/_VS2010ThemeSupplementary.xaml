@@ -1,0 +1,9 @@
+﻿<!-- Specific theme overrides for the VS2010 shell -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0">
+
+    <!-- actual vs key leads to a blue-gray background, not white like soln explorer -->
+    <SolidColorBrush x:Key="awsToolWindowBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+
+</ResourceDictionary>

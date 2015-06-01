@@ -1,0 +1,108 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.EC2.View.AddIPPermissionControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
+    xmlns:validators="clr-namespace:Amazon.AWSToolkit.CommonValidators;assembly=AWSToolkit"                         
+    Height="370" Width="300">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid Margin="5,5,5,5" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Label Margin="5,5,5,5" Grid.Row="0" Grid.Column="0" Content="Protocol:" Style="{DynamicResource awsLabelBaseStyle}"/>
+            <ComboBox Margin="5,5,5,5" Grid.Row="0" Grid.Column="1" Name="_ctlProtocol" 
+                      DisplayMemberPath="DisplayName" HorizontalAlignment="Left" 
+                      SelectedItem="{Binding IPProtocol}"
+                      SelectionChanged="onProtocolSelectionChanged"
+                      Style="{DynamicResource awsComboBoxStyle}"/>
+
+            <Label Margin="5,5,5,5" Grid.Row="1" Grid.Column="0" Content="Port Range:" Style="{DynamicResource awsLabelBaseStyle}"/>
+            <WrapPanel Margin="5,5,5,5" Grid.Row="1" Grid.Column="1">
+                <Label Style="{DynamicResource awsLabelBaseStyle}">Start</Label>
+                <TextBox Margin="5,0,5,0" MinWidth="50" MaxWidth="50" Name="_ctlPortStart" 
+                         PreviewLostKeyboardFocus="onPortStartFocusLost"
+                         Style="{DynamicResource awsTextBoxStyle}">
+                    <Binding Path="PortRangeStart" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <validators:IntegerValidator FieldName="Port Range Start"  Min="1" Max="65535" />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <Label Style="{DynamicResource awsLabelBaseStyle}">End</Label>
+                <TextBox Margin="5,0,5,0" MinWidth="50" MaxWidth="50" Name="_ctlPortEnd" Style="{DynamicResource awsTextBoxStyle}">
+                    <Binding Path="PortRangeEnd" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <validators:IntegerValidator FieldName="Port Range End"  Min="1" Max="65535" />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+            </WrapPanel>
+
+        </Grid>
+
+        <RadioButton Margin="5,15,5,5" Grid.Row="1" Grid.Column="0" GroupName="AssignBy" 
+                     VerticalAlignment="Center"
+                     VerticalContentAlignment="Center"
+                     Name="_ctlPortAndIp" IsChecked="{Binding IsPortAndIpChecked}"
+                     Style="{DynamicResource awsRadioButtonBaseStyle}">Source CIDR</RadioButton>
+        <TextBox Margin="5,15,5,5" Grid.Row="1" Grid.Column="1" Text="{Binding SourceCIDR,UpdateSourceTrigger=PropertyChanged}" 
+                 IsEnabled="{Binding ElementName=_ctlPortAndIp, Path=IsChecked}"
+                 Style="{DynamicResource awsTextBoxStyle}"/>
+
+        <RadioButton Margin="5,5,5,5" GroupName="AssignBy" Grid.Row="3" Grid.Column="0" 
+                     Grid.ColumnSpan="2" Name="_ctlUserAndGroup" 
+                     IsChecked="{Binding IsUserAndGroupChecked}"
+                     Style="{DynamicResource awsRadioButtonBaseStyle}">AWS account and group</RadioButton>
+        <Grid Margin="15,5,15,5" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" IsEnabled="{Binding ElementName=_ctlUserAndGroup, Path=IsChecked}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Margin="5,5,5,5" Grid.Row="0" Grid.Column="0" Content="Account ID:" Style="{DynamicResource awsLabelBaseStyle}"/>
+            <ComboBox Margin="5,5,5,5" Grid.Row="0" Grid.Column="1" Name="_ctlAccountID" LostFocus="_ctlAccountID_LostFocus" 
+                      Text="{Binding UserId,UpdateSourceTrigger=PropertyChanged}"
+                      Style="{DynamicResource awsComboBoxStyle}"/>
+
+
+            <Label Margin="5,5,5,5" Grid.Row="1" Grid.Column="0" Content="Security Group:" Style="{DynamicResource awsLabelBaseStyle}"/>
+            <ComboBox Margin="5,5,5,5" Grid.Row="1" Grid.Column="1" Name="_ctlSecurityGroups" 
+                      Text="{Binding GroupName,UpdateSourceTrigger=PropertyChanged}" 
+                      Style="{DynamicResource awsComboBoxStyle}"/>
+        </Grid>
+
+        <TextBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" TextWrapping="Wrap" Name="_ctlInfo" Margin="5,20,5,5" Style="{DynamicResource awsSelectableTextBoxStyle}"/>
+    </Grid>
+</commonui:BaseAWSControl>

@@ -1,0 +1,80 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.EC2.View.UpdateDNSSettingsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             mc:Ignorable="d" 
+             Height="320" Width="450">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid Margin="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" Style="{DynamicResource awsSubHeaderLabelStyle}">
+            DNS Resolution
+        </Label>
+
+        <Grid Grid.Row="1"  Margin="16,12,4,12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <CheckBox Grid.Row="0" Style="{DynamicResource awsCheckboxButtonBaseStyle}"
+                      IsChecked="{Binding EnableDnsSupport}">
+                Enable DNS _Support
+            </CheckBox>
+            
+            <TextBlock Grid.Row="1" 
+                       Style="{DynamicResource awsInfoTextStyle}"
+                       TextWrapping="Wrap"
+                       FontStyle="Italic"
+                       Margin="20,4,0,4">
+                Indicates whether DNS resolution is supported for the VPC. If this option is not set (unchecked), 
+                the Amazon provided DNS service in the VPC that resolves public DNS hostnames to IP addresses is 
+                not enabled. If this option is set (checked), queries to the Amazon provided DNS server at the 
+                169.254.169.253 IP address, or the reserved IP address at the base of the VPC network range "plus two" 
+                will succeed.
+            </TextBlock>
+        </Grid>
+
+        <Label Grid.Row="2" Style="{DynamicResource awsSubHeaderLabelStyle}">
+            DNS Hostnames
+        </Label>
+
+        <Grid Grid.Row="3" Margin="16,12,4,4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <CheckBox Grid.Row="0" Style="{DynamicResource awsCheckboxButtonBaseStyle}"
+                      IsChecked="{Binding EnableDnsHostnames}">
+                Enable DNS _Hostnames
+            </CheckBox>
+
+            <TextBlock Grid.Row="1" 
+                       Style="{DynamicResource awsInfoTextStyle}"
+                       TextWrapping="Wrap"
+                       FontStyle="Italic"
+                       Margin="20,4,0,4">
+                Indicates whether the instances launched in the VPC get DNS hostnames. If this option is set (checked), 
+                instances in the VPC get DNS hostnames; otherwise, they do not. If you want your instances to get DNS 
+                hostnames, you must also set the Enable DNS Support option above.
+            </TextBlock>
+        </Grid>
+    </Grid>
+</commonui:BaseAWSControl>

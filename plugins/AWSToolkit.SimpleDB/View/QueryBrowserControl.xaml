@@ -1,0 +1,126 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.SimpleDB.View.QueryBrowserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.SimpleDB.View"                         
+    Loaded="onLoaded"
+    PreviewKeyDown="onPreviewKeyDown"                         
+    Height="450" Width="600">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+
+
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="5"></RowDefinition>
+            <RowDefinition Height="4*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Grid.Column="0" LastChildFill="True" Margin="0,0,0,0">
+            <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
+                <Button Click="onExecuteClick">
+                    <Button.ToolTip>Executes the query (Ctrl + R)</Button.ToolTip>
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding ExecuteIcon}"/>
+                            <TextBlock> Execute</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+                <Button Click="onCommitChangesClick" Name="_ctlCommitChangesBtn" IsEnabled="False">
+                    <Button.ToolTip>Commit changes back to SimpleDB</Button.ToolTip>
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding CommitChangesIcon}"/>
+                            <TextBlock> Commit Changes</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+                <Button Click="onAddAttributeClick" Name="_ctlAddAttributeBtn" IsEnabled="False">
+                    <Button.ToolTip>Add an attribute to the output window.  The attribute will be saved in SimpleDB when all the changes are committed.</Button.ToolTip>
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding AddColumnIcon}"/>
+                            <TextBlock> Add Attribute</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+
+            </ToolBar>
+            <TextBox Name="_ctlQueryEditor" VerticalAlignment="Stretch" AcceptsReturn="True" Style="{DynamicResource awsTextBoxStyle}"/>
+        </DockPanel>
+
+        <GridSplitter Grid.Row="1" Grid.Column="0" 
+                      Height="Auto" Width="Auto" 
+                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                      Background="{DynamicResource awsGridSplitterBackgroundGradientBrushKey}"
+                      Foreground="{DynamicResource awsGridSplitterTextForegroundBrushKey}"/>
+
+        <DockPanel Grid.Row="2" Grid.Column="0">
+            <ToolBar DockPanel.Dock="Bottom" ToolBarTray.IsLocked="True" >
+                <Button Click="onFetchSinglePageClick" IsEnabled="{Binding HasMoreRows}">
+                    <Button.ToolTip>Fetch an additional page of data.</Button.ToolTip>
+                    <Button.Content>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding FetchMoreIcon}"/>
+                    </Button.Content>
+                </Button>
+                <Button Click="onFetchFewPagesClick" IsEnabled="{Binding HasMoreRows}" Name="_ctlFetchFewPages">
+                    <Button.Content>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding FetchLotsMoreIcon}"/>
+                    </Button.Content>
+                </Button>
+                <Separator/>
+                <Button Click="onExportClick" IsEnabled="{Binding HasData}">
+                    <Button.ToolTip>Exports the fetched results into a csv file.</Button.ToolTip>
+                    <Button.Content>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding ExportIcon}"/>
+                    </Button.Content>
+                </Button>
+            </ToolBar>
+            <commonui:ToolkitDataGridWrapper   AutoGenerateColumns="False" x:Name="_ctlDataGrid" CellStyle="{DynamicResource awsDataGridCellCentering}"
+                CanUserAddRows="True" CanUserDeleteRows="True" CanUserSortColumns="False"
+                LoadingRow="onLoadingDataGridRow" RowHeaderWidth="30"
+                ScrollViewer.IsDeferredScrollingEnabled="True" VirtualizingStackPanel.VirtualizationMode="Standard"                 
+                HorizontalAlignment="Stretch" HeadersVisibility="All">
+
+                <commonui:ToolkitDataGridWrapper.RowValidationErrorTemplate>
+                    <ControlTemplate>
+                        <Grid Margin="0,-2,0,-2" ToolTip="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGridRow}},
+                                Path=(Validation.Errors)[0].ErrorContent}">
+                            <Ellipse StrokeThickness="0" Fill="Red" Width="{TemplateBinding FontSize}" Height="{TemplateBinding FontSize}" />
+                            <TextBlock Text="!" FontSize="{TemplateBinding FontSize}" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"  />
+                        </Grid>
+                    </ControlTemplate>
+                </commonui:ToolkitDataGridWrapper.RowValidationErrorTemplate>
+
+
+
+                <commonui:ToolkitDataGridWrapper.RowHeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridRow}}, Path=Header}"></TextBlock>
+                    </DataTemplate>
+                </commonui:ToolkitDataGridWrapper.RowHeaderTemplate>
+
+                <commonui:ToolkitDataGridWrapper.RowValidationRules>
+                    <local:ItemNameValidationRule ValidationStep="UpdatedValue"/>
+                </commonui:ToolkitDataGridWrapper.RowValidationRules>
+
+                <commonui:ToolkitDataGridWrapper.Columns>       
+                    <local:SimpleDBItemNameGridColumn Header="Item Name" Binding="{Binding [0], UpdateSourceTrigger=PropertyChanged}" Width="auto"/>
+                </commonui:ToolkitDataGridWrapper.Columns>
+
+            </commonui:ToolkitDataGridWrapper>
+        </DockPanel>
+    </Grid>
+</commonui:BaseAWSControl>

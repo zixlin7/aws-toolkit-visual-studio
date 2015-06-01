@@ -1,0 +1,51 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CloudFront.View.Components.S3OriginControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"                      
+    Height="70" Width="450">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary Source="../ResourceStrings.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Grid.Row="0" Grid.Column="0" Content="S3 Bucket:" ToolTip="{StaticResource ToolTipS3DNSName}" Style="{DynamicResource awsLabelBaseStyle}"/>
+        <ComboBox Grid.Row="0" Grid.Column="1" Margin="5,5,5,0" Visibility="{Binding IsNewVisiblity}" 
+                  IsEditable="True" Text="{Binding S3BucketOrigin, UpdateSourceTrigger=PropertyChanged}" 
+                  ItemsSource="{Binding AllBucketNames}"
+                  HorizontalAlignment="Stretch"
+                  Style="{DynamicResource awsComboBoxStyle}"/>
+        <Button Grid.Row="0" Grid.Column="2" Margin="5,5,5,0" Visibility="{Binding IsNewVisiblity}"  Click="onCreateBucketClick">
+            <Button.Content>
+                <WrapPanel>
+                    <Image Width="16" Height="16" Source="..\..\Resources\Images\new-bucket.png"/>
+                    <TextBlock Margin="5,0,0,0">Create New Bucket...</TextBlock>
+                </WrapPanel>
+            </Button.Content>
+        </Button>
+        <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" IsEnabled="True" 
+                 Visibility="{Binding IsExistingVisiblity}" Margin="5, 5, 0, 5" Text="{Binding S3BucketOrigin, Mode=OneWay}" 
+                 Style="{DynamicResource awsSelectableTextBoxStyle}" />
+        <CheckBox Margin="5,5,5,5"  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" 
+                  Name="_ctlRequireHttps" IsEnabled="{Binding IsNew}" Content="Require HTTPS" 
+                  IsChecked="{Binding RequireHTTPS}" 
+                  ToolTip="{StaticResource ToolTipRequiresHTTPS}"
+                  Style="{DynamicResource awsCheckboxButtonBaseStyle}"/>
+    </Grid>
+</commonui:BaseAWSUserControl>

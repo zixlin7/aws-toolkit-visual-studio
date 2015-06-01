@@ -1,0 +1,29 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.S3.View.RenameFileControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Loaded="OnLoaded"
+    Height="60" Width="300">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}">File Name:</TextBlock>
+        <TextBox Name="_ctlNewFileName"  Grid.Column="1" Grid.Row="0" Margin="5,5,5,5" 
+                 Text="{Binding NewFileName, UpdateSourceTrigger=PropertyChanged}"
+                 Style="{DynamicResource awsTextBoxStyle}"/>
+    </Grid>
+</commonui:BaseAWSControl>

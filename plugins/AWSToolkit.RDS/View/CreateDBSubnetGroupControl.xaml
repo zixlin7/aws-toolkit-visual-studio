@@ -1,0 +1,195 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.RDS.View.CreateDBSubnetGroupControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             Loaded="onLoad"                         
+             mc:Ignorable="d" 
+             Height="400" Width="380">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            
+            <Style x:Key="AddSubnetButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource awsButtonBaseStyle}">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ElementName=_ctlSubnetIDList, Path=SelectedItem}" Value="{x:Null}">
+                        <Setter Property="IsEnabled" Value="False"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+
+    <Grid Margin="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>       
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <TextBlock Grid.ColumnSpan="2"
+                   Style="{DynamicResource awsInfoTextStyle}"
+                   TextWrapping="Wrap"
+                   FontStyle="Italic"
+                   Margin="0,4,0,12">
+            To create a new Subnet Group give it a name, description, and select an existing VPC below. Once you select an existing VPC, 
+            you will be able to add subnets related to that VPC.    
+        </TextBlock> 
+        
+        <Label Grid.Row="1" Grid.Column="0" 
+               Style="{DynamicResource awsLabelBaseStyle}"
+               Content="_Name:"
+               Target="{Binding ElementName=_ctlName}"/>
+        <TextBox Grid.Row="1" Grid.Column="1"
+                 x:Name="_ctlName"
+                 Style="{DynamicResource awsTextBoxStyle}"
+                 Text="{Binding Name, Mode=TwoWay}"
+                 MaxLength="255"/>
+
+        <Label Grid.Row="2" Grid.Column="0" 
+               Style="{DynamicResource awsLabelBaseStyle}"
+               Content="_Description:"
+               Target="{Binding ElementName=_ctlDescription}"/>
+        <TextBox Grid.Row="2" Grid.Column="1"
+                 x:Name="_ctlDescription"
+                 Style="{DynamicResource awsTextBoxStyle}"
+                 Text="{Binding Description, Mode=TwoWay}"/>
+
+        <Label Grid.Row="3" Grid.Column="0" 
+               Style="{DynamicResource awsLabelBaseStyle}"
+               Content="_VPC ID:"
+               Target="{Binding ElementName=_ctlVPCList}"/>
+        <ComboBox Grid.Row="3" Grid.Column="1"
+                  Style="{DynamicResource awsComboBoxStyle}"
+                  x:Name="_ctlVPCList"
+                  ItemsSource="{Binding VPCList, UpdateSourceTrigger=PropertyChanged}"
+                  DisplayMemberPath="FormattedLabel"
+                  SelectedItem="{Binding SelectedVPC}"
+                  SelectionChanged="_ctlVPCList_OnSelectionChanged"/>
+        
+        <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,16,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>       
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                       Style="{DynamicResource awsInfoTextStyle}"
+                       TextWrapping="Wrap"
+                       FontStyle="Italic"
+                       Margin="0,0,0,8">
+                <Run>Add Subnet(s) to this Subnet Group. You may add subnets one at a time below or </Run>
+                <Hyperlink Click="OnAddAllClick">add all the subnets</Hyperlink>
+                <Run> related to this VPC. You may make additions/edits after this group is created. A minimum of 2 subnets is required.</Run>
+            </TextBlock>
+            
+            <Label Grid.Row="1" Grid.Column="0"
+                   Style="{DynamicResource awsLabelBaseStyle}"
+                   Content="Availability _Zone:"/>
+            <ComboBox Grid.Row="1" Grid.Column="1"
+                      Style="{DynamicResource awsComboBoxStyle}"
+                      x:Name="_ctlZoneList"
+                      ItemsSource="{Binding AllAvailabilityZones, UpdateSourceTrigger=PropertyChanged}"
+                      DisplayMemberPath="ZoneName"
+                      SelectionChanged="_ctlZoneList_OnSelectionChanged"
+                      SelectedItem="{Binding SelectedZone}"/>
+
+            <Label Grid.Row="2" Grid.Column="0"
+                   Style="{DynamicResource awsLabelBaseStyle}"
+                   Content="_Subnet ID:"/>
+            <ComboBox Grid.Row="2" Grid.Column="1"
+                      Style="{DynamicResource awsComboBoxStyle}"
+                      x:Name="_ctlSubnetIDList"
+                      ItemsSource="{Binding SubnetsForVPCZone, UpdateSourceTrigger=PropertyChanged}"
+                      DisplayMemberPath="IdAndCidrDetails"
+                      SelectedItem="{Binding SelectedSubnet, UpdateSourceTrigger=PropertyChanged}"/>
+            
+            <Button Grid.Row="2" Grid.Column="2"
+                    Content="Add"
+                    Style="{StaticResource AddSubnetButtonStyle}"
+                    VerticalAlignment="Center"
+                    Margin="4,0"
+                    Click="OnAddClick"
+                    />
+
+            <ListView Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" 
+                      x:Name="_ctlAssignedSubnets" 
+                      VerticalAlignment="Stretch" 
+                      Margin="4,4,0,0"
+                      MinHeight="30"
+                      ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                      ItemsSource="{Binding AssignedSubnets, UpdateSourceTrigger=PropertyChanged}"
+                      >
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Width="120" Header="Availability Zone">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding AvailabilityZone}"
+                                               TextTrimming="CharacterEllipsis"
+                                               />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Width="120" 
+                                    Header="Subnet ID" 
+                                    >
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding SubnetId}"
+                                           TextTrimming="CharacterEllipsis"
+                                           />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Width="100" 
+                                    Header="CIDR Block" 
+                                    >
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding CidrBlock}"
+                                           TextTrimming="CharacterEllipsis"
+                                           />
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Width="32">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Style="{DynamicResource awsButtonBaseStyle}"
+                                            ToolTip="Remove this entry"
+                                            Click="OnRemoveAssignedSubnetClick"
+                                            Tag="{Binding SubnetId}">
+                                        <Image Width="16" Height="16" 
+                                               DataContext="{DynamicResource CommonIcons}" 
+                                               Source="{Binding RemoveIcon}"/>
+                                    </Button>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+
+        </Grid>
+    </Grid>
+</commonui:BaseAWSControl>

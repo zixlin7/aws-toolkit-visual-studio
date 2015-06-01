@@ -1,0 +1,43 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.SQS.View.ExamineMessageControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Height="300" Width="450">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}">Message Id:</TextBlock>
+        <TextBox Grid.Column="1" Grid.Row="0" Style="{DynamicResource awsSelectableTextBoxStyle}" Text="{Binding Path=MessageId, Mode=OneWay}" Margin="5,5,5,5"></TextBox>
+
+        <CheckBox Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" 
+                  IsChecked="{Binding IsBase64Encoded}" Margin="5,5,5,5"
+                  Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+            Convert from base 64 encoding.
+        </CheckBox>
+
+        <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}">Body:</TextBlock>
+        <TextBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" IsReadOnly="True" Name="_ctlMessageBody"  Margin="5,5,5,5" 
+                 Text="{Binding Body,Mode=OneWay}" TextWrapping="Wrap" VerticalAlignment="Stretch"
+                 AcceptsReturn="True" VerticalScrollBarVisibility="Auto" 
+                 Style="{DynamicResource awsTextBoxStyle}"/>
+    </Grid>
+</commonui:BaseAWSControl>

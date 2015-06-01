@@ -1,0 +1,163 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.ElasticBeanstalk.View.Components.LoadBalancerSettings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.ElasticBeanstalk.View.Components"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Height="auto" Width="auto">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <DockPanel>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid MaxWidth="450" HorizontalAlignment="Left">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,5,5,20" Grid.ColumnSpan="2" TextWrapping="Wrap" Style="{DynamicResource SectionDescription}">These settings allow you to control the behavior of your environment's load balancer.</TextBlock>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">HTTP Listener Port:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="1" Grid.Column="1" Margin="5,5,5,0" HorizontalAlignment="Left"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elb:loadbalancer"
+                    PropertySystemName="LoadBalancerHTTPPort" 
+                    />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">HTTPS Listener Port:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="2" Grid.Column="1" Margin="5,5,5,0" HorizontalAlignment="Left"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elb:loadbalancer"
+                    PropertySystemName="LoadBalancerHTTPSPort" 
+                    />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">SSL Certificate ID</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="3" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elb:loadbalancer"
+                    PropertySystemName="SSLCertificateId" 
+                    />
+
+                
+                <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,20,5,0" TextWrapping="Wrap" Style="{DynamicResource SectionDescription}">These settings allow you to configure how Elastic Beanstalk determines whether an EC2 instance is healthy or not.</TextBlock>
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Application Health Check:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="5" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elasticbeanstalk:application"
+                    PropertySystemName="Application Healthcheck URL" 
+                    />
+
+                <TextBlock Grid.Row="6" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Health Check Interval (seconds):</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="6" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elb:healthcheck"
+                    PropertySystemName="Interval" 
+                    />
+                <components:ConfigurationOptionRangeLabelControl
+                    Grid.Row="6" Grid.Column="2" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elb:healthcheck"
+                    PropertySystemName="Interval" 
+                    />
+
+                <TextBlock Grid.Row="7" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Health Check Timeout (seconds):</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="7" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elb:healthcheck"
+                    PropertySystemName="Timeout" 
+                    />
+                <components:ConfigurationOptionRangeLabelControl
+                    Grid.Row="7" Grid.Column="2" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elb:healthcheck"
+                    PropertySystemName="Timeout" 
+                    />
+
+                <TextBlock Grid.Row="8" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Healthy Check Count Threshold:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="8" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elb:healthcheck"
+                    PropertySystemName="HealthyThreshold" 
+                    />
+                <components:ConfigurationOptionRangeLabelControl
+                    Grid.Row="8" Grid.Column="2" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elb:healthcheck"
+                    PropertySystemName="HealthyThreshold" 
+                    />
+
+                <TextBlock Grid.Row="9" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Unhealthy Check Count Threshold:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="9" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elb:healthcheck"
+                    PropertySystemName="UnhealthyThreshold" 
+                    />
+                <components:ConfigurationOptionRangeLabelControl
+                    Grid.Row="9" Grid.Column="2" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elb:healthcheck"
+                    PropertySystemName="UnhealthyThreshold" 
+                    />
+
+
+                <TextBlock Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,20,5,0" TextWrapping="Wrap" Style="{DynamicResource SectionDescription}">These settings allow you to control how your load balancer handles session cookies.</TextBlock>
+
+                <components:ConfigurationOptionControl
+                    Grid.Row="11" Grid.Column="0" Margin="5,5,5,0" HorizontalAlignment="Right"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elb:policies"
+                    PropertySystemName="Stickiness Policy" 
+                    />
+
+                <TextBlock Grid.Row="11" Grid.Column="1" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Enable Session Stickiness</TextBlock>
+
+                <TextBlock Grid.Row="12" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Cookie Expiration Period (seconds):</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="12" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elb:policies"
+                    PropertySystemName="Stickiness Cookie Expiration" 
+                    />
+                <components:ConfigurationOptionRangeLabelControl
+                    Grid.Row="12" Grid.Column="2" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elb:policies"
+                    PropertySystemName="Stickiness Cookie Expiration" 
+                    />
+
+            </Grid>
+        </ScrollViewer>
+    </DockPanel>
+</commonui:BaseAWSUserControl>

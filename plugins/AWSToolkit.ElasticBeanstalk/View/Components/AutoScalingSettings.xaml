@@ -1,0 +1,193 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.ElasticBeanstalk.View.Components.AutoScalingSettings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"                      
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.ElasticBeanstalk.View.Components"
+    Height="auto" Width="auto">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <DockPanel>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid MaxWidth="450" HorizontalAlignment="Left">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,5,5,20" Grid.ColumnSpan="2" TextWrapping="Wrap" Style="{DynamicResource SectionDescription}">Auto-scaling automatically launches or terminates EC2 instances based on defined metrics and thresholds called triggers. Auto-scaling will also launch a new EC2 instance in the event of a failure. These settings allow you to control auto-scaling behavior.</TextBlock>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Minimum Instance Count:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="1" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:asg"
+                    PropertySystemName="MinSize" 
+                    />
+                <components:ConfigurationOptionRangeLabelControl
+                    Grid.Row="1" Grid.Column="2" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:asg"
+                    PropertySystemName="MinSize" 
+                    />
+
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Maximum Instance Count:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="2" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:asg"
+                    PropertySystemName="MaxSize" 
+                    />
+                <components:ConfigurationOptionRangeLabelControl
+                    Grid.Row="2" Grid.Column="2" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:asg"
+                    PropertySystemName="MaxSize" 
+                    />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Availability Zones:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="3" Grid.Column="1" Margin="5,5,5,0" HorizontalAlignment="Left"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:asg"
+                    PropertySystemName="Availability Zones" 
+                    />
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Scaling Cooldown Time (seconds):</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="4" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:asg"
+                    PropertySystemName="Cooldown" 
+                    />
+                <components:ConfigurationOptionRangeLabelControl
+                    Grid.Row="4" Grid.Column="2" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:asg"
+                    PropertySystemName="Cooldown" 
+                    />
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Trigger Measurement:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="5" Grid.Column="1" Margin="5,5,5,0" HorizontalAlignment="Left"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:trigger"
+                    PropertySystemName="MeasureName" 
+                    />
+
+                <TextBlock Grid.Row="6" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Trigger Statistic:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="6" Grid.Column="1" Margin="5,5,5,0" HorizontalAlignment="Left"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:trigger"
+                    PropertySystemName="Statistic" 
+                    />
+
+                <TextBlock Grid.Row="7" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Unit of Measurement:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="7" Grid.Column="1" Margin="5,5,5,0" HorizontalAlignment="Left"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:trigger"
+                    PropertySystemName="Unit" 
+                    />
+
+                <TextBlock Grid.Row="8" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Measurement Period (minutes):</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="8" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:trigger"
+                    PropertySystemName="Period" 
+                    />
+                <components:ConfigurationOptionRangeLabelControl
+                    Grid.Row="8" Grid.Column="2" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:trigger"
+                    PropertySystemName="Period" 
+                    />
+
+                <TextBlock Grid.Row="9" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Breach Duration (minutes):</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="9" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:trigger"
+                    PropertySystemName="BreachDuration" 
+                    />
+                <components:ConfigurationOptionRangeLabelControl
+                    Grid.Row="9" Grid.Column="2" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:trigger"
+                    PropertySystemName="BreachDuration" 
+                    />
+
+                <TextBlock Grid.Row="10" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Upper Threshold:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="10" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:trigger"
+                    PropertySystemName="UpperThreshold" 
+                    />
+                <components:ConfigurationOptionRangeLabelControl
+                    Grid.Row="10" Grid.Column="2" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:trigger"
+                    PropertySystemName="UpperThreshold" 
+                    />
+
+                <TextBlock Grid.Row="11" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Upper Breach Scalement Increment:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="11" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:trigger"
+                    PropertySystemName="UpperBreachScaleIncrement" 
+                    />
+
+                <TextBlock Grid.Row="12" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Lower Threshold:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="12" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:trigger"
+                    PropertySystemName="LowerThreshold" 
+                    />
+                <components:ConfigurationOptionRangeLabelControl
+                    Grid.Row="12" Grid.Column="2" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:trigger"
+                    PropertySystemName="LowerThreshold" 
+                    />
+
+                <TextBlock Grid.Row="13" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Lower Breach Scalement Increment:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="13" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:trigger"
+                    PropertySystemName="LowerBreachScaleIncrement" 
+                    />
+            </Grid>
+        </ScrollViewer>
+    </DockPanel>
+</commonui:BaseAWSUserControl>

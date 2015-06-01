@@ -1,0 +1,35 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CloudFormation.View.Components.TemplateOuputControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Height="auto" Width="auto">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Margin="5,5,5,0" Grid.Row="0" Grid.Column="0" Text="{Binding OutputKey}" MinWidth="150" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Margin="5,5,5,0" Grid.Row="0" Grid.Column="1" Name="_ctlValue" Style="{DynamicResource awsSelectableTextBoxStyle}"/>
+        <TextBlock Margin="5,5,5,0" Grid.Row="0" Grid.Column="1" Name="_ctlLinkOuter">
+            <Hyperlink NavigateUri="{Binding OutputValue, Mode=OneWay}" RequestNavigate="Hyperlink_RequestNavigate">
+                <TextBlock Name="_ctlLinkInner"/>
+            </Hyperlink>
+        </TextBlock>
+
+        <TextBlock Margin="5,0,5,5" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Text="{Binding Description}" TextWrapping="Wrap" Style="{DynamicResource awsInfoTextStyle}"/>
+    </Grid>
+</commonui:BaseAWSUserControl>

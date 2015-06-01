@@ -1,0 +1,51 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.EC2.View.CreateSubnetControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             Loaded="onLoad"
+             Height="200" Width="340">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Margin="5,5,5,5" Grid.Row="0" Grid.Column="0" Text="VPC:" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <ComboBox Margin="5" Grid.Row="0" Grid.Column="1" SelectedItem="{Binding VPC}" DisplayMemberPath="FormattedLabel" 
+                  ItemsSource="{Binding AllVPCs}" Name="_ctlVPC"
+                  Style="{DynamicResource awsComboBoxStyle}"/>
+
+        <TextBlock Margin="5,5,5,5" Grid.Row="1" Grid.Column="0" Text="Availability Zone:" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <ComboBox Margin="5" Grid.Row="1" Grid.Column="1" Text="{Binding AvailabilityZone}" 
+                  ItemsSource="{Binding AllAvailabilityZones}" Name="_ctlZones"
+                  Style="{DynamicResource awsComboBoxStyle}"/>
+
+        <TextBlock Margin="5,5,5,5" Grid.Row="2" Grid.Column="0" Text="CIDR Block:" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <DockPanel Grid.Row="2" Grid.Column="1">
+            <TextBlock Margin="5" DockPanel.Dock="Right" VerticalAlignment="Center" Style="{DynamicResource awsFieldHintTextStyle}" FontStyle="Italic">(e.g. 10.0.0.0/24)</TextBlock>
+            <TextBox Margin="5,5,5,5"  Text="{Binding CIDRBlock}" Name="_ctlCIDRBlock" Style="{DynamicResource awsTextBoxStyle}"/>
+        </DockPanel>
+
+        <TextBlock Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Margin="5,5,5,10" TextWrapping="Wrap" Style="{DynamicResource awsFieldHintTextStyle}">
+             Please use the CIDR format to specify your subnet's IP address block (e.g., 10.0.0.0/24). Please note that block sizes must be between a /16 netmask and /28 netmask. You can create no more than 20 subnets per VPC. Also, please note that a subnet can be the same size as your VPC.
+        </TextBlock>        
+    </Grid>
+</commonui:BaseAWSControl>

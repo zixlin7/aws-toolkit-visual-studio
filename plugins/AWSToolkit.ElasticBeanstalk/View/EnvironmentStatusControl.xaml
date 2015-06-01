@@ -1,0 +1,206 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.ElasticBeanstalk.View.EnvironmentStatusControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.ElasticBeanstalk.View.Components"
+    xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit" 
+    xmlns:charting="clr-namespace:System.Windows.Controls.DataVisualization.Charting;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+    xmlns:datavis="clr-namespace:System.Windows.Controls.DataVisualization;assembly=System.Windows.Controls.DataVisualization.Toolkit"
+    Height="300" Width="800">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>                
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary Source="EditorTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- style is referenced through codebehind, so don't delete -->
+            <Style x:Key="{x:Static ToolBar.MenuStyleKey}" TargetType="Menu">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{DynamicResource awsToolBarTextBrushKey}"/>
+                <Setter Property="Padding" Value="0,2,2,0"/>
+            </Style>
+            
+            <!-- style is applied through codebehind, so don't delete -->
+            <Style x:Key="menuItemStyle" TargetType="MenuItem">
+                <Setter Property="Foreground" Value="{DynamicResource awsToolBarTextBrushKey}"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+            </Style>
+            
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <ToolBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" ToolBarTray.IsLocked="True" >
+            <Button Click="onApplyChangesClick" IsEnabled="{Binding ConfigModel.IsConfigDirty}">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding SaveIcon}"/>
+                        <TextBlock VerticalAlignment="Center">Apply Changes</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Separator/>
+            <Button Click="onConnectToInstance" Name="_ctlConnect">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" Source="..\Resources\Images\connect.png"/>
+                        <TextBlock VerticalAlignment="Center">Connect to Instance</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="onRestartAppServer" Name="_ctlRestart">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" Source="..\Resources\Images\restart.png"/>
+                        <TextBlock VerticalAlignment="Center">Restart App</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Menu>
+                <MenuItem x:Name="environmentMenu">
+                    <MenuItem.Icon>
+                        <Image Source="..\Resources\Images\environment.png" Margin="0" />
+                    </MenuItem.Icon>
+                    <MenuItem.HeaderTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="0" HorizontalAlignment="Left">
+                                <TextBlock Margin="0">Environment</TextBlock>
+                                <Path x:Name="Arrow" Data="{DynamicResource awsDownArrowGeometry}" 
+                                      Fill="{DynamicResource awsToolBarTextBrushKey}" 
+                                      HorizontalAlignment="Center" 
+                                      Margin="3,1,0,0" 
+                                      VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </DataTemplate>    
+                    </MenuItem.HeaderTemplate>
+                    <MenuItem Header="Type" x:Name="environmentTypesSubMenu" 
+                              SubmenuOpened="environmentTypesSubMenu_SubmenuOpened"
+                              >
+                        <MenuItem Header="Single Instance" 
+                                  IsCheckable="True" 
+                                  Tag="SingleInstance"
+                                  Click="EnvironmentTypeChildMenuItem_OnClick"
+                                  x:Name="_singleInstanceType"
+                                  />
+                        <MenuItem Header="Load Balanced" 
+                                  IsCheckable="True"
+                                  Tag="LoadBalanced"
+                                  Click="EnvironmentTypeChildMenuItem_OnClick"
+                                  x:Name="_loadBalancedType"
+                                  />
+                    </MenuItem>
+                    <MenuItem x:Name="_ctlRebuild" 
+                              Header="Rebuild" 
+                              Click="onRebuildEnvironment"
+                              >
+                        <MenuItem.Icon>
+                            <Image Source="..\Resources\Images\rebuild.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <Separator />
+                    <MenuItem x:Name="_ctlTerminate" 
+                              Header="Terminate" 
+                              Click="onTerminateEnvironment"
+                              >
+                        <MenuItem.Icon>
+                            <Image Source="..\Resources\Images\terminate.png" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </MenuItem>
+            </Menu>
+            <Separator/>
+            <Button Click="onRefreshClick">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                        <TextBlock VerticalAlignment="Center" >Refresh</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </ToolBar>
+
+        <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,5,5,5" Text="URL:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBlock Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" Margin="0,5,0,5">
+            <Hyperlink NavigateUri="{Binding EndPointURL, Mode=OneWay}" RequestNavigate="onEndPointURLClick">
+                <TextBlock Text="{Binding EndPointURL, Mode=OneWay}" Style="{DynamicResource awsUrlTextFieldStyle}" HorizontalAlignment="Stretch"/>
+            </Hyperlink>
+        </TextBlock>
+
+        <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,5,5,5" Text="Application:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="1" Grid.Row="2" Margin="0,5,0,5" Text="{Binding ApplicationName}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
+                 TextWrapping="NoWrap" ToolTip="{Binding ApplicationName}"/>
+
+        <TextBlock Grid.Column="2" Grid.Row="2" Margin="5,5,5,5" Text="Running Version:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="3" Grid.Row="2" Margin="0,5,0,5" Text="{Binding VersionLabel}" Style="{DynamicResource awsSelectableTextBoxStyle}" />
+
+        <TextBlock Grid.Column="0" Grid.Row="3" Margin="5,5,5,5" Text="Container Type:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="1" Grid.Row="3" Margin="0,5,0,5" Text="{Binding ContainerType}" Style="{DynamicResource awsSelectableTextBoxStyle}" />
+
+        <TextBlock Grid.Column="2" Grid.Row="3" Margin="5,5,5,5" Text="Created:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="3" Grid.Row="3" Margin="0,5,0,5" Text="{Binding DateCreated}" Style="{DynamicResource awsSelectableTextBoxStyle}" />
+
+        <TextBlock Grid.Column="2" Grid.Row="4" Margin="5,5,5,5" Text="Updated:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="3" Grid.Row="4" Margin="0,5,0,5" Style="{DynamicResource awsSelectableTextBoxStyle}" 
+                 Text="{Binding DateUpdated}" />
+
+        <TextBlock Grid.Column="0" Grid.Row="4" Margin="5,5,5,5" Text="Status:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="1" Grid.Row="4" Margin="0,5,0,5" FontWeight="Bold" 
+                 Foreground="{Binding CompositeStatusHealthColor, Mode=OneWay, NotifyOnTargetUpdated=True}" 
+                 Text="{Binding CompositeStatusHealth, Mode=OneWay}" 
+                 Style="{DynamicResource awsSelectableTextBoxStyle}" />
+
+        <TabControl Margin="5,5,5,5" Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="4" Style="{DynamicResource awsPropertyPageVerticalTabStyle}" SelectionChanged="onTabSelectionChange" >
+            <TabItem Header="Events">
+                <components:EnvironmentEvents x:Name="_ctlEventComponent"/>
+            </TabItem>
+            <TabItem Header="Monitoring" Name="_ctlMonitorTab">
+                <components:MonitorGraphs x:Name="_ctlMonitorComponent"/>
+            </TabItem>
+            <TabItem Header="Resources" Name="_ctlResourcesTab">
+                <components:EnvironmentResources x:Name="_ctlResourcesComponent"/>
+            </TabItem>
+            <TabItem Header="Server" Name="_ctlServerTab">
+                <components:ServerSettings x:Name="_ctlServerComponent"/>
+            </TabItem>
+            <TabItem Header="Load Balancer" Name="_ctlLoadBalancerTab">
+                <components:LoadBalancerSettings x:Name="_ctlLoadBalancerComponent"/>
+            </TabItem>
+            <TabItem Header="Auto Scaling" Name="_ctlAutoScalingTab">
+                <components:AutoScalingSettings x:Name="_ctlAutoScalingComponent"/>
+            </TabItem>
+            <TabItem Header="Notifications" Name="_ctlNotificationsTab">
+                <components:NotificationSettings x:Name="_ctlNotificationsComponent"/>
+            </TabItem>
+            <TabItem Header="Container" Name="_ctlContainerTab">
+                <components:ContainerSettings x:Name="_ctlContainerComponent"/>
+            </TabItem>
+            <TabItem Header="Advanced" Name="_ctlAdvancedTab">
+                <components:AdvancedEnvironmentEditor x:Name="_ctlAdvancedComponent"/>
+            </TabItem>
+            <TabItem Header="Logs" Name="_ctlLogsTab">
+                <components:TailLogViewer x:Name="_ctlLogsComponent"/>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</commonui:BaseAWSControl>

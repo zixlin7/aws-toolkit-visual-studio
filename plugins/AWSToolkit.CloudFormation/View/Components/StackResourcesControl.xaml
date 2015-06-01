@@ -1,0 +1,124 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CloudFormation.View.Components.StackResourcesControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.CloudFormation.View.Components" 
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"                          
+    Loaded="onLoaded"             
+    Height="auto" Width="auto">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"></RowDefinition>
+            <RowDefinition Height="5"></RowDefinition>
+            <RowDefinition Height="3*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Grid.Column="0">
+            <StackPanel DockPanel.Dock="Top" Margin="5,5,5,5" Orientation="Horizontal">
+                <TextBlock FontWeight="SemiBold" Style="{DynamicResource awsTextBlockBaseStyle}" FontSize="16">EC2 Instances:</TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="0" Margin="5,0,5,0" Name="_ctlLastRefresh" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+            </StackPanel> 
+            <commonui:ToolkitDataGridWrapper AutoGenerateColumns="False" Name="_ctlEC2DataGrid"
+                    CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="True"
+                    ContextMenuOpening="onGridContextMenu"
+                    RowHeaderWidth="0"
+                    ItemsSource="{Binding Instances}"                          
+                    CellStyle="{DynamicResource awsDataGridCellCentering}"  
+                    HorizontalAlignment="Stretch" HeadersVisibility="All">
+
+
+
+                <commonui:ToolkitDataGridWrapper.Columns>
+
+                    <DataGridTemplateColumn Header="Instance" Width="auto" SortMemberPath="NativeInstance.InstanceId">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <WrapPanel>
+                                    <Image Width="16" Height="16" Source="{Binding InstanceIcon, Mode=OneWay}"/>
+                                    <TextBlock Margin="5,0,5,0" VerticalAlignment="Center" Text="{Binding NativeInstance.InstanceId, Mode=OneWay}"/>
+                                </WrapPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Status" Width="auto" SortMemberPath="NativeInstance.InstanceState.Name">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <WrapPanel>
+                                    <Image Width="16" Height="16" Source="{Binding StatusIcon, Mode=OneWay}"/>
+                                    <TextBlock Margin="5,0,5,0" VerticalAlignment="Center" Text="{Binding NativeInstance.InstanceState.Name, Mode=OneWay}"/>
+                                </WrapPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTextColumn Header="AMI ID"  Binding="{Binding NativeInstance.ImageId, Mode=OneWay}" Width="auto"/>
+                    <DataGridTextColumn Header="Type" Binding="{Binding InstanceType, Mode=OneWay}" Width="auto"/>
+
+                    <DataGridTextColumn Header="Tags" Binding="{Binding FormattedTags, Mode=OneWay}" Width="auto"/>
+
+                </commonui:ToolkitDataGridWrapper.Columns>
+            </commonui:ToolkitDataGridWrapper>
+        </DockPanel>
+
+        <GridSplitter Grid.Row="1" Grid.Column="0" 
+                      Height="Auto" Width="Auto" 
+                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                      Background="{DynamicResource awsGridSplitterBackgroundGradientBrushKey}"
+                      Foreground="{DynamicResource awsGridSplitterTextForegroundBrushKey}"/>
+
+        <DockPanel Grid.Row="2" Grid.Column="0">
+            <TextBlock DockPanel.Dock="Top" Margin="5,5,5,5" FontWeight="SemiBold" Style="{DynamicResource awsTextBlockBaseStyle}" FontSize="16">Template Resources:</TextBlock>
+
+            <commonui:ToolkitDataGridWrapper AutoGenerateColumns="False" Name="_ctlResourcesDataGrid" ScrollViewer.CanContentScroll="False"
+                    Grid.Row="4" Grid.Column="0"                          
+                    CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="True"
+                    RowHeaderWidth="0"
+                    RowDetailsVisibilityMode="Visible"                          
+                    ItemsSource="{Binding Resources}"                          
+                    HorizontalAlignment="Stretch" HeadersVisibility="All">
+
+                <commonui:ToolkitDataGridWrapper.Resources>
+                    <Style TargetType="{x:Type DataGridCell}">
+                        <Setter Property="Foreground" Value="{DynamicResource awsDefaultControlForegroundBrushKey}" />
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{x:Null}" />
+                                <Setter Property="BorderBrush" Value="{x:Null}" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </commonui:ToolkitDataGridWrapper.Resources>
+
+                <commonui:ToolkitDataGridWrapper.RowDetailsTemplate>
+                    <DataTemplate>
+                        <local:StackResourceDetailHostControl/>
+                    </DataTemplate>
+                </commonui:ToolkitDataGridWrapper.RowDetailsTemplate>
+
+                <commonui:ToolkitDataGridWrapper.Columns>
+
+                    <DataGridTextColumn Header="Logical ID"  Binding="{Binding LogicalResourceId, Mode=OneWay}" Width="auto"/>
+                    <DataGridTextColumn Header="Physical ID" Binding="{Binding PhysicalResourceId, Mode=OneWay}" Width="200"/>
+                    <DataGridTextColumn Header="Type" Binding="{Binding ResourceType, Mode=OneWay}" Width="auto"/>
+                    <DataGridTextColumn Header="Status" Binding="{Binding ResourceStatus, Mode=OneWay}" Width="auto"/>
+                    <DataGridTextColumn Header="Status (Reason)" Binding="{Binding ResourceStatusReason, Mode=OneWay}" Width="auto"/>
+
+                </commonui:ToolkitDataGridWrapper.Columns>
+            </commonui:ToolkitDataGridWrapper>
+        </DockPanel>
+    </Grid>
+</commonui:BaseAWSUserControl>

@@ -1,0 +1,59 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CloudFormation.View.Components.StackEventControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"             
+    Height="auto" Width="auto">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Background="{DynamicResource awsStatusPanelBackgroundBrushKey}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Margin="5,5,5,5" Grid.Column="0" VerticalAlignment="Center" Style="{StaticResource awsTextBlockBaseStyle}">Filter:</TextBlock>
+            <TextBox  Margin="5,5,5,5" Grid.Column="1" Text="{Binding EventTextFilter,UpdateSourceTrigger=PropertyChanged}" 
+                      TextChanged="onEventTextFilterChange" Style="{StaticResource awsTextBoxStyle}"/>
+        </Grid>
+
+        <commonui:ToolkitDataGridWrapper Grid.Row="1" ItemsSource="{Binding Events}" AutoGenerateColumns="False" Name="_ctlDataGrid" CellStyle="{DynamicResource awsDataGridCellCentering}"
+                 CanUserAddRows="False" CanUserDeleteRows="False" DockPanel.Dock="Top"
+                 HorizontalAlignment="Stretch" HeadersVisibility="Column">
+            <commonui:ToolkitDataGridWrapper.Columns>
+
+                <DataGridTextColumn Header="Time" Binding="{Binding NativeStackEvent.Timestamp, Mode=OneWay}" Width="auto"/>
+
+                <DataGridTextColumn Header="Type" Binding="{Binding NativeStackEvent.ResourceType, Mode=OneWay}" Width="auto"/>
+                <DataGridTextColumn Header="Logical ID" Binding="{Binding NativeStackEvent.LogicalResourceId, Mode=OneWay}" Width="auto"/>
+                <DataGridTextColumn Header="Physical ID" Binding="{Binding NativeStackEvent.PhysicalResourceId, Mode=OneWay}" Width="200"/>
+                <DataGridTemplateColumn Header="Status" Width="auto" SortMemberPath="NativeStackEvent.ResourceStatus" >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <WrapPanel>
+                                <Image Width="16" Height="16" Source="{Binding StatusImage}" Margin="5,3,5,3"/>
+                                <TextBlock Text="{Binding NativeStackEvent.ResourceStatus, Mode=OneWay}" VerticalAlignment="Center"/>
+                            </WrapPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Reason" Binding="{Binding NativeStackEvent.ResourceStatusReason, Mode=OneWay}" Width="auto"/>
+
+            </commonui:ToolkitDataGridWrapper.Columns>
+        </commonui:ToolkitDataGridWrapper>
+    </Grid>
+</commonui:BaseAWSUserControl>

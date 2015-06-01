@@ -1,0 +1,60 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.EC2.View.Components.NetworkAclRulesControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             mc:Ignorable="d" 
+             Height="auto" Width="auto">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <DockPanel>
+        <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" Name="_ctlToolbar">
+            <Button Click="onAddRule">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding AddIcon}"/>
+                        <TextBlock>Add Rule</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="onDeleteRule" Name="_ctlDelete">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RemoveIcon}"/>
+                        <TextBlock>Delete</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="onRefreshRules">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                        <TextBlock>Refresh</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </ToolBar>
+        <commonui:ToolkitDataGridWrapper AutoGenerateColumns="False" x:Name="_ctlDataGrid" CellStyle="{DynamicResource awsDataGridCellCentering}"
+                CanUserAddRows="True" CanUserDeleteRows="False" CanUserSortColumns="True"
+                RowHeaderWidth="0"
+                SelectedCellsChanged="onSelectedCellsChanged"                          
+                HorizontalAlignment="Stretch" HeadersVisibility="All">
+
+            <commonui:ToolkitDataGridWrapper.Columns>
+                <DataGridTextColumn Header="Rule #" Binding="{Binding FormattedRuleNumber, Mode=OneWay}" Width="auto"/>
+                <DataGridTextColumn Header="Port" Binding="{Binding FormattedPortRange, Mode=OneWay}" Width="100"/>
+                <DataGridTextColumn Header="Protocol" Binding="{Binding FormattedProtocol, Mode=OneWay}" Width="100"/>
+                <DataGridTextColumn x:Name="_ctlDirection" Header="Source" Binding="{Binding CidrBlock, Mode=OneWay}" Width="125"/>
+                <DataGridTextColumn Header="Allow/Deny" Binding="{Binding FormattedAccess, Mode=OneWay}" Width="auto"/>
+            </commonui:ToolkitDataGridWrapper.Columns>
+        </commonui:ToolkitDataGridWrapper>
+    </DockPanel>
+</commonui:BaseAWSUserControl>

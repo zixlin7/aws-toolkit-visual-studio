@@ -1,0 +1,124 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.ElasticBeanstalk.View.Components.ContainerSettings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.ElasticBeanstalk.View.Components"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"             
+    Height="auto" Width="auto">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <DockPanel>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid MaxWidth="450" HorizontalAlignment="Left">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,5,5,20" Grid.ColumnSpan="2" TextWrapping="Wrap" Style="{DynamicResource SectionDescription}">These properties are passed into the application as environment variables.</TextBlock>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">AWS_ACCESS_KEY_ID:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="1" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}"
+                    PropertyNamespaceName="aws:elasticbeanstalk:application:environment"
+                    PropertySystemName="AWS_ACCESS_KEY_ID" 
+                    />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">AWS_SECRET_KEY_ID:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="2" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elasticbeanstalk:application:environment"
+                    PropertySystemName="AWS_SECRET_KEY" 
+                    />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">PARAM1:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="3" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elasticbeanstalk:application:environment"
+                    PropertySystemName="PARAM1" 
+                    />
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">PARAM2:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="4" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elasticbeanstalk:application:environment"
+                    PropertySystemName="PARAM2" 
+                    />
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">PARAM3:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="5" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elasticbeanstalk:application:environment"
+                    PropertySystemName="PARAM3" 
+                    />
+
+                <TextBlock Grid.Row="6" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">PARAM4:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="6" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elasticbeanstalk:application:environment"
+                    PropertySystemName="PARAM4" 
+                    />
+
+                <TextBlock Grid.Row="7" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">PARAM5:</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="7" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elasticbeanstalk:application:environment"
+                    PropertySystemName="PARAM5" 
+                    />
+
+
+                <TextBlock
+                    Name="RuntimeTextBlock"
+                    Grid.Row="8" Grid.Column="0" Margin="5,5,5,0"
+                    Visibility="{Binding ElementName=RuntimeControl, Path=Visibility, Mode=OneWay}"
+                     Style="{DynamicResource awsTextBlockBaseStyle}">Target Runtime:</TextBlock>
+                <components:ConfigurationOptionControl
+                    x:Name="RuntimeControl"
+                    Grid.Row="8" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}"
+                    PropertyNamespaceName="aws:elasticbeanstalk:container:dotnet:apppool"
+                    PropertySystemName="Target Runtime" 
+                    />
+
+                <TextBlock
+                    Name="ApplicationsTextBlock"
+                    Grid.Row="9" Grid.Column="0" Margin="5,5,5,0"
+                    Visibility="{Binding ElementName=ApplicationControl, Path=Visibility, Mode=OneWay}"
+                     Style="{DynamicResource awsTextBlockBaseStyle}">Enable 32-bit Applications:</TextBlock>
+                <components:ConfigurationOptionControl
+                    x:Name="ApplicationControl"
+                    Grid.Row="9" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}"
+                    PropertyNamespaceName="aws:elasticbeanstalk:container:dotnet:apppool"
+                    PropertySystemName="Enable 32-bit Applications" 
+                    />
+            </Grid>
+        </ScrollViewer>
+    </DockPanel>
+</commonui:BaseAWSUserControl>

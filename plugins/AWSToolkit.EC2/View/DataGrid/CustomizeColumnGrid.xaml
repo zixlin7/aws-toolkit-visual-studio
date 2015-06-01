@@ -1,0 +1,52 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.EC2.View.DataGrid.CustomizeColumnGrid"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Height="auto" Width="auto"
+    Background="{DynamicResource awsWindowBackgroundBrushKey}">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <commonui:ToolkitDataGridWrapper AutoGenerateColumns="False" x:Name="_ctlDataGrid" CellStyle="{DynamicResource awsDataGridCellCentering}" ScrollViewer.IsDeferredScrollingEnabled="True"
+            CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="True" IsEnabled="False"
+            CanUserReorderColumns="True"
+            EnableRowVirtualization="True" 
+            Sorting="SortHandler"                          
+            LoadingRow="onLoadingRow"                                            
+            HorizontalAlignment="Stretch" HeadersVisibility="All"
+            VirtualizingStackPanel.VirtualizationMode="Standard"
+            >
+
+            <commonui:ToolkitDataGridWrapper.RowHeaderTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridRow}}, Path=Header}"></TextBlock>
+                </DataTemplate>
+            </commonui:ToolkitDataGridWrapper.RowHeaderTemplate>
+
+        </commonui:ToolkitDataGridWrapper>
+
+        <ToolBar Grid.Row="1" ToolBarTray.IsLocked="True">
+            <ComboBox x:Name="zoomLevel"
+                          IsReadOnly="True"
+                          Width="70"
+                          Style="{DynamicResource awsComboBoxStyle}" 
+                          ItemsSource="{Binding ElementName=_ctlDataGrid, Path=ZoomLevels}"
+                          SelectedValuePath="Level"
+                          SelectedValue="{Binding ElementName=_ctlDataGrid, Path=ZoomLevel, Mode=TwoWay}"
+                          />
+        </ToolBar>
+
+    </Grid>
+</commonui:BaseAWSUserControl>

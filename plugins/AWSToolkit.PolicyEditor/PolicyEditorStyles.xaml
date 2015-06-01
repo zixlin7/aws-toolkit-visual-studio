@@ -1,0 +1,44 @@
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Style x:Key="LviBulletList" TargetType="{x:Type ListViewItem}">
+    <Setter Property="Template" Value="{DynamicResource ListBoxItemControlTemplateLviBulletList}"/>
+  </Style>
+  <ControlTemplate x:Key="ListBoxItemControlTemplateLviBulletList" TargetType="{x:Type ListBoxItem}">
+    <BulletDecorator Margin="5,0,5,0" Width="Auto">
+      <BulletDecorator.Bullet>
+                <Ellipse Fill="{DynamicResource awsWindowTextBrushKey}" 
+                         Stroke="{DynamicResource awsWindowTextBrushKey}" 
+                         StrokeThickness="1" Width="5" Height="5"/>
+      </BulletDecorator.Bullet>
+            <TextBlock Margin="5,0,5,0" Text="{TemplateBinding Content}" Foreground="{DynamicResource awsWindowTextBrushKey}" />
+    </BulletDecorator>
+  </ControlTemplate>
+
+  <Style x:Key="LviBulletCondition" TargetType="{x:Type ListViewItem}">
+    <Setter Property="Template" Value="{DynamicResource ListBoxItemControlTemplateLviBulletCondition}"/>
+  </Style>
+  <ControlTemplate x:Key="ListBoxItemControlTemplateLviBulletCondition" TargetType="{x:Type ListBoxItem}">
+
+    <StackPanel Orientation="Vertical">
+      <BulletDecorator Margin="5,0,5,0" Width="Auto">
+        <BulletDecorator.Bullet>
+            <Ellipse Fill="{DynamicResource awsWindowTextBrushKey}" 
+                     Stroke="{DynamicResource awsWindowTextBrushKey}" 
+                     StrokeThickness="1" Width="5" Height="5"/>
+        </BulletDecorator.Bullet>
+        <TextBlock Margin="5,0,5,0" Text="{Binding MainLabel}" Foreground="{DynamicResource awsWindowTextBrushKey}" />
+      </BulletDecorator>
+      <BulletDecorator Margin="25,0,5,0" Width="Auto">
+        <BulletDecorator.Bullet>
+                    <Ellipse Fill="{DynamicResource awsWindowTextBrushKey}" 
+                             Stroke="{DynamicResource awsWindowTextBrushKey}" 
+                             StrokeThickness="1" Width="5" Height="5"/>
+        </BulletDecorator.Bullet>
+        <TextBlock Margin="5,0,5,0" Text="{Binding SubLabel}" Foreground="{DynamicResource awsWindowTextBrushKey}" />
+      </BulletDecorator>
+    </StackPanel>
+  </ControlTemplate>  
+
+</ResourceDictionary>

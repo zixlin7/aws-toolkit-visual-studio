@@ -1,0 +1,273 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.RDS.WizardPages.PageUI.ModifyDBInstancePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:toolkitcomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
+    >
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid Margin="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>            
+        
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+                   Margin="0"
+                   >
+                DB Instance Engine and Class
+            </Label>
+
+            <Grid Grid.Row="1" Margin="16,4,4,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width=".3*" />
+                    <ColumnDefinition Width=".2*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="0" Target="{Binding ElementName=_dbEngineVersions}" Style="{DynamicResource awsLabelBaseStyle}">DB Engine _Version:</Label>
+                <toolkitcomponents:ListViewComboBox VerticalAlignment="Center" 
+                                                    x:Name="_dbEngineVersions" 
+                                                    Grid.Row="0" 
+                                                    Grid.Column="1" 
+                                                    SelectionChanged="_dbEngineVersions_SelectionChanged"
+                                                    DisplayMemberPath="EngineVersion"
+                                                    ItemContainerStyle="{DynamicResource awsListViewItemContainerStyle}"
+                                                    AlternationCount="2"
+                                                    ItemsSource="{Binding EngineVersions}"
+                                                    >
+                    <GridViewColumn Header="Version" DisplayMemberBinding="{Binding EngineVersion}" />
+                    <GridViewColumn Header="Description" DisplayMemberBinding="{Binding DBEngineVersionDescription}" />
+                </toolkitcomponents:ListViewComboBox>
+
+                <Label Grid.Row="1" Target="{Binding ElementName=_instanceClass}" Style="{DynamicResource awsLabelBaseStyle}">DB Instance _Class:</Label>
+                <toolkitcomponents:ListViewComboBox Grid.Row="1" 
+                                                Grid.Column="1" 
+                                                x:Name="_instanceClass" 
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Stretch"
+                                                DisplayMemberPath="Name"
+                                                ItemContainerStyle="{DynamicResource awsListViewItemContainerStyle}"
+                                                AlternationCount="2"
+                                                SelectionChanged="_instanceClass_SelectionChanged"
+                                                >
+                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
+                    <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Id}" />
+                    <GridViewColumn Header="vCPU" DisplayMemberBinding="{Binding NumberOfVirtualCores}" />
+                    <GridViewColumn Header="Memory" DisplayMemberBinding="{Binding MemoryWithUnits}" />
+                    <GridViewColumn Header="I/O Capacity" DisplayMemberBinding="{Binding IOCapacity}" />
+                </toolkitcomponents:ListViewComboBox>
+
+                <CheckBox x:Name="_btnMultiAZDeployment"
+                          Grid.Row="0"
+                          Grid.Column="3"
+                          IsChecked="True"
+                          Margin="8,2,4,0"
+                          Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+                    Perform a multi A_Z deployment
+                </CheckBox>
+
+                <CheckBox x:Name="_btnAutoUpgradeMinorVersions"
+                          Grid.Row="1"
+                          Grid.Column="3"
+                          IsChecked="True"
+                          Margin="8,2,4,0"
+                          Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+                    _Upgrade minor versions automatically
+                </CheckBox>
+            </Grid>
+        </Grid>
+        
+        <Grid Grid.Row="1" Margin="0,4,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+                               Margin="0,4,0,0"
+                               >
+                RDS Database Instance
+            </Label>
+
+            <Grid Grid.Row="1" Margin="16,4,4,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>                
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Style="{DynamicResource awsLabelBaseStyle}">Allocated _Storage:</Label>
+                <StackPanel Grid.Column="1" Grid.ColumnSpan="3">
+                    <StackPanel Orientation="Horizontal" Margin="4,0,0,0">
+                        <TextBox x:Name="_allocatedStorage" 
+                                 Width="80"
+                                 HorizontalContentAlignment="Right"
+                                 PreviewTextInput="_allocatedStorage_PreviewTextInput"
+                                 TextChanged="_allocatedStorage_TextChanged"
+                                 Style="{DynamicResource awsTextBoxStyle}"/>
+                        <TextBlock Margin="4,0" VerticalAlignment="Center" Style="{DynamicResource awsTextBlockBaseStyle}">GB</TextBlock>
+                        <TextBlock Margin="8,0,4,0" 
+                                   x:Name="_lblStorageLimits"
+                                   Style="{DynamicResource awsFieldHintTextStyle}"
+                                   FontStyle="Italic">
+                            (Minimum: {0} GB, Maximum {1} GB)
+                        </TextBlock>
+                    </StackPanel>
+                </StackPanel>
+
+                <Grid Grid.Row="2" Grid.ColumnSpan="4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Label Target="{Binding ElementName=_txtMasterUserPassword}"
+                           VerticalAlignment="Top"
+                           Style="{DynamicResource awsLabelBaseStyle}">
+                        Master User _Password*:
+                    </Label>
+                    <PasswordBox x:Name="_txtMasterUserPassword" 
+                                 Grid.Column="1" 
+                                 Margin="4,2,0,2"
+                                 VerticalAlignment="Center" 
+                                 Width="200" 
+                                 PasswordChanged="OnPasswordFieldsChanged"
+                                 Style="{DynamicResource awsPasswordBoxStyle}"/>
+
+                    <Label Grid.Column="2" 
+                           Target="{Binding ElementName=_txtPasswordConfirmation}"
+                           VerticalAlignment="Top"
+                           Style="{DynamicResource awsLabelBaseStyle}">
+                        Confirm Pass_word*:
+                    </Label>
+                    <PasswordBox x:Name="_txtPasswordConfirmation" 
+                                 Grid.Column="3" 
+                                 Margin="4,2,0,2"
+                                 VerticalAlignment="Center" 
+                                 Width="200" 
+                                 PasswordChanged="OnPasswordFieldsChanged"
+                                 Style="{DynamicResource awsPasswordBoxStyle}"/>
+
+                    <TextBlock x:Name="_passwordValidationMsg"
+                               Grid.Row="1"
+                               Grid.Column="1"
+                               Grid.ColumnSpan="3"
+                               Foreground="Red" 
+                               FontStyle="Italic"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap"
+                               Margin="4,2,4,0"
+                               />
+
+                </Grid>
+            </Grid>
+        </Grid>
+        
+        <Grid Grid.Row="2" Margin="0,4,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+                               Margin="0,2,0,0"
+                               >
+                Parameter and Security Groups
+            </Label>
+
+            <Grid Grid.Row="1" Margin="16,2,4,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="2"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       Target="{Binding ElementName=_dbParamGroups}"
+                       Style="{DynamicResource awsLabelBaseStyle}">
+                    DB _Parameter Group:
+                </Label>
+                <ComboBox x:Name="_dbParamGroups" 
+                           VerticalAlignment="Top" 
+                           Grid.Row="2"
+                           Grid.Column="1"
+                           Margin="4,0,0,0"
+                           DisplayMemberPath="DBParameterGroupName"
+                           Style="{DynamicResource awsComboBoxStyle}"
+                           ItemsSource="{Binding ParameterGroups}"/>
+
+                <Label Grid.Row="2"
+                       Grid.Column="2"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Top"
+                       Target="{Binding ElementName=_dbSecurityGroups}"
+                       Style="{DynamicResource awsLabelBaseStyle}">
+                    _Security Groups:
+                </Label>
+                <ListBox x:Name="_dbSecurityGroups" 
+                         VerticalAlignment="Stretch" 
+                         Grid.Row="2"
+                         Grid.Column="3"
+                         Margin="4,0,2,0"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         Style="{DynamicResource awsListBoxStyle}"
+                         ItemsSource="{Binding SecurityGroups}"
+                         Height="110">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox IsChecked="{Binding IsSelected}" 
+                                          Width="20" 
+                                          VerticalAlignment="Center" 
+                                          Style="{DynamicResource awsCheckboxButtonBaseStyle}"/>
+                                <TextBlock Text="{Binding InnerObject.DisplayName}" 
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+            
+        </Grid>
+        
+    </Grid>
+    
+</commonui:BaseAWSUserControl>

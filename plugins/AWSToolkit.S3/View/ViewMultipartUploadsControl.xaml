@@ -1,0 +1,59 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.S3.View.ViewMultipartUploadsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Height="300" Width="400">
+    
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        
+        <ToolBar Grid.Row="0" >
+            <Button Click="onAbortClick">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding AbortIcon}"/>
+                        <TextBlock>Abort</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="onRefreshClick">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                        <TextBlock>Refresh</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </ToolBar>
+
+        <commonui:ToolkitDataGridWrapper Grid.Row="1" x:Name="_ctlMultiparts" CellStyle="{DynamicResource awsDataGridCellCentering}"
+                AutoGenerateColumns="False" ItemsSource="{Binding Uploads}"
+                HorizontalAlignment="Stretch" HeadersVisibility="Column"
+                CanUserAddRows="False" CanUserDeleteRows="False"      
+                ContextMenuOpening="onGridContextMenu"
+                MouseDoubleClick="onRowMouseDoubleClick"
+                              >
+            <commonui:ToolkitDataGridWrapper.Columns>
+
+                <DataGridTextColumn Header="Object Key" Binding="{Binding Key}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Storage Class" Binding="{Binding StorageClass}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Initiated" Binding="{Binding Initiated}" IsReadOnly="True"/>
+
+            </commonui:ToolkitDataGridWrapper.Columns>
+        </commonui:ToolkitDataGridWrapper>
+    </Grid>
+</commonui:BaseAWSControl>

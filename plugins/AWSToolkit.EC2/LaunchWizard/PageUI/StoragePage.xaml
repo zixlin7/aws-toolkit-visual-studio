@@ -1,0 +1,262 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.EC2.LaunchWizard.PageUI.StoragePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:designData="clr-namespace:Amazon.AWSToolkit.EC2.View.DesignData"
+    mc:Ignorable="d"
+    d:DataContext="{d:DesignInstance designData:StorageDesignTimeData, IsDesignTimeCreatable=True}"
+    >
+
+    <commonui:BaseAWSUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="StorageFieldPanel" TargetType="{x:Type StackPanel}">
+                <Setter Property="Margin" Value="0,0,4,0"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+            </Style>
+
+            <!-- go with a dark label so it works across all three themes -->
+            <Style x:Key="StorageFieldLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource awsLabelBaseStyle}">
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+                <Setter Property="Foreground" Value="#050505" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="Margin" Value="0"/>
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="Padding" Value="0"/>
+            </Style>
+
+            <Style x:Key="StorageTextField" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource awsTextBlockBaseStyle}">
+                <Setter Property="Margin" Value="2,4,2,2"  />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            </Style>
+
+            <Style x:Key="StorageTextBoxField" TargetType="{x:Type TextBox}" BasedOn="{StaticResource awsTextBoxStyle}">
+                <Setter Property="Margin" Value="0,2,0,0"  />
+                <Setter Property="Height" Value="22" />
+                <Setter Property="VerticalAlignment" Value="Stretch" />
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            </Style>
+
+            <Style x:Key="StorageFieldCombo" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource awsComboBoxStyle}">
+                <Setter Property="Margin" Value="0,2,0,0"/>
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <!-- gives nicer, more blended, combo boxes with the text fields -->
+                <Setter Property="IsEditable" Value="True"></Setter>
+                <Setter Property="IsReadOnly" Value="False"></Setter>
+            </Style>
+            
+            <Style x:Key="StorageListBoxItemStyle" TargetType="ListBoxItem">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="Margin" Value="1" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Border x:Name="Root"
+                                    BorderBrush="{DynamicResource awsListBoxPanelItemBackgroundBrushKey}"
+                                    Background="{DynamicResource awsListBoxPanelItemBackgroundBrushKey}"
+                                    BorderThickness="2"
+                                    CornerRadius="4"
+                                    Padding="4"
+                                    >
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                      HorizontalAlignment="Left"
+                                                      VerticalAlignment="Center"
+                                                      />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource awsListBoxPanelItemHoverBorderBrushKey}" TargetName="Root" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource awsListBoxPanelItemSelectedBorderBrushKey}" TargetName="Root" />
+                                    <Setter Property="Background" Value="{DynamicResource awsListBoxPanelItemSelectedBackgroundBrushKey}" TargetName="Root"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <DataTemplate x:Key="StorageDeviceItemTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="22" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button VerticalAlignment="Center" 
+                            HorizontalAlignment="Left" 
+                            Margin="0,16,0,2"
+                            Visibility="{Binding IsNonRootDevice, Converter={StaticResource Bool2VisConverter}}"
+                            ToolTip="Deletes the storage volume entry"
+                            Click="StorageVolumeDelete_OnClick"
+                            Tag="{Binding Path=ID}">
+                        <Image Width="16" Height="16" 
+                               DataContext="{DynamicResource CommonIcons}" 
+                               Source="{Binding RemoveIcon}"
+                               />
+                    </Button>
+                    
+                    <StackPanel Grid.Column="1" 
+                                Style="{StaticResource StorageFieldPanel}"
+                                MinWidth="90">
+                        <Label Style="{StaticResource StorageFieldLabel}" 
+                               Content="Type"
+                               Name="TypeLabel"/>
+                        <ComboBox ItemsSource="{Binding AvailableStorageTypes}"
+                                  SelectedItem="{Binding StorageType, Mode=TwoWay}"
+                                  Style="{StaticResource StorageFieldCombo}"
+                                  />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" 
+                                Style="{StaticResource StorageFieldPanel}"
+                                MinWidth="70">
+                        <Label Style="{StaticResource StorageFieldLabel}" 
+                               Content="Device"/>
+                        <TextBlock Text="{Binding Device}" 
+                                   Style="{StaticResource StorageTextField}"
+                                   Visibility="{Binding IsRootDevice, Converter={StaticResource Bool2VisConverter}}"/>
+                        <TextBox Text="{Binding Device}" 
+                                 Style="{StaticResource StorageTextBoxField}"
+                                 Visibility="{Binding IsNonRootDevice, Converter={StaticResource Bool2VisConverter}}"
+                                 />
+                    </StackPanel>
+
+                    <!-- using a fixed width for this column to stop the fields jumping around
+                         when add a non-root volume, vs the root volume
+                    -->
+                    <StackPanel Grid.Column="3" 
+                                Style="{StaticResource StorageFieldPanel}"
+                                Width="115">
+                        <Label Style="{StaticResource StorageFieldLabel}" 
+                               Content="Snapshot"
+                               Visibility="{Binding IsNonRootDevice, Converter={StaticResource Bool2VisConverter}}"/>
+                        <ComboBox Style="{StaticResource StorageFieldCombo}"
+                                  Visibility="{Binding IsNonRootDevice, Converter={StaticResource Bool2VisConverter}}"
+                                  ItemsSource="{Binding Snapshots}"
+                                  SelectedItem="{Binding Snapshot, Mode=TwoWay}"
+                                  DisplayMemberPath="SnapshotId"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="4" 
+                                Style="{StaticResource StorageFieldPanel}"
+                                MinWidth="50">
+                        <Label Style="{StaticResource StorageFieldLabel}" 
+                               Content="Size (GB)"/>
+                        <TextBox Text="{Binding Size}"
+                                 Style="{StaticResource StorageTextBoxField}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="5" 
+                                Style="{StaticResource StorageFieldPanel}"
+                                MinWidth="150">
+                        <Label Style="{StaticResource StorageFieldLabel}" 
+                               Content="Volume Type"/>
+                        <ComboBox ItemsSource="{Binding VolumeTypes}"
+                                  DisplayMemberPath="TypeName"
+                                  SelectedItem="{Binding VolumeType, Mode=TwoWay}"
+                                  Style="{StaticResource StorageFieldCombo}"
+                                  SelectionChanged="VolumeType_OnSelectionChanged"
+                                  />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="6" 
+                                Style="{StaticResource StorageFieldPanel}"
+                                MinWidth="70">
+                        <Label Style="{StaticResource StorageFieldLabel}" 
+                               Content="IOPS"/>
+                        <Grid>
+                            <TextBlock Text="{Binding StaticIops}"
+                                       Style="{StaticResource StorageTextField}"
+                                       x:Name="nonEditableIops"
+                                       Visibility="{Binding Path=IsNonIopsCompatibleDevice, Converter={StaticResource Bool2VisConverter}}"
+                                       />
+                            <TextBox Text="{Binding Iops}" 
+                                     Style="{StaticResource StorageTextBoxField}"
+                                     x:Name="editableIops"
+                                     Visibility="{Binding Path=IsIopsCompatibleDevice, Converter={StaticResource Bool2VisConverter}}"
+                                     ToolTip="{Binding Path=IopsRangeTooltip}"
+                                     />
+                        </Grid>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="7" 
+                                VerticalAlignment="Bottom" 
+                                Style="{StaticResource StorageFieldPanel}">
+                        <CheckBox Style="{DynamicResource awsCheckboxButtonBaseStyle}" 
+                                  IsChecked="{Binding DeleteOnTermination}">Delete on Termination</CheckBox>
+                        <CheckBox Style="{DynamicResource awsCheckboxButtonBaseStyle}" 
+                                  IsChecked="{Binding Encrypted}">Encrypted</CheckBox>
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
+
+            <ControlTemplate TargetType="ListBox" x:Key="StorageControlTemplate">
+                <ScrollViewer HorizontalScrollBarVisibility="Hidden"
+                              VerticalScrollBarVisibility="Auto"
+                              Focusable="false" 
+                              Padding="{TemplateBinding Padding}"
+                              CanContentScroll="True">
+                    <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                </ScrollViewer>
+            </ControlTemplate>
+        </ResourceDictionary>
+    </commonui:BaseAWSUserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Border BorderBrush="{DynamicResource awsDefaultControlBorderBrushKey}" BorderThickness="2">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="{Binding AllowedVolumeTypes}" 
+                           Margin="4,8" 
+                           Style="{DynamicResource awsInfoTextStyle}" 
+                           TextWrapping="Wrap" 
+                           FontWeight="SemiBold"
+                           FontStyle="Italic"
+                           />
+                <ListBox x:Name="_storageList" 
+                         Grid.Row="1"
+                         ItemContainerStyle="{StaticResource StorageListBoxItemStyle}"
+                         Template="{StaticResource StorageControlTemplate}"
+                         ItemTemplate="{StaticResource StorageDeviceItemTemplate}"
+                         HorizontalContentAlignment="Stretch"
+                         VerticalAlignment="Stretch"
+                         ItemsSource="{Binding StorageVolumes}"
+                         SelectedItem="{Binding SelectedVolume, Mode=TwoWay}"
+                         IsSynchronizedWithCurrentItem="True"
+                         />
+            </Grid>
+        </Border>
+        <Button HorizontalAlignment="Right" 
+                Grid.Row="1" 
+                Margin="0,8,4,4"
+                Click="AddVolume_OnClick">
+            <WrapPanel>
+                <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding AddIcon}"/>
+                <TextBlock Margin="4,0,0,0">Add</TextBlock>
+            </WrapPanel>
+        </Button>
+    </Grid>
+</commonui:BaseAWSUserControl>

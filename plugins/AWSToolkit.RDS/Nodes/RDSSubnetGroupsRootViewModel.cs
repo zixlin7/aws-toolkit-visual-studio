@@ -1,0 +1,70 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Windows.Threading;
+using Amazon.RDS;
+using Amazon.RDS.Model;
+
+using Amazon.AWSToolkit.Navigator.Node;
+
+using log4net;
+
+namespace Amazon.AWSToolkit.RDS.Nodes
+{
+    public class RDSSubnetGroupsRootViewModel : InstanceDataRootViewModel
+    {
+        readonly static ILog LOGGER = LogManager.GetLogger(typeof(RDSSubnetGroupsRootViewModel));
+
+        readonly RDSRootViewModel _rootViewModel;
+        readonly IAmazonRDS _rdsClient;
+
+        public RDSSubnetGroupsRootViewModel(RDSSubnetGroupsRootViewMetaNode metaNode, RDSRootViewModel viewModel)
+            : base(metaNode, viewModel, "Subnet Groups")
+        {
+            this._rootViewModel = viewModel;
+            this._rdsClient = viewModel.RDSClient;
+        }
+
+        public IAmazonRDS RDSClient
+        {
+            get { return this._rdsClient; }
+        }
+
+        protected override string IconName
+        {
+            get
+            {
+                return "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.DBSubnetGroups.png";
+            }
+        }
+
+        protected override void LoadChildren()
+        {
+            var request = new DescribeDBSubnetGroupsRequest();
+            ((Amazon.Runtime.Internal.IAmazonWebServiceRequest)request).AddBeforeRequestHandler(Constants.AWSExplorerDescribeUserAgentRequestEventHandler);
+
+            var response = this.RDSClient.DescribeDBSubnetGroups();
+            var items = response.DBSubnetGroups.Select(subnetGroup => new RDSSubnetGroupViewModel(this.MetaNode.FindChild<RDSSubnetGroupViewMetaNode>(), this, subnetGroup)).Cast<IViewModel>().ToList();
+
+            BeginCopingChildren(items);
+        }
+
+        public RegionEndPointsManager.EndPoint CurrentEndPoint
+        {
+            get { return this._rootViewModel.CurrentEndPoint; }
+        }
+
+        public void RemoveDBSubnetGroup(string subnetGroupIdentifier)
+        {
+            base.RemoveChild(subnetGroupIdentifier);
+        }
+
+        public void AddDBSubnetGroup(DBSubnetGroup subnetGroup)
+        {
+            var child = new RDSSubnetGroupViewModel(this.MetaNode.FindChild<RDSSubnetGroupViewMetaNode>(), this, subnetGroup);
+            base.AddChild(child);
+        }
+    }
+}

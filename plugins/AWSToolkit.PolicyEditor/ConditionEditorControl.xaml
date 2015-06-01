@@ -1,0 +1,79 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.PolicyEditor.ConditionEditorControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit" 
+    Height="auto" Width="auto">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <ToolBar Grid.Row="0" Grid.Column="0" ToolBarTray.IsLocked="True">
+            <Button Click="OnAddCondition">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image DataContext="{DynamicResource CommonIcons}" Width="16" Height="16" Source="{Binding AddIcon}"/>
+                        <TextBlock> Add Condition</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="OnRemoveCondition">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image DataContext="{DynamicResource CommonIcons}" Width="16" Height="16" Source="{Binding RemoveIcon}"/>
+                        <TextBlock> Remove Condition</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </ToolBar>
+
+        <commonui:ToolkitDataGridWrapper x:Name="_ctlConditions" Grid.Row="1" Grid.Column="0" CellStyle="{DynamicResource awsDataGridCellCentering}" 
+                AutoGenerateColumns="False" ItemsSource="{Binding Conditions}"
+                HorizontalAlignment="Stretch" HeadersVisibility="Column"
+                CanUserAddRows="False" CanUserDeleteRows="False"                    
+                              >
+            <commonui:ToolkitDataGridWrapper.Columns>
+
+                <DataGridTemplateColumn Header="Condition" Width="200" >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox IsEditable="False" Text="{Binding Type}" ItemsSource="{Binding PossibleConditionTypes}"
+                                      Style="{DynamicResource awsComboBoxStyle}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Key" Width="200" >
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox IsEditable="False" Text="{Binding Key}" ItemsSource="{Binding PossibleConditionKeys}"
+                                      Style="{DynamicResource awsComboBoxStyle}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                
+                <DataGridTextColumn Header="Values" Width="200" Binding="{Binding Values}" />
+            </commonui:ToolkitDataGridWrapper.Columns>
+        </commonui:ToolkitDataGridWrapper>
+<!--         
+        <TextBox Grid.Row="2" Grid.Column="1" Margin="5,5,5,5" Style="{DynamicResource awsSelectableTextBoxStyle}">
+            This is what a condition is.
+        </TextBox>
+-->        
+    </Grid>
+</commonui:BaseAWSUserControl>

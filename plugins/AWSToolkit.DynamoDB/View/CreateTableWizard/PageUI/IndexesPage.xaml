@@ -1,0 +1,47 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.DynamoDB.View.CreateTableWizard.PageUI.IndexesPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             xmlns:components="clr-namespace:Amazon.AWSToolkit.DynamoDB.View.Components"
+             mc:Ignorable="d">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="..\..\..\Resources\ScanConditionTableResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <CheckBox Grid.Row="0" Name="_chkEnableLocalSecondaryIndexes" Margin="5" 
+                  IsEnabled="{Binding UseRangeKey}" IsChecked="{Binding UseLocalSecondaryIndexes}" 
+                  Checked="OnEnableSecondaryIndexesChecked" 
+                  Unchecked="OnEnableSecondaryIndexesChecked"
+                  Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+            Enable Local Secondary Indexes
+        </CheckBox>
+
+        <components:TableIndexesControl Grid.Row="1" x:Name="_ctlLocalIndexes" DataContext="{Binding LocalSecondaryIndexes}" IndexChanged="_ctlIndexes_IndexChanged"/>
+
+        <CheckBox Grid.Row="2" Name="_chkEnableGlobalSecondaryIndexes" Margin="5" 
+                  IsChecked="{Binding UseGlobalSecondaryIndexes}" 
+                  Checked="OnEnableGlobalSecondaryIndexesChecked" 
+                  Unchecked="OnEnableSecondaryIndexesChecked"
+                  Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+            Enable Global Secondary Indexes
+        </CheckBox>
+
+        <components:TableIndexesControl Grid.Row="3" x:Name="_ctlGlobalIndexes" DataContext="{Binding GlobalSecondaryIndexes}" IndexChanged="_ctlIndexes_IndexChanged"/>
+
+    </Grid>
+</commonui:BaseAWSUserControl>

@@ -1,0 +1,63 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.SNS.View.CreateSubscriptionControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Height="180" Width="450">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+
+    <Grid Margin="5,5,5,5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,5" Text="Topic ARN:" Style="{DynamicResource awsTextBlockBaseStyle}" />
+        <ComboBox Grid.Column="1" Grid.Row="0" Margin="5,5,5,5" Name="_ctlTopicARN" IsEditable="True" 
+                  Text="{Binding TopicArn, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding PossibleTopicArns, UpdateSourceTrigger=PropertyChanged}"
+                  Style="{DynamicResource awsComboBoxStyle}"/>
+        <TextBox Grid.Column="1" Grid.Row="0" Margin="5,5,5,5" Name="_ctlTopicARNRO" Text="{Binding TopicArn}"  Style="{DynamicResource awsSelectableTextBoxStyle}"/>
+
+        <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,5,5,5" Text="Protocol:" Style="{DynamicResource awsTextBlockBaseStyle}" />
+        <ComboBox Grid.Column="1" Grid.Row="1" Margin="5,5,5,5" IsEditable="False" Name="_ctlProtocols" 
+                  SelectedItem="{Binding Protocol, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding PossibleProtocol, UpdateSourceTrigger=PropertyChanged}" 
+                  SelectionChanged="onProtocolsSelectionChanged"
+                  Style="{DynamicResource awsComboBoxStyle}"/>
+
+        <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,5,5,5" Text="Endpoint:" Style="{DynamicResource awsTextBlockBaseStyle}" />
+        <TextBox Grid.Column="1" Grid.Row="2" Margin="5,5,5,5" Name="_ctlEndpoints" 
+                 Text="{Binding Endpoint, UpdateSourceTrigger=PropertyChanged}"
+                 Style="{DynamicResource awsTextBoxStyle}"/>
+        <ComboBox Grid.Column="1" Grid.Row="2" Margin="5,5,5,5" Name="_ctlAWSResourcesEndpoints" 
+                  IsEditable="True" Visibility="Hidden" SelectedItem="{Binding Endpoint, UpdateSourceTrigger=PropertyChanged}" 
+                  Style="{DynamicResource awsComboBoxStyle}"/>
+        
+        <CheckBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Margin="5,5,5,5" 
+                  Name="_ctlAddSQSPermission" IsChecked="{Binding IsAddSQSPermission}" 
+                  IsEnabled="False"
+                  Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+            Add permission for SNS topic to send messages to AWS resources.
+        </CheckBox>
+        
+        <WrapPanel Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" Margin="5,5,5,5">
+            <Image VerticalAlignment="Top" DataContext="{DynamicResource CommonIcons}" Source="{Binding WarningIcon}" Width="24" Height="24"></Image>
+            <TextBlock TextWrapping="Wrap" Margin="5, 0, 0, 0"
+                        Style="{DynamicResource awsFieldHintTextStyle}">
+                Creating subscriptions to SQS can take up to 60 seconds to propagate.
+            </TextBlock>
+        </WrapPanel>
+    </Grid>
+</commonui:BaseAWSControl>

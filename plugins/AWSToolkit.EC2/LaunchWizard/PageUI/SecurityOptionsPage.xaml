@@ -1,0 +1,151 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.EC2.LaunchWizard.PageUI.SecurityOptionsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:localviews="clr-namespace:Amazon.AWSToolkit.EC2.View"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"                      
+    Margin="4"  
+    >
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=".5*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width=".5*"/>
+        </Grid.ColumnDefinitions>
+        
+        <StackPanel Grid.Column="0">
+            <Label Style="{DynamicResource awsWizardGroupSubHeaderStyle}">Key Pair</Label>
+
+            <Grid Margin="4">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <RadioButton x:Name="_existingKeyPair"
+                            Grid.Row="0"
+                            Margin="8,4,4,4"
+                            GroupName="KeyPair"
+                            Checked="KeyPairOption_Checked"
+                            Style="{DynamicResource awsRadioButtonBaseStyle}">
+                    Choose from your _existing key pairs:
+                </RadioButton>
+
+                <ComboBox x:Name="_existingKeyPairs"
+                        Grid.Row="1"
+                        Margin="28,4,4,4"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center"
+                        IsEnabled="{Binding ElementName=_existingKeyPair, Path=IsChecked}"
+                        Cursor="Wait"
+                        SelectionChanged="ExistingKeyPairs_SelectionChanged"
+                        Style="{DynamicResource awsComboBoxStyle}"/>
+
+                <RadioButton x:Name="_createKeyPair"
+                            Grid.Row="2"
+                            Margin="8,20,4,4"
+                            GroupName="KeyPair"
+                            Checked="KeyPairOption_Checked"
+                            Style="{DynamicResource awsRadioButtonBaseStyle}">
+                    Create a _new key pair:
+                </RadioButton>
+
+                <TextBox x:Name="_newKeyPairName"
+                        Grid.Row="3"
+                        Margin="28,4,4,4"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Stretch"
+                        IsEnabled="{Binding ElementName=_createKeyPair, Path=IsChecked}"
+                        TextChanged="NewKeyPairName_TextChanged"
+                        Style="{DynamicResource awsTextBoxStyle}"/>
+
+                <RadioButton x:Name="_noKeyPair"
+                            Grid.Row="4"
+                            Margin="8,20,4,4"
+                            GroupName="KeyPair"
+                            Checked="KeyPairOption_Checked"
+                            Style="{DynamicResource awsRadioButtonBaseStyle}">
+                    Proceed _without a key pair
+                </RadioButton>
+
+            </Grid>
+        </StackPanel>
+
+        <Border Grid.Column="1" 
+                BorderThickness="1"
+                Margin="2,16"
+                BorderBrush="{DynamicResource awsDividerRuleBrushKey}"
+                Background="{DynamicResource awsDividerRuleBrushKey}" />
+
+        <StackPanel Grid.Column="2">
+            <Label Style="{DynamicResource awsWizardGroupSubHeaderStyle}">Security Group</Label>
+
+            <Grid Margin="4">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <RadioButton x:Name="_existingSecurityGroup"
+                             Margin="8,4,4,4"
+                             GroupName="SecurityGroup"
+                             IsChecked="True"
+                             Checked="SecurityGroupOption_Checked"
+                             Style="{DynamicResource awsRadioButtonBaseStyle}">
+                    Choose one or more of your existing security groups:
+                </RadioButton>
+
+                <ListBox x:Name="_existingSecurityGroups"
+                         Grid.Row="1"
+                         Margin="28,4,4,4"
+                         Height="150"
+                         VerticalAlignment="Center"
+                         HorizontalAlignment="Stretch"
+                         DisplayMemberPath="DisplayName"
+                         Visibility="{Binding ElementName=_existingSecurityGroup, 
+                                        Path=IsChecked, 
+                                        Converter={StaticResource Bool2VisConverter}}" SelectionMode="Multiple" 
+                         Cursor="Wait"
+                         SelectionChanged="ExistingSecurityGroups_SelectionChanged"
+                         Style="{DynamicResource awsListBoxStyle}"/>
+
+                <RadioButton x:Name="_createSecurityGroup"
+                             Grid.Row="2"
+                             Margin="8,4,4,2"
+                             GroupName="SecurityGroup"
+                             Checked="SecurityGroupOption_Checked"
+                             Style="{DynamicResource awsRadioButtonBaseStyle}">
+                    Create a new security group:
+                </RadioButton>
+
+                <localviews:EmbeddedSecurityGroupControl
+                        x:Name="_securityGroupEditor"
+                        Grid.Row="3"
+                        Margin="28,4,4,0"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        Visibility="{Binding ElementName=_createSecurityGroup, 
+                                        Path=IsChecked, 
+                                        Converter={StaticResource Bool2VisConverter}}"
+                />
+
+            </Grid>
+
+        </StackPanel>
+    </Grid>
+</commonui:BaseAWSUserControl>

@@ -1,0 +1,57 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.RDS.View.AddPermissionRuleControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Height="255" Width="400">
+    
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+            
+        <RadioButton Name="_ctlCIDR" IsChecked="{Binding UseCidrIP}" 
+                     GroupName="PermType" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                     Margin="5"
+                     Style="{DynamicResource awsRadioButtonBaseStyle}">CIDR/IP</RadioButton>
+
+        <Label Grid.Row="1" Grid.Column="0" Margin="20,5,5,5" Style="{DynamicResource awsLabelBaseStyle}">CIDR/IP:</Label>
+        <TextBox Name="_ctlCIDRValue" Grid.Row="1" Grid.Column="1" Margin="5" Text="{Binding CIDR}" 
+                 IsEnabled="{Binding ElementName=_ctlCIDR, Path=IsChecked}"
+                 Style="{DynamicResource awsTextBoxStyle}"/>
+
+        <RadioButton Name="_ctlGroup" IsChecked="{Binding UseEC2SecurityGroup}" 
+                     GroupName="PermType" Grid.Row="2" Grid.Column="0" 
+                     Grid.ColumnSpan="2" Margin="5"
+                     Style="{DynamicResource awsRadioButtonBaseStyle}">EC2 Security Group</RadioButton>
+
+        <Label Grid.Row="3" Grid.Column="0" Margin="20,5,5,5" Style="{DynamicResource awsLabelBaseStyle}">AWS Account ID:</Label>
+        <ComboBox Grid.Row="3" Grid.Column="1"  LostFocus="_ctlAccountID_LostFocus" Margin="5" Name="_ctlAccountID" 
+                  Text="{Binding AWSUser}" IsEnabled="{Binding ElementName=_ctlGroup, Path=IsChecked}"
+                  Style="{DynamicResource awsComboBoxStyle}"/>
+
+        <Label Grid.Row="4" Grid.Column="0" Margin="20,5,5,5" Style="{DynamicResource awsLabelBaseStyle}">EC2 Security Group:</Label>
+        <ComboBox Grid.Row="4" Grid.Column="1" Margin="5" Name="_ctlSecurityGroups" Text="{Binding EC2SecurityGroupName}" 
+                  IsEnabled="{Binding ElementName=_ctlGroup, Path=IsChecked}"
+                  Style="{DynamicResource awsComboBoxStyle}"/>
+
+        <TextBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,20,5,5" TextWrapping="Wrap" Style="{DynamicResource awsSelectableTextBoxStyle}" Name="_ctlInfoMessage"></TextBox>
+    </Grid>
+</commonui:BaseAWSControl>

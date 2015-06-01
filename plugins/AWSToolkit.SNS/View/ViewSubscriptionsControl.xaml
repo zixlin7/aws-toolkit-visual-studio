@@ -1,0 +1,57 @@
+﻿<commonui:BaseAWSView x:Class="Amazon.AWSToolkit.SNS.View.ViewSubscriptionsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"      
+    Height="300" Width="500">
+
+    <commonui:BaseAWSView.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSView.Resources>
+
+    <DockPanel>
+        <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
+            <Button Click="onCreateSubscriptionClick">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" Source="..\Resources\Images\create_subscription.png"/>
+                        <TextBlock>Create New Subscription</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="onDeleteRows">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" Source="..\Resources\Images\delete_subscription.png"/>
+                        <TextBlock>Delete Subscription</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="onRefreshClick">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                        <TextBlock>Refresh</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </ToolBar>
+        <commonui:ToolkitDataGridWrapper ItemsSource="{Binding SubscriptionEntries}" AutoGenerateColumns="False" x:Name="_ctlDataGrid" CellStyle="{DynamicResource awsDataGridCellCentering}"
+                     CanUserAddRows="False" CanUserDeleteRows="False" DockPanel.Dock="Top" 
+                     ContextMenuOpening="onGridContextMenu" SelectionChanged="onSelectionChanged"
+                     DragEnter="onSubscriptionDragEnter" Drop="onSubscriptionDrop" AllowDrop="True"                          
+                     HorizontalAlignment="Stretch" HeadersVisibility="Column">
+            <commonui:ToolkitDataGridWrapper.Columns>
+                
+                <DataGridTextColumn Header="Topic" Binding="{Binding TopicArn, Mode=OneWay}" Width="auto" MinWidth="200"/>
+                <DataGridTextColumn Header="Protocol" Binding="{Binding Protocol, Mode=OneWay}" Width="75"/>
+                <DataGridTextColumn Header="Endpoint" Binding="{Binding EndPoint, Mode=OneWay}" Width="auto"/>
+                <DataGridTextColumn Header="Subscription ID" Binding="{Binding SubscriptionId, Mode=OneWay}" Width="auto"/>
+
+            </commonui:ToolkitDataGridWrapper.Columns>
+        </commonui:ToolkitDataGridWrapper>
+    </DockPanel>
+</commonui:BaseAWSView>

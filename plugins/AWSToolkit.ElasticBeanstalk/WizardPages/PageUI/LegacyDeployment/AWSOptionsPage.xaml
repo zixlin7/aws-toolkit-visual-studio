@@ -1,0 +1,189 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment.AWSOptionsPage"
+    x:ClassModifier="internal"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:toolkitcomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
+    >
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="130" />
+                <ColumnDefinition Width=".5*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width=".5*" />
+            </Grid.ColumnDefinitions>
+
+            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+                   Grid.ColumnSpan="4">
+                   Amazon EC2
+            </Label>
+
+            <Label Target="{Binding ElementName=_solutionStack}"  
+                   Grid.Row="1"
+                   Style="{DynamicResource awsWizardFieldLabelStyle}"
+                   Margin="8,2,4,0"
+                   Content="Container _type *:" 
+                   />
+
+            <ComboBox x:Name="_solutionStack" 
+                      Grid.Row="1"
+                      Grid.Column="1" 
+                      Grid.ColumnSpan="3"
+                      Margin="4,2,4,0" 
+                      VerticalAlignment="Center" 
+                      SelectionChanged="_solutionStack_SelectionChanged" 
+                      Style="{DynamicResource awsComboBoxStyle}"/>
+
+            <Label Target="{Binding ElementName=_customAMI}"
+                   Grid.Row="2"
+                   Style="{DynamicResource awsWizardFieldLabelStyle}"
+                   Margin="8,2,4,0"
+                   Content="Use _custom AMI:"
+                   />
+
+            <TextBox Grid.Row="2"
+                     Grid.Column="1"
+                     Margin="4,2,4,0" 
+                     x:Name="_customAMI"
+                     VerticalAlignment="Center"
+                     LostFocus="_customAMI_LostFocus"
+                     ToolTip="Custom AMIs must be based on the default deployment AMI which contains special software to support AWS Toolkit deployments"
+                     Style="{DynamicResource awsTextBoxStyle}"/>
+
+            <Label Target="{Binding ElementName=_instanceTypesSelector}" 
+                   Grid.Row="3"
+                   Style="{DynamicResource awsWizardFieldLabelStyle}"
+                   Margin="8,2,4,0"
+                   Content="Instance _type *:"
+                   />
+
+            <toolkitcomponents:ListViewComboBox 
+                    x:Name="_instanceTypesSelector"
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Margin="4,2,4,0"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Stretch"
+                    DisplayMemberPath="DisplayName"
+                    ItemContainerStyle="{DynamicResource awsListViewItemContainerStyle}"
+                    AlternationCount="2"
+                    ItemsSource="{Binding InstanceTypes}"
+                    >
+                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
+                <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Id}" />
+                <GridViewColumn Header="Requires VPC" DisplayMemberBinding="{Binding RequiresVPC}" />
+                <GridViewColumn Header="vCPU" DisplayMemberBinding="{Binding NumberOfVirtualCores}" />
+                <GridViewColumn Header="Memory" DisplayMemberBinding="{Binding MemoryWithUnits}" />
+                <GridViewColumn Header="Disk Space" DisplayMemberBinding="{Binding DiskSpaceWithUnits}" />
+            </toolkitcomponents:ListViewComboBox>
+
+            <Label Target="{Binding ElementName=_keyPairSelector}" 
+                   Grid.Row="3"
+                   Grid.Column="2"
+                   Style="{DynamicResource awsWizardFieldLabelStyle}"
+                   Margin="8,2,4,0"
+                   Content="_Key pair *:"
+                   x:Name="KeyPairLabel"
+                   />
+
+            <toolkitcomponents:KeyPairList Grid.Row="3" 
+                                           Grid.Column="3" 
+                                           Margin="4,2,4,0"
+                                           x:Name="_keyPairSelector" 
+                                           AllowNoKeyPairSelection="True" 
+                                           AllowCreateKeyPairSelection="True"
+                                           />
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="0,24,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="130" />
+                <ColumnDefinition Width=".5*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width=".5*" />
+            </Grid.ColumnDefinitions>
+
+            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+                   Grid.ColumnSpan="4">
+                Launch Configuration
+            </Label>
+
+            <Label Target="{Binding ElementName=_role}"
+                   Grid.Row="1"
+                   Style="{DynamicResource awsWizardFieldLabelStyle}"
+                   Content="IAM _Role:"
+                   Margin="8,2,4,0"
+                   />
+
+            <ComboBox x:Name="_role" 
+                      Grid.Row="1"
+                      Grid.Column="1"
+                      Grid.ColumnSpan="3"
+                      Margin="4,2,4,0" 
+                      VerticalAlignment="Center" 
+                      Style="{DynamicResource awsComboBoxStyle}"/>
+
+            <TextBlock Grid.Row="2"
+                       Grid.Column="1"
+                       Grid.ColumnSpan="3" 
+                       FontStyle="Italic" 
+                       Margin="4"
+                       TextWrapping="Wrap" Style="{DynamicResource awsFieldHintTextStyle}">
+                <Run>
+                If you choose not to use the default role, you must grant the relevant permissions to Elastic Beanstalk. See 
+                </Run>
+                <Hyperlink NavigateUri="http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/AWSHowTo.iam.roles.logs.html#iampolicy"
+                           RequestNavigate="Hyperlink_RequestNavigate">
+                    AWS Elastic Beanstalk Developer Guide
+                </Hyperlink>
+                <Run>for more details.</Run>
+            </TextBlock>
+
+            <Grid Grid.Row="3" Grid.ColumnSpan="4" Margin="12,18,4,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <CheckBox Name="_launchIntoVPC" IsChecked="False" Click="_launchIntoVPC_Click" Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+                    Launch into VPC
+                </CheckBox>
+                <TextBlock FontStyle="Italic" 
+                           Grid.Column="1"
+                           TextWrapping="Wrap"
+                           Margin="16,0,0,0" Style="{DynamicResource awsFieldHintTextStyle}">
+                If you elect to launch instances in a VPC, the next page will enable you to customize
+                the VPC settings.
+                </TextBlock>
+            </Grid>
+        </Grid>
+    </Grid>
+</commonui:BaseAWSUserControl>

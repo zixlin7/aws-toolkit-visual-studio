@@ -1,0 +1,91 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.VisualStudio.ShellOptions.GeneralOptionsPageControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="400">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid Margin="4">
+        
+        <GroupBox Header="Toolkit Metadata">
+            
+            <Grid Margin="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock TextWrapping="Wrap" Style="{DynamicResource awsTextBlockBaseStyle}">
+            The AWS Toolkit downloads files containing metadata about AWS
+            services, schemas etc. Please select the location where these up-to-date 
+            copies of these files should be downloaded from (for most users, the
+            default setting is appropriate).
+                </TextBlock>
+
+                <Grid Grid.Row="1" Margin="0,12,0,4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- not worth the setup to use data binding for this set of 
+                         buttons at present
+                    -->
+                    <RadioButton GroupName="Location" 
+                                 x:Name="btnDefault" 
+                                 Margin="4" 
+                                 IsChecked="True"
+                                 Content="_Default"
+                                 />
+                    
+                    <RadioButton GroupName="Location" 
+                                 x:Name="btnCNNorth1"
+                                 Grid.Row="1"
+                                 Margin="4"
+                                 Content="Use the default location for _Beijing (CN-North-1) region"/>
+
+                    <!-- make this visible when we have install capability for hosted files -->
+                    <Grid Grid.Row="2" Margin="4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="20"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <RadioButton GroupName="Location" 
+                                     Grid.ColumnSpan="2"
+                                     x:Name="btnFileSystem"
+                                     Content="Use local _file system location:"/>
+                        <TextBox Grid.Row="1" 
+                                 x:Name="txtFileSystemLocation"
+                                 Margin="16,4,4,0" 
+                                 VerticalAlignment="Center"
+                                 IsEnabled="{Binding ElementName=btnFileSystem, Path=IsChecked }" />
+                        <Button Grid.Row="1"
+                                Grid.Column="1" 
+                                VerticalAlignment="Center"
+                                Content="_..."
+                                Margin="0,4,0,0"
+                                IsEnabled="{Binding ElementName=btnFileSystem, Path=IsChecked }" Click="BrowseButton_Click" />
+                    </Grid>
+                </Grid>
+            </Grid>
+            
+        </GroupBox>
+        
+    </Grid>
+</commonui:BaseAWSUserControl>

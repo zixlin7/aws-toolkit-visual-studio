@@ -1,0 +1,55 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.DynamoDB.View.CreateTableWizard.PageUI.NotificationPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <CheckBox Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" 
+                  Margin="5" IsChecked="{Binding UseBasicAlarms}" 
+                  Click="onClick"
+                  Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+            Enable Basic Alarm
+        </CheckBox>
+
+        <WrapPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="1" Margin="25,5,5,5" Grid.ColumnSpan="2">
+            <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}"
+                       Foreground="{DynamicResource awsWindowTextBrushKey}">Notify me when my table's request rates exceed</TextBlock>
+            <ComboBox Margin="5,0,5,0" DisplayMemberPath="DisplayName" ItemsSource="{Binding PossiblePercentage}" 
+                      SelectedItem="{Binding SelectedPercentage}" IsEnabled="{Binding UseBasicAlarms}"
+                      Style="{DynamicResource awsComboBoxStyle}"/>
+            <TextBlock TextWrapping="Wrap" Style="{DynamicResource awsTextBlockBaseStyle}"
+                       Foreground="{DynamicResource awsWindowTextBrushKey}">of Provisioned Throughput for 60 minutes.</TextBlock>
+        </WrapPanel>
+        <Label Grid.Column="0" Grid.Row="2" Margin="25,5,5,5" Style="{DynamicResource awsLabelBaseStyle}">Send Notification To:</Label>
+        <TextBox Grid.Column="1" Grid.Row="2" Margin="5,5,5,5" TextChanged="onTextChanged" 
+                 ToolTip="Enter a valid email address. When the alarms are triggered, Amazon SNS sends an email to the address (or addresses) you enter in this field.  You can modify addresses later." 
+                 Text="{Binding AlarmEmail, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding UseBasicAlarms}"
+                 Style="{DynamicResource awsTextBoxStyle}"/>
+
+        <TextBlock Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Margin="5" TextWrapping="Wrap" Style="{DynamicResource awsInfoTextStyle}">
+             Amazon DynamoDB will reserve the necessary machine resources to meet your throughput needs based on the read and write capacity specified with consistent, low-latency performance.
+            You pay a flat, hourly rate based on the capacity you reserve.  <Hyperlink Click="aboutDynamoDB_Click">Click here for more about pricing information.</Hyperlink>
+        </TextBlock>
+    </Grid>
+</commonui:BaseAWSUserControl>

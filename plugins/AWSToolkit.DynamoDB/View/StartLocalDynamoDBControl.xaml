@@ -1,0 +1,131 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.DynamoDB.View.StartLocalDynamoDBControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"                           
+             mc:Ignorable="d" 
+             Height="475" Width="750">
+    
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+    </commonui:BaseAWSControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="150"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Margin="5" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Style="{DynamicResource awsTextBlockBaseStyle}">DynamoDB Local HTTP Port:</TextBlock>
+        <TextBox Margin="5,5,5,5" Width="100"  Grid.Row="0" Grid.Column="1" 
+                 Text="{Binding Port,UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left"
+                 Style="{DynamicResource awsTextBoxStyle}"/>
+        <CheckBox IsChecked="{Binding StartNew}" Margin="5" Grid.Row="1" 
+                  Grid.Column="0" Grid.ColumnSpan="2"
+                  Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+            Start new DynamoDB Local process
+        </CheckBox>
+
+        <DockPanel Margin="25,5,5,5" IsEnabled="{Binding StartNew}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+            <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
+                <Button Click="OnInstall" IsEnabled="{Binding IsInstallPossible}">
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding AddIcon}"/>
+                            <TextBlock>Install</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+                <Button Click="OnUninstall" IsEnabled="{Binding IsUninstallPossible}">
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RemoveIcon}"/>
+                            <TextBlock>Uninstall</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+                <ProgressBar Width="100" Margin="5" Name="_ctlProgressbar" Visibility="Hidden"/>
+            </ToolBar>
+
+
+            <commonui:ToolkitDataGridWrapper x:Name="_ctlPermissionDataGrid" CellStyle="{DynamicResource awsDataGridCellCentering}"
+                AutoGenerateColumns="False" ItemsSource="{Binding Versions}"
+                HorizontalAlignment="Stretch" HeadersVisibility="Column"
+                SelectedValue="{Binding SelectedVersion}"                                             
+                CanUserAddRows="False" CanUserDeleteRows="False"                                                 
+                              >
+                <commonui:ToolkitDataGridWrapper.Columns>
+
+                    <DataGridTextColumn Header="Version" Binding="{Binding Version, Mode=OneWay}" Width="100"/>
+
+                    <DataGridTextColumn Header="Installed" Binding="{Binding IsInstalled, Mode=OneWay}"/>
+                    
+                </commonui:ToolkitDataGridWrapper.Columns>
+            </commonui:ToolkitDataGridWrapper>
+        </DockPanel>
+
+        <GroupBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="25,5,5,5" Header="Details">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="5" Style="{DynamicResource awsTextBlockBaseStyle}">Version:</TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SelectedVersion.Version}" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Margin="5" VerticalAlignment="Top" Style="{DynamicResource awsTextBlockBaseStyle}">Description:</TextBlock>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SelectedVersion.Description}" TextWrapping="Wrap" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+            </Grid>
+        </GroupBox>
+
+        <TextBlock Margin="25,5,5,5" VerticalAlignment="Center" Grid.Row="4" Grid.Column="0" Style="{DynamicResource awsTextBlockBaseStyle}">Java Executable Path:</TextBlock>
+
+        <Grid Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Margin="5" IsEnabled="{Binding StartNew}" Grid.Row="0" Grid.Column="0" 
+                     Text="{Binding JavaPath}"
+                     Style="{DynamicResource awsTextBoxStyle}"/>    
+            <Button Grid.Row="0" Grid.Column="1" Margin="5" Padding="10,0,10,0" Click="OnBrowse">Browse</Button>
+        </Grid>
+        
+
+        <TextBlock Margin="25,5,5,5" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" 
+                   Style="{DynamicResource awsFieldHintTextStyle}" TextWrapping="Wrap">
+            The DynamoDB Local Test Tool is a Java application that requires the Java Runtime Environment version 6.
+        </TextBlock>
+
+        <GroupBox Grid.Row="0" Grid.RowSpan="4" Grid.Column="2" Margin="5" Header="How to Connect...">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Margin="5" TextWrapping="Wrap" Style="{DynamicResource awsInfoTextStyle}">
+                <Run>The following code is an example of how to connect to DynamoDB Local using the AWS SDK for .NET.</Run>
+                </TextBlock>
+                <TextBox Grid.Row="1" Margin="20" Foreground="Black" VerticalAlignment="Top" FontWeight="DemiBold" TextWrapping="Wrap" Style="{DynamicResource awsSelectableTextBoxStyle}" Text="{Binding ExampleConnectCode,Mode=OneWay}"/>
+            </Grid>
+        </GroupBox>
+
+    </Grid>
+</commonui:BaseAWSControl>

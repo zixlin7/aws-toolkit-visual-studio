@@ -1,0 +1,61 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.ElasticBeanstalk.View.Components.TailLogViewer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"         
+    Height="auto" Width="auto">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <DockPanel Grid.Row="0" Grid.Column="0" Margin="5,5,5,15">
+            <Button Margin="5" DockPanel.Dock="Right" Click="RefreshClick" Name="_ctlRefresh">
+                <WrapPanel>
+                    <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                    <TextBlock Margin="5">Refresh</TextBlock>
+                </WrapPanel>
+            </Button>
+            <Button Margin="5" DockPanel.Dock="Right" Click="SnapshotLogsClick" Name="_ctlSnapshot">
+                <WrapPanel>
+                    <Image Width="16" Height="16" Source="../../Resources/Images/SnapshotLogs.png"/>
+                    <TextBlock Margin="5">Snapshot Logs</TextBlock>
+                </WrapPanel>
+            </Button>
+            <TextBlock TextWrapping="WrapWithOverflow" VerticalAlignment="Center" Style="{DynamicResource awsTextBlockBaseStyle}">
+                Snapshotting logs will request each instance in your environment to capture the most recent log messages for viewing here.  This can be helpful for diagnosing troubled deployments.
+            </TextBlock>
+        </DockPanel>
+
+        <Border BorderThickness="1" BorderBrush="Orange" Grid.Row="1" Margin="5" Background="LightYellow" Visibility="Hidden" Name="_ctlNoLogFileMessage">
+            <TextBlock Margin="5,2,5,2"  Style="{DynamicResource awsTextBlockBaseStyle}">
+            There are currently no log file snapshots available to view for this environment.
+            </TextBlock>
+        </Border>
+        
+        <DockPanel Grid.Row="2" Visibility="Hidden" Margin="5" Name="_ctlLogOuterContainer">
+            <TextBlock DockPanel.Dock="Top" FontWeight="SemiBold" TextDecorations="Underline" Style="{DynamicResource awsTextBlockBaseStyle}">Log Files:</TextBlock>
+            <StackPanel Name="_ctlLogFileLinks" Orientation="Vertical" Margin="5">
+            </StackPanel>
+        </DockPanel>
+
+        <TextBlock Style="{DynamicResource awsInfoTextStyle}" Grid.Row="3" Margin="5">
+            This feature requires the AMI used by the environment to be based on the November 2012 release or later.  
+            If the environment is using an older AMI then snapshotting logs may return no results.
+        </TextBlock>
+    </Grid>
+</commonui:BaseAWSUserControl>

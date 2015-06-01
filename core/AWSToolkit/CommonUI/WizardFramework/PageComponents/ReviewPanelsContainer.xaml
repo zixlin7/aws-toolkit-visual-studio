@@ -1,0 +1,27 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CommonUI.WizardFramework.PageComponents.ReviewPanelsContainer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"                      
+    >
+
+    <UserControl.Resources>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+    </UserControl.Resources>
+
+    <Border BorderBrush="Black" 
+            BorderThickness="1"
+            CornerRadius="4"
+            Padding="4"
+            Background="{DynamicResource awsWizardReviewPanelsBackgroundBrushKey}">
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="_reviewPanelsStack" 
+                        Margin="0" 
+                        VerticalAlignment="Stretch" 
+                        HorizontalAlignment="Stretch"
+                        CanVerticallyScroll="True"
+                        Background="{DynamicResource awsWizardReviewPanelsBackgroundBrushKey}"
+                        />
+        </ScrollViewer>
+    </Border>
+</commonui:BaseAWSUserControl>

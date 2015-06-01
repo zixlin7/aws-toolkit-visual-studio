@@ -1,0 +1,72 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Windows.Threading;
+
+using Amazon.RDS;
+using Amazon.RDS.Model;
+
+using Amazon.AWSToolkit.RDS.Model;
+using Amazon.AWSToolkit.Navigator.Node;
+
+using log4net;
+
+namespace Amazon.AWSToolkit.RDS.Nodes
+{
+    public class RDSInstanceRootViewModel : InstanceDataRootViewModel
+    {
+        readonly static ILog LOGGER = LogManager.GetLogger(typeof(RDSInstanceRootViewModel));
+
+        readonly RDSRootViewModel _rootViewModel;
+        readonly IAmazonRDS _rdsClient;
+
+        public RDSInstanceRootViewModel(RDSInstanceRootViewMetaNode metaNode, RDSRootViewModel viewModel)
+            : base(metaNode, viewModel, "Instances")
+        {
+            this._rootViewModel = viewModel;
+            this._rdsClient = viewModel.RDSClient;
+        }
+
+        public IAmazonRDS RDSClient
+        {
+            get { return this._rdsClient; }
+        }
+
+        protected override string IconName
+        {
+            get
+            {
+                return "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.DBInstances.png";
+            }
+        }
+
+        protected override void LoadChildren()
+        {
+            var request = new DescribeDBInstancesRequest();
+            ((Amazon.Runtime.Internal.IAmazonWebServiceRequest)request).AddBeforeRequestHandler(Constants.AWSExplorerDescribeUserAgentRequestEventHandler);
+
+            var response = this.RDSClient.DescribeDBInstances(request);
+            var items = response.DBInstances.Select(instance => new RDSInstanceViewModel((RDSInstanceViewMetaNode) this.MetaNode.FindChild<RDSInstanceViewMetaNode>(), this, new DBInstanceWrapper(instance))).Cast<IViewModel>().ToList();
+
+            BeginCopingChildren(items);
+        }
+
+        public RegionEndPointsManager.EndPoint CurrentEndPoint
+        {
+            get { return this._rootViewModel.CurrentEndPoint; }
+        }
+
+        public void RemoveDBInstance(string dbIdentifier)
+        {
+            base.RemoveChild(dbIdentifier);
+        }
+
+        public void AddDBInstance(DBInstanceWrapper instance)
+        {
+            var child = new RDSInstanceViewModel((RDSInstanceViewMetaNode)this.MetaNode.FindChild<RDSInstanceViewMetaNode>(), this, instance);
+            base.AddChild(child);
+        }
+    }
+}

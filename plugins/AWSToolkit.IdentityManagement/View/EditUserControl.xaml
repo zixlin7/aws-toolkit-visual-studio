@@ -1,0 +1,73 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.IdentityManagement.View.EditUserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"    
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.IdentityManagement.View.Components"                         
+    xmlns:policy="clr-namespace:Amazon.AWSToolkit.PolicyEditor;assembly=AWSToolkit.PolicyEditor"      
+    xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"    
+    xmlns:primitives="clr-namespace:Amazon.AWSToolkit.Primitives;assembly=AWSToolkit"
+    x:Name="Main" 
+    Height="300" Width="300">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <ToolBar Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">
+            <Button Click="onSave" IsEnabled="{Binding IsDirty}" Name="_ctlSave">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding SaveIcon}"/>
+                        <TextBlock>Save</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="onRefreshClick">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                        <TextBlock>Refresh</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </ToolBar>
+        <TextBlock Margin="5,5,5,5" Grid.Row="1" Grid.Column="0" Text="User Name:" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Margin="5,5,5,5" Grid.Row="1" Grid.Column="1" Text="{Binding NewName, UpdateSourceTrigger=PropertyChanged}" 
+                 TextChanged="onDirtyChange"
+                 Style="{DynamicResource awsTextBoxStyle}"/>
+
+        <TabControl Margin="5,5,5,5" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Style="{DynamicResource awsPropertyPageHorizontalTabStyle}">
+            <TabItem Header="Groups">
+                <primitives:TwoListMover x:Name="_ctlTwoListMoverGroups"  
+                    AvailableItems="{Binding Path=AvailableGroups}" 
+                    AvailableItemsLabel="Available Groups"
+                    AssignedItems="{Binding Path=AssignedGroups}"
+                    AssignedItemsLabel="Assigned Groups"/>
+
+            </TabItem>
+            <TabItem Header="Access Keys">
+                <components:AccessKeysControl x:Name="_ctlAccessKeys"/>
+            </TabItem>
+            <TabItem Header="Policies">
+                <components:PoliciesControl x:Name="_ctlPolices"/>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</commonui:BaseAWSControl>

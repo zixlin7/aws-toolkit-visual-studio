@@ -1,0 +1,37 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.ElasticBeanstalk.View.Components.NotificationSettings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.ElasticBeanstalk.View.Components"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Height="auto" Width="auto">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid MaxWidth="450" HorizontalAlignment="Left">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,5,5,20" Grid.ColumnSpan="2" TextWrapping="Wrap" Style="{DynamicResource SectionDescription}">Enter an e-mail address which will be sent notifications regarding important events using the Amazon Simple Notification Service. If you wish to stop receiving notifications, simply remove your e-mail address.</TextBlock>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Email Adress:</TextBlock>
+        <components:ConfigurationOptionControl
+            Grid.Row="1" Grid.Column="1" Margin="5,5,5,0"
+            DataContext="{Binding ConfigModel}" 
+            PropertyNamespaceName="aws:elasticbeanstalk:sns:topics"
+            PropertySystemName="Notification Endpoint" 
+            />
+
+    </Grid>
+</commonui:BaseAWSUserControl>

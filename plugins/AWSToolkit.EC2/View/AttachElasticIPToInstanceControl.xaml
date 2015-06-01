@@ -1,0 +1,48 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.EC2.View.AttachElasticIPToInstanceControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             mc:Ignorable="d" 
+             Loaded="onLoad"                         
+             Height="100" Width="350">
+    
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <RadioButton GroupName="ActionType" Name="_ctlSelectExisting" Grid.Column="0" 
+                     Grid.Row="0" Grid.ColumnSpan="2" Margin="5,5,5,5" IsChecked="{Binding ActionSelectedAddress}"
+                     Style="{DynamicResource awsRadioButtonBaseStyle}">
+            Select an Elastic IP address to associate with this instance.
+        </RadioButton>
+
+        <TextBlock Margin="20,5,5,5" Grid.Row="1" Grid.Column="0" Text="IP Address:" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <ComboBox Margin="5" Grid.Row="1" Grid.Column="1" SelectedItem="{Binding SelectedAddress}" 
+                  DisplayMemberPath="PublicIp" ItemsSource="{Binding AvailableAddresses}" Name="_ctlElasticIPs" 
+                  IsEnabled="{Binding ElementName=_ctlSelectExisting, Path=IsChecked}"
+                  Style="{DynamicResource awsComboBoxStyle}"/>
+
+        <RadioButton GroupName="ActionType" Name="_ctlCreateNew" Grid.Column="0" 
+                     Grid.Row="2" Grid.ColumnSpan="2" Margin="5,5,5,5" IsChecked="{Binding ActionCreateNewAddress}"
+                     Style="{DynamicResource awsRadioButtonBaseStyle}">
+            Create new Elastic IP.
+        </RadioButton>
+    </Grid>
+</commonui:BaseAWSControl>

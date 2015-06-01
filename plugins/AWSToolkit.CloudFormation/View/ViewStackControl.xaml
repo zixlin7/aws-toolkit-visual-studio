@@ -1,0 +1,143 @@
+﻿<commonui:BaseAWSView x:Class="Amazon.AWSToolkit.CloudFormation.View.ViewStackControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.CloudFormation.View.Components"
+    xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit" 
+    Height="300" Width="600">
+
+    <commonui:BaseAWSView.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSView.Resources>
+
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <ToolBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" ToolBarTray.IsLocked="True">
+            <Button Click="onConnectToInstance" Name="_ctlConnect">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" Source="..\Resources\Images\connect.png"/>
+                        <TextBlock VerticalAlignment="Center">Connect to Instance</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="onDeleteStack" Name="_ctlDeleteStack">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" Source="..\Resources\Images\delete_stack.png"/>
+                        <TextBlock VerticalAlignment="Center">Delete Stack</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="onCancelUpdate" Name="_ctlCancelStack" IsEnabled="False">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding CancelIcon}"/>
+                        <TextBlock VerticalAlignment="Center">Cancel Update</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>            
+            <Button Click="onRefreshClick" Name="_ctlRefresh">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                        <TextBlock>Refresh</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </ToolBar>
+
+        <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,5,5,5" Text="Stack Name:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="1" Grid.Row="1" Margin="0,5,0,5" Text="{Binding StackName, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" />
+
+        <TextBlock Grid.Column="2" Grid.Row="1" Margin="5,5,5,5" Text="Created:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="3" Grid.Row="1" Margin="0,5,0,5" Text="{Binding Created}" Style="{DynamicResource awsSelectableTextBoxStyle}" />
+
+        <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,5,5,5" Text="Status:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="1" Grid.Row="2" Margin="0,5,0,5" Foreground="{Binding StatusColor}" FontWeight="SemiBold" Text="{Binding Status}" Style="{DynamicResource awsSelectableTextBoxStyle}" />
+
+        <TextBlock Grid.Column="2" Grid.Row="2" Margin="5,5,5,5" Text="Create Timeout:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="3" Grid.Row="2" Margin="0,5,0,5" Text="{Binding CreateTimeout}" Style="{DynamicResource awsSelectableTextBoxStyle}" />
+
+        <TextBlock Grid.Column="0" Grid.Row="3" Margin="5,5,5,5" Text="Status (Reason):"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="1" Grid.Row="3" Margin="0,5,0,5" Text="{Binding StatusReason}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
+                 TextWrapping="NoWrap" ToolTip="{Binding StatusReason}"/>
+
+        <CheckBox Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="2" 
+                  Margin="5,5,5,5" IsChecked="{Binding RollbackOnFailure}" 
+                  IsEnabled="False"
+                  Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+            Rollback on Failure
+        </CheckBox>
+
+        <TextBlock Grid.Column="0" Grid.Row="4" Margin="5,5,5,5" Text="Stack ID:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="1" Grid.Row="4" Grid.ColumnSpan="3"  Margin="0,5,0,5" Text="{Binding StackId}" TextWrapping="Wrap" Style="{DynamicResource awsSelectableTextBoxStyle}" />
+
+        <TextBlock Grid.Column="0" Grid.Row="5" Margin="5,5,5,5" Text="SNS Topic:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="3" Margin="0,5,0,5" Text="{Binding SNSTopic}" Style="{DynamicResource awsSelectableTextBoxStyle}" />
+
+        <TextBlock Grid.Column="0" Grid.Row="6" Margin="5,5,5,5" Text="Description:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="3"  Margin="0,5,0,5" Text="{Binding Description}" TextWrapping="Wrap" Style="{DynamicResource awsSelectableTextBoxStyle}" />
+
+        <TextBlock Name="_ctlLabelApplicationURL"  Grid.Column="0" Grid.Row="7" Margin="5,5,5,5" Text="Application URL:" Visibility="{Binding VSToolkitDeployedFieldsVisibility}"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBlock Name="_ctlApplicationURL" Grid.Column="1" Grid.Row="7" Grid.ColumnSpan="3"  Margin="0,5,0,5" Visibility="{Binding VSToolkitDeployedFieldsVisibility}" Style="{DynamicResource awsTextBlockBaseStyle}">
+            <Hyperlink NavigateUri="{Binding ApplicationUrl, Mode=OneWay}" RequestNavigate="onApplicationURLRequestNavigate">
+                <TextBlock Name="_ctlLinkInner" Text="{Binding ApplicationUrl}"/>
+            </Hyperlink>
+        </TextBlock>
+
+        <TabControl Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="4" Style="{DynamicResource awsPropertyPageVerticalTabStyle}" SelectionChanged="onTabSelectionChange">
+            <TabItem Header="Events">
+                <components:StackEventControl x:Name="_ctlStackEvents"/>
+            </TabItem>
+            <TabItem Header="Resources" Name="_ctlResourcesTab">
+                <components:StackResourcesControl x:Name="_ctlStackResources"/>
+            </TabItem>
+            <TabItem Header="Monitoring" Name="_ctlMonitorTab">
+                <components:StackMonitoringControl x:Name="_ctlStackMonitoring"/>
+            </TabItem>
+            <TabItem Header="Template">
+                <components:ViewTemplateJson x:Name="_ctlTemplateBody"/>
+            </TabItem>
+            <TabItem Header="Parameters">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Orientation="Vertical" Name="_ctlTemplateParameterPanel">
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Outputs">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Orientation="Vertical" Name="_ctlTemplateOutputPanel">
+
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+
+    </Grid>
+</commonui:BaseAWSView>

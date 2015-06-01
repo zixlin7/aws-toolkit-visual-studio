@@ -1,0 +1,38 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.EC2.View.AssociateSubnetControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             Height="100" Width="400">
+    
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="5,5,5,10" TextWrapping="Wrap" Style="{DynamicResource awsTextBlockBaseStyle}">
+             Select the subnet to which you wish to associate with.
+        </TextBlock>
+
+        <TextBlock Margin="5,5,5,5" Grid.Row="1" Grid.Column="0" Text="Subnet:" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <ComboBox Margin="5" Grid.Row="1" Grid.Column="1" SelectedItem="{Binding SelectedSubnet}" 
+                  DisplayMemberPath="ShortDisplayDetails" ItemsSource="{Binding AvailableSubnets}" Name="_ctlSubnet"
+                  Style="{DynamicResource awsComboBoxStyle}"/>
+    </Grid>
+</commonui:BaseAWSControl>

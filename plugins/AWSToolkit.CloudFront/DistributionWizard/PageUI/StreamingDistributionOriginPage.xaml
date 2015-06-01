@@ -1,0 +1,46 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CloudFront.DistributionWizard.PageUI.StreamingDistributionOriginPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.CloudFront.View.Components"      
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary Source="../../View/ResourceStrings.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Margin="5, 5, 5, 0" Grid.Row="0" Grid.Column="0" Content="Price Class:"
+                   ToolTip="Select the price class associated with the maximum price that you want to pay for CloudFront service.  If you select a price class other than All, some of your users may experience higher latency."
+                   Style="{DynamicResource awsLabelBaseStyle}"/>
+        <WrapPanel Margin="5, 5, 0, 0" Grid.Column="1" Grid.Row="0" >
+            <ComboBox ItemsSource="{Binding AllAvailablePriceClasses}" SelectedItem="{Binding SelectedPriceClass}" 
+                      DisplayMemberPath="DisplayName"
+                      Style="{DynamicResource awsComboBoxStyle}"/>
+        </WrapPanel>
+
+
+        <Label Margin="5,5,5,5" Grid.Row="1" Grid.Column="0" Style="{DynamicResource awsLabelBaseStyle}">Comment:</Label>
+        <TextBox Margin="5,5,5,5" Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Name="_ctlComment" AcceptsReturn="True" 
+                 MinLines="3" MaxLines="3" Text="{Binding Comment}" VerticalScrollBarVisibility="Auto"
+                 Style="{DynamicResource awsTextBoxStyle}"/>
+
+        <components:S3OriginControl x:Name="_ctlS3Origin" Grid.Row="3" Grid.ColumnSpan="2"  Margin="5,5,5,5" IsEnabled="{Binding ElementName=_ctlS3OriginSelected, Path=IsChecked}" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Width="auto" Height="auto"/>
+    </Grid>
+</commonui:BaseAWSUserControl>

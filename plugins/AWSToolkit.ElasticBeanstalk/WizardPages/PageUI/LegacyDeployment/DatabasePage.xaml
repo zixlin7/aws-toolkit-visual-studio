@@ -1,0 +1,73 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment.DatabasePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    >
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid Margin="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Margin="6,0" Style="{DynamicResource awsTextBlockBaseStyle}">
+            Select one or more RDS DB security groups:
+        </TextBlock>        
+
+        <ListView x:Name="_dbSecurityGroups" 
+                  Grid.Row="1"
+                  VerticalAlignment="Stretch" 
+                  Margin="4,4,0,0"
+                  MinHeight="60"
+                  ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                  >
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="26">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsSelected}" 
+                                          VerticalAlignment="Center" 
+                                          HorizontalAlignment="Center"
+                                          Click="SecurityGroupCheckbox_Click"
+                                          Style="{DynamicResource awsCheckboxButtonBaseStyle}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Width="140" 
+                                    Header="RDS DB Security Group" 
+                                    >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding InnerObject.DBSecurityGroupName}"
+                                           ToolTip="{Binding InnerObject.DBSecurityGroupName}"
+                                           TextTrimming="CharacterEllipsis"
+                                           />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Width="360" 
+                                    Header="RDS DB Instance" 
+                                    >
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ReferencingDBInstances}"
+                                           ToolTip="{Binding ReferencingDBInstances}"
+                                           TextTrimming="CharacterEllipsis"
+                                           />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</commonui:BaseAWSUserControl>

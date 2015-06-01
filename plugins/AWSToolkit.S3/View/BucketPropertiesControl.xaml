@@ -1,0 +1,255 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.S3.View.BucketPropertiesControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.S3.View.Components"                         
+    xmlns:policy="clr-namespace:Amazon.AWSToolkit.PolicyEditor;assembly=AWSToolkit.PolicyEditor"                         
+    Height="450" Width="600">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid Margin="5,5,5,5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="90"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <ToolBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" ToolBarTray.IsLocked="True" >
+            <Button Click="onApplyChangesClick" IsEnabled="{Binding IsDirty}">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding SaveIcon}"/>
+                        <TextBlock VerticalAlignment="Center">Apply Changes</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="onRefreshClick">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                        <TextBlock VerticalAlignment="Center" >Refresh</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </ToolBar>
+
+        <Image Grid.Column="0" Grid.Row="1" Source="..\Resources\Images\bucket.png" Width="16" Height="16"/>
+        <TextBlock Grid.Column="1" Grid.Row="1" Margin="5, 5, 0, 5" Style="{DynamicResource awsTextBlockBaseStyle}">Bucket:</TextBlock>
+        <TextBox Grid.Column="2" Grid.Row="1" Margin="5, 5, 0, 5" Text="{Binding BucketName, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}"></TextBox>
+
+        <TextBlock Grid.Column="1" Grid.Row="2" Margin="5, 5, 0, 5"  Style="{DynamicResource awsTextBlockBaseStyle}">Region:</TextBlock>
+        <TextBox Grid.Column="2" Grid.Row="2" Margin="5, 5, 0, 5" Text="{Binding RegionDisplayName, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}"></TextBox>
+
+        <TextBlock Grid.Column="1" Grid.Row="3" Margin="5, 5, 0, 5"  Style="{DynamicResource awsTextBlockBaseStyle}">Creation Date:</TextBlock>
+        <TextBox Grid.Column="2" Grid.Row="3" Margin="5, 5, 0, 5" Text="{Binding CreationDate, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}"></TextBox>
+
+        <TabControl Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="4" Margin="0, 0, 10, 10" Style="{DynamicResource awsPropertyPageVerticalTabStyle}" >
+            <TabItem Header="Permissions">
+                <DockPanel>
+                    <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
+                        <Button Click="OnAddPermission">
+                            <Button.Content>
+                                <WrapPanel>
+                                    <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}"  Source="{Binding AddIcon}"/>
+                                    <TextBlock> Add</TextBlock>
+                                </WrapPanel>
+                            </Button.Content>
+                        </Button>
+                        <Button Click="OnRemovePermission">
+                            <Button.Content>
+                                <WrapPanel>
+                                    <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RemoveIcon}"/>
+                                    <TextBlock> Remove</TextBlock>
+                                </WrapPanel>
+                            </Button.Content>
+                        </Button>
+                    </ToolBar>
+
+
+                    <commonui:ToolkitDataGridWrapper x:Name="_ctlPermissionDataGrid" 
+                                                     CellStyle="{DynamicResource awsDataGridCellCentering}"
+                                                     AutoGenerateColumns="False" ItemsSource="{Binding PermissionEntries}"
+                                                     HorizontalAlignment="Stretch" HeadersVisibility="Column"
+                                                     CanUserAddRows="False" CanUserDeleteRows="False">
+                        <commonui:ToolkitDataGridWrapper.Columns>
+
+                            <DataGridTemplateColumn Header="Grantee" Width="1.5*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox IsEditable="True" Text="{Binding GranteeFormatted}" Style="{DynamicResource awsComboBoxStyle}">
+                                            <ComboBoxItem Uid="LogDelivery">Log Delivery</ComboBoxItem>
+                                            <ComboBoxItem Uid="AuthenticatedUsers">Authenticated Users</ComboBoxItem>
+                                            <ComboBoxItem Uid="AllUsers">Everyone</ComboBoxItem>
+                                        </ComboBox>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="List" Width=".5*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding List}" VerticalAlignment="Center" HorizontalAlignment="Center" ClickMode="Press"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="Upload/Delete" Width="1*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding UploadAndDelete}" VerticalAlignment="Center" HorizontalAlignment="Center" ClickMode="Press"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="View" Width="1*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding ViewPermissions}" VerticalAlignment="Center" HorizontalAlignment="Center" ClickMode="Press"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="Edit" Width="1*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding EditPermissions}" VerticalAlignment="Center" HorizontalAlignment="Center" ClickMode="Press"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </commonui:ToolkitDataGridWrapper.Columns>
+                    </commonui:ToolkitDataGridWrapper>
+                </DockPanel>
+            </TabItem>
+            <TabItem Header="Logging">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Column="0" Grid.Row="0" Margin="5, 5, 0, 5" Style="{DynamicResource awsTextBlockBaseStyle}">Enabled:</TextBlock>
+                    <CheckBox Grid.Column="1" Grid.Row="0" Margin="5, 5, 0, 5" 
+                              Name="_ctlIsLoggingEnabled" IsChecked="{Binding IsLoggingEnabled, UpdateSourceTrigger=PropertyChanged}"
+                              Style="{DynamicResource awsCheckboxButtonBaseStyle}"/>
+
+                    <TextBlock Grid.Column="0" Grid.Row="1" Margin="5, 5, 0, 5" Style="{DynamicResource awsTextBlockBaseStyle}">Target Bucket:</TextBlock>
+                    <Grid Grid.Column="1" Grid.Row="1" Margin="5, 5, 0, 5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <ComboBox Grid.Column="0" Grid.Row="0" IsEditable="True" IsEnabled="{Binding ElementName=_ctlIsLoggingEnabled, Path=IsChecked}" 
+                                  Text="{Binding LoggingTargetBucket, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding AllBucketNames}"
+                                  Style="{DynamicResource awsComboBoxStyle}"/>
+                        <Button Grid.Column="1" Grid.Row="0" Margin="5,0,5,0" Click="onCreateBucketClick" IsEnabled="{Binding ElementName=_ctlIsLoggingEnabled, Path=IsChecked}">
+                            <Button.Content>
+                                <WrapPanel>
+                                    <Image Width="16" Height="16" Source="..\Resources\Images\new-bucket.png"/>
+                                    <TextBlock Margin="5,0,0,0">Create New Bucket</TextBlock>
+                                </WrapPanel>
+                            </Button.Content>
+                        </Button>
+                    </Grid>
+
+                    <TextBlock Grid.Column="0" Grid.Row="2" Margin="5, 5, 0, 5" Style="{DynamicResource awsTextBlockBaseStyle}">Target Prefix:</TextBlock>
+                    <TextBox Grid.Column="1" Grid.Row="2" Margin="5, 5, 0, 5" 
+                             IsEnabled="{Binding ElementName=_ctlIsLoggingEnabled, Path=IsChecked}" 
+                             Text="{Binding LoggingTargetPrefix, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{DynamicResource awsTextBoxStyle}"/>
+                    
+                </Grid>
+            </TabItem>
+            <TabItem Header="Notifications">
+                <Grid>                    
+                    <components:BucketNotificationControl x:Name="_ctlBucketNotifications"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="auto" Height="auto"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Website">
+                <Grid>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Margin="5, 5, 5, 5" TextWrapping="Wrap"
+                               Style="{DynamicResource awsTextBlockBaseStyle}">
+                        You can host your static websites entirely out of Amazon S3. Once your bucket has been configured as a website, you can access all your content via the Amazon S3 website endpoint for your bucket.
+                    </TextBlock>
+
+
+                    <Grid Name="_ctlMainWebSitePanel" Grid.Row="1" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Column="0" Grid.Row="0" Margin="5, 5, 0, 5" Style="{DynamicResource awsTextBlockBaseStyle}">Enabled:</TextBlock>
+                        <CheckBox Grid.Column="1" Grid.Row="0" Margin="5, 5, 5, 5" Name="_ctlIsWebSiteEnabled" 
+                                  IsChecked="{Binding IsWebSiteEnabled, UpdateSourceTrigger=PropertyChanged}"
+                                  Style="{DynamicResource awsCheckboxButtonBaseStyle}"/>
+
+                        <TextBlock Grid.Column="0" Grid.Row="1" Margin="5, 5, 0, 5" Style="{DynamicResource awsTextBlockBaseStyle}">Index Document:</TextBlock>
+                        <TextBox Grid.Column="1" Grid.Row="1" Margin="5, 5, 0, 5" 
+                                 IsEnabled="{Binding ElementName=_ctlIsWebSiteEnabled, Path=IsChecked}" 
+                                 Text="{Binding WebSiteIndexDocument, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{DynamicResource awsTextBoxStyle}"/>
+
+                        <TextBlock Grid.Column="0" Grid.Row="2" Margin="5, 5, 0, 5" Style="{DynamicResource awsTextBlockBaseStyle}">Error Document:</TextBlock>
+                        <TextBox Grid.Column="1" Grid.Row="2" Margin="5, 5, 0, 5" 
+                                 IsEnabled="{Binding ElementName=_ctlIsWebSiteEnabled, Path=IsChecked}" 
+                                 Text="{Binding WebSiteErrorDocument, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{DynamicResource awsTextBoxStyle}"/>
+
+                        <TextBlock Grid.Column="0" Grid.Row="3" Margin="5, 5, 0, 5" Style="{DynamicResource awsTextBlockBaseStyle}">End Point:</TextBlock>
+                        <TextBlock Grid.Column="1" Grid.Row="3" Margin="5, 5, 0, 5">
+                            <Hyperlink Name="_ctlWebSiteLink" NavigateUri="{Binding WebSiteEndPoint, Mode=OneWay}" RequestNavigate="onWebsiteRequestNavigate">
+                                <TextBlock Text="{Binding WebSiteEndPoint, Mode=OneWay}"/>
+                            </Hyperlink>
+                        </TextBlock>
+                        
+                        
+                    </Grid>
+
+                    <WrapPanel Grid.Row="2" Margin="5,20,5,5" Visibility="Hidden" Name="_ctlDNSWarning">
+                        <Image VerticalAlignment="Top" Grid.Row="0" Grid.Column="0" DataContext="{DynamicResource CommonIcons}" Source="{Binding WarningIcon}" Width="24" Height="24"></Image>
+                        <TextBlock Margin="5,0,5,0" FontWeight="SemiBold">Bucket name contains characters that make it an invalid DNS hostname.</TextBlock>
+                    </WrapPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Policy">
+                <policy:PolicyEditorControl DataContext="{Binding PolicyModel}" Policy="{Binding Policy}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="auto" Height="auto"/>
+            </TabItem>
+            <TabItem Header="Lifecycle">
+                <components:LifecycleConfigurationControl x:Name="_ctlLifecycle"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="auto" Height="auto"/>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</commonui:BaseAWSControl>

@@ -1,0 +1,428 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"                    
+	xmlns:mwt="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
+    >
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style x:Key="awsFieldFocusVisual">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Rectangle Margin="4,4,21,4" 
+                               SnapsToDevicePixels="true" 
+                               Stroke="{DynamicResource awsTextBoxSelectedBorderBrushKey}" 
+                               StrokeThickness="1" 
+                               StrokeDashArray="1 2"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <commonui:MathConverter x:Key="MathConverter" />
+    
+    <SolidColorBrush x:Key="scanEditorDisabledFieldBackgroundBrush" Color="#FFF4F4F4" />
+    <SolidColorBrush x:Key="scanEditorReadOnlyFieldBackgroundBrush" Color="#FFDFDFDF" />
+    
+    <!-- Used in main data table and condition editor to present textfield for a given single-value cell -->
+    <Style x:Key="scanEditorCellValueEditTextBox" TargetType="{x:Type TextBox}">
+        <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="Foreground" Value="{DynamicResource awsDefaultControlForegroundBrushKey}"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource awsDefaultControlForegroundBrushKey}"/>
+        <Setter Property="AllowDrop" Value="false"/>
+        <Setter Property="MinWidth" Value="0"/>
+        <Setter Property="MinHeight" Value="0"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <ScrollViewer x:Name="PART_ContentHost" 
+                                  Background="{DynamicResource awsTextBoxBackgroundBrushKey}" 
+                                  Focusable="false" 
+                                  HorizontalScrollBarVisibility="Hidden" 
+                                  VerticalScrollBarVisibility="Hidden"/>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsReadOnly" Value="true">
+                            <Setter Property="Background" 
+                                    TargetName="PART_ContentHost" 
+                                    Value="{StaticResource scanEditorReadOnlyFieldBackgroundBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Drop-panel editor styling for the Value field in a condition -->
+    <Style x:Key="scanEditorConditionValueToggleButton" TargetType="{x:Type ToggleButton}">
+        <Setter Property="OverridesDefaultStyle" Value="true"/>
+        <Setter Property="IsTabStop" Value="false"/>
+        <Setter Property="Focusable" Value="false"/>
+        <Setter Property="ClickMode" Value="Press"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ToggleButton}">
+                    <mwt:ButtonChrome x:Name="Chrome" 
+                                      BorderBrush="{TemplateBinding BorderBrush}" 
+                                      Background="{TemplateBinding Background}" 
+                                      RenderMouseOver="{TemplateBinding IsMouseOver}" 
+                                      RenderPressed="{TemplateBinding IsPressed}" 
+                                      RoundCorners="false" 
+                                      SnapsToDevicePixels="true" 
+                                      Width="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}">
+                        <Path x:Name="Arrow" 
+                              Data="{DynamicResource awsDownArrowGeometry}" 
+                              Fill="{DynamicResource awsComboBoxArrowBrushKey}" 
+                              HorizontalAlignment="Center" 
+                              Margin="0,1,0,0" 
+                              VerticalAlignment="Center"/>
+                    </mwt:ButtonChrome>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="true">
+                            <Setter Property="RenderPressed" TargetName="Chrome" Value="true"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Fill" TargetName="Arrow" 
+                                    Value="{DynamicResource awsComboBoxArrowDisabledBrushKey}"/>
+                        </Trigger>
+                        <DataTrigger Binding="{Binding IsSet}" Value="False">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="scanEditorConditionValueStyle" TargetType="{x:Type ComboBox}">
+        <Setter Property="FocusVisualStyle" Value="{StaticResource awsFieldFocusVisual}"/>
+        <Setter Property="Foreground" Value="{DynamicResource awsDefaultControlForegroundBrushKey}"/>
+        <Setter Property="Background" Value="{DynamicResource awsComboBoxBackgroundBrushKey}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource awsComboBoxBorderBrushKey}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ComboBox}">
+                    <Grid x:Name="MainGrid" SnapsToDevicePixels="true" HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" Width="0"/>
+                        </Grid.ColumnDefinitions>
+                        <Popup x:Name="PART_Popup" 
+                               AllowsTransparency="true" 
+                               Grid.ColumnSpan="2"
+                               IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                               Margin="1" 
+                               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" 
+                               Placement="Bottom"
+                               Width="{Binding ActualWidth, ElementName=MainGrid}"
+                               >
+                            <Border x:Name="DropDownBorder" 
+                                    BorderBrush="{TemplateBinding BorderBrush}" 
+                                    BorderThickness="1" 
+                                    Background="{DynamicResource awsComboBoxDropPanelBackgroundBrushKey}"
+                                    Width="{Binding ActualWidth, ElementName=MainGrid}"
+                                    >
+                                <DockPanel>
+                                    <StackPanel DockPanel.Dock="Bottom">
+                                        <Border BorderBrush="{TemplateBinding BorderBrush}" 
+                                                BorderThickness="1" />
+                                        <Grid x:Name="PART_PanelControls" Margin="2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <ToolBarTray IsLocked="True" Grid.Column="0" 
+                                                         HorizontalAlignment="Left">
+                                                <ToolBar x:Name="PART_ListControlButtons" 
+                                                         Background="{DynamicResource awsHorizontalToolBarBackgroundBrushKey}" 
+                                                         VerticalAlignment="Center">
+                                                    <Button x:Name="PART_AddValueButton">
+                                                        <Image Width="16" Height="16" 
+                                                               Source="Images\AddToList.png" 
+                                                               Style="{DynamicResource awsToolbarImageButton}"/>
+                                                    </Button>
+                                                    <Button x:Name="PART_RemoveValueButton">
+                                                        <Image Width="16" Height="16" 
+                                                               Source="Images\RemoveFromList.png" 
+                                                               Style="{DynamicResource awsToolbarImageButton}"/>
+                                                    </Button>
+                                                </ToolBar>
+                                            </ToolBarTray>
+                                            
+                                            <ToolBarTray IsLocked="True" Grid.Column="1" HorizontalAlignment="Right">
+                                                <ToolBar Margin="0" 
+                                                         Background="{DynamicResource awsHorizontalToolBarBackgroundBrushKey}" 
+                                                         VerticalAlignment="Center">
+                                                    <Button x:Name="PART_OKButton">
+                                                        <Image Width="16" Height="16" 
+                                                               DataContext="{DynamicResource CommonIcons}" 
+                                                               Source="{Binding OKIcon}" />
+                                                    </Button>
+                                                    <Button x:Name="PART_CancelButton">
+                                                        <Image Width="16" Height="16" 
+                                                               DataContext="{DynamicResource CommonIcons}" 
+                                                               Source="{Binding AbortIcon}" />
+                                                    </Button>
+                                                </ToolBar>
+                                            </ToolBarTray>
+                                        </Grid>
+                                    </StackPanel>
+
+                                    <Grid x:Name="PART_MultiValueListPanel" Margin="2">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <Label Margin="0,2" Padding="0,2" 
+                                               Style="{DynamicResource awsLabelBaseStyle}">
+                                            Values:
+                                        </Label>
+                                        <commonui:ToolkitDataGridWrapper 
+                                                    x:Name="PART_MultiValueList"
+                                                    Grid.Row="1"
+                                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                                    ItemsSource="{TemplateBinding ItemsSource}"
+                                                    AutoGenerateColumns="False"
+                                                    GridLinesVisibility="Horizontal"
+                                                    CanUserAddRows="False"
+                                                    CanUserDeleteRows="False"
+                                                    HeadersVisibility="None"
+                                                    CanUserSortColumns="False"
+                                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                                    ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                                    Height="150"
+                                                    MaxHeight="300"
+                                                    Width="{Binding ActualWidth, ElementName=MainGrid}"
+                                                    SelectionUnit="FullRow"
+                                                    Foreground="{DynamicResource awsGridForegroundBrushKey}"
+                                                    Background="{DynamicResource awsGridBackgroundBrushKey}">
+                                            <commonui:ToolkitDataGridWrapper.Columns>
+                                                <DataGridTextColumn Binding="{Binding Value}" Width="*" />
+                                            </commonui:ToolkitDataGridWrapper.Columns>
+                                        </commonui:ToolkitDataGridWrapper>
+                                    </Grid>
+                                </DockPanel>
+                            </Border>
+                        </Popup>
+                        <ToggleButton x:Name="PART_ToggleButton" 
+                                      Style="{StaticResource scanEditorConditionValueToggleButton}"
+                                      IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                      Grid.Column="1"
+                                      />
+                        <TextBox x:Name="PART_ValueTextBox" 
+                                 HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" 
+ 							     HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                 Margin="0" 
+                                 Padding="2"
+                                 Style="{StaticResource scanEditorCellValueEditTextBox}" 
+   							     SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                 Foreground="{TemplateBinding Foreground}"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            <Setter Property="Background" Value="{StaticResource scanEditorDisabledFieldBackgroundBrush}"/>
+                        </Trigger>
+                        <DataTrigger Binding="{Binding IsSet}" Value="True">
+                            <Setter Property="IsReadOnly" Value="True" TargetName="PART_ValueTextBox" />
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <!-- Drop-panel editor styling for use in the main data table -->
+    <Style x:Key="scanEditorCellValueEditPanel" TargetType="{x:Type ComboBox}">
+        <Setter Property="FocusVisualStyle" Value="{StaticResource awsFieldFocusVisual}"/>
+        <Setter Property="Foreground" Value="{DynamicResource awsDefaultControlForegroundBrushKey}"/>
+        <Setter Property="TextBox.CaretBrush" Value="{DynamicResource awsDefaultControlForegroundBrushKey}"/>
+        <Setter Property="Background" Value="{DynamicResource awsComboBoxBackgroundBrushKey}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource awsComboBoxBorderBrushKey}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="Padding" Value="2"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ComboBox}">
+                    <Grid x:Name="MainGrid" SnapsToDevicePixels="true" 
+                          HorizontalAlignment="Stretch" 
+                          FocusManager.FocusedElement="{Binding ElementName=PART_ValueTextBox}">
+                        <Popup x:Name="PART_Popup" 
+                               AllowsTransparency="true" 
+                               IsOpen="True" 
+                               Margin="1" 
+                               PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" 
+                               Placement="Bottom"
+                               MinWidth="{Binding ActualWidth, ElementName=MainGrid}"
+                               PlacementTarget="{Binding ElementName=MainGrid}"
+                               >
+                            <Border x:Name="DropDownBorder" 
+                                    BorderBrush="{TemplateBinding BorderBrush}" 
+                                    BorderThickness="1" 
+                                    Background="{DynamicResource awsComboBoxDropPanelBackgroundBrushKey}"
+                                    MinWidth="200"
+                                    >
+                                <DockPanel>
+                                    <Grid x:Name="PART_PanelControls" Margin="2" DockPanel.Dock="Bottom">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <ToolBarTray IsLocked="True" HorizontalAlignment="Left">
+                                            <ToolBar x:Name="PART_FormatToolBar" 
+                                                     Margin="0" 
+                                                     Background="{DynamicResource awsHorizontalToolBarBackgroundBrushKey}" 
+                                                     VerticalAlignment="Center">
+                                                <RadioButton ToolTip="Convert to a single string value" IsChecked="True" 
+                                                             GroupName="ValueTypeGroup" x:Name="PART_AsStringButton">
+                                                    <Image Source="/AWSToolkit.DynamoDB;component/Resources/Images/AsAlpha.png" 
+                                                           Style="{StaticResource awsToolbarImageButton}"/>
+                                                </RadioButton>
+                                                <RadioButton Grid.Column="1" ToolTip="Convert to a set of strings" 
+                                                             GroupName="ValueTypeGroup" x:Name="PART_AsStringSetButton">
+                                                    <Image Source="/AWSToolkit.DynamoDB;component/Resources/Images/AsAlphaSet.png" 
+                                                           Style="{StaticResource awsToolbarImageButton}"/>
+                                                </RadioButton>
+                                                <RadioButton Grid.Column="2" ToolTip="Convert to a single numeric value" 
+                                                             GroupName="ValueTypeGroup" x:Name="PART_AsNumberButton">
+                                                    <Image Source="/AWSToolkit.DynamoDB;component/Resources/Images/AsNumber.png" 
+                                                           Style="{StaticResource awsToolbarImageButton}"/>
+                                                </RadioButton>
+                                                <RadioButton Grid.Column="3" ToolTip="Convert to a set of numbers" 
+                                                             GroupName="ValueTypeGroup" x:Name="PART_AsNumberSetButton">
+                                                    <Image Source="/AWSToolkit.DynamoDB;component/Resources/Images/AsNumberSet.png" 
+                                                           Style="{StaticResource awsToolbarImageButton}"/>
+                                                </RadioButton>
+                                                <RadioButton ToolTip="Convert to a boolean value" 
+                                                             GroupName="ValueTypeGroup" x:Name="PART_AsBoolButton">
+                                                    <Image Source="/AWSToolkit.DynamoDB;component/Resources/Images/AsBoolean.png" 
+                                                           Style="{StaticResource awsToolbarImageButton}"/>
+                                                </RadioButton>
+                                                <RadioButton ToolTip="Convert to a null value" 
+                                                             GroupName="ValueTypeGroup" x:Name="PART_AsNullButton">
+                                                    <Image Source="/AWSToolkit.DynamoDB;component/Resources/Images/AsNull.png" 
+                                                           Style="{StaticResource awsToolbarImageButton}"/>
+                                                </RadioButton>
+                                                <Separator />
+                                            </ToolBar>
+                                        </ToolBarTray>
+
+
+                                        <ToolBarTray IsLocked="True" Grid.Column="1" HorizontalAlignment="Right">
+                                            <ToolBar Margin="0" 
+                                                     Background="{DynamicResource awsHorizontalToolBarBackgroundBrushKey}" 
+                                                     VerticalAlignment="Center">
+                                                <Button x:Name="PART_OKButton">
+                                                    <Image Width="16" Height="16" 
+                                                           DataContext="{DynamicResource CommonIcons}" 
+                                                           Source="{Binding OKIcon}" 
+                                                           Style="{StaticResource awsToolbarImageButton}"/>
+                                                </Button>
+                                                <Button x:Name="PART_CancelButton">
+                                                    <Image Width="16" Height="16" 
+                                                           DataContext="{DynamicResource CommonIcons}" 
+                                                           Source="{Binding AbortIcon}" 
+                                                           Style="{StaticResource awsToolbarImageButton}"/>
+                                                </Button>
+                                            </ToolBar>
+                                        </ToolBarTray>
+                                        
+                                        <TextBlock x:Name="PART_ValidationBox" 
+                                                   Grid.Row="1" 
+                                                   Grid.ColumnSpan="2" 
+                                                   Visibility="Collapsed" 
+                                                   Foreground="Red" 
+                                                   FontWeight="Bold"
+                                                   FontStyle="Italic"
+                                                   Focusable="False"
+                                                   />
+                                    </Grid>
+
+                                    <StackPanel x:Name="PART_MultiValueListPanel">
+                                        <Grid Margin="2">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto" />
+                                                <RowDefinition Height="*" />
+                                                <RowDefinition Height="Auto" />
+                                            </Grid.RowDefinitions>
+                                            <Label Margin="0,2" Padding="0,2" Style="{DynamicResource awsLabelBaseStyle}">Values:</Label>
+                                            <commonui:ToolkitDataGridWrapper x:Name="PART_MultiValueList"
+                                                              Grid.Row="1"
+                                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                                              ItemsSource="{TemplateBinding ItemsSource}"
+                                                              AutoGenerateColumns="False"
+                                                              GridLinesVisibility="Horizontal"
+                                                              CanUserAddRows="False"
+                                                              CanUserDeleteRows="False"
+                                                              HeadersVisibility="None"
+                                                              CanUserSortColumns="False"
+                                                              ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                                              ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                                              Height="150"
+                                                              MaxHeight="300"
+                                                              MaxWidth="300"
+                                                              SelectionUnit="FullRow"
+                                                              Foreground="{DynamicResource awsGridForegroundBrushKey}"
+                                                              Background="{DynamicResource awsGridBackgroundBrushKey}">
+                                                <commonui:ToolkitDataGridWrapper.Columns>
+                                                    <DataGridTextColumn Binding="{Binding Value}" />
+                                                </commonui:ToolkitDataGridWrapper.Columns>
+                                            </commonui:ToolkitDataGridWrapper>
+
+                                            <ToolBarTray Grid.Row="2" HorizontalAlignment="Left" IsLocked="True" Margin="0,2,0,0">
+                                                <ToolBar x:Name="PART_ListControlButtons" 
+                                                         Background="{DynamicResource awsHorizontalToolBarBackgroundBrushKey}" 
+                                                         VerticalAlignment="Center">
+                                                    <Button x:Name="PART_AddValueButton" ToolTip="Add a new value into the set">
+                                                        <Image Width="16" Height="16" Source="Images\AddToList.png" 
+                                                               Style="{StaticResource awsToolbarImageButton}"/>
+                                                    </Button>
+                                                    <Button x:Name="PART_RemoveValueButton" ToolTip="Remove the selected value(s) from the set">
+                                                        <Image Width="16" Height="16" Source="Images\RemoveFromList.png" 
+                                                               Style="{StaticResource awsToolbarImageButton}"/>
+                                                    </Button>
+                                                </ToolBar>
+                                            </ToolBarTray>
+                                        </Grid>
+                                        <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" />
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+                        </Popup>
+                        <TextBox x:Name="PART_ValueTextBox" 
+                                 HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                 IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource TemplatedParent}}" 
+                                 Margin="{TemplateBinding Padding}" 
+                                 Style="{StaticResource scanEditorCellValueEditTextBox}" 
+                                 VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+                                    
+                        </TextBox>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                            <Setter Property="Background" Value="{StaticResource scanEditorDisabledFieldBackgroundBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

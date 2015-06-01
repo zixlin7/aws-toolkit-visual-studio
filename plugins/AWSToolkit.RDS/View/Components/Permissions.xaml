@@ -1,0 +1,55 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.RDS.View.Components.Permissions"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"             
+    Height="auto" Width="auto">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <DockPanel>
+        <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" Name="_ctlToolbar">
+            <Button Click="onAddPermission">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding AddIcon}"/>
+                        <TextBlock>Add Permission</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="onDeletePermission" Name="_ctlDelete">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RemoveIcon}"/>
+                        <TextBlock>Delete Permission</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="onRefreshPermission">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                        <TextBlock>Refresh</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </ToolBar>
+        <commonui:ToolkitDataGridWrapper AutoGenerateColumns="False" x:Name="_ctlDataGrid" CellStyle="{DynamicResource awsDataGridCellCentering}"
+                CanUserAddRows="True" CanUserDeleteRows="False" CanUserSortColumns="True"
+                ItemsSource="{Binding PermissionRules}"
+                RowHeaderWidth="0"
+                SelectedCellsChanged="onSelectedCellsChanged"                          
+                HorizontalAlignment="Stretch" HeadersVisibility="All">
+
+            <commonui:ToolkitDataGridWrapper.Columns>
+                <DataGridTextColumn Header="Connection Type" Binding="{Binding Type, Mode=OneWay}" Width="auto"/>
+                <DataGridTextColumn Header="Details" Binding="{Binding Details, Mode=OneWay}" Width="400"/>
+            </commonui:ToolkitDataGridWrapper.Columns>
+        </commonui:ToolkitDataGridWrapper>
+    </DockPanel>
+</commonui:BaseAWSUserControl>

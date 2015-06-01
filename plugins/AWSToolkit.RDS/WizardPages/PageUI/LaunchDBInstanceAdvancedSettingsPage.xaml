@@ -1,0 +1,257 @@
+﻿<UserControl x:Class="Amazon.AWSToolkit.RDS.WizardPages.PageUI.LaunchDBInstanceAdvancedSettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="350" d:DesignWidth="600">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=".5*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width=".5*"/>
+        </Grid.ColumnDefinitions>            
+        
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+                   Content="Network and Security"/>
+            
+            <Grid Grid.Row="1" Margin="4,8,4,4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Label Style="{DynamicResource awsWizardFieldLabelStyle}"
+                       Content="_VPC:"
+                       Target="{Binding ElementName=_ctlVpcList}"/>    
+                <ComboBox Grid.Row="0" Grid.Column="1"
+                          x:Name="_ctlVpcList"
+                          Style="{DynamicResource awsComboBoxStyle}"
+                          ItemsSource="{Binding Path=VpcList, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedItem="{Binding SelectedVpc}"
+                          DisplayMemberPath="FormattedLabel"
+                          SelectionChanged="_ctlVpcList_OnSelectionChanged"
+                          />
+                <TextBlock Grid.Row="1" Grid.Column="1"
+                           Style="{DynamicResource awsInfoTextStyle}"
+                           TextWrapping="Wrap"
+                           FontStyle="Italic">
+                    Only VPCs with a corresponding DB Subnet Group are listed.
+                </TextBlock>
+            </Grid>
+
+            <Grid Grid.Row="2" Margin="4,4,4,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Grid.Column="0"  
+                       Style="{DynamicResource awsWizardFieldLabelStyle}"
+                       Content="Subnet Group:"
+                       Target="{Binding ElementName=_ctlSubnetGroupList}"
+                       Visibility="{Binding Path=LaunchingIntoVpc, Converter={StaticResource bool2VisConverter}}"
+                       />
+                <ComboBox Grid.Row="0" Grid.Column="1"
+                          x:Name="_ctlSubnetGroupList"
+                          Style="{DynamicResource awsComboBoxStyle}"
+                          ItemsSource="{Binding DbSubnetGroupList}"
+                          SelectedItem="{Binding SelectedDbSubnetGroup}"
+                          DisplayMemberPath="Name"
+                          Visibility="{Binding Path=LaunchingIntoVpc, Converter={StaticResource bool2VisConverter}}"
+                          />
+
+                <CheckBox Grid.Row="1" Grid.Column="1"
+                          Margin="0,4,0,4"
+                          Style="{DynamicResource awsCheckboxButtonBaseStyle}"
+                          IsChecked="{Binding PubliclyAccessible}"
+                          Visibility="{Binding Path=LaunchingIntoVpc, Converter={StaticResource bool2VisConverter}}">
+                    Publicly accessible                    
+                </CheckBox>
+
+                <Label Grid.Row="2" Grid.Column="0"  
+                       Margin="0,4,0,4"
+                       Style="{DynamicResource awsWizardFieldLabelStyle}"
+                       Content="Availability _Zone:"
+                       Target="{Binding ElementName=_ctlZoneList}"/>
+                <ComboBox Grid.Row="2" Grid.Column="1"
+                          Margin="0,8,0,4"
+                          x:Name="_ctlZoneList"
+                          Style="{DynamicResource awsComboBoxStyle}"
+                          ItemsSource="{Binding AvailabilityZoneList}"
+                          SelectedItem="{Binding SelectedAvailabilityZone, UpdateSourceTrigger=PropertyChanged}"
+                          DisplayMemberPath="ZoneName"
+                          />
+
+                <Label Grid.Row="3" Grid.Column="0" 
+                       Margin="0,4,0,4"
+                       Style="{DynamicResource awsWizardFieldLabelStyle}"
+                       Content="_Security Groups:"
+                       VerticalAlignment="Top"/>
+                <StackPanel Grid.Row="3" Grid.Column="1" Margin="0,10,0,0">
+                    <CheckBox x:Name="_ctlCreateNewSecurityGroup" 
+                              Click="_ctlCreateNewSecurityGroup_OnClick"
+                              Content="Create new Security Group"
+                              ToolTip="{Binding NewSecurityGroupTooltip}"/>
+                    <ListBox x:Name="_ctlSecurityGroupsList"
+                             Style="{DynamicResource awsListBoxStyle}"
+                             Height="100"
+                             Margin="0,8,0,0"
+                             ItemsSource="{Binding SecurityGroups}"
+                             >
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox IsChecked="{Binding IsSelected}" 
+                                          Width="20" 
+                                          Style="{DynamicResource awsCheckboxButtonBaseStyle}"/>
+                                    <TextBlock Text="{Binding InnerObject.DisplayName}" 
+                                           VerticalAlignment="Center" 
+                                           ToolTip="{Binding InnerObject.Description}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+
+                <Grid Grid.Row="4" Grid.Column="1" Margin="0,2,4,2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <CheckBox x:Name="_ctlAddCurrentCidr" 
+                              Style="{DynamicResource awsCheckboxButtonBaseStyle}"
+                              IsChecked="{Binding AddCidrToSecurityGroups}"
+                              VerticalAlignment="Top"/>
+                    <TextBlock Grid.Column="1" 
+                               TextWrapping="WrapWithOverflow"
+                               Style="{DynamicResource awsTextBlockBaseStyle}"
+                               Margin="4,0,2,0"
+                               Text="{Binding Path=AddCurrentCidrEstimate, UpdateSourceTrigger=PropertyChanged}"
+                               VerticalAlignment="Top"/>
+                </Grid>
+            </Grid>
+        </Grid>
+
+        <Border Grid.Column="1"
+                BorderThickness="2"
+                BorderBrush="Silver"
+                Margin="2,24,8,24"
+                />
+        
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+                   Content="Database Options"/>
+
+            <Grid Grid.Row="1" Margin="4,8,4,4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <Label Grid.Row="0" Grid.Column="0"
+                       Content="Database _Name:"
+                       Target="{Binding ElementName=_ctlDatabaseName}"
+                       Style="{DynamicResource awsWizardFieldLabelStyle}"/>
+                <TextBox Grid.Row="0" Grid.Column="1"
+                         x:Name="_ctlDatabaseName"
+                         Style="{DynamicResource awsTextBoxStyle}"
+                         Text="{Binding DatabaseName, Mode=TwoWay}"
+                         />
+                
+                <TextBlock Grid.Row="1" Grid.Column="1" 
+                           Style="{StaticResource awsInfoTextStyle}"
+                           Margin="0,4,0,8"
+                           Text="{Binding NameHint, UpdateSourceTrigger=PropertyChanged}"
+                           TextWrapping="Wrap"
+                           FontStyle="Italic"/>
+
+                <Label Grid.Row="2" Grid.Column="0"
+                       Content="Database _Port:"
+                       Target="{Binding ElementName=_ctlDatabasePort}"
+                       Style="{DynamicResource awsWizardFieldLabelStyle}"
+                       VerticalAlignment="Top"/>
+                <StackPanel Grid.Row="2" Grid.Column="1" VerticalAlignment="Top">
+                    <TextBox x:Name="_ctlDatabasePort"
+                             Style="{DynamicResource awsTextBoxStyle}"
+                             Text="{Binding DatabasePort, Mode=TwoWay}"/>
+                    <TextBlock Margin="0,4,0,8"
+                               Style="{StaticResource awsInfoTextStyle}"
+                               TextWrapping="Wrap"
+                               Text="{Binding PortHint, UpdateSourceTrigger=PropertyChanged}"
+                               FontStyle="Italic"/>
+                </StackPanel>
+
+                <Label Grid.Row="3" Grid.Column="0"
+                       Content="DB Parameter _Group:"
+                       Target="{Binding ElementName=_ctlDBParameterGroupList}"
+                       Style="{DynamicResource awsWizardFieldLabelStyle}"/>
+                <ComboBox Grid.Row="3" Grid.Column="1"
+                          x:Name="_ctlDBParameterGroupList"
+                          Style="{DynamicResource awsComboBoxStyle}"
+                          ItemsSource="{Binding DbParameterGroupList}"
+                          SelectedItem="{Binding DbParameterGroup}"
+                          DisplayMemberPath="DBParameterGroupName"/>
+
+                <Label Grid.Row="4" Grid.Column="0"
+                       Content="_Option Group:"
+                       Target="{Binding ElementName=_ctlOptionGroupList}"
+                       Style="{DynamicResource awsWizardFieldLabelStyle}"/>
+                <ComboBox Grid.Row="4" Grid.Column="1"
+                          x:Name="_ctlOptionGroupList"
+                          Style="{DynamicResource awsComboBoxStyle}"
+                          ItemsSource="{Binding OptionGroupList}"
+                          SelectedItem="{Binding OptionGroup}"/>
+
+                <CheckBox Grid.Row="5" Grid.Column="1"
+                          Margin="0,4,0,4"
+                          Style="{DynamicResource awsCheckboxButtonBaseStyle}"
+                          IsChecked="{Binding EnableEncryption}"
+                          Visibility="Hidden">
+                    Enable _Encryption
+                </CheckBox>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

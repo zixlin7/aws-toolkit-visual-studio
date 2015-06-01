@@ -1,0 +1,441 @@
+﻿<!-- AWS Toolkit theme defaults for the standalone AWSStudio shell.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 
+    ******************************************************************************** 
+    * Windows and dialogs
+    ******************************************************************************** 
+    -->
+    <SolidColorBrush x:Key="awsToolWindowBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+    <SolidColorBrush x:Key="awsToolWindowTextBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+
+    <SolidColorBrush x:Key="awsDialogBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+    <SolidColorBrush x:Key="awsDialogTextBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+
+    <SolidColorBrush x:Key="awsStatusPanelBackgroundBrushKey" Color="LightGray" />
+
+    <!-- using tool window background for views seems the most cross-theme compatible; VsColors.BackgroundKey is dark 
+         grey in light/blue themes 
+    -->
+    <SolidColorBrush x:Key="awsWindowBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+    <SolidColorBrush x:Key="awsWindowTextBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+
+    <SolidColorBrush x:Key="awsPanelHeaderAccentBrushKey" Color="LightBlue"/>
+
+    <SolidColorBrush x:Key="awsPanelBorderBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowFrameColorKey}}"/>
+
+    <Color x:Key="awsPanelBackgroundGradientStop0ColorKey">#C0C0C0</Color>
+    <Color x:Key="awsPanelBackgroundGradientStop1ColorKey">#F5F5F5</Color>
+
+    <LinearGradientBrush x:Key="awsPanelBackgroundBrushKey" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop Color="{StaticResource awsPanelBackgroundGradientStop0ColorKey}" Offset="1"/>
+        <GradientStop Color="{StaticResource awsPanelBackgroundGradientStop1ColorKey}" Offset="0"/>
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="awsPanelForegroundBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}"/>
+
+    <!-- 
+    ******************************************************************************** 
+    * Buttons 
+    ******************************************************************************** 
+    -->
+    
+    <Color x:Key="awsButtonNormalBackgroundGradientStop0ColorKey">#F3F3F3</Color>
+    <Color x:Key="awsButtonNormalBackgroundGradientStop1ColorKey">#EBEBEB</Color>
+    <Color x:Key="awsButtonNormalBackgroundGradientStop2ColorKey">#DDDDDD</Color>
+    <Color x:Key="awsButtonNormalBackgroundGradientStop3ColorKey">#CDCDCD</Color>
+    <Color x:Key="awsButtonOverBackgroundGradientStop0ColorKey">#FFFAFAFA</Color>
+    <Color x:Key="awsButtonOverBackgroundGradientStop1ColorKey">#FFE0E0E3</Color>
+    <Color x:Key="awsButtonPressedBackgroundGradientStop0ColorKey">#FFE0E0E2</Color>
+    <Color x:Key="awsButtonPressedBackgroundGradientStop1ColorKey">#FFF8F8F8</Color>
+
+    <SolidColorBrush x:Key="awsButtonNormalBorderBrushKey" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+    <LinearGradientBrush x:Key="awsButtonNormalBackgroundBrushKey" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop Color="{StaticResource awsButtonNormalBackgroundGradientStop0ColorKey}" Offset="0"/>
+        <GradientStop Color="{StaticResource awsButtonNormalBackgroundGradientStop1ColorKey}" Offset="0.5"/>
+        <GradientStop Color="{StaticResource awsButtonNormalBackgroundGradientStop2ColorKey}" Offset="0.5"/>
+        <GradientStop Color="{StaticResource awsButtonNormalBackgroundGradientStop3ColorKey}" Offset="1"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="awsButtonTextBrushKey" Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}"/>
+
+    <SolidColorBrush x:Key="awsButtonIsDefaultBorderBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}"/>
+    <SolidColorBrush x:Key="awsButtonPressedBorderBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}"/>
+
+    <!-- 
+    ******************************************************************************** 
+    * List/Grid controls
+    ******************************************************************************** 
+    -->
+    <SolidColorBrush x:Key="awsGridBorderBrushKey" Color="#FF6593CF"/>
+
+    <SolidColorBrush x:Key="awsGridSplitterTextForegroundBrushKey" Color="#FF204D89"/>
+    <SolidColorBrush x:Key="awsGridSplitterBorderBrushKey" Color="#FF6593CF"/>
+
+    <SolidColorBrush x:Key="awsGridHeadingBackgroundBrushKey" Color="#FF6593CF"/>
+    <SolidColorBrush x:Key="awsGridHeadingForegroundBrushKey" Color="#FF204D89" />
+
+    <SolidColorBrush x:Key="awsGridBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+    <SolidColorBrush x:Key="awsGridLineBrushKey" Color="#FFCEDFF6" />
+    <SolidColorBrush x:Key="awsGridForegroundBrushKey" Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}"/>
+
+    <SolidColorBrush x:Key="awsGridAttributeChangedForegroundBrushKey" Color="Red"/>
+
+    <SolidColorBrush x:Key="awsGridSelectedRowBackgroundBrushKey" Color="LightBlue"/>
+    <SolidColorBrush x:Key="awsGridSelectedCellForegroundBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}"/>
+
+    <SolidColorBrush x:Key="awsGridSelectedNotFocussedRowBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}"/>
+
+    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1" x:Key="awsGridSplitterBackgroundGradientBrushKey">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FFE3EFFF" Offset="0" />
+            <GradientStop Color="#FFAFD2FF" Offset="1" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <!-- 
+    ******************************************************************************** 
+    * Popups 
+    ******************************************************************************** 
+    -->
+    <SolidColorBrush x:Key="awsPopupBorderBrushKey" Color="Orange" />
+    
+    <SolidColorBrush x:Key="awsDropShadowBrushKey" Color="DarkGray" />
+    <DropShadowEffect x:Key="awsDropShadowEffectKey" Color="DarkGray" Opacity=".5"/>
+
+    <LinearGradientBrush x:Key="awsPopupBackgroundBrushKey" StartPoint="0.5, 0" EndPoint="0.5, 1">
+        <GradientStop Offset="0" Color="LightYellow"/>
+        <GradientStop Offset="1" Color="WhiteSmoke"/>
+    </LinearGradientBrush>
+
+    <!-- 
+    ******************************************************************************** 
+    * Tab controls 
+    ******************************************************************************** 
+    -->
+    <SolidColorBrush x:Key="awsTabStripBackgroundBrushKey" Color="Transparent"/>
+    
+    <SolidColorBrush x:Key="awsTabContentBorderBrushKey" Color="#e3e5e9"/>
+    <SolidColorBrush x:Key="awsTabContentBackgroundBrushKey" Color="#8C8E94"/>
+
+    <SolidColorBrush x:Key="awsSelectedTabItemBorderBrushKey" Color="{DynamicResource {x:Static SystemColors.ActiveCaptionTextColorKey}}"/>
+    <SolidColorBrush x:Key="awsSelectedTabItemBrushKey" Color="{DynamicResource {x:Static SystemColors.ActiveCaptionTextColorKey}}"/>
+    <SolidColorBrush x:Key="awsSelectedTabItemBackgroundBrushKey" Color="#F9F9F9"/>
+
+    <SolidColorBrush x:Key="awsHotTabItemBorderBrushKey" Color="{DynamicResource {x:Static SystemColors.ActiveBorderColorKey}}"/>
+    <SolidColorBrush x:Key="awsHotTabItemBrushKey" Color="{DynamicResource {x:Static SystemColors.HotTrackColorKey}}"/>
+    <LinearGradientBrush x:Key="awsHotTabItemBackgroundBrushKey" EndPoint="0,1" StartPoint="0,0">
+        <GradientStop Color="#EAF6FD" Offset="0.15"/>
+        <GradientStop Color="#D9F0FC" Offset=".5"/>
+        <GradientStop Color="#BEE6FD" Offset=".5"/>
+        <GradientStop Color="#A7D9F5" Offset="1"/>
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="awsDisabledTabItemBackgroundBrushKey" Color="#F4F4F4"/>
+    <SolidColorBrush x:Key="awsDisabledTabItemBorderBrushKey" Color="#FFC9C7BA"/>
+
+    <SolidColorBrush x:Key="awsTabControlForegroundBrushKey" Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}"/>
+    <SolidColorBrush x:Key="awsTabControlDisabledForegroundBrushKey" Color="{DynamicResource {x:Static SystemColors.GrayTextColorKey}}"/>
+
+    <LinearGradientBrush x:Key="awsTabControlUnselectedBackgroundBrushKey" StartPoint="0,0" EndPoint="1,0">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#f0f0f0" Offset="0" />
+            <GradientStop Color="#dee1e7" Offset="1" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <!-- 
+    ******************************************************************************** 
+    * Menus
+    ******************************************************************************** 
+    -->
+    <SolidColorBrush x:Key="awsMenuBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.MenuColorKey}}"/>
+    <SolidColorBrush x:Key="awsMenuIconBackgroundBrushKey" Color="LightGray"/>
+
+    <SolidColorBrush x:Key="awsMenuForegroundBrushKey" Color="{DynamicResource {x:Static SystemColors.MenuTextColorKey}}"/>
+    <SolidColorBrush x:Key="awsMenuBorderBrushKey" Color="#FF688CAF"/>
+
+    <SolidColorBrush x:Key="awsMenuSeparatorBrushKey" Color="Black"/>
+
+    <SolidColorBrush x:Key="awsMenuDisabledForegroundBrushKey" Color="{DynamicResource {x:Static SystemColors.GrayTextColorKey}}"/>
+
+    <SolidColorBrush x:Key="awsMenuSelectedBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.MenuHighlightColorKey}}"/>
+
+    <SolidColorBrush x:Key="awsMenuHighlightedBackgroundBrushKey" Color="#3399FF"/>
+    <SolidColorBrush x:Key="awsMenuHighlightedBorderBrushKey" Color="#FF688CAF"/>
+    <SolidColorBrush x:Key="awsMenuSubmenuArrowGlyphHighlightedBrushKey" Color="White"/>
+
+    <!-- 
+    ******************************************************************************** 
+    * Scrollbars
+    ******************************************************************************** 
+    -->
+
+    <SolidColorBrush x:Key="awsScrollBarBrushKey" Color="{DynamicResource {x:Static SystemColors.ScrollBarColorKey}}"/>
+
+    <LinearGradientBrush x:Key="awsScrollBarHorizontalBackgroundBrushKey" StartPoint="0,0" EndPoint="0,1">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#E1E1E1" Offset="0"/>
+            <GradientStop Color="#EDEDED" Offset="0.20"/>
+            <GradientStop Color="#EDEDED" Offset="0.80"/>
+            <GradientStop Color="#E3E3E3" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="awsScrollBarVerticalBackgroundBrushKey" StartPoint="0,0" EndPoint="1,0">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#E1E1E1" Offset="0"/>
+            <GradientStop Color="#EDEDED" Offset="0.20"/>
+            <GradientStop Color="#EDEDED" Offset="0.80"/>
+            <GradientStop Color="#E3E3E3" Offset="1"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="awsScrollBarDisabledBackgroundBrushKey" Color="#F4F4F4"/>
+
+    <!-- these all need to be fixed up properly -->
+    <SolidColorBrush x:Key="awsScrollBarArrowBrushKey" Color="Black"/>
+    <SolidColorBrush x:Key="awsScrollBarArrowBackgroundBrushKey" Color="#FFF0F0F0"/>
+    <SolidColorBrush x:Key="awsScrollBarArrowDisabledBackgroundBrushKey" Color="LightGray"/>
+    
+    <SolidColorBrush x:Key="awsScrollBarArrowMouseOverBackgroundBrushKey" Color="DarkGray"/>
+    <SolidColorBrush x:Key="awsScrollBarArrowMouseOverBrushKey" Color="White"/>
+
+    <SolidColorBrush x:Key="awsScrollBarArrowPressedBackgroundBrushKey" Color="DarkGray"/>
+
+    <SolidColorBrush x:Key="awsScrollBarThumbBackgroundBrushKey" Color="#FFCDCDCD"/>
+    <SolidColorBrush x:Key="awsScrollBarThumbBorderBrushKey" Color="#FFCDCDCD"/>
+    <SolidColorBrush x:Key="awsScrollBarThumbGlyphBrushKey" Color="#FFCDCDCD"/>
+
+    <SolidColorBrush x:Key="awsScrollBarThumbMouseOverBackgroundBrushKey" Color="DarkGray"/>
+    <SolidColorBrush x:Key="awsScrollBarThumbPressedBackgroundBrushKey" Color="DarkGray"/>
+
+    <!-- 
+    ******************************************************************************** 
+    * Toolbars
+    ******************************************************************************** 
+    -->
+    <SolidColorBrush x:Key="awsToolBarTextBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+    <SolidColorBrush x:Key="awsToolBarDisabledTextBrushKey" Color="{DynamicResource {x:Static SystemColors.GrayTextColorKey}}"/>
+
+    <SolidColorBrush x:Key="awsToolBarButtonHoverBrushKey" Color="#C2E0FF"/>
+    <SolidColorBrush x:Key="awsToolBarSubMenuBackgroundBrushKey" Color="#FDFDFD"/>
+    
+    <SolidColorBrush x:Key="awsToolBarButtonHoverBorderBrushKey" Color="#3399FF"/>
+    
+    <SolidColorBrush x:Key="awsToolBarButtonCheckedBrushKey" Color="#E6F0FA"/>
+    <SolidColorBrush x:Key="awsToolBarButtonPressedBorderBrushKey" Color="#3399FF"/>
+    <SolidColorBrush x:Key="awsToolBarButtonPressedBrushKey" Color="#99CCFF"/>
+
+    <LinearGradientBrush x:Key="awsHorizontalToolBarBackgroundBrushKey"  EndPoint="0,1" StartPoint="0,0">
+        <GradientStop Color="#C0C0C0" Offset="1"/>
+        <GradientStop Color="#F5F5F5" Offset="0"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="awsVerticalToolBarBackgroundBrushKey" EndPoint="1,0" StartPoint="0,0">
+        <GradientStop Color="#FFFFFF" Offset="0"/>
+        <GradientStop Color="#FFFBFF" Offset="0.5"/>
+        <GradientStop Color="#F7F7F7" Offset="1"/>
+    </LinearGradientBrush>
+
+    <!-- 
+    ******************************************************************************** 
+    * List Boxes
+    ******************************************************************************** 
+    -->
+
+    <!-- These are used in custom list boxes where the items are a panel of controls, eg quicklaunch, storage. None of the
+         VS accent colors work nicely across all three themes  
+    -->
+    <SolidColorBrush x:Key="awsListBoxPanelItemBackgroundBrushKey" Color="AliceBlue" />
+    <SolidColorBrush x:Key="awsListBoxPanelItemHoverBorderBrushKey" Color="CornflowerBlue" />
+    <SolidColorBrush x:Key="awsListBoxPanelItemSelectedBorderBrushKey" Color="CadetBlue" />
+    <SolidColorBrush x:Key="awsListBoxPanelItemSelectedBackgroundBrushKey" Color="CadetBlue" />
+
+    <!-- 
+    ******************************************************************************** 
+    * Wizards 
+    ******************************************************************************** 
+    -->
+    <SolidColorBrush x:Key="awsWizardBackplaneBackgroundBrushKey" Color="White"/>
+
+    <SolidColorBrush x:Key="awsWizardPageGroupPanelBrushKey" Color="White"/>
+    
+    <SolidColorBrush x:Key="awsWizardPageGroupForegroundBrushKey" Color="LightGray"/>
+    <SolidColorBrush x:Key="awsWizardPageGroupForegroundSelectedBrushKey" Color="#5A7EAA"/>
+
+    <SolidColorBrush x:Key="awsWizardPagesPanelBrushKey" Color="White"/>
+
+    <SolidColorBrush x:Key="awsWizardFooterContainerBackgroundBrushKey" Color="White"/>
+    
+    <SolidColorBrush x:Key="awsWizardGroupHeaderForegroundBrushKey" Color="#5A7EAA"/>
+    <SolidColorBrush x:Key="awsWizardGroupSubHeaderForegroundBrushKey" Color="#5A7EAA"/>
+
+    <SolidColorBrush x:Key="awsWizardReviewPanelsBackgroundBrushKey" Color="White"/>
+    <SolidColorBrush x:Key="awsWizardReviewPanelSectionHeaderBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}"/>
+    <SolidColorBrush x:Key="awsWizardReviewPanelSectionTextBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}"/>
+    <SolidColorBrush x:Key="awsWizardReviewPanelSectionDividerBrushKey" Color="DarkGray"/>
+
+    <!-- 
+    ******************************************************************************** 
+    * TextBoxes
+    ******************************************************************************** 
+    -->
+
+    <SolidColorBrush x:Key="awsTextBoxBorderBrushKey" Color="#FF688CAF"/>
+    <SolidColorBrush x:Key="awsTextBoxForegroundBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}"/>
+    <SolidColorBrush x:Key="awsTextBoxBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}"/>
+
+    <!-- color maps from the original textbox template -->
+    <SolidColorBrush x:Key="awsTextBoxMouseOverBorderBrushKey" Color="#FF7EB4EA"/>
+    <SolidColorBrush x:Key="awsTextBoxSelectedBorderBrushKey" Color="#FF569DE5"/>
+
+    <!-- 
+    ******************************************************************************** 
+    * Misc 
+    ******************************************************************************** 
+    -->
+    <SolidColorBrush x:Key="awsDefaultControlBorderBrushKey" Color="#FF688CAF"/>
+    <SolidColorBrush x:Key="awsDefaultControlForegroundBrushKey" Color="#FF10257F"/>
+    <SolidColorBrush x:Key="awsDefaultControlBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+
+    <SolidColorBrush x:Key="awsDisabledControlForegroundBrushKey" Color="{DynamicResource {x:Static SystemColors.GrayTextColorKey}}"/>
+    <SolidColorBrush x:Key="awsDisabledControlBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.ControlDarkColorKey}}"/>
+
+    <SolidColorBrush x:Key="awsSubHeaderLabelBrushKey" Color="#5A7EAA"/>
+    <SolidColorBrush x:Key="awsInfoTextForegroundBrushKey" Color="Gray"/>
+
+    <SolidColorBrush x:Key="awsFieldHintTextForegroundBrushKey" Color="DarkGray"/>
+
+    <SolidColorBrush x:Key="awsDividerRuleBrushKey" Color="LightBlue"/>
+
+    <SolidColorBrush x:Key="awsAccentBorderBrushKey" Color="{DynamicResource {x:Static SystemColors.ControlDarkDarkColorKey}}"/>
+    <SolidColorBrush x:Key="awsAccentDarkBrushKey" Color="{DynamicResource {x:Static SystemColors.ControlDarkColorKey}}"/>
+    <SolidColorBrush x:Key="awsAccentMediumBrushKey" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}"/>
+    <SolidColorBrush x:Key="awsAccentLightBrushKey" Color="{DynamicResource {x:Static SystemColors.ControlLightColorKey}}"/>
+
+    <SolidColorBrush x:Key="awsSelectableTextBoxBrushKey" Color="#FF10257F"/>
+
+    <SolidColorBrush x:Key="awsUrlTextFieldForegroundBrushKey" Color="Blue" />
+
+    <SolidColorBrush x:Key="awsHeaderedDropPanelPopupBorderBrushKey" Color="#3399FF" />
+    <SolidColorBrush x:Key="awsHeaderedDropPanelHeaderBackgroundBrushKey" Color="#3399FF" />
+    <SolidColorBrush x:Key="awsHeaderedDropPanelHeaderTextBrushKey" Color="Black" />
+    <SolidColorBrush x:Key="awsHeaderedDropPanelFooterBackgroundBrushKey" Color="#3399FF" />
+
+    <SolidColorBrush x:Key="awsStatusTextInfoForeground" Color="Green" />
+    <SolidColorBrush x:Key="awsStatusTextWarnForeground" Color="Orange" />
+    <SolidColorBrush x:Key="awsStatusTextErrorForeground" Color="Red" />
+    <SolidColorBrush x:Key="awsStatusTextOKForeground" Color="Black" />
+
+    <!--
+    ******************************************************************************** 
+    * ComboBox overrides - so we gain the 'flatter' style present in VS and not the
+    * 'raised button' style used by default in WPF. Because the combobox control
+    * template uses hard-wired colors, we also need to copy the template to make
+    * use of these color remaps and can't just set them in style overrides.
+    ******************************************************************************** 
+    -->
+
+    <!-- 
+        readonly combobox color assignments 
+    -->
+    <SolidColorBrush x:Key="awsComboBoxBorderBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowFrameColorKey}}"/>
+    <SolidColorBrush x:Key="awsComboBoxBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}"/>
+
+    <SolidColorBrush x:Key="awsComboBoxDropPanelBackgroundBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}"/>
+
+    <SolidColorBrush x:Key="awsComboBoxToggleButtonBorderBrushKey" Color="#FFACACAC"/>
+    <LinearGradientBrush x:Key="awsComboBoxToggleButtonBackgroundBrushKey" StartPoint="0,0" EndPoint="0,1">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FFF0F0F0" Offset="0" />
+            <GradientStop Color="#FFE5E5E5" Offset="1" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="awsComboBoxToggleButtonSplitBorderBrushKey" Color="#00FFFFFF"/>
+    <SolidColorBrush x:Key="awsComboBoxToggleButtonSplitBorderBackgroundBrushKey" Color="#00FFFFFF"/>
+
+    <SolidColorBrush x:Key="awsComboBoxArrowBrushKey" Color="#FF606060"/>
+
+    <SolidColorBrush x:Key="awsComboBoxDisabledBorderBrushKey" Color="#FFD9D9D9" />
+    <SolidColorBrush x:Key="awsComboBoxDisabledBackgroundBrushKey" Color="#FFF0F0F0" />
+
+    <SolidColorBrush x:Key="awsComboBoxArrowDisabledBrushKey" Color="#FFBFBFBF"/>
+
+    <SolidColorBrush x:Key="awsComboBoxMouseOverBorderBrushKey" Color="#FF7EB4EA"/>
+
+    <LinearGradientBrush x:Key="awsComboBoxMouseOverBackgroundBrushKey" StartPoint="0,0" EndPoint="0,1">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FFECF4FC" Offset="0" />
+            <GradientStop Color="#FFDCECFC" Offset="1" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="awsComboBoxArrowMouseOverBrushKey" Color="#FF000000"/>
+
+    <SolidColorBrush x:Key="awsComboBoxMouseOverSplitBorderBorderBrushKey" Color="{DynamicResource {x:Static SystemColors.WindowFrameColorKey}}" />
+    <LinearGradientBrush x:Key="awsComboBoxMouseOverSplitBorderBackgroundBrushKey">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FFDAECFC" Offset="0" />
+            <GradientStop Color="#FFC4E0FC" Offset="1" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="awsComboBoxPressedBorderBrushKey" Color="#FF569DE5"/>
+    <LinearGradientBrush x:Key="awsComboBoxPressedBackgroundBrushKey" StartPoint="0,0" EndPoint="0,1">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FFDAECFC" Offset="0" />
+            <GradientStop Color="#FFC4E0FC" Offset="1" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="awsComboBoxArrowPressedBrushKey" Color="#FF000000"/>
+
+    <SolidColorBrush x:Key="awsComboBoxPressedSplitBorderBorderBrushKey" Color="#FF569DE5" />
+    <LinearGradientBrush x:Key="awsComboBoxPressedSplitBorderBackgroundBrushKey" StartPoint="0,0" EndPoint="0,1">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FFDAECFC" Offset="0" />
+            <GradientStop Color="#FFC4E0FC" Offset="1" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <!-- 
+        editable combobox color assignments 
+    -->
+    <SolidColorBrush x:Key="awsComboBoxEditableBorderBrushKey" Color="#FFABADB3"/>
+    <SolidColorBrush x:Key="awsComboBoxEditableBackgroundBrushKey" Color="#00FFFFFF"/>
+
+    <SolidColorBrush x:Key="awsComboBoxEditableDisabledBorderBrushKey" Color="#FFBFBFBF" />
+    <SolidColorBrush x:Key="awsComboBoxEditableDisabledBackgroundBrushKey" Color="#FFFFFFFF" />
+
+    <SolidColorBrush x:Key="awsComboBoxEditableDisabledSplitBorderBorderBrushKey" Color="#00FFFFFF" />
+    <SolidColorBrush x:Key="awsComboBoxEditableDisabledSplitBorderBackgroundBrushKey" Color="#00FFFFFF" />
+
+    <SolidColorBrush x:Key="awsComboBoxEditableMouseOverBorderBrushKey" Color="#FF7EB4EA"/>
+    <SolidColorBrush x:Key="awsComboBoxEditableMouseOverBackgroundBrushKey" Color="#FFFFFFFF"/>
+
+    <SolidColorBrush x:Key="awsComboBoxEditableArrowMouseOverBrushKey" Color="White"/>
+
+    <SolidColorBrush x:Key="awsComboBoxEditableMouseOverSplitBorderBorderBrushKey" Color="#FF7EB4EA" />
+    <LinearGradientBrush x:Key="awsComboBoxEditableMouseOverSplitBorderBackgroundBrushKey">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FFDAECFC" Offset="0" />
+            <GradientStop Color="#FFC4E0FC" Offset="1" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="awsComboBoxEditableArrowPressedBrushKey" Color="Black"/>
+
+    <SolidColorBrush x:Key="awsComboBoxEditablePressedBorderBrushKey" Color="#FF569DE5" />
+    <SolidColorBrush x:Key="awsComboBoxEditablePressedBackgroundBrushKey" Color="#FFFFFFFF" />
+
+    <SolidColorBrush x:Key="awsComboBoxEditablePressedSplitBorderBorderBrushKey" Color="#FF569DE5" />
+    <LinearGradientBrush x:Key="awsComboBoxEditablePressedSplitBorderBackgroundBrushKey" StartPoint="0,0" EndPoint="0,1">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#FFDAECFC" Offset="0" />
+            <GradientStop Color="#FFC4E0FC" Offset="1" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+</ResourceDictionary>

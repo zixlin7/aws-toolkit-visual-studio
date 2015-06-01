@@ -1,0 +1,155 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.S3.View.BucketBrowserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"      
+    xmlns:jobtracker="clr-namespace:Amazon.AWSToolkit.CommonUI.JobTracker;assembly=AWSToolkit"                         
+    xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
+    Height="300" Width="450">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="66*"></RowDefinition>
+            <RowDefinition Height="5"></RowDefinition>
+            <RowDefinition Height="22*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Grid.Column="0" LastChildFill="True" Margin="0,0,0,0">
+            <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
+                <Button Click="uploadFileClick">
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" Source="..\Resources\Images\file_up.png"/>
+                            <TextBlock>Upload File</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+                <Button Click="uploadDirectoryClick">
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" Source="..\Resources\Images\folder_up.png"/>
+                            <TextBlock>Upload Folder</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+                <Button Click="onCreateFolderClick">
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" Source="..\Resources\Images\create-folder.png"/>
+                            <TextBlock> Create Folder</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+                <Button Click="refreshClick">
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                            <TextBlock> Refresh</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+            </ToolBar>
+            <DockPanel DockPanel.Dock="Top" Margin="0,5,0,5">
+                <WrapPanel DockPanel.Dock="Right" Margin="5,0,5,0">
+                    <WrapPanel.Resources>
+                        <Style x:Key="Cancel" TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="{DynamicResource awsUrlTextFieldForegroundBrushKey}"/>
+                            <Setter Property="TextDecorations" Value="Underline"/>
+                        </Style>
+                    </WrapPanel.Resources>
+                    <TextBlock Name="_ctlFetchStatus" Style="{DynamicResource awsTextBlockBaseStyle}">Fetched 0 Items</TextBlock>
+                    <TextBlock Name="_ctlFetchCancel"  Margin="5,0,0,0" Style="{StaticResource Cancel}" MouseLeftButtonDown="onCancelLoad" Cursor="Hand">(Cancel)</TextBlock>
+                </WrapPanel>
+                <WrapPanel Name="_ctlBreadCrumbPanel" DockPanel.Dock="Left">
+                    <WrapPanel.Resources>
+                        <Style x:Key="BreadCrumbItem" TargetType="TextBlock">
+                            <Setter Property="Foreground" Value="{DynamicResource awsDefaultControlForegroundBrushKey}"/>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="TextDecorations" Value="Underline" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </WrapPanel.Resources>
+                </WrapPanel>
+            </DockPanel>
+            <Grid DockPanel.Dock="Top" Background="{DynamicResource awsStatusPanelBackgroundBrushKey}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Margin="5,5,5,5" Grid.Column="0" Style="{StaticResource awsTextBlockBaseStyle}">Filter:</TextBlock>
+                <TextBox  Margin="5,5,5,5" Grid.Column="1" Text="{Binding TextFilter,UpdateSourceTrigger=PropertyChanged}" 
+                          TextChanged="onTextFilterChange"
+                          Style="{StaticResource awsTextBoxStyle}"/>
+            </Grid>
+            <ToolBar DockPanel.Dock="Bottom" ToolBarTray.IsLocked="True" >
+                <ComboBox x:Name="zoomLevel"
+                          IsReadOnly="True"
+                          Width="70"
+                          Style="{DynamicResource awsComboBoxStyle}" 
+                          ItemsSource="{Binding ElementName=_ctlDataGrid, Path=ZoomLevels}"
+                          SelectedValuePath="Level"
+                          SelectedValue="{Binding ElementName=_ctlDataGrid, Path=ZoomLevel, Mode=TwoWay}"
+                          />
+            </ToolBar>
+            <commonui:ToolkitDataGridWrapper ItemsSource="{Binding ChildItems.DisplayedChildItems}" 
+                                             AutoGenerateColumns="False" x:Name="_ctlDataGrid" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                             CanUserAddRows="False" CanUserDeleteRows="False" DockPanel.Dock="Top" 
+                                             CellStyle="{DynamicResource awsDataGridCellCentering}" 
+                                             GridLinesVisibility="None" MouseDoubleClick="RowMouseDoubleClick"
+                                             ContextMenuOpening="onGridContextMenu"
+                                             DragEnter="onFileDragEnter" Drop="onFileDrop" AllowDrop="True"
+                                             Sorting="SortHandler"
+                                             PreviewKeyDown="onGridKeyDown"                              
+                                             MouseMove="onDataGridMouseMove"
+                                             PreviewMouseLeftButtonDown="onDataGridMouseDown"                                                   
+                                             SelectedItem="{Binding SelectedItem}"
+                                             HorizontalAlignment="Stretch" HeadersVisibility="Column"
+                                             >
+
+                <commonui:ToolkitDataGridWrapper.CommandBindings>
+                    <CommandBinding Command="ApplicationCommands.Copy" Executed="CopyCommandExecuted"/>
+                    <CommandBinding Command="ApplicationCommands.Cut" Executed="CutCommandExecuted"/>
+                    <CommandBinding Command="ApplicationCommands.Paste" Executed="PasteCommandExecuted"/>
+                    <CommandBinding Command="NavigationCommands.BrowseBack" Executed="BackCommandExecuted"/>
+                </commonui:ToolkitDataGridWrapper.CommandBindings>
+
+                <commonui:ToolkitDataGridWrapper.Columns>
+                    <DataGridTemplateColumn Width="20">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding Icon}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTextColumn Header="Name" Binding="{Binding Title, Mode=OneWay}" Width="auto" MinWidth="200"/>
+                    <DataGridTextColumn Header="Size" Binding="{Binding FormattedSize, Mode=OneWay}" Width="150"/>
+                    <DataGridTextColumn Header="Last Modified Date" Binding="{Binding FormattedLastModifiedDate, Mode=OneWay}" Width="auto"/>
+                    <DataGridTextColumn Header="Storage Class" Binding="{Binding FormattedStorageClass, Mode=OneWay}" Width="auto"/>
+
+                </commonui:ToolkitDataGridWrapper.Columns>
+            </commonui:ToolkitDataGridWrapper>
+        </DockPanel>
+
+        <GridSplitter Grid.Row="1" Grid.Column="0" Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray"/>
+        <ScrollViewer Grid.Row="2" Grid.Column="0" Height="auto"  Width="auto" >
+            <jobtracker:JobTrackerControl x:Name="_ctlJobTracker" Height="auto"  Width="auto"/>
+        </ScrollViewer>
+    </Grid>
+
+</commonui:BaseAWSControl>

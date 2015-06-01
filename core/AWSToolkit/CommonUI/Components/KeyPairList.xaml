@@ -1,0 +1,85 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CommonUI.Components.KeyPairList"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"                      
+    xmlns:toolkitcomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components"
+    >
+    
+    <UserControl.Resources>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <toolkitcomponents:ListViewComboBox
+            IsEditable="False"
+            x:Name="_keyPairSelector" 
+            VerticalAlignment="Center" 
+            DropDownOpened="_keyPairSelector_DropDownOpened"
+            DropDownClosed="_keyPairSelector_DropDownClosed" 
+            SelectionChanged="_keyPairSelector_SelectionChanged"
+            DisplayMemberPath="KeyPairName"
+            MinWidth="120"
+            ToolTip="If a key pair is not chosen, one can be created for you; you can use this to get the administrative login details later.">
+            
+            <GridViewColumn Header="KeyPair Name" DisplayMemberBinding="{Binding KeyPairName}" />
+            <GridViewColumn Header="Stored in AWSToolkit">
+                <GridViewColumn.CellTemplate>
+                    <DataTemplate>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" Source="{Binding IsStoredLocallyIcon, Mode=OneWay}"/>
+                        </WrapPanel>
+                    </DataTemplate>
+                </GridViewColumn.CellTemplate>
+            </GridViewColumn>
+        </toolkitcomponents:ListViewComboBox>
+
+        <Popup x:Name="_keyNameEntryPopup" 
+           AllowsTransparency="True"
+           PlacementTarget="{Binding ElementName=_keyPairSelector}"
+           Placement="Top"
+           VerticalOffset="5"
+           HorizontalOffset="10"
+           PopupAnimation="Slide"
+           Focusable="True" 
+           Opened="_keyNameEntryPopup_Opened"
+           >
+           <Border Style="{DynamicResource awsPopupBorderStyle}">
+
+                <Grid Margin="4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Width="200">
+                        <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}" TextWrapping="Wrap">Enter the name of a key pair that will be created during deployment.</TextBlock>
+                        <TextBox x:Name="_keyName" 
+                                 HorizontalAlignment="Stretch"
+                                 TextChanged="_keyName_TextChanged"
+                                 KeyUp="_keyName_KeyUp"
+                                 Style="{DynamicResource awsTextBoxStyle}"
+                                 />
+                    </StackPanel>
+                    <ContentControl x:Name="_keynameFieldContainer" />
+
+                    <StackPanel Grid.Row="1" 
+                                    Orientation="Horizontal" 
+                                    Margin="0,10,0,2"
+                                    HorizontalAlignment="Right"
+                                    >
+                        <Button x:Name="_popupKeyNameOK" 
+                                Click="_popupKeyNameOK_Click"
+                                Style="{DynamicResource awsPopupDialogButtonStyle}">
+                            OK
+                        </Button>
+                        <Button x:Name="_popupKeyNameCancel" 
+                                Click="_popupKeyNameCancel_Click" 
+                                Style="{DynamicResource awsPopupDialogButtonStyle}">
+                            Cancel
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Popup>
+    </Grid>
+</commonui:BaseAWSUserControl>

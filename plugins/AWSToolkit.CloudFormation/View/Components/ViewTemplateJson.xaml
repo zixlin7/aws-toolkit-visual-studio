@@ -1,0 +1,23 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CloudFormation.View.Components.ViewTemplateJson"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Height="auto" Width="auto">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>    
+
+    <Grid>
+        <TextBox Grid.Row="0" Grid.Column="0" Style="{DynamicResource awsSelectableTextBoxStyle}" FontWeight="SemiBold"
+                 BorderThickness="2" FontFamily="Courier New" FontSize="11"
+                 VerticalAlignment="Stretch" Margin="5,5,5,5" 
+                 Text="{Binding TemplateBody, Mode=OneWay}" TextWrapping="WrapWithOverflow"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"                 
+                 />
+    </Grid>
+</commonui:BaseAWSUserControl>

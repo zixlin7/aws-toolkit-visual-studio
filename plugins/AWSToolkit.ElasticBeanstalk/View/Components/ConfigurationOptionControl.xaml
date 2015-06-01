@@ -1,0 +1,34 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.ElasticBeanstalk.View.Components.ConfigurationOptionControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"         
+    Height="auto" Width="auto" >
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <TextBox
+            Name="TextInput"
+            Visibility="Hidden"
+            Style="{DynamicResource awsTextBoxStyle}"/>
+        <ComboBox
+            Name="ComboInput"
+            Visibility="Hidden"
+            Style="{DynamicResource awsComboBoxStyle}"/>
+        <CheckBox
+            Name="CheckInput"
+            Visibility="Hidden"
+            Style="{DynamicResource awsCheckboxButtonBaseStyle}"/>
+        <StackPanel
+            Name="ListValues"
+            Visibility="Hidden"
+            Orientation="Vertical"
+            />
+    </Grid>
+</commonui:BaseAWSUserControl>

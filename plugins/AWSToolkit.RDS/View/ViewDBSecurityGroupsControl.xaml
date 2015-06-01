@@ -1,0 +1,83 @@
+﻿<commonui:BaseAWSView x:Class="Amazon.AWSToolkit.RDS.View.ViewDBSecurityGroupsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
+    xmlns:uicomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
+    xmlns:ec2components="clr-namespace:Amazon.AWSToolkit.EC2.View.Components;assembly=AWSToolkit.EC2"
+    xmlns:ec2datagrid="clr-namespace:Amazon.AWSToolkit.EC2.View.DataGrid;assembly=AWSToolkit.EC2"
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.RDS.View.Components"
+    xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"  
+    Height="600" Width="800">
+
+    <commonui:BaseAWSView.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSView.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="5"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Grid.Column="0" LastChildFill="True" Margin="0,0,0,0">
+            <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
+                <Button Click="onCreateClick">
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" Source="..\Resources\Images\CreateSecurityGroup.png"/>
+                            <TextBlock>Create Security Group</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+                <Button Click="onDeleteSecurityGroupsClick" Name="_ctlDelete" IsEnabled="False">
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RemoveIcon}"/>
+                            <TextBlock>Delete Security Group</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+                <Button Click="onRefreshClick">
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                            <TextBlock>Refresh</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+                <Separator />
+                <uicomponents:HeaderedDropPanel 
+                    DropDownImage="{Binding Source={StaticResource CommonIcons}, Path=ShowHideIcon}"
+                    DropDownLabel="Show/Hide"
+                    PanelHeaderLabel="Show/Hide Columns"
+                    DropPanelOpening="OnColumnCustomizationDropPanelOpening"
+                    ApplyPressed="OnColumnCustomizationApplyPressed"
+                    >
+                    <ec2components:ShowHideColumnsPanel 
+                        x:Name="_columnCustomizationPanel" 
+                        ShowCustomAttributePanel="False"
+                        />
+                </uicomponents:HeaderedDropPanel>
+            </ToolBar>
+
+            <ec2datagrid:CustomizeColumnGrid x:Name="_ctlDataGrid" 
+                GridContextMenuOpening="onGridContextMenu"          
+                GridSelectionChanged="onSelectionChanged"  
+                KeyField="Name"                                             
+                ItemsSource="{Binding SecurityGroups}"/>
+
+        </DockPanel>
+        <GridSplitter Grid.Row="1" Grid.Column="0" Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray"/>
+
+        <components:Permissions Grid.Row="2" Grid.Column="0" x:Name="_ctlPermissions"/>
+    </Grid>
+    
+</commonui:BaseAWSView>

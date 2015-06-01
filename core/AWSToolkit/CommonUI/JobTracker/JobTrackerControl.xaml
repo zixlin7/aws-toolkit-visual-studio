@@ -1,0 +1,60 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CommonUI.JobTracker.JobTrackerControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"
+    Height="300" Width="700">
+   
+    <UserControl.Resources>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+    </UserControl.Resources>
+    
+    <DockPanel LastChildFill="True">
+        <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
+            <Button Click="ClearCompletedClick" Name="_ctlClearBtn" ToolBar.OverflowMode="Never">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" Source="{Binding ClearCompletedIcon}"/>
+                        <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}"> Clear</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </ToolBar>
+        <commonui:ToolkitDataGridWrapper ItemsSource="{Binding Jobs}" AutoGenerateColumns="False" x:Name="_ctlDataGrid" CellStyle="{DynamicResource awsDataGridCellCentering}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                     CanUserAddRows="False" CanUserDeleteRows="False" DockPanel.Dock="Top" 
+                     GridLinesVisibility="None" HeadersVisibility="Column"                          
+                     HorizontalAlignment="Stretch">
+            <commonui:ToolkitDataGridWrapper.Columns>
+
+                <DataGridTextColumn Header="Title" Binding="{Binding Title, Mode=OneWay}" Width="150"/>
+                <DataGridTextColumn Header="Status" Binding="{Binding CurrentStatus, Mode=OneWay}" Width="400"/>
+                <DataGridTemplateColumn Header="Progress" Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ProgressBar HorizontalAlignment="Stretch" Height="15"
+                                         Minimum="{Binding ProgressMin}"
+                                         Maximum="{Binding ProgressMax}"
+                                         Value="{Binding ProgressValue}"
+                                        ToolTip="{Binding ProgressToolTip}">
+                                <ProgressBar.Resources>
+                                    <ResourceDictionary Source="/PresentationFramework.Luna,Version=3.0.0.0,Culture=neutral,PublicKeyToken=31bf3856ad364e35;component/themes/luna.normalcolor.xaml" />
+                                </ProgressBar.Resources>
+                            </ProgressBar>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>                    
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="20">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Visibility="{Binding Path=IsActionEnabled, Converter={StaticResource Bool2VisConverter}}"
+                                    IsEnabled="{Binding IsActionEnabled}" 
+                                    Click="OnActionClick">
+                                <Image Source="{Binding ActionIcon}" Width="10" Height="10"/>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </commonui:ToolkitDataGridWrapper.Columns>
+        </commonui:ToolkitDataGridWrapper>
+    </DockPanel>
+</commonui:BaseAWSUserControl>

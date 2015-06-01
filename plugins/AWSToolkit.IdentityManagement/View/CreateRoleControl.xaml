@@ -1,0 +1,36 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.IdentityManagement.View.CreateRoleControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Loaded="OnLoaded"
+    Height="50" Width="300">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+
+    <Grid>
+        <Grid.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="ResourceStrings.xaml"/>
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </Grid.Resources>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Margin="5,5,5,5" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Style="{DynamicResource awsTextBlockBaseStyle}" >Name:</TextBlock>
+        <TextBox Margin="5,5,5,5" Name="_ctlRoleName" Grid.Row="0" Grid.Column="1" Text="{Binding RoleName}" Style="{DynamicResource awsTextBoxStyle}"/>
+    </Grid>
+</commonui:BaseAWSControl>

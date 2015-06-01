@@ -1,0 +1,74 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CloudFront.View.Components.CNAMEControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Height="300" Width="300"
+    Background="{DynamicResource awsPanelBackgroundBrushKey}">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary Source="../ResourceStrings.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <DockPanel>
+
+        <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True">
+            <Button Click="OnAddCNAME">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image DataContext="{DynamicResource CommonIcons}" Width="16" Height="16" Source="{Binding AddIcon}"/>
+                        <TextBlock> Add</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="OnRemoveCNAME">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image DataContext="{DynamicResource CommonIcons}" Width="16" Height="16" Source="{Binding RemoveIcon}"/>
+                        <TextBlock> Remove</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </ToolBar>
+        <StackPanel Margin="5,5,5,5" DockPanel.Dock="Bottom">
+            <TextBlock DockPanel.Dock="Bottom" TextWrapping="WrapWithOverflow" Style="{DynamicResource awsInfoTextStyle}" Background="Transparent">
+            A CNAME is useful because it lets you choose a domain name for your links instead of the domain name CloudFront provides you.
+            </TextBlock>
+
+            <TextBlock Margin="0,10,0,0" TextWrapping="WrapWithOverflow" Style="{DynamicResource awsInfoTextStyle}" > For more information go to the Amazon CloudFront documentation.</TextBlock>
+            <TextBlock>
+                <Hyperlink NavigateUri="" RequestNavigate="onRequestNavigate">
+                    <TextBlock Name="_ctlPrivateDocsLink" Text="Using CNAMEs with Distributions" Foreground="{DynamicResource awsUrlTextFieldForegroundBrushKey}"/>
+                </Hyperlink>
+            </TextBlock>
+            
+            <Grid Margin="5,5,5,5" Background="Transparent">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Image VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" DataContext="{DynamicResource CommonIcons}" Source="{Binding WarningIcon}" Width="24" Height="24"></Image>
+                <TextBlock Margin="5,0,5,0" Grid.Row="0" Grid.Column="1"  TextWrapping="Wrap" Style="{DynamicResource awsInfoTextStyle}" >
+                
+                Important, you must be the owner of any domain name that you specify as an alias of your distribution's domain name.
+                </TextBlock>
+            </Grid>
+
+        </StackPanel>
+
+        <commonui:ToolkitDataGridWrapper Grid.Column="0" Grid.Row="1" x:Name="_ctlCNAMEs" CellStyle="{DynamicResource awsDataGridCellCentering}"
+                AutoGenerateColumns="False" ItemsSource="{Binding CNAMEs}"
+                HorizontalAlignment="Stretch" HeadersVisibility="Column"
+                CanUserAddRows="False" CanUserDeleteRows="False" ToolTip="{StaticResource ToolTipCNAMEs}"   
+                              >
+            <commonui:ToolkitDataGridWrapper.Columns>
+
+                <DataGridTextColumn Header="CNAME" Width="1*" Binding="{Binding Value}"/>
+
+            </commonui:ToolkitDataGridWrapper.Columns>
+        </commonui:ToolkitDataGridWrapper>
+    </DockPanel>
+</commonui:BaseAWSUserControl>

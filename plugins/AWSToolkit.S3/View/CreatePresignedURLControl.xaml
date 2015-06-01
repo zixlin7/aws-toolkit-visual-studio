@@ -1,0 +1,92 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.S3.View.CreatePresignedURLControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"                         
+    xmlns:primitives="clr-namespace:Amazon.AWSToolkit.Primitives;assembly=AWSToolkit"                         
+    Height="330" Width="600">
+    
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <GroupBox Grid.Row="0" Grid.Column="0" Header="Expiration" VerticalAlignment="Top">
+            <primitives:DateTimePickerControl SelectedDateTime="{Binding Expiration,Mode=TwoWay}" VerticalAlignment="Top"/>
+        </GroupBox>
+        
+        
+        <Grid Grid.Row="0" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,5,5,5" Text="S3 Bucket" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Margin="5,5,5,5" Text="{Binding BucketName}" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,5,5,5" Text="Object Key" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Margin="5,5,5,5" Text="{Binding ObjectKey}" Style="{DynamicResource awsTextBoxStyle}"/>
+
+            <TextBlock Grid.Row="2" Grid.Column="0" Margin="5,5,5,5" Text="Action" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+            <StackPanel Grid.Row="2" Grid.Column="1" Margin="5,5,5,5" Orientation="Vertical" HorizontalAlignment="Left">
+                <RadioButton GroupName="HttpVerb" Margin="0,3,0,3" IsChecked="{Binding IsGetVerb}"
+                             Style="{DynamicResource awsRadioButtonBaseStyle}">GET (Download object)</RadioButton>
+                <RadioButton GroupName="HttpVerb" Margin="0,3,0,3" IsChecked="{Binding IsPutVerb}"
+                             Style="{DynamicResource awsRadioButtonBaseStyle}">PUT (Upload object)</RadioButton>                
+            </StackPanel>
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Margin="5,5,5,5" Text="Content Type" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+            <TextBox Grid.Row="3" IsEnabled="{Binding IsPutVerb}" Grid.Column="1" Margin="5,5,5,5" 
+                     Text="{Binding ContentType}" Style="{DynamicResource awsTextBoxStyle}"/>
+
+            <TextBlock Grid.Row="4" Grid.Column="0" Margin="5,5,5,5" Text="Note" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+            <TextBlock Grid.Row="4" Grid.Column="1" Margin="5,5,5,5" TextWrapping="WrapWithOverflow" Style="{DynamicResource awsTextBlockBaseStyle}"
+                       Text="Creating a presigned URL for objects encrypted using AWS Key Management Service is not currently supported. The generated URL may not be functional." />
+
+        </Grid>
+        
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Row="0" Grid.Column="0" Margin="5,5,5,5" Padding="5,0,5,0" Click="onGenerateClick">Generate</Button>
+            <TextBlock Grid.Row="0" Grid.Column="1" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}">URL:</TextBlock>
+
+            <TextBlock Grid.Row="0" Grid.Column="2" Margin="5,5,5,5" >
+                <Hyperlink NavigateUri="{Binding FullURL, Mode=OneWay}" RequestNavigate="onRequestNavigate">
+                    <TextBlock Text="{Binding FullURL, Mode=OneWay}"/>
+                </Hyperlink>
+            </TextBlock>
+            <Button Grid.Row="0" Grid.Column="4" Margin="5,5,5,5" Padding="5,0,5,0" Click="onCopyClick" IsEnabled="{Binding IsValidURL}">Copy</Button>
+            
+        </Grid>
+    </Grid>
+</commonui:BaseAWSControl>

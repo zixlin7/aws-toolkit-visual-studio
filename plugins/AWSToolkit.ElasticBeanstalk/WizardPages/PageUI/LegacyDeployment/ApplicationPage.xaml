@@ -1,0 +1,145 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment.ApplicationPage"
+    x:ClassModifier="internal"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    >
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid Margin="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>    
+
+            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+                   Margin="0,0,0,8">
+                Application Details
+            </Label>
+            
+            <Grid Grid.Row="1" Margin="20,0,4,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Target="{Binding ElementName=_txtAppName}" Content="_Name * :" Style="{DynamicResource awsLabelBaseStyle}" />
+                <TextBox Grid.Column="1" 
+                         x:Name="_txtAppName" 
+                         VerticalAlignment="Center" 
+                         TextChanged="OnTextFieldChanged" 
+                         Text="{Binding Path=AppName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         MaxLength="100"
+                         Style="{DynamicResource awsTextBoxStyle}"/>
+
+                <Label Grid.Row="1" 
+                       Target="{Binding ElementName=_txtAppDescription}" 
+                       Margin="0,4,0,0" 
+                       Content="_Description:" 
+                       Style="{DynamicResource awsLabelBaseStyle}"/>
+                <TextBox Grid.Row="1" 
+                         Margin="0,4,0,0" 
+                         Grid.Column="1" 
+                         x:Name="_txtAppDescription" 
+                         Text="{Binding Path=AppDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         MaxLength="200"
+                         Style="{DynamicResource awsTextBoxStyle}"/>
+            </Grid>
+        </Grid>
+        
+        <Grid Grid.Row="1" Margin="0,20,0,0" x:Name="_appVersionGroup">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+                   Margin="0,0,0,8">
+                Application Version
+            </Label>
+
+            <Grid Grid.Row="1" Margin="20,0,4,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Target="{Binding ElementName=_versionLabel}" 
+                       Style="{DynamicResource awsWizardFieldLabelStyle}"
+                       Margin="0,4,0,0" 
+                       Padding="4" 
+                       Content="Deployment version _label * :" 
+                       />
+                <TextBox Margin="4" 
+                         Grid.Column="1" 
+                         Name="_versionLabel" 
+                         VerticalAlignment="Center" 
+                         TextChanged="OnTextFieldChanged"
+                         Text="{Binding Path=DeploymentVersionLabel, 
+                                    Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         MaxLength="100"
+                         Style="{DynamicResource awsTextBoxStyle}"/>
+
+                <StackPanel Orientation="Horizontal" 
+                            Margin="4,0" 
+                            Grid.Row="1" 
+                            Grid.Column="1"
+                            x:Name="_versionValidationGroup">
+                    <Image x:Name="_validateOKImg" Source="/AWSToolkit.ElasticBeanstalk;component/Resources/EmbeddedImages/Validated.png" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Image x:Name="_validateFailImg" Source="/AWSToolkit.ElasticBeanstalk;component/Resources/EmbeddedImages/Failed.png" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <TextBlock x:Name="_versionValidatedMsg" Visibility="Hidden" FontStyle="Italic" Text="(validation state)" Style="{DynamicResource awsTextBlockBaseStyle}" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="0,20,0,0" x:Name="_incDeploymentGroup">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+                   Margin="0,0,0,8">
+                Incremental Deployment
+            </Label>
+            <StackPanel Grid.Row="1" Margin="20,0,4,0">
+                <CheckBox x:Name="_btnIncrementalDeployment"
+                          Click="_btnIncrementalDeployment_Click"
+                          Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+                    Deploy application _incrementally
+                </CheckBox>
+                <TextBlock TextWrapping="Wrap" FontStyle="Italic" Margin="0,4,0,0" 
+                           Style="{DynamicResource awsFieldHintTextStyle}">
+                    This will use an automatically-created local Git repository to
+                    push only the changes made in the project to the Elastic Beanstalk 
+                    environment. The application version label will be set from the Git commit id.
+                </TextBlock>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</commonui:BaseAWSUserControl>

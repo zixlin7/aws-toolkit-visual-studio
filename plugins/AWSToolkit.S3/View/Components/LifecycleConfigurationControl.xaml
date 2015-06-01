@@ -1,0 +1,71 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.S3.View.Components.LifecycleConfigurationControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"                         
+    xmlns:col="clr-namespace:System.Collections;assembly=mscorlib"
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.S3.View.Components"
+    Height="300" Width="500">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary Source="LifecycleGridEditControls.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Bottom" Margin="5, 20, 5, 5" TextWrapping="Wrap" Style="{DynamicResource awsFieldHintTextStyle}">
+            Using lifecycle configuration, objects whose keys start with a designated prefix can be queued for 
+            transition to Amazon Glacier or deletion from Amazon S3 after the configured period has passed. 
+            For example, an application might load periodic logs to a bucket. You might need these logs only for a  specific period. In this case, you can configure 
+            lifecycle so that these log objects expire after a certain number of days after creation.
+        </TextBlock>
+
+        <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
+            <Button Click="OnAddRule">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding AddIcon}"/>
+                        <TextBlock> Add</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="OnRemoveRule">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RemoveIcon}"/>
+                        <TextBlock> Remove</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </ToolBar>
+
+        <commonui:ToolkitDataGridWrapper x:Name="_ctlDataGrid" CellStyle="{DynamicResource awsDataGridCellCentering}"
+                AutoGenerateColumns="False" ItemsSource="{Binding LifecycleRules}"
+                HorizontalAlignment="Stretch" HeadersVisibility="Column"
+                CanUserAddRows="False" CanUserDeleteRows="False"                     
+                              >
+            <commonui:ToolkitDataGridWrapper.Columns>
+
+                <DataGridTextColumn Header="Name (Optional)" Binding="{Binding RuleId, UpdateSourceTrigger=PropertyChanged}"  Width="1*"/>
+                <DataGridTextColumn Header="Prefix" Binding="{Binding Prefix, UpdateSourceTrigger=PropertyChanged}" Width="1*"/>
+
+                <local:LifecycleExpirationColumn Header="Expiration" Width="1*"/>
+                <local:LifecycleTransitionColumn Header="Transition" Width="1*"/>
+
+                <DataGridComboBoxColumn Header="Status" SelectedItemBinding="{Binding Status, UpdateSourceTrigger=PropertyChanged}" Width="1*">
+                    <DataGridComboBoxColumn.ItemsSource>
+                        <col:ArrayList>
+                            <sys:String>Enabled</sys:String>
+                            <sys:String>Disabled</sys:String>
+                        </col:ArrayList>
+                    </DataGridComboBoxColumn.ItemsSource>
+                </DataGridComboBoxColumn>
+
+            </commonui:ToolkitDataGridWrapper.Columns>
+        </commonui:ToolkitDataGridWrapper>
+    </DockPanel>
+</commonui:BaseAWSUserControl>

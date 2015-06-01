@@ -1,0 +1,53 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CommonUI.CheckedTree.CheckedTreeControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"             
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI.CheckedTree"             
+    Height="auto" Width="auto"
+    >
+    <UserControl.Resources>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.Resources>
+            <ResourceDictionary>
+                <Style x:Key="localTreeViewItemStyle" TargetType="TreeViewItem">
+                    <Setter Property="IsExpanded" Value="{Binding IsInitiallyExpanded, Mode=OneTime}" />
+                    <Setter Property="IsSelected" Value="{Binding IsInitiallySelected, Mode=OneTime}" />
+                    <Setter Property="KeyboardNavigation.AcceptsReturn" Value="True" />
+                    <Setter Property="local:VirtualToggleButton.IsVirtualToggleButton" Value="True" />
+                    <Setter Property="local:VirtualToggleButton.IsChecked" Value="{Binding IsChecked}" />
+                    <Setter Property="Foreground" Value="{DynamicResource awsDefaultControlForegroundBrushKey}"/>
+                </Style>
+
+                <HierarchicalDataTemplate 
+                    x:Key="CheckBoxItemTemplate"
+                    ItemsSource="{Binding Children, Mode=OneTime}"
+                    >
+                    <StackPanel Orientation="Horizontal">
+                        <!-- These elements are bound to a CheckedViewModel object. -->
+                        <CheckBox
+                            Focusable="False" 
+                            IsChecked="{Binding IsChecked}" 
+                            Style="{DynamicResource awsCheckboxButtonBaseStyle}"
+                            />
+                        <ContentPresenter 
+                            Content="{Binding Name, Mode=OneTime}" 
+                            Margin="2,0"
+                            />
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </ResourceDictionary>
+        </Grid.Resources>
+
+        <TreeView HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                  x:Name="tree"
+                  ItemContainerStyle="{StaticResource localTreeViewItemStyle}"
+                  ItemsSource="{Binding RootAction,Mode=OneTime}"
+                  ItemTemplate="{StaticResource CheckBoxItemTemplate}"
+                  Background="{DynamicResource awsPanelBackgroundBrushKey}"
+            />
+
+    </Grid>
+</commonui:BaseAWSUserControl>

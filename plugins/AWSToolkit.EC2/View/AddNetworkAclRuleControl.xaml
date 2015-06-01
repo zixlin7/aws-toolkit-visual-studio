@@ -1,0 +1,80 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.EC2.View.AddNetworkAclRuleControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+            xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
+            xmlns:validators="clr-namespace:Amazon.AWSToolkit.CommonValidators;assembly=AWSToolkit"                         
+            Height="200" Width="300">
+    
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid Margin="15,5,15,5" Grid.Row="1" Grid.Column="0" IsEnabled="{Binding ElementName=_ctlPortAndIp, Path=IsChecked}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+        <TextBlock Margin="5,5,5,5" Grid.Row="0" Grid.Column="0" Text="Rule #:" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Margin="5,5,5,5" Grid.Row="0" Grid.Column="1" Style="{DynamicResource awsTextBoxStyle}">
+            <Binding Path="RuleNumber" UpdateSourceTrigger="PropertyChanged">
+                <Binding.ValidationRules>
+                    <validators:IntegerValidator FieldName="Port Range Start"  Min="1" Max="32766" />
+                </Binding.ValidationRules>
+            </Binding>
+        </TextBox>
+
+        <TextBlock Margin="5,5,5,5" Grid.Row="1" Grid.Column="0" Text="Protocol:" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+            <ComboBox Margin="5,5,5,5" Grid.Row="1" Grid.Column="1" Name="_ctlProtocol" 
+                      DisplayMemberPath="DisplayName" HorizontalAlignment="Left" 
+                      SelectedItem="{Binding IPProtocol}"
+                      SelectionChanged="onProtocolSelectionChanged"
+                      Style="{DynamicResource awsComboBoxStyle}"/>
+
+        <TextBlock Margin="5,5,5,5" Grid.Row="2" Grid.Column="0" Text="Port Range:" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+            <WrapPanel Margin="5,5,5,5" Grid.Row="2" Grid.Column="1">
+                <TextBlock >Start</TextBlock>
+                <TextBox Margin="5,0,5,0" MinWidth="50" MaxWidth="50" Name="_ctlPortStart" 
+                         PreviewLostKeyboardFocus="onPortStartFocusLost"
+                         Style="{DynamicResource awsTextBoxStyle}">
+                    <Binding Path="PortRangeStart" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <validators:IntegerValidator FieldName="Port Range Start"  Min="1" Max="65535" />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+                <TextBlock>End</TextBlock>
+            <TextBox Margin="5,0,5,0" MinWidth="50" MaxWidth="50" Name="_ctlPortEnd" Style="{DynamicResource awsTextBoxStyle}">
+                    <Binding Path="PortRangeEnd" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <validators:IntegerValidator FieldName="Port Range End"  Min="1" Max="65535" />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox>
+            </WrapPanel>
+
+        <TextBlock Margin="5,5,5,5" Grid.Row="3" Grid.Column="0" Text="Source CIDR:" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+            <TextBox Margin="5,5,5,5" Grid.Row="3" Grid.Column="1" 
+                     Text="{Binding SourceCIDR,UpdateSourceTrigger=PropertyChanged}"
+                     Style="{DynamicResource awsTextBoxStyle}"/>
+
+        <WrapPanel Margin="5,5,5,5" Grid.Row="4" Grid.ColumnSpan="2">
+            <RadioButton Margin="5" GroupName="RuleAction" IsChecked="{Binding IsAllow}" Style="{DynamicResource awsRadioButtonBaseStyle}">Allow</RadioButton>
+            <RadioButton Margin="5" GroupName="RuleAction" Style="{DynamicResource awsRadioButtonBaseStyle}">Deny</RadioButton>
+        </WrapPanel>
+
+    </Grid>
+</commonui:BaseAWSControl>

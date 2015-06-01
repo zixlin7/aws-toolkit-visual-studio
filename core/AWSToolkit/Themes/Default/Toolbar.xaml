@@ -1,0 +1,56 @@
+﻿<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style x:Key="awsToolbarImageButton" TargetType="{x:Type Image}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type UIElement}, AncestorLevel=1}, Path=IsEnabled}" Value="False">
+                <Setter Property="Opacity" Value="0.3"></Setter>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="{x:Type ToolBar}">
+        <Style.Resources>
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="Margin" Value="5,0,10,0"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Foreground" Value="{DynamicResource awsToolBarTextBrushKey}"/>
+            </Style>
+        </Style.Resources>
+        <Setter Property="Background" Value="{DynamicResource awsHorizontalToolBarBackgroundBrushKey}"/>
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type ToolBar}">
+              <Grid x:Name="Grid" SnapsToDevicePixels="true">
+                <Border x:Name="MainPanelBorder" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Margin="0,0,0,0" Padding="{TemplateBinding Padding}">
+                  <DockPanel KeyboardNavigation.TabIndex="1" KeyboardNavigation.TabNavigation="Local">
+                    <ContentPresenter x:Name="ToolBarHeader" ContentSource="Header" HorizontalAlignment="Center" Margin="4,0,4,0" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center"/>
+                    <ToolBarPanel x:Name="PART_ToolBarPanel" IsItemsHost="true" Margin="0,1,2,2" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                  </DockPanel>
+                </Border>
+              </Grid>
+              <ControlTemplate.Triggers>
+                <Trigger Property="Header" Value="{x:Null}">
+                  <Setter Property="Visibility" TargetName="ToolBarHeader" Value="Collapsed"/>
+                </Trigger>
+                <Trigger Property="ToolBarTray.IsLocked" Value="true">
+                </Trigger>
+                <Trigger Property="Orientation" Value="Vertical">
+                  <Setter Property="Margin" TargetName="Grid" Value="1,3,1,1"/>
+                  <Setter Property="Margin" TargetName="ToolBarHeader" Value="0,0,0,4"/>
+                  <Setter Property="Margin" TargetName="PART_ToolBarPanel" Value="1,0,2,2"/>
+                  <Setter Property="DockPanel.Dock" TargetName="ToolBarHeader" Value="Top"/>
+                  <Setter Property="Margin" TargetName="MainPanelBorder" Value="0,0,0,11"/>
+                  <Setter Property="Background" Value="{DynamicResource awsVerticalToolBarBackgroundBrushKey}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="false">
+                  <Setter Property="Foreground" Value="{DynamicResource awsToolBarDisabledTextBrushKey}"/>
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+  </Style>
+
+</ResourceDictionary>

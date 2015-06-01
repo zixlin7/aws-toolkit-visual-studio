@@ -1,0 +1,273 @@
+﻿<commonui:BaseAWSView x:Class="Amazon.AWSToolkit.SQS.View.QueueViewControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:validators="clr-namespace:Amazon.AWSToolkit.CommonValidators;assembly=AWSToolkit"                      
+    Height="500" Width="600" >
+
+    <commonui:BaseAWSView.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSView.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <ToolBar Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" ToolBarTray.IsLocked="True">
+            <Button Click="save_Click" ToolTip="Save Attributes" IsEnabled="False" Name="_ctlSave">
+                <WrapPanel>
+                    <Image DataContext="{DynamicResource CommonIcons}" Source="{Binding SaveIcon}" Width="16" Height="16"></Image>
+                    <TextBlock> Save</TextBlock>
+                </WrapPanel>
+            </Button>
+            <Button Click="send_Click" ToolTip="Send New Message">
+                <WrapPanel>
+                    <Image Source="..\Resources\Images\sendmessage.png" Width="16" Height="16"></Image>
+                    <TextBlock> Send</TextBlock>
+                </WrapPanel>
+            </Button>
+            <Button Click="purge_Click" ToolTip="Purge Queue">
+                <WrapPanel>
+                    <Image Source="..\Resources\Images\purgequeue.png" Width="16" Height="16"></Image>
+                    <TextBlock> Purge</TextBlock>
+                </WrapPanel>
+            </Button>
+            <Button Click="refresh_Click" ToolTip="Refresh">
+                <WrapPanel>
+                    <Image DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}" Width="16" Height="16"></Image>
+                    <TextBlock> Refresh</TextBlock>
+                </WrapPanel>
+            </Button>
+        </ToolBar>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,5,5,5" 
+                   ToolTip="The length of time (in seconds) that a message received from a queue will be invisible to other receiving components when they ask to receive messages.  Valid range is from 0 to 43200 (12 hours)." 
+                   Style="{DynamicResource awsTextBlockBaseStyle}">
+            Visibility timeout (Seconds):
+        </TextBlock>
+        <TextBox Grid.Row="1" Grid.Column="1" Margin="5,5,5,5" HorizontalAlignment="Left" Width="100" Style="{DynamicResource awsTextBoxStyle}">
+            <Binding Path="VisibilityTimeout" UpdateSourceTrigger="PropertyChanged">
+                <Binding.ValidationRules>
+                    <validators:IntegerValidator FieldName="Visibility timeout" Min="0" Max="43200"/>
+                </Binding.ValidationRules>
+            </Binding>
+            
+        </TextBox>
+
+
+        <TextBlock Grid.Column="2" Grid.Row="1" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}" >Created timestamp:</TextBlock>
+        <TextBlock Grid.Column="3" Grid.Row="1" Text="{Binding CreatedTimestamp}" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}"></TextBlock>
+
+        <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,5,5,5" 
+                   ToolTip="The limit of how many bytes a message can contain before Amazon SQS rejects it.  Valid range is from 1024 bytes (1KB) up to 65536 bytes (64KB)."
+                   Style="{DynamicResource awsTextBlockBaseStyle}">
+            Maximum message size (Bytes):
+        </TextBlock>
+        <TextBox Name="_ctlMaximumMessageSize" Grid.Column="1" Grid.Row="2" Margin="5,5,5,5" HorizontalAlignment="Left" Width="100" Style="{DynamicResource awsTextBoxStyle}">
+            <Binding Path="MaximumMessageSize" UpdateSourceTrigger="PropertyChanged">
+                <Binding.ValidationRules>
+                    <validators:IntegerValidator FieldName="Maximum message size" Min="1024" Max="65536"/>
+                </Binding.ValidationRules>
+            </Binding>
+        </TextBox>
+
+        <TextBlock Grid.Column="2" Grid.Row="2" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}" >Last modified timestamp:</TextBlock>
+        <TextBlock Grid.Column="3" Grid.Row="2" Text="{Binding LastModifiedTimestamp}" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+
+        <TextBlock Grid.Column="0" Grid.Row="3" Margin="5,5,5,5" 
+                   ToolTip="The number of seconds Amazon SQS retains a message.  Valid range is from 3600 (1 hour) to 1209600 (14 days)."
+                   Style="{DynamicResource awsTextBlockBaseStyle}">
+            Message retention period (Seconds):
+        </TextBlock>
+        <TextBox Name="_ctlMessageRetentionPeriod" Grid.Column="1" Grid.Row="3" Margin="5,5,5,5" HorizontalAlignment="Left" Width="100" Style="{DynamicResource awsTextBoxStyle}">
+            <Binding Path="MessageRetentionPeriod" UpdateSourceTrigger="PropertyChanged">
+                <Binding.ValidationRules>
+                    <validators:IntegerValidator FieldName="Message retention period" Min="3600" Max="1209600"/>
+                </Binding.ValidationRules>
+            </Binding>
+        </TextBox>
+
+        <TextBlock Grid.Column="2" Grid.Row="3" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}" >Number of messages:</TextBlock>
+        <TextBlock Grid.Column="3" Grid.Row="3" Text="{Binding ApproximateNumberOfMessages}" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+
+        <TextBlock Grid.Column="0" Grid.Row="4" Margin="5,5,5,5" 
+                   ToolTip="The length of time (in seconds) to delay the time when messages sent to the queue are available to be processed.  Valid range is from 0 to 900 (15 minutes)."
+                   Style="{DynamicResource awsTextBlockBaseStyle}">
+            Default Delivery Delay (Seconds):
+        </TextBlock>
+        <TextBox Grid.Column="1" Grid.Row="4" Margin="5,5,5,5" HorizontalAlignment="Left" Width="100" Style="{DynamicResource awsTextBoxStyle}">
+            <Binding Path="DelaySeconds" UpdateSourceTrigger="PropertyChanged">
+                <Binding.ValidationRules>
+                    <validators:IntegerValidator FieldName="Message retention period" Min="0" Max="900"/>
+                </Binding.ValidationRules>
+            </Binding>
+        </TextBox>
+
+        <TextBlock Grid.Column="2" Grid.Row="4" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}" >Number of messages not visible:</TextBlock>
+        <TextBlock Grid.Column="3" Grid.Row="4" Text="{Binding ApproximateNumberOfMessagesNotVisible}" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+
+        <Grid Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid Margin="0,8,4,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}" >Queue ARN:</TextBlock>
+                <TextBox Grid.Column="1" Style="{DynamicResource awsSelectableTextBoxStyle}" Text="{Binding QueueARN}" Margin="5,5,5,5"/>
+
+                <TextBlock Grid.Row="1" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}">Queue URL:</TextBlock>
+                <TextBox Grid.Row="1" Grid.Column="1" Style="{DynamicResource awsSelectableTextBoxStyle}" Text="{Binding QueueURL}" Margin="5,5,5,5"/>
+            </Grid>
+
+            <!-- if the queue has a redrive policy, the policy details are made visible here 
+            -->
+            <Grid Grid.Row="1" 
+                  Visibility="{Binding Path=HasRedrivePolicy, 
+                  Converter={StaticResource Bool2VisConverter}}"
+                   Margin="0,8,4,0"
+                  >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>                
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Style="{DynamicResource awsSubHeaderLabelStyle}" 
+                       Content="Redrive Policy:" 
+                       Grid.ColumnSpan="2"
+                       />
+                <Label Grid.Row="1"
+                       Margin="20,0,4,0" 
+                       Content="Maximum Receives:" 
+                       Style="{DynamicResource awsLabelBaseStyle}"/>
+                <TextBox Grid.Row="1"
+                         Grid.Column="1"
+                         Margin="4,0,4,0"
+                         Style="{DynamicResource awsSelectableTextBoxStyle}"
+                         Text="{Binding Path=MaximumReceives}"
+                         />
+                
+                <Label Grid.Row="2" 
+                       Content="Dead Letter Queue:"
+                       Margin="20,0,4,0"
+                       Style="{DynamicResource awsLabelBaseStyle}"/>
+                <TextBox Grid.Row="2"
+                         Grid.Column="1"
+                         Style="{DynamicResource awsSelectableTextBoxStyle}"
+                         Margin="4,0,4,0"
+                         Text="{Binding Path=DeadLetterQueue}"
+                         />
+            </Grid>
+            
+            <!-- if the queue is the target of one or more redrive policies, the source queues are made
+                 visible here
+            -->
+            <Grid Grid.Row="2" 
+                  Visibility="{Binding Path=IsRedriveTarget, Converter={StaticResource Bool2VisConverter}}"
+                   Margin="0,8,4,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="80"/>
+                </Grid.RowDefinitions>
+
+                <Label Style="{DynamicResource awsSubHeaderLabelStyle}" 
+                       Content="Source Queues:" 
+                       />
+                <TextBlock Grid.Row="1" Margin="40,2,4,2" Style="{DynamicResource awsTextBlockBaseStyle}">
+                    (Queues that are using this as a dead-letter queue.)
+                </TextBlock>
+                <commonui:ToolkitDataGridWrapper x:Name="_ctlDeadLetterGrid" 
+                        Grid.Row="2"
+                        ItemsSource="{Binding Path=DeadLetterSourceQueues}"
+                        Margin="40,2,4,2"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        HorizontalAlignment="Left"
+                        AutoGenerateColumns="False"
+                        HeadersVisibility="Column"
+                        CanUserAddRows="False" 
+                        CanUserDeleteRows="False"
+                        >
+                    <commonui:ToolkitDataGridWrapper.Columns>
+                        <DataGridTextColumn Width="120" 
+                                            Header="Queue Names" 
+                                            Binding="{Binding Name}"
+                                            IsReadOnly="True"
+                                            />
+                        <DataGridTextColumn Width="350" 
+                                            Header="ARN" 
+                                            Binding="{Binding QueueARN}" 
+                                            IsReadOnly="True"
+                                            />
+                    </commonui:ToolkitDataGridWrapper.Columns>
+                </commonui:ToolkitDataGridWrapper>
+            </Grid>
+        </Grid>
+
+        <Label Grid.Column="0" Grid.Row="6" Margin="0,12,5,5" Style="{DynamicResource awsSubHeaderLabelStyle}">Message Sampling</Label>
+        <commonui:ToolkitDataGridWrapper Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="4" ItemsSource="{Binding Messages}" AutoGenerateColumns="False" x:Name="_ctlDataGrid"
+                     CanUserAddRows="False" CanUserDeleteRows="False" 
+                     DockPanel.Dock="Top" MouseDoubleClick="_ctlDataGrid_MouseDoubleClick"
+                     SelectionChanged="onSelectionChanged" ContextMenuOpening="onGridContextMenu"                        
+                     HeadersVisibility="Column">
+            <commonui:ToolkitDataGridWrapper.Columns>
+                <DataGridTextColumn Header="Message Id" Binding="{Binding MessageId}" IsReadOnly="True" />
+                <DataGridTextColumn Header="Message Body" Binding="{Binding CleanBody}" Width="300" IsReadOnly="True" />
+               
+                <DataGridTextColumn Header="Sender Id" Binding="{Binding SenderId}" Width="300" IsReadOnly="True" />
+                <DataGridTextColumn Header="Sent" Binding="{Binding FormattedSentTimestamp}" Width="300" IsReadOnly="True" />
+            </commonui:ToolkitDataGridWrapper.Columns>
+        </commonui:ToolkitDataGridWrapper>
+
+        <Grid Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="4" Margin="5,5,5,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" MinWidth="24" />
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Image VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" DataContext="{DynamicResource CommonIcons}" Source="{Binding WarningIcon}" Width="24" Height="24"></Image>
+            <TextBlock Grid.Column="1" TextWrapping="Wrap" VerticalAlignment="Center" 
+                       Margin="5,5,5,5"
+                       Style="{DynamicResource awsFieldHintTextStyle}"
+                       FontStyle="Italic">
+                Changes can take up to 60 seconds to propagate throughout the SQS system.
+            </TextBlock>
+        </Grid>
+    </Grid>
+</commonui:BaseAWSView>

@@ -1,0 +1,97 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudFormationEditorTests", "CloudFormationEditorTests\CloudFormationEditorTests.csproj", "{1F798D0E-8FC0-498D-AB2F-4CFFBB9EB9A3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2FB91E7D-354F-4FE3-9A64-E814B2AC062D}"
+	ProjectSection(SolutionItems) = preProject
+		CloudFormationEditorPackage.vsmdi = CloudFormationEditorPackage.vsmdi
+		Local.testsettings = Local.testsettings
+		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit", "..\core\AWSToolkit\AWSToolkit.csproj", "{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSSDK.Extensions", "..\core\AWSSDK.Extensions\AWSSDK.Extensions.csproj", "{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.Util", "..\core\AWSToolkit.Util\AWSToolkit.Util.csproj", "{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudFormation.Parser", "..\core\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj", "{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.VS2010", "..\vstudio\AWSToolkit.VS2010\AWSToolkit.VS2010.csproj", "{A62C273B-A38E-4154-9D0A-E85D771825B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CloudFormation.Interface", "..\plugins\AWSToolkit.CloudFormation.Interface\AWSToolkit.CloudFormation.Interface.csproj", "{5A78BF40-7D5B-467E-8CE4-9659F22669D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.ElasticBeanstalk.Interface", "..\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj", "{D4D5C421-6265-4674-A1F9-DC11A56FC030}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.VisualStudio.Shared.VS2010", "..\vstudio\AWSToolkit.VisualStudio.Shared\AWSToolkit.VisualStudio.Shared.VS2010.csproj", "{4088E710-0F8D-4218-B5A8-0A02DA06BF6C}"
+EndProject
+Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = CloudFormationEditorPackage.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug VS2010 Build|Any CPU = Debug VS2010 Build|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1F798D0E-8FC0-498D-AB2F-4CFFBB9EB9A3}.Debug VS2010 Build|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F798D0E-8FC0-498D-AB2F-4CFFBB9EB9A3}.Debug VS2010 Build|Any CPU.Build.0 = Debug|Any CPU
+		{1F798D0E-8FC0-498D-AB2F-4CFFBB9EB9A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F798D0E-8FC0-498D-AB2F-4CFFBB9EB9A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F798D0E-8FC0-498D-AB2F-4CFFBB9EB9A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F798D0E-8FC0-498D-AB2F-4CFFBB9EB9A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}.Debug VS2010 Build|Any CPU.ActiveCfg = Debug VS2010 Build|Any CPU
+		{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}.Debug VS2010 Build|Any CPU.Build.0 = Debug VS2010 Build|Any CPU
+		{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}.Debug VS2010 Build|Any CPU.ActiveCfg = Debug VS2010 Build|Any CPU
+		{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}.Debug VS2010 Build|Any CPU.Build.0 = Debug VS2010 Build|Any CPU
+		{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}.Debug VS2010 Build|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}.Debug VS2010 Build|Any CPU.Build.0 = Debug|Any CPU
+		{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}.Debug VS2010 Build|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}.Debug VS2010 Build|Any CPU.Build.0 = Debug|Any CPU
+		{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A62C273B-A38E-4154-9D0A-E85D771825B2}.Debug VS2010 Build|Any CPU.ActiveCfg = Debug|Any CPU
+		{A62C273B-A38E-4154-9D0A-E85D771825B2}.Debug VS2010 Build|Any CPU.Build.0 = Debug|Any CPU
+		{A62C273B-A38E-4154-9D0A-E85D771825B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A62C273B-A38E-4154-9D0A-E85D771825B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A62C273B-A38E-4154-9D0A-E85D771825B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A62C273B-A38E-4154-9D0A-E85D771825B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A78BF40-7D5B-467E-8CE4-9659F22669D0}.Debug VS2010 Build|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A78BF40-7D5B-467E-8CE4-9659F22669D0}.Debug VS2010 Build|Any CPU.Build.0 = Debug|Any CPU
+		{5A78BF40-7D5B-467E-8CE4-9659F22669D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A78BF40-7D5B-467E-8CE4-9659F22669D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A78BF40-7D5B-467E-8CE4-9659F22669D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A78BF40-7D5B-467E-8CE4-9659F22669D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4D5C421-6265-4674-A1F9-DC11A56FC030}.Debug VS2010 Build|Any CPU.ActiveCfg = Debug VS2010 Build|Any CPU
+		{D4D5C421-6265-4674-A1F9-DC11A56FC030}.Debug VS2010 Build|Any CPU.Build.0 = Debug VS2010 Build|Any CPU
+		{D4D5C421-6265-4674-A1F9-DC11A56FC030}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4D5C421-6265-4674-A1F9-DC11A56FC030}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4D5C421-6265-4674-A1F9-DC11A56FC030}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4D5C421-6265-4674-A1F9-DC11A56FC030}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4088E710-0F8D-4218-B5A8-0A02DA06BF6C}.Debug VS2010 Build|Any CPU.ActiveCfg = Debug|Any CPU
+		{4088E710-0F8D-4218-B5A8-0A02DA06BF6C}.Debug VS2010 Build|Any CPU.Build.0 = Debug|Any CPU
+		{4088E710-0F8D-4218-B5A8-0A02DA06BF6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4088E710-0F8D-4218-B5A8-0A02DA06BF6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4088E710-0F8D-4218-B5A8-0A02DA06BF6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4088E710-0F8D-4218-B5A8-0A02DA06BF6C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

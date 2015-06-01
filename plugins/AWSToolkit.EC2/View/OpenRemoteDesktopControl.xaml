@@ -1,0 +1,82 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.EC2.View.OpenRemoteDesktopControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
+    Height="400" Width="450"
+    >
+    
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <StackPanel Orientation="Vertical">
+        <RadioButton Margin="5,15,5,5" Name="_ctlUseKeypairSelected" 
+                     GroupName="TypeOfCredentials" IsChecked="True"
+                     Style="{DynamicResource awsRadioButtonBaseStyle}">Use EC2 keypair to log on</RadioButton>
+        <Grid Margin="20,5,5,10" IsEnabled="{Binding ElementName=_ctlUseKeypairSelected, Path=IsChecked}" Name="_ctlPrivateKeyGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Private Key:" Margin="5,5,5,5" VerticalAlignment="Top" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+            <Grid Grid.Row="0" Grid.Column="1" MinHeight="150" MaxHeight="150">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBox Margin="5,0,5,5" VerticalAlignment="Stretch" AcceptsReturn="True" 
+                         Text="{Binding PrivateKey}" TextWrapping="Wrap" Name="_ctlPrivateKey"
+                         Style="{DynamicResource awsTextBoxStyle}"/>
+                <TextBlock Margin="5,5,5,0" Grid.Row="1" TextWrapping="Wrap"
+                           Style="{DynamicResource awsFieldHintTextStyle}" FontStyle="Italic">
+                    Please include the entire text, including the Begin and End lines (Ex: "-----BEGIN RSA PRIVATE KEY-----")
+                </TextBlock>
+            </Grid>
+
+            <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,5,5,5" IsChecked="{Binding SavePrivateKey}"
+                      ToolTip="Checking this will cause the private key to be stored encrypted within the toolkit.  Future attempts to connect will not require the private key. The private key can be managed in the Key Pairs view."
+                      Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+                Save Private Key
+            </CheckBox>
+        </Grid>
+        <RadioButton Margin="5,5,5,5" Name="_ctlUseCustomCredentialsSelected" 
+                     GroupName="TypeOfCredentials"
+                     Style="{DynamicResource awsRadioButtonBaseStyle}">Enter credentials</RadioButton>
+        <Grid Margin="20,5,5,5" IsEnabled="{Binding ElementName=_ctlUseCustomCredentialsSelected, Path=IsChecked}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,5,5,5" Text="User name:" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Margin="5,5,5,5" Text="{Binding EnteredUsername}" Style="{DynamicResource awsTextBoxStyle}"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,5,5,5" Text="Password:" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+            <PasswordBox Grid.Row="1" Grid.Column="1" Margin="5,5,5,5" x:Name="_ctlEnteredPassword" PasswordChar="*" Style="{DynamicResource awsPasswordBoxStyle}"/>
+
+            <CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,5,5,5" 
+                      IsChecked="{Binding SaveCredentials}"
+                      Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+                Save Credentials
+            </CheckBox>
+        </Grid>
+        <CheckBox Margin="5,5,5,5" IsChecked="{Binding MapDrives}" Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+            Map local drives on remote desktop
+        </CheckBox>
+        
+    </StackPanel>
+</commonui:BaseAWSControl>

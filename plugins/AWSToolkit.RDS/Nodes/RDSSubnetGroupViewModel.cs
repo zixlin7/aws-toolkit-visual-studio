@@ -1,0 +1,52 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Windows.Threading;
+
+using Amazon.RDS;
+using Amazon.RDS.Model;
+
+//using Amazon.AWSToolkit.RDS.Controller;
+using Amazon.AWSToolkit.RDS.Model;
+using Amazon.AWSToolkit.Navigator.Node;
+
+using log4net;
+
+namespace Amazon.AWSToolkit.RDS.Nodes
+{
+    public class RDSSubnetGroupViewModel : AbstractViewModel
+    {
+        readonly static ILog LOGGER = LogManager.GetLogger(typeof(RDSSubnetGroupViewModel));
+
+        readonly IAmazonRDS _rdsClient;
+        readonly DBSubnetGroupWrapper _subnetGroup;
+
+        public RDSSubnetGroupViewModel(RDSSubnetGroupViewMetaNode metaNode, RDSSubnetGroupsRootViewModel viewModel, DBSubnetGroup subnetGroup)
+            : base(metaNode, viewModel, subnetGroup.DBSubnetGroupName)
+        {
+            this._subnetGroup = new DBSubnetGroupWrapper(subnetGroup);
+            this._rdsClient = viewModel.RDSClient;
+        }
+
+        public IAmazonRDS RDSClient
+        {
+            get { return this._rdsClient; }
+        }
+
+        protected override string IconName
+        {
+            get
+            {
+                return "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.DBSubnetGroups.png";
+            }
+        }
+
+        public DBSubnetGroupWrapper SubnetGroup
+        {
+            get { return this._subnetGroup; }
+        }
+
+    }
+}

@@ -1,0 +1,61 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CloudFormation.View.Components.TemplateParameterControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Height="auto" Width="auto">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Margin="5,5,5,0" Grid.Row="0" Grid.Column="0" Text="{Binding Name}" MinWidth="150" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Margin="5,5,5,0" Grid.Row="0" Grid.Column="1" Text="{Binding OverrideValue, UpdateSourceTrigger=PropertyChanged}" 
+                 Name="_ctlValue" LostFocus="_ctlValue_LostFocus" TextChanged="_ctlValue_TextChanged"
+                 Style="{DynamicResource awsTextBoxStyle}"/>
+        <ComboBox Margin="5,5,5,0" Grid.Row="0" Grid.Column="1" Text="{Binding OverrideValue, UpdateSourceTrigger=PropertyChanged}" 
+                  Visibility="Hidden" Name="_ctlListValue"
+                  Style="{DynamicResource awsComboBoxStyle}"/>
+
+        <Grid Grid.Row="0" Grid.Column="1" Name="_ctlPasswordGrid" Visibility="Hidden">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <PasswordBox Margin="5,5,5,0" Grid.Row="0" Grid.Column="0" Name="_ctlPasswordValue" 
+                         Visibility="Visible" LostFocus="_ctlValue_LostFocus" PasswordChar="*" 
+                         PasswordChanged="_ctlPasswordValue_PasswordChanged"
+                         Style="{DynamicResource awsPasswordBoxStyle}"/>
+            <TextBox Margin="5,5,5,0" Grid.Row="0" Grid.Column="0" Name="_ctlPasswordClearTextValue" Visibility="Hidden" 
+                     LostFocus="_ctlValue_LostFocus" TextChanged="_ctlValue_PasswordClearTextChanged"
+                     Style="{DynamicResource awsTextBoxStyle}"/>
+
+            <CheckBox Margin="5" Grid.Row="0" Grid.Column="1" 
+                      Click="ClearPassword_Checked" VerticalAlignment="Center" 
+                      Name="_ctlShowClearText"
+                      Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+                Show Clear Text
+            </CheckBox>
+        </Grid> 
+        
+        <TextBlock Margin="5,0,5,5" Grid.Row="1" Grid.Column="0" Name="_ctlDescription" Grid.ColumnSpan="2" TextWrapping="Wrap" Style="{DynamicResource awsInfoTextStyle}"/>
+        <TextBlock Margin="5,0,5,5" Grid.Row="1" Grid.Column="0" Name="_ctlErrorMessage" Grid.ColumnSpan="2" TextWrapping="Wrap" Style="{DynamicResource awsInfoTextStyle}" Foreground="Red"/>
+    </Grid>
+</commonui:BaseAWSUserControl>

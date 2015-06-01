@@ -1,0 +1,74 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.PolicyEditor.StatementEditorControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"                   
+    xmlns:checkedTree="clr-namespace:Amazon.AWSToolkit.CommonUI.CheckedTree;assembly=AWSToolkit"  
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.PolicyEditor"
+    Height="300" Width="auto">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid AllowDrop="True">
+        <Grid.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Margin="5,5,5,5" Grid.Row="0" Grid.Column="0" Style="{DynamicResource awsTextBlockBaseStyle}">Effect:</TextBlock>
+        <StackPanel Margin="5,5,5,5" Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+            <RadioButton Margin="5,0,5,0" Content="Allow" 
+                         GroupName="{Binding Id}" 
+                         IsChecked="{Binding AllowEffect}"
+                         Style="{DynamicResource awsRadioButtonBaseStyle}"/>
+            <RadioButton Margin="5,0,5,0" Content="Deny" 
+                         GroupName="{Binding Id}"
+                         IsChecked="{Binding DenyEffect}"
+                         Style="{DynamicResource awsRadioButtonBaseStyle}"/>
+        </StackPanel>
+
+        <TabControl Margin="5,5,5,5" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+                    VerticalAlignment="Stretch" 
+                    x:Name="_ctlTabContainer"
+                    Style="{DynamicResource awsPropertyPageHorizontalTabStyle}">
+            <TabItem Header="Principals" x:Name="_ctlPrincipalTab">
+                <DockPanel >
+                    <local:PrincipalEditorControl Margin="5,0,5,0" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch"  AllowDrop="True" Drop="OnDrop" DragOver="OnDrag"/>
+                </DockPanel>
+            </TabItem>
+            <TabItem Header="Actions">
+                <DockPanel >
+                    <checkedTree:CheckedTreeControl Margin="5,0,5,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  AllowDrop="True" Drop="OnDrop" DragOver="OnDrag"/>
+                </DockPanel>
+            </TabItem>
+            <TabItem Header="Resources">
+                <DockPanel >
+                    <local:ResourceEditorControl Margin="5,0,5,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  AllowDrop="True" Drop="OnDrop" DragOver="OnDrag"/>
+                </DockPanel>
+            </TabItem>
+            <TabItem Header="Conditions">
+                <DockPanel >
+                    <local:ConditionEditorControl Margin="5,0,5,0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  AllowDrop="True" Drop="OnDrop" DragOver="OnDrag"/>
+                </DockPanel>
+            </TabItem>
+        </TabControl>
+        
+    </Grid>
+</commonui:BaseAWSUserControl>

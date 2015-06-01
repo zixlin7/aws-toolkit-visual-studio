@@ -1,0 +1,36 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.EC2.View.GetConsoleOutputControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"                           
+    Height="350" Width="500">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}">Last Updated:</TextBlock>
+        <TextBox Grid.Row="0" Grid.Column="1" Margin="5,5,5,5" Style="{DynamicResource awsSelectableTextBoxStyle}" Text="{Binding Timestamp}"/>
+        
+        <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{DynamicResource awsSelectableTextBoxStyle}" 
+                 BorderThickness="2" FontFamily="Courier New" FontSize="11" Foreground="LightGreen" Background="Black"
+                 VerticalAlignment="Stretch" Margin="5,5,5,5" 
+                 Text="{Binding ConsoleOutput}" TextWrapping="WrapWithOverflow"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                 />
+    </Grid>
+</commonui:BaseAWSControl>

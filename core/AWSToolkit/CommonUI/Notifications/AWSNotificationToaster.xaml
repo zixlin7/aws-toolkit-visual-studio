@@ -1,0 +1,57 @@
+﻿<Window x:Class="Amazon.AWSToolkit.CommonUI.Notifications.AWSNotificationToaster"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        WindowStyle="None" 
+        ResizeMode="NoResize" 
+        ShowInTaskbar="False" 
+        VerticalContentAlignment="Center" 
+        HorizontalContentAlignment="Center"
+        Name="awsToaster"
+        Opacity="0"
+        Activated="awsToaster_Activated" 
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        Height="110" Width="260"
+        MouseEnter="awsToaster_MouseEnter"
+        MouseLeave="awsToaster_MouseLeave"
+        >
+
+    <Window.Resources>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+    </Window.Resources>
+
+    <Border BorderBrush="Black" BorderThickness="2" CornerRadius="8" Background="White">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="27" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="54" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Image HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Opacity=".85" 
+                   Margin="2" 
+                   Panel.ZIndex="-1"
+                   Grid.RowSpan="2"
+                   Grid.ColumnSpan="2" Source="/AWSToolkit;component/Resources/Logos/logo_aws_notext.png" Width="93.333" />
+            
+            <TextBlock Grid.Column="1" x:Name="_header" HorizontalAlignment="Right" Margin="0,4,4,4" Text="Header" FontWeight="Bold" FontSize="14" 
+                       Style="{DynamicResource awsTextBlockBaseStyle}"/>
+            
+            <ContentControl 
+                    Grid.Row="1" 
+                    Grid.Column="1"
+                    Grid.ColumnSpan="2"
+                    x:Name="_toasterContent" 
+                    Margin="4,0,4,2" 
+                    HorizontalAlignment="Left" 
+                    VerticalAlignment="Top" 
+                    Panel.ZIndex="1"/>
+        </Grid>
+    </Border>
+</Window>

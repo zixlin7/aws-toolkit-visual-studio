@@ -1,0 +1,60 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.EC2.View.Components.InstanceVolumes"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.EC2.View.Components"             
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"                      
+    xmlns:uicomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"             
+    xmlns:ec2datagrid="clr-namespace:Amazon.AWSToolkit.EC2.View.DataGrid"             
+    Height="auto" Width="auto">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <DockPanel>
+        <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
+            <Button Click="onCreateVolumeClick">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" Source="..\..\Resources\Images\create-volume.png"/>
+                        <TextBlock>Create Volume</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="onRefreshClick">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                        <TextBlock>Refresh</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Separator />
+            <uicomponents:HeaderedDropPanel 
+                    DataContext="{DynamicResource CommonIcons}"
+                    DropDownImage="{Binding Path=ShowHideIcon}"
+                    DropDownLabel="Show/Hide"
+                    PanelHeaderLabel="Show/Hide Columns"
+                    DropPanelOpening="OnColumnCustomizationDropPanelOpening"
+                    ApplyPressed="OnColumnCustomizationApplyPressed"
+                    >
+                <components:ShowHideColumnsPanel 
+                        x:Name="_columnCustomizationPanel" 
+                        ShowCustomAttributePanel="True"
+                        />
+            </uicomponents:HeaderedDropPanel>
+        </ToolBar>
+
+        <ec2datagrid:CustomizeColumnGrid x:Name="_ctlDataGrid" 
+                GridContextMenuOpening="onGridContextMenu"          
+                GridSelectionChanged="onSelectionChanged"  
+                GotFocus="onGotFocus"
+                KeyField="VolumeId"                                             
+                ItemsSource="{Binding Volumes}"/>
+        
+    </DockPanel>
+</commonui:BaseAWSUserControl>

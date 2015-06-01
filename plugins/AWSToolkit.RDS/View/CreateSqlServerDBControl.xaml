@@ -1,0 +1,89 @@
+﻿<commonui:BaseAWSControl  x:Class="Amazon.AWSToolkit.RDS.View.CreateSqlServerDBControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
+    Width="420"
+    Height="200"                          
+    >
+    
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid Margin="8">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock TextWrapping="Wrap" Margin="0,8,0,8" Style="{DynamicResource awsTextBlockBaseStyle}">
+            Enter the login details for the DB instance and the name of the new database to create:
+        </TextBlock>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Label Margin="0,4,0,0" Style="{DynamicResource awsLabelBaseStyle}">
+                DB _Instance:
+            </Label>
+            <Label Grid.Column="1" 
+                   Content="{Binding DBInstance}"
+                   Margin="4,0"
+                   FontStyle="Italic"
+                   VerticalAlignment="Bottom"
+                   Style="{DynamicResource awsLabelBaseStyle}"
+                   />
+    
+            <Label Grid.Row="1"
+                   Margin="0,4,0,0"
+                   Target="{Binding ElementName=_userName}"
+                   Style="{DynamicResource awsLabelBaseStyle}">
+                _User Name:
+            </Label>
+            <TextBox Grid.Row="1" Grid.Column="1" 
+                     x:Name="_userName"
+                     Text="{Binding UserName}"
+                     Margin="4,0"
+                     Style="{DynamicResource awsTextBoxStyle}"/>
+            
+            <Label Grid.Row="2" 
+                   Margin="0,4,0,0"
+                   Target="{Binding ElementName=_password}"
+                   Style="{DynamicResource awsLabelBaseStyle}">
+                _Password:
+            </Label>
+            <PasswordBox Grid.Row="2" Grid.Column="1" 
+                         x:Name="_password"
+                         VerticalAlignment="Center"
+                         Margin="4,0"
+                         PasswordChanged="_password_PasswordChanged"
+                         Style="{DynamicResource awsPasswordBoxStyle}"/>
+        
+            <Label Grid.Row="3" 
+                   Target="{Binding ElementName=_dbName}"
+                   Margin="0,12,0,0"
+                   Style="{DynamicResource awsLabelBaseStyle}">
+                Database _Name:
+            </Label>
+            <TextBox Grid.Row="3"
+                     Grid.Column="1"
+                     x:Name="_dbName"
+                     Margin="4,12,0,0"
+                     Text="{Binding DBName}"
+                     Style="{DynamicResource awsTextBoxStyle}"/>
+        </Grid>
+    </Grid>
+</commonui:BaseAWSControl>

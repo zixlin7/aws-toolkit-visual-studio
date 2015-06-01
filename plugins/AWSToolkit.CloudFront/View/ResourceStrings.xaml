@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary 
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+    <system:String x:Key="ToolTipEnable">Whether the distribution is enabled to accept end user requests for content.</system:String>
+    <system:String x:Key="ToolTipDefaultRootObject">A default root object is an object that CloudFront returns when a user's request points to your distribution's root URL instead of a specific object in your distribution. Defining a default root object avoids exposing the contents of your distribution.</system:String>
+    <system:String x:Key="ToolTipRequiresHTTPS">Requires that all request must use the HTTPS protocol.</system:String>
+    
+    <system:String x:Key="ToolTipCustomDNSName">The origin to associate with the distribution. For example: www.example.com.</system:String>
+    <system:String x:Key="ToolTipHTTPPort">The HTTP port the custom origin listens on.</system:String>
+    <system:String x:Key="ToolTipHTTPSPort">The HTTPS port the custom origin listens on.</system:String>
+    <system:String x:Key="ToolTipOriginProtocol">The protocol policy to apply to your origin.  If you specify Http Only, CloudFront uses HTTP only to access the origin.  If you specify Match Viewer, CloudFront fetches from your origin using HTTP or HTTPS, based on the protocol of the viewer request.</system:String>
+    
+    <system:String x:Key="ToolTipLoggingBucket">The Amazon S3 bucket to store the access logs in.</system:String>
+    <system:String x:Key="ToolTipLoggingPrefix">An optional string of your choice to prefix to the access No log filenames for this distribution. For example: myprefix/</system:String>
+    
+    <system:String x:Key="ToolTipS3DNSName">The DNS name of your Amazon S3 bucket to associate with the distribution. For example: mybucket.s3.amazonaws.com.</system:String>
+    <system:String x:Key="ToolTipOriginAccessIdentity">The CloudFront origin access identity to associate with the distribution. If you want the distribution to serve private content, set this field; if you want the distribution to serve public content, leave this field blank.</system:String>
+
+    <system:String x:Key="ToolTipSelfSign">Check this box if you want a private content distribution and you want to give your own AWS account permission to create signed URLs.</system:String>
+    <system:String x:Key="ToolTipTrustedSigners">When working with private content distribution.  These are the AWS account numbers that can create signed URLs.</system:String>
+    
+    <system:String x:Key="ToolTipCNAMEs">A CNAME alias you want to associate with this distribution.  You can have up to 10 CNAME aliases per distribution.</system:String>
+    
+</ResourceDictionary>

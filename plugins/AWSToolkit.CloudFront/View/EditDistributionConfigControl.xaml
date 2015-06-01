@@ -1,0 +1,71 @@
+﻿<local:DistributionConfigEditor x:Class="Amazon.AWSToolkit.CloudFront.View.EditDistributionConfigControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.CloudFront.View"
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.CloudFront.View.Components"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
+    Height="600" Width="600">
+    
+    <local:DistributionConfigEditor.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </local:DistributionConfigEditor.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        
+        <ToolBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" ToolBarTray.IsLocked="True" >
+            <Button Click="onApplyChangesClick" IsEnabled="{Binding IsDirty}">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding SaveIcon}"/>
+                        <TextBlock VerticalAlignment="Center">Apply Changes</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="onRefreshClick">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                        <TextBlock VerticalAlignment="Center" >Refresh</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </ToolBar>
+
+        <TextBlock Margin="5, 5, 5, 0" Grid.Row="1" Grid.Column="0" Text="ID:" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Margin="5, 5, 0, 0" Grid.Column="1" Grid.Row="1" Text="{Binding Id, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}"/>
+
+        <TextBlock Margin="5, 5, 5, 0" Grid.Row="2" Grid.Column="0" Text="Domain Name:" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBlock Margin="5, 5, 0, 0" Grid.Column="1" Grid.Row="2"  Style="{DynamicResource awsTextBlockBaseStyle}">
+            <Hyperlink NavigateUri="{Binding DomainName, Mode=OneWay}" RequestNavigate="onDomainNameClick" x:Name="_domainLink" IsEnabled="True">
+                <TextBlock Text="{Binding DomainName, Mode=OneWay}" Style="{DynamicResource awsUrlTextFieldStyle}"/>
+            </Hyperlink>
+        </TextBlock>
+
+        <TextBlock Margin="5, 5, 5, 0" Grid.Row="3" Grid.Column="0" Text="Status:" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Margin="5, 5, 0, 0" Grid.Column="1" Grid.Row="3" Text="{Binding Status, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}"/>
+
+        <TextBlock Margin="5, 5, 5, 0" Grid.Row="4" Grid.Column="0" Text="Last Modified:" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Margin="5, 5, 0, 0" Grid.Column="1" Grid.Row="4" Text="{Binding LastModifedDate, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}"/>
+
+
+        <components:DistributionConfigEditor x:Name="_ctlConfigEditor" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Width="auto" Height="auto"/>
+    </Grid>
+</local:DistributionConfigEditor>

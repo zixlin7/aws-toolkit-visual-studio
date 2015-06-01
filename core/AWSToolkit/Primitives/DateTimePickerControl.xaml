@@ -1,0 +1,29 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.Primitives.DateTimePickerControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"                      
+    Height="220" Width="auto">
+
+    <UserControl.Resources>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="170"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <Calendar Grid.Row="0" Grid.Column="0" Name="_ctlDatePicker" SelectedDatesChanged="onDateTimeSelectionChanged"/>
+
+        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Margin="5,5,5,5">
+            <ComboBox Width="auto" MinWidth="40" Name="_ctlHours" HorizontalContentAlignment="Right" SelectionChanged="onDateTimeSelectionChanged"
+                      Style="{DynamicResource awsComboBoxStyle}"/>
+            <TextBlock Margin="3,0,3,0" Style="{DynamicResource awsTextBlockBaseStyle}">:</TextBlock>
+            <ComboBox Width="auto" MinWidth="40" Name="_ctlMinutes" HorizontalContentAlignment="Right" SelectionChanged="onDateTimeSelectionChanged"
+                      Style="{DynamicResource awsComboBoxStyle}"/>
+            <ComboBox Margin="5,0,0,0" Width="45" Name="_ctlAMPM" HorizontalContentAlignment="Right" SelectionChanged="onDateTimeSelectionChanged"
+                      Style="{DynamicResource awsComboBoxStyle}"/>
+        </StackPanel>
+    </Grid>
+</commonui:BaseAWSUserControl>

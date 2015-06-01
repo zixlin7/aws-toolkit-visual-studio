@@ -1,0 +1,186 @@
+﻿<Window x:Class="Amazon.AWSToolkit.CommonUI.WizardFramework.AWSStandardWizard"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:designData="clr-namespace:Amazon.AWSToolkit.CommonUI.WizardFramework.DesignData"
+        mc:Ignorable="d"
+        MinHeight="500" Height="500" 
+        MinWidth="800" Width="800"
+        ShowInTaskbar="False" 
+        WindowStartupLocation="CenterOwner" 
+        Icon="/AWSToolkit;component/MainIcon.ico"
+        Title="(wizard title set at runtime)" 
+        SizeToContent="Manual" 
+        WindowStyle="SingleBorderWindow"
+        >
+
+    <Window.Resources>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+    </Window.Resources>
+
+    <Grid HorizontalAlignment="Stretch" 
+          VerticalAlignment="Stretch"
+          Style="{DynamicResource awsWizardBackplaneStyle}">
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="66" MaxHeight="66"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="_wizardHeaderContainer" 
+              Style="{DynamicResource awsWizardHeaderContainerStyle}"
+              Grid.Row="0"
+              d:DataContext="{d:DesignInstance designData:HeaderDesignTimeData, IsDesignTimeCreatable=True}"
+              >
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Image Grid.Column="0" 
+                   Width="80" 
+                   Height="60" 
+                   Style="{DynamicResource awsWizardHeaderStandardLogoStyle}"
+                   Source="/AWSToolkit;component/Resources/Logos/logo_aws_notext.png" 
+                   />
+
+            <StackPanel Margin="4" Grid.Column="1">
+                <TextBlock Style="{DynamicResource awsWizardHeaderPageHeaderTextStyle}" 
+                           Text="{Binding ActivePageTitle, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                           />
+                <TextBlock Style="{DynamicResource awsWizardHeaderPageSubHeaderTextStyle}" 
+                           Text="{Binding ActivePageDescription, Mode=OneWay}" 
+                           />
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- need a fixed starting size here so that when we hide the panel
+                     (no groups mode), the outer backplane grid collapses to yield
+                     the entire surface to the page
+                -->
+            <Grid x:Name="_groupsPanel"  
+                  Grid.Column="0" 
+                  Style="{DynamicResource awsWizardPageGroupPanelStyle}"
+                  VerticalAlignment="Stretch"
+                  Visibility="{Binding HasPageGroups, Converter={StaticResource Bool2VisConverter}}"
+                  Width="140">
+
+                <!--SelectedItem="{Binding ActiveTableOfContentEntry, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"-->
+
+                <ItemsControl Style="{DynamicResource awsWizardPageGroupContainerStyle}"
+                              d:DataContext="{d:DesignInstance designData:TableOfContentsDesignTimeData, IsDesignTimeCreatable=True}"
+                              ItemsSource="{Binding TableOfContents}"
+                              KeyboardNavigation.IsTabStop="False"
+                              >
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DisplayName}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" 
+                                               BasedOn="{StaticResource awsWizardPageGroupItemStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsIndented}" Value="True">
+                                                    <Setter Property="Margin" Value="12,2,0,2"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding IsActive, Mode=TwoWay}" Value="True">
+                                                    <Setter Property="Foreground" Value="{DynamicResource awsWizardPageGroupForegroundSelectedBrushKey}" />
+                                                    <Setter Property="FontStyle" Value="Italic" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Border Width="2" 
+                        Background="LightGray" 
+                        Margin="4,16,2,4" 
+                        VerticalAlignment="Stretch" 
+                        HorizontalAlignment="Right" />
+            </Grid>
+
+            <Grid x:Name="_pagesContainer" 
+                  Grid.Column="1"
+                  Style="{DynamicResource awsWizardPagesContainerStyle}"
+                  Margin="4,10,4,4"
+                  HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Stretch"
+                  >
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+            </Grid>
+        </Grid>
+        
+        <Grid x:Name="_wizardFooterContainer"  
+              Grid.Row="2" 
+              Style="{DynamicResource awsWizardFooterContainerStyle}"
+              Margin="0,4,0,0" 
+              HorizontalAlignment="Stretch">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" 
+                    x:Name="_btnHelp" 
+                    Visibility="Hidden"
+                    Style="{DynamicResource awsWizardFooterPageNavButtonStyle}"
+                    Content="Help"
+                    />
+            <StackPanel Orientation="Horizontal" Grid.Column="2" HorizontalAlignment="Right" Margin="0,6,2,4">
+                <Button x:Name="_btnCancel" 
+                        IsCancel="True"
+                        Style="{DynamicResource awsWizardFooterPageNavButtonStyle}"
+                        Content="Close"
+                        />
+                <Button Margin="40,0,0,0" 
+                        x:Name="_btnBack" 
+                        Click="_btnBack_Click" 
+                        IsEnabled="False"
+                        Style="{DynamicResource awsWizardFooterPageNavButtonStyle}"
+                        Content="Back"
+                        />
+                <Button x:Name="_btnNext" 
+                        Click="_btnNext_Click" 
+                        IsEnabled="False"
+                        Style="{DynamicResource awsWizardFooterPageNavButtonStyle}"
+                        Content="Next"
+                        />
+                <Button x:Name="_btnFinish" 
+                        Click="_btnFinish_Click" 
+                        IsEnabled="False"
+                        Style="{DynamicResource awsWizardFooterPageNavButtonStyle}"
+                        Content="Finish"
+                        />
+            </StackPanel>
+
+            <ResizeGrip 
+                Grid.Column="3" 
+                HorizontalAlignment="Right" 
+                VerticalAlignment="Bottom"
+                Height="20"
+                Width="20"
+                Margin="0"
+                />
+        </Grid>
+    </Grid>
+    
+</Window>

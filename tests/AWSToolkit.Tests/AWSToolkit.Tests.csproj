@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Amazon.AWSToolkit.Tests</RootNamespace>
+    <AssemblyName>AWSToolkit.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug VS2010 Build|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug VS2010 Build\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AWSSDK.Core">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Auth\PolicyReaderTests.cs" />
+    <Compile Include="AWSDeploymentAMITests\LaunchTests.cs" />
+    <Compile Include="Clients.cs" />
+    <Compile Include="CloudFormationDeployment\ParseTemplateFileTests.cs" />
+    <Compile Include="CloudFormationDeployment\StackTests.cs" />
+    <Compile Include="CompareVersionNumbers.cs" />
+    <Compile Include="CryptoTests.cs" />
+    <Compile Include="Deployment\ConfigCaptureTests.cs" />
+    <Compile Include="Deployment\ConfigReaderTests.cs" />
+    <Compile Include="EC2\ColumnDefinitionTests.cs" />
+    <Compile Include="ElasticBeanstalk\DeployNewApplicationTests.cs" />
+    <Compile Include="EndPointTests.cs" />
+    <Compile Include="IPAddressUtilTests.cs" />
+    <Compile Include="ParseVersionFileTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Persistence\SettingsPersistenceTests.cs" />
+    <Compile Include="S3\BucketBrowserModelTests.cs" />
+    <Compile Include="S3\DownloadFilesTests.cs" />
+    <Compile Include="S3\IOTests.cs" />
+    <Compile Include="SimpleDB\DetermineDomainFromQuery.cs" />
+    <Compile Include="SQS\PermissionsTests.cs" />
+    <Compile Include="SQS\QueueARNTest.cs" />
+    <Compile Include="TestShellProvider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\awsdeploy\client\AWSDeploymentLib\AWSDeploymentLib.csproj">
+      <Project>{DFFE75F2-61CC-4CEA-87A5-1C573436DE9E}</Project>
+      <Name>AWSDeploymentLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
+      <Project>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</Project>
+      <Name>AWSSDK.Extensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\plugins\AWSToolkit.CloudFormation.Interface\AWSToolkit.CloudFormation.Interface.csproj">
+      <Project>{5A78BF40-7D5B-467E-8CE4-9659F22669D0}</Project>
+      <Name>AWSToolkit.CloudFormation.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\plugins\AWSToolkit.CloudFormation\AWSToolkit.CloudFormation.csproj">
+      <Project>{6AE302DB-2304-47C8-8E3C-96C85AC1D469}</Project>
+      <Name>AWSToolkit.CloudFormation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\plugins\AWSToolkit.EC2\AWSToolkit.EC2.csproj">
+      <Project>{BD907681-AFE8-4008-97CD-11B138FDDCA7}</Project>
+      <Name>AWSToolkit.EC2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj">
+      <Project>{D4D5C421-6265-4674-A1F9-DC11A56FC030}</Project>
+      <Name>AWSToolkit.ElasticBeanstalk.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\plugins\AWSToolkit.ElasticBeanstalk\AWSToolkit.ElasticBeanstalk.csproj">
+      <Project>{AA98EC2E-AC7C-4080-993B-F80592D31037}</Project>
+      <Name>AWSToolkit.ElasticBeanstalk</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\plugins\AWSToolkit.S3.Interface\AWSToolkit.S3.Interface.csproj">
+      <Project>{C2D616BD-C2AB-4130-93E5-2ADA2172A08A}</Project>
+      <Name>AWSToolkit.S3.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\plugins\AWSToolkit.S3\AWSToolkit.S3.csproj">
+      <Project>{A01EDD42-F7F5-4E20-8DEB-9F66F2980662}</Project>
+      <Name>AWSToolkit.S3</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\plugins\AWSToolkit.SimpleDB\AWSToolkit.SimpleDB.csproj">
+      <Project>{9DD9F407-F2C6-495A-9204-C9825C67E9B9}</Project>
+      <Name>AWSToolkit.SimpleDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\plugins\AWSToolkit.SQS\AWSToolkit.SQS.csproj">
+      <Project>{91DF5775-5635-4DF3-A26F-5CFE1136763E}</Project>
+      <Name>AWSToolkit.SQS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\AWSToolkit.Util\AWSToolkit.Util.csproj">
+      <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
+      <Name>AWSToolkit.Util</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\core\AWSToolkit\AWSToolkit.csproj">
+      <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
+      <Name>AWSToolkit</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CloudFormationDeployment\sample-test.template" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Deployment\TestDeployment.conf" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Archives\AWS2010WebApp.zip" />
+    <EmbeddedResource Include="Archives\DynamicCompression.zip" />
+    <EmbeddedResource Include="Archives\NBlog.zip" />
+    <EmbeddedResource Include="Archives\PetBoardVS2010.zip" />
+    <EmbeddedResource Include="Archives\TestVS2010MVC3.zip" />
+    <EmbeddedResource Include="Archives\VisualStudio2010MVC2.zip" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CloudFormationDeployment\LoadBalanced.template" />
+    <EmbeddedResource Include="CloudFormationDeployment\SingleInstance.template" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

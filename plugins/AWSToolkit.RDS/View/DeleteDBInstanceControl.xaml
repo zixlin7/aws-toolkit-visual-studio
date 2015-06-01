@@ -1,0 +1,39 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.RDS.View.DeleteDBInstanceControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
+    Height="130" Width="330">
+    
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5" Style="{DynamicResource awsTextBlockBaseStyle}">Are you sure you want to delete the deletetest DB instance?</TextBlock>
+        
+        <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,15,5,5" 
+                  IsChecked="{Binding CreateFinalSnapshot}" Name="_ctlCreateSnapshot"
+                  Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+            Create Final Snapshot?
+        </CheckBox>
+        <TextBlock Grid.Row="2" Grid.Column="0" Margin="5" Style="{DynamicResource awsTextBlockBaseStyle}">Final Snapshot Name:</TextBlock>
+        <TextBox Grid.Row="2" Grid.Column="1" Margin="5" Text="{Binding FinalSnapshotName}" 
+                 IsEnabled="{Binding ElementName=_ctlCreateSnapshot, Path=IsChecked}"
+                 Style="{DynamicResource awsTextBoxStyle}"/>
+        
+    </Grid>
+</commonui:BaseAWSControl>

@@ -1,0 +1,43 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    >
+
+    <!--
+    <Style TargetType="{x:Type components:DataFormatToolBarControl}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type  components:DataFormatToolBarControl}">
+                    <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <ToolBarTray IsLocked="True" x:Name="PART_UpperTray">
+                                <ToolBar x:Name="PART_FormatToolBar" Margin="0" Background="Transparent" VerticalAlignment="Center">
+                                    <RadioButton ToolTip="Convert to a single string value" IsChecked="True" GroupName="ValueTypeGroup" x:Name="PART_AsStringButton">
+                                        <Image Source="/AWSToolkit.DynamoDB;component/Resources/Images/AsAlpha.png" />
+                                    </RadioButton>
+                                    <RadioButton Grid.Column="1" ToolTip="Convert to a set of strings" GroupName="ValueTypeGroup" x:Name="PART_AsStringSetButton">
+                                        <Image Source="/AWSToolkit.DynamoDB;component/Resources/Images/AsAlphaSet.png" />
+                                    </RadioButton>
+                                    <Separator />
+                                    <RadioButton Grid.Column="2" ToolTip="Convert to a single numeric value" GroupName="ValueTypeGroup" x:Name="PART_AsNumberButton">
+                                        <Image Source="/AWSToolkit.DynamoDB;component/Resources/Images/AsNumber.png" />
+                                    </RadioButton>
+                                    <RadioButton Grid.Column="3" ToolTip="Convert to a set of numbers" GroupName="ValueTypeGroup" x:Name="PART_AsNumberSetButton">
+                                        <Image Source="/AWSToolkit.DynamoDB;component/Resources/Images/AsNumberSet.png" />
+                                    </RadioButton>
+                                </ToolBar>
+                            </ToolBarTray>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    -->
+</ResourceDictionary>

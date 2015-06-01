@@ -1,0 +1,45 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.SNS.View.EditDisplayNameControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
+    Height="150" Width="350">
+    
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <DockPanel>
+        <TextBlock DockPanel.Dock="Top" Margin="5, 5, 5, 5" TextWrapping="Wrap"
+                   Style="{DynamicResource awsTextBlockBaseStyle}">
+            The Display Name of a topic will be used, if present, in the "From:" field of any email notifications from the topic.
+        </TextBlock>
+
+        <Grid Margin="5,10,5,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}">Display Name:</TextBlock>
+            <TextBox Name="_ctlNewTopicName"  Grid.Column="1" Grid.Row="0" Margin="5,5,5,5" 
+                     Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{DynamicResource awsTextBoxStyle}"/>
+
+            <TextBlock Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" Margin="5,5,5,5" 
+                       VerticalAlignment="Top"
+                       Style="{DynamicResource awsFieldHintTextStyle}"
+                       FontStyle="Italic">
+                Up to 100 printable ASCII characters
+            </TextBlock>
+
+        </Grid>
+    </DockPanel>
+</commonui:BaseAWSControl>

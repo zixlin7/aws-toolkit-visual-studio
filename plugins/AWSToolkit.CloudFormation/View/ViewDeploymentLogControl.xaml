@@ -1,0 +1,34 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.CloudFormation.View.ViewDeploymentLogControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Height="350" Width="550">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,5,5,5" Name="_ctlLoadingStatus" Text="Loading" FontWeight="SemiBold" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+
+        <TextBox Name="_ctlLog" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{DynamicResource awsSelectableTextBoxStyle}" 
+                 BorderThickness="2" FontFamily="Courier New" FontWeight="SemiBold" FontSize="11" Foreground="Black" Background="LightGray"
+                 VerticalAlignment="Stretch" Margin="5,5,5,5" 
+                 Text="{Binding Log}" TextWrapping="NoWrap"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                 />
+    </Grid>
+</commonui:BaseAWSControl>

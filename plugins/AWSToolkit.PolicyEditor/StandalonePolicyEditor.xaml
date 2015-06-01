@@ -1,0 +1,19 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.PolicyEditor.StandalonePolicyEditor"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.PolicyEditor"                         
+    Height="300" Width="500">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+
+    <Grid>
+        <local:PolicyEditorControl x:Name="_ctlPolicyEditor"/>                    
+    </Grid>
+</commonui:BaseAWSControl>

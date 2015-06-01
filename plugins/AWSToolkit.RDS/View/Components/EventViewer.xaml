@@ -1,0 +1,39 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.RDS.View.Components.EventViewer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Height="auto" Width="auto">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <DockPanel>
+        <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" Name="_ctlToolbar">
+            <Button Click="onRefreshEvents">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                        <TextBlock>Refresh</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </ToolBar>
+        <commonui:ToolkitDataGridWrapper AutoGenerateColumns="False" x:Name="_ctlDataGrid" CellStyle="{DynamicResource awsDataGridCellCentering}"
+                CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="True"
+                ItemsSource="{Binding SelectedEvents}"
+                RowHeaderWidth="0"                
+                HorizontalAlignment="Stretch" HeadersVisibility="All">
+
+            <commonui:ToolkitDataGridWrapper.Columns>
+                <DataGridTextColumn Header="Event Time" Binding="{Binding Date, Mode=OneWay}" Width="auto"/>
+                <DataGridTextColumn Header="Event Source" Binding="{Binding SourceIdentifier, Mode=OneWay}" Width="1*"/>
+                <DataGridTextColumn Header="Event System Notes" Binding="{Binding Message, Mode=OneWay}" Width="3*"/>
+            </commonui:ToolkitDataGridWrapper.Columns>
+        </commonui:ToolkitDataGridWrapper>
+    </DockPanel>
+</commonui:BaseAWSUserControl>

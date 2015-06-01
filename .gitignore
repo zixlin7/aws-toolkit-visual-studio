@@ -1,0 +1,23 @@
+######################################
+# Visual Studio per-user settings data
+######################################
+*.suo
+*.user
+
+####################
+# Build/Test folders
+####################
+
+**/bin/
+**/obj/
+**/TestResults/
+**/Temp/
+**/NuGet.exe
+**/buildlogs/
+
+**/.vs/
+
+**/Deployment/
+**/Include/
+
+shells/AWSToolkit.VisualStudio.Shared/bin_vs2010/

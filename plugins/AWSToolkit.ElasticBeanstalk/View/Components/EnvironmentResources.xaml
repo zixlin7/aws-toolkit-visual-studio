@@ -1,0 +1,138 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.ElasticBeanstalk.View.Components.EnvironmentResources"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:detailpanes="clr-namespace:Amazon.AWSToolkit.ElasticBeanstalk.View.Components.ResourceDetails"
+    Height="auto" Width="auto">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <DockPanel>
+        <DockPanel.Resources>
+            <Style TargetType="{x:Type DataGridCell}" x:Key="ResourceDetail">
+                <Setter Property="Foreground" Value="{DynamicResource awsDefaultControlForegroundBrushKey}" />
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Style.Triggers>
+                    <Trigger Property="IsSelected" Value="True">
+                        <Setter Property="Background" Value="{x:Null}" />
+                        <Setter Property="BorderBrush" Value="{x:Null}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </DockPanel.Resources>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid  Loaded="onLoad" Margin="10,0,10,0">
+                
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,20,5" FontWeight="SemiBold" FontSize="15" Style="{DynamicResource awsTextBlockBaseStyle}">Resources last refreshed at: </TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="0" Margin="5,5,20,5" FontWeight="SemiBold"  FontSize="15" Name="_ctlLastRefresh" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+                <TextBlock Grid.Column="0" Grid.Row="1"  Grid.ColumnSpan="2"  Margin="5,5,5,5" FontWeight="SemiBold" FontSize="14" Style="{DynamicResource awsTextBlockBaseStyle}">EC2 Instances:</TextBlock>
+                <commonui:ToolkitDataGridWrapper Grid.Column="0" Grid.Row="2"  Grid.ColumnSpan="2"  ScrollViewer.CanContentScroll="False"
+                                ItemsSource="{Binding Instances}" 
+                                AutoGenerateColumns="False"
+                                RowDetailsVisibilityMode="Visible"
+                                x:Name="_ctlInstanceGrid" 
+                                CellStyle="{DynamicResource ResourceDetail}"
+                                CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch" HeadersVisibility="Column">
+
+                    <commonui:ToolkitDataGridWrapper.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="State" Binding="{Binding State, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="Key Name" Binding="{Binding KeyName, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="AMI" Binding="{Binding AMI, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="Platform" Binding="{Binding Platform, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="Architecture" Binding="{Binding Architecture, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="Type" Binding="{Binding Type, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="SecurityGroups" Binding="{Binding SecurityGroups, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="Availability Zone" Binding="{Binding AvailabilityZone, Mode=OneWay}" Width="auto"/>
+                    </commonui:ToolkitDataGridWrapper.Columns>
+
+                    <commonui:ToolkitDataGridWrapper.RowDetailsTemplate>
+                        <DataTemplate>
+                            <detailpanes:InstanceDetails Margin="20,10,20,10"/>
+                        </DataTemplate>
+                    </commonui:ToolkitDataGridWrapper.RowDetailsTemplate>
+                </commonui:ToolkitDataGridWrapper>
+
+                <TextBlock Grid.Column="0" Grid.Row="3"  Grid.ColumnSpan="2" Margin="5,5,5,5" FontWeight="SemiBold" FontSize="14" Style="{DynamicResource awsTextBlockBaseStyle}">Load Balancers:</TextBlock>
+                <commonui:ToolkitDataGridWrapper Grid.Column="0" Grid.Row="4"  Grid.ColumnSpan="2" ItemsSource="{Binding LoadBalancers}" 
+                                  RowDetailsVisibilityMode="Visible"
+                                  AutoGenerateColumns="False" x:Name="_ctlLoadBalancerGrid" CellStyle="{DynamicResource ResourceDetail}"
+                         CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch" HeadersVisibility="Column">
+
+                    <commonui:ToolkitDataGridWrapper.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="HealthCheck" Binding="{Binding FormattedHealthCheck, Mode=OneWay}" Width="auto"/>
+                    </commonui:ToolkitDataGridWrapper.Columns>
+
+                    <commonui:ToolkitDataGridWrapper.RowDetailsTemplate>
+                        <DataTemplate>
+                            <detailpanes:LoadBalancerDetails Margin="20,10,20,10"/>
+                        </DataTemplate>
+                    </commonui:ToolkitDataGridWrapper.RowDetailsTemplate>
+                </commonui:ToolkitDataGridWrapper>
+
+                <TextBlock Grid.Column="0" Grid.Row="5"  Grid.ColumnSpan="2" Margin="5,5,5,5" FontWeight="SemiBold" FontSize="14" Style="{DynamicResource awsTextBlockBaseStyle}">Auto Scaling Groups:</TextBlock>
+                <commonui:ToolkitDataGridWrapper Grid.Column="0" Grid.Row="6"  Grid.ColumnSpan="2" 
+                                  ItemsSource="{Binding AutoScalingGroups}" 
+                                  AutoGenerateColumns="False"
+                                  RowDetailsVisibilityMode="Visible"
+                                  x:Name="_ctlAutoScalingGrid" 
+                                  CellStyle="{DynamicResource ResourceDetail}"
+                                  CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch" HeadersVisibility="Column">
+
+                    <commonui:ToolkitDataGridWrapper.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="Min" Binding="{Binding MinSize, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="Max" Binding="{Binding MaxSize, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="Desired" Binding="{Binding DesiredCapacity, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="Availability Zones" Binding="{Binding AvailabilityZones, Mode=OneWay}" Width="auto"/>
+                    </commonui:ToolkitDataGridWrapper.Columns>
+
+                    <commonui:ToolkitDataGridWrapper.RowDetailsTemplate>
+                        <DataTemplate>
+                            <detailpanes:AutoScalingGroupDetails Margin="20,10,20,10"/>
+                        </DataTemplate>
+                    </commonui:ToolkitDataGridWrapper.RowDetailsTemplate>
+                </commonui:ToolkitDataGridWrapper>
+
+                <TextBlock Grid.Column="0" Grid.Row="7"  Grid.ColumnSpan="2" Margin="5,5,5,5" FontWeight="SemiBold" FontSize="14" Style="{DynamicResource awsTextBlockBaseStyle}">Triggers:</TextBlock>
+                <commonui:ToolkitDataGridWrapper Grid.Column="0" Grid.Row="8"  Grid.ColumnSpan="2" ItemsSource="{Binding Triggers}" AutoGenerateColumns="False" x:Name="_ctlTriggerGrid"
+                         CellStyle="{DynamicResource ResourceDetail}" CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch" HeadersVisibility="Column">
+
+                    <commonui:ToolkitDataGridWrapper.Columns>
+                        <DataGridTextColumn Header="Alarm Name" Binding="{Binding AlarmName, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="Metric Name" Binding="{Binding MetricName, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="State" Binding="{Binding State, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="Statistic" Binding="{Binding Statistic, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="Threshold" Binding="{Binding Threshold, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="Unit" Binding="{Binding Unit, Mode=OneWay}" Width="auto"/>
+                        <DataGridTextColumn Header="Comparison Operator" Binding="{Binding ComparisonOperator, Mode=OneWay}" Width="auto"/>
+                    </commonui:ToolkitDataGridWrapper.Columns>
+                </commonui:ToolkitDataGridWrapper>
+            </Grid>
+        </ScrollViewer>
+    </DockPanel>
+</commonui:BaseAWSUserControl>

@@ -1,0 +1,92 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.Account.View.RegisterAccountControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"
+    xmlns:view="clr-namespace:Amazon.AWSToolkit.Account.View"
+    Height="275" Width="500"
+    Background="Transparent">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <BooleanToVisibilityConverter x:Key="bool2VisConverter" />
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+
+    <Grid>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="120"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Column="0" Grid.Row="0" Target="{Binding ElementName=_ctlDisplayName}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Bottom">Profile _Name:</Label>
+        <TextBox Margin="4" Name="_ctlDisplayName" Grid.Column="1" Grid.Row="0" 
+                 Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}" 
+                 TextChanged="MandatoryFieldTextChanged" Style="{DynamicResource awsTextBoxStyle}"/>
+
+        <TextBlock Grid.Row="1" Grid.Column="1" 
+                   Style="{DynamicResource awsInfoTextStyle}" 
+                   FontStyle="Italic"
+                   TextWrapping="Wrap"
+                   Margin="4,0,4,2"
+                   Visibility="{Binding Path=PromptToUseDefaultName, 
+                                    RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=view:RegisterAccountControl}, 
+                                    Converter={StaticResource bool2VisConverter}}">
+            A profile name of 'default' allows the SDK to find credentials when no explicit profile name is 
+            specified in your code or application configuration settings.
+        </TextBlock>
+        
+        <Label Grid.Column="0" Grid.Row="2" Target="{Binding ElementName=_ctlAccessKey}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Bottom">_Access Key ID:</Label>
+        <TextBox Margin="4" Grid.Column="1" Grid.Row="2" x:Name="_ctlAccessKey" 
+                 Text="{Binding AccessKey, UpdateSourceTrigger=PropertyChanged}" 
+                 TextChanged="MandatoryFieldTextChanged" Style="{DynamicResource awsTextBoxStyle}"/>
+
+        <Label Grid.Column="0" Grid.Row="3" Target="{Binding ElementName=_ctlSecretKey}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Bottom">_Secret Access Key:</Label>
+        <TextBox Margin="4" Grid.Column="1" Grid.Row="3" x:Name="_ctlSecretKey" 
+                 Text="{Binding SecretKey, UpdateSourceTrigger=PropertyChanged}" 
+                 TextChanged="MandatoryFieldTextChanged" Style="{DynamicResource awsTextBoxStyle}"/>
+
+        <Label Grid.Column="0" Grid.Row="4" Target="{Binding ElementName=_ctlAccountNumber}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Bottom">A_ccount Number*:</Label>
+        <TextBox Margin="4" Grid.Column="1" Grid.Row="4" x:Name="_ctlAccountNumber" 
+                 Text="{Binding AccountNumber, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource awsTextBoxStyle}"/>
+
+        <Label Grid.Column="0" Grid.Row="5" Target="{Binding ElementName=_ctlAccountNumber}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Center">Account _Type:</Label>
+        <ComboBox Margin="4" Grid.Column="1" Grid.Row="5" 
+                  x:Name="_ctlTypeOfAccount" 
+                  SelectedItem="{Binding SelectedAccountType}" 
+                  ItemsSource="{Binding AllAccountTypes}"
+                  DisplayMemberPath="DisplayName"
+                  Style="{DynamicResource awsComboBoxStyle}"/>
+
+        <WrapPanel Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2" Margin="0,4,0,0">
+            <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}">Account information can found at:</TextBlock>
+            <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}" Margin="4,0,0,0">
+            <Hyperlink NavigateUri="http://aws.amazon.com/developers/access-keys/" RequestNavigate="onRequestNavigate">
+                <TextBlock Style="{DynamicResource awsUrlTextFieldStyle}" 
+                           Name="_ctlAWSLink" 
+                           Text="http://aws.amazon.com/developers/access-keys/"
+                           />
+            </Hyperlink></TextBlock>
+
+        </WrapPanel>
+
+        <TextBlock Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="2" Margin="4" TextWrapping="Wrap" Style="{DynamicResource awsTextBlockBaseStyle}">
+            * Account Number is an optional field used for constructing amazon resource names (ARN).
+        </TextBlock>
+    </Grid>
+</commonui:BaseAWSControl>

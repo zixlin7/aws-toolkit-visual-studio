@@ -1,0 +1,36 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.RDS.View.PromptAddCurrentCIDRControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Height="220" Width="400">
+    
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <TextBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,5,5,10" TextWrapping="Wrap" Style="{DynamicResource awsSelectableTextBoxStyle}">
+            Unable to connect to the SQL Server instance.  Either the security group is missing permissions or 
+            a firewall is blocking your access.  Do you want to add your current CIDR/IP to the security group.
+        </TextBox>
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Margin="20,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}">CIDR/IP:</TextBlock>
+        <TextBox Name="_ctlCIDRValue" Grid.Row="1" Grid.Column="1" Margin="5" Style="{DynamicResource awsTextBoxStyle}"/>
+
+        <TextBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="5,20,5,5" TextWrapping="Wrap" Style="{DynamicResource awsSelectableTextBoxStyle}" Name="_ctlInfoMessage"></TextBox>
+    </Grid>
+</commonui:BaseAWSControl>

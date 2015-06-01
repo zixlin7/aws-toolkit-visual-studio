@@ -1,0 +1,103 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CommonUI.Components.TemplatePickerControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"                      
+    >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            
+            <Style x:Key="TemplatePickerListBoxItemStyle" TargetType="ListBoxItem">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="Margin" Value="4" />
+                <Setter Property="TextBlock.Foreground" Value="{DynamicResource awsDefaultControlForegroundBrushKey}"></Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Border x:Name="Root"
+                                    BorderBrush="{DynamicResource awsListBoxPanelItemBackgroundBrushKey}"
+                                    Background="{DynamicResource awsListBoxPanelItemBackgroundBrushKey}"
+                                    BorderThickness="2"
+                                    CornerRadius="4"
+                                    Padding="4"
+                                    >
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                      HorizontalAlignment="Left"
+                                                      VerticalAlignment="Center"
+                                                      />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource awsListBoxPanelItemHoverBorderBrushKey}" TargetName="Root" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource awsListBoxPanelItemSelectedBorderBrushKey}" TargetName="Root" />
+                                    <Setter Property="Background" Value="{DynamicResource awsListBoxPanelItemSelectedBackgroundBrushKey}" TargetName="Root" />
+                                    <Setter Property="TextBlock.Foreground" Value="Black"></Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <DataTemplate x:Key="TemplatePickerItemTemplate">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <!-- need fixed width at present to force text to wrap -->
+                        <ColumnDefinition Width="500" />
+                    </Grid.ColumnDefinitions>
+                    <Image Width="32" Height="32" Source="{Binding TemplateIcon, Mode=OneWay}"
+                           VerticalAlignment="Top"
+                           Grid.RowSpan="2"/>
+
+                    <TextBlock Margin="0"
+                               Grid.Column="1"
+                               TextWrapping="NoWrap" 
+                               TextTrimming="WordEllipsis" 
+                               FontWeight="Bold" 
+                               Text="{Binding TemplateHeader}" 
+                               Style="{DynamicResource awsTextBlockBaseStyle}"
+                               Foreground="{TemplateBinding TextBlock.Foreground}"/>
+                    <TextBlock Grid.Row="1" 
+                               Grid.Column="1"
+                               TextWrapping="Wrap" 
+                               Text="{Binding TemplateDescription}" 
+                               Style="{DynamicResource awsTextBlockBaseStyle}"
+                               Foreground="{TemplateBinding TextBlock.Foreground}"/>
+                </Grid>
+            </DataTemplate>
+
+            <ControlTemplate TargetType="ListBox" x:Key="TemplatePickerControlTemplate">
+                <ScrollViewer HorizontalScrollBarVisibility="Hidden"
+                              VerticalScrollBarVisibility="Auto"
+                              Focusable="false" 
+                              Padding="{TemplateBinding Padding}"
+                              CanContentScroll="True">
+                    <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                </ScrollViewer>
+            </ControlTemplate>
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <ListBox x:Name="_templateList" 
+             ItemContainerStyle="{StaticResource TemplatePickerListBoxItemStyle}"
+             ItemTemplate="{StaticResource TemplatePickerItemTemplate}"
+             Template="{StaticResource TemplatePickerControlTemplate}"
+             BorderThickness="0"
+             SelectionChanged="_templateList_SelectionChanged"
+             HorizontalContentAlignment="Stretch"
+             Background="Transparent"
+             ItemsSource="{Binding BoundTemplates}"
+             />
+
+</commonui:BaseAWSUserControl>

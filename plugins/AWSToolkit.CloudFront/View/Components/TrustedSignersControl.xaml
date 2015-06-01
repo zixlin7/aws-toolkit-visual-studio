@@ -1,0 +1,124 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CloudFront.View.Components.TrustedSignersControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:toolkitcomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"                         
+    Height="300" Width="300"
+    Background="{DynamicResource awsPanelBackgroundBrushKey}">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary Source="../ResourceStrings.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" MinWidth="107" />
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="auto" MinWidth="125" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <CheckBox Grid.Column="0" Grid.Row="0" Margin="5, 5, 0, 5" Name="_ctlIsPrivateEnabled" 
+                  IsChecked="{Binding IsPrivateDistributionEnabled, UpdateSourceTrigger=PropertyChanged}" 
+                  Content="Enabled"
+                  Style="{DynamicResource awsCheckboxButtonBaseStyle}"/>
+
+        <Label Grid.Row="1" Grid.Column="0" Content="Origin Access Identity:" VerticalAlignment="Center" 
+                   Margin="5,5,5,5" ToolTip="{StaticResource ToolTipOriginAccessIdentity}"
+                   Style="{DynamicResource awsLabelBaseStyle}"/>
+
+        <toolkitcomponents:ListViewComboBox 
+                                 
+            Grid.Row="1" Grid.Column="1" 
+            x:Name="_ctlOriginAccessIdentites"                    
+            VerticalAlignment="Center"
+            HorizontalAlignment="Stretch"
+            DisplayMemberPath="DisplayName"
+            ItemContainerStyle="{DynamicResource awsListViewItemContainerStyle}"
+            AlternationCount="2"
+            ItemsSource="{Binding AllOriginAccessIdentities}"
+            SelectedItem="{Binding SelectedOriginAccessIdentityWrapper}"
+            IsEnabled="{Binding ElementName=_ctlIsPrivateEnabled, Path=IsChecked}" 
+            >
+
+            <GridViewColumn Header="Comment" DisplayMemberBinding="{Binding Comment}" />
+            <GridViewColumn Header="ID" DisplayMemberBinding="{Binding Id}" />
+            <GridViewColumn Header="Canonical User ID" DisplayMemberBinding="{Binding FormattedCanonicalUserId}" />
+        </toolkitcomponents:ListViewComboBox>
+
+        <Button Grid.Row="1" Grid.Column="2" IsEnabled="{Binding ElementName=_ctlIsPrivateEnabled, Path=IsChecked}" Margin="5,5,5,5" Click="onCreateOriginAccessIdentityClick">
+            <Button.Content>
+                <TextBlock>Create New Identity</TextBlock>
+            </Button.Content>
+        </Button>
+<!--        
+        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" IsEnabled="True" Visibility="{Binding IsExistingVisiblity}" Margin="5,5,5,5" Text="{Binding CanonicalUserId, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}"></TextBox>
+-->
+
+        <CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="5, 5, 0, 5" 
+                  IsChecked="{Binding TrustedSignerSelf, UpdateSourceTrigger=PropertyChanged}" 
+                  Content="Allow owner to create signed URLs." 
+                  ToolTip="{StaticResource ToolTipSelfSign}"
+                  Style="{DynamicResource awsCheckboxButtonBaseStyle}"/>
+
+        <Label Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="5,5,5,5" Style="{DynamicResource awsLabelBaseStyle}">Specify trusted signers (max. 5 accounts):</Label>
+
+        <ToolBar Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" ToolBarTray.IsLocked="True" IsEnabled="{Binding ElementName=_ctlIsPrivateEnabled, Path=IsChecked}" >
+            <Button Click="OnAddTrustedSigner">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image DataContext="{DynamicResource CommonIcons}" Width="16" Height="16" Source="{Binding AddIcon}"/>
+                        <TextBlock> Add</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+            <Button Click="OnRemoveTrustedSigner">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image DataContext="{DynamicResource CommonIcons}" Width="16" Height="16" Source="{Binding RemoveIcon}"/>
+                        <TextBlock> Remove</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </ToolBar>
+
+        <commonui:ToolkitDataGridWrapper Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" x:Name="_ctlTrustedSignerAccountIds" CellStyle="{DynamicResource awsDataGridCellCentering}"
+                AutoGenerateColumns="False" ItemsSource="{Binding TrustedSignerAWSAccountIds}"
+                HorizontalAlignment="Stretch" HeadersVisibility="Column"
+                CanUserAddRows="False" CanUserDeleteRows="False" ToolTip="{StaticResource ToolTipTrustedSigners}"  
+                          IsEnabled="{Binding ElementName=_ctlIsPrivateEnabled, Path=IsChecked}" 
+                              >
+            <commonui:ToolkitDataGridWrapper.Columns>
+
+                <DataGridTextColumn Header="AWS Account Number" Width="1*" Binding="{Binding Value}" />
+
+            </commonui:ToolkitDataGridWrapper.Columns>
+        </commonui:ToolkitDataGridWrapper>
+
+        <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Margin="5,5,5,5" Orientation="Vertical" >
+            <TextBlock TextWrapping="WrapWithOverflow" Style="{DynamicResource awsInfoTextStyle}" >The Origin Access Identity's S3 canonical user ID must be given read permission to the objects 
+            in the S3 Bucket that are to be exposed through the private distribution.</TextBlock>
+            
+            <TextBlock Margin="0,10,0,0" TextWrapping="WrapWithOverflow" Style="{DynamicResource awsInfoTextStyle}" > For more information go to the Amazon CloudFront documentation. </TextBlock>
+            <TextBlock>
+                <Hyperlink NavigateUri="" RequestNavigate="onRequestNavigate">
+                    <TextBlock Name="_ctlPrivateDocsLink" Text="Private Distribution Documentation" Foreground="{DynamicResource awsUrlTextFieldForegroundBrushKey}"/>
+                </Hyperlink>
+            </TextBlock>
+        </StackPanel>
+    </Grid>
+</commonui:BaseAWSUserControl>

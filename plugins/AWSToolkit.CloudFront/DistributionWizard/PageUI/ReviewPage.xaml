@@ -1,0 +1,21 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CloudFront.DistributionWizard.PageUI.ReviewPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:pageComponents="clr-namespace:Amazon.AWSToolkit.CommonUI.WizardFramework.PageComponents;assembly=AWSToolkit"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <pageComponents:ReviewPanelsContainer 
+        Margin="4,0,4,2" 
+        x:Name="_reviewPanelsContainer"
+        VerticalContentAlignment="Stretch"
+        HorizontalContentAlignment="Stretch"
+        />
+</commonui:BaseAWSUserControl>

@@ -1,0 +1,309 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Windows;
+using System.Windows.Threading;
+
+using Amazon.AWSToolkit;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.IdentityManagement.View;
+using Amazon.AWSToolkit.IdentityManagement.Model;
+using Amazon.AWSToolkit.IdentityManagement.Nodes;
+using Amazon.Runtime.Internal.Settings;
+
+using Amazon.Auth.AccessControlPolicy;
+using Amazon.IdentityManagement;
+using Amazon.IdentityManagement.Model;
+
+using log4net;
+
+namespace Amazon.AWSToolkit.IdentityManagement.Controller
+{
+    public class EditUserController : BaseContextCommand
+    {
+        static readonly ILog LOGGER = LogManager.GetLogger(typeof(EditUserController));
+
+        IAmazonIdentityManagementService _iamClient;
+        EditUserModel _model;
+        IAMUserViewModel _iamUserViewModel;
+
+        public EditUserModel Model
+        {
+            get { return this._model; }
+        }
+
+        public override ActionResults Execute(IViewModel model)
+        {
+            this._iamUserViewModel = model as IAMUserViewModel;
+            if (this._iamUserViewModel == null)
+                return new ActionResults().WithSuccess(false);
+
+            this._iamClient = this._iamUserViewModel.IAMClient;
+            this._model = new EditUserModel();
+
+            this._model.OrignalName = this._iamUserViewModel.User.UserName;
+            this._model.NewName = this._iamUserViewModel.User.UserName;
+
+            EditUserControl control = new EditUserControl(this);
+            ToolkitFactory.Instance.ShellProvider.OpenInEditor(control);
+
+            return new ActionResults()
+                    .WithSuccess(true);
+        }
+
+        public void LoadModel()
+        {
+            loadGroups();
+            loadPolicies();
+            loadAccessKeys();
+
+            this.Model.CommitChanges();
+        }
+
+        #region Load Model
+        void loadGroups()
+        {
+            var assignedGroups = new HashSet<string>();
+            var listGroupsRequest = new ListGroupsForUserRequest() { UserName = this.Model.OrignalName };
+            ListGroupsForUserResponse listGroupResponse = null;
+            do
+            {
+                if (listGroupResponse != null)
+                    listGroupsRequest.Marker = listGroupResponse.Marker;
+                listGroupResponse = this._iamClient.ListGroupsForUser(listGroupsRequest);
+
+                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+                    {
+                        foreach (var group in listGroupResponse.Groups)
+                        {
+                            assignedGroups.Add(group.GroupName);
+                            this.Model.AssignedGroups.Add(group.GroupName);
+                        }
+                    }));
+            } while (listGroupResponse.IsTruncated);
+
+
+            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+                {
+                    var rootGroup = this._iamUserViewModel.IAMUserRootViewModel.IAMRootViewModel.IAMGroupRootViewModel;
+                    foreach (IViewModel model in rootGroup.Children)
+                    {
+                        IAMGroupViewModel groupModel = model as IAMGroupViewModel;
+                        if (groupModel == null)
+                            continue;
+
+
+                        if (!assignedGroups.Contains(groupModel.Group.GroupName))
+                            this.Model.AvailableGroups.Add(groupModel.Group.GroupName);
+                    }
+                }));
+        }
+
+        void loadPolicies()
+        {
+            var listPolicyRequest =
+                new ListUserPoliciesRequest() { UserName = this.Model.OrignalName };
+            ListUserPoliciesResponse listPolicyResponse = null;
+            do
+            {
+                if (listPolicyResponse != null)
+                    listPolicyRequest.Marker = listPolicyResponse.Marker;
+                listPolicyResponse = this._iamClient.ListUserPolicies(listPolicyRequest);
+
+                foreach (var policyName in listPolicyResponse.PolicyNames)
+                {
+                    var policyModel = new IAMPolicyModel {Name = policyName};
+
+                    try
+                    {
+                        var response = this._iamClient.GetUserPolicy(new GetUserPolicyRequest()
+                        {
+                            UserName = this.Model.OrignalName,
+                            PolicyName = policyName
+                        });
+                        policyModel.Policy = Policy.FromJson(response.GetDecodedPolicyDocument());
+
+                        ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() => this.Model.IAMPolicyModels.Add(policyModel)));
+                    }
+                    catch (Exception e)
+                    {
+                        LOGGER.Error("Error loading policy " + policyName, e);
+                        ToolkitFactory.Instance.ShellProvider.ShowError("Error parsing template " + policyName + ": " + e.Message);
+                    }
+                }
+            }
+            while (listPolicyResponse.IsTruncated);
+        }
+
+        void loadAccessKeys()
+        {
+            var secretKeys = AccessKeyModel.LoadSecretKeysLocalRepository();
+
+            var listAccessKeysRequest =
+                new ListAccessKeysRequest()
+                {
+                    UserName = this.Model.OrignalName
+                };
+            ListAccessKeysResponse listAccessKeysResponse = null;
+            do
+            {                
+                if (listAccessKeysResponse != null)
+                    listAccessKeysRequest.Marker = listAccessKeysResponse.Marker;
+                listAccessKeysResponse = this._iamClient.ListAccessKeys(listAccessKeysRequest);
+
+                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+                    {
+                        foreach (var metadata in listAccessKeysResponse.AccessKeyMetadata)
+                        {
+                            string secretKey = secretKeys[metadata.AccessKeyId];
+
+                            var accessModel = new AccessKeyModel(
+                                metadata.AccessKeyId, metadata.Status, metadata.CreateDate,
+                                !string.IsNullOrEmpty(secretKey), secretKey);
+
+                            this._model.AccessKeys.Add(accessModel);
+                        }
+                    }));
+            }
+            while (listAccessKeysResponse.IsTruncated);
+        }
+        #endregion
+
+        public void Refresh()
+        {
+            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+                {
+                    this._model.AccessKeys.Clear();
+                    this._model.AssignedGroups.Clear();
+                    this._model.AvailableGroups.Clear();
+                    this._model.IAMPolicyModels.Clear();
+                }));
+            this.LoadModel();
+        }
+
+        public void Persist()
+        {
+            if (!this.Model.OrignalName.Equals(this.Model.NewName))
+            {
+                var request = new UpdateUserRequest()
+                {
+                    UserName = this.Model.OrignalName,
+                    NewUserName = this.Model.NewName
+                };
+                this._iamClient.UpdateUser(request);
+
+                this.Model.OrignalName = this.Model.NewName;
+
+                if (this._iamUserViewModel != null)
+                {
+                    this._iamUserViewModel.UpdateUser(this.Model.OrignalName);
+                }
+            }
+
+            foreach (var group in this.Model.AssignedGroups)
+            {
+                if (!this.Model.OrignalAssignedGroups.Contains(group))
+                {
+                    var request = new AddUserToGroupRequest()
+                    {
+                        GroupName = group,
+                        UserName = this.Model.NewName
+                    };
+                    this._iamClient.AddUserToGroup(request);
+                }
+            }
+
+            foreach (var group in this.Model.OrignalAssignedGroups)
+            {
+                if (!this.Model.AssignedGroups.Contains(group))
+                {
+                    var request = new RemoveUserFromGroupRequest()
+                    {
+                        GroupName = group,
+                        UserName = this.Model.NewName
+                    };
+                    this._iamClient.RemoveUserFromGroup(request);
+                }
+            }
+
+            foreach (var policyModel in this.Model.DeletedPolicies)
+            {
+                if (!this.Model.NewPolicies.Contains(policyModel))
+                {
+                    var request = new DeleteUserPolicyRequest()
+                    {
+                        UserName = this.Model.NewName,
+                        PolicyName = policyModel
+                    };
+                    this._iamClient.DeleteUserPolicy(request);
+                }
+            }
+
+            foreach (var policyModel in this.Model.IAMPolicyModels)
+            {
+                var request = new PutUserPolicyRequest()
+                {
+                    UserName = this.Model.OrignalName,
+                    PolicyName = policyModel.Name,
+                    PolicyDocument = policyModel.Policy.ToJson()
+                };
+                this._iamClient.PutUserPolicy(request);
+            }
+
+            this.Model.CommitChanges();
+        }
+
+
+        public AccessKeyModel CreateNewAccessKeys()
+        {
+            var request = new CreateAccessKeyRequest() { UserName = this._model.OrignalName };
+            var response = this._iamClient.CreateAccessKey(request);
+
+            var accessKey = response.AccessKey;
+            var accessModel = new AccessKeyModel(accessKey.AccessKeyId, accessKey.Status, accessKey.CreateDate)
+                                  {
+                                      SecretKey = accessKey.SecretAccessKey
+                                  };
+            this._model.AccessKeys.Add(accessModel);
+            return accessModel;
+        }
+
+        public void DeleteAccessKey(AccessKeyModel accessKeyModel)
+        {
+            // Sanity check so we don't accidently delete the root access keys.
+            if (string.IsNullOrEmpty(this._model.OrignalName))
+                throw new ApplicationException("Missing username");
+
+            var request = new DeleteAccessKeyRequest()
+            {
+                UserName = this._model.OrignalName,
+                AccessKeyId = accessKeyModel.AccessKey
+            };
+            this._iamClient.DeleteAccessKey(request);
+
+            if(accessKeyModel.PersistSecretKeyLocal)
+                accessKeyModel.PersistSecretKeyLocal = false;
+        }
+
+        public void UpdateAccessKey(string accessKeyId, string status)
+        {
+            // Sanity check so we don't accidently delete the root access keys.
+            if (string.IsNullOrEmpty(this._model.OrignalName))
+                throw new ApplicationException("Missing username");
+
+            var request = new UpdateAccessKeyRequest()
+            {
+                UserName = this._model.OrignalName,
+                AccessKeyId = accessKeyId,
+                Status = status
+            };
+            this._iamClient.UpdateAccessKey(request);
+        }
+    }
+}

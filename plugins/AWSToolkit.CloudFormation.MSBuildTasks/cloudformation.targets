@@ -1,0 +1,25 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <UsingTask 
+    TaskName="TemplateCompileTask" 
+    AssemblyFile="AWSToolkit.CloudFormation.MSBuildTasks.dll" />
+
+  <Target Name="GetFrameworkPaths"/>
+
+  <Target Name="ResolveAssemblyReferences"/>
+
+  <Target Name="CoreCompile"/>
+  <Target Name="Build"/>
+  <Target Name="ReBuild"/>
+  <Target Name="Clean"/>
+  
+	<Target Name="Build">
+
+    <TemplateCompileTask
+      SourceFiles="@(Compile)"
+      ProjectPath="$(MSBuildProjectDirectory)"
+      />
+
+  </Target>
+
+</Project>

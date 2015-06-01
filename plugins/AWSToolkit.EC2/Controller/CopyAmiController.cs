@@ -1,0 +1,74 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Windows;
+
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.EC2.Nodes;
+using Amazon.AWSToolkit.EC2.Model;
+
+using Amazon.EC2;
+using Amazon.EC2.Model;
+using Amazon.AWSToolkit.Account;
+
+namespace Amazon.AWSToolkit.EC2.Controller
+{
+    public class CopyAmiController : BulkChangeController<IAmazonEC2, ImageWrapper>
+    {
+        private string _sourceRegion;
+        private RegionEndPointsManager.RegionEndPoints _destinationRegion;
+        private AccountViewModel _account;
+
+        public CopyAmiController(string sourceRegion, RegionEndPointsManager.RegionEndPoints destinationRegion, AccountViewModel account)
+        {            
+            _sourceRegion = sourceRegion;
+            _destinationRegion = destinationRegion;
+            _account = account;
+        }
+
+        protected override string Action
+        {
+            get { return "Copy to Region"; }
+        }
+
+        protected override string ConfirmMessage
+        {
+            get { return string.Format("Are you sure you want to copy this image to {0}: ",_destinationRegion.DisplayName); }
+        }
+
+        protected override void PerformAction(IAmazonEC2 client, ImageWrapper instance)
+        {
+            // Create client for the destination region
+            var endpoint = _destinationRegion.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
+            var config = new AmazonEC2Config {ServiceURL = endpoint.Url};
+            if (endpoint.Signer != null)
+                config.SignatureVersion = endpoint.Signer;
+            if (endpoint.AuthRegion != null)
+                config.AuthenticationRegion = endpoint.AuthRegion;
+
+            AmazonEC2Client ec2Client = new AmazonEC2Client(_account.AccessKey,_account.SecretKey, config);
+            
+            try
+            {
+                var copyImageRequest = new CopyImageRequest
+                {
+                    ClientToken = Guid.NewGuid().ToString(),
+                    Description = instance.Description,
+                    Name = instance.Name,
+                    SourceImageId = instance.ImageId,
+                    SourceRegion = _sourceRegion
+                };
+               var copyImageResponse = ec2Client.CopyImage(copyImageRequest);
+               ToolkitFactory.Instance.ShellProvider.ShowMessage(
+                   "Copy to Region",
+                   string.Format("The copy operation has started, the destination AMI ID is {0}.",copyImageResponse.ImageId));
+            }
+            finally
+            {
+                ec2Client.Dispose();
+            }
+        }
+    }
+}

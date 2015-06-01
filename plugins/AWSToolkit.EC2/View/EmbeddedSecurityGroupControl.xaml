@@ -1,0 +1,179 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.EC2.View.EmbeddedSecurityGroupControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
+    >
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid VerticalAlignment="Stretch"
+          HorizontalAlignment="Stretch"
+          >
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=".5*" />
+            <ColumnDefinition Width=".5*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Label Target="{Binding ElementName=_groupName}" Style="{DynamicResource awsLabelBaseStyle}">
+                _Group Name *:
+            </Label>
+
+            <TextBox x:Name="_groupName" 
+                     VerticalAlignment="Center"
+                     Grid.Column="1"
+                     TextChanged="GroupName_TextChanged"
+                     Style="{DynamicResource awsTextBoxStyle}"/>
+
+            <Label Grid.Column="2"
+                   Target="{Binding ElementName=_groupDescription}"
+                   Style="{DynamicResource awsLabelBaseStyle}">
+                Group _Description *:
+            </Label>
+
+            <TextBox x:Name="_groupDescription" 
+                     VerticalAlignment="Center"
+                     Grid.Column="3"
+                     TextChanged="GroupDescription_TextChanged"
+                     Style="{DynamicResource awsTextBoxStyle}"/>
+
+        </Grid>
+
+        <Label Grid.Row="1" Grid.ColumnSpan="2" FontStyle="Italic" Style="{DynamicResource awsLabelBaseStyle}" FontSize="14">
+            Inbound Rules:
+        </Label>
+
+        <Grid Grid.Row="2" Margin="4">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Label Target="{Binding ElementName=_protocols}" Style="{DynamicResource awsLabelBaseStyle}">
+                _Protocol:
+            </Label>
+
+            <ComboBox x:Name="_protocols" 
+                      Grid.Column="1"
+                      VerticalAlignment="Center"
+                      DisplayMemberPath="DisplayName" 
+                      HorizontalAlignment="Stretch" 
+                      SelectedItem="{Binding IPProtocol}"                          
+                      SelectionChanged="onProtocolSelectionChanged"
+                      Style="{DynamicResource awsComboBoxStyle}"/>
+
+            <Label Target="{Binding ElementName=_portRange}"
+                    Grid.Row="1"
+                    Margin="0,2,0,2"
+                   Style="{DynamicResource awsLabelBaseStyle}">
+                Port _Range:
+            </Label>
+
+            <StackPanel Grid.Row="1" 
+                        Grid.Column="1" 
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        Margin="0,2,0,2">
+                <TextBox x:Name="_portRange"
+                         TextChanged="PortRange_TextChanged"
+                         Style="{DynamicResource awsTextBoxStyle}"/>
+                <TextBlock TextWrapping="Wrap" Style="{DynamicResource awsFieldHintTextStyle}" FontStyle="Italic">(e.g., 80 or 49152-65535)</TextBlock>
+            </StackPanel>
+
+            <Label Target="{Binding ElementName=_source}"
+                   Grid.Row="2"
+                   Style="{DynamicResource awsLabelBaseStyle}">
+                _Source:
+            </Label>
+
+            <StackPanel Grid.Row="2"
+                            Grid.Column="1"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
+                <TextBox x:Name="_source" Style="{DynamicResource awsTextBoxStyle}"/>
+                <TextBlock TextWrapping="Wrap" Style="{DynamicResource awsFieldHintTextStyle}" FontStyle="Italic">(e.g., 192.168.2.0/24, sg-47ad482e, or 1234567890/default)</TextBlock>
+            </StackPanel>
+
+            <Button x:Name="_addPermission"
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    Margin="4"
+                    Click="AddPermission_Click"
+                    >
+                <StackPanel Orientation="Horizontal">
+                    <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding AddIcon}" />
+                    <TextBlock>Add Rule</TextBlock>
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <commonui:ToolkitDataGridWrapper Grid.Row="2"
+                          Grid.Column="1"
+                          AutoGenerateColumns="False" 
+                          x:Name="_permissions" 
+                          CanUserAddRows="False" 
+                          CanUserDeleteRows="False" 
+                          CanUserSortColumns="False"
+                          HorizontalAlignment="Stretch" 
+                          HeadersVisibility="All"
+                          Margin="4"
+                          HorizontalScrollBarVisibility="Hidden"
+                          VerticalScrollBarVisibility="Auto"
+                      >
+
+            <commonui:ToolkitDataGridWrapper.Columns>
+                <DataGridTextColumn Header="Service/Port" 
+                                        Binding="{Binding FormattedIPProtocol, Mode=OneWay}" 
+                                        Width="auto"
+                                        />
+                <DataGridTextColumn Header="Source" 
+                                        Binding="{Binding Source, Mode=OneWay}" 
+                                        Width="*"/>
+
+                <DataGridTemplateColumn Header="Remove" Width="auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Button Click="RemovePermission_Click">
+                                    <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RemoveIcon}" />
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </commonui:ToolkitDataGridWrapper.Columns>
+
+        </commonui:ToolkitDataGridWrapper>
+    </Grid>
+
+</commonui:BaseAWSUserControl>

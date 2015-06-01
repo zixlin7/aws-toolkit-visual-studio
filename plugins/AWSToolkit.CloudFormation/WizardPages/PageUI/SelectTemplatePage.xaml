@@ -1,0 +1,128 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI.SelectTemplatePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Height="auto" Width="auto">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid Margin="0,12,0,4">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <Label Margin="5,5,5,5" Grid.Row="0" Grid.Column="0" 
+               VerticalAlignment="Top" Style="{DynamicResource awsLabelBaseStyle}"
+               Target="{Binding ElementName=_ctlStackName}">
+            Stack _Name:
+        </Label>
+        <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="1" >
+            <TextBox Margin="5,5,5,5" Name="_ctlStackName" 
+                     Text="{Binding StackName, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{DynamicResource awsTextBoxStyle}"/>
+            <TextBlock Foreground="Red" x:Name="_nameValidatedMsg" 
+                       Visibility="Hidden" FontStyle="Italic" Margin="0,4,0,0" 
+                       Text="Must contain only letters, numbers, dashes and start with an alpha character." 
+                       TextWrapping="Wrap" 
+                       Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        </StackPanel>
+
+
+        <Label Margin="5,5,5,5" Grid.Row="1" Grid.Column="0" Style="{DynamicResource awsLabelBaseStyle}">
+            Stack Template Source:
+        </Label>
+
+        <RadioButton Margin="15,5,5,5" Grid.Row="2" Grid.Column="0" 
+                     Name="_ctlUseLocalFile" 
+                     GroupName="source" 
+                     IsChecked="{Binding UseLocalFile, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{DynamicResource awsRadioButtonBaseStyle}">
+            Select a _file:
+        </RadioButton>
+        <DockPanel Margin="5,5,5,5" Grid.Row="2" Grid.Column="1">
+            <Button DockPanel.Dock="Right" Margin="5,0,5,0" Padding="5,0,5,0" 
+                    IsEnabled="{Binding ElementName=_ctlUseLocalFile, Path=IsChecked}"  Click="onBrowseTemplateClick"
+                    Content="..."/>
+            <TextBox Name="_ctlLocalFile" IsReadOnly="True" Style="{DynamicResource awsTextBoxStyle}"/>
+        </DockPanel> 
+        
+        <RadioButton Margin="15,5,5,5" Grid.Row="3" Grid.Column="0" 
+                     Name="_ctlUseSampleTemplate" 
+                     GroupName="source" 
+                     IsChecked="{Binding UseSampleTemplate, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{DynamicResource awsRadioButtonBaseStyle}">
+            Use a sample te_mplate:
+        </RadioButton>
+        <ComboBox IsEnabled="{Binding ElementName=_ctlUseSampleTemplate, Path=IsChecked}" Margin="5,5,5,5" 
+                  Grid.Row="3" Grid.Column="1" DisplayMemberPath="Name" SelectedItem="{Binding SampleTemplate, UpdateSourceTrigger=PropertyChanged}" 
+                  ItemsSource="{Binding Templates}" Name="_ctlSampleTemplates"
+                  Style="{DynamicResource awsComboBoxStyle}"/>
+
+        <Label Grid.Column="0" Grid.Row="4" Margin="5, 20, 0, 5" 
+               Style="{DynamicResource awsLabelBaseStyle}"
+               Target="{Binding ElementName=_ctlSNSTopic}">
+            SNS _Topic (Optional):
+        </Label>
+        
+        <Grid Grid.Column="1" Grid.Row="4" Margin="5, 20, 0, 5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox Grid.Column="0" Grid.Row="0" IsEditable="True" Text="{Binding SNSTopic}" Name="_ctlSNSTopic" Style="{DynamicResource awsComboBoxStyle}"/>
+            <Button Grid.Column="1" Grid.Row="0" Margin="5,0,5,0" Click="onCreateTopicClick">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" Source="..\..\Resources\Images\create_topic.png"/>
+                        <TextBlock Margin="5,0,5,0">New Topic</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </Grid>
+
+        <Label Margin="5,5,5,5" Grid.Column="0" Grid.Row="5" 
+                   Style="{DynamicResource awsLabelBaseStyle}"
+               Target="{Binding ElementName=_ctlTimeout}">
+            C_reation Timeout:
+        </Label>
+        <ComboBox Margin="5,5,5,5" Grid.Column="1" Grid.Row="5" 
+                  Text="{Binding CreationTimeout}" 
+                  SelectedIndex="0" HorizontalAlignment="Left"
+                  x:Name="_ctlTimeout"
+                  Style="{DynamicResource awsComboBoxStyle}">
+            <ComboBoxItem>None</ComboBoxItem>
+            <ComboBoxItem>5 min</ComboBoxItem>
+            <ComboBoxItem>10 min</ComboBoxItem>
+            <ComboBoxItem>15 min</ComboBoxItem>
+            <ComboBoxItem>20 min</ComboBoxItem>
+            <ComboBoxItem>30 min</ComboBoxItem>
+            <ComboBoxItem>60 min</ComboBoxItem>
+            <ComboBoxItem>90 min</ComboBoxItem>
+        </ComboBox>
+
+        <CheckBox Margin="5,5,5,5" 
+                  Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2" 
+                  IsChecked="{Binding RollbackOnFailure}"
+                  Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+            Roll_back on failure
+        </CheckBox>
+    </Grid>
+</commonui:BaseAWSUserControl>

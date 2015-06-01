@@ -1,0 +1,79 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.ElasticBeanstalk.View.Components.ServerSettings"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.ElasticBeanstalk.View.Components"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Height="auto" Width="auto">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <DockPanel>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid MaxWidth="450" HorizontalAlignment="Left">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,5,5,20" Grid.ColumnSpan="2" TextWrapping="Wrap" Style="{DynamicResource SectionDescription}">These settings allow you to control your environment's servers and enable login.</TextBlock>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}">*EC2 Instance Type</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="1" Grid.Column="1" Margin="5,5,5,0" HorizontalAlignment="Left"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:launchconfiguration"
+                    PropertySystemName="InstanceType" 
+                    />
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}">*EC2 Security Group</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="2" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:launchconfiguration"
+                    PropertySystemName="SecurityGroups" 
+                    />
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}">*Existing Key Pair</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="3" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:launchconfiguration"
+                    PropertySystemName="EC2KeyName" 
+                    />
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}">*Monitoring Interval</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="4" Grid.Column="1" Margin="5,5,5,0" HorizontalAlignment="Left" 
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:launchconfiguration"
+                    PropertySystemName="MonitoringInterval" 
+                    />
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}">*AMI ID</TextBlock>
+                <components:ConfigurationOptionControl
+                    Grid.Row="5" Grid.Column="1" Margin="5,5,5,0"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:autoscaling:launchconfiguration"
+                    PropertySystemName="ImageId" 
+                    />
+
+                <TextBlock Grid.Row="6" Grid.Column="0" Margin="20,5,5,5" Grid.ColumnSpan="2" TextWrapping="Wrap" Style="{DynamicResource SectionDescription}">Note: *It may take a few minutes to see changes to these options take effect in your environment.</TextBlock>
+            </Grid>
+        </ScrollViewer>
+    </DockPanel>
+</commonui:BaseAWSUserControl>

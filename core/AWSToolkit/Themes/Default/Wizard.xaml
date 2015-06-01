@@ -1,0 +1,138 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 
+    **********************************************************************
+    the backplane grid of the wizard; this contains all other components 
+    overlaid on top
+    ********************************************************************** 
+    -->
+    <Style x:Key="awsWizardBackplaneStyle" TargetType="{x:Type Grid}">
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Background" Value="{DynamicResource awsWizardBackplaneBackgroundBrushKey}"/>
+    </Style>
+
+    <!-- 
+    **********************************************************************
+    the top banner containing logos and per-page navigational text
+    ********************************************************************** 
+    -->
+    <Style x:Key="awsWizardHeaderContainerStyle" TargetType="{x:Type Grid}">
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource awsWizardBackplaneBackgroundBrushKey}"/>
+    </Style>
+
+    <Style x:Key="awsWizardHeaderStandardLogoStyle" TargetType="{x:Type Image}">
+        <Setter Property="Margin" Value="4" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="awsWizardHeaderPageHeaderTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Margin" Value="0,4,0,0" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="Foreground" Value="{DynamicResource awsWizardGroupHeaderForegroundBrushKey}"/>
+    </Style>
+
+    <Style x:Key="awsWizardHeaderPageSubHeaderTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="Margin" Value="0,4,0,0" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="TextTrimming" Value="None" />
+        <Setter Property="Foreground" Value="{DynamicResource awsWizardGroupSubHeaderForegroundBrushKey}"/>
+    </Style>
+
+    <!-- 
+    **********************************************************************
+    the groups container is on the left side of the wizard and contains 
+    grouping labels for the logical groups of pages in the wizard
+    **********************************************************************
+    -->
+
+    <Style x:Key="awsWizardPageGroupPanelStyle" TargetType="{x:Type Grid}">
+        <Setter Property="Background" Value="{DynamicResource awsWizardPageGroupPanelBrushKey}"/>
+    </Style>
+
+    <Style x:Key="awsWizardPageGroupContainerStyle" TargetType="{x:Type ItemsControl}">
+        <Setter Property="Margin" Value="12,24,4,12"/>
+        <Setter Property="Background" Value="{DynamicResource awsWizardPageGroupPanelBrushKey}"/>
+    </Style>
+
+    <Style x:Key="awsWizardPageGroupItemStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource awsWizardPageGroupForegroundBrushKey}" />
+        <Setter Property="Margin" Value="0,2" />
+    </Style>
+
+    <!-- the central area of the wizard containing the actual page content -->
+    <Style x:Key="awsWizardPagesContainerStyle" TargetType="{x:Type Grid}">
+        <Setter Property="Background" Value="{DynamicResource awsWizardPagesPanelBrushKey}"/>
+    </Style>
+
+    <!-- the footer area of the wizard, containing the primary navigation buttons -->
+    <Style x:Key="awsWizardFooterContainerStyle" TargetType="{x:Type Grid}">
+        <Setter Property="Background" Value="{DynamicResource awsWizardFooterContainerBackgroundBrushKey}"/>
+    </Style>
+
+    <Style x:Key="awsWizardFooterPageNavButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Width" Value="78" />
+        <Setter Property="Height" Value="25" />
+        <Setter Property="Margin" Value="4,0,0,0" />
+    </Style>
+
+    <Style x:Key="awsWizardFooterPageNavButtonImageStyle" TargetType="{x:Type Image}">
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value=".3" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="awsWizardFieldLabelStyle" TargetType="{x:Type Label}">
+        <Setter Property="VerticalAlignment" Value="Bottom" />
+        <Setter Property="Foreground" Value="{DynamicResource awsDefaultControlForegroundBrushKey}" />
+    </Style>
+    
+    <Style x:Key="awsWizardGroupHeaderStyle" TargetType="{x:Type Label}">
+        <Setter Property="Foreground" Value="{DynamicResource awsWizardGroupHeaderForegroundBrushKey}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <Style x:Key="awsWizardGroupSubHeaderStyle" TargetType="{x:Type Label}">
+        <Setter Property="Foreground" Value="{DynamicResource awsWizardGroupSubHeaderForegroundBrushKey}" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <Style x:Key="awsWizardReviewPanelSectionHeaderStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="Foreground" Value="{DynamicResource awsWizardReviewPanelSectionHeaderBrushKey}" />
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="FontFamily" Value="Segou UI" />
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Margin" Value="4"/>
+    </Style>
+
+    <Style x:Key="awsWizardReviewPanelSectionTextStyle" TargetType="{x:Type ContentControl}">
+        <Setter Property="TextBlock.Foreground" Value="{DynamicResource awsWizardReviewPanelSectionTextBrushKey}" />
+        <Setter Property="TextBlock.FontWeight" Value="Normal"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="TextBlock.FontFamily" Value="Segou UI" />
+        <Setter Property="TextBlock.FontSize" Value="12"/>
+        <Setter Property="Margin" Value="16,4,8,12"/>
+    </Style>
+    
+    <Style x:Key="awsWizardReviewPanelDividerStyle" TargetType="{x:Type Border}">
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="Margin" Value="16,0,8,4"/>
+        <Setter Property="Height" Value="1"/>
+        <Setter Property="Background" Value="{DynamicResource awsWizardReviewPanelSectionDividerBrushKey}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource awsWizardReviewPanelSectionDividerBrushKey}"/>
+    </Style>
+    
+</ResourceDictionary>

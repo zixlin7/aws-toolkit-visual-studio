@@ -1,0 +1,38 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.SimpleDB.View.AddAttributeControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
+    Loaded="OnLoaded"                         
+    Height="120" Width="300">
+    
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}">Attribute Name:</TextBlock>
+        <TextBox Name="_ctlAttributeName" Grid.Column="1" Grid.Row="0" Margin="5,5,5,5" 
+                 Text="{Binding AttributeName, UpdateSourceTrigger=PropertyChanged}"
+                 Style="{DynamicResource awsTextBoxStyle}"/>
+        
+        <TextBlock Margin="5,5,5,5" Grid.Column="1" Grid.Row="1" TextWrapping="Wrap" 
+                   VerticalAlignment="Top"
+                   Style="{DynamicResource awsFieldHintTextStyle}"
+                   FontStyle="Italic">
+            This attribute will not exist in SimpleDB until an item has committed data for it.
+        </TextBlock>
+    </Grid>
+</commonui:BaseAWSControl>

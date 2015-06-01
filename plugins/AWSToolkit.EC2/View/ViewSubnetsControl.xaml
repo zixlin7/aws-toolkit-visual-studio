@@ -1,0 +1,80 @@
+﻿<commonui:BaseAWSView x:Class="Amazon.AWSToolkit.EC2.View.ViewSubnetsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
+            xmlns:components="clr-namespace:Amazon.AWSToolkit.EC2.View.Components"
+            xmlns:uicomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"                        
+            xmlns:ec2datagrid="clr-namespace:Amazon.AWSToolkit.EC2.View.DataGrid"                      
+            xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"  
+            Height="600" Width="800">
+
+    <commonui:BaseAWSView.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSView.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Grid.Column="0" LastChildFill="True" Margin="0,0,0,0">
+            <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
+                <Button Click="onCreateClick">
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" Source="..\Resources\Images\subnet-add.png"/>
+                            <TextBlock>Create Subnet</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+                <Button Click="onDeleteClick" Name="_ctlDelete" IsEnabled="False">
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" Source="..\Resources\Images\subnet-remove.png"/>
+                            <TextBlock>Delete</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+                <Button Click="onRefreshClick">
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                            <TextBlock>Refresh</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+                <Separator />
+                <uicomponents:HeaderedDropPanel 
+                    DropDownImage="{Binding Source={StaticResource CommonIcons}, Path=ShowHideIcon}"
+                    DropDownLabel="Show/Hide"
+                    PanelHeaderLabel="Show/Hide Columns"
+                    DropPanelOpening="OnColumnCustomizationDropPanelOpening"
+                    ApplyPressed="OnColumnCustomizationApplyPressed"
+                    >
+                    <components:ShowHideColumnsPanel 
+                        x:Name="_columnCustomizationPanel" 
+                        ShowCustomAttributePanel="True"
+                        />
+                </uicomponents:HeaderedDropPanel>
+            </ToolBar>
+
+            <ec2datagrid:CustomizeColumnGrid x:Name="_ctlDataGrid" 
+                GridContextMenuOpening="onGridContextMenu"          
+                GridSelectionChanged="onSelectionChanged"  
+                GotFocus="onGotFocus"                                             
+                KeyField="SubnetId"                                             
+                ItemsSource="{Binding Subnets}"/>
+        </DockPanel>
+            
+    </Grid>
+</commonui:BaseAWSView>

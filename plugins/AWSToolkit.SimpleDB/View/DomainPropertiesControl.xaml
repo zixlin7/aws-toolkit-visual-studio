@@ -1,0 +1,53 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.SimpleDB.View.DomainPropertiesControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
+    Height="250" Width="300">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Margin="5, 5, 5, 5" Grid.Column="0" Grid.Row="0" Style="{DynamicResource awsTextBlockBaseStyle}">Domain:</TextBlock>
+        <TextBox Margin="5, 5, 5, 5" Grid.Column="1" Grid.Row="0" Text="{Binding Domain, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}"></TextBox>
+
+        <TextBlock Margin="5, 5, 5, 5" Grid.Column="0" Grid.Row="1" Style="{DynamicResource awsTextBlockBaseStyle}">Item Count:</TextBlock>
+        <TextBox Margin="5, 5, 5, 5" Grid.Column="1" Grid.Row="1" Text="{Binding ItemCount, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}"></TextBox>
+
+        <TextBlock Margin="5, 5, 5, 5" Grid.Column="0" Grid.Row="2" Style="{DynamicResource awsTextBlockBaseStyle}">Attribute Value Count:</TextBlock>
+        <TextBox Margin="5, 5, 5, 5" Grid.Column="1" Grid.Row="2" Text="{Binding AttributeValueCount, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}"></TextBox>
+
+        <TextBlock Margin="5, 5, 5, 5" Grid.Column="0" Grid.Row="3" Style="{DynamicResource awsTextBlockBaseStyle}">Attribute Name Count:</TextBlock>
+        <TextBox Margin="5, 5, 5, 5" Grid.Column="1" Grid.Row="3" Text="{Binding AttributeNameCount, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}"></TextBox>
+
+        <TextBlock Margin="5, 5, 5, 5" Grid.Column="0" Grid.Row="4" Style="{DynamicResource awsTextBlockBaseStyle}">Item Names Size:</TextBlock>
+        <TextBox Margin="5, 5, 5, 5" Grid.Column="1" Grid.Row="4" Text="{Binding ItemNamesSizeBytes, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}"></TextBox>
+
+        <TextBlock Margin="5, 5, 5, 5" Grid.Column="0" Grid.Row="5" Style="{DynamicResource awsTextBlockBaseStyle}">Attribute Values Size:</TextBlock>
+        <TextBox Margin="5, 5, 5, 5" Grid.Column="1" Grid.Row="5" Text="{Binding AttributeValuesSizeBytes, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}"></TextBox>
+
+        <TextBlock Margin="5, 5, 5, 5" Grid.Column="0" Grid.Row="6" Style="{DynamicResource awsTextBlockBaseStyle}">Attribute Names Size:</TextBlock>
+        <TextBox Margin="5, 5, 5, 5" Grid.Column="1" Grid.Row="6" Text="{Binding AttributeNamesSizeBytes, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}"></TextBox>
+
+    </Grid>
+</commonui:BaseAWSControl>

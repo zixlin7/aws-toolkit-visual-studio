@@ -1,0 +1,191 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.Lambda.View.Components.FunctionLogsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="700">
+
+    <commonui:BaseAWSUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <ControlTemplate TargetType="ListBox" x:Key="LogControlTemplate">
+                <ScrollViewer HorizontalScrollBarVisibility="Hidden"
+                              VerticalScrollBarVisibility="Auto"
+                              Focusable="false" 
+                              Padding="{TemplateBinding Padding}"
+                              CanContentScroll="True">
+                    <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                </ScrollViewer>
+            </ControlTemplate>
+
+            <Style x:Key="LogListBoxItemStyle" TargetType="ListBoxItem">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="Margin" Value="1" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Border x:Name="Root"
+                                    BorderBrush="{DynamicResource awsListBoxPanelItemBackgroundBrushKey}"
+                                    Background="{DynamicResource awsListBoxPanelItemBackgroundBrushKey}"
+                                    BorderThickness="2"
+                                    CornerRadius="4"
+                                    Padding="4"
+                                    >
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                      HorizontalAlignment="Left"
+                                                      VerticalAlignment="Center"
+                                                      />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource awsListBoxPanelItemHoverBorderBrushKey}" TargetName="Root" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource awsListBoxPanelItemSelectedBorderBrushKey}" TargetName="Root" />
+                                    <Setter Property="Background" Value="{DynamicResource awsListBoxPanelItemSelectedBackgroundBrushKey}" TargetName="Root"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="LogPanel" TargetType="{x:Type StackPanel}">
+                <Setter Property="Margin" Value="0,0,4,0"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+            </Style>
+
+            <Style x:Key="LogLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource awsLabelBaseStyle}">
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+                <Setter Property="Foreground" Value="#050505" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="Margin" Value="0"/>
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="Padding" Value="0"/>
+            </Style>
+
+            <Style x:Key="LogField" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource awsTextBlockBaseStyle}">
+                <Setter Property="Margin" Value="2,4,2,2"  />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            </Style>
+
+            <DataTemplate x:Key="LogItemTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button VerticalAlignment="Center" 
+                            HorizontalAlignment="Left" 
+                            Margin="0,16,0,2"
+                            ToolTip="Downloads the log stream"
+                            Click="GetLogStream_OnClick"
+                            Tag="{Binding Path=ID}">
+                        <Image Width="16" Height="16" 
+                               DataContext="{DynamicResource CommonIcons}" 
+                               Source="{Binding DownloadIcon}"
+                               />
+                    </Button>
+
+                    <Button VerticalAlignment="Center" 
+                            HorizontalAlignment="Left" 
+                            Grid.Column="1"
+                            Margin="4,16,0,2"
+                            Visibility="{Binding IsNonRootDevice, Converter={StaticResource Bool2VisConverter}}"
+                            ToolTip="Deletes the log stream"
+                            Click="DeleteLogStream_OnClick"
+                            Tag="{Binding Path=ID}">
+                        <Image Width="16" Height="16" 
+                               DataContext="{DynamicResource CommonIcons}" 
+                               Source="{Binding RemoveIcon}"
+                               />
+                    </Button>
+
+
+                    <StackPanel Grid.Column="2" 
+                                Style="{StaticResource LogPanel}"
+                                Margin="10,0,10,0"
+                                MinWidth="250">
+
+                        <Label Style="{StaticResource LogLabel}" 
+                               Content="Stream Name"
+                               Name="TypeLabel"/>
+
+                        <TextBlock Style="{StaticResource LogField}"
+                            Text="{Binding LogStreamName}"
+                            />
+
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="3" 
+                                Style="{StaticResource LogPanel}"
+                                Margin="10,0,10,0"
+                                MinWidth="90">
+                        <Label Style="{StaticResource LogLabel}" 
+                               Content="First Event"/>
+                        <TextBlock Style="{StaticResource LogField}"
+                            Text="{Binding FirstEventTimestamp}"
+                            />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="4" 
+                                Style="{StaticResource LogPanel}"
+                                Margin="10,0,10,0"
+                                MinWidth="90">
+                        <Label Style="{StaticResource LogLabel}" 
+                               Content="Last Event"/>
+                        <TextBlock Style="{StaticResource LogField}"
+                            Text="{Binding LastEventTimestamp}"
+                            />
+                    </StackPanel>
+
+                </Grid>
+            </DataTemplate>
+
+        </ResourceDictionary>
+    </commonui:BaseAWSUserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}" TextWrapping="Wrap" Margin="4,8">
+            AWS Lambda logs all requests handled by your function and also automatically stores logs generated by your code through Amazon CloudWatch Logs.
+        </TextBlock>
+
+        <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}" TextWrapping="Wrap" Margin="4,0,4,16" Grid.Row="1">
+            Note: In order for AWS Lambda to write to CloudWatch Logs the IAM role for the Lambda function must give permission to CloudWatch Logs.
+        </TextBlock>
+
+        <Border BorderBrush="{DynamicResource awsDefaultControlBorderBrushKey}" BorderThickness="2"
+                Grid.Row="2"
+                >
+            <ListBox x:Name="_ctlLogs" 
+                         ItemContainerStyle="{StaticResource LogListBoxItemStyle}"
+                         Template="{StaticResource LogControlTemplate}"
+                         ItemTemplate="{StaticResource LogItemTemplate}"
+                         HorizontalContentAlignment="Stretch"
+                         VerticalAlignment="Stretch"
+                         ItemsSource="{Binding Logs}"
+                         SelectedItem="{Binding SelectedLog, Mode=TwoWay}"
+                         IsSynchronizedWithCurrentItem="True"
+                         />
+        </Border>
+
+    </Grid>
+</commonui:BaseAWSUserControl>

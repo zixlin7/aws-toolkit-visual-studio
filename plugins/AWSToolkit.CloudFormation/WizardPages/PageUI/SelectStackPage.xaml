@@ -1,0 +1,126 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI.SelectStackPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             xmlns:commoncomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
+             mc:Ignorable="d" 
+             Height="auto" Width="auto">
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <Style x:Key="HeaderStyleRadioButton" TargetType="{x:Type RadioButton}">
+                <Setter Property="Foreground" Value="{DynamicResource awsWizardGroupHeaderForegroundBrushKey}" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="FontSize" Value="13" />
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <commoncomponents:AccountAndRegionPicker Grid.Row="0" Margin="0" Grid.Column="0" Grid.ColumnSpan="2" x:Name="_ctlAccountAndRegionPicker"/>
+
+
+
+        <RadioButton Margin="5,20,5,5" Grid.Row="1" Grid.Column="0" Name="_ctlCreateStack" GroupName="StackOperation" IsChecked="True" Checked="_ctlCreateStack_Checked"
+                     Style="{StaticResource HeaderStyleRadioButton}">
+            Create New Stack
+        </RadioButton>
+        <StackPanel Grid.Row="1" Grid.Column="1">
+            <TextBox  Margin="5,15,5,5" Name="_ctlNewStackName" 
+                      VerticalAlignment="Bottom" 
+                      TextChanged="_ctlNewStackName_TextChanged"
+                      Style="{DynamicResource awsTextBoxStyle}"/>
+            <TextBlock Foreground="Red" 
+                       x:Name="_nameValidatedMsg" 
+                       Visibility="Hidden" 
+                       FontStyle="Italic" 
+                       Margin="0,4,0,0" 
+                       Text="Must contain only letters, numbers, dashes and start with an alpha character." 
+                       TextWrapping="Wrap" 
+                       Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        </StackPanel>
+
+
+        <Label Style="{DynamicResource awsWizardFieldLabelStyle}" Margin="25,5,0,0" Grid.Column="0" Grid.Row="2" >SNS Topic (Optional):</Label>
+
+        <Grid Grid.Column="1" Grid.Row="2" Margin="5, 5, 0, 5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+
+            <ComboBox Grid.Column="0" Grid.Row="0" IsEditable="True" Text="{Binding SNSTopic}" Name="_ctlSNSTopic" 
+                      IsEnabled="{Binding ElementName=_ctlCreateStack, Path=IsChecked}" 
+                      Style="{DynamicResource awsComboBoxStyle}"/>
+            <Button Grid.Column="1" Grid.Row="0" Margin="5,0,5,0" Click="onCreateTopicClick" IsEnabled="{Binding ElementName=_ctlCreateStack, Path=IsChecked}">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" Source="..\..\Resources\Images\create_topic.png"/>
+                        <TextBlock Margin="5,0,5,0">New Topic</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </Grid>
+
+        <Label Style="{DynamicResource awsWizardFieldLabelStyle}" Margin="25,5,5,5" Grid.Column="0" Grid.Row="3">Creation Timeout:</Label>
+        <ComboBox Margin="5,5,5,5" Grid.Column="1" Grid.Row="3" Name="_ctlCreationTimeout" SelectedIndex="0" 
+                  HorizontalAlignment="Left" IsEnabled="{Binding ElementName=_ctlCreateStack, Path=IsChecked}"  
+                  VerticalAlignment="Bottom"
+                  Style="{DynamicResource awsComboBoxStyle}">
+            <ComboBoxItem>None</ComboBoxItem>
+            <ComboBoxItem>5 min</ComboBoxItem>
+            <ComboBoxItem>10 min</ComboBoxItem>
+            <ComboBoxItem>15 min</ComboBoxItem>
+            <ComboBoxItem>20 min</ComboBoxItem>
+            <ComboBoxItem>30 min</ComboBoxItem>
+            <ComboBoxItem>60 min</ComboBoxItem>
+            <ComboBoxItem>90 min</ComboBoxItem>
+        </ComboBox>
+
+        <CheckBox Margin="25,5,5,5" 
+                  Grid.Column="0" 
+                  Grid.Row="4" 
+                  Grid.ColumnSpan="2" 
+                  Name="_ctlRollbackOnFailure" 
+                  IsEnabled="{Binding ElementName=_ctlCreateStack, Path=IsChecked}"
+                  Style="{DynamicResource awsCheckboxButtonStyle}">
+            Rollback on failure
+        </CheckBox>
+
+        <RadioButton Margin="5,20,5,5" 
+                     Grid.Row="5" 
+                     Grid.Column="0" 
+                     Name="_ctlUpdateStack" 
+                     GroupName="StackOperation" 
+                     Checked="_ctlCreateStack_Checked"
+                     Style="{StaticResource HeaderStyleRadioButton}">
+            Update Existing Stack
+        </RadioButton>
+        <ComboBox IsEnabled="{Binding ElementName=_ctlUpdateStack, Path=IsChecked}" Margin="5,20,5,5" 
+                  Grid.Row="5" Grid.Column="1" ItemsSource="{Binding Templates}" Name="_ctlExistingStacks"  
+                  VerticalAlignment="Bottom" SelectionChanged="_ctlExistingStacks_SelectionChanged"
+                  Style="{DynamicResource awsComboBoxStyle}"/>
+
+    </Grid>
+</commonui:BaseAWSUserControl>

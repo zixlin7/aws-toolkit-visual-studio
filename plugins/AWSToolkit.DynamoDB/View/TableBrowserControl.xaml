@@ -1,0 +1,166 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.DynamoDB.View.TableBrowserControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
+    xmlns:columns="clr-namespace:Amazon.AWSToolkit.DynamoDB.View.Columns"
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.DynamoDB.View.Components"
+    xmlns:model="clr-namespace:Amazon.AWSToolkit.DynamoDB.Model"                         
+    PreviewKeyDown="onPreviewKeyDown"                         
+    Height="600" Width="600"
+    >
+    
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>        
+                <ResourceDictionary Source="..\Resources\ScanConditionTableResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1.1*"></RowDefinition>
+            <RowDefinition Height="5"></RowDefinition>
+            <RowDefinition Height="2*"></RowDefinition>
+        </Grid.RowDefinitions>
+            
+        <Grid Grid.Row="0" Grid.Column="1" Margin="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+
+            <ToolBar Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" ToolBarTray.IsLocked="True" >
+                <Button Click="onExecuteClick" IsEnabled="{Binding CanScan}">
+                    <Button.ToolTip>Executes the query (Ctrl + R)</Button.ToolTip>
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding ExecuteIcon}"/>
+                            <TextBlock>Scan Table</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+                <Button Click="onCommitChangesClick" Name="_ctlCommitChangesBtn" IsEnabled="False">
+                    <Button.ToolTip>Commit changes back to DynamoDB</Button.ToolTip>
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding CommitChangesIcon}"/>
+                            <TextBlock> Commit Changes</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+                <Button Click="onAddAttributeClick" Name="_ctlAddAttributeBtn" IsEnabled="False">
+                    <Button.ToolTip>Add an attribute to the output window.  The attribute will be saved in SimpleDB when all the changes are committed.</Button.ToolTip>
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding AddColumnIcon}"/>
+                            <TextBlock>Add Attribute</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+            </ToolBar>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="4" Style="{DynamicResource awsTextBlockBaseStyle}">Table:</TextBlock>
+            <TextBox Grid.Row="1" Grid.Column="1" Margin="4" Text="{Binding TableName, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="2" Margin="4" Style="{DynamicResource awsTextBlockBaseStyle}">Status:</TextBlock>
+            <WrapPanel Grid.Row="1" Grid.Column="3" Margin="4" Orientation="Horizontal">
+                <TextBox Text="{Binding TableStatus, Mode=OneWay}" FontWeight="SemiBold" Foreground="{Binding TableStatusColor}" Style="{DynamicResource awsSelectableTextBoxStyle}"/>
+                <Button Margin="4,0" Click="onRefreshStatusClick">
+                    <Button.Content>
+                        <Image DataContext="{DynamicResource CommonIcons}" Width="16" Height="16" Source="{Binding RefreshIcon}"/>
+                    </Button.Content>
+                </Button>
+            </WrapPanel>
+
+            <components:ScanConditionsControl x:Name="_scanConditionsControl" 
+                                              Grid.Row="2" 
+                                              Grid.ColumnSpan="4" 
+                                              HorizontalAlignment="Stretch"
+                                              HorizontalContentAlignment="Stretch"
+                                              VerticalAlignment="Stretch"
+                                              VerticalContentAlignment="Stretch"
+                                              Padding="0"
+                                              />
+        </Grid>
+
+        <GridSplitter Grid.Row="1" Grid.Column="0" 
+                      Height="Auto" Width="Auto" 
+                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                      Background="{DynamicResource awsGridSplitterBackgroundGradientBrushKey}"
+                      Foreground="{DynamicResource awsGridSplitterTextForegroundBrushKey}"/>
+
+        <DockPanel Grid.Row="3" Grid.Column="0">
+            <ToolBar Name="_ctlBinaryKeysToolbar" DockPanel.Dock="Top" ToolBarTray.IsLocked="True" Background="{DynamicResource awsHorizontalToolBarBackgroundBrushKey}"
+                     Visibility="Collapsed">
+                <Label Style="{DynamicResource awsLabelBaseStyle}">
+                    Table is defined with binary key(s), no new items can be added with this view.
+                </Label>
+            </ToolBar>
+            <ToolBar DockPanel.Dock="Bottom" ToolBarTray.IsLocked="True" >
+                <ComboBox x:Name="zoomLevel"
+                          IsReadOnly="True"
+                          Width="70"
+                          Style="{DynamicResource awsComboBoxStyle}" 
+                          ItemsSource="{Binding ElementName=_ctlDataGrid, Path=ZoomLevels}"
+                          SelectedValuePath="Level"
+                          SelectedValue="{Binding ElementName=_ctlDataGrid, Path=ZoomLevel, Mode=TwoWay}"
+                          />
+                <Button Click="onFetchSinglePageClick" IsEnabled="{Binding HasMoreRows}">
+                    <Button.ToolTip>Continue scanning an 1 additional time with the same conditions.</Button.ToolTip>
+                    <Button.Content>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding FetchMoreIcon}"/>
+                    </Button.Content>
+                </Button>
+                <Button Click="onFetchFewPagesClick" IsEnabled="{Binding HasMoreRows}" Name="_ctlFetchFewPages">
+                    <Button.Content>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding FetchLotsMoreIcon}"/>
+                    </Button.Content>
+                </Button>
+                <Separator/>
+                <Button Click="onExportClick" IsEnabled="{Binding HasData}">
+                    <Button.ToolTip>Exports the fetched results into a csv file.</Button.ToolTip>
+                    <Button.Content>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding ExportIcon}"/>
+                    </Button.Content>
+                </Button>
+            </ToolBar>
+            <commonui:ToolkitDataGridWrapper AutoGenerateColumns="False" 
+                                             Name="_ctlDataGrid" 
+                                             CellStyle="{DynamicResource awsDataGridCellCentering}"
+                                             CanUserAddRows="False" 
+                                             CanUserDeleteRows="True" 
+                                             CanUserSortColumns="False"
+                                             LoadingRow="onLoadingDataGridRow" 
+                                             RowHeaderWidth="35" 
+                                             ItemsSource="{Binding Documents}"
+                                             ScrollViewer.IsDeferredScrollingEnabled="True" 
+                                             VirtualizingStackPanel.VirtualizationMode="Standard"                 
+                                             HorizontalAlignment="Stretch" 
+                                             HeadersVisibility="All" 
+                                             IsReadOnly="False"
+                                             >
+                
+                <commonui:ToolkitDataGridWrapper.RowHeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridRow}},
+                                   Path=Header}"></TextBlock>
+                    </DataTemplate>
+                </commonui:ToolkitDataGridWrapper.RowHeaderTemplate>
+
+            </commonui:ToolkitDataGridWrapper>
+        </DockPanel>
+      
+    </Grid>
+</commonui:BaseAWSControl>
