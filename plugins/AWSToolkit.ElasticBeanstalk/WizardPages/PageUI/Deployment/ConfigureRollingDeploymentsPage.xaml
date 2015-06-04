@@ -1,0 +1,273 @@
+﻿<commonUi:BaseAWSUserControl  x:Class="Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment.ConfigureRollingDeploymentsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="600">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary>
+                    <commonUi:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+
+        <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+            Grid.Row="0" 
+            Grid.Column="0"
+            Margin="3"
+            >
+            Application Versions
+        </Label>
+
+        <Grid
+            Margin="16,0,4,0"
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="3"
+            >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            
+            <RadioButton 
+                Grid.Row="0"
+                Grid.Column="0"
+                Name="_ctlIsPercentageType"
+                GroupName="BatchType"
+                Margin="3"
+                IsChecked="True"
+                Checked="_ctlIsPercentageType_Checked"
+                >
+                Percentage
+            </RadioButton>
+
+            <StackPanel
+                Grid.Row="1"
+                Grid.Column="0"
+                Orientation="Horizontal"
+                Margin="20,3,0,3"
+                IsEnabled="{Binding ElementName=_ctlIsPercentageType,Path=IsChecked}"
+                >
+
+                <Label 
+                    Style="{DynamicResource awsWizardFieldLabelStyle}"
+                    VerticalAlignment="Center"
+                    Margin="3"
+                    >
+                    Update application versions
+                </Label>
+                
+                <TextBox
+                MinWidth="50"
+                Style="{DynamicResource awsTextBoxStyle}"
+                Margin="3"
+                Name="_ctlPercentage"
+                Text="100"
+                HorizontalAlignment="Left"
+                Width="50"
+                TextChanged="_ctlPercentage_TextChanged"
+                >
+
+                </TextBox>
+
+                <Label 
+                    Style="{DynamicResource awsWizardFieldLabelStyle}"
+                    VerticalAlignment="Center"
+                    Margin="3"
+                    >
+                % of instances updated at a time.
+                </Label>
+            </StackPanel>
+
+            
+            <RadioButton 
+                Grid.Row="2"
+                Grid.Column="0"
+                Name="_ctlIsFixedSizeType"
+                GroupName="BatchType"
+                Margin="3"
+                Checked="_ctlIsFixedSizeType_Checked"
+                >
+                Fixed
+            </RadioButton>
+
+            <StackPanel
+                Grid.Row="3"
+                Grid.Column="0"
+                Orientation="Horizontal"
+                Margin="20,3,0,3"
+                IsEnabled="{Binding ElementName=_ctlIsFixedSizeType,Path=IsChecked}"
+                >
+
+                <Label 
+                    Style="{DynamicResource awsWizardFieldLabelStyle}"
+                    VerticalAlignment="Center"
+                    Margin="3"
+                    >
+                    Update application versions 
+                </Label>
+
+                <TextBox
+                MinWidth="50"
+                Style="{DynamicResource awsTextBoxStyle}"
+                Margin="3"
+                Name="_ctlFixedSize"
+                Text="1"
+                HorizontalAlignment="Left"
+                Width="50"
+                TextChanged="_ctlFixedSize_TextChanged"
+                >
+
+                </TextBox>
+
+                <Label 
+                    Style="{DynamicResource awsWizardFieldLabelStyle}"
+                    VerticalAlignment="Center"
+                    Margin="3"
+                    >
+                instance(s) at a time.
+                </Label>
+            </StackPanel>
+
+        </Grid>
+
+        <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+            Grid.Row="2" 
+            Grid.Column="0"
+            Margin="3"
+            >
+            Environment Configuration
+        </Label>
+        
+        <Grid
+            Grid.Row="3"
+            >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <CheckBox
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="3"
+                VerticalAlignment="Center"
+                Style="{DynamicResource awsCheckboxButtonBaseStyle}"
+                Margin="16,3,4,3"
+                Name="_ctlEnableRolling"
+                Checked="_ctlEnableRolling_Checked"
+                
+                >
+                <AccessText TextWrapping="Wrap">
+                Enables you to specify the number of instances that
+                remain in service during environment configuration updates.
+                </AccessText>
+            </CheckBox>
+
+
+            <Label Style="{DynamicResource awsWizardFieldLabelStyle}"
+            Grid.Row="1" 
+            Grid.Column="0"
+            Margin="16,3,4,3"
+            >
+                Maximum Batch Size:
+            </Label>            
+
+
+            <TextBox
+            Grid.Row="1"
+            Grid.Column="1"
+            MinWidth="50"
+            Style="{DynamicResource awsTextBoxStyle}"
+            Margin="3"
+            Name="_ctlMaxBatchSize"
+            IsEnabled="{Binding ElementName=_ctlEnableRolling,Path=IsChecked}"
+            Text="1"
+            TextChanged="_ctlMaxBatchSize_TextChanged"
+            >
+
+            </TextBox>
+
+            <TextBlock 
+            Style="{DynamicResource awsFieldHintTextStyle}"
+            VerticalAlignment="Center"
+            TextWrapping="Wrap"
+            Grid.Row="1"
+            Grid.Column="2"
+            Margin="3"
+            >
+                The maximum number of instances that should be
+                modified at any given time.
+            </TextBlock>
+
+            <Label Style="{DynamicResource awsWizardFieldLabelStyle}"
+            Grid.Row="2" 
+            Grid.Column="0"
+            Margin="16,3,4,3"
+            >
+                Minimum instance in service:
+            </Label>
+
+            <TextBox
+            Grid.Row="2"
+            Grid.Column="1"
+            MinWidth="50"
+            Style="{DynamicResource awsTextBoxStyle}"
+            Margin="3"
+            Name="_ctlMinInstanceInService"
+            IsEnabled="{Binding ElementName=_ctlEnableRolling,Path=IsChecked}"
+            Text="1"
+            TextChanged="_ctlMinInstanceInService_TextChanged"
+            >
+
+            </TextBox>
+
+            <TextBlock 
+            Style="{DynamicResource awsFieldHintTextStyle}"
+            VerticalAlignment="Center"
+            TextWrapping="Wrap"
+            Grid.Row="2"
+            Grid.Column="2"
+            Margin="3"
+            >
+                The minimum number of instances that should be in 
+                service at any given time.
+            </TextBlock>
+
+
+
+        </Grid>
+
+
+    </Grid>
+</commonUi:BaseAWSUserControl>

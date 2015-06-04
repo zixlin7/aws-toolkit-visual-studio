@@ -1,0 +1,141 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment.FastTrackRepublishPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    >
+    
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid Margin="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="200"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+                   Margin="0,8,0,4"
+                   Grid.ColumnSpan="2">
+                Project
+            </Label>
+
+            <Label Grid.Row="1" 
+                   Grid.Column="0"
+                   Margin="20,2,4,4"
+                   Content="_Build configuration:"
+                   Target="{Binding ElementName=_buildConfigurationList}"
+                   />
+
+            <ComboBox Grid.Row="1" 
+                      Grid.Column="1"
+                      x:Name="_buildConfigurationList"
+                      Style="{DynamicResource awsComboBoxStyle}"
+                      ItemsSource="{Binding BuildConfigurations}"
+                      SelectedItem="{Binding SelectedBuildConfiguration}"
+                      HorizontalAlignment="Stretch"
+                      Margin="0,0,4,0"
+                      />
+
+            <Label Grid.Row="2" 
+                   Grid.Column="0"
+                   Margin="20,2,4,4"
+                   Content="App path:"
+                   Target="{Binding ElementName=_iisAppPath}"
+                   />
+
+            <TextBox Grid.Row="2"
+                     Grid.Column="1"
+                     Style="{DynamicResource awsTextBoxStyle}"
+                     x:Name="_iisAppPath"
+                     Margin="0,0,4,0"
+                     Text="{Binding IISAppPath}"
+                     />
+            
+            <Label Grid.Row="3" 
+                   Style="{DynamicResource awsWizardGroupHeaderStyle}"
+                   Margin="0,0,0,8"
+                   Grid.ColumnSpan="2">
+                Environment
+            </Label>
+
+            <StackPanel x:Name="_envDetailsPanel" 
+                        Grid.Row="4" 
+                        Grid.Column="0"
+                        Margin="20,0,4,8" 
+                        VerticalAlignment="Top"
+                        Grid.ColumnSpan="2">
+                <TextBlock TextWrapping="Wrap" Margin="4,20,4,0" 
+                           Style="{DynamicResource awsTextBlockBaseStyle}">
+                    Fetching details of the last AWS Elastic Beanstalk Environment that the project was deployed to. Please wait...
+                </TextBlock>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+                   Margin="0,0,0,8">
+                Application Version
+            </Label>
+
+            <Grid Grid.Row="1" Margin="20,0,4,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Target="{Binding ElementName=_versionLabel}" 
+                       Style="{DynamicResource awsWizardFieldLabelStyle}"
+                       Margin="0,4,0,0" 
+                       Padding="4" 
+                       Content="Deployment version _label * :" 
+                       />
+                <TextBox Margin="4,4,0,4" 
+                         Grid.Column="1" 
+                         Name="_versionLabel" 
+                         TextChanged="OnVersionFieldChanged"
+                         Text="{Binding Path=DeploymentVersionLabel, 
+                                    Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{DynamicResource awsTextBoxStyle}"
+                         ToolTip="A label identifying this version"/>
+
+                <StackPanel Orientation="Horizontal" 
+                            Margin="4,0" 
+                            Grid.Row="1" 
+                            Grid.Column="1"
+                            x:Name="_versionValidationGroup">
+                    <Image x:Name="_validateOKImg" Source="/AWSToolkit.ElasticBeanstalk;component/Resources/EmbeddedImages/Validated.png" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Image x:Name="_validateFailImg" Source="/AWSToolkit.ElasticBeanstalk;component/Resources/EmbeddedImages/Failed.png" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <TextBlock x:Name="_versionValidatedMsg" Visibility="Hidden" FontStyle="Italic" Text="(validation state)"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</commonui:BaseAWSUserControl>

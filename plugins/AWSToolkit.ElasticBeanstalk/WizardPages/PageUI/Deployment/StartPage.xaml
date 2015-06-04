@@ -1,0 +1,290 @@
+﻿<commonui:BaseAWSUserControl 
+    x:Class="Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment.StartPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:designData="clr-namespace:Amazon.AWSToolkit.ElasticBeanstalk.View.DesignData"
+    xmlns:svcmodel="clr-namespace:Amazon.ElasticBeanstalk.Model;assembly=AWSSDK.ElasticBeanstalk"
+    xmlns:model="clr-namespace:Amazon.AWSToolkit.ElasticBeanstalk.Model"
+    mc:Ignorable="d" 
+    d:DataContext="{d:DesignInstance designData:ApplicationEnvironmentsDesignTimeContext, IsDesignTimeCreatable=True}"
+    d:DesignHeight="300" d:DesignWidth="500">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="applicationTreeViewItemStyle" 
+                   TargetType="{x:Type TreeViewItem}" 
+                   BasedOn="{StaticResource awsTreeViewItemStyle}">
+                <Setter Property="IsExpanded" Value="True"/>
+            </Style>
+
+            <HierarchicalDataTemplate DataType="{x:Type model:DeployedApplicationModel}"
+                                      ItemsSource ="{Binding Path=Environments}"
+                                      >
+                <Grid Margin="0,2,0,2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Image Source="{Binding ApplicationIcon}"
+                           Width="16" Height="16"/>
+                    <TextBlock Text="{Binding Path=ApplicationName}"
+                               Grid.Column="1" 
+                               Margin="8,0,0,0"
+                               Style="{DynamicResource awsTextBlockBaseStyle}"/>
+                </Grid>
+            </HierarchicalDataTemplate>
+
+            <HierarchicalDataTemplate DataType="{x:Type svcmodel:EnvironmentDescription}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20"/>
+                        <ColumnDefinition Width=".3*"/>
+                        <ColumnDefinition Width=".3*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Image Source="{Binding RelativeSource={RelativeSource Mode=FindAncestor, 
+                                                                 AncestorType={x:Type TreeViewItem}, 
+                                                                 AncestorLevel=2}, 
+                                    Path=DataContext.EnvironmentIcon}"
+                           />
+                    <TextBlock Text="{Binding EnvironmentName}"
+                               Grid.Column="1"
+                               Margin="4,0"
+                               Style="{DynamicResource awsTextBlockBaseStyle}"/>
+                    <TextBlock Text="{Binding Status}"
+                               Grid.Column="2"
+                               Margin="8,0,2,0"
+                               Style="{DynamicResource awsTextBlockBaseStyle}"/>
+                    <TextBlock Text="{Binding CNAME}"
+                               Grid.Column="3"
+                               Margin="16,0,4,0"
+                               TextTrimming="CharacterEllipsis"
+                               FontStyle="Italic"
+                               Style="{DynamicResource awsTextBlockBaseStyle}"
+                               TextAlignment="Right"
+                               HorizontalAlignment="Right"/>
+                </Grid>
+            </HierarchicalDataTemplate>
+        </ResourceDictionary>
+   </UserControl.Resources>
+
+    <Grid Margin="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=".7*" />
+            <ColumnDefinition Width=".3*" />
+        </Grid.ColumnDefinitions>
+
+        <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+                   Grid.ColumnSpan="2"
+                   Margin="0"
+                   >
+            Profile
+        </Label>
+
+        <Grid Grid.Row="1" Grid.Column="0" Margin="12,0,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Label Target="{Binding ElementName=_accountSelector}" 
+                   Style="{DynamicResource awsWizardFieldLabelStyle}"
+                   Margin="0">
+                Account _profile to use for deployment:
+            </Label>
+            <ComboBox 
+                    Margin="4,0,2,0" 
+                    Grid.Column="1" 
+                    x:Name="_accountSelector" 
+                    DisplayMemberPath="DisplayName" 
+                    ItemsSource="{Binding Path=Accounts}"
+                    SelectionChanged="AccountSelector_SelectionChanged"
+                    Style="{DynamicResource awsComboBoxStyle}"/>
+
+            <ToggleButton x:Name="_useOtherAccount" 
+                          Grid.Column="2" 
+                          VerticalAlignment="Center"
+                          ToolTip="Add another account profile"
+                          Margin="2">
+                <Image DataContext="{DynamicResource CommonIcons}" 
+                       Source="{Binding AddAccountIcon}" 
+                       Width="16" Height="16"/>
+            </ToggleButton>
+            <Popup x:Name="_accountEntryPopup"
+                       AllowsTransparency="True"
+                       IsOpen="{Binding ElementName=_useOtherAccount, Path=IsChecked}"
+                       PlacementTarget="{Binding ElementName=_useOtherAccount}"
+                       Placement="Left"
+                       PopupAnimation="Slide"
+                       VerticalOffset="{Binding ElementName=_useOtherAccount, Path=ActualHeight}"
+                       HorizontalOffset="{Binding ElementName=_useOtherAccount, Path=ActualWidth}"
+                       Loaded="AccountEntryPopup_Loaded"
+                       >
+
+                <Popup.Resources>
+                    <!-- temp local definition of resources for account control, copied
+                                     from host dialog so we space the same etc; this needs to go into
+                                     a 'dialog style' sheet we can import with studio (but not today,
+                                     on eve of sprint demo!)
+                                -->
+                    <Style TargetType="{x:Type Grid}">
+                        <Setter Property="Margin" Value="10" />
+                    </Style>
+                    <Style TargetType="{x:Type Label}">
+                        <Setter Property="Margin" Value="0,3,5,5" />
+                        <Setter Property="Padding" Value="0,0,0,5" />
+                    </Style>
+                    <Style TargetType="{x:Type TextBox}">
+                        <Setter Property="Margin" Value="0,0,0,5" />
+                        <Style.Triggers>
+                            <Trigger Property="Validation.HasError" Value="true">
+                                <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style TargetType="{x:Type StackPanel}">
+                        <Setter Property="Orientation" Value="Horizontal" />
+                        <Setter Property="HorizontalAlignment" Value="Right" />
+                    </Style>
+                </Popup.Resources>
+
+                <Border Style="{DynamicResource awsPopupBorderStyle}">
+
+                    <Grid Margin="4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <ContentControl x:Name="_accountFieldContainer" />
+
+                        <StackPanel Grid.Row="1" 
+                                        Orientation="Horizontal" 
+                                        Margin="0,10,4,4"
+                                        HorizontalAlignment="Right"
+                                        >
+                            <Button x:Name="_popupAccountOK" 
+                                        Click="PopupAccountOK_Click"
+                                        Style="{DynamicResource awsPopupDialogButtonStyle}">
+                                OK
+                            </Button>
+                            <Button x:Name="_popupAccountCancel" 
+                                        Click="PopupAccountCancel_Click" 
+                                        Style="{DynamicResource awsPopupDialogButtonStyle}">
+                                Cancel
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Popup>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="1" Margin="0">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Target="{Binding ElementName=_regionSelector}" 
+                       Style="{DynamicResource awsWizardFieldLabelStyle}"
+                       Margin="2,0,0,0">
+                    Region:
+                </Label>
+
+                <ComboBox x:Name="_regionSelector"
+                          Grid.Column="1"
+                          Margin="2"
+                          VerticalAlignment="Center"
+                          SelectionChanged="RegionSelector_SelectionChanged"
+                          Style="{DynamicResource awsComboBoxStyle}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Margin="5,0,0,0" Width="13" Height="12" Source="{Binding FlagIcon}"/>
+                                <TextBlock Margin="5,0,0,0" Text="{Binding DisplayName}" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+            </Grid>
+        </Grid>
+
+        <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+               Margin="0,12,0,0"
+               Grid.Row="2"
+               Grid.Column="0"
+               Grid.ColumnSpan="2">
+            Deployment Target
+        </Label>
+
+        <RadioButton GroupName="modeGroup"
+                     Grid.Row="3"
+                     Grid.ColumnSpan="2" Grid.Column="0"
+                     x:Name="_btnDeployNew"
+                     Margin="12,16,0,0"
+                     IsChecked="True"
+                     Style="{DynamicResource awsRadioButtonBaseStyle}"
+                     Checked="DeploymentModeButton_OnChecked">
+            Create a _new application environment
+        </RadioButton>
+
+        <RadioButton GroupName="modeGroup"
+                     Grid.Row="4"
+                     Grid.ColumnSpan="2" Grid.Column="0"
+                     x:Name="_btnRedeploy"
+                     Margin="12,16,0,8"
+                     IsEnabled="False"
+                     Style="{DynamicResource awsRadioButtonBaseStyle}"
+                     Checked="DeploymentModeButton_OnChecked">
+            R_edeploy to an existing environment:
+        </RadioButton>
+
+        <TreeView x:Name="_existingDeploymentsTree"
+                  Grid.Row="5"
+                  Grid.ColumnSpan="2" Grid.Column="0"
+                  VerticalAlignment="Stretch"
+                  VerticalContentAlignment="Stretch"
+                  Margin="28,4,4,8"
+                  HorizontalAlignment="Stretch"
+                  ItemContainerStyle="{StaticResource applicationTreeViewItemStyle}"
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                  ItemsSource="{Binding ExistingDeployments}"
+                  SelectedItemChanged="_existingDeploymentsTree_OnSelectedItemChanged"
+                  Background="{DynamicResource awsDefaultControlBackgroundBrushKey}"
+                  />
+
+        <Button Grid.Row="6"
+                Grid.Column="0"
+                Margin="12,8,4,2"
+                Padding="4,2"
+                VerticalAlignment="Bottom"
+                HorizontalAlignment="Left"
+                Style="{DynamicResource awsButtonBaseStyle}"
+                ToolTip="Closes this wizard and starts the legacy deployment wizard, supporting deployments to AWS CloudFormation"
+                Click="UseLegacyWizard_OnClick"
+                x:Name="_btnUseLegacyWizard"
+                >
+            Use legacy wizard...
+        </Button>
+
+    </Grid>
+</commonui:BaseAWSUserControl>
