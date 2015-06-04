@@ -17,8 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CloudFormationEditor", "Clo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.Studio", "..\shells\AWSToolkit.Studio\AWSToolkit.Studio.csproj", "{EC3E1437-DD67-4CBE-B7A7-4A8485690E79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.Tests", "..\tests\AWSToolkit.Tests\AWSToolkit.Tests.csproj", "{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSSDK.Extensions", "..\core\AWSSDK.Extensions\AWSSDK.Extensions.csproj", "{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit", "..\core\AWSToolkit\AWSToolkit.csproj", "{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}"
@@ -154,24 +152,6 @@ Global
 		{EC3E1437-DD67-4CBE-B7A7-4A8485690E79}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{EC3E1437-DD67-4CBE-B7A7-4A8485690E79}.Release|Win32.ActiveCfg = Release|Any CPU
 		{EC3E1437-DD67-4CBE-B7A7-4A8485690E79}.Release|x86.ActiveCfg = Release|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Debug VS2010 Build|Any CPU.ActiveCfg = Debug VS2010 Build|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Debug VS2010 Build|Any CPU.Build.0 = Debug VS2010 Build|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Debug VS2010 Build|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Debug VS2010 Build|Mixed Platforms.Build.0 = Debug|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Debug VS2010 Build|Win32.ActiveCfg = Debug VS2010 Build|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Debug VS2010 Build|x86.ActiveCfg = Debug VS2010 Build|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Release|Win32.ActiveCfg = Release|Any CPU
-		{F8FFDDEC-48A6-45FF-8049-82B70C8FE837}.Release|x86.ActiveCfg = Release|Any CPU
 		{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}.Debug VS2010 Build|Any CPU.ActiveCfg = Debug VS2010 Build|Any CPU
 		{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}.Debug VS2010 Build|Any CPU.Build.0 = Debug VS2010 Build|Any CPU
 		{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}.Debug VS2010 Build|Mixed Platforms.ActiveCfg = Release|Any CPU
