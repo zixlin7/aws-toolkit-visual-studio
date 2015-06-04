@@ -17,7 +17,7 @@
 
 **/.vs/
 
-**/Deployment/
-**/Include/
+Deployment/**
+Include/**
 
 shells/AWSToolkit.VisualStudio.Shared/bin_vs2010/
