@@ -93,6 +93,9 @@
         <Copy
             SourceFiles="@(AWSToolkitPackageFiles)"
             DestinationFolder="$(Deployment)\AWSToolkitPackage" />
+        <Copy
+            SourceFiles="..\shells\AWSToolkitPackage\bin\$(Configuration)\cloudformation.targets"
+            DestinationFolder="$(Deployment)\AWSToolkitPackage" />
 
         <MakeDir Directories="$(Deployment)\AWSToolkit.VisualStudio.Shared" />
         <ItemGroup>
