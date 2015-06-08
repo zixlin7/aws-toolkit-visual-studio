@@ -87,25 +87,29 @@
 
         <MakeDir Directories="$(Deployment)\AWSToolkitPackage" />
         <ItemGroup>
-            <AWSToolkitPackageFiles 
-                Include="..\shells\AWSToolkitPackage\bin\$(Configuration)\AWSToolkitPackage.*" />
+            <AWSToolkitPackageFiles Include="..\shells\AWSToolkitPackage\bin\$(Configuration)\AWSToolkitPackage.*" />
+            <ThirdPartyLibs Include="..\thirdparty\Microsoft.WindowsAPICodePack.dll;..\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll" />
+            <CustomMSBuildTargets Include="..\shells\AWSToolkitPackage\bin\$(Configuration)\cloudformation.targets" />
+            <ImageFiles Include="..\shells\AWSToolkitPackage\aws_preview.gif;..\shells\AWSToolkitPackage\aws-icon.png" />
+            <Templates Include="..\shells\AWSToolkitPackage\Templates\AWSToolkitPackage.vsdir;..\shells\AWSToolkitPackage\Templates\hosted.control.awstoolkitpackage" />
         </ItemGroup>
         <Copy
-            SourceFiles="@(AWSToolkitPackageFiles)"
-            DestinationFolder="$(Deployment)\AWSToolkitPackage" />
-        <Copy
-            SourceFiles="..\shells\AWSToolkitPackage\bin\$(Configuration)\cloudformation.targets"
+            SourceFiles="@(AWSToolkitPackageFiles);@(ThirdPartyLibs);@(CustomMSBuildTargets);@(ImageFiles);@(Templates)"
             DestinationFolder="$(Deployment)\AWSToolkitPackage" />
 
+        <Copy
+            SourceFiles="..\shells\AWSToolkitPackage\source.extension.vsixmanifest"
+            DestinationFiles="$(Deployment)\AWSToolkitPackage\extension.vsixmanifest" />
+            
         <MakeDir Directories="$(Deployment)\AWSToolkit.VisualStudio.Shared" />
         <ItemGroup>
-            <AWSToolkitSharedFiles 
-                Include="..\shells\AWSToolkit.VisualStudio.Shared\bin_vs2010\$(Configuration)\AWSToolkitPackage.Shared.*" />
+            <AWSToolkitSharedFiles Include="..\shells\AWSToolkit.VisualStudio.Shared\bin_vs2010\$(Configuration)\AWSToolkitPackage.Shared.*" />
         </ItemGroup>
         <Copy
             SourceFiles="@(AWSToolkitSharedFiles)"
             DestinationFolder="$(Deployment)\AWSToolkit.VisualStudio.Shared" />
 
+        <!-- AWSStudio -->
         <MakeDir Directories="$(Deployment)\AWSToolkit.Studio" />
         <ItemGroup>
             <AWSToolkitStudioFiles 
@@ -115,32 +119,13 @@
             SourceFiles="@(AWSToolkitStudioFiles)"
             DestinationFolder="$(Deployment)\AWSToolkit.Studio" />
 
-        <Copy
-            SourceFiles="..\shells\AWSToolkitPackage\source.extension.vsixmanifest"
-            DestinationFiles="$(Deployment)\AWSToolkitPackage\extension.vsixmanifest" />
-        <Copy
-            SourceFiles="..\shells\AWSToolkitPackage\Templates\AWSToolkitPackage.vsdir"
-            DestinationFolder="$(Deployment)\AWSToolkitPackage" />
-        <Copy
-            SourceFiles="..\shells\AWSToolkitPackage\Templates\hosted.control.awstoolkitpackage"
-            DestinationFolder="$(Deployment)\AWSToolkitPackage" />
-            
-        <!-- misc image files -->
-        <Copy
-            SourceFiles="..\shells\AWSToolkitPackage\aws_preview.gif"
-            DestinationFolder="$(Deployment)\AWSToolkitPackage" />
-        <Copy
-            SourceFiles="..\shells\AWSToolkitPackage\aws-icon.png"
-            DestinationFolder="$(Deployment)\AWSToolkitPackage" />
-
-        <!-- prebuilt 3rd party binaries and configs -->
+        <!-- misc 3rd party binaries and configs -->
         <Copy
             SourceFiles="..\thirdparty\PemToPPKConverter.exe"
             DestinationFolder="$(Deployment)\Plugins" />
         <Copy
             SourceFiles="..\shells\AWSToolkitPackage\log4net.config"
             DestinationFolder="$(Deployment)\AWSToolkitPackage" />
-        
     </Target>
     
 	<Target Name="update-version" DependsOnTargets="build-tools">		
