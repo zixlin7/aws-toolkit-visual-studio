@@ -147,6 +147,7 @@
 		<SaveBuildArtifactTask
 			RepositoryRoot="$(MSBuildProjectDirectory)\.."
 			BuildArtifactType="toolkit"
+			GitBranch="$(GitBranch)"
 			LocalArchiveRootFolder="$(LocalArchiveRootFolder)"
 			/>
 	</Target>
