@@ -91,7 +91,6 @@
             <ThirdPartyLibs Include="..\thirdparty\Microsoft.WindowsAPICodePack.dll;..\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll" />
             <CustomMSBuildTargets Include="..\shells\AWSToolkitPackage\bin\$(Configuration)\cloudformation.targets" />
             <ImageFiles Include="..\shells\AWSToolkitPackage\aws_preview.gif;..\shells\AWSToolkitPackage\aws-icon.png" />
-            <Templates Include="..\shells\AWSToolkitPackage\Templates\AWSToolkitPackage.vsdir;..\shells\AWSToolkitPackage\Templates\hosted.control.awstoolkitpackage" />
         </ItemGroup>
         <Copy
             SourceFiles="@(AWSToolkitPackageFiles);@(ThirdPartyLibs);@(CustomMSBuildTargets);@(ImageFiles);@(Templates)"
@@ -109,6 +108,26 @@
             SourceFiles="@(AWSToolkitSharedFiles)"
             DestinationFolder="$(Deployment)\AWSToolkit.VisualStudio.Shared" />
 
+        <!-- copy the loose control template files to the corresponding output folder -->
+        <ItemGroup>
+            <TemplateFiles Include="..\shells\AWSToolkitPackage\Templates\*.*" />
+        </ItemGroup>
+        <Copy SourceFiles="@(TemplateFiles)"
+              DestinationFolder="$(Deployment)\AWSToolkitPackage\Templates" />
+
+        <!-- zip the cloudformation and item template files, place these into upper level folder for installer -->
+        <MakeDir Directories="$(Deployment)\AWSToolkitPackage.Templates\ProjectTemplates" />
+        <MakeDir Directories="$(Deployment)\AWSToolkitPackage.Templates\ItemTemplates" />
+		<Zip
+			InputDirectory="..\shells\AWSToolkitPackage\Templates\Projects\CloudFormationTemplateProject"
+			OutputFileName="$(Deployment)\AWSToolkitPackage.Templates\ProjectTemplates\CloudFormationTemplateProject.zip" />        
+		<Zip
+			InputDirectory="..\shells\AWSToolkitPackage\Templates\Projects\FunctionTemplateProject"
+			OutputFileName="$(Deployment)\AWSToolkitPackage.Templates\ProjectTemplates\FunctionTemplateProject.zip" />        
+		<Zip
+			InputDirectory="..\shells\AWSToolkitPackage\Templates\Items\Template"
+			OutputFileName="$(Deployment)\AWSToolkitPackage.Templates\ItemTemplates\Template.zip" />        
+  
         <!-- AWSStudio -->
         <MakeDir Directories="$(Deployment)\AWSToolkit.Studio" />
         <ItemGroup>
