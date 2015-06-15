@@ -15,15 +15,17 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
         public static Assembly AssemblyResolveEventHandler(object sender, ResolveEventArgs args)
         {
             Assembly assembly = null;
-            int pos = args.Name.IndexOf(",");
+            var pos = args.Name.IndexOf(",");
             if (pos > 0)
             {
-                string assemblyName = args.Name.Substring(0, pos);
-                string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                string fullPath = path + @"\" + assemblyName + ".dll";
-
-                if (File.Exists(fullPath))
-                    assembly = Assembly.LoadFile(fullPath);
+                var assemblyName = args.Name.Substring(0, pos);
+                if (assemblyName.StartsWith("AWSSDK.", StringComparison.OrdinalIgnoreCase))
+                {
+                    var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    var fullPath = Path.Combine(path, "SDK", assemblyName + ".dll");
+                    if (File.Exists(fullPath))
+                        assembly = Assembly.LoadFile(fullPath);
+                }
             }
             
             return assembly;
