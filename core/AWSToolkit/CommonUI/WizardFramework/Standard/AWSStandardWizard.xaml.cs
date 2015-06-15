@@ -319,7 +319,7 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
                 _awsBaseWizardImpl.TransitionPage(AWSWizardConstants.NavigationReason.movingForward, _pagesContainer.Children);
                 Cursor = Cursors.Arrow;
 
-                ret = ToolkitFactory.Instance.ShellProvider.ShowModal(this);
+                ret = ToolkitFactory.Instance.ShellProvider.ShowModal(this, ((IAWSWizard)this).WizardID);
             }
             catch (Exception exc)
             {

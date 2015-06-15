@@ -90,6 +90,10 @@ namespace Amazon.AWSToolkit.CommonUI
             }
         }
 
+        public virtual string MetricId
+        {
+            get { return this.GetType().FullName; }
+        }
 
         public virtual bool Validated()
         {
@@ -173,5 +177,6 @@ namespace Amazon.AWSToolkit.CommonUI
         protected virtual void PostDataContextBound()
         {
         }
+
     }
 }

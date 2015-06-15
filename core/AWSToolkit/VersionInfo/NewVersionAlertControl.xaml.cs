@@ -49,6 +49,11 @@ namespace Amazon.AWSToolkit.VersionInfo
             }
         }
 
+        public override string MetricId
+        {
+            get { return this.GetType().FullName; }
+        }
+
         void buildDocument()
         {
             foreach (var version in this._versions)

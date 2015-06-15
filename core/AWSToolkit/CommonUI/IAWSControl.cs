@@ -12,6 +12,8 @@ namespace Amazon.AWSToolkit.CommonUI
     {
         string Title { get; }
         string UniqueId { get; }
+        string MetricId { get; }
+
         UserControl UserControl { get; }
 
         bool SupportsBackGroundDataLoad { get; }

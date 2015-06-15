@@ -22,6 +22,8 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
+using Amazon.AWSToolkit.MobileAnalytics;
+
 //using Amazon.AWSToolkit.VisualStudio.Shared;
 
 namespace Amazon.AWSToolkit.Studio
@@ -170,11 +172,14 @@ namespace Amazon.AWSToolkit.Studio
         public bool ShowModalFrameless(IAWSControl hostedControl)
         {
             Window host = DialogHostUtil.CreateFramelessDialogHost(hostedControl);
-            return ShowModal(host);
+            return ShowModal(host, hostedControl.MetricId);
         }
 
-        public bool ShowModal(Window window)
+        public bool ShowModal(Window window, string metricId)
         {
+            SimpleMobileAnalytics recorder = SimpleMobileAnalytics.Instance;
+            recorder.AddProperty(Attributes.OpenViewFullIdentifier, metricId);
+            recorder.RecordEventWithProperties();
             window.Owner = this;
             return window.ShowDialog().GetValueOrDefault();
         }
