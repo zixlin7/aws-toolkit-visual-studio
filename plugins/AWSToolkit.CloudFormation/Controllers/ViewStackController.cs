@@ -379,7 +379,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
         public LoadBalancerDescriptionWrapper GetLoadBalancerDetails(string name)
         {
-            var request = new DescribeLoadBalancersRequest() { LoadBalancerNames = new List<string>() { name } };
+            var request = new Amazon.ElasticLoadBalancing.Model.DescribeLoadBalancersRequest() { LoadBalancerNames = new List<string>() { name } };
             var response = this._elbClient.DescribeLoadBalancers(request);
             if (response.LoadBalancerDescriptions.Count != 1)
                 return null;
