@@ -50,7 +50,7 @@ namespace Amazon.CloudFormation
                 }
                 else if (stackResource.ResourceType == "AWS::ElasticLoadBalancing::LoadBalancer")
                 {
-                    var describeLoadRequest = new DescribeLoadBalancersRequest() { LoadBalancerNames = new List<string>() { stackResource.PhysicalResourceId } };
+                    var describeLoadRequest = new Amazon.ElasticLoadBalancing.Model.DescribeLoadBalancersRequest() { LoadBalancerNames = new List<string>() { stackResource.PhysicalResourceId } };
                     var describeLoadResponse = elbClient.DescribeLoadBalancers(describeLoadRequest);
                     fetchedDescribes[stackResource.LogicalResourceId] = describeLoadResponse;
 
