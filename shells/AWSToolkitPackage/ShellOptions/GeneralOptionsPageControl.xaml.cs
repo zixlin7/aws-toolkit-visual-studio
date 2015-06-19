@@ -17,6 +17,26 @@ namespace Amazon.AWSToolkit.VisualStudio.ShellOptions
 
         private static string filePrefix = Uri.UriSchemeFile + Uri.SchemeDelimiter;
 
+        public string AnalyticsPermission
+        {
+            get
+            {
+                if (permissionCheckBox.IsChecked.GetValueOrDefault())
+                    return "true";
+                else
+                    return "false";
+            }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                    permissionCheckBox.IsChecked = true;
+                else if (value.Equals("true"))
+                    permissionCheckBox.IsChecked = true;
+                else
+                    permissionCheckBox.IsChecked = false;
+            }
+        }
+
         public string HostedFilesLocation
         {
             get
@@ -64,6 +84,11 @@ namespace Amazon.AWSToolkit.VisualStudio.ShellOptions
             {
                 txtFileSystemLocation.Text = dlg.SelectedPath;
             }
+        }
+
+        private void CheckBox_Checked(object sender, EventArgs e)
+        {
+
         }
     }
 }

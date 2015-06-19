@@ -320,6 +320,8 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
                 Cursor = Cursors.Arrow;
 
                 ret = ToolkitFactory.Instance.ShellProvider.ShowModal(this, ((IAWSWizard)this).WizardID);
+                var wizard = this as IAWSWizard;
+                var metric = (wizard == null) ? null : wizard.WizardID;
             }
             catch (Exception exc)
             {

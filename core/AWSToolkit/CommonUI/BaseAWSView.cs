@@ -10,7 +10,7 @@ using System.Windows.Threading;
 
 namespace Amazon.AWSToolkit.CommonUI
 {
-    public abstract class BaseAWSView : BaseAWSControl, IPropertySupport
+    public class BaseAWSView : BaseAWSControl, IPropertySupport
     {
         public BaseAWSView()
         {

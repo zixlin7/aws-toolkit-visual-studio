@@ -6,7 +6,7 @@
              xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="400">
-    
+
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -16,9 +16,9 @@
     </UserControl.Resources>
 
     <Grid Margin="4">
-        
+
         <GroupBox Header="Toolkit Metadata">
-            
+
             <Grid Margin="4">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -48,7 +48,7 @@
                                  IsChecked="True"
                                  Content="_Default"
                                  />
-                    
+
                     <RadioButton GroupName="Location" 
                                  x:Name="btnCNNorth1"
                                  Grid.Row="1"
@@ -82,10 +82,11 @@
                                 Margin="0,4,0,0"
                                 IsEnabled="{Binding ElementName=btnFileSystem, Path=IsChecked }" Click="BrowseButton_Click" />
                     </Grid>
+                    <CheckBox x:Name="permissionCheckBox" Content="Analytics Opt-in" Margin="10,61,242,-14" Grid.Row="2" VerticalAlignment="Top" Height="21" IsChecked="True" ClickMode="Press" Checked="CheckBox_Checked"/>
                 </Grid>
             </Grid>
-            
+
         </GroupBox>
-        
+
     </Grid>
 </commonui:BaseAWSUserControl>

@@ -9,6 +9,7 @@ using Amazon.MobileAnalytics.Custom;
 using Amazon.MobileAnalytics.Model;
 using Amazon.CognitoIdentity;
 using System.ComponentModel;
+using Amazon.Runtime.Internal.Settings;
 
 namespace Amazon.AWSToolkit.MobileAnalytics
 {
@@ -27,13 +28,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
 
     public class SimpleMobileAnalytics
     {
-        /*
-         * TODO: This flag needs to be determined based on user selection
-         */
-        private bool USER_GAVE_US_PERMISSION_TO_RECORD_ANALYTICS = true;
-
         private AmazonMobileAnalyticsClient amazonMobileAnalyticsClient;
-        private CognitoAWSCredentials credentialsProvider;
+        private AnalyticsCognitoAWSCredentials credentialsProvider;
         private ClientContext clientContext;
 
         private const string AWS_COGNITO_IDENTITY_POOL_ID = "us-east-1:af7e8a33-505c-4819-bfb4-3a034ac81664";
@@ -47,7 +43,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         private const string RESUME_SESSION = "_session.resume";
 
         private const string SESSION_ID = "analytics_test_session";
-        private Session startSessionDetails;
+        private Session _startSessionDetails;
 
         /*
          * Do NOT change MOBILE_ANALYTICS_EVENT_VERSION_NUMBER!!
@@ -60,6 +56,15 @@ namespace Amazon.AWSToolkit.MobileAnalytics
 
         private Dictionary<string, string> _attributes;
         private Dictionary<string, double> _metrics;
+
+        public bool PermissionToCollectAnalytics
+        {
+            get
+            {
+                string analyticsPermission = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsPermission);
+                return (analyticsPermission.Equals("true")) ? true : false;
+            }
+        }
 
         /*
          * Create a singleton instance of this class
@@ -90,8 +95,11 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// </summary>
         private SimpleMobileAnalytics()
         {
-            // Initialize the Amazon Cognito credentials provider
-            credentialsProvider = new CognitoAWSCredentials(
+            /* Initialize the Amazon Cognito credentials provider.
+             * Using the Analytics extended CognitoAWSCredentials will
+             * ensure caching of the identityID for unauthticated session logging. 
+             */
+            credentialsProvider = new AnalyticsCognitoAWSCredentials(
                 AWS_COGNITO_IDENTITY_POOL_ID,
                 RegionEndpoint.USEast1
             );
@@ -112,7 +120,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
              * see https://msdn.microsoft.com/en-us/library/microsoft.visualstudio.shell.interop.ivspackage.close.aspx
              * for reference on how we're notified when the user closes VS
              */
-            startSessionDetails = StartSession();
+            _startSessionDetails = StartSession();
         }
 
         /// <summary>
@@ -125,8 +133,11 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// <param name="attributeValue">The string you'd like associated with the Attribute key.</param>
         public void AddProperty(Attributes attributeKey, string attributeValue)
         {
-            if (USER_GAVE_US_PERMISSION_TO_RECORD_ANALYTICS)
+            if (PermissionToCollectAnalytics)
             {
+                if (_attributes == null)
+                    _attributes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
                 if (!string.IsNullOrWhiteSpace(attributeValue))
                 {
                     if (attributeValue.Contains(SERVICE_NAME_IDENTIFIER))
@@ -150,8 +161,11 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// <param name="metricValue">The double value you'd like associated with the Metric key.</param>
         public void AddProperty(Metrics metricKey, double metricValue)
         {
-            if (USER_GAVE_US_PERMISSION_TO_RECORD_ANALYTICS)
+            if (PermissionToCollectAnalytics)
             {
+                if (_metrics == null)
+                    _metrics = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
+
                 if (metricValue != null)
                     _metrics.Add(metricKey.ToString(), metricValue);
             }
@@ -165,33 +179,23 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// </summary>
         /// <param name="attributeString"></param>
         private void ParseServiceAndView(string attributeString) {
-            StringBuilder serviceName = new StringBuilder();
-            StringBuilder viewName = new StringBuilder();
 
             //Grab the service name
             int startIndex = attributeString.LastIndexOf(SERVICE_NAME_IDENTIFIER) + SERVICE_NAME_IDENTIFIER.Length;
-            char[] attributeCharArray = attributeString.ToCharArray();
-            for (int i = startIndex; i < attributeCharArray.Length; i++)
-            {
-                if (attributeCharArray[i] == '.')
-                    break;
-
-                serviceName.Append(attributeCharArray[i]);
-            }
-            AddProperty(Attributes.ServiceName, serviceName.ToString());
+            int indexOfNextPeriod = attributeString.IndexOf(".", startIndex);
+            string serviceName = attributeString.Substring(startIndex, indexOfNextPeriod - startIndex);
+            AddProperty(Attributes.ServiceName, serviceName);
 
             //check to see if the view name exists, then grab it if it does
             if (attributeString.Contains(VIEW_NAME_IDENTIFIER))
             {
                 startIndex = attributeString.LastIndexOf(VIEW_NAME_IDENTIFIER) + VIEW_NAME_IDENTIFIER.Length;
-                for (int i = startIndex; i < attributeCharArray.Length; i++)
-                {
-                    if (attributeCharArray[i] == '.')
-                        break;
-
-                    viewName.Append(attributeCharArray[i]);
-                }
-                AddProperty(Attributes.ViewName, viewName.ToString());
+                indexOfNextPeriod = attributeString.IndexOf(".", startIndex);
+                //check to see if there's a '.' after the view name. If not, grab the rest of the string.
+                if (indexOfNextPeriod == -1)
+                    indexOfNextPeriod = attributeString.Length;
+                string viewName = attributeString.Substring(startIndex, indexOfNextPeriod - startIndex);
+                AddProperty(Attributes.ViewName, viewName);
             }
         }
 
@@ -203,7 +207,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// <returns></returns>
         private Session StartSession()
         {
-            if (USER_GAVE_US_PERMISSION_TO_RECORD_ANALYTICS)
+            if (PermissionToCollectAnalytics)
             {
                 PutEventsRequest putEventRequest = new PutEventsRequest();
                 putEventRequest.ClientContext = clientContext.ToJsonString();
@@ -237,7 +241,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// </summary>
         public void StopSession()
         {
-            if (USER_GAVE_US_PERMISSION_TO_RECORD_ANALYTICS)
+            if (PermissionToCollectAnalytics && _startSessionDetails != null)
             {
                 PutEventsRequest putEventRequest = new PutEventsRequest();
                 putEventRequest.ClientContext = clientContext.ToJsonString();
@@ -249,7 +253,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                     EventType = STOP_SESSION,
                     Session = new Session
                     {
-                        StartTimestamp = startSessionDetails.StartTimestamp,
+                        StartTimestamp = _startSessionDetails.StartTimestamp,
                         StopTimestamp = endTime,
                         Id = SESSION_ID
                     }
@@ -267,10 +271,10 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// <param name="customEvent"></param>
         private void PopulateCustomEvent(Event customEvent)
         {
-            if (USER_GAVE_US_PERMISSION_TO_RECORD_ANALYTICS)
+            if (PermissionToCollectAnalytics)
             {
                 customEvent.EventType = GENERIC_EVENT_NAME;
-                customEvent.Version = MOBILE_ANALYTICS_EVENT_VERSION_NUMBER; //Do not change this!!! See Version documentation here: http://docs.aws.amazon.com/mobileanalytics/latest/ug/PutEvents.html
+                customEvent.Version = MOBILE_ANALYTICS_EVENT_VERSION_NUMBER;
                 customEvent.Timestamp = DateTime.Now;
 
                 if (_attributes != null)
@@ -300,7 +304,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// </summary>
         public void RecordEventWithProperties()
         {
-            if (USER_GAVE_US_PERMISSION_TO_RECORD_ANALYTICS)
+            if (PermissionToCollectAnalytics)
             {
                 BackgroundWorker bw = new BackgroundWorker();
 
@@ -315,11 +319,27 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                         PutEventsRequest putEventRequest = new PutEventsRequest();
                         putEventRequest.ClientContext = clientContext.ToJsonString();
 
-                        //grab some arbitary event
-                        Event myEvent = new Event();
-                        myEvent.Session = startSessionDetails;
-                        PopulateCustomEvent(myEvent);
+                        /*
+                         * This catches the case where a customer opted out of analytics before toolkit initialization,
+                         * then turned analytics on and triggered events after the fact.
+                         * 
+                         * Although unlikely to occur, this would cause issues because populating an event requires information
+                         * about the start session. Also the service requires a session is started before events can be aggregated.
+                         */
+                        if (_startSessionDetails == null)
+                        {
+                            _startSessionDetails = StartSession();
+                        }
 
+                        Event myEvent = new Event();
+                        myEvent.Session = _startSessionDetails;
+                        //Lock the singleton because the _attributes and _metric properties will be accessed and emptied
+                        lock (this)
+                        {
+                            //populate the event with all _attributes and _metrics
+                            PopulateCustomEvent(myEvent);
+                        }
+                        
                         //put the event in the putEventRequest list
                         putEventRequest.Events.Add(myEvent);
 
