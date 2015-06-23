@@ -14,7 +14,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
 
         public static Assembly AssemblyResolveEventHandler(object sender, ResolveEventArgs args)
         {
-            Assembly assembly = null;
             var pos = args.Name.IndexOf(",");
             if (pos > 0)
             {
@@ -22,13 +21,13 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
                 if (assemblyName.StartsWith("AWSSDK.", StringComparison.OrdinalIgnoreCase))
                 {
                     var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                    var fullPath = Path.Combine(path, "SDK", assemblyName + ".dll");
-                    if (File.Exists(fullPath))
-                        assembly = Assembly.LoadFile(fullPath);
+                    var testPath = Path.Combine(path, "SDK", assemblyName + ".dll");
+                    if (File.Exists(testPath))
+                        return Assembly.LoadFile(testPath);
                 }
             }
             
-            return assembly;
+            return null;
         }
 
         public static void ConfigureLog4Net()

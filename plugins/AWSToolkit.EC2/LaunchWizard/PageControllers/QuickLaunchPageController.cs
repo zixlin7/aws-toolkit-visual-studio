@@ -204,7 +204,8 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
 
         private void StorePageData()
         {
-            if (_pageUI.SelectedAMI != null)
+            var selectedAmi = _pageUI.SelectedAMI;
+            if (selectedAmi != null)
                 HostingWizard[LaunchWizardProperties.AMIOptions.propkey_SelectedAMI] =
                     _imageWrappers[_pageUI.SelectedAMIID];
             else
@@ -255,7 +256,18 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
                 _pageUI.SelectedInstanceProfile != null ? _pageUI.SelectedInstanceProfile.Arn : null;
 
             HostingWizard[LaunchWizardProperties.StorageProperties.propkey_QuickLaunchVolumeType] = _pageUI.SelectedVolumeType.TypeCode;
-            HostingWizard[LaunchWizardProperties.StorageProperties.propkey_QuickLaunchVolumeSize] = _pageUI.VolumeSize;
+            // if the user entered volume size is less than size declared in quicklaunch data, or built-in 
+            // sizes for volume type on platform, override
+            var userVolumeSize = _pageUI.VolumeSize;
+            if (selectedAmi != null)
+            {
+                var minSize = selectedAmi.TotalImageSize;
+                if (minSize <= 0)
+                    minSize = _pageUI.SelectedVolumeType.MinimumSizeForPlatform(selectedAmi.Platform);
+                if (userVolumeSize < minSize)
+                    userVolumeSize = minSize;
+            }
+            HostingWizard[LaunchWizardProperties.StorageProperties.propkey_QuickLaunchVolumeSize] = userVolumeSize;
         }
 
         // used to ensure 'Advanced' (aka Next) is always enabled; for Launch (aka Finish) depends on

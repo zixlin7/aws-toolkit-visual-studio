@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
-
-using Amazon.AWSToolkit;
+using System.Xml.XPath;
 
 using log4net;
 using Amazon.EC2.Model;
@@ -19,6 +17,18 @@ namespace Amazon.AWSToolkit.EC2
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(EC2ServiceMeta));
         readonly Dictionary<string, InstanceType> _instanceTypeMetaDictionary = new Dictionary<string, InstanceType>();
         IList<InstanceType> _allTypes = null;
+
+        // Fallback values if we can't find a default size (as 'totalImageSize' in the quicklaunch 
+        // image file. Some Windows images need 50GB min, so upsize our default.
+        const int LinuxRootVolumeSizeFallback = 15;
+        const int WindowsRootVolumeSizeFallback = 50;
+
+        // just in case these could ever differ...
+        const int WindowsAdditionalVolumeSizeFallback = 8;
+        const int LinuxAdditionalVolumeSizeFallback = 8;
+
+        const int MinIopsFallback = 100;
+        const int MaxIopsFallback = 4000;
 
         static readonly object _syncLock = new object();
         static EC2ServiceMeta _instance;
@@ -78,6 +88,42 @@ namespace Amazon.AWSToolkit.EC2
         }
 
         public InstanceType DefaultInstanceType
+        {
+            get;
+            private set;
+        }
+
+        public int DefaultWindowsRootVolumeSize
+        {
+            get;
+            private set;
+        }
+
+        public int DefaultWindowsAdditionalVolumeSize
+        {
+            get;
+            private set;
+        }
+
+        public int DefaultLinuxRootVolumeSize
+        {
+            get;
+            private set;
+        }
+
+        public int DefaultLinuxAdditionalVolumeSize
+        {
+            get;
+            private set;
+        }
+
+        public int MinIops
+        {
+            get;
+            private set;
+        }
+
+        public int MaxIops
         {
             get;
             private set;
@@ -152,18 +198,58 @@ namespace Amazon.AWSToolkit.EC2
                 }
             }
 
-            string defaultInstanceTypeId;
-            XElement xel = xdoc.Root.Element("DefaultInstanceType");
-            if (xel != null)
-                defaultInstanceTypeId = xel.Attribute("id").Value;
-            else
-                defaultInstanceTypeId = "m1.small";
-
+            var defaultInstanceTypeId = QuerySetting(xdoc, "DefaultInstanceType", "id", "m1.small");
             if (_instanceTypeMetaDictionary.ContainsKey(defaultInstanceTypeId))
             {
                 DefaultInstanceTypeId = defaultInstanceTypeId;
                 DefaultInstanceType = _instanceTypeMetaDictionary[defaultInstanceTypeId];
             }
+
+            DefaultWindowsRootVolumeSize = QuerySetting(xdoc, "DefaultVolumeSizes/WindowsRootVolumeSize", null, WindowsRootVolumeSizeFallback);
+            DefaultWindowsAdditionalVolumeSize = QuerySetting(xdoc, "DefaultVolumeSizes/WindowsAdditionalVolumeSize", null, WindowsAdditionalVolumeSizeFallback);
+
+            DefaultLinuxRootVolumeSize = QuerySetting(xdoc, "DefaultVolumeSizes/LinuxRootVolumeSize", null, LinuxRootVolumeSizeFallback);
+            DefaultLinuxAdditionalVolumeSize = QuerySetting(xdoc, "DefaultVolumeSizes/LinuxAdditionalVolumeSize", null, LinuxAdditionalVolumeSizeFallback);
+
+            MinIops = QuerySetting(xdoc, "Iops", "min", MinIopsFallback);
+            MaxIops = QuerySetting(xdoc, "Iops", "max", MaxIopsFallback);
         }
+
+        int QuerySetting(XDocument xdoc, string elementName, string attributeName, int fallbackValue)
+        {
+            // pass empty string to avoid ToString/TryParse roundtrip on fallback value
+            var val = QuerySetting(xdoc, elementName, attributeName, string.Empty);
+            if (!string.IsNullOrEmpty(val))
+            {
+                int v;
+                if (int.TryParse(val, out v))
+                    return v;
+            }
+
+            return fallbackValue;
+        }
+
+        string QuerySetting(XDocument xdoc, string elementName, string attributeName, string fallbackValue)
+        {
+            var x = xdoc.Root.XPathSelectElement(elementName);
+            if (x != null)
+            {
+                string val = null;
+                if (!string.IsNullOrEmpty(attributeName))
+                {
+                    var attr = x.Attribute(attributeName);
+                    if (attr != null)
+                        val = attr.Value;
+                }
+                else
+                    val = x.Value;
+
+                if (!string.IsNullOrEmpty(val))
+                    return val;
+            }
+
+            return fallbackValue;
+        }
+
     }
 }

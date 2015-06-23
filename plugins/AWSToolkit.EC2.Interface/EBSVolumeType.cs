@@ -14,10 +14,13 @@ namespace Amazon.AWSToolkit.EC2
 
         public int MinimumSizeForPlatform(string platform)
         {
-            if (platform.Equals("windows", StringComparison.OrdinalIgnoreCase))
-                return EBSVolumeTypes.DefaultWindowsPlatformSize;
+            if (MinimumSize.HasValue)
+                return MinimumSize.Value;
 
-            return MinimumSize.HasValue ? MinimumSize.Value : EBSVolumeTypes.DefaultLinuxVolumeSize;
+            if (platform.Equals("windows", StringComparison.OrdinalIgnoreCase))
+                return EC2ServiceMeta.Instance.DefaultWindowsRootVolumeSize;
+
+            return EC2ServiceMeta.Instance.DefaultLinuxRootVolumeSize;
         }
     }
 
@@ -26,13 +29,8 @@ namespace Amazon.AWSToolkit.EC2
         public static EBSVolumeType[] AllVolumeTypes =
         {
             new EBSVolumeType { Description = "General Purpose (SSD)", TypeCode = "gp2" },
-            new EBSVolumeType { Description = "ProvisionedIOPS (SSD)", TypeCode = "io1", MinimumSize = 10, IsPiopsVolume = true },
+            new EBSVolumeType { Description = "ProvisionedIOPS (SSD)", TypeCode = "io1", IsPiopsVolume = true },
             new EBSVolumeType { Description = "Magnetic", TypeCode = "standard" },
         };
-
-        // these seem to be the bare minimums based on using the web console, don't think you can
-        // query these values
-        public static int DefaultLinuxVolumeSize = 8;
-        public static int DefaultWindowsPlatformSize = 30;
     }
 }

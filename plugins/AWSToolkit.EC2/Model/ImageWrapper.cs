@@ -221,19 +221,27 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [DisplayName("Image Size")]
-        public string ImageSize
+        public string FormattedImageSize
         {
             get 
             {
+                return ImageSize + " GiB"; 
+            }
+        }
+
+        public int ImageSize
+        {
+            get
+            {
                 int size = 0;
-                foreach(var map in this._image.BlockDeviceMappings)
+                foreach (var map in this._image.BlockDeviceMappings)
                 {
                     if (map.Ebs == null)
                         continue;
 
                     size += (int)map.Ebs.VolumeSize;
                 }
-                return size + " GiB"; 
+                return size;
             }
         }
 

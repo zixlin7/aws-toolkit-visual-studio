@@ -163,7 +163,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
             Utility.ConfigureLog4Net();
 
-            AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(Utility.AssemblyResolveEventHandler);
+            AppDomain.CurrentDomain.AssemblyResolve += Utility.AssemblyResolveEventHandler;
 
             this._hier = new NavigatorVsUIHierarchy();
             this._shellDispatcher = Dispatcher.CurrentDispatcher;

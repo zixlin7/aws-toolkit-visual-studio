@@ -141,14 +141,6 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
 
     internal class StoragePageModel : BaseModel
     {
-        // these values based on observation of the console's launch wizard
-        private const int RootVolumeSize_Windows = 30;
-        private const int RootVolumeSize_Linux = 8;
-
-        // just in case these could ever differ...
-        private const int AdditionalVolumeSize_Windows = 8;
-        private const int AdditionalVolumeSize_Linux = 8;
-
         private readonly ObservableCollection<InstanceLaunchStorageVolume> _storageVolumes = new ObservableCollection<InstanceLaunchStorageVolume>();
         
         private ImageWrapper SelectedAMI { get; set; }
@@ -200,11 +192,19 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
                                 || selectedAMI.VirtualizationType.Equals(VirtualizationType.Paravirtual, StringComparison.OrdinalIgnoreCase)
                     ? "/dev/sda1"
                     : "/dev/xvda",
-                Size = selectedAMI.IsWindowsPlatform ? RootVolumeSize_Windows : RootVolumeSize_Linux,
                 DeleteOnTermination = true,
                 Encrypted = false,
                 VolumeType = InstanceLaunchStorageVolume.VolumeTypeFromCode(VolumeWrapper.GeneralPurposeTypeCode)
             };
+
+            // get the volume size from the image details if available, otherwise fallback
+            // to hard-coded defaults
+            var imageSize = selectedAMI.ImageSize;
+            if (imageSize <= 0)
+                imageSize = selectedAMI.IsWindowsPlatform
+                    ? EC2ServiceMeta.Instance.DefaultWindowsRootVolumeSize
+                    : EC2ServiceMeta.Instance.DefaultLinuxRootVolumeSize;
+            rootVolume.Size = imageSize;
 
             rootVolume.SetAvailableStorageTypesForInstanceType(SelectedInstanceType, 0);
 
@@ -220,7 +220,9 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
         {
             var volume = new InstanceLaunchStorageVolume
             {
-                Size = SelectedAMI.IsWindowsPlatform ? AdditionalVolumeSize_Windows : AdditionalVolumeSize_Linux,
+                Size = SelectedAMI.IsWindowsPlatform 
+                    ? EC2ServiceMeta.Instance.DefaultWindowsAdditionalVolumeSize 
+                    : EC2ServiceMeta.Instance.DefaultLinuxAdditionalVolumeSize,
                 DeleteOnTermination = false,
                 Encrypted = false,
                 VolumeType = InstanceLaunchStorageVolume.VolumeTypeFromCode(VolumeWrapper.GeneralPurposeTypeCode)

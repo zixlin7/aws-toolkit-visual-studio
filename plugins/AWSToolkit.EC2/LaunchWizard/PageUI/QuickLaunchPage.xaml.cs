@@ -3,25 +3,16 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 using Amazon.AWSToolkit.EC2.View.Components;
 using Amazon.AWSToolkit.EC2.Model;
 
 using Amazon.EC2.Model;
-using AMIImage = Amazon.EC2.Model.Image;
 using Amazon.IdentityManagement.Model;
 
 namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
@@ -366,12 +357,15 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
             if (SelectedAMI == null)
                 return;
 
-            var min = SelectedVolumeType.MinimumSizeForPlatform(SelectedAMI.Platform);
-            if (min > VolumeSize)
-            {
-                VolumeSize = min;
-                NotifyPropertyChanged("VolumeSize");
-            }
+            // if we got an image size recorded in the quicklaunch backing file, use it
+            // otherwise fall back to using a hard-coded default for the volume type
+            // on the selected platform
+            int minSize = SelectedAMI.TotalImageSize;
+            if (minSize <= 0)
+                minSize = SelectedVolumeType.MinimumSizeForPlatform(SelectedAMI.Platform);
+
+            VolumeSize = minSize;
+            NotifyPropertyChanged("VolumeSize");
         }
 
         private void _securityGroups_SelectionChanged(object sender, SelectionChangedEventArgs e)

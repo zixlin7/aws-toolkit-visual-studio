@@ -79,10 +79,29 @@
     <CustomExtension Type="Plugins">..\..\thirdparty\NGit.dll</CustomExtension>
     <CustomExtension Type="Plugins">..\..\thirdparty\NSch.dll</CustomExtension>
     <CustomExtension Type="Plugins">..\..\thirdparty\Sharpen.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.AutoScaling.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.CloudFormation.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.CloudFront.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.CloudWatch.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.CloudWatchLogs.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.Core.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.DynamoDBv2.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.EC2.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.ElasticBeanstalk.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.ElasticLoadBalancing.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.Extensions.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.IdentityManagement.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.Kinesis.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.Lambda.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.RDS.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.S3.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.SQS.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.SimpleDB.dll</CustomExtension>
+    <CustomExtension Type="SDK">..\..\Deployment\plugins\AWSSDK.SimpleNotificationService.dll</CustomExtension>
     <CustomExtension Type="Shared Assemblies">|AWSToolkitPackage.Shared|</CustomExtension>
     <CustomExtension Type="AWSToolkitMedia">..\..\Deployment\plugins\Media\ToolkitFirstRun.wmv</CustomExtension>
     <MefComponent>|AWSToolkit.CloudFormation.EditorExtensions|</MefComponent>
     <Assembly AssemblyName="|AWSToolkit.CloudFormation.TemplateWizards;AssemblyName|">|AWSToolkit.CloudFormation.TemplateWizards|</Assembly>
     <Assembly AssemblyName="|AWSToolkit.Lambda.TemplateWizards;AssemblyName|">|AWSToolkit.Lambda.TemplateWizards|</Assembly>
-  </Content>
+ </Content>
 </Vsix>

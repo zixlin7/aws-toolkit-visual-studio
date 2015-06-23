@@ -297,13 +297,9 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         private readonly string _id = Guid.NewGuid().ToString("N");  
         
-        // taken from ec2's runinstances docs
-        private const int MinIops = 100;
-        private const int MaxIops = 4000;
-
         public InstanceLaunchStorageVolume()
         {
-            Iops = MinIops;
+            Iops = EC2ServiceMeta.Instance.MinIops;
             // always default to EBS, since not all instance types
             // allow instance store volumes (and if they do, the number
             // can be limited)

@@ -65,6 +65,7 @@
     </Reference>
     <Reference Include="AWSSDK.ElasticBeanstalk">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.ElasticBeanstalk.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="AWSSDK.Lambda">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.Lambda.dll</HintPath>
@@ -583,6 +584,103 @@
     </Content>
     <Content Include="..\..\Deployment\plugins\Media\ToolkitFirstRun.wmv">
       <Link>Plugins\Media\ToolkitFirstRun.wmv</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.AutoScaling.dll">
+      <Link>SDK\AWSSDK.AutoScaling.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.CloudFormation.dll">
+      <Link>SDK\AWSSDK.CloudFormation.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.CloudFront.dll">
+      <Link>SDK\AWSSDK.CloudFront.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.CloudWatch.dll">
+      <Link>SDK\AWSSDK.CloudWatch.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.CloudWatchLogs.dll">
+      <Link>SDK\AWSSDK.CloudWatchLogs.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.Core.dll">
+      <Link>SDK\AWSSDK.Core.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.DynamoDBv2.dll">
+      <Link>SDK\AWSSDK.DynamoDBv2.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.EC2.dll">
+      <Link>SDK\AWSSDK.EC2.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.ElasticBeanstalk.dll">
+      <Link>SDK\AWSSDK.ElasticBeanstalk.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.ElasticLoadBalancing.dll">
+      <Link>SDK\AWSSDK.ElasticLoadBalancing.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\AWSSDK.Extensions.dll">
+      <Link>SDK\AWSSDK.Extensions.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.IdentityManagement.dll">
+      <Link>SDK\AWSSDK.IdentityManagement.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.Kinesis.dll">
+      <Link>SDK\AWSSDK.Kinesis.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.Lambda.dll">
+      <Link>SDK\AWSSDK.Lambda.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.RDS.dll">
+      <Link>SDK\AWSSDK.RDS.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.S3.dll">
+      <Link>SDK\AWSSDK.S3.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.SQS.dll">
+      <Link>SDK\AWSSDK.SQS.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.SimpleDB.dll">
+      <Link>SDK\AWSSDK.SimpleDB.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\plugins\AWSSDK.SimpleNotificationService.dll">
+      <Link>SDK\AWSSDK.SimpleNotificationService.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
