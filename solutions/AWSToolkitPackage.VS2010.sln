@@ -69,7 +69,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.DynamoDB", "..\p
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.DynamoDB.Interface", "..\plugins\AWSToolkit.DynamoDB.Interface\AWSToolkit.DynamoDB.Interface.csproj", "{59D6F9BE-5344-496A-9E03-A2A0020DAAC4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkitPackage", "..\shells\AWSToolkitPackage\AWSToolkitPackage.csproj", "{F79D62B3-1B27-45D5-B28B-9505E92A93A3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkitPackage.VS2010", "..\shells\AWSToolkitPackage\AWSToolkitPackage.VS2010.csproj", "{F79D62B3-1B27-45D5-B28B-9505E92A93A3}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9DD9F407-F2C6-495A-9204-C9825C67E9B9} = {9DD9F407-F2C6-495A-9204-C9825C67E9B9}
 		{C4042C0E-20B3-40C3-9CD1-D4FB2CA84FD9} = {C4042C0E-20B3-40C3-9CD1-D4FB2CA84FD9}
