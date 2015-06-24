@@ -471,14 +471,14 @@ namespace AWSDeployment
 
         private void SetupEC2GroupForRDS()
         {
-            var securityGroupName = this.EnvironmentName + Amazon.AWSToolkit.Constants.BEANSTALK_RDS_SECURITY_GROUP_POSTFIX;
+            var ec2SecurityGroupName = this.EnvironmentName + Amazon.AWSToolkit.Constants.BEANSTALK_RDS_SECURITY_GROUP_POSTFIX;
 
             SecurityGroup ec2SecurityGroup = null;
             try
             {
                 var filters = new List<Amazon.EC2.Model.Filter>
                 {
-                    new Amazon.EC2.Model.Filter { Name = "group-name", Values = new List<string>{securityGroupName}}
+                    new Amazon.EC2.Model.Filter { Name = "group-name", Values = new List<string>{ec2SecurityGroupName}}
                 };
                 if (!string.IsNullOrEmpty(VPCId))
                     filters.Add(new Amazon.EC2.Model.Filter { Name = "vpc-id", Values = new List<string>{ VPCId}});
@@ -498,16 +498,36 @@ namespace AWSDeployment
             {
                 var createSecurityGroupRequest = new CreateSecurityGroupRequest
                 {
-                    GroupName = securityGroupName,
+                    GroupName = ec2SecurityGroupName,
                     Description = "Security Group created for Beanstalk Environment to give access to RDS instances"
                 };
                 if (!string.IsNullOrEmpty(VPCId))
                     createSecurityGroupRequest.VpcId = VPCId;
 
                 ec2SecurityGroupId = this.EC2Client.CreateSecurityGroup(createSecurityGroupRequest).GroupId;
-                Observer.Status("...created EC2 security group for allowing access to RDS instances '{0}'", securityGroupName);
+                Observer.Status("...created EC2 security group for allowing access to RDS instances '{0}'", ec2SecurityGroupName);
 
-                ec2SecurityGroup = this.EC2Client.DescribeSecurityGroups(new DescribeSecurityGroupsRequest { GroupIds = new List<string> { ec2SecurityGroupId } }).SecurityGroups[0];
+                // allow for possible eventual consistency
+                const int maxRetryCount = 10;
+                var retry = 0;
+                while (ec2SecurityGroup == null && retry < maxRetryCount)
+                {
+                    retry++;
+                    try
+                    {
+                        ec2SecurityGroup = EC2Client.DescribeSecurityGroups(new DescribeSecurityGroupsRequest {GroupIds = new List<string> {ec2SecurityGroupId}}).SecurityGroups.FirstOrDefault();
+                    }
+                    catch
+                    {
+                        Observer.Status("...waiting for creation of Amazon EC2 security group {0}", ec2SecurityGroupName);
+                        Thread.Sleep(500);
+                    }
+                }
+
+                if (ec2SecurityGroup == null)
+                {
+                    Observer.Status("...failed to confirm EC2 security group creation after {0} attempts; continuing with deployment", maxRetryCount);
+                }
             }
             else
             {
@@ -533,7 +553,7 @@ namespace AWSDeployment
             }
             catch (Exception e)
             {
-                Observer.Status("...error opening port 80 in security group '{0}': {1}", securityGroupName, e.Message);
+                Observer.Status("...error opening port 80 in security group '{0}': {1}", ec2SecurityGroupName, e.Message);
             }
 
             if (RDSSecurityGroups.Any())
@@ -550,7 +570,7 @@ namespace AWSDeployment
                         };
 
                         // can't output to console as message potentially out-of-order now we're in a thread
-                        Observer.LogOnly("...adding EC2 security group '{0}' to RDS security group '{1}'", securityGroupName, rdsSecurityGroup);
+                        Observer.LogOnly("...adding EC2 security group '{0}' to RDS security group '{1}'", ec2SecurityGroupName, rdsSecurityGroup);
                         RDSClient.AuthorizeDBSecurityGroupIngress(authIngressRequest);
                     }
                     catch (AmazonRDSException e)
@@ -558,10 +578,10 @@ namespace AWSDeployment
                         // can't output to console as message potentially out-of-order now we're in a thread
                         if (e is AuthorizationAlreadyExistsException)
                             Observer.Status("......EC2 security group '{0}' already has ingress permissions in RDS security group '{1}'",
-                                            securityGroupName, rdsSecurityGroup);
+                                            ec2SecurityGroupName, rdsSecurityGroup);
                         else
                             Observer.Status("......caught AmazonRDSException whilst adding EC2 security group '{0}' to RDS security group '{1}', skipped - {2}",
-                                        securityGroupName, rdsSecurityGroup, e.Message);
+                                        ec2SecurityGroupName, rdsSecurityGroup, e.Message);
                     }
                 }
             }
@@ -631,12 +651,12 @@ namespace AWSDeployment
                 {
                     Namespace = "aws:autoscaling:launchconfiguration",
                     OptionName = "SecurityGroups",
-                    Value = ec2SecurityGroupId
+                    Value = this.LaunchIntoVPC ? ec2SecurityGroupId : ec2SecurityGroupName
                 });
             }
             else
             {
-                existingOption.Value += "," + ec2SecurityGroupId;
+                existingOption.Value += "," + (this.LaunchIntoVPC ? ec2SecurityGroupId : ec2SecurityGroupName);
             }
         }
 
