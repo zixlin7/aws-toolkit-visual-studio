@@ -177,9 +177,10 @@ namespace Amazon.AWSToolkit.Studio
 
         public bool ShowModal(Window window, string metricId)
         {
-            SimpleMobileAnalytics recorder = SimpleMobileAnalytics.Instance;
-            recorder.AddProperty(Attributes.OpenViewFullIdentifier, metricId);
-            recorder.RecordEventWithProperties();
+            ToolkitEvent toolkitEvent = new ToolkitEvent();
+            toolkitEvent.AddProperty(AttributeKeys.OpenViewFullIdentifier, metricId);
+            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(toolkitEvent);
+
             window.Owner = this;
             return window.ShowDialog().GetValueOrDefault();
         }

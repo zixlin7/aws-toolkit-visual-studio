@@ -191,7 +191,8 @@ namespace Amazon.AWSToolkit.VisualStudio
                 LOGGER.Warn("Failed to register for broadcast messages, theme change will not be detected", e);
             }
 
-            //recorder = new SimpleMobileAnalytics();
+            //Create Instance of SimpleMobileAnalytics Recorder
+            //This will also start the main session
             recorder = SimpleMobileAnalytics.Instance;
         }
 
@@ -1871,8 +1872,9 @@ namespace Amazon.AWSToolkit.VisualStudio
 
             var openShell = GetService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
 
-            recorder.AddProperty(Attributes.OpenViewFullIdentifier, editorControl.GetType().FullName);
-            recorder.RecordEventWithProperties();
+            ToolkitEvent toolkitEvent = new ToolkitEvent();
+            toolkitEvent.AddProperty(AttributeKeys.OpenViewFullIdentifier, editorControl.GetType().FullName);
+            recorder.QueueEventToBeRecorded(toolkitEvent);
 
             var logicalView = VSConstants.LOGVIEWID_Primary;
             var editorFactoryGuid = new Guid(GuidList.guid_VSPackageEditorFactoryString);
@@ -1987,8 +1989,9 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         public bool ShowModal(Window window, string metricId)
         {
-            recorder.AddProperty(Attributes.OpenViewFullIdentifier, metricId);
-            recorder.RecordEventWithProperties();
+            ToolkitEvent toolkitEvent = new ToolkitEvent();
+            toolkitEvent.AddProperty(AttributeKeys.OpenViewFullIdentifier, metricId);
+            recorder.QueueEventToBeRecorded(toolkitEvent);
 
             var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
             IntPtr parent;
@@ -2229,7 +2232,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         int IVsPackage.Close()
         {
-            SimpleMobileAnalytics.Instance.StopSession();
+            SimpleMobileAnalytics.Instance.StopMainSession();
             return Microsoft.VisualStudio.VSConstants.S_OK;
         }
 

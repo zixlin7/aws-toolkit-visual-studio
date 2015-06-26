@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Amazon.AWSToolkit.MobileAnalytics
 {
-    class AnalyticsCognitoAWSCredentials : CognitoAWSCredentials
+    public class AnalyticsCognitoAWSCredentials : CognitoAWSCredentials
     {
 
         public AnalyticsCognitoAWSCredentials(string cognitoIdentityPoolID, RegionEndpoint regionEndpoint)

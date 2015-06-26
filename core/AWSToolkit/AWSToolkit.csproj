@@ -267,7 +267,12 @@
     <Compile Include="IShellProvider.cs" />
     <Compile Include="IShellProviderThemeService.cs" />
     <Compile Include="MobileAnalytics\AnalyticsCognitoAWSCredentials.cs" />
+    <Compile Include="MobileAnalytics\AMAConstants.cs" />
+    <Compile Include="MobileAnalytics\AMAServiceCallHandler.cs" />
+    <Compile Include="MobileAnalytics\ClientContext.cs" />
+    <Compile Include="MobileAnalytics\ClientContextConfig.cs" />
     <Compile Include="MobileAnalytics\SimpleMobileAnalytics.cs" />
+    <Compile Include="MobileAnalytics\ToolkitEvent.cs" />
     <Compile Include="Navigator\Node\AbstractViewModel.cs" />
     <Compile Include="Navigator\ActionHandlerWrapper.cs" />
     <Compile Include="Navigator\ActionResults.cs" />
