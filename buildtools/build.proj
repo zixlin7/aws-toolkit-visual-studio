@@ -206,7 +206,7 @@
 			/>
 	</Target>
 	
-   	<Target Name="get-references">		
+	<Target Name="get-references"  DependsOnTargets="build-tools">		
 		<MSBuild Projects ="$(MSBuildProjectFullPath)" Targets="get-reference-sdk" Properties="TargetRepository=$(MSBuildProjectDirectory)\.."/>
 	</Target>
 
