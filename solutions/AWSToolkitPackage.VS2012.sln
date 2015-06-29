@@ -110,13 +110,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkitPackage.Shared", "..\shells\AWSToolkit.VisualStudio.Shared\AWSToolkitPackage.Shared.csproj", "{097A6937-AABA-4D8C-9CDE-3566564E9A18}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LambdaEditor", "LambdaEditor", "{8007EF83-83CC-4B3B-B79B-C75CED867A68}"
-	ProjectSection(SolutionItems) = preProject
-		..\plugins\AWSToolkit.Lambda.TemplateWizards\AWSToolkit.Lambda.TemplateWizards.csproj = ..\plugins\AWSToolkit.Lambda.TemplateWizards\AWSToolkit.Lambda.TemplateWizards.csproj
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.Lambda.Interface", "..\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj", "{7E4C1857-240E-4BD2-B4CE-D37BF0E41DF6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.Lambda", "..\plugins\AWSToolkit.Lambda\AWSToolkit.Lambda.csproj", "{7102B4CF-9B9D-4827-ADCA-D23971CD84C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.Lambda.TemplateWizards", "..\plugins\AWSToolkit.Lambda.TemplateWizards\AWSToolkit.Lambda.TemplateWizards.csproj", "{783E4198-A8F1-4E74-AF3E-0001B0AD516B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -796,6 +795,24 @@ Global
 		{7102B4CF-9B9D-4827-ADCA-D23971CD84C3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7102B4CF-9B9D-4827-ADCA-D23971CD84C3}.Release|Win32.ActiveCfg = Release|Any CPU
 		{7102B4CF-9B9D-4827-ADCA-D23971CD84C3}.Release|x86.ActiveCfg = Release|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Debug VS2010 Build|Any CPU.ActiveCfg = Debug|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Debug VS2010 Build|Any CPU.Build.0 = Debug|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Debug VS2010 Build|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Debug VS2010 Build|Mixed Platforms.Build.0 = Debug|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Debug VS2010 Build|Win32.ActiveCfg = Debug|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Debug VS2010 Build|x86.ActiveCfg = Debug|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Release|Win32.ActiveCfg = Release|Any CPU
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -830,5 +847,6 @@ Global
 		{FE98588C-7FEE-414E-9EAB-F36BF64C88C0} = {D9AF7182-5F6D-4AA6-AADD-CCF0C6CC4290}
 		{18023934-17CF-421E-87C2-61838B7498C6} = {D9AF7182-5F6D-4AA6-AADD-CCF0C6CC4290}
 		{0588D27B-7D87-4B33-9120-4C0A9E7D6665} = {D9AF7182-5F6D-4AA6-AADD-CCF0C6CC4290}
+		{783E4198-A8F1-4E74-AF3E-0001B0AD516B} = {8007EF83-83CC-4B3B-B79B-C75CED867A68}
 	EndGlobalSection
 EndGlobal
