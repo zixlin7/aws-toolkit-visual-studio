@@ -23,7 +23,7 @@
         <AWSDeployVersionNumber Condition="'$(AWSDeployVersion)'==''"></AWSDeployVersionNumber>
     </PropertyGroup>
     
-	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;update-version;build-awsdeploy;build-vstoolkit;copy-artifacts;save-build">
+	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;update-version;build-awsdeploy;build-vstoolkit;keyscan;copy-artifacts;save-build">
 		<Message Text="Builds all components of the AWS Toolkit for Visual Studio"/>
 	</Target>
 
@@ -162,6 +162,41 @@
 			/>
 	</Target>
 
+    <Target Name="keyscan" DependsOnTargets="build-tools">
+        <ItemGroup>
+            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Debug\View\Components\GetPasswordAskPrivateKey.baml" />
+            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Debug\View\OpenRemoteDesktopControl.baml" />
+            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Debug\View\OpenSCPSessionControl.baml" />
+            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Debug\View\OpenSSHSessionControl.baml" />
+            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Debug\AWSToolkit.EC2.g.resources" />
+            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Release\View\Components\GetPasswordAskPrivateKey.baml" />
+            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Release\View\OpenRemoteDesktopControl.baml" />
+            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Release\View\OpenSCPSessionControl.baml" />
+            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Release\View\OpenSSHSessionControl.baml" />
+            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Release\AWSToolkit.EC2.g.resources" />
+            <PrivateKeyException Include="plugins\AWSToolkit.EC2\View\Components\GetPasswordAskPrivateKey.xaml" />
+            <PrivateKeyException Include="plugins\AWSToolkit.EC2\View\GetPasswordControl.xaml.cs" />
+            <PrivateKeyException Include="plugins\AWSToolkit.EC2\View\OpenRemoteDesktopControl.xaml" />
+            <PrivateKeyException Include="plugins\AWSToolkit.EC2\View\OpenSCPSessionControl.xaml" />
+            <PrivateKeyException Include="plugins\AWSToolkit.EC2\View\OpenSSHSessionControl.xaml" />
+            <PrivateKeyException Include="tests\AWSToolkit.Tests\CryptoTests.cs" />
+            <PrivateKeyException Include="thirdparty\PemToPPKConverter\openssh.c" />
+            <PrivateKeyException Include="thirdparty\PemToPPKConverter\Release\openssh.obj" />
+        </ItemGroup>
+        
+        <ItemGroup>
+            <FileException Include="awsdeploy\tests\AWSDeploymentUnitTest\Resources\sample-configfile.txt" />
+        </ItemGroup>
+        
+        <KeyScannerTask 
+            Folder="$(MSBuildProjectDirectory)\.."
+            FilePattern="**"
+            PrivateKeyExceptions="@(PrivateKeyException)"
+            FileExceptions="@(FileException)"
+            ParallelScan="true"
+            />
+    </Target>
+    
 	<Target Name="save-build"  DependsOnTargets="build-tools">		
 		<SaveBuildArtifactTask
 			RepositoryRoot="$(MSBuildProjectDirectory)\.."
