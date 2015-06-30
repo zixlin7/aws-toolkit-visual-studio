@@ -21,6 +21,8 @@
         
         <AWSToolkitVersionNumber Condition="'$(AWSToolkitVersion)'==''"></AWSToolkitVersionNumber>
         <AWSDeployVersionNumber Condition="'$(AWSDeployVersion)'==''"></AWSDeployVersionNumber>
+        
+        <RunKeyScan Condition="'$(RunKeyScan)'==''">false</RunKeyScan>
     </PropertyGroup>
     
 	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;update-version;build-awsdeploy;build-vstoolkit;keyscan;copy-artifacts;save-build">
@@ -162,7 +164,7 @@
 			/>
 	</Target>
 
-    <Target Name="keyscan" DependsOnTargets="build-tools">
+    <Target Name="keyscan" Condition="$(RunKeyScan)" DependsOnTargets="build-tools">
         <ItemGroup>
             <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Debug\View\Components\GetPasswordAskPrivateKey.baml" />
             <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Debug\View\OpenRemoteDesktopControl.baml" />
