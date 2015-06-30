@@ -13,7 +13,7 @@ using Amazon.Runtime.Internal.Settings;
 
 namespace Amazon.AWSToolkit.MobileAnalytics
 {
-    public class SimpleMobileAnalytics
+    public class SimpleMobileAnalytics : IDisposable
     {
         private const int MAX_QUEUE_SIZE = 500;
         private Queue<Event> _eventQueue;
@@ -123,6 +123,14 @@ namespace Amazon.AWSToolkit.MobileAnalytics
             //This method trigger when VS closes so we need to force the service call.
             //If we don't the background thread won't collect any remaining events in the queue.
             _serviceCallHandler.ForceAMAServiceCallAttempt();
+
+            //Signifies that this method should only be called when the toolkit is being closed.
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            //don't do anything -- just here to signify you shouldn't use this class after calling StopMainSession
         }
 
         /// <summary>

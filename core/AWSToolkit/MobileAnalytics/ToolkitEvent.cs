@@ -76,22 +76,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         }
 
         /// <summary>
-        /// Do NOT use this constructor for sessions! It is intended to allow you to
-        /// create an event with a customEventType, while still using the main session.
-        /// </summary>
-        /// <param name="customEventType"></param>
-        public ToolkitEvent(string customEventType)
-        {
-            _eventTimestamp = DateTime.UtcNow;
-            _attributes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            _metrics = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
-
-            _customEventType = customEventType;
-
-            this.AddProperty(AttributeKeys.ReadableTimestamp, _eventTimestamp.ToString());
-        }
-
-        /// <summary>
         /// Converts a toolkit event into an AMA Event
         /// </summary>
         /// <returns>AMA Event with properties of a toolkit event</returns>
