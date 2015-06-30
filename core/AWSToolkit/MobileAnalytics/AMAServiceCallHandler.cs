@@ -12,13 +12,13 @@ namespace Amazon.AWSToolkit.MobileAnalytics
     public class AMAServiceCallHandler
     {
         private const int BACKGROUND_QUEUE_MAX_CAPACITY = 500;
-        private const int MAX_SLEEP_TIME_BEOFRE_SERVICE_CALL_ATTEMPT = 300000; //5 minutes in milliseconds
-        private const int TIME_BETWEEN_QUEUE_CHECKS = 60000; //1 minute in milliseconds
+        private TimeSpan MAX_SLEEP_TIME_BEOFORE_SERVICE_CALL_ATTEMPT = TimeSpan.FromMinutes(5);
+        private TimeSpan TIME_BETWEEN_QUEUE_CAPACITY_CHECKS = TimeSpan.FromMinutes(1);
+        private TimeSpan MAX_SERVICE_CALL_TIME_ALLOWED = TimeSpan.FromSeconds(8);
+        private DateTime _nextScheduledServiceCall;
 
         private Thread _mainBackgroundThread;
         private Queue<Event> _backgroundQueue;
-        private int _maxTimesAllowedToSleepBeforeServiceCallAttempt = MAX_SLEEP_TIME_BEOFRE_SERVICE_CALL_ATTEMPT / TIME_BETWEEN_QUEUE_CHECKS;
-        private int _timesSlept = 0;
 
         private AmazonMobileAnalyticsClient _amazonMobileAnalyticsClient;
         private AnalyticsCognitoAWSCredentials _credentialsProvider;
@@ -59,8 +59,17 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// </summary>
         private AMAServiceCallHandler()
         {
-            _mainBackgroundThread = new Thread(new ThreadStart(mainBackgroundThreadActivity));
             _backgroundQueue = new Queue<Event>(BACKGROUND_QUEUE_MAX_CAPACITY);
+
+            string identityPoolId = MostReventlyUsedCognitoIdentityPool;
+            if (string.IsNullOrEmpty(identityPoolId) || !identityPoolId.Equals(AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID))
+            {
+                //if null or if it doesn't match the currently stored pool id, clear the cached cognito identity id (different than pool id)
+                //and write the newest identity pool id
+                //when the _credentialsProvider is called next, it will handle caching a new identity id
+                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsCognitoIdentityId, "");
+                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsMostReventlyUsedCognitoIdentityPool, AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID);
+            }
 
             try
             {
@@ -91,13 +100,18 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 {
                     //log me eventually
                 }
+
+                //construct the AWS Mobile Analytics Client Context
+                ClientContextConfig clientContextConfig = new ClientContextConfig(CustomerGuid, AMAConstants.ClientInformation.APP_TITLE, AMAConstants.ClientInformation.APP_ID);
+                _clientContext = new ClientContext(clientContextConfig);
+
+                //start the main background thread
+                _mainBackgroundThread = new Thread(new ThreadStart(mainBackgroundThreadActivity));
+                _mainBackgroundThread.Start();
             }
 
-            //construct the AWS Mobile Analytics Client Context
-            ClientContextConfig clientContextConfig = new ClientContextConfig(CustomerGuid, AMAConstants.ClientInformation.APP_TITLE, AMAConstants.ClientInformation.APP_ID);
-            _clientContext = new ClientContext(clientContextConfig);
-
-            _mainBackgroundThread.Start();
+            //set when the next scheduled service call should be
+            _nextScheduledServiceCall = DateTime.UtcNow + MAX_SLEEP_TIME_BEOFORE_SERVICE_CALL_ATTEMPT;
         }
 
         private void mainBackgroundThreadActivity()
@@ -111,9 +125,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                  * 
                  * In either case, attempt to make a service call so the queue doesn't have to reject new incoming events
                  */
-                if (_timesSlept >= _maxTimesAllowedToSleepBeforeServiceCallAttempt || _backgroundQueue.Count >= BACKGROUND_QUEUE_MAX_CAPACITY * 0.75)
+                if (DateTime.UtcNow > _nextScheduledServiceCall || _backgroundQueue.Count >= BACKGROUND_QUEUE_MAX_CAPACITY * 0.75)
                 {
-                    _timesSlept = 0;
                     ForceAMAServiceCallAttempt();
                 }
                 else
@@ -122,8 +135,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                     CollectNewEventsFromMainThread();
                 }
 
-                Thread.Sleep(TIME_BETWEEN_QUEUE_CHECKS);
-                _timesSlept++;
+                Thread.Sleep(TIME_BETWEEN_QUEUE_CAPACITY_CHECKS);
             }
         }
 
@@ -155,79 +167,132 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// because that method will time out the service call thread if need be in order to
         /// mitigate customer pain.
         /// </summary>
-        private void ServiceCallAttempt()
+        private void ServiceCallAttempt(object obj)
         {
-            if (PermissionToCollectAnalytics && !_credentialsOrClientFailedToConstruct)
+            var request = obj as PutEventsRequest;
+            if (PermissionToCollectAnalytics && !_credentialsOrClientFailedToConstruct && request != null)
             {
-                PutEventsRequest request = new PutEventsRequest();
-                request.ClientContext = _clientContext.ToJsonString();
-
-                lock (_backgroundQueue)
+                if (request.Events.Count > 0)
                 {
-                    //only bother with service calls if the backgroundQueue has something in it.
-                    if (_backgroundQueue.Count > 0)
+                    //Attempt to make the request
+                    PutEventsResponse response = null;
+                    try
                     {
-                        //In the event the service call fails, use the queue to restore the events
-                        Queue<Event> recoveryQueue = new Queue<Event>(BACKGROUND_QUEUE_MAX_CAPACITY);
-                        Event tempEvent;
-
-                        //unload background queue into recovery queue and putEventsRequest
-                        while (_backgroundQueue.Count > 0)
-                        {
-                            tempEvent = _backgroundQueue.Dequeue();
-                            request.Events.Add(tempEvent);
-                            recoveryQueue.Enqueue(tempEvent);
-                        }
-
-                        //Attemp to make the request
-                        PutEventsResponse response = null;
-                        try
-                        {
-                            response = _amazonMobileAnalyticsClient.PutEvents(request);
-                        }
-                        catch (Exception e)
-                        {
-                            //wifi was probably off
-                        }
-
-                        //if the call failed, restore the background queue
-                        if (response != null && !response.HttpStatusCode.ToString().Equals("Accepted"))
-                        {
-                            _backgroundQueue = recoveryQueue;
-                        }
+                        response = _amazonMobileAnalyticsClient.PutEvents(request);
+                    }
+                    catch (Exception e)
+                    {
+                        //wifi was probably off
                     }
                 }
             }
-
         }
 
         /// <summary>
         /// Forces the collection of events from the main queue and
-        /// attempting to push them out to the service.
+        /// attempts to push them out to the service.
         /// 
         /// This is called by both the background thread and external classes
-        /// such as the SimpleMobileAnalytics class when necessary.
+        /// such as the SimpleMobileAnalytics class, when necessary.
         /// </summary>
         public void ForceAMAServiceCallAttempt()
         {
             CollectNewEventsFromMainThread();
 
-            Thread serviceCallThread = new Thread(new ThreadStart(ServiceCallAttempt));
-            serviceCallThread.Start();
-
-            //Give the thread 8 seconds to push the events. If it can't then kill it.
-            var startTime = DateTime.Now;
-            while ((DateTime.Now - startTime).TotalSeconds < 8 && serviceCallThread.IsAlive);
-            
-            if (serviceCallThread.IsAlive)
+            //populate the RecoveryQueue and PutEventsRequest
+            Queue<Event> recoveryQueue = null;
+            PutEventsRequest request = null;
+            lock (_backgroundQueue)
             {
-                try
+                if (_backgroundQueue.Count > 0)
                 {
-                    serviceCallThread.Abort();
+                    recoveryQueue = new Queue<Event>(BACKGROUND_QUEUE_MAX_CAPACITY);
+                    request = new PutEventsRequest();
+                    request.ClientContext = _clientContext.ToJsonString();
+
+                    //In the event the service call fails, use the recovery queue to restore the events
+                    //unload background queue into recovery queue and putEventsRequest
+                    Event tempEvent;
+                    while (_backgroundQueue.Count > 0)
+                    {
+                        tempEvent = _backgroundQueue.Dequeue();
+                        request.Events.Add(tempEvent);
+                        recoveryQueue.Enqueue(tempEvent);
+                    }
                 }
-                catch (Exception e)
+            }
+
+            //Only make a service call if the request is populated, which it won't be if there was nothing in the queue
+            if (request != null)
+            {
+                //start the service call thread
+                Thread serviceCallThread = new Thread(new ParameterizedThreadStart(ServiceCallAttempt));
+                serviceCallThread.Start(request);
+
+                //Give the thread a set amount of seconds to push the events. If it can't, then kill it.
+                var startTime = DateTime.UtcNow;
+                while (serviceCallThread.IsAlive)
                 {
-                    //Log me eventually
+                    if (!ShouldKeepThreadAlive(startTime))
+                    {
+                        //restore the background thread
+                        RestoreBackgroundQueue(recoveryQueue);
+                        break;
+                    }
+
+                    //sleep for a second and check again
+                    Thread.Sleep(TimeSpan.FromSeconds(1));
+                }
+
+                //if the service call thread didn't exit gracefully, kill it
+                if (serviceCallThread.IsAlive)
+                {
+                    try
+                    {
+                        serviceCallThread.Abort();
+                    }
+                    catch (Exception e)
+                    {
+                        //Log me eventually
+                    }
+                }
+            }
+
+            //set the next scheduled service call
+            _nextScheduledServiceCall = DateTime.UtcNow + MAX_SLEEP_TIME_BEOFORE_SERVICE_CALL_ATTEMPT;
+        }
+
+        /// <summary>
+        /// Determines whether or not the thread has been running for too long.
+        /// </summary>
+        /// <param name="startTime">When was the thread started.</param>
+        /// <returns>Whether or not the thread should keep executing.</returns>
+        private bool ShouldKeepThreadAlive(DateTime startTime)
+        {
+            if ((DateTime.UtcNow - startTime) < MAX_SERVICE_CALL_TIME_ALLOWED)
+                return true;
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// Restores the background queue.
+        /// </summary>
+        /// <param name="recoveryQueue">the recovery queue used to restore the background queue.</param>
+        private void RestoreBackgroundQueue(Queue<Event> recoveryQueue)
+        {
+            lock (_backgroundQueue)
+            {
+                //unload background into recovery
+                while (recoveryQueue.Count < BACKGROUND_QUEUE_MAX_CAPACITY && _backgroundQueue.Count > 0)
+                {
+                    recoveryQueue.Enqueue(_backgroundQueue.Dequeue());
+                }
+
+                //reload background with proper order
+                while (_backgroundQueue.Count < BACKGROUND_QUEUE_MAX_CAPACITY && recoveryQueue.Count > 0)
+                {
+                    _backgroundQueue.Enqueue(recoveryQueue.Dequeue());
                 }
             }
         }
@@ -243,12 +308,11 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 try
                 {
                     string analyticsPermission = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsPermission);
-                    return (analyticsPermission.Equals("true")) ? true : false;
+                    return string.Equals(analyticsPermission, "true", StringComparison.OrdinalIgnoreCase);
                 }
                 catch (Exception e)
                 {
                     //log exception eventually
-
                     return false;
                 }
             }
@@ -278,6 +342,30 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 {
                     return Guid.NewGuid().ToString();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets or generates the most recently cached cognito identity pool ID in the APP Data.
+        /// We cache this so we know whether or not we need to clear the cached cognito identityID
+        /// </summary>
+        private string MostReventlyUsedCognitoIdentityPool
+        {
+            get
+            {
+                //try to retrieve the most recently used cognito identity pool.
+                try
+                {
+                    return PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsMostReventlyUsedCognitoIdentityPool);
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+            set
+            {
+                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsMostReventlyUsedCognitoIdentityPool, value);
             }
         }
 

@@ -95,7 +95,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// <returns></returns>
         private void StartMainSession()
         {
-            DateTime startTime = DateTime.Now;
+            DateTime startTime = DateTime.UtcNow;
             _startSessionDetails = new Session()
             {
                 StartTimestamp = startTime,
@@ -114,7 +114,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// </summary>
         public void StopMainSession()
         {
-            DateTime stopTime = DateTime.Now;
+            DateTime stopTime = DateTime.UtcNow;
             _startSessionDetails.StopTimestamp = stopTime;
 
             ToolkitEvent stopSessionEvent = new ToolkitEvent(AMAConstants.SessionEventNames.STOP_SESSION, _startSessionDetails);
@@ -141,7 +141,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 return false;
 
             //Ensure event timestamp is populated
-            if (analyticsEvent.Timestamp == null)
+            if (analyticsEvent.Timestamp == DateTime.MinValue)
                 return false;
 
             //If the session is null, create one and use the main session to populate it
@@ -157,7 +157,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 return false;
 
             //Ensure a custom session was populated correctly
-            if (analyticsEvent.Session.StartTimestamp == null)
+            if (analyticsEvent.Session.StartTimestamp == DateTime.MinValue)
                 return false;
 
             return true;

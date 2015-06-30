@@ -29,7 +29,7 @@ namespace Amazon.AWSToolkit.VisualStudio.ShellOptions
             set
             {
                 if (string.IsNullOrEmpty(value))
-                    permissionCheckBox.IsChecked = true;
+                    permissionCheckBox.IsChecked = false;
                 else if (value.Equals("true"))
                     permissionCheckBox.IsChecked = true;
                 else

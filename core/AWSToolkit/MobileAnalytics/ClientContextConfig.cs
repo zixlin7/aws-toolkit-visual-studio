@@ -116,7 +116,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// The version code for your app. For example, 3.
         /// </summary>
         /// <value>The app version code.</value>
-        public string AppVersionCode { get { return _appVersionCode; } }
+        public string AppVersionCode { get { return _appVersionCode; } set { _appVersionCode = value; } }
 
         /// <summary>
         /// The name of your package. For example, com.example.my_app.

@@ -48,8 +48,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         private string _envMake = "";
         private string _envModel = "";
 
-        private ClientContextConfig _config;
-
         private static object _lock = new object();
 
         /// <summary>
@@ -81,25 +79,14 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 _envLocale = "";
             }
 
-            _envPlatformVersion = typeof(ClientContext).Assembly.GetName().Version.ToString();
+            Config.AppVersionCode = typeof(ClientContext).Assembly.GetName().Version.ToString();
         }
 
         /// <summary>
         /// Gets or sets the config.
         /// </summary>
         /// <value>The config.</value>
-        public ClientContextConfig Config
-        {
-            set
-            {
-                _config = value;
-            }
-
-            get
-            {
-                return _config;
-            }
-        }
+        public ClientContextConfig Config { get; set; }
 
         /// <summary>
         /// Adds the custom attributes to the Client Context

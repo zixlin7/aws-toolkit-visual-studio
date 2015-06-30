@@ -35,7 +35,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         private Dictionary<string, string> _attributes;
         private Dictionary<string, double> _metrics;
         private DateTime _eventTimestamp;
-        private string _customEventType = AMAConstants.EventTypes.VisualStudioToolkitEvent.ToString();
+        private string _customEventType = AMAConstants.EventTypes.VisualStudioToolkitEvent;
         private Session _customStartSessionDetails;
 
         /// <summary>
@@ -48,15 +48,14 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// </summary>
         public ToolkitEvent(string customEventType = AMAConstants.EventTypes.VisualStudioToolkitEvent, Session customStartSessionDetails = null)
         {
-            _eventTimestamp = DateTime.Now;
+            _eventTimestamp = DateTime.UtcNow;
             _attributes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             _metrics = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 
             /*
              * If given custom traits, save them for Mobile Analytics Event export
              */
-            if (!customEventType.Equals(AMAConstants.EventTypes.VisualStudioToolkitEvent))
-                _customEventType = customEventType;
+            _customEventType = customEventType;
 
             if (customStartSessionDetails != null)
             {
@@ -83,7 +82,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// <param name="customEventType"></param>
         public ToolkitEvent(string customEventType)
         {
-            _eventTimestamp = DateTime.Now;
+            _eventTimestamp = DateTime.UtcNow;
             _attributes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             _metrics = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 

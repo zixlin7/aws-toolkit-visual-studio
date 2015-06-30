@@ -31,8 +31,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         public static class ClientInformation
         {
             public const string CLIENT_ID = "anonymous_user";
-            public const string APP_TITLE = "aws_dot_net_sdk_tooling";
-            public const string APP_ID = "18db203edefd489a82eb440f29ec2cd1";
+            public const string APP_TITLE = "visual-studio-toolkit-test";
+            public const string APP_ID = "9b7a8a27eec74c6696a15222961af9ae";
         }
 
         public static class EventTypes
@@ -58,7 +58,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// <summary>
         /// Cognito Identity Pool to use for the Mobile Analytics service.
         /// </summary>
-        public const string AWS_COGNITO_IDENTITY_POOL_ID = "us-east-1:af7e8a33-505c-4819-bfb4-3a034ac81664";
+        public const string AWS_COGNITO_IDENTITY_POOL_ID = "us-east-1:93504934-38ab-4e75-aa41-d0f9bf5c5268";
 
     }
 }
