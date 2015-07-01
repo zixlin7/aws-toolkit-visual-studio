@@ -149,7 +149,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         {
             get
             {
-                if (_existingDeploymentsTree.SelectedItem == null)
+                if (_existingDeploymentsTree == null || _existingDeploymentsTree.SelectedItem == null)
                     return null;
 
                 var deployment = _existingDeploymentsTree.SelectedItem as DeployedApplicationModel;
@@ -271,6 +271,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         private void DeploymentModeButton_OnChecked(object sender, RoutedEventArgs e)
         {
+            // if the user is toggling between create-new and redeploy, clean out any
+            // selected environment otherwise when they come back to redeploy, the Next
+            // button stays enabled but there is no selected environment (or the one
+            // that is is out of date and not reflected in the UI)
+            if (SelectedDeployment != null)
+                SelectedDeployment.SelectedEnvironmentName = null;
+
             NotifyPropertyChanged(uiProperty_DeploymentMode);
         }
     }
