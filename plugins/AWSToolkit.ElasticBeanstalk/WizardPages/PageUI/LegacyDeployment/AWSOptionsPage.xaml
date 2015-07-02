@@ -86,12 +86,11 @@
                     Margin="4,2,4,0"
                     VerticalAlignment="Center"
                     HorizontalAlignment="Stretch"
-                    DisplayMemberPath="DisplayName"
+                    DisplayMemberPath="Id"
                     ItemContainerStyle="{DynamicResource awsListViewItemContainerStyle}"
                     AlternationCount="2"
                     ItemsSource="{Binding InstanceTypes}"
                     >
-                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
                 <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Id}" />
                 <GridViewColumn Header="Requires VPC" DisplayMemberBinding="{Binding RequiresVPC}" />
                 <GridViewColumn Header="vCPU" DisplayMemberBinding="{Binding NumberOfVirtualCores}" />

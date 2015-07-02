@@ -64,12 +64,11 @@
                                                 x:Name="_instanceClass" 
                                                 VerticalAlignment="Center"
                                                 HorizontalAlignment="Stretch"
-                                                DisplayMemberPath="Name"
+                                                DisplayMemberPath="Id"
                                                 ItemContainerStyle="{DynamicResource awsListViewItemContainerStyle}"
                                                 AlternationCount="2"
                                                 SelectionChanged="_instanceClass_SelectionChanged"
                                                 >
-                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
                     <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Id}" />
                     <GridViewColumn Header="vCPU" DisplayMemberBinding="{Binding NumberOfVirtualCores}" />
                     <GridViewColumn Header="Memory" DisplayMemberBinding="{Binding MemoryWithUnits}" />

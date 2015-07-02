@@ -146,8 +146,7 @@
                 IsEnabled="{Binding ElementName=_ctlWithPrivate,Path=IsChecked}"
                 ItemsSource="{Binding InstanceTypes}"
                 SelectedItem="{Binding NATInstanceType}"
-                DisplayMemberPath="DisplayName">
-            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
+                DisplayMemberPath="Id">
             <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Id}" />
             <GridViewColumn Header="Requires VPC" DisplayMemberBinding="{Binding RequiresVPC}" />
             <GridViewColumn Header="vCPU" DisplayMemberBinding="{Binding NumberOfVirtualCores}" />
