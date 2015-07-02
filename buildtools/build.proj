@@ -19,10 +19,11 @@
         <!-- default location for artifacts consolidation -->
         <Deployment Condition="'$(Deployment)'==''">$(RootPath)\Deployment</Deployment>
         
+        <RunKeyScan Condition="'$(RunKeyScan)'==''">false</RunKeyScan>
+
+        <UpdateVersions Condition="'$(UpdateVersions)'==''">false</UpdateVersions>
         <AWSToolkitVersionNumber Condition="'$(AWSToolkitVersion)'==''"></AWSToolkitVersionNumber>
         <AWSDeployVersionNumber Condition="'$(AWSDeployVersion)'==''"></AWSDeployVersionNumber>
-        
-        <RunKeyScan Condition="'$(RunKeyScan)'==''">false</RunKeyScan>
     </PropertyGroup>
     
 	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;update-version;build-awsdeploy;build-vstoolkit;keyscan;copy-artifacts;save-build">
@@ -149,7 +150,7 @@
             DestinationFolder="$(Deployment)\AWSToolkitPackage" />
     </Target>
     
-	<Target Name="update-version" DependsOnTargets="build-tools">		
+	<Target Name="update-version" DependsOnTargets="build-tools" Condition="$(UpdateVersions)">		
 		<UpdateAWSDeployVersionTask
 			RepositoryRoot="$(MSBuildProjectDirectory)\.."
             AssemblyInfoPaths="awsdeploy\host"
