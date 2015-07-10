@@ -92,7 +92,7 @@
         <ItemGroup>
             <AWSToolkitPackageFiles Include="..\shells\AWSToolkitPackage\bin\$(Configuration)\AWSToolkitPackage.*" />
             <ThirdPartyLibs Include="..\thirdparty\Microsoft.WindowsAPICodePack.dll;..\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll" />
-            <CustomMSBuildTargets Include="..\shells\AWSToolkitPackage\bin\$(Configuration)\cloudformation.targets" />
+            <CustomMSBuildTargets Include="..\plugins\AWSToolkit.CloudFormation.MSBuildTasks\cloudformation.targets" />
             <ImageFiles Include="..\shells\AWSToolkitPackage\aws_preview.gif;..\shells\AWSToolkitPackage\aws-icon.png" />
         </ItemGroup>
         <Copy
@@ -148,6 +148,17 @@
         <Copy
             SourceFiles="..\shells\AWSToolkitPackage\log4net.config"
             DestinationFolder="$(Deployment)\AWSToolkitPackage" />
+            
+        <!-- snapshot the sdk the toolkit was built against; the installer will use these files in preference to
+             the sdk reference it gets (in case toolkit did not get rebuilt for an sdk update).
+        -->
+        <ItemGroup>
+            <SDKAssemblies Include="..\Include\sdk\assemblies\net35\AWSSDK.*.dll" />
+        </ItemGroup>
+        <Copy
+            SourceFiles="@(SDKAssemblies)"
+            DestinationFolder="$(Deployment)\sdk" />
+        
     </Target>
     
 	<Target Name="update-version" DependsOnTargets="build-tools" Condition="$(UpdateVersions)">		

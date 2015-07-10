@@ -63,6 +63,7 @@
     <Reference Include="AWSSDK.Core">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.Core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\thirdparty\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -583,52 +584,52 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.AutoScaling.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.AutoScaling.dll">
       <Link>SDK\AWSSDK.AutoScaling.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.CloudFormation.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.CloudFormation.dll">
       <Link>SDK\AWSSDK.CloudFormation.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.CloudFront.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.CloudFront.dll">
       <Link>SDK\AWSSDK.CloudFront.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.CloudWatch.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.CloudWatch.dll">
       <Link>SDK\AWSSDK.CloudWatch.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.CloudWatchLogs.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.CloudWatchLogs.dll">
       <Link>SDK\AWSSDK.CloudWatchLogs.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.Core.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.Core.dll">
       <Link>SDK\AWSSDK.Core.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.DynamoDBv2.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.DynamoDBv2.dll">
       <Link>SDK\AWSSDK.DynamoDBv2.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.EC2.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.EC2.dll">
       <Link>SDK\AWSSDK.EC2.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.ElasticBeanstalk.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.ElasticBeanstalk.dll">
       <Link>SDK\AWSSDK.ElasticBeanstalk.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.ElasticLoadBalancing.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.ElasticLoadBalancing.dll">
       <Link>SDK\AWSSDK.ElasticLoadBalancing.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -638,42 +639,42 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.IdentityManagement.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.IdentityManagement.dll">
       <Link>SDK\AWSSDK.IdentityManagement.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.Kinesis.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.Kinesis.dll">
       <Link>SDK\AWSSDK.Kinesis.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.Lambda.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.Lambda.dll">
       <Link>SDK\AWSSDK.Lambda.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.RDS.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.RDS.dll">
       <Link>SDK\AWSSDK.RDS.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.S3.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.S3.dll">
       <Link>SDK\AWSSDK.S3.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.SQS.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.SQS.dll">
       <Link>SDK\AWSSDK.SQS.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.SimpleDB.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.SimpleDB.dll">
       <Link>SDK\AWSSDK.SimpleDB.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\plugins\AWSSDK.SimpleNotificationService.dll">
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.SimpleNotificationService.dll">
       <Link>SDK\AWSSDK.SimpleNotificationService.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -683,12 +684,14 @@
     <ProjectReference Include="..\..\core\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
       <Project>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</Project>
       <Name>AWSSDK.Extensions</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\plugins\AWSToolkit.CloudFormation.EditorExtensions\AWSToolkit.CloudFormation.EditorExtensions.csproj">
       <Project>{18023934-17CF-421E-87C2-61838B7498C6}</Project>
       <Name>AWSToolkit.CloudFormation.EditorExtensions</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\plugins\AWSToolkit.CloudFormation.Interface\AWSToolkit.CloudFormation.Interface.csproj">
       <Project>{5A78BF40-7D5B-467E-8CE4-9659F22669D0}</Project>
@@ -698,14 +701,17 @@
     <ProjectReference Include="..\..\plugins\AWSToolkit.CloudFormation.MSBuildTasks\AWSToolkit.CloudFormation.MSBuildTasks.csproj">
       <Project>{FE98588C-7FEE-414E-9EAB-F36BF64C88C0}</Project>
       <Name>AWSToolkit.CloudFormation.MSBuildTasks</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\plugins\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
       <Project>{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}</Project>
       <Name>AWSToolkit.CloudFormation.Parser</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\plugins\AWSToolkit.CloudFormation.TemplateWizards\AWSToolkit.CloudFormation.TemplateWizards.csproj">
       <Project>{0588D27B-7D87-4B33-9120-4C0A9E7D6665}</Project>
       <Name>AWSToolkit.CloudFormation.TemplateWizards</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj">
       <Project>{D4D5C421-6265-4674-A1F9-DC11A56FC030}</Project>
@@ -715,14 +721,17 @@
     <ProjectReference Include="..\..\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj">
       <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>
       <Name>AWSToolkit.Lambda.Interface</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\plugins\AWSToolkit.Lambda.TemplateWizards\AWSToolkit.Lambda.TemplateWizards.csproj">
       <Project>{783e4198-a8f1-4e74-af3e-0001b0ad516b}</Project>
       <Name>AWSToolkit.Lambda.TemplateWizards</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\plugins\AWSToolkit.Lambda\AWSToolkit.Lambda.csproj">
       <Project>{7102b4cf-9b9d-4827-adca-d23971cd84c3}</Project>
       <Name>AWSToolkit.Lambda</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\core\AWSToolkit.Util\AWSToolkit.Util.csproj">
       <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
