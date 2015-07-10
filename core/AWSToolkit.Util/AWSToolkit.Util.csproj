@@ -43,15 +43,19 @@
     </Reference>
     <Reference Include="AWSSDK.CloudFormation">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.CloudFormation.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.Core">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.Core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.EC2">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.EC2.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.S3">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.S3.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\thirdparty\log4net.dll</HintPath>

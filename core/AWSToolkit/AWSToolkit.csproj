@@ -50,27 +50,35 @@
   <ItemGroup>
     <Reference Include="AWSSDK.CloudFormation">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.CloudFormation.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.CloudWatch">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.CloudWatch.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.Core">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.Core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.EC2">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.EC2.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.ElasticBeanstalk">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.ElasticBeanstalk.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.IdentityManagement">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.IdentityManagement.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.Lambda">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.Lambda.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.SimpleNotificationService">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.SimpleNotificationService.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -555,6 +563,7 @@
     <ProjectReference Include="..\..\core\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
       <Project>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</Project>
       <Name>AWSSDK.Extensions</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\core\AWSToolkit.Util\AWSToolkit.Util.csproj">
       <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>

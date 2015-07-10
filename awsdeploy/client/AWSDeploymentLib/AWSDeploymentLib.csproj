@@ -46,30 +46,39 @@
     </Reference>
     <Reference Include="AWSSDK.AutoScaling">
       <HintPath>..\..\..\Include\sdk\assemblies\net35\AWSSDK.AutoScaling.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.CloudFormation">
       <HintPath>..\..\..\Include\sdk\assemblies\net35\AWSSDK.CloudFormation.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.Core">
       <HintPath>..\..\..\Include\sdk\assemblies\net35\AWSSDK.Core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.EC2">
       <HintPath>..\..\..\Include\sdk\assemblies\net35\AWSSDK.EC2.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.ElasticBeanstalk">
       <HintPath>..\..\..\Include\sdk\assemblies\net35\AWSSDK.ElasticBeanstalk.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.ElasticLoadBalancing">
       <HintPath>..\..\..\Include\sdk\assemblies\net35\AWSSDK.ElasticLoadBalancing.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.IdentityManagement">
       <HintPath>..\..\..\Include\sdk\assemblies\net35\AWSSDK.IdentityManagement.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.RDS">
       <HintPath>..\..\..\Include\sdk\assemblies\net35\AWSSDK.RDS.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.S3">
       <HintPath>..\..\..\Include\sdk\assemblies\net35\AWSSDK.S3.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -129,6 +138,7 @@
     <ProjectReference Include="..\..\..\core\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
       <Project>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</Project>
       <Name>AWSSDK.Extensions</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\core\AWSToolkit.Util\AWSToolkit.Util.csproj">
       <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
