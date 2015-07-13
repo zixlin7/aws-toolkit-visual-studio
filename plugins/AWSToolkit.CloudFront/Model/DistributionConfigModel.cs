@@ -6,7 +6,7 @@ using System.Text;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Util;
-
+using Amazon.CloudFront;
 using Amazon.CloudFront.Model;
 
 namespace Amazon.AWSToolkit.CloudFront.Model
@@ -282,7 +282,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
                     origin.CustomOriginConfig = new CustomOriginConfig();
                     origin.CustomOriginConfig.HTTPPort = httpPort;
                     origin.CustomOriginConfig.HTTPSPort = httpsPort;
-                    origin.CustomOriginConfig.OriginProtocolPolicy = this.MatchViewer ? "match-viewer" : "http-only";
+                    origin.CustomOriginConfig.OriginProtocolPolicy = this.MatchViewer ? OriginProtocolPolicy.MatchViewer : OriginProtocolPolicy.HttpOnly;
                 }
             }
             
@@ -315,7 +315,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
                 config.CustomErrorResponses = new CustomErrorResponses() { Quantity = 0 };
             }
             
-            config.DefaultCacheBehavior.ViewerProtocolPolicy = this.RequireHTTPS ? "https" : "allow-all";
+            config.DefaultCacheBehavior.ViewerProtocolPolicy = this.RequireHTTPS ? ViewerProtocolPolicy.HttpsOnly : ViewerProtocolPolicy.AllowAll;
 
             config.DefaultCacheBehavior.TrustedSigners = new TrustedSigners();
             if (this.IsPrivateDistributionEnabled && (this.TrustedSignerSelf || this.TrustedSignerAWSAccountIds.Count > 0))
