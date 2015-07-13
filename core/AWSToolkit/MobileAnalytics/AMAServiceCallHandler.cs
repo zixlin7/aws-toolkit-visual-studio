@@ -68,7 +68,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 //and write the newest identity pool id
                 //when the _credentialsProvider is called next, it will handle caching a new identity id
                 PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsCognitoIdentityId, "");
-                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsMostReventlyUsedCognitoIdentityPool, AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID);
+                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsMostRecentlyUsedCognitoIdentityPool, AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID);
             }
 
             try
@@ -307,7 +307,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 //try to retrieve permission. If we can't access the file for whatever reason, assume we don't have permission.
                 try
                 {
-                    string analyticsPermission = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsPermission);
+                    string analyticsPermission = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsPermitted);
                     return string.Equals(analyticsPermission, "true", StringComparison.OrdinalIgnoreCase);
                 }
                 catch (Exception e)
@@ -328,15 +328,15 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 //try to retrieve customer guid. If we can't access the file for whatever reason, create an arbitrary one.
                 try
                 {
-                    string customerGuid = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsCustomerGuid);
-                    if (string.IsNullOrEmpty(customerGuid))
+                    string customerId = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsAnonymousCustomerId);
+                    if (string.IsNullOrEmpty(customerId))
                     {
                         Guid g = Guid.NewGuid();
-                        customerGuid = g.ToString();
-                        PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsCustomerGuid, customerGuid);
+                        customerId = g.ToString();
+                        PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsAnonymousCustomerId, customerId);
                     }
 
-                    return customerGuid;
+                    return customerId;
                 }
                 catch (Exception e)
                 {
@@ -356,7 +356,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 //try to retrieve the most recently used cognito identity pool.
                 try
                 {
-                    return PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsMostReventlyUsedCognitoIdentityPool);
+                    return PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsMostRecentlyUsedCognitoIdentityPool);
                 }
                 catch (Exception e)
                 {
@@ -365,7 +365,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
             }
             set
             {
-                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsMostReventlyUsedCognitoIdentityPool, value);
+                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsMostRecentlyUsedCognitoIdentityPool, value);
             }
         }
 

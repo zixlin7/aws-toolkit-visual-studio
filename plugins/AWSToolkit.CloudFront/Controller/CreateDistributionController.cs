@@ -37,7 +37,7 @@ namespace Amazon.AWSToolkit.CloudFront.Controller
 
             Dictionary<string, object> seedProperties = new Dictionary<string, object>();
 
-            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("CreateCloudFrontDistribution", seedProperties);
+            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.CloudFront.View.CreateCloudFrontDistribution", seedProperties);
             wizard.Title = "Create CloudFront Distribution";
 
             IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]

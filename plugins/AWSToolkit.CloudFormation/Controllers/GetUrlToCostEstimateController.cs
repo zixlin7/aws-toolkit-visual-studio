@@ -43,7 +43,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                 seedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_TemplateServiceOwner] = DeploymentServiceIdentifiers.CloudFormationServiceName;
                 seedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate] = wrapper;
 
-                IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("CostEstimator", seedProperties);
+                IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.CloudFormation.View.CostEstimator", seedProperties);
                 wizard.Title = "Estimate Cost for Template";
 
                 IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]

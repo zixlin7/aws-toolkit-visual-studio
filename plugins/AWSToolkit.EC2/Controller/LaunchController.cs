@@ -65,7 +65,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 }
             };
 
-            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("LaunchEC2Instance", seedProperties);
+            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.EC2.View.LaunchEC2Instance", seedProperties);
             wizard.Title = "Launch new Amazon EC2 Instance";
 
             var defaultPages = new IAWSWizardPageController[]

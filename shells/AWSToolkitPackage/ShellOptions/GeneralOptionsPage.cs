@@ -55,8 +55,8 @@ namespace Microsoft.Samples.VisualStudio.IDE.OptionsPage
             var hostedFilesLocation = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.HostedFilesLocation);
             (_hostedControl.Child as GeneralOptionsPageControl).HostedFilesLocation = hostedFilesLocation;
 
-            var analyticsPermission = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsPermission);
-            (_hostedControl.Child as GeneralOptionsPageControl).AnalyticsPermission = analyticsPermission;
+            var analyticsPermitted = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsPermitted);
+            (_hostedControl.Child as GeneralOptionsPageControl).AnalyticsPermission = analyticsPermitted;
 
             base.OnActivate(e);
 		}
@@ -95,8 +95,8 @@ namespace Microsoft.Samples.VisualStudio.IDE.OptionsPage
             var hostedFilesLocation = (_hostedControl.Child as GeneralOptionsPageControl).HostedFilesLocation;
             PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.HostedFilesLocation, hostedFilesLocation);
 
-            var analyticsPermission = (_hostedControl.Child as GeneralOptionsPageControl).AnalyticsPermission;
-            PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsPermission, analyticsPermission);
+            var analyticsPermitted = (_hostedControl.Child as GeneralOptionsPageControl).AnalyticsPermission;
+            PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsPermitted, analyticsPermitted);
         }
 
         #endregion Event Handlers

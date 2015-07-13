@@ -52,7 +52,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             var template = LoadDeploymentTemplate(applicationViewModel.ElasticBeanstalkRootViewModel.CurrentEndPoint.RegionSystemName);
             seedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate] = template;
 
-            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("PublishApplicationVersion", seedProperties);
+            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.ElasticBeanstalk.View.PublishApplicationVersion", seedProperties);
             wizard.Title = "Publish Application Version";
 
             // register the page groups we expect child pages to fit into

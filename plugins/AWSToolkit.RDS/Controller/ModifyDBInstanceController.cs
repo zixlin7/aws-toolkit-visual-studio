@@ -85,7 +85,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
             seedProperties[RDSWizardProperties.SeedData.propkey_EC2Client] = ec2Client;
             seedProperties[RDSWizardProperties.SeedData.propkey_DBInstanceWrapper] = dbInstanceWrapper;
 
-            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("ModifyDBInstance", seedProperties);
+            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.RDS.View.ModifyDBInstance", seedProperties);
             wizard.Title = string.Format("Modify DB Instance - {0}", dbInstanceWrapper.DisplayName);
 
             IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]

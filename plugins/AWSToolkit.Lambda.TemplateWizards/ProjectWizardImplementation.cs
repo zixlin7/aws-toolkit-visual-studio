@@ -128,7 +128,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
 
             try
             {
-                IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("New AWS Lambda Project", new Dictionary<string, object>());
+                IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Lambda.View.NewAWSLambdaProject", new Dictionary<string, object>());
                 wizard.Title = "New AWS Lambda Project";
 
                 IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
