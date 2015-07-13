@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Microsoft.Win32;
@@ -12,16 +13,36 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(Utility));
 
+        // certain 3rd party assemblies shared between the toolkit and plugins can
+        // be found at the root
+        private static readonly HashSet<string> ThirdPartyRootAssemblies = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "System.Windows.Controls.DataVisualization.Toolkit",
+            "Microsoft.WindowsAPICodePack",
+            "Microsoft.WindowsAPICodePack.Shell",
+            "Microsoft.Data.ConnectionUI"
+        };
+
         public static Assembly AssemblyResolveEventHandler(object sender, ResolveEventArgs args)
         {
             var pos = args.Name.IndexOf(",");
             if (pos > 0)
             {
                 var assemblyName = args.Name.Substring(0, pos);
+
+                // all sdk assemblies should be in .\sdk subfolder
                 if (assemblyName.StartsWith("AWSSDK.", StringComparison.OrdinalIgnoreCase))
                 {
                     var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                     var testPath = Path.Combine(path, "SDK", assemblyName + ".dll");
+                    if (File.Exists(testPath))
+                        return Assembly.LoadFile(testPath);
+                }
+
+                if (ThirdPartyRootAssemblies.Contains(assemblyName))
+                {
+                    var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    var testPath = Path.Combine(path, assemblyName + ".dll");
                     if (File.Exists(testPath))
                         return Assembly.LoadFile(testPath);
                 }
