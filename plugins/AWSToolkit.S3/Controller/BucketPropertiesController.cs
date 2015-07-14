@@ -514,22 +514,6 @@ namespace Amazon.AWSToolkit.S3.Controller
 
                 this._model.EventConfigurations.Add(editable);
             }
-            foreach (var config in getNotificationsResponse.LambdaFunctionConfigurations)
-            {
-                var editable = new EventConfigurationModel
-                {
-                    Id = config.Id,
-                    TargetService = EventConfigurationModel.Service.Lambda,
-                    ResourceArn = config.FunctionArn
-                };
-
-                foreach (var eventType in config.Events)
-                {
-                    editable.EventTypes.Add(eventType);
-                }
-
-                this._model.EventConfigurations.Add(editable);
-            }
         }
 
         private void loadWebSiteConfiguration()
