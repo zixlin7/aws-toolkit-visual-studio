@@ -308,8 +308,8 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             if (this._kinesisClient == null)
                 return streams;
 
-            var request = new ListStreamsRequest();
-            ListStreamsResponse response = null;
+            var request = new Amazon.Kinesis.Model.ListStreamsRequest();
+            Amazon.Kinesis.Model.ListStreamsResponse response = null;
 
             do{
                 if (response != null)
