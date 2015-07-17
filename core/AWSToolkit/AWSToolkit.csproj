@@ -56,6 +56,12 @@
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.CloudWatch.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AWSSDK.CognitoIdentity">
+      <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.CognitoIdentity.dll</HintPath>
+    </Reference>
+    <Reference Include="AWSSDK.CognitoSync">
+      <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.CognitoSync.dll</HintPath>
+    </Reference>
     <Reference Include="AWSSDK.Core">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.Core.dll</HintPath>
       <Private>False</Private>
@@ -75,6 +81,9 @@
     <Reference Include="AWSSDK.Lambda">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.Lambda.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.MobileAnalytics">
+      <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.MobileAnalytics.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.SimpleNotificationService">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.SimpleNotificationService.dll</HintPath>
@@ -265,6 +274,13 @@
     <Compile Include="IRegisterDataConnectionService.cs" />
     <Compile Include="IShellProvider.cs" />
     <Compile Include="IShellProviderThemeService.cs" />
+    <Compile Include="MobileAnalytics\AnalyticsCognitoAWSCredentials.cs" />
+    <Compile Include="MobileAnalytics\AMAConstants.cs" />
+    <Compile Include="MobileAnalytics\AMAServiceCallHandler.cs" />
+    <Compile Include="MobileAnalytics\ClientContext.cs" />
+    <Compile Include="MobileAnalytics\ClientContextConfig.cs" />
+    <Compile Include="MobileAnalytics\SimpleMobileAnalytics.cs" />
+    <Compile Include="MobileAnalytics\ToolkitEvent.cs" />
     <Compile Include="Navigator\Node\AbstractViewModel.cs" />
     <Compile Include="Navigator\ActionHandlerWrapper.cs" />
     <Compile Include="Navigator\ActionResults.cs" />

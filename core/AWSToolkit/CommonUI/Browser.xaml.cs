@@ -38,5 +38,10 @@ namespace Amazon.AWSToolkit.CommonUI
                 return "Getting Started";
             }
         }
+
+        public override string MetricId
+        {
+            get { return this.GetType().FullName; }
+        }
     }
 }

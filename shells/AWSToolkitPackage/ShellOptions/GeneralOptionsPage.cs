@@ -11,6 +11,7 @@ using Amazon.AWSToolkit.VisualStudio.ShellOptions;
 using Microsoft.VisualStudio.Shell;
 
 using Amazon.AWSToolkit.VisualStudio;
+using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Microsoft.Samples.VisualStudio.IDE.OptionsPage
 {
@@ -54,6 +55,9 @@ namespace Microsoft.Samples.VisualStudio.IDE.OptionsPage
             var hostedFilesLocation = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.HostedFilesLocation);
             (_hostedControl.Child as GeneralOptionsPageControl).HostedFilesLocation = hostedFilesLocation;
 
+            var analyticsPermitted = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsPermitted);
+            (_hostedControl.Child as GeneralOptionsPageControl).AnalyticsPermission = analyticsPermitted;
+
             base.OnActivate(e);
 		}
 
@@ -90,6 +94,9 @@ namespace Microsoft.Samples.VisualStudio.IDE.OptionsPage
             // specific file system location
             var hostedFilesLocation = (_hostedControl.Child as GeneralOptionsPageControl).HostedFilesLocation;
             PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.HostedFilesLocation, hostedFilesLocation);
+
+            var analyticsPermitted = (_hostedControl.Child as GeneralOptionsPageControl).AnalyticsPermission;
+            PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsPermitted, analyticsPermitted);
         }
 
         #endregion Event Handlers

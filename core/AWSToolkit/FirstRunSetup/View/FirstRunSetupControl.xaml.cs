@@ -67,6 +67,11 @@ namespace Amazon.AWSToolkit.FirstRunSetup.View
             return true;
         }
 
+        public override string MetricId
+        {
+            get { return this.GetType().FullName; }
+        }
+
         public bool HasMediaPlayerSited
         {
             get { return _mediaElement != null; }    

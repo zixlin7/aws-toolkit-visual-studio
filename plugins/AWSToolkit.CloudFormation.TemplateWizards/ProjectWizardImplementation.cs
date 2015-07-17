@@ -17,7 +17,7 @@ namespace Amazon.AWSToolkit.CloudFormation.TemplateWizards
         {
             try
             {
-                IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("New AWS CloudFormation Project", new Dictionary<string, object>());
+                IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.CloudFormation.View.NewAWSCloudFormationProject", new Dictionary<string, object>());
                 wizard.Title = "New AWS CloudFormation Project";
 
                 IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]

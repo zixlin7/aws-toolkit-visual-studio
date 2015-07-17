@@ -35,7 +35,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             Dictionary<string, object> seedProperties = new Dictionary<string, object>();
             seedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_TemplateServiceOwner] = DeploymentServiceIdentifiers.CloudFormationServiceName;
 
-            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("CreateStack", seedProperties);
+            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.CloudFormation.View.CreateStack", seedProperties);
             wizard.Title = "Create Stack";
 
             IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]

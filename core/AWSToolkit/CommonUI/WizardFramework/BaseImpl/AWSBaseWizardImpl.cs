@@ -6,6 +6,7 @@ using System.Reflection.Emit;
 using System.Windows;
 using System.Windows.Controls;
 using log4net;
+using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.CommonUI.WizardFramework
 {
@@ -587,6 +588,13 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
             }
 
             pageController.PageActivated(navigationReason);
+
+            ToolkitEvent toolkitEvent = new ToolkitEvent(AMAConstants.EventTypes.WizardTrackingEvent);
+            toolkitEvent.AddProperty(MetricKeys.PageIndex, pageToShow.PageIndex);
+            toolkitEvent.AddProperty(MetricKeys.GroupIndex, pageToShow.GroupIndex);
+            toolkitEvent.AddProperty(AttributeKeys.NavigationReason, navigationReason.ToString());
+            toolkitEvent.AddProperty(AttributeKeys.OpenViewFullIdentifier, _hostingWizard.WizardID);
+            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(toolkitEvent);
         }
 
         /// <summary>

@@ -33,5 +33,10 @@ namespace Amazon.AWSToolkit
                 return "Send AWS Toolkit for Visual Studio Feedback";
             }
         }
+
+        public override string MetricId
+        {
+            get { return this.GetType().FullName; }
+        }
     }
 }

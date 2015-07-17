@@ -45,6 +45,8 @@ using Amazon.AWSToolkit.PluginServices.Deployment;
 
 using Microsoft.VisualStudio.Project;
 using Window = System.Windows.Window;
+using System.ComponentModel;
+using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -101,7 +103,7 @@ namespace Amazon.AWSToolkit.VisualStudio
     [ProvideProfileAttribute(typeof(GeneralOptionsPage), "AWS Toolkit", "General", 150, 160, true, DescriptionResourceID = 150)]
     [ProvideOptionPageAttribute(typeof(ProxyOptionsPage), "AWS Toolkit", "Proxy", 150, 170, true)]
     [ProvideProfileAttribute(typeof(ProxyOptionsPage), "AWS Toolkit", "Proxy", 150, 170, true, DescriptionResourceID = 150)]
-    public sealed class AWSToolkitPackage : ProjectPackage, IShellProvider, IShellProviderThemeService, IVsInstalledProduct, IRegisterDataConnectionService, IVsShellPropertyEvents, IVsBroadcastMessageEvents
+    public sealed class AWSToolkitPackage : ProjectPackage, IShellProvider, IShellProviderThemeService, IVsInstalledProduct, IRegisterDataConnectionService, IVsShellPropertyEvents, IVsBroadcastMessageEvents, IVsPackage
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(AWSToolkitPackage));
 
@@ -151,6 +153,8 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// </summary>
         bool? _msdeployInstallVerified = null;
 
+        private SimpleMobileAnalytics recorder;
+
         /// <summary>
         /// Default constructor of the package.
         /// Inside this method you can place any initialization code that does not require 
@@ -185,7 +189,11 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch (Exception e)
             {
                 LOGGER.Warn("Failed to register for broadcast messages, theme change will not be detected", e);
-            }			
+            }
+
+            //Create Instance of SimpleMobileAnalytics Recorder
+            //This will also start the main session
+            recorder = SimpleMobileAnalytics.Instance;
         }
 
         public ILog Logger { get { return LOGGER; } }
@@ -756,7 +764,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// <returns>True if the wizard ran to completion. False if the user cancelled or requested the legacy wizard.</returns>
         bool InitializeAndRunDeploymentWizard(VSWebProjectInfo projectInfo, out IDictionary<string, object> wizardProperties)
         {
-            var wizard = AWSWizardFactory.CreateStandardWizard("Deploy2AWS", null);
+            var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.General.View.Deploy2AWS", null);
             wizard.Title = "Publish to Amazon Web Services";
 
             SetVSToolkitDeploymentSeedData(wizard, projectInfo);
@@ -795,7 +803,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// <returns>True if the wizard ran to completion, false if the user cancelled</returns>
         bool InitializeAndRunLegacyDeploymentWizard(VSWebProjectInfo projectInfo, out IDictionary<string, object> wizardProperties)
         {
-            var wizard = AWSWizardFactory.CreateStandardWizard("LegacyDeploy2AWS", null);
+            var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.General.View.LegacyDeploy2AWS", null);
             wizard.Title = "Publish to Amazon Web Services";
 
             wizard.SetProperty(DeploymentWizardProperties.SeedData.propkey_LegacyDeploymentMode, true);
@@ -870,7 +878,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
 
             // use a one-page wizard to have the same look as the standard deployment wizard
-            var wizard = AWSWizardFactory.CreateStandardWizard("Redeploy2AWS", null);
+            var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.General.View.Redeploy2AWS", null);
             SetVSToolkitFastRedeploymentSeedData(wizard, pi, deploymentHistory);
 
             var pageControllers = new List<IAWSWizardPageController>();
@@ -1864,6 +1872,10 @@ namespace Amazon.AWSToolkit.VisualStudio
 
             var openShell = GetService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
 
+            ToolkitEvent toolkitEvent = new ToolkitEvent();
+            toolkitEvent.AddProperty(AttributeKeys.OpenViewFullIdentifier, editorControl.GetType().FullName);
+            recorder.QueueEventToBeRecorded(toolkitEvent);
+
             var logicalView = VSConstants.LOGVIEWID_Primary;
             var editorFactoryGuid = new Guid(GuidList.guid_VSPackageEditorFactoryString);
 
@@ -1972,11 +1984,15 @@ namespace Amazon.AWSToolkit.VisualStudio
         public bool ShowModal(IAWSControl hostedControl, MessageBoxButton buttons)
         {
             var host = DialogHostUtil.CreateDialogHost(buttons, hostedControl);
-            return ShowModal(host);
+            return ShowModal(host, hostedControl.MetricId);
         }
 
-        public bool ShowModal(Window window)
+        public bool ShowModal(Window window, string metricId)
         {
+            ToolkitEvent toolkitEvent = new ToolkitEvent();
+            toolkitEvent.AddProperty(AttributeKeys.OpenViewFullIdentifier, metricId);
+            recorder.QueueEventToBeRecorded(toolkitEvent);
+
             var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
             IntPtr parent;
             if (uiShell.GetDialogOwnerHwnd(out parent) != VSConstants.S_OK)
@@ -2011,7 +2027,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         public bool ShowModalFrameless(IAWSControl hostedControl)
         {
             var host = DialogHostUtil.CreateFramelessDialogHost(hostedControl);
-            return ShowModal(host);
+            return ShowModal(host, hostedControl.MetricId);
         }
 
         public void ShowError(string message)
@@ -2211,6 +2227,16 @@ namespace Amazon.AWSToolkit.VisualStudio
 
             return vsProject;
         }
+
+        #region IVsPackage Members
+
+        int IVsPackage.Close()
+        {
+            SimpleMobileAnalytics.Instance.StopMainSession();
+            return Microsoft.VisualStudio.VSConstants.S_OK;
+        }
+
+        #endregion
 
         #region IVsInstalledProduct Members
 

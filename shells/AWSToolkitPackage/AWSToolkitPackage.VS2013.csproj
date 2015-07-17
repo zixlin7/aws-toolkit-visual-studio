@@ -72,6 +72,9 @@
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.Lambda.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AWSSDK.MobileAnalytics">
+      <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.MobileAnalytics.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\thirdparty\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>

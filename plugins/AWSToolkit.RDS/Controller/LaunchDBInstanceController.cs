@@ -70,7 +70,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
 
                 seedProperties[RDSWizardProperties.SeedData.propkey_VPCOnly] = EC2Utilities.CheckForVpcOnlyMode(ec2Client);
 
-                var wizard = AWSWizardFactory.CreateStandardWizard("LaunchDBInstance", seedProperties);
+                var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.RDS.View.LaunchDBInstance", seedProperties);
                 wizard.Title = "Launch DB Instance";
 
                 var defaultPages = new IAWSWizardPageController[]

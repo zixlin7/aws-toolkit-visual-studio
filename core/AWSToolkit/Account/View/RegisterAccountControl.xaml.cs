@@ -81,6 +81,11 @@ namespace Amazon.AWSToolkit.Account.View
             return true;
         }
 
+        public override string MetricId
+        {
+            get { return this.GetType().FullName; }
+        }
+
         // used to make the explanatory label of why a profile named 'default'
         // is useful. Not needed if user already has 'default' set up.
         public bool PromptToUseDefaultName

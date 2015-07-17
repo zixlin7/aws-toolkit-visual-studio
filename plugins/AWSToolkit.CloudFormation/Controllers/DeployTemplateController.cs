@@ -35,7 +35,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             seedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate] = CloudFormationTemplateWrapper.FromLocalFile(templatePath);
             seedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplateName] = templateName;
 
-            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("DeployTemplate", seedProperties);
+            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.CloudFormation.View.DeployTemplate", seedProperties);
             wizard.Title = "Deploy Template";
 
             IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]

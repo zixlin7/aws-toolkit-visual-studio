@@ -36,5 +36,10 @@ namespace Amazon.AWSToolkit
         public const string EC2InstanceSaveCredentials = "EC2InstanceSaveCredentials";
         public const string EC2InstanceUserName = Amazon.Runtime.Internal.Settings.SettingsConstants.EC2InstanceUserName;
         public const string EC2InstancePassword = Amazon.Runtime.Internal.Settings.SettingsConstants.EC2InstancePassword;
+
+        public const string AnalyticsPermitted = "AnalyticsPermitted";
+        public const string AnalyticsCognitoIdentityId = "AnalyticsCognitoIdentityId";
+        public const string AnalyticsAnonymousCustomerId = "AnalyticsAnonymousCustomerId";
+        public const string AnalyticsMostRecentlyUsedCognitoIdentityPool = "AnalyticsMostRecentlyUsedCognitoIdentityPool";
     }
 }

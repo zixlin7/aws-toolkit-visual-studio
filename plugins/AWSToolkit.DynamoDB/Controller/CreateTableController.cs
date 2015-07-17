@@ -86,7 +86,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
 
             seedProperties[LAST_CONTROLLER] = defaultPages[defaultPages.Length - 1];
 
-            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("CreateDDBTable", seedProperties);
+            IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.DynamoDB.View.CreateDDBTable", seedProperties);
 
             wizard.Title = "Create new DynamoDB Table";
             wizard.RegisterPageControllers(defaultPages, 0);

@@ -29,7 +29,7 @@ namespace Amazon.AWSToolkit
         bool ShowModal(IAWSControl hostedControl, MessageBoxButton buttons);
         bool ShowModalFrameless(IAWSControl hostedControl);
 
-        bool ShowModal(Window window);
+        bool ShowModal(Window window, string metricId);
 
         void ShowError(string message);
         void ShowError(string title, string message);
