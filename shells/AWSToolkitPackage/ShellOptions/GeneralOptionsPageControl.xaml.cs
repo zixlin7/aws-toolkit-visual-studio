@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Forms;
+using System.Windows.Navigation;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace Amazon.AWSToolkit.VisualStudio.ShellOptions
@@ -84,6 +87,12 @@ namespace Amazon.AWSToolkit.VisualStudio.ShellOptions
             {
                 txtFileSystemLocation.Text = dlg.SelectedPath;
             }
+        }
+
+        void AWSPrivacyPolicyLink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo((sender as Hyperlink).NavigateUri.ToString()));
+            e.Handled = true;
         }
 
         private void CheckBox_Checked(object sender, EventArgs e)
