@@ -91,7 +91,7 @@
         <MakeDir Directories="$(Deployment)\AWSToolkitPackage" />
         <ItemGroup>
             <AWSToolkitPackageFiles Include="..\shells\AWSToolkitPackage\bin\$(Configuration)\AWSToolkitPackage.*" />
-            <ThirdPartyLibs Include="..\thirdparty\Microsoft.WindowsAPICodePack.dll;..\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll" />
+            <ThirdPartyLibs Include="..\thirdparty\Microsoft.WindowsAPICodePack.dll;..\thirdparty\Microsoft.WindowsAPICodePack.Shell.dll;..\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll" />
             <CustomMSBuildTargets Include="..\plugins\AWSToolkit.CloudFormation.MSBuildTasks\cloudformation.targets" />
             <ImageFiles Include="..\shells\AWSToolkitPackage\aws_preview.gif;..\shells\AWSToolkitPackage\aws-icon.png" />
         </ItemGroup>
