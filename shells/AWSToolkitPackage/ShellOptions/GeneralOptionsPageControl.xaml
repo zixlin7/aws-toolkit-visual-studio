@@ -82,7 +82,11 @@
                                 Margin="0,4,0,0"
                                 IsEnabled="{Binding ElementName=btnFileSystem, Path=IsChecked }" Click="BrowseButton_Click" />
                     </Grid>
-                    <CheckBox x:Name="permissionCheckBox" Content="Analytics Opt-in" Margin="10,61,242,-14" Grid.Row="2" VerticalAlignment="Top" Height="21" IsChecked="True" ClickMode="Press" Checked="CheckBox_Checked"/>
+                    <CheckBox x:Name="permissionCheckBox" Margin="10,55,10,0" Grid.Row="2" VerticalAlignment="Top" Height="80" IsChecked="True" ClickMode="Press" Checked="CheckBox_Checked">
+                        <TextBlock TextWrapping="Wrap">
+                                By leaving this box checked, you agree that AWS may anonymously collect analytics about your usage of AWS Toolkit. AWS will handle all information received in accordance with the AWS Privacy Policy (&quot;<Hyperlink RequestNavigate="AWSPrivacyPolicyLink_RequestNavigate" NavigateUri="http://aws.amazon.com/privacy/">http://aws.amazon.com/privacy/</Hyperlink>&quot;).
+                        </TextBlock>
+                    </CheckBox>
                 </Grid>
             </Grid>
 
