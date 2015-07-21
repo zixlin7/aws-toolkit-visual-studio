@@ -40,6 +40,6 @@ namespace Amazon.AWSToolkit
         public const string AnalyticsPermitted = "AnalyticsPermitted";
         public const string AnalyticsCognitoIdentityId = "AnalyticsCognitoIdentityId";
         public const string AnalyticsAnonymousCustomerId = "AnalyticsAnonymousCustomerId";
-        public const string AnalyticsMostRecentlyUsedCognitoIdentityPool = "AnalyticsMostRecentlyUsedCognitoIdentityPool";
+        public const string AnalyticsMostRecentlyUsedCognitoIdentityPoolId = "AnalyticsMostRecentlyUsedCognitoIdentityPoolId";
     }
 }

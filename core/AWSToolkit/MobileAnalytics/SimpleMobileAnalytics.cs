@@ -10,11 +10,14 @@ using Amazon.MobileAnalytics.Model;
 using Amazon.CognitoIdentity;
 using System.ComponentModel;
 using Amazon.Runtime.Internal.Settings;
+using log4net;
 
 namespace Amazon.AWSToolkit.MobileAnalytics
 {
     public class SimpleMobileAnalytics : IDisposable
     {
+        internal static ILog LOGGER = LogManager.GetLogger(typeof(SimpleMobileAnalytics));
+
         private const int MAX_QUEUE_SIZE = 500;
         private Queue<Event> _eventQueue;
 
@@ -52,6 +55,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// </summary>
         private SimpleMobileAnalytics()
         {
+            LOGGER.Info("Attempting to initialize SimpleMobileAnalytics wrapper.");
+
             //initialize the event queue
             _eventQueue = new Queue<Event>(MAX_QUEUE_SIZE);
 
@@ -66,6 +71,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
             StartMainSession();
 
             //Spin up instance/thread of the ServiceCallHandler
+            LOGGER.Info("Attempting to spin up background thread for analytics service calls. Note: Permission to push analytics will be determined in background thread.");
             _serviceCallHandler = AMAServiceCallHandler.Instance;
         }
         
@@ -104,6 +110,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
 
             ToolkitEvent startSessionEvent = new ToolkitEvent(AMAConstants.SessionEventNames.START_SESSION, _startSessionDetails);
             QueueEventToBeRecorded(startSessionEvent);
+            LOGGER.Info("Start of session locally saved in analytics queue.");
         }
 
 
@@ -122,6 +129,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
 
             //This method trigger when VS closes so we need to force the service call.
             //If we don't the background thread won't collect any remaining events in the queue.
+            LOGGER.Info("Main session was stopped. Attemping to force final analytics service call attempt. Note: Permission to collect analytics will be checked.");
             _serviceCallHandler.ForceAMAServiceCallAttempt();
 
             //Signifies that this method should only be called when the toolkit is being closed.
@@ -179,6 +187,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         public bool QueueEventToBeRecorded(ToolkitEvent toolkitEvent)
         {
             Event analyticsEvent = toolkitEvent.ConvertToMobileAnalyticsEvent();
+            LOGGER.InfoFormat("Queuing analytics event in local queue with timestamp: {0}", analyticsEvent.Timestamp);
 
             if (ValidEvent(analyticsEvent) && _eventQueue.Count < MAX_QUEUE_SIZE)
             {

@@ -1,6 +1,7 @@
 ﻿using Amazon.MobileAnalytics;
 using Amazon.MobileAnalytics.Model;
 using Amazon.Runtime.Internal.Settings;
+using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
 {
     public class AMAServiceCallHandler
     {
+        internal static ILog LOGGER = LogManager.GetLogger(typeof(AMAServiceCallHandler));
+
         private const int BACKGROUND_QUEUE_MAX_CAPACITY = 500;
         private TimeSpan MAX_SLEEP_TIME_BEOFORE_SERVICE_CALL_ATTEMPT = TimeSpan.FromMinutes(5);
         private TimeSpan TIME_BETWEEN_QUEUE_CAPACITY_CHECKS = TimeSpan.FromMinutes(1);
@@ -59,16 +62,20 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// </summary>
         private AMAServiceCallHandler()
         {
+            LOGGER.Info("Attempting to construct AMAServiceCallHandler.");
+            LOGGER.InfoFormat("Note: User has set permission to collect analytics to: {0}. If false, no analytics will be pushed.", PermissionToCollectAnalytics);
+
             _backgroundQueue = new Queue<Event>(BACKGROUND_QUEUE_MAX_CAPACITY);
 
-            string identityPoolId = MostReventlyUsedCognitoIdentityPool;
+            string identityPoolId = MostRecentlyUsedCognitoIdentityPool;
             if (string.IsNullOrEmpty(identityPoolId) || !identityPoolId.Equals(AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID))
             {
                 //if null or if it doesn't match the currently stored pool id, clear the cached cognito identity id (different than pool id)
                 //and write the newest identity pool id
                 //when the _credentialsProvider is called next, it will handle caching a new identity id
                 PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsCognitoIdentityId, "");
-                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsMostRecentlyUsedCognitoIdentityPool, AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID);
+                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsMostRecentlyUsedCognitoIdentityPoolId, AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID);
+                LOGGER.InfoFormat("AnalyticsMostRecentlyUsedCognitoIdentityPoolId needs set or updated. Clearing AnalyticsCognitoIdentityId and setting AnalyticsMostRecentlyUsedCognitoIdentityPoolId to {0} in MiscSettings", AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID);
             }
 
             try
@@ -78,14 +85,15 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                  * Using the Analytics extended CognitoAWSCredentials will
                  * ensure caching of the identityID for unauthticated session logging. 
                  */
+                LOGGER.InfoFormat("Attempting to create credentials via Cognito using poolId: {0} and RegionEndpoint.USEast1.", AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID);
                 _credentialsProvider = new AnalyticsCognitoAWSCredentials(
                     AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID,
                     RegionEndpoint.USEast1
                 );
             }
-            catch
+            catch (Exception e)
             {
-                //log me eventually
+                LOGGER.Error("Failed to construct credentials provider.", e);
                 _credentialsOrClientFailedToConstruct = true;
             }
 
@@ -98,7 +106,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 }
                 catch (Exception e)
                 {
-                    //log me eventually
+                    LOGGER.Error("Failed to construct AMA client.", e);
                 }
 
                 //construct the AWS Mobile Analytics Client Context
@@ -106,6 +114,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 _clientContext = new ClientContext(clientContextConfig);
 
                 //start the main background thread
+                LOGGER.Info("Attempting to start background thread to pull from main thread queue.");
                 _mainBackgroundThread = new Thread(new ThreadStart(mainBackgroundThreadActivity));
                 _mainBackgroundThread.Start();
             }
@@ -179,10 +188,12 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                     try
                     {
                         response = _amazonMobileAnalyticsClient.PutEvents(request);
+                        LOGGER.InfoFormat("Reponse from AMAClient.PutEvents(request) meta data: {0}, response HttpStatusCode: {0}", response.ResponseMetadata, response.HttpStatusCode);
                     }
                     catch (Exception e)
                     {
                         //wifi was probably off
+                        LOGGER.Error("AMAClient.PutEvents(request) failed. Likely candidate for failure: no internet connection.", e);
                     }
                 }
             }
@@ -247,13 +258,14 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 //if the service call thread didn't exit gracefully, kill it
                 if (serviceCallThread.IsAlive)
                 {
+                    LOGGER.DebugFormat("Service Call Thread took longer than {0} seconds. Aborting the call.", MAX_SERVICE_CALL_TIME_ALLOWED.Seconds);
                     try
                     {
                         serviceCallThread.Abort();
                     }
                     catch (Exception e)
                     {
-                        //Log me eventually
+                        LOGGER.Error("Error aborting background service call thread.", e);
                     }
                 }
             }
@@ -312,7 +324,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 }
                 catch (Exception e)
                 {
-                    //log exception eventually
+                    LOGGER.Error("Failed to access MiscSettings file. We don't know if we have permission to collect analytics. Assuming we do not have permission.");
                     return false;
                 }
             }
@@ -340,6 +352,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 }
                 catch (Exception e)
                 {
+                    LOGGER.Error("Failed to access AnalyticsAnonymousCustomerId in MiscSettings. Creating a new one.", e);
                     return Guid.NewGuid().ToString();
                 }
             }
@@ -349,23 +362,24 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// Gets or generates the most recently cached cognito identity pool ID in the APP Data.
         /// We cache this so we know whether or not we need to clear the cached cognito identityID
         /// </summary>
-        private string MostReventlyUsedCognitoIdentityPool
+        private string MostRecentlyUsedCognitoIdentityPool
         {
             get
             {
                 //try to retrieve the most recently used cognito identity pool.
                 try
                 {
-                    return PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsMostRecentlyUsedCognitoIdentityPool);
+                    return PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsMostRecentlyUsedCognitoIdentityPoolId);
                 }
                 catch (Exception e)
                 {
+                    LOGGER.Error("Failed to access AnalyticsMostRecentlyUsedCognitoIdentityPoolId in MiscSettings file.", e);
                     return null;
                 }
             }
             set
             {
-                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsMostRecentlyUsedCognitoIdentityPool, value);
+                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsMostRecentlyUsedCognitoIdentityPoolId, value);
             }
         }
 
