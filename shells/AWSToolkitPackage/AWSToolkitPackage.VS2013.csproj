@@ -74,6 +74,7 @@
     </Reference>
     <Reference Include="AWSSDK.MobileAnalytics">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.MobileAnalytics.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\thirdparty\ICSharpCode.SharpZipLib.dll</HintPath>

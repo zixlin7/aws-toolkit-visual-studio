@@ -58,9 +58,11 @@
     </Reference>
     <Reference Include="AWSSDK.CognitoIdentity">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.CognitoIdentity.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.CognitoSync">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.CognitoSync.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.Core">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.Core.dll</HintPath>
@@ -84,6 +86,7 @@
     </Reference>
     <Reference Include="AWSSDK.MobileAnalytics">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.MobileAnalytics.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="AWSSDK.SimpleNotificationService">
       <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.SimpleNotificationService.dll</HintPath>

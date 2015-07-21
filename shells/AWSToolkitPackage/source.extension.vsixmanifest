@@ -131,7 +131,8 @@
 	<CustomExtension Type="SDK">..\..\Include\sdk\assemblies\net35\AWSSDK.SimpleWorkflow.dll</CustomExtension>
 	<CustomExtension Type="SDK">..\..\Include\sdk\assemblies\net35\AWSSDK.SQS.dll</CustomExtension>
 	<CustomExtension Type="SDK">..\..\Include\sdk\assemblies\net35\AWSSDK.StorageGateway.dll</CustomExtension>
-	<CustomExtension Type="SDK">..\..\Include\sdk\assemblies\net35\AWSSDK.WorkSpaces.dll</CustomExtension>    <CustomExtension Type="Shared Assemblies">|AWSToolkitPackage.Shared|</CustomExtension>
+	<CustomExtension Type="SDK">..\..\Include\sdk\assemblies\net35\AWSSDK.WorkSpaces.dll</CustomExtension>    
+	<CustomExtension Type="Shared Assemblies">|AWSToolkitPackage.Shared|</CustomExtension>
     <CustomExtension Type="AWSToolkitMedia">..\..\Deployment\plugins\Media\ToolkitFirstRun.wmv</CustomExtension>
     <MefComponent>|AWSToolkit.CloudFormation.EditorExtensions|</MefComponent>
     <Assembly AssemblyName="|AWSToolkit.CloudFormation.TemplateWizards;AssemblyName|">|AWSToolkit.CloudFormation.TemplateWizards|</Assembly>
