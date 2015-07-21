@@ -20,7 +20,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
             "System.Windows.Controls.DataVisualization.Toolkit",
             "Microsoft.WindowsAPICodePack",
             "Microsoft.WindowsAPICodePack.Shell",
-            "Microsoft.Data.ConnectionUI"
+            "Microsoft.Data.ConnectionUI",
+			"WPFToolkit"
         };
 
         public static Assembly AssemblyResolveEventHandler(object sender, ResolveEventArgs args)
