@@ -592,6 +592,11 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.AWSSupport.dll">
+      <Link>SDK\AWSSDK.AWSSupport.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.CloudFormation.dll">
       <Link>SDK\AWSSDK.CloudFormation.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -599,6 +604,26 @@
     </Content>
     <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.CloudFront.dll">
       <Link>SDK\AWSSDK.CloudFront.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.CloudHSM.dll">
+      <Link>SDK\AWSSDK.CloudHSM.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.CloudSearch.dll">
+      <Link>SDK\AWSSDK.CloudSearch.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.CloudSearchDomain.dll">
+      <Link>SDK\AWSSDK.CloudSearchDomain.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.CloudTrail.dll">
+      <Link>SDK\AWSSDK.CloudTrail.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -612,8 +637,58 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.CodeCommit.dll">
+      <Link>SDK\AWSSDK.CodeCommit.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.CodeDeploy.dll">
+      <Link>SDK\AWSSDK.CodeDeploy.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.CodePipeline.dll">
+      <Link>SDK\AWSSDK.CodePipeline.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.CognitoIdentity.dll">
+      <Link>SDK\AWSSDK.CognitoIdentity.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.CognitoSync.dll">
+      <Link>SDK\AWSSDK.CognitoSync.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.ConfigService.dll">
+      <Link>SDK\AWSSDK.ConfigService.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.Core.dll">
       <Link>SDK\AWSSDK.Core.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.DataPipeline.dll">
+      <Link>SDK\AWSSDK.DataPipeline.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.DeviceFarm.dll">
+      <Link>SDK\AWSSDK.DeviceFarm.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.DirectConnect.dll">
+      <Link>SDK\AWSSDK.DirectConnect.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.DirectoryService.dll">
+      <Link>SDK\AWSSDK.DirectoryService.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -627,8 +702,23 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.ECS.dll">
+      <Link>SDK\AWSSDK.ECS.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.ElastiCache.dll">
+      <Link>SDK\AWSSDK.ElastiCache.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.ElasticBeanstalk.dll">
       <Link>SDK\AWSSDK.ElasticBeanstalk.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.ElasticFileSystem.dll">
+      <Link>SDK\AWSSDK.ElasticFileSystem.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -637,13 +727,33 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Deployment\AWSSDK.Extensions.dll">
-      <Link>SDK\AWSSDK.Extensions.dll</Link>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.ElasticMapReduce.dll">
+      <Link>SDK\AWSSDK.ElasticMapReduce.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.ElasticTranscoder.dll">
+      <Link>SDK\AWSSDK.ElasticTranscoder.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.Glacier.dll">
+      <Link>SDK\AWSSDK.Glacier.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.IdentityManagement.dll">
       <Link>SDK\AWSSDK.IdentityManagement.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.ImportExport.dll">
+      <Link>SDK\AWSSDK.ImportExport.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.KeyManagementService.dll">
+      <Link>SDK\AWSSDK.KeyManagementService.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -657,8 +767,38 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.MachineLearning.dll">
+      <Link>SDK\AWSSDK.MachineLearning.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.MobileAnalytics.dll">
+      <Link>SDK\AWSSDK.MobileAnalytics.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.OpsWorks.dll">
+      <Link>SDK\AWSSDK.OpsWorks.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.RDS.dll">
       <Link>SDK\AWSSDK.RDS.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.Redshift.dll">
+      <Link>SDK\AWSSDK.Redshift.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.Route53.dll">
+      <Link>SDK\AWSSDK.Route53.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.Route53Domains.dll">
+      <Link>SDK\AWSSDK.Route53Domains.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -667,8 +807,8 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.SQS.dll">
-      <Link>SDK\AWSSDK.SQS.dll</Link>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.SecurityToken.dll">
+      <Link>SDK\AWSSDK.SecurityToken.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -677,8 +817,45 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.SimpleEmail.dll">
+      <Link>SDK\AWSSDK.SimpleEmail.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.SimpleNotificationService.dll">
       <Link>SDK\AWSSDK.SimpleNotificationService.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.SimpleSystemsManagement.dll">
+      <Link>SDK\AWSSDK.SimpleSystemsManagement.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.SimpleWorkflow.dll">
+      <Link>SDK\AWSSDK.SimpleWorkflow.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.SQS.dll">
+      <Link>SDK\AWSSDK.SQS.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.StorageGateway.dll">
+      <Link>SDK\AWSSDK.StorageGateway.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Include\sdk\assemblies\net35\AWSSDK.WorkSpaces.dll">
+      <Link>SDK\AWSSDK.WorkSpaces.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\Deployment\AWSSDK.Extensions.dll">
+      <Link>SDK\AWSSDK.Extensions.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
