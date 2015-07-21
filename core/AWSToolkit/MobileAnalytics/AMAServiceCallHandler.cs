@@ -193,7 +193,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                     catch (Exception e)
                     {
                         //wifi was probably off
-                        LOGGER.Error("AMAClient.PutEvents(request) failed. Likely candidate for failure: no internet connection.", e);
+                        LOGGER.Error("AMAClient.PutEvents(request) failed.", e);
                     }
                 }
             }
@@ -258,7 +258,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 //if the service call thread didn't exit gracefully, kill it
                 if (serviceCallThread.IsAlive)
                 {
-                    LOGGER.DebugFormat("Service Call Thread took longer than {0} seconds. Aborting the call.", MAX_SERVICE_CALL_TIME_ALLOWED.Seconds);
+                    LOGGER.DebugFormat("Service Call Thread took longer than {0} seconds. Aborting the call.", MAX_SERVICE_CALL_TIME_ALLOWED.TotalSeconds);
                     try
                     {
                         serviceCallThread.Abort();
