@@ -79,6 +79,7 @@
     <CustomExtension Type="Plugins">..\..\thirdparty\NGit.dll</CustomExtension>
     <CustomExtension Type="Plugins">..\..\thirdparty\NSch.dll</CustomExtension>
     <CustomExtension Type="Plugins">..\..\thirdparty\Sharpen.dll</CustomExtension>
+	<CustomExtension Type="SDK">..\..\Deployment\AWSSDK.Extensions.dll</CustomExtension>
 	<CustomExtension Type="SDK">..\..\Include\sdk\assemblies\net35\AWSSDK.AutoScaling.dll</CustomExtension>
 	<CustomExtension Type="SDK">..\..\Include\sdk\assemblies\net35\AWSSDK.AWSSupport.dll</CustomExtension>
 	<CustomExtension Type="SDK">..\..\Include\sdk\assemblies\net35\AWSSDK.CloudFormation.dll</CustomExtension>
@@ -133,9 +134,9 @@
 	<CustomExtension Type="SDK">..\..\Include\sdk\assemblies\net35\AWSSDK.StorageGateway.dll</CustomExtension>
 	<CustomExtension Type="SDK">..\..\Include\sdk\assemblies\net35\AWSSDK.WorkSpaces.dll</CustomExtension>    
 	<CustomExtension Type="Shared Assemblies">|AWSToolkitPackage.Shared|</CustomExtension>
-    <CustomExtension Type="AWSToolkitMedia">..\..\Deployment\plugins\Media\ToolkitFirstRun.wmv</CustomExtension>
-    <MefComponent>|AWSToolkit.CloudFormation.EditorExtensions|</MefComponent>
-    <Assembly AssemblyName="|AWSToolkit.CloudFormation.TemplateWizards;AssemblyName|">|AWSToolkit.CloudFormation.TemplateWizards|</Assembly>
-    <Assembly AssemblyName="|AWSToolkit.Lambda.TemplateWizards;AssemblyName|">|AWSToolkit.Lambda.TemplateWizards|</Assembly>
+  <CustomExtension Type="AWSToolkitMedia">..\..\Deployment\plugins\Media\ToolkitFirstRun.wmv</CustomExtension>
+  <MefComponent>|AWSToolkit.CloudFormation.EditorExtensions|</MefComponent>
+  <Assembly AssemblyName="|AWSToolkit.CloudFormation.TemplateWizards;AssemblyName|">|AWSToolkit.CloudFormation.TemplateWizards|</Assembly>
+  <Assembly AssemblyName="|AWSToolkit.Lambda.TemplateWizards;AssemblyName|">|AWSToolkit.Lambda.TemplateWizards|</Assembly>
  </Content>
 </Vsix>

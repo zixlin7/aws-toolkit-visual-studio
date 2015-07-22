@@ -864,17 +864,14 @@
     <ProjectReference Include="..\..\plugins\AWSToolkit.CloudFormation.MSBuildTasks\AWSToolkit.CloudFormation.MSBuildTasks.csproj">
       <Project>{FE98588C-7FEE-414E-9EAB-F36BF64C88C0}</Project>
       <Name>AWSToolkit.CloudFormation.MSBuildTasks</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\plugins\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
       <Project>{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}</Project>
       <Name>AWSToolkit.CloudFormation.Parser</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\plugins\AWSToolkit.CloudFormation.TemplateWizards\AWSToolkit.CloudFormation.TemplateWizards.csproj">
       <Project>{0588D27B-7D87-4B33-9120-4C0A9E7D6665}</Project>
       <Name>AWSToolkit.CloudFormation.TemplateWizards</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj">
       <Project>{D4D5C421-6265-4674-A1F9-DC11A56FC030}</Project>
@@ -889,7 +886,6 @@
     <ProjectReference Include="..\..\plugins\AWSToolkit.Lambda.TemplateWizards\AWSToolkit.Lambda.TemplateWizards.csproj">
       <Project>{783e4198-a8f1-4e74-af3e-0001b0ad516b}</Project>
       <Name>AWSToolkit.Lambda.TemplateWizards</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\plugins\AWSToolkit.Lambda\AWSToolkit.Lambda.csproj">
       <Project>{7102b4cf-9b9d-4827-adca-d23971cd84c3}</Project>

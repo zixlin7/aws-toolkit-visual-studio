@@ -13,9 +13,9 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(Utility));
 
-        // certain 3rd party assemblies shared between the toolkit and plugins can
+        // certain assemblies (usually 3rd party) shared between the toolkit and plugins can
         // be found at the root
-        private static readonly HashSet<string> ThirdPartyRootAssemblies = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly HashSet<string> AssembliesAtPackageRoot = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "System.Windows.Controls.DataVisualization.Toolkit",
             "Microsoft.WindowsAPICodePack",
@@ -40,7 +40,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
                         return Assembly.LoadFile(testPath);
                 }
 
-                if (ThirdPartyRootAssemblies.Contains(assemblyName))
+                if (AssembliesAtPackageRoot.Contains(assemblyName))
                 {
                     var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                     var testPath = Path.Combine(path, assemblyName + ".dll");
