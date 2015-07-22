@@ -24,6 +24,9 @@
         <UpdateVersions Condition="'$(UpdateVersions)'==''">false</UpdateVersions>
         <AWSToolkitVersionNumber Condition="'$(AWSToolkitVersion)'==''"></AWSToolkitVersionNumber>
         <AWSDeployVersionNumber Condition="'$(AWSDeployVersion)'==''"></AWSDeployVersionNumber>
+	
+    	<AWSToolkitPackageOutput>$(Deployment)\AWSToolkitPackage</AWSToolkitPackageOutput>
+
     </PropertyGroup>
     
 	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;update-version;build-awsdeploy;build-vstoolkit;keyscan;copy-artifacts;save-build">
@@ -46,8 +49,8 @@
 		<Message Text="Consolidating project templates to deployment folder"/>
 
         <PropertyGroup>
-            <ProjectTemplatesDest>$(Deployment)\templates\AWSToolkitPackage.Templates\ProjectTemplates</ProjectTemplatesDest>
-            <ItemTemplatesDest>$(Deployment)\templates\AWSToolkitPackage.Templates\ProjectTemplates</ItemTemplatesDest>
+            <ProjectTemplatesDest>$(AWSToolkitPackageOutput)\ProjectTemplates</ProjectTemplatesDest>
+            <ItemTemplatesDest>$(AWSToolkitPackageOutput)\ItemTemplates</ItemTemplatesDest>
         </PropertyGroup>
         
 		<MakeDir Directories="$(ProjectTemplatesDest)" />
@@ -72,7 +75,7 @@
 		<Message Text="Consolidating icons to deployment folder"/>
 
         <PropertyGroup>
-            <IconsDest>$(Deployment)\icons</IconsDest>
+            <IconsDest>$(Deployment)\Icons</IconsDest>
         </PropertyGroup>
 
 		<MakeDir Directories="$(IconsDest)" />
@@ -88,7 +91,7 @@
     <Target Name="copy-shellartifacts">
 		<Message Text="Consolidating shell artifacts to deployment folder"/>
 
-        <MakeDir Directories="$(Deployment)\AWSToolkitPackage" />
+        <MakeDir Directories="$(AWSToolkitPackageOutput)" />
         <ItemGroup>
             <AWSToolkitPackageFiles Include="..\shells\AWSToolkitPackage\bin\$(Configuration)\AWSToolkitPackage.*" />
             <ThirdPartyLibs Include="..\thirdparty\Microsoft.WindowsAPICodePack.dll;..\thirdparty\Microsoft.WindowsAPICodePack.Shell.dll;..\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll" />
@@ -97,40 +100,26 @@
         </ItemGroup>
         <Copy
             SourceFiles="@(AWSToolkitPackageFiles);@(ThirdPartyLibs);@(CustomMSBuildTargets);@(ImageFiles);@(Templates)"
-            DestinationFolder="$(Deployment)\AWSToolkitPackage" />
+            DestinationFolder="$(AWSToolkitPackageOutput)" />
 
         <Copy
-            SourceFiles="..\shells\AWSToolkitPackage\source.extension.vsixmanifest"
-            DestinationFiles="$(Deployment)\AWSToolkitPackage\extension.vsixmanifest" />
+            SourceFiles="..\shells\AWSToolkitPackage\bin\$(Configuration)\extension.vsixmanifest"
+            DestinationFolder="$(AWSToolkitPackageOutput)" />
             
-        <MakeDir Directories="$(Deployment)\AWSToolkit.VisualStudio.Shared" />
         <ItemGroup>
             <AWSToolkitSharedFiles Include="..\shells\AWSToolkit.VisualStudio.Shared\bin_vs2010\$(Configuration)\AWSToolkitPackage.Shared.*" />
         </ItemGroup>
         <Copy
             SourceFiles="@(AWSToolkitSharedFiles)"
-            DestinationFolder="$(Deployment)\AWSToolkit.VisualStudio.Shared" />
+            DestinationFolder="$(AWSToolkitPackageOutput)" />
 
         <!-- copy the loose control template files to the corresponding output folder -->
         <ItemGroup>
             <TemplateFiles Include="..\shells\AWSToolkitPackage\Templates\*.*" />
         </ItemGroup>
         <Copy SourceFiles="@(TemplateFiles)"
-              DestinationFolder="$(Deployment)\AWSToolkitPackage\Templates" />
+              DestinationFolder="$(AWSToolkitPackageOutput)\Templates" />
 
-        <!-- zip the cloudformation and item template files, place these into upper level folder for installer -->
-        <MakeDir Directories="$(Deployment)\AWSToolkitPackage.Templates\ProjectTemplates" />
-        <MakeDir Directories="$(Deployment)\AWSToolkitPackage.Templates\ItemTemplates" />
-		<Zip
-			InputDirectory="..\shells\AWSToolkitPackage\Templates\Projects\CloudFormationTemplateProject"
-			OutputFileName="$(Deployment)\AWSToolkitPackage.Templates\ProjectTemplates\CloudFormationTemplateProject.zip" />        
-		<Zip
-			InputDirectory="..\shells\AWSToolkitPackage\Templates\Projects\FunctionTemplateProject"
-			OutputFileName="$(Deployment)\AWSToolkitPackage.Templates\ProjectTemplates\FunctionTemplateProject.zip" />        
-		<Zip
-			InputDirectory="..\shells\AWSToolkitPackage\Templates\Items\Template"
-			OutputFileName="$(Deployment)\AWSToolkitPackage.Templates\ItemTemplates\Template.zip" />        
-  
         <!-- AWSStudio -->
         <MakeDir Directories="$(Deployment)\AWSToolkit.Studio" />
         <ItemGroup>
@@ -158,7 +147,7 @@
         <Copy
             SourceFiles="@(SDKAssemblies)"
             DestinationFolder="$(Deployment)\sdk" />
-        
+
     </Target>
     
 	<Target Name="update-version" DependsOnTargets="build-tools" Condition="$(UpdateVersions)">		
