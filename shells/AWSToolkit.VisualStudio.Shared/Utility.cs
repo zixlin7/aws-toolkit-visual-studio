@@ -34,18 +34,26 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
                 // all sdk assemblies should be in .\sdk subfolder
                 if (assemblyName.StartsWith("AWSSDK.", StringComparison.OrdinalIgnoreCase))
                 {
+                    LOGGER.InfoFormat("Resolving location for SDK assembly {0}", assemblyName);
                     var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                     var testPath = Path.Combine(path, "SDK", assemblyName + ".dll");
                     if (File.Exists(testPath))
+                    {
+                        LOGGER.InfoFormat("...resolved for {0}", testPath);
                         return Assembly.LoadFile(testPath);
+                    }
                 }
 
                 if (AssembliesAtPackageRoot.Contains(assemblyName))
                 {
+                    LOGGER.InfoFormat("Resolving location for other assembly at package root {0}", assemblyName);
                     var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                     var testPath = Path.Combine(path, assemblyName + ".dll");
                     if (File.Exists(testPath))
+                    {
+                        LOGGER.InfoFormat("...resolved for {0}", testPath);
                         return Assembly.LoadFile(testPath);
+                    }
                 }
             }
             
