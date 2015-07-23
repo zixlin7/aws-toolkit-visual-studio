@@ -38,11 +38,21 @@
 		<Exec Command="$(devenv2013) /Rebuild $(Configuration) ..\solutions\AWSDeploymentHostManager.sln"/>
     </Target>
 
-    <Target Name="build-vstoolkit">
+    <Target Name="build-vstoolkit" DependsOnTargets="patch-vsixmanifest">
+	
 		<Message Text="Building Visual Studio toolkit integration"/>
 		<Exec Command="$(devenv2013) /Rebuild $(Configuration) ..\solutions\AWSToolkitPackage.VS2013.sln"/>
     </Target>
 
+	<Target Name="patch-vsixmanifest" Condition="$(UpdateVersions)">
+		<!-- patch vsixmanifest with release package id if running on Jenkins (likely indicated by update version flag set) -->
+		<PatchVsixManifestPackageIdTask
+			PackageRootFolder="..\shells\AWSToolkitPackage"
+			PackageIdPrefix="AWSToolkitPackage"
+			GuidSourceFile="Guids.cs"
+			GuidMemberName="guid_VSPackageString" />
+	</Target>
+	
     <Target Name="copy-artifacts" DependsOnTargets="build-vstoolkit;copy-templates;copy-icons;copy-shellartifacts" />
     
     <Target Name="copy-templates">
