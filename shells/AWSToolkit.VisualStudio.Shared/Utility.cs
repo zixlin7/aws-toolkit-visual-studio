@@ -13,30 +13,19 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(Utility));
 
-        // certain assemblies (usually 3rd party) shared between the toolkit and plugins can
-        // be found at the root
-        private static readonly HashSet<string> AssembliesAtPackageRoot = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            "System.Windows.Controls.DataVisualization.Toolkit",
-            "Microsoft.WindowsAPICodePack",
-            "Microsoft.WindowsAPICodePack.Shell",
-            "Microsoft.Data.ConnectionUI",
-			"WPFToolkit"
-        };
-
         public static Assembly AssemblyResolveEventHandler(object sender, ResolveEventArgs args)
         {
             var pos = args.Name.IndexOf(",");
             if (pos > 0)
             {
                 var assemblyName = args.Name.Substring(0, pos);
+                var extensionRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string testPath;
 
                 // all sdk assemblies should be in .\sdk subfolder
                 if (assemblyName.StartsWith("AWSSDK.", StringComparison.OrdinalIgnoreCase))
                 {
-                    LOGGER.InfoFormat("Resolving location for SDK assembly {0}", assemblyName);
-                    var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                    var testPath = Path.Combine(path, "SDK", assemblyName + ".dll");
+                    testPath = Path.Combine(extensionRoot, "SDK", assemblyName + ".dll");
                     if (File.Exists(testPath))
                     {
                         LOGGER.InfoFormat("...resolved for {0}", testPath);
@@ -44,17 +33,9 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
                     }
                 }
 
-                if (AssembliesAtPackageRoot.Contains(assemblyName))
-                {
-                    LOGGER.InfoFormat("Resolving location for other assembly at package root {0}", assemblyName);
-                    var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                    var testPath = Path.Combine(path, assemblyName + ".dll");
-                    if (File.Exists(testPath))
-                    {
-                        LOGGER.InfoFormat("...resolved for {0}", testPath);
-                        return Assembly.LoadFile(testPath);
-                    }
-                }
+                testPath = Path.Combine(extensionRoot, assemblyName + ".dll");
+                if (File.Exists(testPath))
+                    return Assembly.LoadFile(testPath);
             }
             
             return null;
