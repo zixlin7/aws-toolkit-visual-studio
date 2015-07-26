@@ -28,6 +28,7 @@ namespace Amazon.AWSToolkit
         public const string LAMBDA_SERVICE_NAME = "Lambda";
         public const string KINESIS_SERVICE_NAME = "Kinesis";
         public const string DYNAMODB_SERVICE_NAME = "DynamoDB";
+        public const string DYNAMODB_STREAM_SERVICE_NAME = "DynamoDBStream";
         public const string CLOUDWATCH_LOGS_NAME = "Logs";
 
         public const string US_EAST_1 = "us-east-1";

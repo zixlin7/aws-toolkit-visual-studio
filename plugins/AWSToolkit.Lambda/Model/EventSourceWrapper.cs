@@ -38,7 +38,15 @@ namespace Amazon.AWSToolkit.Lambda.Model
                     break;
             }
 
-            this.ResourceDisplayName = tokens[tokens.Length - 1];
+            if (string.Equals(ServiceName, DYNAMODB_FRIENDLY_NAME))
+            {
+                var streamTokens = configuration.EventSourceArn.Split('/');
+                this.ResourceDisplayName = streamTokens[1];
+            }
+            else
+            {
+                this.ResourceDisplayName = tokens[tokens.Length - 1];
+            }
 
             StringBuilder sb = new StringBuilder();
             sb.AppendFormat("Batch Size: {0}, Last Result: {1}", configuration.BatchSize, configuration.LastProcessingResult);
@@ -60,8 +68,17 @@ namespace Amazon.AWSToolkit.Lambda.Model
                     ServiceName = statement.Principals[0].Provider;
             }
 
-            var tokens = statement.Conditions[0].Values[0].Split(':');
-            this.ResourceDisplayName = tokens[tokens.Length - 1];
+
+            if (string.Equals(ServiceName, DYNAMODB_FRIENDLY_NAME))
+            {
+                var tokens = statement.Conditions[0].Values[0].Split('/');
+                this.ResourceDisplayName = tokens[1];
+            }
+            else
+            {
+                var tokens = statement.Conditions[0].Values[0].Split(':');
+                this.ResourceDisplayName = tokens[tokens.Length - 1];
+            }
 
             this.Details = "Action: " + statement.Actions[0].ActionName;
         }

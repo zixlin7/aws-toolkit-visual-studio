@@ -26,11 +26,11 @@ namespace Amazon.AWSToolkit.Lambda.View
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(AddEventSourceControl));
 
         public const int SOURCE_TYPE_S3_INDEX = 0;
-        public const int SOURCE_TYPE_KINESIS_INDEX = 1;
+        public const int SOURCE_TYPE_DYNAMODB_STREAM_INDEX = 1;
         public const int SOURCE_TYPE_SNS_INDEX = 2;
-        public const int SOURCE_TYPE_DYNAMODB_INDEX = 3;
+        public const int SOURCE_TYPE_KINESIS_INDEX = 3;
 
-        public enum SourceType { Unknown, S3, DynamoDB, Kinesis, SNS };
+        public enum SourceType { Unknown, S3, DynamoDBStream, Kinesis, SNS };
 
         AddEventSourceController _controller;
         public AddEventSourceControl(AddEventSourceController controller)
@@ -57,8 +57,8 @@ namespace Amazon.AWSToolkit.Lambda.View
                 {
                     case SOURCE_TYPE_S3_INDEX:
                         return SourceType.S3;
-                    case SOURCE_TYPE_DYNAMODB_INDEX:
-                        return SourceType.DynamoDB;
+                    case SOURCE_TYPE_DYNAMODB_STREAM_INDEX:
+                        return SourceType.DynamoDBStream;
                     case SOURCE_TYPE_KINESIS_INDEX:
                         return SourceType.Kinesis;
                     case SOURCE_TYPE_SNS_INDEX:
@@ -147,7 +147,7 @@ namespace Amazon.AWSToolkit.Lambda.View
                     this._ctlBatchSize.IsEnabled = true;
                     this._ctlStartingPosition.IsEnabled = true;
                     break;
-                case SOURCE_TYPE_DYNAMODB_INDEX:
+                case SOURCE_TYPE_DYNAMODB_STREAM_INDEX:
                     UpdateForDynamoDBType();
                     this._ctlBatchSize.IsEnabled = true;
                     this._ctlStartingPosition.IsEnabled = true;

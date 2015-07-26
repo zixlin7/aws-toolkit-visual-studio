@@ -37,8 +37,9 @@
                   SelectionChanged="EventSourceType_SelectionChanged"
                   >
             <ComboBoxItem>Amazon S3</ComboBoxItem>
-            <ComboBoxItem>Amazon Kinesis</ComboBoxItem>
+            <ComboBoxItem>Amazon DynamoDB Stream</ComboBoxItem>
             <ComboBoxItem>Amazon SNS</ComboBoxItem>
+            <ComboBoxItem>Amazon Kinesis</ComboBoxItem>
         </ComboBox>
 
         <TextBlock Margin="15,5,5,5" 

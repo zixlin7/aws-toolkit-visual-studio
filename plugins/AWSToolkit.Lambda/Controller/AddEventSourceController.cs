@@ -39,6 +39,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         IAmazonLambda _lambdaClient;
         IAmazonDynamoDB _dynamoDBClient;
+        IAmazonDynamoDBStreams _dynamoDBStreamsClient;
         IAmazonIdentityManagementService _iamClient;
         IAmazonKinesis _kinesisClient;
         IAmazonS3 _s3Client;
@@ -72,6 +73,10 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             var dynamoDBConfig = new AmazonDynamoDBConfig();
             dynamoDBConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.DYNAMODB_SERVICE_NAME).Url;
             this._dynamoDBClient = new AmazonDynamoDBClient(account.AccessKey, account.SecretKey, dynamoDBConfig);
+
+            var dynamoDBStreamConfig = new AmazonDynamoDBStreamsConfig();
+            dynamoDBStreamConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.DYNAMODB_STREAM_SERVICE_NAME).Url;
+            this._dynamoDBStreamsClient = new AmazonDynamoDBStreamsClient(account.AccessKey, account.SecretKey, dynamoDBStreamConfig);
 
             var iamConfig = new AmazonIdentityManagementServiceConfig();
             iamConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).Url;
@@ -181,8 +186,9 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             string eventSourceArn = null;
             switch (this._control.EventSourceType)
             {
-                case AddEventSourceControl.SourceType.DynamoDB:
-                    eventSourceArn = "";
+                case AddEventSourceControl.SourceType.DynamoDBStream:
+                    var tokens = this._control.Resource.Split('/');
+                    eventSourceArn = string.Format("arn:aws:dynamodb:{0}:{1}:table/{2}/stream/{3}", this._region, this._accountNumber, tokens[0], tokens[1]);
                     break;
                 case AddEventSourceControl.SourceType.Kinesis:
                     eventSourceArn = string.Format("arn:aws:kinesis:{0}:{1}:stream/{2}", this._region, this._accountNumber, this._control.Resource);
@@ -281,25 +287,30 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         public List<string> GetDynamoDBStreams()
         {
-            var tables = new List<string>();
-            if (this._dynamoDBClient == null)
-                return tables;
+            var streams = new List<string>();
+            if (this._dynamoDBStreamsClient == null)
+                return streams;
 
-            var request = new ListTablesRequest();
-            ListTablesResponse response = null;
+            var request = new Amazon.DynamoDBv2.Model.ListStreamsRequest();
+            Amazon.DynamoDBv2.Model.ListStreamsResponse response = null;
 
             do
             {
                 if (response != null)
-                    request.ExclusiveStartTableName = response.LastEvaluatedTableName;
+                    request.ExclusiveStartStreamArn = response.LastEvaluatedStreamArn;
 
-                response = this._dynamoDBClient.ListTables(request);
+                response = this._dynamoDBStreamsClient.ListStreams(request);
 
-                tables.AddRange(response.TableNames);
-            } while (!string.IsNullOrEmpty(response.LastEvaluatedTableName));
+                foreach (var stream in response.Streams)
+                {
+                    var tokens = stream.StreamArn.Split('/');
+                    var streamName = string.Format("{0}/{1}", tokens[1], tokens[tokens.Length - 1]);
+                    streams.Add(streamName);
+                }
+            } while (!string.IsNullOrEmpty(response.LastEvaluatedStreamArn));
 
-            tables = new List<string>(tables.OrderBy(x => x));
-            return tables;
+            streams = new List<string>(streams.OrderBy(x => x));
+            return streams;
         }
 
         public List<string> GetKinesisStreams()
