@@ -137,7 +137,7 @@ namespace Amazon.AWSToolkit.Lambda
         }
 
 
-        public enum RoleType {Kinesis};
+        public enum RoleType {Kinesis, DynamoDBStream};
 
         public static void ApplyPolicyToRole(IAmazonIdentityManagementService iamClient,  RoleType type, string role)
         {
@@ -155,6 +155,13 @@ namespace Amazon.AWSToolkit.Lambda
                     policy = reader.ReadToEnd().Trim();
 
                 policyName = "Kinesis-Read-for-Lambda";
+            }
+            if (type == RoleType.DynamoDBStream)
+            {
+                using (var reader = new System.IO.StreamReader(assembly.GetManifestResourceStream("Amazon.AWSToolkit.Lambda.Policies.LambdaInvokeRoleDynamoDBStream.json")))
+                    policy = reader.ReadToEnd().Trim();
+
+                policyName = "DynamoDBStream-Read-for-Lambda";
             }
 
             iamClient.PutRolePolicy(new PutRolePolicyRequest

@@ -223,6 +223,18 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                     else
                         return false;
                 }
+                if (e.Message.StartsWith("Cannot access stream arn:aws:dynamodb"))
+                {
+                    if (ToolkitFactory.Instance.ShellProvider.Confirm("Add Policy",
+                        "The IAM role executing the Lambda function does not have permission to read from the DynamoDB stream. " +
+                        "Do you wish to apply a read only policy for DynamoDB to the role and continue adding the event source?"))
+                    {
+                        ApplyRoleTypeAndCreateEventSourceWithRetry(LambdaUtilities.RoleType.DynamoDBStream, request);
+                    }
+                    else
+                        return false;
+
+                }
                 else
                     throw;
             }

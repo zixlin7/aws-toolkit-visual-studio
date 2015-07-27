@@ -83,6 +83,7 @@
     <EmbeddedResource Include="Policies\LambdaInvokeRoleKinesis.json" />
     <EmbeddedResource Include="Policies\LambdaInvokeRoleS3AssumeRoleDocument.json" />
     <EmbeddedResource Include="Policies\LambdaInvokeRoleS3.json" />
+    <EmbeddedResource Include="Policies\LambdaInvokeRoleDynamoDBStream.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
