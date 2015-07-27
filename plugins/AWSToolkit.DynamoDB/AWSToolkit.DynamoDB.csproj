@@ -104,6 +104,7 @@
     <Compile Include="Controller\DeleteTableController.cs" />
     <Compile Include="Controller\StartLocalDynamoDBController.cs" />
     <Compile Include="Controller\StopLocalDynamoDBController.cs" />
+    <Compile Include="Controller\StreamPropertiesController.cs" />
     <Compile Include="Controller\TableBrowserController.cs" />
     <Compile Include="Controller\TablePropertiesController.cs" />
     <Compile Include="DynamoDBActivator.cs" />
@@ -111,6 +112,7 @@
     <Compile Include="Model\CreateTableModel.cs" />
     <Compile Include="Model\ScanCondition.cs" />
     <Compile Include="Model\StartLocalDynamoDBModel.cs" />
+    <Compile Include="Model\StreamPropertiesModel.cs" />
     <Compile Include="Model\TableBrowserModel.cs" />
     <Compile Include="Model\TablePropertiesModel.cs" />
     <Compile Include="Nodes\DynamoDBRootViewMetaNode.cs" />
@@ -160,6 +162,9 @@
     </Compile>
     <Compile Include="View\StartLocalDynamoDBControl.xaml.cs">
       <DependentUpon>StartLocalDynamoDBControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\StreamPropertiesControl.xaml.cs">
+      <DependentUpon>StreamPropertiesControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\TableBrowserControl.xaml.cs">
       <DependentUpon>TableBrowserControl.xaml</DependentUpon>
@@ -239,6 +244,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\StartLocalDynamoDBControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\StreamPropertiesControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

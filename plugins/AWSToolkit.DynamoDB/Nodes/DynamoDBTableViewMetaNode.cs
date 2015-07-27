@@ -26,6 +26,12 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
             set;
         }
 
+        public ActionHandlerWrapper.ActionHandler OnStreamProperties
+        {
+            get;
+            set;
+        }
+
         private void OnDeleteResponse(IViewModel focus, ActionResults results)
         {
             DynamoDBTableViewModel tableModel = focus as DynamoDBTableViewModel;
@@ -38,7 +44,8 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
             {
                 return BuildActionHandlerList(
                     new ActionHandlerWrapper("Open", OnOpen, null, true, this.GetType().Assembly, "Amazon.AWSToolkit.DynamoDB.Resources.EmbeddedImages.table.png"),
-                    new ActionHandlerWrapper("Properties...", OnProperties, null, false, null, "properties.png"),
+                    new ActionHandlerWrapper("Stream Properties...", OnProperties, null, false, null, null),
+                    new ActionHandlerWrapper("Table Properties...", OnProperties, null, false, null, "properties.png"),
                     null,
                     new ActionHandlerWrapper("Delete", OnDelete, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false, null, "delete.png")
                     );
