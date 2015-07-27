@@ -26,8 +26,20 @@ namespace Amazon.AWSToolkit
                     settings.Port = port;
                 }
 
-                settings.Username = proxySettings[SettingsConstants.ProxyUsername];
-                settings.Password = proxySettings[SettingsConstants.ProxyPassword];
+                // Migrate old insecure setting to new encrypted settings.
+                if (proxySettings[SettingsConstants.ProxyUsernameObsolete] != null || proxySettings[SettingsConstants.ProxyPasswordObsolete] != null)
+                {
+                    proxySettings[SettingsConstants.ProxyUsernameEncrypted] = proxySettings[SettingsConstants.ProxyUsernameObsolete];
+                    proxySettings[SettingsConstants.ProxyPasswordEncrypted] = proxySettings[SettingsConstants.ProxyPasswordObsolete];
+
+                    proxySettings[SettingsConstants.ProxyUsernameObsolete] = null;
+                    proxySettings[SettingsConstants.ProxyPasswordObsolete] = null;
+
+                    PersistenceManager.Instance.SaveSettings(SettingsConstants.UserPreferences, userSettings);
+                }
+
+                settings.Username = proxySettings[SettingsConstants.ProxyUsernameEncrypted];
+                settings.Password = proxySettings[SettingsConstants.ProxyPasswordEncrypted];
             }
 
 
@@ -45,8 +57,8 @@ namespace Amazon.AWSToolkit
             else
                 objectSettings.Remove(SettingsConstants.ProxyPort);
             
-            objectSettings[SettingsConstants.ProxyUsername] = settings.Username;
-            objectSettings[SettingsConstants.ProxyPassword] = settings.Password;
+            objectSettings[SettingsConstants.ProxyUsernameEncrypted] = settings.Username;
+            objectSettings[SettingsConstants.ProxyPasswordEncrypted] = settings.Password;
 
             PersistenceManager.Instance.SaveSettings(SettingsConstants.UserPreferences, userSettings);
 
