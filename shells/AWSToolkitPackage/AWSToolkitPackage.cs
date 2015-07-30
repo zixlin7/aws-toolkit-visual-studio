@@ -764,7 +764,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// <returns>True if the wizard ran to completion. False if the user cancelled or requested the legacy wizard.</returns>
         bool InitializeAndRunDeploymentWizard(VSWebProjectInfo projectInfo, out IDictionary<string, object> wizardProperties)
         {
-            var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.General.View.Deploy2AWS", null);
+            var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Deployment2AWS.View.Deploy2AWS", null);
             wizard.Title = "Publish to Amazon Web Services";
 
             SetVSToolkitDeploymentSeedData(wizard, projectInfo);
@@ -803,7 +803,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// <returns>True if the wizard ran to completion, false if the user cancelled</returns>
         bool InitializeAndRunLegacyDeploymentWizard(VSWebProjectInfo projectInfo, out IDictionary<string, object> wizardProperties)
         {
-            var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.General.View.LegacyDeploy2AWS", null);
+            var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Deployment2AWS.View.LegacyDeploy2AWS", null);
             wizard.Title = "Publish to Amazon Web Services";
 
             wizard.SetProperty(DeploymentWizardProperties.SeedData.propkey_LegacyDeploymentMode, true);
@@ -878,7 +878,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
 
             // use a one-page wizard to have the same look as the standard deployment wizard
-            var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.General.View.Redeploy2AWS", null);
+            var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Deployment2AWS.View.Redeploy2AWS", null);
             SetVSToolkitFastRedeploymentSeedData(wizard, pi, deploymentHistory);
 
             var pageControllers = new List<IAWSWizardPageController>();
