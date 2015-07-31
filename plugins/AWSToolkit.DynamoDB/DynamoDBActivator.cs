@@ -50,7 +50,7 @@ namespace Amazon.AWSToolkit.DynamoDB
             rootNode.DynamoDBTableViewMetaNode.OnProperties =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<TablePropertiesController>().Execute);
 
-            rootNode.DynamoDBTableViewMetaNode.OnProperties =
+            rootNode.DynamoDBTableViewMetaNode.OnStreamProperties =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<StreamPropertiesController>().Execute);
 
             rootNode.DynamoDBTableViewMetaNode.OnOpen =
