@@ -13,7 +13,8 @@ namespace Amazon.AWSToolkit
         Unknown = 0,
         Light,
         Dark,
-        Blue
+        Blue,
+        HighContrast
     }
 
     public static class ThemeUtil
@@ -22,7 +23,8 @@ namespace Amazon.AWSToolkit
         {
             { "de3dbbcd-f642-433c-8353-8f1df4370aba", VsTheme.Light }, 
             { "1ded0138-47ce-435e-84ef-9ec1f439b749", VsTheme.Dark }, 
-            { "a4d6a176-b948-4b29-8c66-53c97a1ed7d0", VsTheme.Blue }
+            { "a4d6a176-b948-4b29-8c66-53c97a1ed7d0", VsTheme.Blue },
+            { "a5c004b4-2d4b-494e-bf01-45fc492522c7", VsTheme.HighContrast }
         };
 
         public static VsTheme GetCurrentTheme()
@@ -41,6 +43,7 @@ namespace Amazon.AWSToolkit
         }
 
         static string _registryVersion;
+
         public static void Initialize(string registryVersion)
         {
             _registryVersion = registryVersion;
@@ -48,20 +51,44 @@ namespace Amazon.AWSToolkit
 
         public static string GetThemeId()
         {
-            if (string.IsNullOrWhiteSpace(_registryVersion))
+            if (string.IsNullOrEmpty(_registryVersion))
                 return null;
 
-            const string CategoryName = "General";
-            const string ThemePropertyName = "CurrentTheme";
-            string keyName = string.Format(@"Software\Microsoft\VisualStudio\{0}\{1}", _registryVersion, CategoryName);
-
-            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(keyName))
+            // VS2015 moved the location and format of the persisted theme indication
+            var vrn = double.Parse(_registryVersion);
+            if (vrn < 14)
             {
-                if (key != null)
+                const string CategoryName = "General";
+                const string ThemePropertyName = "CurrentTheme";
+                string keyName = string.Format(@"Software\Microsoft\VisualStudio\{0}\{1}", _registryVersion, CategoryName);
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(keyName))
                 {
-                    var value = (string)key.GetValue(ThemePropertyName, string.Empty);
-                    // some systems have the theme id in braces, others don't
-                    return value.Trim('{', '}');
+                    if (key != null)
+                    {
+                        var value = (string)key.GetValue(ThemePropertyName, string.Empty);
+                        // some systems have the theme id in braces, others don't
+                        return value.Trim('{', '}');
+                    }
+                }
+            }
+            else
+            {
+                const string CategoryName = @"ApplicationPrivateSettings\Microsoft\VisualStudio";
+                const string ThemePropertyName = "ColorTheme";
+                string keyName = string.Format(@"Software\Microsoft\VisualStudio\{0}\{1}", _registryVersion, CategoryName);
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(keyName))
+                {
+                    if (key != null)
+                    {
+                        // format is '0*System.String*1ded0138-47ce-435e-84ef-9ec1f439b749'
+                        var value = (string)key.GetValue(ThemePropertyName, string.Empty);
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            var parts = value.Split('*');
+                            if (parts.Length == 3)
+                                return parts[2];
+                        }
+                    }
                 }
             }
 
