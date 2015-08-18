@@ -41,7 +41,7 @@
                              Margin="8,8,4,4"
                              GroupName="AMI"
                              IsChecked="True"
-                             Style="{DynamicResource awsRadioButtonStyle}">
+                             Style="{DynamicResource awsRadioButtonBaseStyle}">
                     _Default AMI:
                 </RadioButton>
                 <ComboBox x:Name="_defaultAMIs" Grid.Column="1" 
@@ -54,7 +54,7 @@
                 <RadioButton x:Name="_useCustomAMI" Grid.Column="2"
                              Margin="8,8,4,4"
                              GroupName="AMI"
-                             Style="{DynamicResource awsRadioButtonStyle}">
+                             Style="{DynamicResource awsRadioButtonBaseStyle}">
                     _Custom AMI:                    
                 </RadioButton>
                 <TextBox Grid.Column="3"
@@ -250,7 +250,7 @@
 
                 <CheckBox Margin="8,4,4,0" 
                           IsChecked="{Binding RollbackOnFailure}"
-                          Style="{DynamicResource awsCheckboxButtonStyle}"
+                          Style="{DynamicResource awsCheckboxButtonBaseStyle}"
                           VerticalAlignment="Center">
                     Rollback on _failure
                 </CheckBox>

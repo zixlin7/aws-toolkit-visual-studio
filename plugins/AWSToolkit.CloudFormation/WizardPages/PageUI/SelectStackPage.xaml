@@ -104,7 +104,7 @@
                   Grid.ColumnSpan="2" 
                   Name="_ctlRollbackOnFailure" 
                   IsEnabled="{Binding ElementName=_ctlCreateStack, Path=IsChecked}"
-                  Style="{DynamicResource awsCheckboxButtonStyle}">
+                  Style="{DynamicResource awsCheckboxButtonBaseStyle}">
             Rollback on failure
         </CheckBox>
 
