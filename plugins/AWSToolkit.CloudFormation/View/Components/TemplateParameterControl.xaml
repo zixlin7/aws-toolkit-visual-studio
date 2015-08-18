@@ -22,7 +22,10 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Margin="5,5,5,0" Grid.Row="0" Grid.Column="0" Text="{Binding Name}" MinWidth="150" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <Label Margin="0,5,5,0" Grid.Row="0" Grid.Column="0" Content="{Binding Name}" MinWidth="150" 
+               Style="{DynamicResource awsWizardFieldLabelStyle}" VerticalAlignment="Center"
+               FontWeight="SemiBold"
+               />
         <TextBox Margin="5,5,5,0" Grid.Row="0" Grid.Column="1" Text="{Binding OverrideValue, UpdateSourceTrigger=PropertyChanged}" 
                  Name="_ctlValue" LostFocus="_ctlValue_LostFocus" TextChanged="_ctlValue_TextChanged"
                  Style="{DynamicResource awsTextBoxStyle}"/>
