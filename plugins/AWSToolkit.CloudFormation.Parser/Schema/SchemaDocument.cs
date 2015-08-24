@@ -45,5 +45,35 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
         {
             get { return this._pseudoParameters.Values; }
         }
+
+
+        HashSet<string> _awsCustomParameterTypes;
+        public HashSet<string> AWSCustomParameterTypes
+        {
+            get
+            {
+                if(this._awsCustomParameterTypes == null)
+                {
+                    lock(this)
+                    {
+                        if(this._awsCustomParameterTypes == null)
+                        {
+                            this._awsCustomParameterTypes = new HashSet<string>();
+
+                            var parameters = this.RootSchemaObject.GetPropertySchema("Parameters");
+                            var parameterTypes = parameters.GetDefaultChildSchemaObject().GetPropertySchema("Type").AllowedValues;
+
+                            foreach (var type in parameterTypes)
+                            {
+                                if (type.Value.StartsWith("AWS::"))
+                                    this._awsCustomParameterTypes.Add(type.Value);
+                            }
+                        }
+                    }
+                }
+
+                return this._awsCustomParameterTypes;
+            }
+        }
     }
 }

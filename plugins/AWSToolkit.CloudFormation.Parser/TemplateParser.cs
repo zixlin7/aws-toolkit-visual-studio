@@ -26,19 +26,6 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
 
         static Dictionary<string, string> BASIC_RESOURCES_TEMPLATES = new Dictionary<string, string>();
 
-        static Func<string, bool> isRefType = x =>
-        {
-            if (x.StartsWith("AWS::") &&
-                !(
-                    x.Equals("AWS::EC2::KeyPair::KeyName") ||
-                    x.Equals("AWS::EC2::SecurityGroup::Id") ||
-                    x.Equals("AWS::EC2::Subnet::Id") ||
-                    x.Equals("AWS::EC2::VPC::Id")
-                ))
-                return true;
-
-            return false;
-        };
 
         SchemaDocument _schema;
         JsonDocument _jsonDocument;
@@ -232,7 +219,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
                 {
                     foreach (var kvp in this._referencesByType)
                     {
-                        if (isRefType(kvp.Key))
+                        if (IsRefType(kvp.Key))
                             continue;
 
                         foreach (var name in kvp.Value)
@@ -303,7 +290,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
 
             foreach (var kvp in this._referencesByType)
             {
-                if(isRefType(kvp.Key))
+                if(IsRefType(kvp.Key))
                     continue;
 
                 references.AddRange(kvp.Value);
@@ -408,7 +395,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
                         // Add all parameters because CloudFormation will do type conversion like numbers to strings
                         foreach (var kvp in this._referencesByType)
                         {
-                            if (isRefType(kvp.Key))
+                            if (IsRefType(kvp.Key))
                                 continue;
 
                             foreach (var name in kvp.Value)
@@ -1639,6 +1626,14 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
                     }
                 }
             }
+        }
+
+        private bool IsRefType(string x)
+        {
+            if (x.StartsWith("AWS::") && !_schema.AWSCustomParameterTypes.Contains(x))
+                return true;
+
+            return false;
         }
     }
 }
