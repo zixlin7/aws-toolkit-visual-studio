@@ -160,7 +160,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages
 
             // deployments within service organised by accountid: <region, T>
             var accountDeployments = beanstalkDeployments.DeploymentsForAccount(account.SettingsUniqueKey);
-            return accountDeployments[regionSystemName];
+            return accountDeployments.ContainsKey(regionSystemName) ? accountDeployments[regionSystemName] : null;
         }
     }
 }
