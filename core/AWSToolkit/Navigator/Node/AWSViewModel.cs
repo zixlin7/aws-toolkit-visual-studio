@@ -12,6 +12,8 @@ using System.Windows.Threading;
 using Amazon.Runtime.Internal.Settings;
 
 using Amazon.AWSToolkit.Account;
+using log4net;
+using Amazon.Util;
 
 namespace Amazon.AWSToolkit.Navigator.Node
 {
@@ -21,6 +23,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
         AWSViewMetaNode _metaNode;
         ObservableCollection<AccountViewModel> _accounts = new ObservableCollection<AccountViewModel>();
         SettingsWatcher _watcher;
+        ILog _logger = LogManager.GetLogger(typeof(AWSViewModel));
 
         public AWSViewModel(Dispatcher dispatcher, AWSViewMetaNode metaNode)
             : base(metaNode, null, "root")
@@ -91,7 +94,22 @@ namespace Amazon.AWSToolkit.Navigator.Node
 
             foreach(var os in settings.OrderBy(x => ((string)x[ToolkitSettingsConstants.DisplayNameField]).ToLower()))
             {
-                updatedAccounts.Add(new AccountViewModel(this._metaNode.FindChild<AccountViewMetaNode>(), this, os));
+                // For now: make sure that corrupt/invalid profiles do not crash the toolkit/vs and simply skip them 
+                // (after logging the failure).
+                // Todo in future: move the validation into the AccountViewModel's parseObjectSettings member and
+                // set a valid/invalid state flag in the instance. In the profile drop down, we can then list the
+                // invalid profiles but make them non-selectable for use (but editable, so errors can be corrected).
+                // The entry in the drop down will need an indicator showing the profile is bad, with the validation
+                // fail message.
+                try
+                {
+                    ProfileManager.Validate(os[ToolkitSettingsConstants.DisplayNameField]);
+                    updatedAccounts.Add(new AccountViewModel(this._metaNode.FindChild<AccountViewMetaNode>(), this, os));
+                }
+                catch (InvalidDataException e)
+                {
+                    _logger.ErrorFormat("Failed to load profile {0}, exception {1}", os[ToolkitSettingsConstants.DisplayNameField], e.Message);
+                }
             }
 
             var deleted = _accounts.Except(updatedAccounts, AccountViewModelEqualityComparer.Instance).ToList();
