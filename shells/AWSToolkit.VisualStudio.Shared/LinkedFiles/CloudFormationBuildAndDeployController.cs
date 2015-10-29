@@ -29,7 +29,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                             Logger,
                             Options,
                             versionLabel,
-                            Options[DeploymentWizardProperties.AppOptions.propkey_TargetFramework] as string,
+                            Options[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] as string,
                             false,
                             completionEvent
                        );

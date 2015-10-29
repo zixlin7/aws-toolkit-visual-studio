@@ -93,13 +93,16 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating
         public List<string> SupportedFrameworks { get; protected set; }
 
         /// <summary>
-        /// Checks whether the ami associated with the template supports a given .Net framework version
+        /// Checks whether the ami associated with the template supports a given .Net runtime version
         /// </summary>
-        /// <param name="requestedVersion"></param>
+        /// <param name="requestedRuntime"></param>
         /// <returns></returns>
-        public bool SupportsFrameworkVersion(string requestedVersion)
+        public bool SupportsFrameworkVersion(string requestedRuntime)
         {
-            return SupportedFrameworks.Any(framework => string.Compare(framework, requestedVersion, StringComparison.InvariantCultureIgnoreCase) == 0);
+            if (requestedRuntime.StartsWith("2", StringComparison.Ordinal))
+                return (SupportedFrameworks.Contains("2.0") || SupportedFrameworks.Contains("3.0") || SupportedFrameworks.Contains("3.5"));
+
+            return true;
         }
 
         public void LoadAndParse()

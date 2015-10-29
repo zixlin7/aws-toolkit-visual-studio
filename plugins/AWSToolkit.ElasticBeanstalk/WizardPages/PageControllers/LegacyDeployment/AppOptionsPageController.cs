@@ -225,7 +225,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyD
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.AppendFormat("{0};", _pageUI.TargetFramework); 
+            sb.AppendFormat("{0};", _pageUI.TargetRuntime); 
             sb.AppendFormat("{0};", _pageUI.Enable32BitApplications);
             sb.AppendFormat("{0};", _pageUI.HealthCheckURL);
 

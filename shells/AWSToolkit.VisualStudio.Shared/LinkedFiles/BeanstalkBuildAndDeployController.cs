@@ -37,7 +37,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
                             Logger,
                             Options,
                             versionLabel,
-                            Options[DeploymentWizardProperties.AppOptions.propkey_TargetFramework] as string,
+                            Options[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] as string,
                             _useIncrementalDeployment,
                             completionEvent
                        );

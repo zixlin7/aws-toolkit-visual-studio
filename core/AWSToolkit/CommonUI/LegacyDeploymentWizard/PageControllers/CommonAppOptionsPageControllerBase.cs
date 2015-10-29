@@ -114,12 +114,12 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
                 _pageUI.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(onPropertyChanged);
 
                 // these settings are based off VS project settings, so we can set once only
-                string targetFramework = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetFramework] as string;
+                string targetRuntime = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] as string;
                 bool enable32BitApps = false;
                 if (HostingWizard.IsPropertySet(DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications))
                     enable32BitApps = (bool)HostingWizard[DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications];
 
-                _pageUI.SetAppPoolSettings(targetFramework, enable32BitApps);
+                _pageUI.SetAppPoolSettings(targetRuntime, enable32BitApps);
 
                 // the ability to use an iam user can be safely set here; only IAM user accounts whose keys are
                 // held in the toolkit are valid and that won't change during the wizard's runtime
@@ -221,11 +221,11 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
         // fields on display
         void StorePageData()
         {
-            string targetFramework = _pageUI.TargetFramework;
-            if (!string.IsNullOrEmpty(targetFramework))
-                HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetFramework] = targetFramework;
+            string targetRuntime = _pageUI.TargetRuntime;
+            if (!string.IsNullOrEmpty(targetRuntime))
+                HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] = targetRuntime;
             else
-                HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetFramework] = null;
+                HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] = null;
 
             HostingWizard[DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications] = _pageUI.Enable32BitApplications;
 

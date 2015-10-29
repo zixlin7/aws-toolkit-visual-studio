@@ -232,9 +232,9 @@
         public static class AppOptions
         {
             /// <summary>
-            /// String, optional, major.minor version label of the target framework/runtime of the application.
+            /// String, optional, major.minor version label of the target runtime of the application.
             /// </summary>
-            public static readonly string propkey_TargetFramework = "targetFramework";
+            public static readonly string propkey_TargetRuntime = "targetRuntime";
 
             /// <summary>
             /// Boolean, optional - passed into wizard when invoked from vs2008 environment where the v4

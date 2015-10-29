@@ -1480,23 +1480,9 @@ namespace Amazon.AWSToolkit.VisualStudio
                     }
                 }
 
-                // seed the suggested .NET framework needed for the application from project properties, if available
-                var targetFramework = projectInfo.TargetFramework;
-                if (!string.IsNullOrEmpty(targetFramework))
-                {
-                    if (targetFramework.StartsWith("v", StringComparison.InvariantCultureIgnoreCase))
-                        targetFramework = targetFramework.Substring(1);
-                }
-                else
-                {
-                    if (ShellName == Constants.VS2012HostShell.ShellName
-                            || ShellName == Constants.VS2013HostShell.ShellName
-                            || ShellName == Constants.VS2015HostShell.ShellName)
-                        targetFramework = VSWebProjectInfo.FrameworkVersionV45;
-                    else
-                        targetFramework = VSWebProjectInfo.FrameworkVersionV40;
-                }
-                seedProperties.Add(DeploymentWizardProperties.AppOptions.propkey_TargetFramework, targetFramework);
+                // seed the suggested .NET runtime needed for the application from project properties, if available
+                var targetRuntime = projectInfo.TargetRuntime;
+                seedProperties.Add(DeploymentWizardProperties.AppOptions.propkey_TargetRuntime, targetRuntime);
 
                 seedProperties.Add(DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications, false);
 
@@ -1566,16 +1552,8 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch { }
             finally
             {
-                var targetFramework = projectInfo.TargetFramework;
-                if (string.IsNullOrEmpty(targetFramework))
-                {
-                    if (ShellName == Constants.VS2012HostShell.ShellName
-                            || ShellName == Constants.VS2013HostShell.ShellName)
-                        targetFramework = VSWebProjectInfo.FrameworkVersionV45;
-                    else
-                        targetFramework = VSWebProjectInfo.FrameworkVersionV40;
-                }
-                seedProperties.Add(DeploymentWizardProperties.AppOptions.propkey_TargetFramework, targetFramework);
+                var targetRuntime = projectInfo.TargetRuntime;
+                seedProperties.Add(DeploymentWizardProperties.AppOptions.propkey_TargetRuntime, targetRuntime);
             }
 
             wizard.SetProperties(seedProperties);

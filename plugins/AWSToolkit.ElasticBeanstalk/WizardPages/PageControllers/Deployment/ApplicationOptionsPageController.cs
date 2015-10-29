@@ -60,14 +60,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                 _pageUI.PropertyChanged += OnPagePropertyChanged;
 
                 // these settings are based off the VS project settings, so we can get away with setting on construction
-                var targetFramework = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetFramework] as string;
+                var targetRuntime = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] as string;
                 var enable32BitApps = false;
                 if (HostingWizard.IsPropertySet(DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications))
                     enable32BitApps = (bool)HostingWizard[DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications];
 
                 _pageUI.Enable32BitAppPool = enable32BitApps;
 
-                _pageUI.SetDefaultAppPoolFramework(targetFramework);
+                _pageUI.SetDefaultAppPoolFramework(targetRuntime);
 
                 if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_RedeployingAppVersion))
                     RedeployingAppVersion = (bool)HostingWizard[DeploymentWizardProperties.SeedData.propkey_RedeployingAppVersion];
@@ -285,11 +285,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
         private void StorePageData()
         {
-            string targetFramework = _pageUI.TargetFramework;
-            if (!string.IsNullOrEmpty(targetFramework))
-                HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetFramework] = targetFramework;
+            string targetRuntime = _pageUI.TargetRuntime;
+            if (!string.IsNullOrEmpty(targetRuntime))
+                HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] = targetRuntime;
             else
-                HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetFramework] = null;
+                HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] = null;
 
             HostingWizard[DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications] = _pageUI.Enable32BitAppPool;
             if (string.IsNullOrEmpty(_pageUI.IISAppPath) || string.Equals(_pageUI.IISAppPath, "/"))

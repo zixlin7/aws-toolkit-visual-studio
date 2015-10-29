@@ -215,8 +215,8 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
         protected void CopyContainerProperties()
         {
             // don't overwrite engine defaults unless set
-            if (DeploymentProperties.ContainsKey(DeploymentWizardProperties.AppOptions.propkey_TargetFramework))
-                Deployment.TargetRuntime = DeploymentEngineBase.RuntimeFromFramework(getValue<string>(DeploymentWizardProperties.AppOptions.propkey_TargetFramework));
+            if (DeploymentProperties.ContainsKey(DeploymentWizardProperties.AppOptions.propkey_TargetRuntime))
+                Deployment.TargetRuntime = getValue<string>(DeploymentWizardProperties.AppOptions.propkey_TargetRuntime);
             if (DeploymentProperties.ContainsKey(DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications))
                 Deployment.Enable32BitApplications = getValue<bool>(DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications);
             if (DeploymentProperties.ContainsKey(DeploymentWizardProperties.AppOptions.propkey_HealthCheckUrl))

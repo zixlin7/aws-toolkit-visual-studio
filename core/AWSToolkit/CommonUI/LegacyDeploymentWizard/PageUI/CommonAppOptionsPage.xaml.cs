@@ -105,7 +105,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
 
         public IAWSWizardPageController PageController { get; set; }
 
-        public string TargetFramework
+        public string TargetRuntime
         {
             get
             {

@@ -43,11 +43,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
                     && (bool)pageController.HostingWizard[DeploymentWizardProperties.AppOptions.propkey_ShowV2RuntimeOnly])
             {
                 // can't modify collection whilst enumerating
-                var toRemove = _targetFramework.Items.Cast<ComboBoxItem>().Where(cbi => (cbi.Tag as string).StartsWith("4")).ToList();
+                var toRemove = _targetRuntime.Items.Cast<ComboBoxItem>().Where(cbi => (cbi.Tag as string).StartsWith("4")).ToList();
 
                 foreach (var cbi in toRemove)
                 {
-                    _targetFramework.Items.Remove(cbi);
+                    _targetRuntime.Items.Remove(cbi);
                 }
             }
         }
@@ -71,12 +71,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             }
         }
 
-        public string TargetFramework
+        public string TargetRuntime
         {
             get
             {
-                if (_targetFramework.SelectedItem != null)
-                    return (_targetFramework.SelectedItem as ComboBoxItem).Tag as string;
+                if (_targetRuntime.SelectedItem != null)
+                    return (_targetRuntime.SelectedItem as ComboBoxItem).Tag as string;
 
                 return string.Empty;
             }
@@ -181,25 +181,25 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         }
 
 
-        public void SetDefaultAppPoolFramework(string targetFramework)
+        public void SetDefaultAppPoolFramework(string targetRuntime)
         {
-            ComboBoxItem frameworkToSelect = null;
-            if (!string.IsNullOrEmpty(targetFramework))
+            ComboBoxItem runtimeToSelect = null;
+            if (!string.IsNullOrEmpty(targetRuntime))
             {
-                foreach (ComboBoxItem cbi in _targetFramework.Items)
+                foreach (ComboBoxItem cbi in _targetRuntime.Items)
                 {
-                    if ((cbi.Tag as string) == targetFramework)
+                    if ((cbi.Tag as string) == targetRuntime)
                     {
-                        frameworkToSelect = cbi;
+                        runtimeToSelect = cbi;
                         break;
                     }
                 }
             }
 
-            if (frameworkToSelect != null)
-                _targetFramework.SelectedItem = frameworkToSelect;
+            if (runtimeToSelect != null)
+                _targetRuntime.SelectedItem = runtimeToSelect;
             else
-                _targetFramework.SelectedIndex = _targetFramework.Items.Count - 1;
+                _targetRuntime.SelectedIndex = _targetRuntime.Items.Count - 1;
         }
 
         bool _versionFetchPending = false;

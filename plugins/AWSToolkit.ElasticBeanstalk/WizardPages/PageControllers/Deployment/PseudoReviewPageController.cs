@@ -276,12 +276,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
             if (HostingWizard.IsPropertySet(DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate))
                 template = HostingWizard[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate] as DeploymentTemplateWrapperBase;
             
-            var targetFramework = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetFramework] as string;
+            var targetRuntime = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] as string;
             var iisAppPath = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath] as string;
 
-            if (!string.IsNullOrEmpty(targetFramework))
+            if (!string.IsNullOrEmpty(targetRuntime))
             {
-                sb.AppendFormat("Use an IIS application pool supporting .NET Framework {0}", targetFramework);
+                sb.AppendFormat("Use an IIS application pool supporting .NET Runtime {0}", targetRuntime);
                 if (!redeployingAppVersion)
                 {
                     sb.AppendFormat(" with path '{0}'.", iisAppPath);
@@ -294,7 +294,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                     if (HostingWizard.IsPropertySet(DeploymentWizardProperties.AWSOptions.propkey_CustomAMIID))
                         customAmiId = HostingWizard[DeploymentWizardProperties.AWSOptions.propkey_CustomAMIID] as string;
 
-                    if (template != null && !template.SupportsFrameworkVersion(targetFramework) && string.IsNullOrEmpty(customAmiId))
+                    if (template != null && !template.SupportsFrameworkVersion(targetRuntime) && string.IsNullOrEmpty(customAmiId))
                     {
                         tb.Text = sb.ToString();
                         panel.Children.Add(tb);
@@ -303,7 +303,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                         tb.Foreground = Brushes.Red;
                         sb.Length = 0;
 
-                        sb.AppendLine("WARNING: the selected .Net Framework version is not supported in the default AMI associated with this container. An appropriately-configured custom AMI should be used but one has not been specified.");
+                        sb.AppendLine("WARNING: the selected .NET Runtime version is not supported in the default AMI associated with this container. An appropriately-configured custom AMI should be used but one has not been specified.");
                         tb.Text = sb.ToString();
                         panel.Children.Add(tb);
 

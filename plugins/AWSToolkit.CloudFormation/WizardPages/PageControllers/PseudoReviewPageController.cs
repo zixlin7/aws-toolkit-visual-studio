@@ -228,14 +228,14 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
             TextBlock tb = CreateTextBlock();
             var sb = new StringBuilder();
 
-            string targetFramework = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetFramework] as string;
-            if (!string.IsNullOrEmpty(targetFramework))
+            string targetRuntime = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] as string;
+            if (!string.IsNullOrEmpty(targetRuntime))
             {
-                sb.AppendLine(string.Format("Use an application pool supporting .NET Framework v{0}.", targetFramework));
+                sb.AppendLine(string.Format("Use an application pool supporting .NET Runtime v{0}.", targetRuntime));
                 if (!isRedeploying)
                 {
                     var template = HostingWizard[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate] as DeploymentTemplateWrapperBase;
-                    if (!template.SupportsFrameworkVersion(targetFramework))
+                    if (!template.SupportsFrameworkVersion(targetRuntime))
                     {
                         string customAMI = HostingWizard[DeploymentWizardProperties.AWSOptions.propkey_CustomAMIID] as string;
                         if (string.IsNullOrEmpty(customAMI))
@@ -247,7 +247,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
                             tb.Foreground = Brushes.Red;
 
                             sb.Length = 0;
-                            sb.AppendLine("WARNING: the selected .Net Framework version is not supported in the default AMI associated with this deployment template. An appropriately-configured custom AMI should be used but one has not been specified.");
+                            sb.AppendLine("WARNING: the selected .NET Framework version is not supported in the default AMI associated with this deployment template. An appropriately-configured custom AMI should be used but one has not been specified.");
                             tb.Text = sb.ToString();
                             panel.Children.Add(tb);
 

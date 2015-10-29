@@ -260,15 +260,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyD
             if (HostingWizard.IsPropertySet(DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate))
                 template = HostingWizard[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate] as DeploymentTemplateWrapperBase;
             
-            string targetFramework = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetFramework] as string;
-            if (!string.IsNullOrEmpty(targetFramework))
+            string targetRuntime = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] as string;
+            if (!string.IsNullOrEmpty(targetRuntime))
             {
-                sb.AppendLine(string.Format("Use an application pool supporting .NET Framework {0}.", targetFramework));
+                sb.AppendLine(string.Format("Use an application pool supporting .NET Runtime {0}.", targetRuntime));
                 if (!isRedeploying)
                 {
                     string customAMI = HostingWizard[DeploymentWizardProperties.AWSOptions.propkey_CustomAMIID] as string;
 
-                    if (template != null && !template.SupportsFrameworkVersion(targetFramework) && string.IsNullOrEmpty(customAMI))
+                    if (template != null && !template.SupportsFrameworkVersion(targetRuntime) && string.IsNullOrEmpty(customAMI))
                     {
                         tb.Text = sb.ToString();
                         panel.Children.Add(tb);
@@ -277,7 +277,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyD
                         tb.Foreground = Brushes.Red;
                         sb.Length = 0;
 
-                        sb.AppendLine("WARNING: the selected .Net Framework version is not supported in the default AMI associated with this container. An appropriately-configured custom AMI should be used but one has not been specified.");
+                        sb.AppendLine("WARNING: the selected .NET Runtime version is not supported in the default AMI associated with this container. An appropriately-configured custom AMI should be used but one has not been specified.");
                         tb.Text = sb.ToString();
                         panel.Children.Add(tb);
 

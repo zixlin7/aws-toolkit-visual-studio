@@ -94,7 +94,7 @@
                    Grid.Row="2"
                    Style="{DynamicResource awsWizardFieldLabelStyle}"
                    Margin="8,2,4,0"
-                   Content="App _pool:"
+                   Content="App _pool runtime:"
                    />
             <Grid Grid.Row="2" Grid.Column="1">
                 <Grid.ColumnDefinitions>
@@ -102,13 +102,10 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <ComboBox x:Name="_targetFramework"
+                <ComboBox x:Name="_targetRuntime"
                           Style="{DynamicResource awsComboBoxStyle}">
-                    <ComboBoxItem Tag="2.0" Content=".NET Framework 2.0" />
-                    <ComboBoxItem Tag="3.0" Content=".NET Framework 3.0" />
-                    <ComboBoxItem Tag="3.5" Content=".NET Framework 3.5" />
-                    <ComboBoxItem Tag="4.0" Content=".NET Framework 4.0" />
-                    <ComboBoxItem Tag="4.5" Content=".NET Framework 4.5" />
+                    <ComboBoxItem Tag="2.0" Content="2.0 .NET Runtime" />
+                    <ComboBoxItem Tag="4.0" Content="4.0 .NET Runtime" />
                 </ComboBox>
 
                 <Image x:Name="_targetFrameworkWarnIcon" 

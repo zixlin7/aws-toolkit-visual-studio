@@ -323,7 +323,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             string enable32Bit = getValue<string>(DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications);
             if (!string.IsNullOrEmpty(enable32Bit))
                 Deployment.Enable32BitApplications = Convert.ToBoolean(enable32Bit);
-            Deployment.TargetRuntime = DeploymentEngineBase.RuntimeFromFramework(getValue<string>(DeploymentWizardProperties.AppOptions.propkey_TargetFramework));
+            Deployment.TargetRuntime = getValue<string>(DeploymentWizardProperties.AppOptions.propkey_TargetRuntime);
 
             if (DeploymentProperties.ContainsKey(DeploymentWizardProperties.AppOptions.propkey_EnvAppSettings))
             {

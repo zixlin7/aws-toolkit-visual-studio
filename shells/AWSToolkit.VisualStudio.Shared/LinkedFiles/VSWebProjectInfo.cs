@@ -42,11 +42,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
         const string TargetFrameworkMonikerProperty = "TargetFrameworkMoniker"; // used in web site projects
         const string TargetFrameworkProperty = "TargetFramework"; // also used in both, returns framework code
 
-        public const string FrameworkVersionV20 = "2.0";
-        public const string FrameworkVersionV30 = "3.0";
-        public const string FrameworkVersionV35 = "3.5";
-        public const string FrameworkVersionV40 = "4.0";
-        public const string FrameworkVersionV45 = "4.5";
+        public const string RuntimeV2_0 = "2.0";
+        public const string RuntimeV4_0 = "4.0";
 
         /// <summary>
         /// 'well known' codes indicating target framework versions
@@ -67,8 +64,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
         static readonly Dictionary<string, VsWebProjectType> VsWebProjectKinds 
             = new Dictionary<string, VsWebProjectType>(StringComparer.InvariantCultureIgnoreCase);
 
-        static readonly Dictionary<TargetFrameworkCode, string> FrameworkCodeLookup = new Dictionary<TargetFrameworkCode, string>();
-
         public enum VsWebProjectType
         {
             NotWebProjectType,
@@ -80,12 +75,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
         {
             VsWebProjectKinds.Add(guidWebApplicationProject, VsWebProjectType.WebApplicationProject);
             VsWebProjectKinds.Add(guidWebSiteProject, VsWebProjectType.WebSiteProject);
-
-            FrameworkCodeLookup.Add(TargetFrameworkCode.Fx20, FrameworkVersionV20);
-            FrameworkCodeLookup.Add(TargetFrameworkCode.Fx30, FrameworkVersionV30);
-            FrameworkCodeLookup.Add(TargetFrameworkCode.Fx35, FrameworkVersionV35);
-            FrameworkCodeLookup.Add(TargetFrameworkCode.Fx40, FrameworkVersionV40);
-            FrameworkCodeLookup.Add(TargetFrameworkCode.Fx45, FrameworkVersionV45);
         }
 
         public VSWebProjectInfo(IVsHierarchy projHier, string projectIDGuid, string projectTypeGuid)
@@ -181,13 +170,11 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
         }
 
         /// <summary>
-        /// Returns the framework version selected for the project in its build properties; from
-        /// this the required runtime can be inferred (disregarding whether 4.5 is a framework or
-        /// a runtime!).
+        /// Returns the runtime version selected for the project in its build properties.
         /// For web application projects, this data is inside the project file. For web site projects, 
         /// it's held in the WebsiteProperties ProjectSection for the project in the solution file.
         /// </summary>
-        public string TargetFramework
+        public string TargetRuntime
         {
             get
             {
@@ -207,7 +194,10 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
                                     if (framework.StartsWith("v", StringComparison.InvariantCultureIgnoreCase))
                                         framework = framework.Substring(1);
 
-                                    return framework;
+                                    if (framework.StartsWith("2", StringComparison.Ordinal) || framework.StartsWith("3", StringComparison.Ordinal))
+                                        return RuntimeV2_0;
+
+                                    return RuntimeV4_0;
                                 }
 
                                 return string.Empty;
@@ -221,7 +211,18 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
                                     var vrnCode = prop.Value.ToString();
                                     var vrnCodeVal = Int32.Parse(vrnCode); // 'Value as string' does not work
                                     if (Enum.IsDefined(typeof(TargetFrameworkCode), vrnCodeVal))
-                                        return FrameworkCodeLookup[(TargetFrameworkCode)(Enum.Parse(typeof(TargetFrameworkCode), vrnCode))];
+                                    {
+                                        var fx = (TargetFrameworkCode)(Enum.Parse(typeof(TargetFrameworkCode), vrnCode));
+                                        switch (fx)
+                                        {
+                                            case TargetFrameworkCode.Fx35:
+                                            case TargetFrameworkCode.Fx30:
+                                            case TargetFrameworkCode.Fx20:
+                                                return RuntimeV2_0;
+                                            default:
+                                                return RuntimeV4_0;
+                                        }
+                                    }
                                 }
                                 catch (NullReferenceException) { }
 
