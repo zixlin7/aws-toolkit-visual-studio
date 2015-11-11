@@ -677,7 +677,8 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
 
         IAmazonElasticBeanstalk GetBeanstalkClient(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
         {
-            var config = new AmazonElasticBeanstalkConfig {ServiceURL = region.GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME).Url};
+            var endpoint = region.GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME);
+            var config = new AmazonElasticBeanstalkConfig {ServiceURL = endpoint.Url, AuthenticationRegion = endpoint.AuthRegion};
             return new AmazonElasticBeanstalkClient(account.AccessKey, account.SecretKey, config);
         }
 

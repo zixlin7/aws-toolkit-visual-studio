@@ -424,9 +424,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             // information we have at hand
             try
             {
+                var endpoint = region.GetEndpoint("ElasticBeanstalk");
                 var config = new AmazonElasticBeanstalkConfig()
                 {
-                    ServiceURL = region.GetEndpoint("ElasticBeanstalk").Url
+                    ServiceURL = endpoint.Url,
+                    AuthenticationRegion = endpoint.AuthRegion
                 };
 
                 var client = new AmazonElasticBeanstalkClient(account.AccessKey, account.SecretKey, config);

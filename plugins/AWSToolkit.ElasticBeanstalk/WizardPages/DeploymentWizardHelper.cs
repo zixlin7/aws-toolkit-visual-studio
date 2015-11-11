@@ -37,9 +37,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages
 
         public static IAmazonElasticBeanstalk GetBeanstalkClient(AccountViewModel accountViewModel, RegionEndPointsManager.RegionEndPoints region)
         {
+            var endpoint = region.GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME);
             var beanstalkConfig = new AmazonElasticBeanstalkConfig
             {
-                ServiceURL = region.GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME).Url
+                ServiceURL = endpoint.Url,
+                AuthenticationRegion = endpoint.AuthRegion
             };
             return new AmazonElasticBeanstalkClient(accountViewModel.AccessKey, accountViewModel.SecretKey, beanstalkConfig);
         }

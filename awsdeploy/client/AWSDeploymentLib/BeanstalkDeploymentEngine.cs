@@ -202,7 +202,8 @@ namespace AWSDeployment
             {
                 if (this._beanstalkClient == null)
                 {
-                    var beanstalkConfig = new AmazonElasticBeanstalkConfig {ServiceURL = RegionEndPoints.GetEndpoint("ElasticBeanstalk").Url};
+                    var endpoint = RegionEndPoints.GetEndpoint("ElasticBeanstalk");
+                    var beanstalkConfig = new AmazonElasticBeanstalkConfig {ServiceURL = endpoint.Url, AuthenticationRegion = endpoint.AuthRegion};
                     this._beanstalkClient = new AmazonElasticBeanstalkClient(AWSAccessKey, AWSSecretKey, beanstalkConfig);
                 }
 

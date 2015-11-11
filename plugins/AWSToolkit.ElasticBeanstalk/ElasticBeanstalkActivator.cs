@@ -161,10 +161,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
                                                             BeanstalkConstants.DeploymentTargetQueryParam_ApplicationName,
                                                             BeanstalkConstants.DeploymentTargetQueryParam_EnvironmentName));
 
+            var endpoint = RegionEndPointsManager.Instance.GetRegion(region)
+                            .GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME);
             var config = new AmazonElasticBeanstalkConfig();
-            config.ServiceURL
-                = RegionEndPointsManager.Instance.GetRegion(region)
-                            .GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME).Url;
+            config.ServiceURL = endpoint.Url;
+            config.AuthenticationRegion = endpoint.AuthRegion;
+
             var client = new AmazonElasticBeanstalkClient(account.AccessKey, account.SecretKey, config);
             bool isValid = false;
             try
@@ -206,7 +208,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
             try
             {
 
-                var config = new AmazonElasticBeanstalkConfig {ServiceURL = endpoint.Url};
+                var config = new AmazonElasticBeanstalkConfig {ServiceURL = endpoint.Url, AuthenticationRegion = endpoint.AuthRegion};
                 var client = new AmazonElasticBeanstalkClient(account.AccessKey, account.SecretKey, config);
 
                 var response = client.DescribeApplications(new DescribeApplicationsRequest());
