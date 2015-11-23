@@ -152,6 +152,14 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
 
                 if (proposedIdentifier.IndexOf("--") != -1)
                     return "Must not contain two consecutive hyphens";
+
+                // now do a general check that it contains only letters, 
+                // digits or hyphens (this applies to all db engines)
+                foreach (var c in _txtInstanceIdentifier.Text)
+                {
+                    if (!char.IsLetterOrDigit(c) && c != '-')
+                        return "Must contain only letters, digits or hyphens";
+                }
             }
 
             return string.Empty;
