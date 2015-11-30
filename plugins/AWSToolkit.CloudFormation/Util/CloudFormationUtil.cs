@@ -194,10 +194,9 @@ namespace Amazon.AWSToolkit.CloudFormation.Util
             });
 
             string url = null;
-            
-            url = String.Format("https://{0}.s3{1}.amazonaws.com/{2}", bucketName, 
-                region.SystemName.Equals(RegionEndpoint.USEast1.SystemName) ? "" : String.Format("-{0}", region.SystemName),
-                s3Key);
+
+            var s3Host = region.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME);            
+            url = String.Format("{0}{1}/{2}", s3Host.Url, bucketName, s3Key);
             
             return url;
         }
