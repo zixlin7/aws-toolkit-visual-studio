@@ -9,6 +9,7 @@ using System.Windows.Threading;
 using Amazon.Runtime.Internal.Settings;
 using Amazon.AWSToolkit.Navigator.Node;
 using log4net;
+using Amazon.Util;
 
 namespace Amazon.AWSToolkit.Account
 {
