@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Adornments;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -28,6 +29,16 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
         {
             string filePath;
             IErrorListReporter errorListProvider = CreateErrorListReporter(textView, out filePath);
+
+            // Attempt to change the encoding to remove the BOM. If the BOM exist the file can't 
+            // not be used directly in the CloudFormation web console.
+            try
+            {
+                ITextDocument property;
+                textView.TextDataModel.DocumentBuffer.Properties.TryGetProperty<ITextDocument>((object)typeof(ITextDocument), out property);
+                property.Encoding = new UTF8Encoding(false);
+            }
+            catch { }
 
             textView.TextBuffer.Properties[typeof(IErrorListReporter)] = errorListProvider;
             textView.TextBuffer.Properties[EditorContants.FILE_PATH_PROPERTY_NAME] = filePath;

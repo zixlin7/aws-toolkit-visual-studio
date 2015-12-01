@@ -60,7 +60,7 @@ namespace Amazon.AWSToolkit.VisualStudio.CloudFormationEditor
             // this invocation.
             Guid clsidTextBuffer = typeof(VsTextBufferClass).GUID;
             Guid iidTextBuffer = VSConstants.IID_IUnknown;
-            object pTextBuffer = pTextBuffer = parentPackage.CreateInstance(
+            object pTextBuffer = parentPackage.CreateInstance(
                   ref clsidTextBuffer,
                   ref iidTextBuffer,
                   typeof(object));
