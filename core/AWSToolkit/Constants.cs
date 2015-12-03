@@ -28,8 +28,32 @@ namespace Amazon.AWSToolkit
 
         public const string BEANSTALK_RDS_SECURITY_GROUP_POSTFIX = "-rds-associations";
 
-        public const string IAM_ROLE_EC2_ASSUME_ROLE_POLICY_DOCUMENT = 
-            "{\"Statement\":[{\"Principal\":{\"Service\":[\"ec2.amazonaws.com\"]},\"Effect\":\"Allow\",\"Action\":[\"sts:AssumeRole\"]}]}";
+
+        public static string GetIAMRoleEC2AssumeRolePolicyDocument(RegionEndPointsManager.RegionEndPoints region)
+        {
+            const string IAM_ROLE_EC2_ASSUME_ROLE_POLICY_DOCUMENT = 
+                "{{\"Statement\":[{{\"Principal\":{{\"Service\":[\"{0}\"]}},\"Effect\":\"Allow\",\"Action\":[\"sts:AssumeRole\"]}}]}}";
+
+            var principal = DetermineEC2PrincipleForAssumeRole(region);
+
+            var policy = string.Format(IAM_ROLE_EC2_ASSUME_ROLE_POLICY_DOCUMENT, principal);
+            return policy;
+        }
+
+        private static string DetermineEC2PrincipleForAssumeRole(RegionEndPointsManager.RegionEndPoints region)
+        {
+            var iamEndpoint = region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
+
+            var pos = iamEndpoint.Url.IndexOf("amazonaws");
+            if (pos == -1)
+                return "ec2.amazonaws.com";
+
+            var host = iamEndpoint.Url.Substring(pos);
+            if (host.EndsWith("/"))
+                host = host.Substring(0, host.Length - 1);
+
+            return string.Format("ec2.{0}", host);
+        }
 
         static string _versionNumber;
         public static string VERSION_NUMBER

@@ -248,7 +248,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 var role = this.Deployment.IAMClient.CreateRole(new CreateRoleRequest
                     {
                         RoleName = newRoleName,
-                        AssumeRolePolicyDocument = Amazon.AWSToolkit.Constants.IAM_ROLE_EC2_ASSUME_ROLE_POLICY_DOCUMENT
+                        AssumeRolePolicyDocument = Amazon.AWSToolkit.Constants.GetIAMRoleEC2AssumeRolePolicyDocument(this.Deployment.RegionEndPoints)
                     }).Role;
                 this.Observer.Status("Created IAM Role {0}", newRoleName);
 

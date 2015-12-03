@@ -48,7 +48,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
             var roleRequest = new CreateRoleRequest()
             {
                 RoleName = this.Model.RoleName.Trim(),
-                AssumeRolePolicyDocument = Amazon.AWSToolkit.Constants.IAM_ROLE_EC2_ASSUME_ROLE_POLICY_DOCUMENT
+                AssumeRolePolicyDocument = Amazon.AWSToolkit.Constants.GetIAMRoleEC2AssumeRolePolicyDocument(this._rootModel.IAMRootViewModel.CurrentRegion)
             };
             var createResponse = this._rootModel.IAMClient.CreateRole(roleRequest);
 

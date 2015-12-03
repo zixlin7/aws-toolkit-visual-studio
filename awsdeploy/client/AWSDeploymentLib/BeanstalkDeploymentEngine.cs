@@ -1502,7 +1502,7 @@ namespace AWSDeployment
                 {
                     if (isDefaultRole)
                     {
-                        string ASSUME_ROLE_POLICY = "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":[\"ec2.amazonaws.com\"]},\"Action\":[\"sts:AssumeRole\"]}]}";
+                        string ASSUME_ROLE_POLICY = Amazon.AWSToolkit.Constants.GetIAMRoleEC2AssumeRolePolicyDocument(this.RegionEndPoints);
                         var request = new CreateRoleRequest()
                         {
                             RoleName = roleName,

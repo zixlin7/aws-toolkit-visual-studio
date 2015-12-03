@@ -28,6 +28,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         // property names used with NotifyPropertyChanged
         public static readonly string uiProperty_Region = "Region";
         public static readonly string uiProperty_Account = "Account";
+        public static readonly string uiProperty_Accounts = "Accounts";
         public static readonly string uiProperty_DeploymentMode = "DeploymentMode"; // deploy new vs redeploy
         public static readonly string uiProperty_ExistingDeployments = "ExistingDeployments";
         public static readonly string uiProperty_SelectedDeployment = "SelectedDeployment";
@@ -50,9 +51,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         public void Initialize(AccountViewModel account)
         {
-            if (account != null)
-                this._accountSelector.SelectedItem = account;
-
             var regions = RegionEndPointsManager.Instance.Regions
                             .Where(rep => rep.GetEndpoint(DeploymentServiceIdentifiers.BeanstalkServiceName) != null)
                             .ToList();
@@ -63,6 +61,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
                 var region = RegionEndPointsManager.Instance.GetDefaultRegionEndPoints();
                 this._regionSelector.SelectedItem = region;
             }
+
+            if (account != null)
+                this._accountSelector.SelectedItem = account;
         }
 
         AWSViewModel _rootViewModel;
@@ -79,7 +80,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             }
         }
 
-        ObservableCollection<AccountViewModel> _accounts;
+        ObservableCollection<AccountViewModel> _accounts = new ObservableCollection<AccountViewModel>();
         public ObservableCollection<AccountViewModel> Accounts
         {
             get
@@ -87,19 +88,34 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
                 if (RootViewModel == null)
                     return null;
 
-                if (this._accounts == null)
-                {
-                    this._accounts = new ObservableCollection<AccountViewModel>();
-
-                    foreach (var account in this.RootViewModel.RegisteredAccounts)
-                    {
-                        if (!account.HasRestrictions)
-                            this._accounts.Add(account);
-                    }
-                }
-
                 return this._accounts;
             }
+        }
+
+        private void RefreshAccountOptions()
+        {
+            if (this._accounts == null)
+                this._accounts = new ObservableCollection<AccountViewModel>();
+
+            this._accounts.Clear();
+            foreach (var account in this.RootViewModel.RegisteredAccounts)
+            {
+                if (!account.HasRestrictions && (SelectedRegion == null || !SelectedRegion.HasRestrictions))
+                    this._accounts.Add(account);
+                else if (SelectedRegion != null && SelectedRegion.ContainAnyRestrictions(account.Restrictions))
+                    this._accounts.Add(account);
+            }
+
+            if(this.SelectedAccount != null && !this._accounts.Contains(this.SelectedAccount))
+            {
+                if (this.Accounts.Count == 0)
+                    this.SelectedAccount = null;
+                else
+                    this.SelectedAccount = this.Accounts[0];
+            }
+
+            NotifyPropertyChanged(uiProperty_Accounts);
+            this._accountSelector.IsEnabled = this.Accounts.Count != 0;
         }
 
         public AccountViewModel SelectedAccount
@@ -232,6 +248,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         void RegionSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            RefreshAccountOptions();
             NotifyPropertyChanged(uiProperty_Region);
         }
 
