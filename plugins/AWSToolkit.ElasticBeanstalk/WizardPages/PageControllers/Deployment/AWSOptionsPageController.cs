@@ -11,11 +11,8 @@ using Amazon.AWSToolkit.EC2;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
 using Amazon.AWSToolkit.SimpleWorkers;
-using Amazon.EC2.Model;
 using Amazon.ElasticBeanstalk.Model;
 using Amazon.IdentityManagement;
-using Amazon.RDS;
-using Amazon.RDS.Model;
 using log4net;
 using AWSOptionsPage = Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment.AWSOptionsPage;
 

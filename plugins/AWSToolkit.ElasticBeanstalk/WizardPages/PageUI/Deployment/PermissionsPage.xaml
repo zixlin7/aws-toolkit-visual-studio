@@ -1,0 +1,87 @@
+﻿<commonui:BaseAWSUserControl 
+    x:Class="Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment.PermissionsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:toolkitcomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
+    mc:Ignorable="d" 
+    d:DesignHeight="350" d:DesignWidth="500">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height=".5*" />
+            <RowDefinition Height=".5*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,4,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}" Grid.Row="0">
+                Deployed Application Permissions
+            </Label>
+
+            <Grid Grid.Row="1" Margin="8,4,4,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Label Target="{Binding ElementName=_iamPicker}"
+                       Style="{DynamicResource awsWizardFieldLabelStyle}">
+                    _Role:
+                </Label>
+                <toolkitcomponents:IAMCapabilityPicker Name="_iamPicker" Grid.Column="1"/>
+            </Grid>
+
+            <TextBlock Grid.Row="2"   
+                           FontStyle="Italic"
+                           TextWrapping="Wrap"
+                           Margin="12,4,4,0" 
+                           Style="{DynamicResource awsFieldHintTextStyle}">
+                The permissions for the Identity and Access Management role can be updated after the environment is created.
+            </TextBlock>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}" Grid.Row="0">
+                Service Permissions
+            </Label>
+
+            <TextBlock Style="{DynamicResource awsFieldHintTextStyle}" 
+                       Grid.Row="1"
+                       TextWrapping="Wrap"
+                       Margin="12,8,12,0">
+                A service role allows the Elastic Beanstalk service to monitor
+                environment resources on your behalf. See [Roles and Instance Profiles] in the
+                Elastic Beanstalk developer guide for details.
+            </TextBlock>
+
+            <ComboBox Grid.Row="2" 
+                      Style="{DynamicResource awsComboBoxStyle}"
+                      Margin="12,8,12,0"
+                      ItemsSource="{Binding ServicePermissionRoles}"
+                      SelectedItem="{Binding SelectedServicePermissionRole}"
+                      />
+
+        </Grid>
+    </Grid>
+</commonui:BaseAWSUserControl>

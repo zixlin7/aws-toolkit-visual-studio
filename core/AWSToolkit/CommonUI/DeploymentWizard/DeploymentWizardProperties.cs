@@ -8,6 +8,7 @@
     {
         public static string AppTargetGroup = "Application";
         public static string AWSOptionsGroup = "AWS Options";
+        public static string PermissionsGroup = "Permissions";
         public static string AppOptionsGroup = "Options";
         public static string ReviewGroup = "Review";
 
@@ -15,6 +16,7 @@
         {
             AppTargetGroup,
             AWSOptionsGroup,
+            PermissionsGroup,
             AppOptionsGroup,
             ReviewGroup
         };

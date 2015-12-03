@@ -129,6 +129,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
                 new WizardPages.PageControllers.Deployment.AWSOptionsPageController(),
                 new WizardPages.PageControllers.Deployment.VpcOptionsPageController(),
                 new WizardPages.PageControllers.Deployment.ConfigureRollingDeploymentsController(),
+                new WizardPages.PageControllers.Deployment.PermissionsPageController(),
                 new WizardPages.PageControllers.Deployment.ApplicationOptionsPageController(),
                 new WizardPages.PageControllers.Deployment.PseudoReviewPageController()
             };
