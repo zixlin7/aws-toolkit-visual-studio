@@ -136,6 +136,15 @@ namespace AWSDeployment
         /// </summary>
         public string RoleName { get; set; }
 
+        /// <summary>
+        /// IAM role that Elastic Beanstalk assumes when calling other services on your behalf.
+        /// Elastic Beanstalk uses the service role that you specify when creating an Elastic 
+        /// Beanstalk environment when it calls Amazon Elastic Compute Cloud (Amazon EC2), Elastic 
+        /// Load Balancing, and Auto Scaling APIs to gather information about the health of its AWS 
+        /// resources.
+        /// </summary>
+        public string ServiceRoleName { get; set; }
+
         public bool LaunchIntoVPC { get; set; }
         public string VPCId { get; set; }
         public string VPCSecurityGroupId { get; set; }
@@ -1296,7 +1305,20 @@ namespace AWSDeployment
                     	});
                 	}
 				}
+
+                if (!string.IsNullOrEmpty(ServiceRoleName) && configOptionSettings.FirstOrDefault(
+                    x => (x.Namespace == "aws:elasticbeanstalk:environment" && x.OptionName == "ServiceRole")) == null)
+                {
+                    ConfigureServiceRole(ServiceRoleName);
+                    configOptionSettings.Add(new ConfigurationOptionSetting()
+                    {
+                        Namespace = "aws:elasticbeanstalk:environment",
+                        OptionName = "ServiceRole",
+                        Value = ServiceRoleName
+                    });
+                }
             }
+
             if (!isSingleInstanceEnvLaunch && !string.IsNullOrEmpty(ApplicationHealthcheckPath) && configOptionSettings.FirstOrDefault(
                 x => (x.Namespace == "aws:elasticbeanstalk:application" && x.OptionName == "Application Healthcheck URL")) == null)
             {
@@ -1502,7 +1524,9 @@ namespace AWSDeployment
                 {
                     if (isDefaultRole)
                     {
-                        string ASSUME_ROLE_POLICY = Amazon.AWSToolkit.Constants.GetIAMRoleEC2AssumeRolePolicyDocument(this.RegionEndPoints);
+                        var ASSUME_ROLE_POLICY 
+                            = Amazon.AWSToolkit.Constants.GetIAMRoleAssumeRolePolicyDocument(RegionEndPointsManager.EC2_SERVICE_NAME,
+                                                                                             this.RegionEndPoints);
                         var request = new CreateRoleRequest()
                         {
                             RoleName = roleName,
@@ -1571,6 +1595,47 @@ namespace AWSDeployment
             }
 
             return instanceProfileName;
+        }
+
+        void ConfigureServiceRole(string serviceRoleName)
+        {
+            try
+            {
+                // ensure the default or user-defined role exists
+                bool isDefaultRole = serviceRoleName == BeanstalkParameters.DefaultServiceRoleName;
+                Role role = getRole(serviceRoleName);
+                if (role == null)
+                {
+                    if (isDefaultRole)
+                    {
+                        var ASSUME_ROLE_POLICY 
+                            = Amazon.AWSToolkit.Constants.GetIAMRoleAssumeRolePolicyDocument(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME,
+                                                                                             this.RegionEndPoints);
+                        var request = new CreateRoleRequest()
+                        {
+                            RoleName = serviceRoleName,
+                            Path = "/",
+                            AssumeRolePolicyDocument = ASSUME_ROLE_POLICY
+                        };
+                        role = IAMClient.CreateRole(request).Role;
+
+                        IAMClient.PutRolePolicy(new PutRolePolicyRequest
+                        {
+                            PolicyDocument = RolePolicies.DefaultBeanstalkServiceRolePolicy,
+                            PolicyName = serviceRoleName + "_VSToolkit-autocreated",
+                            RoleName = serviceRoleName
+                        });
+                    }
+                    else
+                    {
+                        Observer.Warn("Unable to find role with name '{0}'; environment settings for service role will be skipped.", serviceRoleName);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Observer.Error("Caught Exception whilst setting up service role: {0}", e.Message);
+            }
         }
 
         Role getRole(string roleName)

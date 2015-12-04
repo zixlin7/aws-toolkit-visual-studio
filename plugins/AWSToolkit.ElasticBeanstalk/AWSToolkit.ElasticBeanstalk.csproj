@@ -305,6 +305,7 @@
     <Compile Include="WizardPages\PageWorkers\QueryExistingVPCsWorker.cs" />
     <Compile Include="WizardPages\PageWorkers\QueryInstanceProfilesWorker.cs" />
     <Compile Include="WizardPages\PageWorkers\QueryRDSGroupsAndInstancesWorker.cs" />
+    <Compile Include="WizardPages\PageWorkers\QueryServiceRolesWorker.cs" />
     <Compile Include="WizardPages\PageWorkers\QueryVPCPropertiesWorker.cs" />
     <Compile Include="WizardPages\PageWorkers\SolutionStackInstanceSizesWorker.cs" />
     <Compile Include="WizardPages\Validators\ApplicationNameValidator.cs" />

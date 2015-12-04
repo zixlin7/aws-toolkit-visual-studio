@@ -76,31 +76,7 @@ namespace Amazon.AWSToolkit.Lambda.View
             this._ctlAccountAndRegion.Initialize(navigator.SelectedAccount, navigator.SelectedRegionEndPoints, new string[] { LambdaRootViewMetaNode.LAMBDA_ENDPOINT_LOOKUP });
             this._ctlAccountAndRegion.PropertyChanged += _ctlAccountAndRegion_PropertyChanged;
 
-            this.IAMPicker.RoleFilter = x =>
-            {
-                if (string.IsNullOrEmpty(x.AssumeRolePolicyDocument))
-                    return false;
-
-                try
-                {
-                    var policy = Policy.FromJson(HttpUtility.UrlDecode(x.AssumeRolePolicyDocument));
-                    foreach(var statement in policy.Statements)
-                    {
-                        if(statement.Actions.Contains(new ActionIdentifier("sts:AssumeRole")) &&
-                            statement.Principals.Contains(new Principal("Service", "lambda.amazonaws.com")))
-                        {
-                            return true;
-                        }
-                    }
-                    return x.AssumeRolePolicyDocument.Contains("lambda.amazonaws.com");
-                }
-                catch(Exception e)
-                {
-                    LOGGER.ErrorFormat("Error parsing assume role document: {0} Error: {1}", x.AssumeRolePolicyDocument, e.Message);
-                    return false;
-                }
-            };
-
+            this.IAMPicker.RoleFilter = RolePolicyFilter.AssumeRoleServicePrincipalSelector;
 
             this.UpdateIAMPicker();
 
@@ -268,8 +244,7 @@ namespace Amazon.AWSToolkit.Lambda.View
             if (this._ctlAccountAndRegion.SelectedAccount == null || this._ctlAccountAndRegion.SelectedRegion == null)
                 return;
 
-            var iamClient = this._ctlAccountAndRegion.SelectedAccount.CreateServiceClient<AmazonIdentityManagementServiceClient>(this._ctlAccountAndRegion.SelectedRegion);
-            this._ctlIAMPicker.Initialize(iamClient, IAMCapabilityPicker.IAMMode.Roles);
+            this._ctlIAMPicker.Initialize(this._ctlAccountAndRegion.SelectedAccount, this._ctlAccountAndRegion.SelectedRegion, IAMCapabilityPicker.IAMMode.Roles);
         }
 
         private void UpdateExistingFunctions()

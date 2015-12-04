@@ -15,6 +15,7 @@ using Amazon.IdentityManagement;
 using AWSDeployment;
 using log4net;
 using System.Windows.Data;
+using Amazon.AWSToolkit.Account;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 {
@@ -52,11 +53,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         public IAWSWizardPageController PageController { get; set; }
 
-        public void InitializeIAM(IAmazonIdentityManagementService iamClient)
-        {
-            this._iamPicker.Initialize(iamClient, IAMCapabilityPicker.IAMMode.InstanceProfiles, BeanstalkParameters.DefaultRoleName);
-        }
-
         public string SolutionStack
         {
             get
@@ -87,22 +83,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         }
 
         public ObservableCollection<InstanceType> InstanceTypes { get; private set; }
-
-        public string SelectedInstanceProfile
-        {
-            get 
-            {
-                if (this._iamPicker.SelectedRole == null)
-                    return null;
-
-                return this._iamPicker.SelectedRole.Name; 
-            }
-        }
-
-        public IAMCapabilityPicker.PolicyTemplate[] SelectedPolicyTemplates
-        {
-            get { return this._iamPicker.SelectedPolicyTemplates; }
-        }
 
         public bool SingleInstanceEnvironment { get; set; }
 

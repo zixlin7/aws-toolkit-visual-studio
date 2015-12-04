@@ -23,7 +23,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(AWSOptionsPageController));
 
         private AWSOptionsPage _pageUI;
-        private IAmazonIdentityManagementService _iamClient;
         private string _lastSeenAccount = string.Empty;
         private string _lastSeenRegion = string.Empty;
         private List<string> _windowsSolutionStacks;
@@ -69,11 +68,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
             get { return "Set Amazon EC2 and other AWS-related options for the deployed application."; }
         }
 
-        public IAmazonIdentityManagementService IAMClient
-        {
-            get { return this._iamClient;}
-        }        
-        
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {            
             if (HostingWizard.IsPropertySet(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy))
@@ -121,9 +115,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                     LoadSolutionStacks(selectedAccount, selectedRegion);
                     LoadExistingKeyPairs(selectedAccount, selectedRegion);
                     LoadRDSGroupAndInstanceData(selectedAccount, selectedRegion);
-
-                    this._iamClient = DeploymentWizardHelper.GetIAMClient(selectedAccount, selectedRegion);
-                    this._pageUI.InitializeIAM(this._iamClient);
                 }
                 else
                 {
@@ -226,9 +217,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                 // user had gone to the vpc page
                 if (!_pageUI.UseNonDefaultVpc)
                     QueryAndSetDefaultVpcProperties();
-
-                HostingWizard[BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_InstanceProfileName] = _pageUI.SelectedInstanceProfile;
-                HostingWizard[BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_PolicyTemplates] = _pageUI.SelectedPolicyTemplates;
 
                 var dbSecurityGroups = _pageUI.SelectedSecurityGroups;
                 if (dbSecurityGroups.Count > 0)

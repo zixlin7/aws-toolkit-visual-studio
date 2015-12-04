@@ -1,26 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml.Linq;
 
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 
 using log4net;
-
+using Amazon.AWSToolkit.Account;
 
 namespace Amazon.AWSToolkit.CommonUI.Components
 {
@@ -37,6 +28,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
         public enum IAMMode { InstanceProfiles, Roles };
 
         IAmazonIdentityManagementService _iamClient;
+        RegionEndPointsManager.RegionEndPoints _region;
         TextBlock _ctlComboSelectedDisplay;
         HashSet<PolicyTemplate> _selectedPolicyTemplates = new HashSet<PolicyTemplate>();
         string[] _serviceSpecificProfiles;
@@ -58,16 +50,18 @@ namespace Amazon.AWSToolkit.CommonUI.Components
             }
         }
 
-        public Func<Role, bool> RoleFilter
+        public Func<Role, string, bool> RoleFilter
         {
             get;
             set;
         }
 
-        public void Initialize(IAmazonIdentityManagementService iamClient, IAMMode iamMode, params string[] serviceSpecificProfiles)
+        public void Initialize(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region, IAMMode iamMode, params string[] serviceSpecificProfiles)
         {
             this._iamMode = iamMode;
-            this._iamClient = iamClient;
+            this._region = region;
+            this._iamClient = account.CreateServiceClient<AmazonIdentityManagementServiceClient>(region);
+
             this._serviceSpecificProfiles = serviceSpecificProfiles;
 
 
@@ -126,9 +120,10 @@ namespace Amazon.AWSToolkit.CommonUI.Components
             {
                 IList<IAMEntity> entities = new List<IAMEntity>();
                 var listResponse = this._iamClient.EndListRoles(result);
-                foreach(var role in listResponse.Roles)
+                var lambdaPrincipal = _region.GetPrincipalForAssumeRole(RegionEndPointsManager.LAMBDA_SERVICE_NAME);
+                foreach (var role in listResponse.Roles)
                 {
-                    if (this.RoleFilter == null || this.RoleFilter(role))
+                    if (this.RoleFilter == null || this.RoleFilter(role, lambdaPrincipal))
                         entities.Add(new IAMEntity(role.RoleName, role.Arn));
                 }
 

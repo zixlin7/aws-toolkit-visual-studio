@@ -23,7 +23,7 @@
             <RowDefinition Height=".5*" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Margin="0,4,0,0">
+        <Grid Grid.Row="0" Margin="0,12,12,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -34,7 +34,7 @@
                 Deployed Application Permissions
             </Label>
 
-            <Grid Grid.Row="1" Margin="8,4,4,0">
+            <Grid Grid.Row="1" Margin="8,4,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
@@ -49,13 +49,13 @@
             <TextBlock Grid.Row="2"   
                            FontStyle="Italic"
                            TextWrapping="Wrap"
-                           Margin="12,4,4,0" 
+                           Margin="12,8,0,0" 
                            Style="{DynamicResource awsFieldHintTextStyle}">
                 The permissions for the Identity and Access Management role can be updated after the environment is created.
             </TextBlock>
         </Grid>
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Margin="0,0,12,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -69,18 +69,18 @@
             <TextBlock Style="{DynamicResource awsFieldHintTextStyle}" 
                        Grid.Row="1"
                        TextWrapping="Wrap"
-                       Margin="12,8,12,0">
+                       Margin="12,4,0,0">
                 A service role allows the Elastic Beanstalk service to monitor
                 environment resources on your behalf. See [Roles and Instance Profiles] in the
                 Elastic Beanstalk developer guide for details.
             </TextBlock>
 
-            <ComboBox Grid.Row="2" 
+            <ComboBox x:Name="_ctlServicePermissions" 
+                      Grid.Row="2" 
                       Style="{DynamicResource awsComboBoxStyle}"
-                      Margin="12,8,12,0"
                       ItemsSource="{Binding ServicePermissionRoles}"
                       SelectedItem="{Binding SelectedServicePermissionRole}"
-                      />
+                      Margin="12,8,0,0"/>
 
         </Grid>
     </Grid>

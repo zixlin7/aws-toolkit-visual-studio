@@ -97,6 +97,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             if (this._accounts == null)
                 this._accounts = new ObservableCollection<AccountViewModel>();
 
+            // cache current selection so that if it's still valid for the new region
+            // we can re-select it
+            var priorSelectedAccount = SelectedAccount;
+
             this._accounts.Clear();
             foreach (var account in this.RootViewModel.RegisteredAccounts)
             {
@@ -106,16 +110,23 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
                     this._accounts.Add(account);
             }
 
-            if(this.SelectedAccount != null && !this._accounts.Contains(this.SelectedAccount))
+            if (priorSelectedAccount != null)
             {
-                if (this.Accounts.Count == 0)
-                    this.SelectedAccount = null;
-                else
-                    this.SelectedAccount = this.Accounts[0];
+                foreach (var a in Accounts)
+                {
+                    if (a.AccountDisplayName.Equals(priorSelectedAccount.AccountViewModel.AccountDisplayName, StringComparison.Ordinal))
+                    {
+                        this.SelectedAccount = a;
+                        break;
+                    }    
+                }
             }
 
+            if(this.SelectedAccount == null && Accounts.Any())
+                this.SelectedAccount = Accounts[0];
+
+            this._accountSelector.IsEnabled = Accounts.Any();
             NotifyPropertyChanged(uiProperty_Accounts);
-            this._accountSelector.IsEnabled = this.Accounts.Count != 0;
         }
 
         public AccountViewModel SelectedAccount

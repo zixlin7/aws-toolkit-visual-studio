@@ -69,6 +69,8 @@
         public const string ContainerSection_NotificationEmail = "NotificationEmail";
 
         public const string DefaultRoleName = "aws-elasticbeanstalk-ec2-role";
+        public const string DefaultServiceRoleName = "aws-elasticbeanstalk-service-role";
+
         public const string LogPublishingPolicyName = "Beanstalk-DefaultLogPublishingPolicy";
 
     }
@@ -85,5 +87,36 @@
         public const string SettingsSection_SNSTopic = "SNSTopic";
         public const string SettingsSection_CreationTimeout = "CreationTimeout";
         public const string SettingsSection_RollbackOnFailure = "RollbackOnFailure";
+    }
+
+    public abstract class RolePolicies
+    {
+        public const string DefaultBeanstalkServiceRolePolicy = 
+"{"
+  + "\"Version\": \"2012-10-17\","
+  + "\"Statement\": ["
+  + " {"
+  + "   \"Effect\": \"Allow\","
+  + "    \"Action\": ["
+  + "      \"elasticloadbalancing:DescribeInstanceHealth\","
+  + "      \"ec2:DescribeInstances\","
+  + "      \"ec2:DescribeInstanceStatus\","
+  + "      \"ec2:GetConsoleOutput\","
+  + "      \"ec2:AssociateAddress\","
+  + "      \"ec2:DescribeAddresses\","
+  + "      \"ec2:DescribeSecurityGroups\","
+  + "      \"sqs:GetQueueAttributes\","
+  + "      \"sqs:GetQueueUrl\","
+  + "      \"autoscaling:DescribeAutoScalingGroups\","
+  + "      \"autoscaling:DescribeAutoScalingInstances\","
+  + "      \"autoscaling:DescribeScalingActivities\","
+  + "      \"autoscaling:DescribeNotificationConfigurations\""
+  + "    ],"
+  + "    \"Resource\": ["
+  + "      \"*\""
+  + "    ]"
+  + "  }"
+  + "]"
+  + "}";
     }
 }

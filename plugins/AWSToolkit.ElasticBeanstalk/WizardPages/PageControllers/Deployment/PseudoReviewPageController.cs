@@ -101,7 +101,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
             reviewPanels.Add(ApplicationReviewPanel(isRedeployment));
             if (!isRedeployment)
+            {
                 reviewPanels.Add(AWSOptionsReviewPanel());
+                reviewPanels.Add(PermissionsReviewPanel());
+            }
             reviewPanels.Add(ApplicationOptionsReviewPanel(isRedeployment));
 
             return reviewPanels;
@@ -168,17 +171,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                                         HostingWizard[DeploymentWizardProperties.AWSOptions.propkey_InstanceTypeID] as string,
                                         string.IsNullOrEmpty(customAmiId) ? "Use the default AMI for the container"
                                                                         : string.Format("Use a custom AMI with ID {0}", customAmiId)));
-
-            // capabilities review goes here, in place of the profile name we used to emit
-            //if (HostingWizard.IsPropertySet(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_InstanceProfileName))
-            //{
-            //    var roleName = HostingWizard[BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_InstanceProfileName] as string;
-            //    if (roleName == BeanstalkParameters.DefaultRoleName)
-            //        sb.AppendLine(string.Format("Launch the instance(s) with the default IAM role '{0}'.", roleName));
-            //    else
-            //        sb.AppendLine(string.Format("Launch the instance(s) with the IAM role '{0}'. This role will be modified to with the S3::PutObject permissions to enable log publishing", 
-            //                                    roleName));
-            //}
 
             var keypair = HostingWizard[DeploymentWizardProperties.AWSOptions.propkey_KeyPairName] as string;
             if (!string.IsNullOrEmpty(keypair))
@@ -247,6 +239,31 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
             tb.Text = sb.ToString();
             return new ServiceReviewPanelInfo { ReviewPanelHeader = "AWS Options", ReviewPanel = tb };
+        }
+
+        ServiceReviewPanelInfo PermissionsReviewPanel()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            if (HostingWizard.IsPropertySet(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_InstanceProfileName))
+            {
+                var roleName = HostingWizard[BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_InstanceProfileName] as string;
+                if (roleName == BeanstalkParameters.DefaultRoleName)
+                    sb.AppendLine(string.Format("Launch the instance(s) with the default IAM role '{0}'.", roleName));
+                else
+                    sb.AppendLine(string.Format("Launch the instance(s) with the IAM role '{0}'. This role will be modified to with the S3::PutObject permissions to enable log publishing",
+                                                roleName));
+            }
+
+            var serviceRoleName = HostingWizard[BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ServiceRoleName] as string;
+            if (serviceRoleName == BeanstalkParameters.DefaultServiceRoleName)
+                sb.AppendLine(string.Format("Launch the instance(s) with the default service role '{0}'.", serviceRoleName));
+            else
+                sb.AppendLine(string.Format("Launch the instance(s) with the service role '{0}'.", serviceRoleName));
+
+            TextBlock tb = CreateTextBlock();
+            tb.Text = sb.ToString();
+            return new ServiceReviewPanelInfo { ReviewPanelHeader = "Permissions", ReviewPanel = tb };
         }
 
         ServiceReviewPanelInfo ApplicationOptionsReviewPanel(bool isRedeployment)

@@ -123,6 +123,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 Deployment.CustomAmiID = getValue<string>(DeploymentWizardProperties.AWSOptions.propkey_CustomAMIID);
 
                 Deployment.RoleName = ConfigureIAMRole();
+                Deployment.ServiceRoleName = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ServiceRoleName);
 
                 Deployment.LaunchIntoVPC = getValue<bool>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_LaunchIntoVPC);
                 // if user did not choose to use a custom vpc and we are in a vpc-only environment, push through the default vpc id so we
@@ -248,7 +249,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 var role = this.Deployment.IAMClient.CreateRole(new CreateRoleRequest
                     {
                         RoleName = newRoleName,
-                        AssumeRolePolicyDocument = Amazon.AWSToolkit.Constants.GetIAMRoleEC2AssumeRolePolicyDocument(this.Deployment.RegionEndPoints)
+                        AssumeRolePolicyDocument 
+                            = Constants.GetIAMRoleAssumeRolePolicyDocument(RegionEndPointsManager.EC2_SERVICE_NAME,
+                                                                           this.Deployment.RegionEndPoints)
                     }).Role;
                 this.Observer.Status("Created IAM Role {0}", newRoleName);
 

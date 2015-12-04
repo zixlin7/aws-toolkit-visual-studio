@@ -106,6 +106,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
             public static readonly string propkey_ELBSubnet = "elb-subnet";
             public static readonly string propkey_ELBScheme = "elb-scheme";
             public static readonly string propkey_VPCSecurityGroup = "vpc-security-group";
+            public static readonly string propkey_ServiceRoleName = "serviceRole";
         }
 
         public static class AppOptionsProperties

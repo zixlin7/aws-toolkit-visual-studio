@@ -1,38 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using log4net;
-using Amazon.AWSToolkit.Account;
 using System.ComponentModel;
+using System.Web;
+
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
+using Amazon.AWSToolkit.Account;
+using log4net;
+using Amazon.Auth.AccessControlPolicy;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
 {
     /// <summary>
-    /// Worker class to query established IAM instance profiles for a selected account
+    /// Worker class to query established IAM roles for a selected account
+    /// that grant an assume role policy to a service.
     /// </summary>
-    internal class QueryInstanceProfilesWorker
+    internal class QueryServiceRolesWorker
     {
-        public delegate void DataAvailableCallback(IEnumerable<InstanceProfile> data);
+        public delegate void DataAvailableCallback(IEnumerable<Role> data);
         DataAvailableCallback _callback;
 
         struct WorkerData
         {
+            public string ServicePrincipal { get; set; }
             public IAmazonIdentityManagementService IAMClient { get; set; }
             public ILog Logger { get; set; }
         }
 
-        public QueryInstanceProfilesWorker(AccountViewModel accountViewModel,
-                                           RegionEndPointsManager.RegionEndPoints regionEndPoints,
-                                           ILog logger,
-                                           DataAvailableCallback callback)
+        public QueryServiceRolesWorker(AccountViewModel accountViewModel,
+                                       RegionEndPointsManager.RegionEndPoints regionEndPoints,
+                                       ILog logger,
+                                       DataAvailableCallback callback)
         {
             _callback = callback;
 
-            var iamConfig = new AmazonIdentityManagementServiceConfig {ServiceURL = regionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).Url};
+            var iamConfig = new AmazonIdentityManagementServiceConfig { ServiceURL = regionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).Url };
             var iamClient = new AmazonIdentityManagementServiceClient(accountViewModel.AccessKey, accountViewModel.SecretKey, iamConfig);
 
             var bw = new BackgroundWorker();
@@ -40,6 +42,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
             bw.RunWorkerCompleted += WorkerCompleted;
             bw.RunWorkerAsync(new WorkerData
             {
+                ServicePrincipal = regionEndPoints.GetPrincipalForAssumeRole(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME),
                 IAMClient = iamClient,
                 Logger = logger
             });
@@ -49,17 +52,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
         {
             var workerData = (WorkerData)e.Argument;
 
-            var profiles = new List<InstanceProfile>();
+            var roles = new List<Role>();
 
             try
             {
-                ListInstanceProfilesResponse response;
-                var request = new ListInstanceProfilesRequest();
+                ListRolesResponse response;
+                var request = new ListRolesRequest();
                 do
                 {
-                    response = workerData.IAMClient.ListInstanceProfiles(request);
-                    var profileSet = response.InstanceProfiles;
-                    profiles.AddRange(profileSet);
+                    response = workerData.IAMClient.ListRoles(request);
+                    var validRoles = RolePolicyFilter.FilterByAssumeRoleServicePrincipal(response.Roles, workerData.ServicePrincipal);
+                    roles.AddRange(validRoles);
                     request.Marker = response.Marker;
                 } while (response.IsTruncated);
             }
@@ -68,15 +71,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
                 workerData.Logger.Error(GetType().FullName + ", exception in Worker", exc);
             }
 
-            e.Result = profiles;
+            e.Result = roles;
         }
 
         void WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if (_callback != null)
-                _callback(e.Result as IEnumerable<InstanceProfile>);
+                _callback(e.Result as IEnumerable<Role>);
         }
 
-        private QueryInstanceProfilesWorker() { }
+        private QueryServiceRolesWorker() { }
     }
 }

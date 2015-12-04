@@ -248,6 +248,21 @@ namespace Amazon.AWSToolkit
                 this._endpoints.TryGetValue(serviceName, out endpoint);
                 return endpoint;
             }
+
+            public virtual string GetPrincipalForAssumeRole(string serviceName)
+            {
+                var endpoint = GetEndpoint(serviceName);
+
+                var pos = endpoint.Url.IndexOf("amazonaws");
+                if (pos == -1 || serviceName.Equals("elasticbeanstalk", StringComparison.OrdinalIgnoreCase))
+                    return string.Concat(serviceName.ToLowerInvariant(), ".amazonaws.com");
+
+                var host = endpoint.Url.Substring(pos);
+                if (host.EndsWith("/"))
+                    host = host.Substring(0, host.Length - 1);
+
+                return string.Format("{0}.{1}", serviceName.ToLowerInvariant(), host);
+            }
         }
 
         public class LocalRegionEndPoints : RegionEndPoints            

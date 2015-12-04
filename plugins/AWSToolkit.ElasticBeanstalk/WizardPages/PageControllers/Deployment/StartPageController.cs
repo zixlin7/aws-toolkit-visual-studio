@@ -21,6 +21,7 @@ using log4net;
 using Amazon.EC2;
 using Amazon.EC2.Model;
 using Amazon.AWSToolkit.EC2;
+using System.Threading;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deployment
 {
@@ -33,20 +34,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
         readonly Dictionary<string, List<DeploymentTemplateWrapperBase>> _templatesByRegion 
             = new Dictionary<string, List<DeploymentTemplateWrapperBase>>();
 
-        bool _deploymentsQueryWorkerActive;
-        bool DeploymentsQueryWorkerActive
+        int _workersActive = 0;
+        public bool WorkersActive
         {
             get
             {
                 bool ret;
                 lock (_syncLock)
-                    ret = _deploymentsQueryWorkerActive;
+                    ret = _workersActive > 0;
                 return ret;
-            }
-            set
-            {
-                lock (_syncLock)
-                    _deploymentsQueryWorkerActive = value;
             }
         }
 
@@ -190,7 +186,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                 if (_pageUI == null)
                     return false;
 
-                if (DeploymentsQueryWorkerActive)
+                if (WorkersActive)
                     return false;
 
                 var fwdsOK = _pageUI.SelectedRegion != null && _pageUI.SelectedAccount != null;
@@ -324,7 +320,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
             }
             else
             {
-                DeploymentsQueryWorkerActive = true;
+                Interlocked.Increment(ref _workersActive);
 
                 new QueryExistingDeploymentsWorker(account, 
                                                    region, 
@@ -388,11 +384,16 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                                                   string forRegion, 
                                                   ICollection<DeployedApplicationModel> deployments)
         {
-            _deploymentsByUserRegion.Add(ConstructCachedDeploymentsKey(forAccount, forRegion), deployments);
+            Interlocked.Decrement(ref _workersActive);
+
+            var key = ConstructCachedDeploymentsKey(forAccount, forRegion);
+            // check for key existence as we may have overlapping responses
+            // from interaction between the account and region fields
+            if (!_deploymentsByUserRegion.ContainsKey(key))
+                _deploymentsByUserRegion.Add(key, deployments);
 
             _pageUI.LoadAvailableDeployments(deployments);
 
-            DeploymentsQueryWorkerActive = false;
             TestForwardTransitionEnablement();
         }
     }

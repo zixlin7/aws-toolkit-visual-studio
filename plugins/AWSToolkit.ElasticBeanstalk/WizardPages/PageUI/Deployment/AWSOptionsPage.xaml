@@ -137,7 +137,6 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid>
@@ -276,40 +275,7 @@
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="2" Margin="0,12,0,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
-            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}" Grid.Row="0">
-                Deployed Application Permissions
-            </Label>
-
-            <Grid Grid.Row="1" Margin="8,4,4,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Label Target="{Binding ElementName=_iamPicker}"
-                       Style="{DynamicResource awsWizardFieldLabelStyle}">
-                    _Role:
-                </Label>
-                <toolkitcomponents:IAMCapabilityPicker Name="_iamPicker" Grid.Column="1"/>
-            </Grid>
-
-            <TextBlock Grid.Row="2"   
-                           FontStyle="Italic"
-                           TextWrapping="Wrap"
-                           Margin="12,4,4,0" 
-                           Style="{DynamicResource awsFieldHintTextStyle}">
-                The permissions for the Identity and Access Management role can be updated after the environment is created.
-            </TextBlock>
-
-        </Grid>
-
-        <Grid Grid.Row="3" Margin="0,12,0,0">
+        <Grid Grid.Row="2" Margin="0,24,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
