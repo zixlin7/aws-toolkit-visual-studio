@@ -1,8 +1,8 @@
 ﻿<VSTemplate Version="2.0.0" Type="Project"
     xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
   <TemplateData>
-    <Name>AWS Lambda Function Project</Name>
-    <Description>A project for creating an AWS Lambda Function.</Description>
+    <Name>AWS Lambda Function Project (Node.js)</Name>
+    <Description>A project for creating an AWS Lambda Function using Node.js.</Description>
     <Icon>LambdaTemplateProject.ico</Icon>
     <ProjectType>AWS</ProjectType>
     <DefaultName>Lambda Function</DefaultName>
