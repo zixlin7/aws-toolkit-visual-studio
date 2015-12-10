@@ -11,6 +11,7 @@ using Amazon.EC2.Model;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
 using log4net;
+using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.EC2.Nodes
 {
@@ -32,14 +33,14 @@ namespace Amazon.AWSToolkit.EC2.Nodes
             }
         }
 
-        protected override void BuildClient(string accessKey, string secretKey)
+        protected override void BuildClient(AWSCredentials awsCredentials)
         {
             var config = new AmazonEC2Config {ServiceURL = this.CurrentEndPoint.Url};
             if (this.CurrentEndPoint.Signer != null)
                 config.SignatureVersion = this.CurrentEndPoint.Signer;
             if (this.CurrentEndPoint.AuthRegion != null)
                 config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
-            this._ec2Client = new AmazonEC2Client(accessKey, secretKey, config);
+            this._ec2Client = new AmazonEC2Client(awsCredentials, config);
         }
     }
 }

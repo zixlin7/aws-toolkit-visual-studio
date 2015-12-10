@@ -198,7 +198,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyD
         {
             var config = new AmazonRDSConfig();
             config.ServiceURL = region.GetEndpoint(RegionEndPointsManager.RDS_SERVICE_NAME).Url;
-            var rdsClient = new AmazonRDSClient(account.AccessKey, account.SecretKey, config);
+            var rdsClient = new AmazonRDSClient(account.Credentials, config);
 
             List<DBInstance> dbInstances = null;
             try
@@ -219,7 +219,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyD
         {
             var config = new AmazonRDSConfig();
             config.ServiceURL = region.GetEndpoint(RegionEndPointsManager.RDS_SERVICE_NAME).Url;
-            var rdsClient = new AmazonRDSClient(account.AccessKey, account.SecretKey, config);
+            var rdsClient = new AmazonRDSClient(account.Credentials, config);
 
             var dbSecurityGroups = new List<DBSecurityGroup>();
             try

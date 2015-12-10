@@ -135,7 +135,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyD
 
         string ConstructLastSeenKey(AccountViewModel account, string region, string appName, string envName)
         {
-            return string.Format("{0}#{1}#{2}#{3}", account.AccessKey, region, appName, envName);
+            return string.Format("{0}#{1}#{2}#{3}", account.CredentialKeys.AccessKey, region, appName, envName);
         }
 
         void FetchSettingsWorkerCompleted(IEnumerable<ConfigurationOptionSetting> settings)
@@ -258,7 +258,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyD
                     {
                         AccountViewModel selectedAccount 
                             = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
-                        sb.AppendFormat("{0};{1};", selectedAccount.AccessKey, selectedAccount.SecretKey);
+                        var keys = selectedAccount.CredentialKeys;
+                        sb.AppendFormat("{0};{1};", keys.AccessKey, keys.SecretKey);
                     }
                     break;
 

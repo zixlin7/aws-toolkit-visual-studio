@@ -48,7 +48,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             if (endpoint.AuthRegion != null)
                 config.AuthenticationRegion = endpoint.AuthRegion;
 
-            AmazonEC2Client ec2Client = new AmazonEC2Client(_account.AccessKey,_account.SecretKey, config);
+            AmazonEC2Client ec2Client = new AmazonEC2Client(_account.Credentials, config);
             
             try
             {

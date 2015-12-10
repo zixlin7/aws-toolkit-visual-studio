@@ -48,7 +48,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Util
             this._cfClient = this._viewModel.CloudFormationClient;
 
             var ec2Config = new AmazonEC2Config {ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).Url};
-            this._ec2Client = new AmazonEC2Client(this._viewModel.AccountViewModel.AccessKey, this._viewModel.AccountViewModel.SecretKey, ec2Config);
+            this._ec2Client = new AmazonEC2Client(this._viewModel.AccountViewModel.Credentials, ec2Config);
         }
         public CloudFormationUtil(IAmazonCloudFormation cfClient, IAmazonEC2 ec2Client)
         {
@@ -171,7 +171,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Util
         {
             var s3Client = account.CreateServiceClient<AmazonS3Client>(region);
 
-            string uniqueIdentifier = string.IsNullOrEmpty(account.AccountNumber) ? account.AccessKey : account.AccountNumber;
+            string uniqueIdentifier = string.IsNullOrEmpty(account.AccountNumber) ? account.CredentialKeys.AccessKey : account.AccountNumber;
             string bucketName = string.Format("cloudformation-{0}-{1}", region.SystemName, uniqueIdentifier).ToLower();
             string s3Key = string.Format("{0}/{1}", stack, templateName);
 

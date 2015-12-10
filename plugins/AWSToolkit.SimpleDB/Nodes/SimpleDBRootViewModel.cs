@@ -13,6 +13,7 @@ using Amazon.SimpleDB.Model;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.SimpleDB.Nodes
 {
@@ -45,7 +46,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Nodes
             }
         }
 
-        protected override void BuildClient(string accessKey, string secretKey)
+        protected override void BuildClient(AWSCredentials awsCredentials)
         {
             AmazonSimpleDBConfig config = new AmazonSimpleDBConfig();
             config.ServiceURL = this.CurrentEndPoint.Url;
@@ -53,7 +54,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Nodes
                 config.SignatureVersion = this.CurrentEndPoint.Signer;
             if (this.CurrentEndPoint.AuthRegion != null)
                 config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
-            this._sdbClient = new AmazonSimpleDBClient(accessKey, secretKey, config);
+            this._sdbClient = new AmazonSimpleDBClient(awsCredentials, config);
         }
 
         public IAmazonSimpleDB SimpleDBClient

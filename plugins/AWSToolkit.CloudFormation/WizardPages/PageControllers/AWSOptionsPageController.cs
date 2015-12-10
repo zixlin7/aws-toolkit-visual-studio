@@ -365,12 +365,12 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
                 var rep = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
                 var selectedAccount = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
 
-                var accountAndRegion = string.Concat(selectedAccount.AccessKey, rep.SystemName);
+                var accountAndRegion = string.Concat(selectedAccount.CredentialKeys.AccessKey, rep.SystemName);
                 IAmazonEC2 ec2Client;
                 if (!this._ec2ClientsByAccountAndRegion.ContainsKey(accountAndRegion))
                 {
                     var ec2Config = new AmazonEC2Config {ServiceURL = rep.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).Url};
-                    ec2Client = new AmazonEC2Client(selectedAccount.AccessKey, selectedAccount.SecretKey, ec2Config);
+                    ec2Client = new AmazonEC2Client(selectedAccount.Credentials, ec2Config);
                     this._ec2ClientsByAccountAndRegion.Add(accountAndRegion, ec2Client);
                 }
                 else

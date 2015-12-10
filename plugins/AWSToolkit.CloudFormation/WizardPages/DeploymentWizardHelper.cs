@@ -23,7 +23,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages
             if (rootViewModel != null)
                 return rootViewModel.CloudFormationClient;
             else
-                return new AmazonCloudFormationClient(accountViewModel.AccessKey, accountViewModel.SecretKey, Amazon.RegionEndpoint.USEast1);
+                return new AmazonCloudFormationClient(accountViewModel.Credentials, Amazon.RegionEndpoint.USEast1);
         }
     }
 }

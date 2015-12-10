@@ -74,7 +74,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                 if (this._ec2Client == null)
                 {
                     var ec2Config = new AmazonEC2Config {ServiceURL = RegionEndPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).Url};
-                    this._ec2Client = new AmazonEC2Client(_account.AccessKey, _account.SecretKey, ec2Config);
+                    this._ec2Client = new AmazonEC2Client(_account.Credentials, ec2Config);
                 }
 
                 return this._ec2Client;
@@ -89,7 +89,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                 if (this._cfClient == null)
                 {
                     var cfConfig = new AmazonCloudFormationConfig {ServiceURL = RegionEndPoints.GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME).Url};
-                    this._cfClient = new AmazonCloudFormationClient(_account.AccessKey, _account.SecretKey, cfConfig);
+                    this._cfClient = new AmazonCloudFormationClient(_account.Credentials, cfConfig);
                 }
 
                 return _cfClient;
@@ -124,7 +124,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             // had occasion when users have had lead/trail spaces when entering a/c number; explorer
             // should remove but play safe. Know access key is trim-safe already.
             string suffix = !string.IsNullOrEmpty(account.AccountNumber) ?
-                account.AccountNumber.Trim() : account.AccessKey;
+                account.AccountNumber.Trim() : account.CredentialKeys.AccessKey;
             suffix = suffix.Replace("-", ""); // Get rid of hyphens so we won't get inconsistent bucket names created.
             var bucketName = string.Format("awsdeployment-{0}-{1}", region, suffix);
             return bucketName.ToLower(); 

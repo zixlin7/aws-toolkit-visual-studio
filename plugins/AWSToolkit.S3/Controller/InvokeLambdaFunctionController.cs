@@ -95,7 +95,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             {
                 ServiceURL = this.Model.SelectedRegion.GetEndpoint(RegionEndPointsManager.LAMBDA_SERVICE_NAME).Url
             };
-            var client = new AmazonLambdaClient(accountModel.AccessKey, accountModel.SecretKey, config);
+            var client = new AmazonLambdaClient(accountModel.Credentials, config);
             return client;
         }
 

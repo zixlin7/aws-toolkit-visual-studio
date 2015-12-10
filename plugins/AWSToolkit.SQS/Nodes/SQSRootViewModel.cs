@@ -13,6 +13,7 @@ using Amazon.SQS.Model;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.SQS.Nodes
 {
@@ -46,14 +47,14 @@ namespace Amazon.AWSToolkit.SQS.Nodes
             }
         }
 
-        protected override void BuildClient(string accessKey, string secretKey)
+        protected override void BuildClient(AWSCredentials awsCredentials)
         {
             var config = new AmazonSQSConfig {ServiceURL = this.CurrentEndPoint.Url};
             if (this.CurrentEndPoint.Signer != null)
                 config.SignatureVersion = this.CurrentEndPoint.Signer;
             if (this.CurrentEndPoint.AuthRegion != null)
                 config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
-            this._sqsClient = new AmazonSQSClient(accessKey, secretKey, config);
+            this._sqsClient = new AmazonSQSClient(awsCredentials, config);
         }
 
         public IAmazonSQS SQSClient

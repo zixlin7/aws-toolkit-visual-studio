@@ -34,7 +34,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
             var serviceRoot = this._rootModel.Parent as ServiceRootViewModel;
             var dynamoDBStreamConfig = new AmazonDynamoDBStreamsConfig();
             dynamoDBStreamConfig.ServiceURL = serviceRoot.CurrentRegion.GetEndpoint(RegionEndPointsManager.DYNAMODB_STREAM_SERVICE_NAME).Url;
-            this._dynamoDBStreamsClient = new AmazonDynamoDBStreamsClient(this._rootModel.AccountViewModel.AccessKey, this._rootModel.AccountViewModel.SecretKey, dynamoDBStreamConfig);
+            this._dynamoDBStreamsClient = new AmazonDynamoDBStreamsClient(this._rootModel.AccountViewModel.Credentials, dynamoDBStreamConfig);
 
             this._model = new StreamPropertiesModel(this._rootModel.Table);
             this._control = new StreamPropertiesControl(this);

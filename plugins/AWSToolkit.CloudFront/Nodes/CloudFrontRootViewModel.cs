@@ -15,6 +15,7 @@ using Amazon.CloudFront.Model;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.Runtime;
 //using Amazon.AWSToolkit.CloudFront.Controller;
 
 namespace Amazon.AWSToolkit.CloudFront.Nodes
@@ -52,7 +53,7 @@ namespace Amazon.AWSToolkit.CloudFront.Nodes
             }
         }
 
-        protected override void BuildClient(string accessKey, string secretKey)
+        protected override void BuildClient(AWSCredentials awsCredentials)
         {
             var config = new AmazonCloudFrontConfig();
             config.ServiceURL = this.CurrentEndPoint.Url;
@@ -60,7 +61,7 @@ namespace Amazon.AWSToolkit.CloudFront.Nodes
                 config.SignatureVersion = this.CurrentEndPoint.Signer;
             if (this.CurrentEndPoint.AuthRegion != null)
                 config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
-            this._cfClient = new Amazon.CloudFront.AmazonCloudFrontClient(accessKey, secretKey, config);
+            this._cfClient = new Amazon.CloudFront.AmazonCloudFrontClient(awsCredentials, config);
         }
 
         public IAmazonCloudFront CFClient

@@ -119,7 +119,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             if (endPoint.AuthRegion != null)
                 config.AuthenticationRegion = endPoint.AuthRegion;
 
-            var client = new AmazonEC2Client(account.AccessKey, account.SecretKey, config);
+            var client = new AmazonEC2Client(account.Credentials, config);
 
             var response = client.DescribeSecurityGroups(new DescribeSecurityGroupsRequest());
             foreach (var group in response.SecurityGroups)

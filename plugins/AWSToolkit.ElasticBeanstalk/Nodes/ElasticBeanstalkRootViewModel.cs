@@ -10,6 +10,7 @@ using Amazon.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
 {
@@ -47,14 +48,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
             }
         }
 
-        protected override void BuildClient(string accessKey, string secretKey)
+        protected override void BuildClient(AWSCredentials awsCredentials)
         {
             var config = new AmazonElasticBeanstalkConfig {ServiceURL = this.CurrentEndPoint.Url};
             if (this.CurrentEndPoint.Signer != null)
                 config.SignatureVersion = this.CurrentEndPoint.Signer;
             if (this.CurrentEndPoint.AuthRegion != null)
                 config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
-            this._beanstalkClient = new AmazonElasticBeanstalkClient(accessKey, secretKey, config);
+            this._beanstalkClient = new AmazonElasticBeanstalkClient(awsCredentials, config);
         }
 
         public IAmazonElasticBeanstalk BeanstalkClient

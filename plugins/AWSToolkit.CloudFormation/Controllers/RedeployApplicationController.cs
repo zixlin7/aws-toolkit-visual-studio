@@ -21,8 +21,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             LOGGER = LogManager.GetLogger(typeof(RedeployApplicationController));
             Observer = new DeploymentControllerBaseObserver(LOGGER);
             Deployment.Observer = Observer;
-            Deployment.AWSAccessKey = _account.AccessKey;
-            Deployment.AWSSecretKey = _account.SecretKey;
+            Deployment.Credentials = _account.Credentials;
             Deployment.DeploymentMode = DeploymentEngineBase.DeploymentModes.RedeployNewVersion;
         }
 

@@ -36,7 +36,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
             RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.Instance.GetRegion(region);
 
             var ec2Config = new AmazonEC2Config { ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).Url };
-            this._ec2Client = new AmazonEC2Client(rdsInstanceViewModel.AccountViewModel.AccessKey, rdsInstanceViewModel.AccountViewModel.SecretKey, ec2Config);
+            this._ec2Client = new AmazonEC2Client(rdsInstanceViewModel.AccountViewModel.Credentials, ec2Config);
 
 
             var control = new PromptAddCurrentCIDRControl(this);

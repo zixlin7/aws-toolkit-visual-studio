@@ -53,19 +53,19 @@ namespace Amazon.AWSToolkit.S3.Controller
 
             var iamConfig = new AmazonIdentityManagementServiceConfig();
             iamConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).Url;
-            this._iamClient = new AmazonIdentityManagementServiceClient(account.AccessKey, account.SecretKey, iamConfig);
+            this._iamClient = new AmazonIdentityManagementServiceClient(account.Credentials, iamConfig);
 
             var sqsConfig = new AmazonSQSConfig();
             sqsConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.SQS_SERVICE_NAME).Url;
-            this._sqsClient = new AmazonSQSClient(account.AccessKey, account.SecretKey, sqsConfig);
+            this._sqsClient = new AmazonSQSClient(account.Credentials, sqsConfig);
 
             var snsConfig = new AmazonSimpleNotificationServiceConfig();
             snsConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME).Url;
-            this._snsClient = new AmazonSimpleNotificationServiceClient(account.AccessKey, account.SecretKey, snsConfig);
+            this._snsClient = new AmazonSimpleNotificationServiceClient(account.Credentials, snsConfig);
 
             var lambdaConfig = new AmazonLambdaConfig();
             lambdaConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.LAMBDA_SERVICE_NAME).Url;
-            this._lambdaClient = new AmazonLambdaClient(account.AccessKey, account.SecretKey, lambdaConfig);
+            this._lambdaClient = new AmazonLambdaClient(account.Credentials, lambdaConfig);
 
             this._control = new AddEventConfigurationControl(this);
             ToolkitFactory.Instance.ShellProvider.ShowModal(this._control);

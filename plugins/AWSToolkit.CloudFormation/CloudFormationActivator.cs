@@ -160,9 +160,7 @@ namespace Amazon.AWSToolkit.CloudFormation
             config.ServiceURL 
                 = RegionEndPointsManager.Instance.GetRegion(region)
                             .GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME).Url;
-            IAmazonCloudFormation client = new AmazonCloudFormationClient(account.AccessKey,
-                                                                         account.SecretKey,
-                                                                         config);
+            IAmazonCloudFormation client = new AmazonCloudFormationClient(account.Credentials, config);
             bool isValid = false;
             try
             {
@@ -200,7 +198,7 @@ namespace Amazon.AWSToolkit.CloudFormation
             try
             {
                 var config = new AmazonCloudFormationConfig {ServiceURL = endpoint.Url};
-                var client = new AmazonCloudFormationClient(account.AccessKey, account.SecretKey, config);
+                var client = new AmazonCloudFormationClient(account.Credentials, config);
 
                 var response = client.DescribeStacks(new DescribeStacksRequest());
                 logger.InfoFormat("Worker query for existing stacks returned {0} entries", response.Stacks.Count);

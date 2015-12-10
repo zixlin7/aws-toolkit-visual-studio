@@ -25,16 +25,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages
 {
     internal static class DeploymentWizardHelper
     {
-        /// <summary>
-        /// Return the access and secret keys to use in a query 
-        /// </summary>
-        public static void GetAWSAccountKeys(IAWSWizard hostWizard, out string awsAccessKey, out string awsSecretKey)
-        {
-            var account = hostWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
-            awsAccessKey = account.AccessKey;
-            awsSecretKey = account.SecretKey;
-        }
-
         public static IAmazonElasticBeanstalk GetBeanstalkClient(AccountViewModel accountViewModel, RegionEndPointsManager.RegionEndPoints region)
         {
             var endpoint = region.GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME);
@@ -43,7 +33,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages
                 ServiceURL = endpoint.Url,
                 AuthenticationRegion = endpoint.AuthRegion
             };
-            return new AmazonElasticBeanstalkClient(accountViewModel.AccessKey, accountViewModel.SecretKey, beanstalkConfig);
+            return new AmazonElasticBeanstalkClient(accountViewModel.Credentials, beanstalkConfig);
         }
 
         public static IAmazonIdentityManagementService GetIAMClient(AccountViewModel accountViewModel, RegionEndPointsManager.RegionEndPoints region)
@@ -52,7 +42,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages
             {
                 ServiceURL = region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).Url
             };
-            return new AmazonIdentityManagementServiceClient(accountViewModel.AccessKey, accountViewModel.SecretKey, config);
+            return new AmazonIdentityManagementServiceClient(accountViewModel.Credentials, config);
         }
 
         public static IAmazonEC2 GetEC2Client(AccountViewModel accountViewModel, RegionEndPointsManager.RegionEndPoints region)
@@ -61,7 +51,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages
             {
                 ServiceURL = region.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).Url
             };
-            return new AmazonEC2Client(accountViewModel.AccessKey, accountViewModel.SecretKey, ec2Config);
+            return new AmazonEC2Client(accountViewModel.Credentials, ec2Config);
         }
 
         public static IAmazonRDS GetRDSClient(AccountViewModel accountViewModel, RegionEndPointsManager.RegionEndPoints region)
@@ -70,7 +60,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages
             {
                 ServiceURL = region.GetEndpoint(RegionEndPointsManager.RDS_SERVICE_NAME).Url
             };
-            return new AmazonRDSClient(accountViewModel.AccessKey, accountViewModel.SecretKey, rdsConfig);
+            return new AmazonRDSClient(accountViewModel.Credentials, rdsConfig);
         }
 
         public static bool IsSingleInstanceEnvironment(IAWSWizard hostWizard)

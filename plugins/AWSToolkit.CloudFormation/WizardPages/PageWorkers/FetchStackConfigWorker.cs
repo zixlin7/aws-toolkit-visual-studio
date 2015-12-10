@@ -66,7 +66,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageWorkers
                     if (_autoScalingClient == null)
                     {
                         var asConfig = new AmazonAutoScalingConfig {ServiceURL = RegionEndPoints.GetEndpoint(RegionEndPointsManager.AUTOSCALING_SERVICE_NAME).Url};
-                        _autoScalingClient = new AmazonAutoScalingClient(Account.AccessKey, Account.SecretKey, asConfig);
+                        _autoScalingClient = new AmazonAutoScalingClient(Account.Credentials, asConfig);
                     }
 
                     return _autoScalingClient;
@@ -81,7 +81,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageWorkers
                     if (_s3Client == null)
                     {
                         var s3Config = new AmazonS3Config {ServiceURL = RegionEndPoints.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME).Url};
-                        _s3Client = new AmazonS3Client(Account.AccessKey, Account.SecretKey, s3Config);
+                        _s3Client = new AmazonS3Client(Account.Credentials, s3Config);
                     }
 
                     return _s3Client;
@@ -96,7 +96,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageWorkers
                     if (_ec2Client == null)
                     {
                         var ec2Config = new AmazonEC2Config {ServiceURL = RegionEndPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).Url};
-                        _ec2Client = new AmazonEC2Client(Account.AccessKey, Account.SecretKey, ec2Config);
+                        _ec2Client = new AmazonEC2Client(Account.Credentials, ec2Config);
                     }
 
                     return _ec2Client;
@@ -111,7 +111,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageWorkers
                     if (_cloudFormationClient == null)
                     {
                         var cfConfig = new AmazonCloudFormationConfig {ServiceURL = RegionEndPoints.GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME).Url};
-                        _cloudFormationClient = new AmazonCloudFormationClient(Account.AccessKey, Account.SecretKey, cfConfig);
+                        _cloudFormationClient = new AmazonCloudFormationClient(Account.Credentials, cfConfig);
                     }
 
                     return _cloudFormationClient;
@@ -126,7 +126,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageWorkers
                     if (_elbClient == null)
                     {
                         var elbConfig = new AmazonElasticLoadBalancingConfig {ServiceURL = RegionEndPoints.GetEndpoint(RegionEndPointsManager.ELB_SERVICE_NAME).Url};
-                        _elbClient = new AmazonElasticLoadBalancingClient(Account.AccessKey, Account.SecretKey, elbConfig);
+                        _elbClient = new AmazonElasticLoadBalancingClient(Account.Credentials, elbConfig);
                     }
 
                     return _elbClient;

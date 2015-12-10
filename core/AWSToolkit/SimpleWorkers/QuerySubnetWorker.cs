@@ -49,7 +49,7 @@ namespace Amazon.AWSToolkit.SimpleWorkers
             if (region.AuthRegion != null)
                 ec2Config.AuthenticationRegion = region.AuthRegion;
 
-            IAmazonEC2 ec2Client = new AmazonEC2Client(account.AccessKey, account.SecretKey, ec2Config);
+            IAmazonEC2 ec2Client = new AmazonEC2Client(account.Credentials, ec2Config);
 
             bw.RunWorkerAsync(new object[] { ec2Client, logger });
         }

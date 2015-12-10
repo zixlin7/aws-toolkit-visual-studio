@@ -15,6 +15,7 @@ using Amazon.IdentityManagement.Model;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.IdentityManagement.Nodes;
+using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.IdentityManagement.Nodes
 {
@@ -81,14 +82,14 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             }
         }
 
-        protected override void BuildClient(string accessKey, string secretKey)
+        protected override void BuildClient(AWSCredentials awsCredentials)
         {
             var config = new AmazonIdentityManagementServiceConfig {ServiceURL = this.CurrentEndPoint.Url};
             if (this.CurrentEndPoint.Signer != null)
                 config.SignatureVersion = this.CurrentEndPoint.Signer;
             if (this.CurrentEndPoint.AuthRegion != null)
                 config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
-            this._iamClient = new AmazonIdentityManagementServiceClient(accessKey, secretKey, config);
+            this._iamClient = new AmazonIdentityManagementServiceClient(awsCredentials, config);
         }
 
         public IAmazonIdentityManagementService IAMClient

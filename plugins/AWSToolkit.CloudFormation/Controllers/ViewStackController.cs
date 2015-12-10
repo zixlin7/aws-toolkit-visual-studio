@@ -69,20 +69,20 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             }
 
             var elbConfig = new AmazonElasticLoadBalancingConfig {ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.ELB_SERVICE_NAME).Url};
-            this._elbClient = new AmazonElasticLoadBalancingClient(this._stackModel.AccountViewModel.AccessKey, this._stackModel.AccountViewModel.SecretKey, elbConfig);
+            this._elbClient = new AmazonElasticLoadBalancingClient(this._stackModel.AccountViewModel.Credentials, elbConfig);
 
             var asConfig = new AmazonAutoScalingConfig {ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.AUTOSCALING_SERVICE_NAME).Url};
-            this._asClient = new AmazonAutoScalingClient(this._stackModel.AccountViewModel.AccessKey, this._stackModel.AccountViewModel.SecretKey, asConfig);
+            this._asClient = new AmazonAutoScalingClient(this._stackModel.AccountViewModel.Credentials, asConfig);
 
             var ec2Config = new AmazonEC2Config {ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).Url};
-            this._ec2Client = new AmazonEC2Client(this._stackModel.AccountViewModel.AccessKey, this._stackModel.AccountViewModel.SecretKey, ec2Config);
+            this._ec2Client = new AmazonEC2Client(this._stackModel.AccountViewModel.Credentials, ec2Config);
 
 
             var cwConfig = new AmazonCloudWatchConfig {ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_SERVICE_NAME).Url};
-            this._cwClient = new AmazonCloudWatchClient(this._stackModel.AccountViewModel.AccessKey, this._stackModel.AccountViewModel.SecretKey, cwConfig);
+            this._cwClient = new AmazonCloudWatchClient(this._stackModel.AccountViewModel.Credentials, cwConfig);
 
             var rdsConfig = new AmazonRDSConfig {ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.RDS_SERVICE_NAME).Url};
-            this._rdsClient = new AmazonRDSClient(this._stackModel.AccountViewModel.AccessKey, this._stackModel.AccountViewModel.SecretKey, rdsConfig);
+            this._rdsClient = new AmazonRDSClient(this._stackModel.AccountViewModel.Credentials, rdsConfig);
 
             this._model = new ViewStackModel(this._stackModel.StackName);
             var control = new ViewStackControl(this);

@@ -8,7 +8,7 @@ using Amazon.Lambda;
 using Amazon.Lambda.Model;
 
 using Amazon.AWSToolkit;
-
+using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.Lambda.Nodes
 {
@@ -41,7 +41,7 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
             }
         }
 
-        protected override void BuildClient(string accessKey, string secretKey)
+        protected override void BuildClient(AWSCredentials awsCredentials)
         {
             AmazonLambdaConfig config = new AmazonLambdaConfig();
             config.ServiceURL = this.CurrentEndPoint.Url;
@@ -49,7 +49,7 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
                 config.SignatureVersion = this.CurrentEndPoint.Signer;
             if (this.CurrentEndPoint.AuthRegion != null)
                 config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
-            this._lambdaClient = new AmazonLambdaClient(accessKey, secretKey, config);
+            this._lambdaClient = new AmazonLambdaClient(awsCredentials, config);
         }
 
         public IAmazonLambda LambdaClient

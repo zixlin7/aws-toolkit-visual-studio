@@ -25,8 +25,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             LOGGER = LogManager.GetLogger(typeof(DeployApplicationController));
             Observer = new DeploymentControllerBaseObserver(LOGGER);
             Deployment.Observer = Observer;
-            Deployment.AWSAccessKey = _account.AccessKey;
-            Deployment.AWSSecretKey = _account.SecretKey;   
+            Deployment.AWSProfileName = _account.AccountDisplayName;
         }
 
         public override void Execute()

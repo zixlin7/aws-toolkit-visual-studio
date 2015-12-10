@@ -84,7 +84,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
             return null;
         }
 
-        private void loadRegistedAccounts()
+        private void LoadRegisteredProfiles()
         {
             List<AccountViewModel> updatedAccounts = new List<AccountViewModel>();
 
@@ -122,7 +122,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
 
         public void Refresh()
         {
-            loadRegistedAccounts();
+            LoadRegisteredProfiles();
         }
 
 

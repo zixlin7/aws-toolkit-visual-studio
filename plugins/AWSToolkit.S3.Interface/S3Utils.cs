@@ -44,7 +44,7 @@ namespace Amazon.AWSToolkit.S3
 
                 var endPoint = region.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME);
                 var config = BuildS3Config(endPoint);
-                regionSpecificClient = new AmazonS3Client(account.AccessKey, account.SecretKey, config);
+                regionSpecificClient = new AmazonS3Client(account.Credentials, config);
             }
             catch (Exception e)
             {

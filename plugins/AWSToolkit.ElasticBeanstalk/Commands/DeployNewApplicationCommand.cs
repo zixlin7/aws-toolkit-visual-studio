@@ -67,8 +67,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                     as BeanstalkDeploymentEngine;
 
             Deployment.AWSProfileName = Account.AccountDisplayName;
-            Deployment.AWSAccessKey = Account.AccessKey;
-            Deployment.AWSSecretKey = Account.SecretKey;
             Deployment.Observer = Observer;
             Deployment.DeploymentPackage = deploymentPackage;
             Deployment.Region = (getValue<RegionEndPointsManager.RegionEndPoints>(CommonWizardProperties.AccountSelection.propkey_SelectedRegion)).SystemName;
@@ -434,7 +432,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                     AuthenticationRegion = endpoint.AuthRegion
                 };
 
-                var client = new AmazonElasticBeanstalkClient(account.AccessKey, account.SecretKey, config);
+                var client = new AmazonElasticBeanstalkClient(account.Credentials, config);
                 var response = client.CreateStorageLocation();
                 bucketName = response.S3Bucket;
             }
@@ -448,7 +446,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 {
                     // had occasion when users have had lead/trail spaces when entering a/c number; explorer
                     // should remove but play safe. Know access key is trim-safe already.
-                    string suffix = !string.IsNullOrEmpty(account.AccountNumber) ? account.AccountNumber.Trim() : account.AccessKey;
+                    string suffix = !string.IsNullOrEmpty(account.AccountNumber) ? account.AccountNumber.Trim() : account.CredentialKeys.AccessKey;
                     suffix = suffix.Replace("-", ""); // Get rid of hyphens so we won't get inconsistent bucket names created.
                     bucketName = string.Format("elasticbeanstalk-{0}-{1}", region.SystemName, suffix).ToLower();
                 }

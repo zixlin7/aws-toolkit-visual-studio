@@ -13,12 +13,13 @@ using Amazon.EC2.Model;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
+using Amazon.Runtime;
 
 namespace AWSDeployment
 {
     public abstract class DeploymentEngineBase
     {
-        public const int 
+        public const int
             SUCCESS = 0,
             CONFIGURATION_ERROR = 1,
             DEPLOYMENT_FAILED = 3;
@@ -57,11 +58,28 @@ namespace AWSDeployment
         #region Common Deployment Properties
 
         /// <summary>
-        /// AWS credentials to use for deployment
+        /// The name of a credential profile that can be used to obtain AWS credentials for 
+        /// deployment. Deployments will look to obtain credentials from the profile, then 
+        /// Credentials property and finally the access and secret key members.
         /// </summary>
         public string AWSProfileName { get; set; }
+
+        /// <summary>
+        /// AWS credentials that can be used during deployment.
+        /// </summary>
+        public AWSCredentials Credentials { get; set; }
+
+        /// <summary>
+        /// Access key that can be used, with corresponding AWSSecretKey value,
+        /// during deployment.
+        /// </summary>
         public string AWSAccessKey { get; set; }
-        public string AWSSecretKey { protected get; set; }
+
+        /// <summary>
+        /// Secret key that can be used, with corresponding AWSAccessKey value,
+        /// during deployment.
+        /// </summary>
+        public string AWSSecretKey { get; set; }
 
         /// <summary>
         /// Deployment will send messages, status, and errors to this object.
@@ -159,7 +177,8 @@ namespace AWSDeployment
                 if (this._s3Client == null)
                 {
                     var s3Config = new AmazonS3Config {ServiceURL = RegionEndPoints.GetEndpoint("S3").Url};
-                    this._s3Client = new AmazonS3Client(AWSAccessKey, AWSSecretKey, s3Config);
+                    var keys = CredentialKeys;
+                    this._s3Client = new AmazonS3Client(keys.AccessKey, keys.SecretKey, s3Config);
                 }
 
                 return this._s3Client;
@@ -174,7 +193,8 @@ namespace AWSDeployment
                 if (this._ec2Client == null)
                 {
                     var ec2Config = new AmazonEC2Config {ServiceURL = RegionEndPoints.GetEndpoint("EC2").Url};
-                    this._ec2Client = new AmazonEC2Client(AWSAccessKey, AWSSecretKey, ec2Config);
+                    var keys = CredentialKeys;
+                    this._ec2Client = new AmazonEC2Client(keys.AccessKey, keys.SecretKey, ec2Config);
                 }
 
                 return this._ec2Client;
@@ -359,15 +379,36 @@ namespace AWSDeployment
             this.Region = settings[REGION] as string;
         }
 
+        /// <summary>
+        /// Returns the set of access and secret keys to use, varying based on how the deployment 
+        /// instance was set up.
+        /// </summary>
+        protected ImmutableCredentials CredentialKeys
+        {
+            get
+            {
+                if (Credentials != null)
+                    return Credentials.GetCredentials();
+
+                if (!string.IsNullOrEmpty(AWSProfileName))
+                {
+                    SetCredentialsFromProfileName(AWSProfileName);
+                    return Credentials.GetCredentials();
+                }
+
+                // we would not have passed pre-deploy validation if one of
+                // profile, credentials or access/secret keys was not set
+                return new ImmutableCredentials(AWSAccessKey, AWSSecretKey, null);
+            }
+        }
+
         public void SetCredentialsFromProfileName(string profileName)
         {
             this.AWSProfileName = profileName;
             Amazon.Runtime.AWSCredentials credentials;
             if (Amazon.Util.ProfileManager.TryGetAWSCredentials(this.AWSProfileName, out credentials))
             {
-                var cred = credentials.GetCredentials();
-                this.AWSAccessKey = cred.AccessKey;
-                this.AWSSecretKey = cred.SecretKey;
+                this.Credentials = credentials;
             }
         }
 
@@ -395,10 +436,11 @@ namespace AWSDeployment
         {
             if (requirePackage && string.IsNullOrEmpty(DeploymentPackage))
                 throw new ArgumentException("DeploymentPackage");
-            if (string.IsNullOrEmpty(AWSAccessKey))
-                throw new ArgumentException("AWSAccessKey");
-            if (string.IsNullOrEmpty(AWSSecretKey))
-                throw new ArgumentException("AWSSecretKey");
+
+            if (string.IsNullOrEmpty(AWSProfileName)
+                    && Credentials == null
+                    && (string.IsNullOrEmpty(AWSAccessKey) && string.IsNullOrEmpty(AWSSecretKey)))
+                throw new InvalidOperationException("No credentials supplied; expected AWSProfileName or Credentials or AWSAccessKey & AWSSecretKey properties to be set.");
         }
 
         /// <summary>
@@ -464,8 +506,17 @@ namespace AWSDeployment
             }
             else
             {
-                config.PutParameter("AWSAccessKey", this.AWSAccessKey);
-                config.PutParameter("AWSSecretKey", this.AWSSecretKey);
+                if (this.Credentials != null)
+                {
+                    var credentialKeys = Credentials.GetCredentials();
+                    config.PutParameter("AWSAccessKey", credentialKeys.AccessKey);
+                    config.PutParameter("AWSSecretKey", credentialKeys.SecretKey);
+                }
+                else
+                {
+                    config.PutParameter("AWSAccessKey", AWSAccessKey);
+                    config.PutParameter("AWSSecretKey", AWSSecretKey);
+                }
             }
 
             if (!string.IsNullOrEmpty(this.UploadBucket))
