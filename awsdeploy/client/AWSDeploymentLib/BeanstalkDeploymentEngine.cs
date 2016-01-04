@@ -213,8 +213,7 @@ namespace AWSDeployment
                 {
                     var endpoint = RegionEndPoints.GetEndpoint("ElasticBeanstalk");
                     var beanstalkConfig = new AmazonElasticBeanstalkConfig {ServiceURL = endpoint.Url, AuthenticationRegion = endpoint.AuthRegion};
-                    var keys = CredentialKeys;
-                    this._beanstalkClient = new AmazonElasticBeanstalkClient(keys.AccessKey, keys.SecretKey, beanstalkConfig);
+                    this._beanstalkClient = new AmazonElasticBeanstalkClient(Credentials, beanstalkConfig);
                 }
 
                 return this._beanstalkClient;
@@ -230,8 +229,7 @@ namespace AWSDeployment
                 if (this._rdsClient == null)
                 {
                     var rdsConfig = new AmazonRDSConfig {ServiceURL = RegionEndPoints.GetEndpoint("RDS").Url};
-                    var keys = CredentialKeys;
-                    this._rdsClient = new AmazonRDSClient(keys.AccessKey, keys.SecretKey, rdsConfig);
+                    this._rdsClient = new AmazonRDSClient(Credentials, rdsConfig);
                 }
 
                 return this._rdsClient;
@@ -247,8 +245,7 @@ namespace AWSDeployment
                 if (this._iamClient == null)
                 {
                     var iamConfig = new AmazonIdentityManagementServiceConfig {ServiceURL = RegionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).Url};
-                    var keys = CredentialKeys;
-                    this._iamClient = new AmazonIdentityManagementServiceClient(keys.AccessKey, keys.SecretKey, iamConfig);
+                    this._iamClient = new AmazonIdentityManagementServiceClient(Credentials, iamConfig);
                 }
 
                 return this._iamClient;

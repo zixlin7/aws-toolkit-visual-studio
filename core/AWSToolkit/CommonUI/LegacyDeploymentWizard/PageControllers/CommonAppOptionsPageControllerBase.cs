@@ -282,9 +282,9 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
                     {
                         AccountViewModel selectedAccount 
                             = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
-                        var credentialKeys = selectedAccount.CredentialKeys;
-                        appSettings[DeploymentWizardProperties.AppOptions.propkey_EnvAccessKey] = credentialKeys.AccessKey;
-                        appSettings[DeploymentWizardProperties.AppOptions.propkey_EnvSecretKey] = credentialKeys.SecretKey;
+                        var credentials = selectedAccount.Credentials.GetCredentials();
+                        appSettings[DeploymentWizardProperties.AppOptions.propkey_EnvAccessKey] = credentials.AccessKey;
+                        appSettings[DeploymentWizardProperties.AppOptions.propkey_EnvSecretKey] = credentials.SecretKey;
                     }
                     break;
 

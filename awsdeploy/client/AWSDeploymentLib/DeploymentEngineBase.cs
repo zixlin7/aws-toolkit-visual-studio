@@ -177,8 +177,7 @@ namespace AWSDeployment
                 if (this._s3Client == null)
                 {
                     var s3Config = new AmazonS3Config {ServiceURL = RegionEndPoints.GetEndpoint("S3").Url};
-                    var keys = CredentialKeys;
-                    this._s3Client = new AmazonS3Client(keys.AccessKey, keys.SecretKey, s3Config);
+                    this._s3Client = new AmazonS3Client(Credentials, s3Config);
                 }
 
                 return this._s3Client;
@@ -193,8 +192,7 @@ namespace AWSDeployment
                 if (this._ec2Client == null)
                 {
                     var ec2Config = new AmazonEC2Config {ServiceURL = RegionEndPoints.GetEndpoint("EC2").Url};
-                    var keys = CredentialKeys;
-                    this._ec2Client = new AmazonEC2Client(keys.AccessKey, keys.SecretKey, ec2Config);
+                    this._ec2Client = new AmazonEC2Client(Credentials, ec2Config);
                 }
 
                 return this._ec2Client;
@@ -379,29 +377,6 @@ namespace AWSDeployment
             this.Region = settings[REGION] as string;
         }
 
-        /// <summary>
-        /// Returns the set of access and secret keys to use, varying based on how the deployment 
-        /// instance was set up.
-        /// </summary>
-        protected ImmutableCredentials CredentialKeys
-        {
-            get
-            {
-                if (Credentials != null)
-                    return Credentials.GetCredentials();
-
-                if (!string.IsNullOrEmpty(AWSProfileName))
-                {
-                    SetCredentialsFromProfileName(AWSProfileName);
-                    return Credentials.GetCredentials();
-                }
-
-                // we would not have passed pre-deploy validation if one of
-                // profile, credentials or access/secret keys was not set
-                return new ImmutableCredentials(AWSAccessKey, AWSSecretKey, null);
-            }
-        }
-
         public void SetCredentialsFromProfileName(string profileName)
         {
             this.AWSProfileName = profileName;
@@ -441,6 +416,14 @@ namespace AWSDeployment
                     && Credentials == null
                     && (string.IsNullOrEmpty(AWSAccessKey) && string.IsNullOrEmpty(AWSSecretKey)))
                 throw new InvalidOperationException("No credentials supplied; expected AWSProfileName or Credentials or AWSAccessKey & AWSSecretKey properties to be set.");
+
+            if (Credentials == null)
+            {
+                if (!string.IsNullOrEmpty(AWSProfileName))
+                    SetCredentialsFromProfileName(AWSProfileName);
+                else
+                    Credentials = new BasicAWSCredentials(AWSAccessKey, AWSSecretKey);
+            }
         }
 
         /// <summary>

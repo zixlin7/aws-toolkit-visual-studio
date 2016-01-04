@@ -123,9 +123,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
         {
             // had occasion when users have had lead/trail spaces when entering a/c number; explorer
             // should remove but play safe. Know access key is trim-safe already.
-            string suffix = !string.IsNullOrEmpty(account.AccountNumber) ?
-                account.AccountNumber.Trim() : account.CredentialKeys.AccessKey;
-            suffix = suffix.Replace("-", ""); // Get rid of hyphens so we won't get inconsistent bucket names created.
+            string suffix = account.UniqueIdentifier;
             var bucketName = string.Format("awsdeployment-{0}-{1}", region, suffix);
             return bucketName.ToLower(); 
         }

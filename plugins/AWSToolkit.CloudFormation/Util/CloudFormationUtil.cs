@@ -171,8 +171,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Util
         {
             var s3Client = account.CreateServiceClient<AmazonS3Client>(region);
 
-            string uniqueIdentifier = string.IsNullOrEmpty(account.AccountNumber) ? account.CredentialKeys.AccessKey : account.AccountNumber;
-            string bucketName = string.Format("cloudformation-{0}-{1}", region.SystemName, uniqueIdentifier).ToLower();
+            string bucketName = string.Format("cloudformation-{0}-{1}", region.SystemName, account.UniqueIdentifier).ToLower();
             string s3Key = string.Format("{0}/{1}", stack, templateName);
 
             try

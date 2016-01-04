@@ -365,7 +365,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
                 var rep = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
                 var selectedAccount = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
 
-                var accountAndRegion = string.Concat(selectedAccount.CredentialKeys.AccessKey, rep.SystemName);
+                var accountAndRegion = string.Concat(selectedAccount.Credentials.GetCredentials().AccessKey, rep.SystemName);
                 IAmazonEC2 ec2Client;
                 if (!this._ec2ClientsByAccountAndRegion.ContainsKey(accountAndRegion))
                 {

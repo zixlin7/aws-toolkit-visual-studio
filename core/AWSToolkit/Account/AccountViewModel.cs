@@ -151,22 +151,25 @@ namespace Amazon.AWSToolkit.Account
             }
         }
 
-        /// <summary>
-        /// Returns the current access and secret keys obtained from the bound credential
-        /// profile.
-        /// </summary>
-        public ImmutableCredentials CredentialKeys
-        {
-            get
-            {
-                return Credentials.GetCredentials();
-            }
-        }
-
         public string AccountNumber
         {
             get { return this._accountNumber; }
             set { this._accountNumber = value; }
+        }
+
+        public string UniqueIdentifier
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(AccountNumber))
+                    return AccountNumber.Trim().Replace("-", ""); // Get rid of hyphens so we won't get inconsistent names if used to create buckets
+
+                var credentials = Credentials.GetCredentials();
+                if (string.IsNullOrEmpty(credentials.Token))
+                    return credentials.AccessKey;
+
+                throw new InvalidOperationException("Temporary credentials cannot be used to generate a unique identifier.");
+            }
         }
 
         public bool HasRestrictions
@@ -222,7 +225,8 @@ namespace Amazon.AWSToolkit.Account
             if (_credentials == null)
                 return string.Empty;
 
-            return string.Concat(DisplayName, "/", CredentialKeys.AccessKey);
+            var c = Credentials.GetCredentials();
+            return string.Concat(DisplayName, "/", c.AccessKey);
         }
 
         public T CreateServiceClient<T>(RegionEndPointsManager.RegionEndPoints region) where T : class
