@@ -62,16 +62,16 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             this._beanstalkClient = this._environmentModel.BeanstalkClient;
 
             var cwConfig = new AmazonCloudWatchConfig {ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_SERVICE_NAME).Url};
-            this._cwClient = new AmazonCloudWatchClient(this._environmentModel.AccountViewModel.AccessKey, this._environmentModel.AccountViewModel.SecretKey, cwConfig);
+            this._cwClient = new AmazonCloudWatchClient(this._environmentModel.AccountViewModel.Credentials, cwConfig);
 
             var asConfig = new AmazonAutoScalingConfig {ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.AUTOSCALING_SERVICE_NAME).Url};
-            this._asClient = new AmazonAutoScalingClient(this._environmentModel.AccountViewModel.AccessKey, this._environmentModel.AccountViewModel.SecretKey, asConfig);
+            this._asClient = new AmazonAutoScalingClient(this._environmentModel.AccountViewModel.Credentials, asConfig);
 
             var elbConfig = new AmazonElasticLoadBalancingConfig {ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.ELB_SERVICE_NAME).Url};
-            this._elbClient = new AmazonElasticLoadBalancingClient(this._environmentModel.AccountViewModel.AccessKey, this._environmentModel.AccountViewModel.SecretKey, elbConfig);
+            this._elbClient = new AmazonElasticLoadBalancingClient(this._environmentModel.AccountViewModel.Credentials, elbConfig);
 
             var ec2Config = new AmazonEC2Config {ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).Url};
-            this._ec2Client = new AmazonEC2Client(this._environmentModel.AccountViewModel.AccessKey, this._environmentModel.AccountViewModel.SecretKey, ec2Config);
+            this._ec2Client = new AmazonEC2Client(this._environmentModel.AccountViewModel.Credentials, ec2Config);
 
             var ec2Model = this._environmentModel.AccountViewModel.FindSingleChild<IEC2RootViewModel>(false);
             if (ec2Model != null)

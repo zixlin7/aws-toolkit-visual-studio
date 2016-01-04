@@ -63,7 +63,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             {
                 var logsConfig = new AmazonCloudWatchLogsConfig();
                 logsConfig.ServiceURL = endpointURL;
-                this._logsClient = new AmazonCloudWatchLogsClient(this._account.AccessKey, this._account.SecretKey, logsConfig);
+                this._logsClient = new AmazonCloudWatchLogsClient(this._account.Credentials, logsConfig);
             }
 
 

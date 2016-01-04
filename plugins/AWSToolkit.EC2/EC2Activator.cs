@@ -126,7 +126,7 @@ namespace Amazon.AWSToolkit.EC2
 
         bool IAWSEC2.IsVpcOnly(AccountViewModel account, RegionEndpoint region)
         {
-            var ec2Client = new AmazonEC2Client(account.AccessKey, account.SecretKey, region);
+            var ec2Client = new AmazonEC2Client(account.Credentials, region);
             return EC2Utilities.CheckForVpcOnlyMode(ec2Client);
         }
 

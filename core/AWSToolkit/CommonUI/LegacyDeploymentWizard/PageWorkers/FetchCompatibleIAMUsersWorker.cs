@@ -45,7 +45,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageWorkers
             bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(WorkerCompleted);
 
             var iamConfig = new AmazonIdentityManagementServiceConfig {ServiceURL = regionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).Url};
-            var iamClient = new AmazonIdentityManagementServiceClient(account.AccessKey, account.SecretKey, iamConfig);
+            var iamClient = new AmazonIdentityManagementServiceClient(account.Credentials, iamConfig);
 
             bw.RunWorkerAsync(new WorkerData
             {

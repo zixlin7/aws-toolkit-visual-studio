@@ -19,6 +19,7 @@ using Amazon.AWSToolkit.Navigator.Node;
 
 using Amazon.AWSToolkit.S3.Clipboard;
 using log4net;
+using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.S3.Nodes
 {
@@ -53,10 +54,10 @@ namespace Amazon.AWSToolkit.S3.Nodes
             }
         }
 
-        protected override void BuildClient(string accessKey, string secretKey)
+        protected override void BuildClient(AWSCredentials awsCredentials)
         {
             var config = S3Utils.BuildS3Config(this.CurrentEndPoint);
-            this._s3Client = new AmazonS3Client(accessKey, secretKey, config);
+            this._s3Client = new AmazonS3Client(awsCredentials, config);
         }
 
 

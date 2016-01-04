@@ -10,6 +10,7 @@ using Amazon.Runtime.Internal.Settings;
 using Amazon.AWSToolkit.Navigator.Node;
 using log4net;
 using Amazon.Util;
+using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.Account
 {
@@ -22,13 +23,14 @@ namespace Amazon.AWSToolkit.Account
         AccountViewMetaNode _metaNode;
         AWSViewModel _awsViewModel;
 
-        string _settingsUniqueKey;
+        // credentials obtained on-demand from the bound profile
+        AWSCredentials _credentials;
+
+        // data about the bound profile
+        string _profileSettingsKey;
         string _displayName;
-        string _accessKey;
-        string _secretKey;
         string _accountNumber;
         HashSet<string> _restrictions;
-
 
         ObservableCollection<IViewModel> _serviceViewModels;
 
@@ -45,16 +47,17 @@ namespace Amazon.AWSToolkit.Account
         public void ReloadFromPersistence()
         {
             var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
-            var os = settings[this._settingsUniqueKey];
+            var os = settings[this._profileSettingsKey];
             parseObjectSettings(os);
         }
 
         void parseObjectSettings(SettingsCollection.ObjectSettings settings)
         {
-            this._settingsUniqueKey = settings.UniqueKey;
+            this._profileSettingsKey = settings.UniqueKey;
             this._displayName = settings[ToolkitSettingsConstants.DisplayNameField];
-            this._accessKey = settings[ToolkitSettingsConstants.AccessKeyField];
-            this._secretKey = settings[ToolkitSettingsConstants.SecretKeyField];
+
+            _credentials = new StoredProfileAWSCredentials(this._displayName);
+
             this._accountNumber = settings[ToolkitSettingsConstants.AccountNumberField];
 
             if (this._accountNumber != null)
@@ -114,7 +117,7 @@ namespace Amazon.AWSToolkit.Account
 
         public string SettingsUniqueKey
         {
-            get { return this._settingsUniqueKey; }
+            get { return this._profileSettingsKey; }
         }
 
         public override string Name
@@ -133,22 +136,40 @@ namespace Amazon.AWSToolkit.Account
             }
         }
 
-        public string AccessKey
+        /// <summary>
+        /// Returns the AWSCredentials instance bound to the model. To obtain actual
+        /// keys, use the CredentialKeys property.
+        /// </summary>
+        public AWSCredentials Credentials
         {
-            get { return this._accessKey;}
-            set { this._accessKey = value; }
-        }
+            get
+            {
+                if (_credentials == null)
+                    throw new InvalidOperationException("No credential profile has been loaded.");
 
-        public string SecretKey
-        {
-            get { return this._secretKey;}
-            set { this._secretKey = value; }
+                return _credentials;
+            }
         }
 
         public string AccountNumber
         {
             get { return this._accountNumber; }
             set { this._accountNumber = value; }
+        }
+
+        public string UniqueIdentifier
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(AccountNumber))
+                    return AccountNumber.Trim().Replace("-", ""); // Get rid of hyphens so we won't get inconsistent names if used to create buckets
+
+                var credentials = Credentials.GetCredentials();
+                if (string.IsNullOrEmpty(credentials.Token))
+                    return credentials.AccessKey;
+
+                throw new InvalidOperationException("Temporary credentials cannot be used to generate a unique identifier.");
+            }
         }
 
         public bool HasRestrictions
@@ -201,7 +222,11 @@ namespace Amazon.AWSToolkit.Account
 
         public override string ToString()
         {
-            return this.AccessKey;
+            if (_credentials == null)
+                return string.Empty;
+
+            var c = Credentials.GetCredentials();
+            return string.Concat(DisplayName, "/", c.AccessKey);
         }
 
         public T CreateServiceClient<T>(RegionEndPointsManager.RegionEndPoints region) where T : class
@@ -209,8 +234,8 @@ namespace Amazon.AWSToolkit.Account
             Type type = typeof(T);
             try
             {
-                var constructor = type.GetConstructor(new[] { typeof(string), typeof(string), typeof(RegionEndpoint) });
-                var client = constructor.Invoke(new object[] { this.AccessKey, this.SecretKey, RegionEndpoint.GetBySystemName(region.SystemName) }) as T;
+                var constructor = type.GetConstructor(new[] { typeof(AWSCredentials),typeof(RegionEndpoint) });
+                var client = constructor.Invoke(new object[] { Credentials, RegionEndpoint.GetBySystemName(region.SystemName) }) as T;
                 return client;
             }
             catch (Exception e)

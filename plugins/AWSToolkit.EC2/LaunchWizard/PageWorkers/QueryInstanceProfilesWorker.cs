@@ -48,7 +48,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageWorkers
             if (endpoint.AuthRegion != null)
                 iamConfig.AuthenticationRegion = endpoint.AuthRegion;
 
-            var iamClient = new AmazonIdentityManagementServiceClient(accountViewModel.AccessKey, accountViewModel.SecretKey, iamConfig);
+            var iamClient = new AmazonIdentityManagementServiceClient(accountViewModel.Credentials, iamConfig);
 
             bw.DoWork += Worker;
             bw.RunWorkerCompleted += WorkerCompleted;

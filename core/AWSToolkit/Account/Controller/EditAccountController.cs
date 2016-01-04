@@ -14,7 +14,7 @@ namespace Amazon.AWSToolkit.Account.Controller
     public class EditAccountController : RegisterAccountController, IContextCommand
     {
         public const string NAME_CHANGE_PARAMETER = "nameChange";
-        public const string CREDENTIALS_CHANGE_PARAMTER = "credentialsChange";
+        public const string CREDENTIALS_CHANGE_PARAMETER = "credentialsChange";
 
         public const string ACCESSKEY_PARAMETER = "AccessKey";
         public const string SECRETKEY_PARAMETER = "SecretKey";
@@ -73,15 +73,12 @@ namespace Amazon.AWSToolkit.Account.Controller
 
             PersistenceManager.Instance.SaveSettings(ToolkitSettingsConstants.RegisteredProfiles, settings);
 
-            this._accountViewModel.DisplayName = this.Model.DisplayName;
-            this._accountViewModel.AccessKey = this.Model.AccessKey;
-            this._accountViewModel.SecretKey = this.Model.SecretKey;
-            this._accountViewModel.AccountNumber = this.Model.AccountNumber;
+            this._accountViewModel.ReloadFromPersistence();
 
             this._results = new ActionResults().WithSuccess(true)
                 .WithFocalname(this.Model.DisplayName)
                 .WithParameter(NAME_CHANGE_PARAMETER, nameChange)
-                .WithParameter(CREDENTIALS_CHANGE_PARAMTER, credentialsChange)
+                .WithParameter(CREDENTIALS_CHANGE_PARAMETER, credentialsChange)
                 .WithParameter(ACCOUNTNUMBER_PARAMETER, this.Model.AccountNumber)
                 .WithParameter(ACCESSKEY_PARAMETER, this.Model.AccessKey)
                 .WithParameter(SECRETKEY_PARAMETER, this.Model.SecretKey);

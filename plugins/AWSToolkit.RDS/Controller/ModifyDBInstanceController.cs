@@ -66,7 +66,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
             var endPoints = RegionEndPointsManager.Instance.GetRegion(instanceRootViewModel.CurrentEndPoint.RegionSystemName);
             var endPoint = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
             var config = new AmazonEC2Config() { ServiceURL = endPoint.Url };
-            ec2Client = new AmazonEC2Client(account.AccessKey, account.SecretKey, config);
+            ec2Client = new AmazonEC2Client(account.Credentials, config);
 
             if (dbInstanceWrapper.DBInstanceStatus != DBInstanceWrapper.DbStatusAvailable)
             {

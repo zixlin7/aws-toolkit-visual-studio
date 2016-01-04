@@ -9,6 +9,7 @@ using Amazon.DynamoDBv2.Model;
 
 using Amazon.AWSToolkit.DynamoDB.Controller;
 using Amazon.AWSToolkit.DynamoDB.Util;
+using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.DynamoDB.Nodes
 {
@@ -78,7 +79,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
             base.NotifyPropertyChanged("Name");
         }
 
-        protected override void BuildClient(string accessKey, string secretKey)
+        protected override void BuildClient(AWSCredentials awsCredentials)
         {
             AmazonDynamoDBConfig config = new AmazonDynamoDBConfig();
             config.ServiceURL = this.CurrentEndPoint.Url;
@@ -86,7 +87,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
                 config.SignatureVersion = this.CurrentEndPoint.Signer;
             if (this.CurrentEndPoint.AuthRegion != null)
                 config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
-            this._ddbClient = new AmazonDynamoDBClient(accessKey, secretKey, config);            
+            this._ddbClient = new AmazonDynamoDBClient(awsCredentials, config);            
         }
 
         public override IList<ActionHandlerWrapper> GetVisibleActions()

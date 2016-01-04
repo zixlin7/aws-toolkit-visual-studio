@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Amazon.Runtime;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
             this._baseName = name;
             this._region = RegionEndPointsManager.Instance.GetDefaultRegionEndPoints();
             this._endPoint = this._region.GetEndpoint(this.MetaNode.EndPointSystemName);
-            BuildClient(this.AccountViewModel.AccessKey, this.AccountViewModel.SecretKey);
+            BuildClient(this.AccountViewModel.Credentials);
         }
 
         public RegionEndPointsManager.RegionEndPoints CurrentRegion
@@ -34,13 +35,13 @@ namespace Amazon.AWSToolkit.Navigator.Node
             get { return this._endPoint; }
         }
 
-        protected abstract void BuildClient(string accessKey, string secretKey);
+        protected abstract void BuildClient(AWSCredentials credentials);
 
         public void UpdateEndPoint(string regionName)
         {
             this._region = RegionEndPointsManager.Instance.GetRegion(regionName);
             this._endPoint = this._region.GetEndpoint(this.MetaNode.EndPointSystemName);
-            this.BuildClient(this.AccountViewModel.AccessKey, this.AccountViewModel.SecretKey);
+            this.BuildClient(this.AccountViewModel.Credentials);
             this.Refresh(true);
         }
 

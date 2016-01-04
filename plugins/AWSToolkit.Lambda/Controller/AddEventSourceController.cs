@@ -72,27 +72,27 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
             var dynamoDBConfig = new AmazonDynamoDBConfig();
             dynamoDBConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.DYNAMODB_SERVICE_NAME).Url;
-            this._dynamoDBClient = new AmazonDynamoDBClient(account.AccessKey, account.SecretKey, dynamoDBConfig);
+            this._dynamoDBClient = new AmazonDynamoDBClient(account.Credentials, dynamoDBConfig);
 
             var dynamoDBStreamConfig = new AmazonDynamoDBStreamsConfig();
             dynamoDBStreamConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.DYNAMODB_STREAM_SERVICE_NAME).Url;
-            this._dynamoDBStreamsClient = new AmazonDynamoDBStreamsClient(account.AccessKey, account.SecretKey, dynamoDBStreamConfig);
+            this._dynamoDBStreamsClient = new AmazonDynamoDBStreamsClient(account.Credentials, dynamoDBStreamConfig);
 
             var iamConfig = new AmazonIdentityManagementServiceConfig();
             iamConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).Url;
-            this._iamClient = new AmazonIdentityManagementServiceClient(account.AccessKey, account.SecretKey, iamConfig);
+            this._iamClient = new AmazonIdentityManagementServiceClient(account.Credentials, iamConfig);
 
             var kinesisConfig = new AmazonKinesisConfig();
             kinesisConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.KINESIS_SERVICE_NAME).Url;
-            this._kinesisClient = new AmazonKinesisClient(account.AccessKey, account.SecretKey, kinesisConfig);
+            this._kinesisClient = new AmazonKinesisClient(account.Credentials, kinesisConfig);
 
             var s3Config = new AmazonS3Config();
             s3Config.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME).Url;
-            this._s3Client = new AmazonS3Client(account.AccessKey, account.SecretKey, s3Config);
+            this._s3Client = new AmazonS3Client(account.Credentials, s3Config);
 
             var snsConfig = new AmazonSimpleNotificationServiceConfig();
             snsConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME).Url;
-            this._snsClient = new AmazonSimpleNotificationServiceClient(account.AccessKey, account.SecretKey, snsConfig);
+            this._snsClient = new AmazonSimpleNotificationServiceClient(account.Credentials, snsConfig);
 
             this._control = new AddEventSourceControl(this);
             ToolkitFactory.Instance.ShellProvider.ShowModal(this._control);

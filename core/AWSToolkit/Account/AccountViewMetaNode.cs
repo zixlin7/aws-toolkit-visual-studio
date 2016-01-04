@@ -44,10 +44,9 @@ namespace Amazon.AWSToolkit.Account
             {
                 model.DisplayName = results.FocalName;
             }
-            if (results.GetParameter<bool>(EditAccountController.CREDENTIALS_CHANGE_PARAMTER, false))
+            if (results.GetParameter<bool>(EditAccountController.CREDENTIALS_CHANGE_PARAMETER, false))
             {
-                model.AccessKey = results.GetParameter<string>(EditAccountController.ACCESSKEY_PARAMETER, string.Empty);
-                model.SecretKey = results.GetParameter<string>(EditAccountController.SECRETKEY_PARAMETER, string.Empty);
+                model.ReloadFromPersistence();
                 model.FullReload(true);
             }
         }

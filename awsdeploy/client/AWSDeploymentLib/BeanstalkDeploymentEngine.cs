@@ -213,7 +213,7 @@ namespace AWSDeployment
                 {
                     var endpoint = RegionEndPoints.GetEndpoint("ElasticBeanstalk");
                     var beanstalkConfig = new AmazonElasticBeanstalkConfig {ServiceURL = endpoint.Url, AuthenticationRegion = endpoint.AuthRegion};
-                    this._beanstalkClient = new AmazonElasticBeanstalkClient(AWSAccessKey, AWSSecretKey, beanstalkConfig);
+                    this._beanstalkClient = new AmazonElasticBeanstalkClient(Credentials, beanstalkConfig);
                 }
 
                 return this._beanstalkClient;
@@ -229,7 +229,7 @@ namespace AWSDeployment
                 if (this._rdsClient == null)
                 {
                     var rdsConfig = new AmazonRDSConfig {ServiceURL = RegionEndPoints.GetEndpoint("RDS").Url};
-                    this._rdsClient = new AmazonRDSClient(AWSAccessKey, AWSSecretKey, rdsConfig);
+                    this._rdsClient = new AmazonRDSClient(Credentials, rdsConfig);
                 }
 
                 return this._rdsClient;
@@ -245,7 +245,7 @@ namespace AWSDeployment
                 if (this._iamClient == null)
                 {
                     var iamConfig = new AmazonIdentityManagementServiceConfig {ServiceURL = RegionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).Url};
-                    this._iamClient = new AmazonIdentityManagementServiceClient(AWSAccessKey, AWSSecretKey, iamConfig);
+                    this._iamClient = new AmazonIdentityManagementServiceClient(Credentials, iamConfig);
                 }
 
                 return this._iamClient;
@@ -1130,8 +1130,9 @@ namespace AWSDeployment
         string getRemoteURL(bool includeEnvironment)
         {
             var user = new AWSUser();
-            user.AccessKey = AWSAccessKey;
-            user.SecretKey = AWSSecretKey;
+            var credentialKeys = Credentials.GetCredentials();
+            user.AccessKey = credentialKeys.AccessKey;
+            user.SecretKey = credentialKeys.SecretKey;
             var request = new AWSElasticBeanstalkRequest();
             request.Host = GetGitPushHost();
             request.Region = RegionEndPoints.SystemName;

@@ -14,6 +14,7 @@ using Amazon.CloudFormation.Model;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.CloudFormation.Nodes
 {
@@ -65,14 +66,14 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
             get { return this._cloudFormationClient; }
         }
 
-        protected override void BuildClient(string accessKey, string secretKey)
+        protected override void BuildClient(AWSCredentials awsCredentials)
         {
             var config = new AmazonCloudFormationConfig {MaxErrorRetry = 6, ServiceURL = this.CurrentEndPoint.Url};
             if (this.CurrentEndPoint.Signer != null)
                 config.SignatureVersion = this.CurrentEndPoint.Signer;
             if (this.CurrentEndPoint.AuthRegion != null)
                 config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
-            this._cloudFormationClient = new AmazonCloudFormationClient(accessKey, secretKey, config);
+            this._cloudFormationClient = new AmazonCloudFormationClient(awsCredentials, config);
         }
 
 
