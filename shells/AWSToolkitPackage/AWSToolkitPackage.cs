@@ -1821,8 +1821,10 @@ namespace Amazon.AWSToolkit.VisualStudio
                             _shellVersion = "2010";
                         else if (dte.Version.StartsWith("11"))
                             _shellVersion = "2012";
-                        else
+                        else if (dte.Version.StartsWith("12"))
                             _shellVersion = "2013";
+                        else
+                            _shellVersion = "2015";
                     }
                 }
 
