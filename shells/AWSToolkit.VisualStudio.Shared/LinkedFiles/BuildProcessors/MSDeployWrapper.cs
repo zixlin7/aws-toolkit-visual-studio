@@ -42,7 +42,13 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
         const string DECLPARAM_SCOPE_SETACL = "setAcl";
         const string DECLPARAM_TAG_IISAPP = "IisApp";
 
+        // this location can be used to find msdeploy in Windows versions up to and including 8.1 update 1
         const string MSDEPLOY_PROBE_REGISTRY_PATH = @"SOFTWARE\Microsoft\.NETFramework\AssemblyFolders\MSDeploy";
+
+        // from Windows 10 (even after upgrade from prior version) the registry key no longer exists,
+        // so we test this file system path
+        const string MSDEPLOY_PROBE_FOLDER_PATH = @"C:\Program Files\IIS\Microsoft Web Deploy V3\";
+
         #endregion
 
         StringBuilder _declaredParams;
@@ -88,9 +94,16 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
                                                outputPackageFilename,
                                                _declaredParams != null ? _declaredParams.ToString() : string.Empty);
 
+            var msdeployLocation = LocateMsDeployExe(logger);
+
+            logger.OutputMessage(string.Format("...invoking '{0} {1}', working folder '{2}'", 
+                                               msdeployLocation, 
+                                               manifestCmd, 
+                                 _contentLocation), true, true);
+
             var psi = new ProcessStartInfo
             {
-                FileName = MsDeployExe,
+                FileName = msdeployLocation,
                 Arguments = manifestCmd,
 
                 // shouldn't be needed as we're fully qualifying in command line, just in case...
@@ -101,7 +114,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
                 CreateNoWindow = true
             };
 
-            logger.OutputMessage(string.Format("...starting {0} {1}", psi.FileName, psi.Arguments));
+            //logger.OutputMessage(string.Format("...starting {0} {1}", psi.FileName, psi.Arguments));
 
             using (var proc = new Process())
             {
@@ -116,10 +129,10 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
                         {
                             string output;
                             if ((output = proc.StandardOutput.ReadLine()) != null)
-                                logger.OutputMessage("......output: " + output);
+                                logger.OutputMessage("......msdeploy: " + output, true, true);
                             string error;
                             if ((error = proc.StandardError.ReadLine()) != null)
-                                logger.OutputMessage("......error: " + error);
+                                logger.OutputMessage("......msdeploy error: " + error, true, true);
                             if (output == null && error == null)
                                 break;
                         }
@@ -181,21 +194,45 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
         /// Probes registry for install location of vs msdeploy.exe; if not found then
         /// fallback to just exename
         /// </summary>
-        string MsDeployExe
+        string LocateMsDeployExe(IBuildAndDeploymentLogger logger)
         {
-            get
+            var msdeployPath = string.Empty;
+
+            logger.LogMessage("...probing to find msdeploy.exe");
+
+            try
             {
-                var msdeployPath = string.Empty;
+                // registry path good up until Windows 8.1 update 1
+                logger.LogMessage("......inspecting registry path HKLM\\" + MSDEPLOY_PROBE_REGISTRY_PATH);
                 using (var msdeployKey = Registry.LocalMachine.OpenSubKey(MSDEPLOY_PROBE_REGISTRY_PATH, false))
                 {
                     msdeployPath = msdeployKey.GetValue(null) as string;
                 }
 
-                if (!string.IsNullOrEmpty(msdeployPath))
-                    return Path.Combine(msdeployPath, MSDEPLOY_EXE);
-                else
-                    return MSDEPLOY_EXE;
             }
+            catch (Exception e)
+            {
+                logger.LogMessage(".........exception on registry probe: " + e.Message);
+            }
+
+            if (string.IsNullOrEmpty(msdeployPath))
+            {
+                // on Windows 10, it all changed (even after 8.x -> upgrade),
+                logger.LogMessage("......inspecting folder path " + MSDEPLOY_PROBE_FOLDER_PATH);
+                if (Directory.Exists(MSDEPLOY_PROBE_FOLDER_PATH))
+                    msdeployPath = MSDEPLOY_PROBE_FOLDER_PATH;
+            }
+
+            if (!string.IsNullOrEmpty(msdeployPath))
+            {
+                var location = Path.Combine(msdeployPath, MSDEPLOY_EXE);
+                logger.LogMessage("...using msdeploy from " + location);
+                return location;
+            }
+
+            // if we still can't find it, just hope it's on path
+            logger.LogMessage("...unable to locate msdeploy.exe, relying on path resolution");
+            return MSDEPLOY_EXE;
         }
 
         // strings provided to msdeploy are usually regex's, so we must escape everything

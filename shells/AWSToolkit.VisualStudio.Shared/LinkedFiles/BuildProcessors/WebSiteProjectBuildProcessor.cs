@@ -74,10 +74,11 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
 
                     // the dte.BuildSelection hack will have grabbed the output window and changed to Build,
                     // so grab it back...
-                    taskInfo.Logger.OutputMessage(string.Format("...building deployment package {0}", _outputPackage), true);
+                    taskInfo.Logger.OutputMessage(string.Format("...building deployment package '{0}'", _outputPackage), true, true);
 
                     var projectTargetPathProperty = string.Format(AspNetTargetPathPropertyPattern,
                                                                   TaskInfo.ProjectInfo.ProjectIDGuid.Trim(new char[] { '{', '}' }));
+
                     // SteveR: - not ready to make use of this yet
                     string stagedOutputLocation = null /*taskInfo.ProjectInfo.BuildProject.GetPropertyValue(projectTargetPathProperty)*/;
                     if (string.IsNullOrEmpty(stagedOutputLocation))
@@ -94,6 +95,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
                                                               TaskInfo.RuntimeFromFramework,
                                                               iisAppPath,
                                                               TaskInfo.UseIncrementalDeployment);
+
                     msDeployWrapper.Run(_outputPackage, TaskInfo.Logger);
                 }
 
@@ -101,9 +103,16 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
                 {
                     if (Directory.Exists(_outputPackage))
                         ProcessorResult = ResultCodes.Succeeded;
+                    else
+                        taskInfo.Logger.OutputMessage(string.Format("...error, folder '{0}' could not be found", _outputPackage), true, true);
                 }
-                else if (File.Exists(_outputPackage))
-                    ProcessorResult = ResultCodes.Succeeded;
+                else
+                {
+                    if (File.Exists(_outputPackage))
+                        ProcessorResult = ResultCodes.Succeeded;
+                    else
+                        taskInfo.Logger.OutputMessage(string.Format("...error, package '{0}' could not be found", _outputPackage), true, true);
+                }
 
                 TaskInfo.Logger.OutputMessage(ProcessorResult == ResultCodes.Succeeded
                     ? "..deployment package created successfully..."
@@ -111,8 +120,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
             }
             catch (Exception exc)
             {
-                TaskInfo.Logger.OutputMessage("...caught exception during deployment package creation -");
-                TaskInfo.Logger.OutputMessage(exc.Message);
+                TaskInfo.Logger.OutputMessage("...caught exception during deployment package creation: " + exc.Message, true, true);
             }
             finally
             {
