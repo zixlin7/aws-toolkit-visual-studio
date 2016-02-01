@@ -47,7 +47,11 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
 
         // from Windows 10 (even after upgrade from prior version) the registry key no longer exists,
         // so we test this file system path
-        const string MSDEPLOY_PROBE_FOLDER_PATH = @"C:\Program Files\IIS\Microsoft Web Deploy V3\";
+        readonly string[] MSDEPLOY_KNOWN_PATHS =
+        {
+            @"C:\Program Files\IIS\Microsoft Web Deploy V3\",
+            @"C:\Program Files (x86)\IIS\Microsoft Web Deploy V3\"
+        };
 
         #endregion
 
@@ -218,15 +222,21 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
             if (string.IsNullOrEmpty(msdeployPath))
             {
                 // on Windows 10, it all changed (even after 8.x -> upgrade),
-                logger.LogMessage("......inspecting folder path " + MSDEPLOY_PROBE_FOLDER_PATH);
-                if (Directory.Exists(MSDEPLOY_PROBE_FOLDER_PATH))
-                    msdeployPath = MSDEPLOY_PROBE_FOLDER_PATH;
+                foreach (var p in MSDEPLOY_KNOWN_PATHS)
+                {
+                    logger.LogMessage("......inspecting folder path " + p);
+                    if (Directory.Exists(p))
+                    {
+                        msdeployPath = p;
+                        break;
+                    }
+                }
             }
 
             if (!string.IsNullOrEmpty(msdeployPath))
             {
                 var location = Path.Combine(msdeployPath, MSDEPLOY_EXE);
-                logger.LogMessage("...using msdeploy from " + location);
+                logger.LogMessage("...using msdeploy found at: " + location);
                 return location;
             }
 
