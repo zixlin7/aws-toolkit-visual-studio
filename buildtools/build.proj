@@ -161,7 +161,7 @@
     </Target>
     
 	<Target Name="update-version" DependsOnTargets="build-tools" Condition="$(UpdateVersions)">		
-		<UpdateAWSDeployVersionTask
+		<UpdateAssemblyInfoVersionTask
 			RepositoryRoot="$(MSBuildProjectDirectory)\.."
             AssemblyInfoPaths="awsdeploy\host"
 			VersionNumber="$(AWSDeployVersionNumber)"
