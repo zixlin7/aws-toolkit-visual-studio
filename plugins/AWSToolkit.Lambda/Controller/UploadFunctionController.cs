@@ -26,7 +26,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionController));
 
-        public const string ZIP_FILTER = @"-\.njsproj$;-\.sln$;-\.suo$;-.ntvs_analysis.dat;-.git;-.svn;-_testdriver.js;-_sampleEvent.json";
+        public const string ZIP_FILTER = @"-\.njsproj$;-\.sln$;-\.suo$;-.ntvs_analysis\.dat;-\.git;-\.svn;-_testdriver.js;-_sampleEvent\.json";
 
         UploadFunctionControl _control;
         ActionResults _results;
