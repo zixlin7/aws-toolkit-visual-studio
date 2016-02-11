@@ -101,13 +101,20 @@ namespace Amazon.AWSToolkit.Navigator.Node
                 // invalid profiles but make them non-selectable for use (but editable, so errors can be corrected).
                 // The entry in the drop down will need an indicator showing the profile is bad, with the validation
                 // fail message.
-                if (AWSCredentialsProfile.CanCreateFrom(os))
+                try
                 {
-                    updatedAccounts.Add(new AccountViewModel(this._metaNode.FindChild<AccountViewMetaNode>(), this, os));
+                    if (AWSCredentialsProfile.CanCreateFrom(os))
+                    {
+                        updatedAccounts.Add(new AccountViewModel(this._metaNode.FindChild<AccountViewMetaNode>(), this, os));
+                    }
+                    else
+                    {
+                        _logger.InfoFormat("Skipped non-AWS credential profile {0}", os[ToolkitSettingsConstants.DisplayNameField]);
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    _logger.InfoFormat("Skipped non-AWS credential profile {0}", os[ToolkitSettingsConstants.DisplayNameField]);
+                    _logger.InfoFormat("Skipped credential profile {0} due to error: {1}", os[ToolkitSettingsConstants.DisplayNameField], e.Message);
                 }
             }
 
