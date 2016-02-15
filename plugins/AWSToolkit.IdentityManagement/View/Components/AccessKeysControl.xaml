@@ -42,29 +42,31 @@
                               >
             <commonui:ToolkitDataGridWrapper.RowDetailsTemplate>
                 <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="1*"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition Height="auto"/>
-                        </Grid.RowDefinitions>
+                    <Border BorderBrush="{DynamicResource awsAccentMediumBrushKey}" BorderThickness="2" CornerRadius="4" Margin="4">
+                        <Grid Background="{DynamicResource awsPanelBackgroundBrushKey}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
 
-                        <TextBlock Margin="5,5,5,5" Grid.Row="0" Grid.Column="0" Text="Access Key ID" Style="{DynamicResource awsTextBlockBaseStyle}" />
-                        <TextBox Margin="5,5,5,5" Grid.Row="0" Grid.Column="1" Style="{DynamicResource awsSelectableTextBoxStyle}" Text="{Binding AccessKey}"/>
+                            <TextBlock Margin="5,5,5,5" Grid.Row="0" Grid.Column="0" Text="Access Key ID" Style="{DynamicResource awsTextBlockBaseStyle}" />
+                            <TextBox Margin="5,5,5,5" Grid.Row="0" Grid.Column="1" Style="{DynamicResource awsSelectableTextBoxStyle}" Text="{Binding AccessKey}"/>
 
-                        <TextBlock Margin="5,5,5,5" Grid.Row="1" Grid.Column="0" Text="Secret Access Key" Style="{DynamicResource awsTextBlockBaseStyle}" />
-                        <TextBox Margin="5,5,5,5" Grid.Row="1" Grid.Column="1" Text="{Binding SecretKey}" Style="{DynamicResource awsTextBoxStyle}"/>
+                            <TextBlock Margin="5,5,5,5" Grid.Row="1" Grid.Column="0" Text="Secret Access Key" Style="{DynamicResource awsTextBlockBaseStyle}" />
+                            <TextBox Margin="5,5,5,5" Grid.Row="1" Grid.Column="1" Text="{Binding SecretKey}" Style="{DynamicResource awsTextBoxStyle}"/>
 
-                        <CheckBox Margin="5,5,5,5" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+                            <CheckBox Margin="5,5,5,5" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
                                   IsChecked="{Binding PersistSecretKeyLocal}" Content="Save the secret access key locally."
                                   Style="{DynamicResource awsCheckboxButtonBaseStyle}"/>
-                        <Button Margin="5,5,5,5" Grid.Row="3" Grid.Column="0" Content="{Binding ChangeStatusLabel}" Click="onChangeStatus"/>
-                    </Grid>
+                            <Button Margin="5,5,5,5" Grid.Row="3" Grid.Column="0" Content="{Binding ChangeStatusLabel}" Click="onChangeStatus"/>
+                        </Grid>
+                    </Border>
                 </DataTemplate>
             </commonui:ToolkitDataGridWrapper.RowDetailsTemplate>
 
