@@ -54,7 +54,16 @@
     <SolidColorBrush x:Key="awsButtonTextBrushKey" Color="{DynamicResource {x:Static vsfx:VsColors.ButtonTextKey}}"/>
     <SolidColorBrush x:Key="awsButtonIsDefaultBorderBrush" Color="{DynamicResource {x:Static vsfx:VsColors.HighlightKey}}"/>
     <SolidColorBrush x:Key="awsButtonPressedBorderBrush" Color="{DynamicResource {x:Static vsfx:VsColors.HighlightKey}}"/>
-    
+    <SolidColorBrush x:Key="awsButtonMouseOverBorderBrush" Color="{DynamicResource {x:Static vsfx:VsColors.HighlightKey}}"/>
+
+    <!-- this allows us to retain black-on-white coloring for the checkbox button mark 
+         across light and dark themes (if we used reversed foreground/background assignments,
+         we'd have white-on-black checkbox marks
+    -->
+    <SolidColorBrush x:Key="awsCheckboxOrRadioBorderBrushKey" Color="{DynamicResource {x:Static vsfx:VsColors.ControlOutlineKey}}"/>
+    <SolidColorBrush x:Key="awsCheckboxOrRadioForegroundBrushKey" Color="{DynamicResource {x:Static vsfx:VsColors.WindowTextKey}}"/>
+    <SolidColorBrush x:Key="awsCheckboxOrRadioBackgroundBrushKey" Color="{DynamicResource {x:Static vsfx:VsColors.WindowKey}}"/>
+
     <!-- 
     ******************************************************************************** 
     * List/Grid controls

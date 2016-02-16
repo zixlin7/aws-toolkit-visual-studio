@@ -23,4 +23,14 @@
     <!-- not quite so harsh as standard blue on a dark background -->
     <!--<SolidColorBrush x:Key="awsUrlTextFieldForegroundBrushKey" Color="DarkBlue" />-->
 
+    <SolidColorBrush x:Key="awsButtonMouseOverBorderBrush" Color="#FF5593FF"/>
+
+    <!-- this allows us to retain black-on-white coloring for the checkbox button mark 
+         across light and dark themes (if we used simple foreground/background,
+         we'd have white-on-black checkbox marks
+    -->
+    <SolidColorBrush x:Key="awsCheckboxOrRadioBorderBrushKey" Color="#FFFFFFFF"/>
+    <SolidColorBrush x:Key="awsCheckboxOrRadioForegroundBrushKey" Color="#FF212121"/>
+    <SolidColorBrush x:Key="awsCheckboxOrRadioBackgroundBrushKey" Color="#FFFFFFFF"/>
+
 </ResourceDictionary>
