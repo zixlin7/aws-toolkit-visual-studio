@@ -417,6 +417,15 @@ namespace AWSDeployment
                     && (string.IsNullOrEmpty(AWSAccessKey) && string.IsNullOrEmpty(AWSSecretKey)))
                 throw new InvalidOperationException("No credentials supplied; expected AWSProfileName or Credentials or AWSAccessKey & AWSSecretKey properties to be set.");
 
+            EnsureCredentialsReadyForDeployment();
+        }
+
+        /// <summary>
+        /// Ensures the Credentials property is set up to return valid credentials based on
+        /// how credential data was passed into the tool.
+        /// </summary>
+        protected void EnsureCredentialsReadyForDeployment()
+        {
             if (Credentials == null)
             {
                 if (!string.IsNullOrEmpty(AWSProfileName))

@@ -302,6 +302,9 @@ namespace AWSDeployment
         int PostProcessConfigurationSettingsForNewDeploy()
         {
             DeploymentMode = DeploymentModes.DeployNewApplication;
+
+            EnsureCredentialsReadyForDeployment();
+
             return VerifyOptionsForNewUploadAreSet();
         }
 
@@ -317,6 +320,8 @@ namespace AWSDeployment
                               ApplicationName,
                               EnvironmentName,
                               VersionLabel);
+
+                EnsureCredentialsReadyForDeployment();
 
                 var response
                     = BeanstalkClient.DescribeEnvironments(new DescribeEnvironmentsRequest()
