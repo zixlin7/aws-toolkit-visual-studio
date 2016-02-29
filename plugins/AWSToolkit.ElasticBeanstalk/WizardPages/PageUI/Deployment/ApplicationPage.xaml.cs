@@ -137,7 +137,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         {
             get
             {
-                if (EnvironmentName == null || EnvironmentName.Length < 4 || EnvironmentName.Length > 23)
+                if (EnvironmentName == null || EnvironmentName.Length < 4 || EnvironmentName.Length > 40)
                 {
                     return false;
                 }

@@ -19,7 +19,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.Validators
 
             if(!page.IsEnvironmentNameValid)
             {
-                return new ValidationResult(false, "The environment name length must be between 4 and 23 characters and can only contain letters, numbers, and hyphens.");
+                return new ValidationResult(false, "The environment name length must be between 4 and 40 characters and can only contain letters, numbers, and hyphens.");
             }
 
             return new ValidationResult(true, null);

@@ -48,7 +48,7 @@
                     <TextBox x:Name="_envName" VerticalAlignment="Center" TextChanged="OnEnvNameChanged" 
                              IsEnabled="{Binding ElementName=_btnCreateNewEnv, Path=IsChecked}"
                              LostFocus="_envName_LostFocus"
-                             MaxLength="23"
+                             MaxLength="40"
                              Style="{DynamicResource awsTextBoxStyle}"/>
                     <TextBlock x:Name="_envNameValidationMsg" 
                                Margin="2" 
