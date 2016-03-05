@@ -1672,7 +1672,9 @@
                     "required": true,
                     "allowed-values": [
                       "allow-all",
-                      "https-only"
+                      "https-only",
+                      "redirect-to-https",
+                      "*"
                     ],
                     "description": "Specifies the protocol that users can use to access the files in the origin specified by TargetOriginId when the default cache behavior is applicable to a request."
                   }
@@ -1834,6 +1836,11 @@
                     "description": "Specifies how CloudFront serves HTTPS requests."
                   }
                 }
+              },
+              "WebACLId": {
+                "type": "String",
+                "required": false,
+                "description": "The AWS WAF web ACL to associate with this distribution."
               }
             }
           }
@@ -1906,6 +1913,11 @@
             "required": true,
             "description": "Indicates whether the CloudTrail trail is currently logging AWS API calls."
           },
+          "IsMultiRegionTrail": {
+            "type": "Boolean",
+            "required": false,
+            "description": "Indicates whether the CloudTrail trail is created in the region in which you create the stack (false) or in all regions (true)."
+          },
           "KMSKeyId": {
             "type": "String",
             "required": true,
@@ -1926,6 +1938,7 @@
           "SnsTopicName": {
             "type": "String",
             "required": false,
+            "resource-ref-type": "AWS::SNS::Topic",
             "description": "The name of an Amazon SNS topic that is notified when new log files are published."
           },
           "Tags": {
@@ -2699,6 +2712,7 @@
               "Location": {
                 "type": "String",
                 "required": true,
+                "resource-ref-type": "AWS::S3::Bucket",
                 "description": "The location where AWS CodePipeline stores artifacts for a pipeline, such as an S3 bucket."
               },
               "Type": {
@@ -3052,6 +3066,11 @@
                 "required": false,
                 "description": "Indicates whether to record all supported resource types. If you specify this property, do not specify the ResourceTypes property."
               },
+              "IncludeGlobalResourceTypes": {
+                "type": "Boolean",
+                "required": false,
+                "description": "Indicates whether AWS Config records all supported global resource types. "
+              },
               "ResourceTypes": {
                 "type": "Array",
                 "array-type": "String",
@@ -3073,7 +3092,11 @@
                   "AWS::EC2::VPC",
                   "AWS::EC2::VPNConnection",
                   "AWS::EC2::VPNGateway",
-                  "AWS::CloudTrail::Trail"
+                  "AWS::CloudTrail::Trail",
+                  "AWS::IAM::User",
+                  "AWS::IAM::Group",
+                  "AWS::IAM::Role",
+                  "AWS::IAM::Policy"
                 ]
               }
             }
@@ -3335,6 +3358,95 @@
                 "required": true,
                 "resource-ref-type": "*",
                 "description": "A value associated with the key term."
+              }
+            }
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::DirectoryService::MicrosoftAD": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::DirectoryService::MicrosoftAD resource creates a Microsoft Active Directory in AWS so that your directory users and groups can access the AWS Management Console and AWS applications using their existing credentials.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::DirectoryService::MicrosoftAD resource creates a Microsoft Active Directory in AWS so that your directory users and groups can access the AWS Management Console and AWS applications using their existing credentials."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "CreateAlias": {
+            "type": "Boolean",
+            "required": false,
+            "description": "A unique alias to assign to the Microsoft Active Directory in AWS. "
+          },
+          "EnableSso": {
+            "type": "Boolean",
+            "required": false,
+            "description": "Whether to enable single sign-on for a Microsoft Active Directory in AWS."
+          },
+          "Name": {
+            "type": "String",
+            "required": true,
+            "description": "The fully qualified name for the Microsoft Active Directory in AWS, such as corp.example.com."
+          },
+          "Password": {
+            "type": "String",
+            "required": true,
+            "description": "The password for the default administrative user, Admin."
+          },
+          "ShortName": {
+            "type": "String",
+            "required": false,
+            "description": "The NetBIOS name for your domain, such as CORP."
+          },
+          "VpcSettings": {
+            "type": "Object",
+            "required": true,
+            "description": "Specifies the VPC settings of the Microsoft Active Directory server in AWS.",
+            "properties": {
+              "SubnetIds": {
+                "type": "Array",
+                "array-type": "String",
+                "required": true,
+                "description": "A list of at least two subnet IDs for the directory servers.",
+                "resource-ref-type": "AWS::EC2::Subnet"
+              },
+              "VpcId": {
+                "type": "String",
+                "required": true,
+                "description": "The VPC ID in which to create the Microsoft Active Directory server.",
+                "resource-ref-type": "AWS::EC2::VPC"
               }
             }
           }
@@ -4543,6 +4655,61 @@
                 "description": "A value associated with the key term."
               }
             }
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::EC2::NatGateway": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::EC2::NatGateway resource creates a network address translation (NAT) gateway in the specified public subnet",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::EC2::NatGateway resource creates a network address translation (NAT) gateway in the specified public subnet"
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "AllocationId": {
+            "type": "String",
+            "required": true,
+            "description": "The allocation ID of an Elastic IP address to associate with the NAT gateway."
+          },
+          "SubnetId": {
+            "type": "String",
+            "required": false,
+            "resource-ref-type": "AWS::EC2::Subnet",
+            "description": "The public subnet in which to create the NAT gateway."
           }
         }
       },
@@ -7146,6 +7313,60 @@
     }
   }
 ,
+  "AWS::ECR::Repository": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::ECR::Repository resource creates an Amazon EC2 Container Registry (Amazon ECR) repository, where users can push and pull Docker images.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::ECR::Repository resource creates an Amazon EC2 Container Registry (Amazon ECR) repository, where users can push and pull Docker images."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "RepositoryName": {
+            "type": "String",
+            "required": false,
+            "description": "A name for the image repository."
+          },
+          "RepositoryPolicyText": {
+            "type": "Json",
+            "required": false,
+            "description": "A policy that controls who has access to the repository and which actions they can perform on it."
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
   "AWS::ECS::Cluster": {
     "type": "Object",
     "required": false,
@@ -9095,6 +9316,765 @@
     }
   }
 ,
+  "AWS::Elasticsearch::Domain": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::Elasticsearch::Domain resource creates an Amazon Elasticsearch Service (Amazon ES) domain that encapsulates the Amazon ES engine instances.",
+    "return-values": [
+      {
+        "name": "DomainArn",
+        "description": "The Amazon Resource Name (ARN) of the domain, such as arn:aws:es:us-west-2:123456789012:domain/mystack-elasti-1ab2cdefghij."
+      },
+      {
+        "name": "DomainEndpoint",
+        "description": "The domain-specific endpoint that is used to submit index, search, and data upload requests to an Amazon ES domain, such as search-mystack-elasti-1ab2cdefghij-ab1c2deckoyb3hofw7wpqa3cm.us-west-2.es.amazonaws.com."
+      }
+    ],
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::Elasticsearch::Domain resource creates an Amazon Elasticsearch Service (Amazon ES) domain that encapsulates the Amazon ES engine instances."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "AccessPolicies": {
+            "type": "Json",
+            "required": false,
+            "description": "An AWS Identity and Access Management (IAM) policy document that specifies who can access the Amazon ES domain and their permissions."
+          },
+          "AdvancedOptions": {
+            "type": "Json",
+            "required": false,
+            "description": "Additional options to specify for the Amazon ES domain."
+          },
+          "DomainName": {
+            "type": "String",
+            "required": false,
+            "description": "A name for the Amazon ES domain."
+          },
+          "EBSOptions": {
+            "type": "Object",
+            "required": false,
+            "description": "The configurations of Amazon Elastic Block Store (Amazon EBS) volumes that are attached to data nodes in the Amazon ES domain.",
+            "Properties": {
+              "EBSEnabled": {
+                "type": "Boolean",
+                "required": false,
+                "description": "Specifies whether Amazon EBS volumes are attached to data nodes in the Amazon ES domain."
+              },
+              "Iops": {
+                "type": "Number",
+                "required": false,
+                "description": "The number of I/O operations per second (IOPS) that the volume supports."
+              },
+              "VolumeSize": {
+                "type": "Number",
+                "required": false,
+                "description": "The size of the EBS volume for each data node."
+              },
+              "VolumeType": {
+                "type": "String",
+                "required": false,
+                "description": "The EBS volume type to use with the Amazon ES domain, such as standard, gp2, or io1.",
+                "allowed-values": [
+                  "gp2",
+                  "io1",
+                  "*"
+                ]
+              }
+            }
+          },
+          "ElasticsearchClusterConfig": {
+            "type": "Object",
+            "required": false,
+            "description": "The cluster configuration for the Amazon ES domain.",
+            "Properties": {
+              "DedicatedMasterCount": {
+                "type": "Number",
+                "required": false,
+                "description": "The number of instances to use for the master node."
+              },
+              "DedicatedMasterEnabled": {
+                "type": "Boolean",
+                "required": false,
+                "description": "Indicates whether to use a dedicated master node for the Amazon ES domain."
+              },
+              "DedicatedMasterType": {
+                "type": "String",
+                "required": false,
+                "description": "The hardware configuration of the computer that hosts the dedicated master node, such as m3.medium.elasticsearch.",
+                "allowed-values": [
+                  "*",
+                  "t2.micro.elasticsearch",
+                  "t2.small.elasticsearch",
+                  "t2.medium.elasticsearch",
+                  "m3.medium.elasticsearch",
+                  "m3.large.elasticsearch",
+                  "m3.xlarge.elasticsearch",
+                  "m3.2xlarge.elasticsearch",
+                  "r3.large.elasticsearch",
+                  "r3.xlarge.elasticsearch",
+                  "r3.2xlarge.elasticsearch",
+                  "r3.4xlarge.elasticsearch",
+                  "r3.8xlarge.elasticsearch",
+                  "i2.xlarge.elasticsearch",
+                  "i2.2xlarge.elasticsearch"
+                ]
+              },
+              "InstanceCount": {
+                "type": "Number",
+                "required": false,
+                "description": "The number of data nodes (instances) to use in the Amazon ES domain."
+              },
+              "InstanceType": {
+                "type": "String",
+                "required": false,
+                "description": "",
+                "allowed-values": [
+                  "*",
+                  "t2.micro.elasticsearch",
+                  "t2.small.elasticsearch",
+                  "t2.medium.elasticsearch",
+                  "m3.medium.elasticsearch",
+                  "m3.large.elasticsearch",
+                  "m3.xlarge.elasticsearch",
+                  "m3.2xlarge.elasticsearch",
+                  "r3.large.elasticsearch",
+                  "r3.xlarge.elasticsearch",
+                  "r3.2xlarge.elasticsearch",
+                  "r3.4xlarge.elasticsearch",
+                  "r3.8xlarge.elasticsearch",
+                  "i2.xlarge.elasticsearch",
+                  "i2.2xlarge.elasticsearch"
+                ]
+              },
+              "ZoneAwarenessEnabled": {
+                "type": "Boolean",
+                "required": false,
+                "description": "Indicates whether to enable zone awareness for the Amazon ES domain."
+              }
+            }
+          },
+          "SnapshotOptions": {
+            "type": "Object",
+            "required": false,
+            "description": "The hour in UTC during which the service takes an automated daily snapshot of the indices in the Amazon ES domain.",
+            "Properties": {
+              "AutomatedSnapshotStartHour": {
+                "type": "Number",
+                "required": false,
+                "description": "The hour in UTC during which the service takes an automated daily snapshot of the indices in the Amazon ES domain."
+              }
+            }
+          },
+          "Tags": {
+            "type": "Array",
+            "array-type": "Object",
+            "required": false,
+            "description": "The tags that you want to attach.",
+            "properties": {
+              "Key": {
+                "type": "String",
+                "required": true,
+                "description": "The key term for this item."
+              },
+              "Value": {
+                "type": "String",
+                "required": true,
+                "resource-ref-type": "*",
+                "description": "A value associated with the key term."
+              }
+            }
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::EMR::Cluster": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::EMR::Cluster resource creates an Amazon Elastic MapReduce (Amazon EMR) cluster.",
+    "return-values": [
+      {
+        "name": "MasterPublicDNS",
+        "description": "The public DNS name of the master node (instance), such as ec2-12-123-123-123.us-west-2.compute.amazonaws.com."
+      }
+    ],
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::EMR::Cluster resource creates an Amazon Elastic MapReduce (Amazon EMR) cluster."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "AdditionalInfo": {
+            "type": "Json",
+            "required": false,
+            "description": "Additional features that you want to select."
+          },
+          "Applications": {
+            "type": "Array",
+            "array-type": "Object",
+            "required": false,
+            "description": "The software applications to deploy on the cluster, and the arguments that Amazon EMR passes to those applications.",
+            "properties": {
+              "AdditionalInfo": {
+                "type": "Json",
+                "required": false,
+                "description": "Metadata about third-party applications that third-party vendors use for testing purposes."
+              },
+              "Args": {
+                "type": "Array",
+                "array-type": "String",
+                "required": false,
+                "description": "Arguments that Amazon EMR passes to the application."
+              },
+              "Name": {
+                "type": "String",
+                "required": false,
+                "description": "The name of the application to add to your cluster."
+              },
+              "Version": {
+                "type": "String",
+                "required": false,
+                "description": "The version of the application."
+              }
+            }
+          },
+          "BootstrapActions": {
+            "type": "Array",
+            "array-type": "Object",
+            "required": false,
+            "description": "A list of bootstrap actions that Amazon EMR runs before starting applications on the cluster.",
+            "properties": {
+              "Name": {
+                "type": "String",
+                "required": true,
+                "description": "The name of the bootstrap action to add to your cluster."
+              },
+              "ScriptBootstrapAction": {
+                "type": "String",
+                "required": true,
+                "description": "The script that the bootstrap action runs."
+              }
+            }
+          },
+          "Configurations": {
+            "type": "Array",
+            "array-type": "Json",
+            "required": false,
+            "description": "The software configuration of the Amazon EMR cluster."
+          },
+          "Instances": {
+            "type": "Object",
+            "required": true,
+            "description": "Configures the EC2 instances that will run jobs in the Amazon EMR cluster.",
+            "properties": {
+              "AdditionalMasterSecurityGroups": {
+                "type": "Array",
+                "array-type": "String",
+                "required": false,
+                "resource-ref-type": "AWS::EC2::SecurityGroup",
+                "description": "A list of additional EC2 security group IDs to assign to the master instance (master node) in your Amazon EMR cluster."
+              },
+              "AdditionalSlaveSecurityGroups": {
+                "type": "Array",
+                "array-type": "String",
+                "required": false,
+                "resource-ref-type": "AWS::EC2::SecurityGroup",
+                "description": "A list of additional EC2 security group IDs to assign to the slave instances (slave nodes) in your Amazon EMR cluster."
+              },
+              "Ec2KeyName": {
+                "type": "String",
+                "required": false,
+                "description": "The name of an Amazon Elastic Compute Cloud (Amazon EC2) key pair"
+              },
+              "Ec2SubnetId": {
+                "type": "String",
+                "required": false,
+                "resource-ref-type": "AWS::EC2::Subnet",
+                "description": "The ID of an Amazon Virtual Private Cloud (Amazon VPC) virtual private cloud (VPC) where you want to launch your instances."
+              },
+              "EmrManagedMasterSecurityGroup": {
+                "type": "String",
+                "required": false,
+                "resource-ref-type": "AWS::EC2::SecurityGroup",
+                "description": "The ID of an EC2 security group (managed by Amazon EMR) that is assigned to the master instance (master node) in your Amazon EMR cluster."
+              },
+              "EmrManagedSlaveSecurityGroup": {
+                "type": "String",
+                "required": false,
+                "resource-ref-type": "AWS::EC2::SecurityGroup",
+                "description": "The ID of an EC2 security group (managed by Amazon EMR) that is assigned to the slave instances (slave nodes) in your Amazon EMR cluster."
+              },
+              "HadoopVersion": {
+                "type": "String",
+                "required": false,
+                "description": "The Hadoop version for the job flow.",
+                "allowed-values": [
+                  "*",
+                  "0.18",
+                  "0.20",
+                  "0.20.205",
+                  "1.0.3",
+                  "2.2.0",
+                  "2.4.0"
+                ]
+              },
+              "Placement": {
+                "type": "Object",
+                "required": false,
+                "description": "The Availability Zone (AZ) in which the job flow runs.",
+                "properties": {
+                  "AvailabilityZone": {
+                    "type": "String",
+                    "required": false,
+                    "description": "The Amazon Elastic Compute Cloud (Amazon EC2) AZ for the job flow."
+                  }
+                }
+              },
+              "ServiceAccessSecurityGroup": {
+                "type": "String",
+                "required": false,
+                "resource-ref-type": "AWS::EC2::SecurityGroup",
+                "description": "The ID of an EC2 security group (managed by Amazon EMR) that services use to access clusters in private subnets."
+              },
+              "TerminationProtected": {
+                "type": "Boolean",
+                "required": false,
+                "description": "Indicates whether to prevent the EC2 instances from being terminated by an API call or user intervention."
+              },
+              "CoreInstanceGroup": {
+                "type": "Object",
+                "required": true,
+                "resource-ref-type": "AWS::EMR::InstanceGroupConfig",
+                "description": "The settings for the core instances in your Amazon EMR cluster.",
+                "properties": {
+                  "BidPrice": {
+                    "type": "String",
+                    "required": false,
+                    "description": "When launching instances as Spot Instances, the bid price in USD for each EC2 instance in the instance group."
+                  },
+                  "Configurations": {
+                    "type": "Array",
+                    "array-type": "Json",
+                    "required": false,
+                    "description": "A list of configurations to apply to this instance group."
+                  },
+                  "InstanceCount": {
+                    "type": "Number",
+                    "required": true,
+                    "description": "The number of instances to launch in the instance group."
+                  },
+                  "InstanceType": {
+                    "type": "String",
+                    "required": true,
+                    "allowed-values": {
+                      "MacroExpansion": "ec2-instances"
+                    },
+                    "description": "The EC2 instance type for all instances in the instance group."
+                  },
+                  "Market": {
+                    "type": "String",
+                    "required": false,
+                    "description": "When launching instances as Spot Instances, the bid price in USD for each EC2 instance in the instance group.",
+                    "allowed-values": [
+                      "ON_DEMAND",
+                      "SPOT"
+                    ]
+                  },
+                  "Name": {
+                    "type": "String",
+                    "required": false,
+                    "description": "A name for the instance group."
+                  }
+                }
+              },
+              "MasterInstanceGroup": {
+                "type": "Object",
+                "required": true,
+                "resource-ref-type": "AWS::EMR::InstanceGroupConfig",
+                "description": "The settings for the core instances in your Amazon EMR cluster.",
+                "properties": {
+                  "BidPrice": {
+                    "type": "String",
+                    "required": false,
+                    "description": "When launching instances as Spot Instances, the bid price in USD for each EC2 instance in the instance group."
+                  },
+                  "Configurations": {
+                    "type": "Array",
+                    "array-type": "Json",
+                    "required": false,
+                    "description": "A list of configurations to apply to this instance group."
+                  },
+                  "InstanceCount": {
+                    "type": "Number",
+                    "required": true,
+                    "description": "The number of instances to launch in the instance group."
+                  },
+                  "InstanceType": {
+                    "type": "String",
+                    "required": true,
+                    "allowed-values": {
+                      "MacroExpansion": "ec2-instances"
+                    },
+                    "description": "The EC2 instance type for all instances in the instance group."
+                  },
+                  "Market": {
+                    "type": "String",
+                    "required": false,
+                    "description": "When launching instances as Spot Instances, the bid price in USD for each EC2 instance in the instance group.",
+                    "allowed-values": [
+                      "ON_DEMAND",
+                      "SPOT"
+                    ]
+                  },
+                  "Name": {
+                    "type": "String",
+                    "required": false,
+                    "description": "A name for the instance group."
+                  }
+                }
+              }
+            }
+          },
+          "JobFlowRole": {
+            "type": "String",
+            "required": true,
+            "resource-ref-type": "AWS::IAM::Role",
+            "description": "An AWS Identity and Access Management (IAM) role for an Amazon EMR cluster."
+          },
+          "LogUri": {
+            "type": "String",
+            "required": false,
+            "resource-ref-type": "AWS::S3::Bucket",
+            "description": "An S3 bucket location to which Amazon EMR writes logs files from a job flow."
+          },
+          "Name": {
+            "type": "String",
+            "required": true,
+            "description": "A name for the Amazon EMR cluster."
+          },
+          "ReleaseLabel": {
+            "type": "String",
+            "required": false,
+            "description": "The Amazon EMR software release label. A release is a set of software applications and components that you can install and configure on an Amazon EMR cluster."
+          },
+          "ServiceRole": {
+            "type": "String",
+            "required": true,
+            "resource-ref-type": "AWS::IAM::Role",
+            "description": "The IAM role that Amazon EMR assumes to access AWS resources on your behalf. "
+          },
+          "VisibleToAllUsers": {
+            "type": "Boolean",
+            "required": false,
+            "description": "Indicates whether the instances in the cluster are visible to all IAM users in the AWS account."
+          },
+          "Tags": {
+            "type": "Array",
+            "array-type": "Object",
+            "required": false,
+            "description": "The tags that you want to attach.",
+            "properties": {
+              "Key": {
+                "type": "String",
+                "required": true,
+                "description": "The key term for this item."
+              },
+              "Value": {
+                "type": "String",
+                "required": true,
+                "resource-ref-type": "*",
+                "description": "A value associated with the key term."
+              }
+            }
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::EMR::InstanceGroupConfig": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::EMR::InstanceGroupConfig resource configures a task instance group for an Amazon Elastic MapReduce (Amazon EMR) cluster.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::EMR::InstanceGroupConfig resource configures a task instance group for an Amazon Elastic MapReduce (Amazon EMR) cluster."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "BidPrice": {
+            "type": "String",
+            "required": false,
+            "description": "When launching instances as Spot Instances, the bid price in USD for each EC2 instance in the instance group."
+          },
+          "Configurations": {
+            "type": "Array",
+            "array-type": "Json",
+            "required": false,
+            "description": "A list of configurations to apply to this instance group."
+          },
+          "InstanceCount": {
+            "type": "Number",
+            "required": true,
+            "description": "The number of instances to launch in the instance group."
+          },
+          "InstanceType": {
+            "type": "String",
+            "required": true,
+            "description": "The EC2 instance type for all instances in the instance group.",
+            "allowed-values": [
+              "*",
+              "t1.micro",
+              "m1.small",
+              "m1.medium",
+              "m1.large",
+              "m1.xlarge",
+              "m2.xlarge",
+              "m2.2xlarge",
+              "m2.4xlarge",
+              "m3.medium",
+              "m3.large",
+              "m3.xlarge",
+              "m3.2xlarge",
+              "c1.medium",
+              "c1.xlarge",
+              "cr1.8xlarge",
+              "c3.large",
+              "c3.xlarge",
+              "c3.2xlarge",
+              "c3.4xlarge",
+              "c3.8xlarge",
+              "cc1.4xlarge",
+              "cc2.8xlarge",
+              "cg1.4xlarge",
+              "g2.2xlarge",
+              "g2.2xlarge",
+              "hi1.4xlarge",
+              "hs1.8xlarge",
+              "i2.xlarge",
+              "i2.2xlarge",
+              "i2.4xlarge",
+              "i2.8xlarge",
+              "r3.large",
+              "r3.xlarge",
+              "r3.2xlarge",
+              "r3.4xlarge",
+              "r3.8xlarge"
+            ]
+          },
+          "Market": {
+            "type": "String",
+            "required": false,
+            "description": "When launching instances as Spot Instances, the bid price in USD for each EC2 instance in the instance group.",
+            "allowed-values": [
+              "ON_DEMAND",
+              "SPOT"
+            ]
+          },
+          "Name": {
+            "type": "String",
+            "required": false,
+            "description": "A name for the instance group."
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::EMR::Step": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::EMR::Step resource creates a unit of work (a job flow step) that you submit to an Amazon Elastic MapReduce (Amazon EMR) cluster. ",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::EMR::Step resource creates a unit of work (a job flow step) that you submit to an Amazon Elastic MapReduce (Amazon EMR) cluster. "
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "ActionOnFailure": {
+            "type": "String",
+            "required": true,
+            "description": "The action to take if the job flow step fails.",
+            "allowed-values": [
+              "*",
+              "CONTINUE",
+              "CONTINUE_AND_WAIT"
+            ]
+          },
+          "HadoopJarStep": {
+            "type": "Object",
+            "required": true,
+            "description": "The JAR file that includes the main function that Amazon EMR executes.",
+            "properties": {
+              "Args": {
+                "type": "String",
+                "required": false,
+                "description": "A list of command line arguments passed to the JAR file's main function when the function is executed."
+              },
+              "Jar": {
+                "type": "String",
+                "required": true,
+                "description": "A path to the JAR file that Amazon EMR runs for the job flow step."
+              },
+              "MainClass": {
+                "type": "String",
+                "required": false,
+                "description": "The name of the main class in the specified JAR file. If you don't specify a value, you must specify a main class in the JAR file's manifest file."
+              },
+              "StepProperties": {
+                "type": "Array",
+                "array-type": "Object",
+                "required": false,
+                "description": "A list of Java properties that are set when the job flow step runs.",
+                "properties": {
+                  "Key": {
+                    "type": "String",
+                    "required": true,
+                    "description": "The unique identifier of a key-value pair."
+                  },
+                  "Value": {
+                    "type": "String",
+                    "required": false,
+                    "description": "The value part of the identified key."
+                  }
+                }
+              }
+            }
+          },
+          "JobFlowId": {
+            "type": "String",
+            "required": true,
+            "resource-ref-type": "AWS::EMR::Cluster",
+            "description": "The ID of a cluster in which you want to run this job flow step."
+          },
+          "Name": {
+            "type": "String",
+            "required": true,
+            "description": "A name for the job flow step."
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
   "AWS::IAM::AccessKey": {
     "type": "Object",
     "required": false,
@@ -10047,6 +11027,72 @@
     }
   }
 ,
+  "AWS::Logs::Destination": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::Logs::Destination resource creates an Amazon CloudWatch Logs (CloudWatch Logs) destination.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::Logs::Destination resource creates an Amazon CloudWatch Logs (CloudWatch Logs) destination."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "DestinationName": {
+            "type": "String",
+            "required": true,
+            "description": "The name of the CloudWatch Logs destination."
+          },
+          "DestinationPolicy": {
+            "type": "String",
+            "required": true,
+            "description": "An AWS Identity and Access Management (IAM) policy that specifies who can write to your destination."
+          },
+          "RoleArn": {
+            "type": "String",
+            "required": true,
+            "resource-ref-type": "AWS::IAM::Role",
+            "description": "The Amazon Resource Name (ARN) of an IAM role that permits CloudWatch Logs to send data to the specified AWS resource (TargetArn)."
+          },
+          "TargetArn": {
+            "type": "String",
+            "required": true,
+            "resource-ref-type": "AWS::Kinesis::Stream",
+            "description": "The ARN of the AWS resource that receives log events. Currently, you can specify only an Amazon Kinesis stream."
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
   "AWS::Logs::LogGroup": {
     "type": "Object",
     "required": false,
@@ -10065,6 +11111,61 @@
             "type": "Number",
             "required": false,
             "description": "The number of days log events are kept in CloudWatch Logs. When a log event expires, CloudWatch Logs automatically deletes it."
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::Logs::LogStream": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::Logs::LogStream resource creates an Amazon CloudWatch Logs log stream in a log group.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::Logs::LogStream resource creates an Amazon CloudWatch Logs log stream in a log group."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "LogGroupName": {
+            "type": "String",
+            "required": true,
+            "resource-ref-type": "AWS::Logs::LogGroup",
+            "description": "The name of the log group where the log stream is created."
+          },
+          "LogStreamName": {
+            "type": "String",
+            "required": true,
+            "description": "The name of the log stream to create. The name must be unique within the log group."
           }
         }
       },
@@ -11203,6 +12304,12 @@
             "required": false,
             "description": "The version number of the database engine to use."
           },
+          "KmsKeyId": {
+            "type": "String",
+            "required": false,
+            "resource-ref-type": "AWS::KMS::Key",
+            "description": "The Amazon Resource Name (ARN) of the AWS Key Management Service master key that is used to encrypt the database instances in the DB cluster."
+          },
           "MasterUsername": {
             "type": "String",
             "required": false,
@@ -11227,6 +12334,16 @@
             "type": "String",
             "required": false,
             "description": "The weekly time range during which system maintenance can occur, in Universal Coordinated Time (UTC)."
+          },
+          "SnapshotIdentifier": {
+            "type": "String",
+            "required": false,
+            "description": "The identifier for the DB cluster snapshot from which you want to restore."
+          },
+          "StorageEncrypted": {
+            "type": "Boolean",
+            "required": false,
+            "description": "Indicates whether the DB instances in the cluster are encrypted."
           },
           "VpcSecurityGroupIds": {
             "type": "Array",
@@ -13532,6 +14649,50 @@
               }
             }
           },
+          "ReplicationConfiguration": {
+            "type": "Object",
+            "required": false,
+            "description": "Configuration for replicating objects in an S3 bucket. To enable replication, you must also enable versioning by using the VersioningConfiguration property.",
+            "properties": {
+              "Role": {
+                "type": "String",
+                "required": true,
+                "description": "The Amazon Resource Name (ARN) of an AWS Identity and Access Management (IAM) role that Amazon S3 assumes when replicating objects."
+              },
+              "Rules": {
+                "type": "Array",
+                "array-type": "Object",
+                "required": true,
+                "description": " replication rule that specifies which objects to replicate and where they are stored.",
+                "properties": {
+                  "Destination": {
+                    "type": "String",
+                    "required": true,
+                    "description": "Defines the destination where Amazon S3 stores replicated objects."
+                  },
+                  "Id": {
+                    "type": "String",
+                    "required": false,
+                    "description": "A unique identifier for the rule. If you don't specify a value, AWS CloudFormation generates a random ID."
+                  },
+                  "Prefix": {
+                    "type": "String",
+                    "required": true,
+                    "description": "An object prefix. This rule applies to all Amazon S3 objects with this prefix. To specify all objects in an S3 bucket, specify an empty string."
+                  },
+                  "Status": {
+                    "type": "String",
+                    "required": true,
+                    "description": "Whether the rule is enabled.",
+                    "allowed-values": [
+                      "Enabled",
+                      "Disabled"
+                    ]
+                  }
+                }
+              }
+            }
+          },
           "VersioningConfiguration": {
             "type": "Object",
             "required": false,
@@ -14112,6 +15273,452 @@
             "type": "Json",
             "required": true,
             "description": "A JSON object that describes an instance configuration."
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::WAF::ByteMatchSet": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::WAF::ByteMatchSet resource creates an AWS WAF ByteMatchSet that identifies a part of a web request that you want to inspect.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::WAF::ByteMatchSet resource creates an AWS WAF ByteMatchSet that identifies a part of a web request that you want to inspect."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "ByteMatchTuples": {
+            "type": "Object",
+            "required": false,
+            "description": "Settings for the ByteMatchSet, such as the bytes (typically a string that corresponds with ASCII characters) that you want AWS WAF to search for in web requests.",
+            "properties": {
+              "FieldToMatch": {
+                "type": "Object",
+                "required": true,
+                "description": "The part of a web request that you want AWS WAF to search, such as a specific header or a query string.",
+                "properties": {
+                  "Data": {
+                    "type": "String",
+                    "required": false,
+                    "description": "If you specify HEADER for the Type property, the name of the header that AWS WAF searches for, such as User-Agent or Referer. If you specify any other value for the Type property, do not specify this property."
+                  },
+                  "Type": {
+                    "type": "String",
+                    "required": true,
+                    "description": "The part of the web request in which AWS WAF searches for the target string. For valid values, see FieldToMatch in the AWS WAF API Reference.",
+                    "allowed-values": [
+                      "HEADER",
+                      "METHOD",
+                      "QUERY_STRING",
+                      "URI",
+                      "*"
+                    ]
+                  }
+                }
+              },
+              "PositionalConstraint": {
+                "type": "String",
+                "required": true,
+                "description": "How AWS WAF finds matches within the web request part in which you are searching."
+              },
+              "TargetString": {
+                "type": "String",
+                "required": false,
+                "description": "The value that AWS WAF searches for."
+              },
+              "TargetStringBase64": {
+                "type": "String",
+                "required": false,
+                "description": "The base64-encoded value that AWS WAF searches for."
+              },
+              "TextTransformation": {
+                "type": "String",
+                "required": true,
+                "description": "Specifies how AWS WAF processes the target string value. "
+              }
+            }
+          },
+          "Name": {
+            "type": "String",
+            "required": true,
+            "description": "A friendly name or description of the ByteMatchSet."
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::WAF::IPSet": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::WAF::IPSet resource creates an AWS WAF IPSet that specifies which web requests to permit or block based on the IP addresses from which the requests originate.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::WAF::IPSet resource creates an AWS WAF IPSet that specifies which web requests to permit or block based on the IP addresses from which the requests originate."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "IPSetDescriptors": {
+            "type": "Object",
+            "required": false,
+            "description": "The IP address type and IP address range (in CIDR notation) from which web requests originate.",
+            "properties": {
+              "Type": {
+                "type": "String",
+                "required": true,
+                "description": "The IP address type, such as IPV4.",
+                "allowed-values": [
+                  "IPV4",
+                  "*"
+                ]
+              },
+              "Value": {
+                "type": "String",
+                "required": true,
+                "description": "An IP address (in CIDR notation) that AWS WAF permits, blocks, or counts."
+              }
+            }
+          },
+          "Name": {
+            "type": "String",
+            "required": true,
+            "description": "A friendly name or description of the IPSet."
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::WAF::Rule": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::WAF::Rule resource creates an AWS WAF rule that specifies a combination of IPSet, ByteMatchSet, and SqlInjectionMatchSet objects that identify the web requests to allow, block, or count.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::WAF::Rule resource creates an AWS WAF rule that specifies a combination of IPSet, ByteMatchSet, and SqlInjectionMatchSet objects that identify the web requests to allow, block, or count."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "MetricName": {
+            "type": "String",
+            "required": true,
+            "description": "A friendly name or description for the metrics of this rule."
+          },
+          "Name": {
+            "type": "String",
+            "required": true,
+            "description": "A friendly name or description of the rule."
+          },
+          "Predicates": {
+            "type": "Array",
+            "array-type": "Object",
+            "required": false,
+            "description": "The ByteMatchSet, IPSet, or SqlInjectionMatchSet objects to include in a rule.",
+            "properties": {
+              "DataId": {
+                "type": "String",
+                "required": true,
+                "description": "A unique identifier for the predicate.",
+                "resource-ref-type": [
+                  "AWS::WAF::ByteMatchSet",
+                  "AWS::WAF::IPSet",
+                  "AWS::WAF::SqlInjectionMatchSet",
+                  "*"
+                ]
+              },
+              "Negated": {
+                "type": "Boolean",
+                "required": true,
+                "description": "Whether to use the settings or the negated settings that you specified in the ByteMatchSet, IPSet, or SqlInjectionMatchSet objects."
+              },
+              "Type": {
+                "type": "String",
+                "required": true,
+                "description": "The type of predicate in a rule, such as an IPSet (IPMatch). ",
+                "allowed-values": [
+                  "IPMatch",
+                  "ByteMatch",
+                  "SqlInjectionMatch",
+                  "*"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::WAF::SqlInjectionMatchSet": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::WAF::IPSet resource creates an AWS WAF SqlInjectionMatchSet, which you use to allow, block, or count requests that contain malicious SQL code in a specific part of web requests. ",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::WAF::IPSet resource creates an AWS WAF SqlInjectionMatchSet, which you use to allow, block, or count requests that contain malicious SQL code in a specific part of web requests. "
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "Name": {
+            "type": "String",
+            "required": true,
+            "description": "A friendly name or description of the SqlInjectionMatchSet."
+          },
+          "SqlInjectionMatchTuples": {
+            "type": "Object",
+            "required": false,
+            "description": "The parts of web requests that you want AWS WAF to inspect for malicious SQL code and, if you want AWS WAF to inspect a header, the name of the header.",
+            "properties": {
+              "FieldToMatch": {
+                "type": "Object",
+                "required": true,
+                "description": "The part of a web request that you want AWS WAF to search, such as a specific header or a query string.",
+                "properties": {
+                  "Data": {
+                    "type": "String",
+                    "required": false,
+                    "description": "If you specify HEADER for the Type property, the name of the header that AWS WAF searches for, such as User-Agent or Referer. If you specify any other value for the Type property, do not specify this property."
+                  },
+                  "Type": {
+                    "type": "String",
+                    "required": true,
+                    "description": "The part of the web request in which AWS WAF searches for the target string. For valid values, see FieldToMatch in the AWS WAF API Reference.",
+                    "allowed-values": [
+                      "HEADER",
+                      "METHOD",
+                      "QUERY_STRING",
+                      "URI",
+                      "*"
+                    ]
+                  }
+                },
+                "TextTransformation": {
+                  "type": "String",
+                  "required": true,
+                  "description": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass AWS WAF."
+                }
+              }
+            }
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::WAF::WebACL": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::WAF::WebACL resource creates an AWS WAF web access control group (ACL) containing the rules that identify the Amazon CloudFront (CloudFront) web requests that you want to allow, block, or count.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::WAF::Rule resource creates an AWS WAF rule that specifies a combination of IPSet, ByteMatchSet, and SqlInjectionMatchSet objects that identify the web requests to allow, block, or count."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "DefaultAction": {
+            "type": "Object",
+            "required": true,
+            "description": "The action that you want AWS WAF to take when a request doesn't match the criteria in any of the rules that are associated with the web ACL.",
+            "properties": {
+              "Type": {
+                "type": "String",
+                "required": true,
+                "description": "For actions that are associated with a rule, the action that AWS WAF takes when a web request matches all conditions in a rule.",
+                "allowed-values": [
+                  "ALLOW",
+                  "BLOCK",
+                  "COUNT",
+                  "*"
+                ]
+              }
+            }
+          },
+          "MetricName": {
+            "type": "String",
+            "required": true,
+            "description": "A friendly name or description for the Amazon CloudWatch metric of this web ACL."
+          },
+          "Name": {
+            "type": "String",
+            "required": true,
+            "description": "A friendly name or description of the web ACL."
+          },
+          "Rules": {
+            "type": "Array",
+            "array-type": "Object",
+            "required": false,
+            "description": "The rules to associate with the web ACL and the settings for each rule.",
+            "properties": {
+              "Action": {
+                "type": "String",
+                "required": true,
+                "description": "The action that Amazon CloudFront (CloudFront) or AWS WAF takes when a web request matches all conditions in the rule, such as allow, block, or count the request.",
+                "allowed-values": [
+                  "ALLOW",
+                  "BLOCK",
+                  "COUNT",
+                  "*"
+                ]
+              },
+              "Priority": {
+                "type": "Number",
+                "required": true,
+                "description": "The order in which AWS WAF evaluates the rules in a web ACL. AWS WAF evaluates rules with a lower value before rules with a higher value."
+              },
+              "RuleId": {
+                "type": "String",
+                "required": true,
+                "resource-ref-type": "AWS::WAF::Rule",
+                "description": "The ID of an AWS WAF rule to associate with a web ACL."
+              }
+            }
           }
         }
       },
