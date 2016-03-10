@@ -49,7 +49,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             CheckIfOpenPort();
 
             ToolsUtil.SetToolLocation(Executable, this._model.ToolLocation);
-            SCPUtil.ConnectWithPrivateKey(this._instance.NativeInstance.PublicIpAddress, this._model.EnteredUsername, this._model.PrivateKey);
+            SCPUtil.ConnectWithPrivateKey(this._instance.ConnectName, this._model.EnteredUsername, this._model.PrivateKey);
             this._results = new ActionResults().WithSuccess(true);
             PersistLastSelectedValues(true, null);
         }

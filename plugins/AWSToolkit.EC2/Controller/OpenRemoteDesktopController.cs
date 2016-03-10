@@ -32,9 +32,12 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         public ActionResults Execute(FeatureViewModel featureViewModel, RunningInstanceWrapper instance)
         {
-            if (instance.ConnectName == null)
+            if (!instance.HasPublicAddress)
             {
-                throw new ApplicationException(EC2Constants.NO_IP_TO_CONNECT_MESSAGE);
+                if (!ToolkitFactory.Instance.ShellProvider.Confirm("Instance IP Address", EC2Constants.NO_PUBLIC_IP_CONFIRM_CONNECT_PRIVATE_IP))
+                {
+                    return new ActionResults().WithSuccess(false);
+                }
             }
 
             this._featureViewModel = featureViewModel;

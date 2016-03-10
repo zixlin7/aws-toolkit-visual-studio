@@ -7,7 +7,11 @@ namespace Amazon.AWSToolkit.EC2
 {
     public static class EC2Constants
     {
-        public const string NO_IP_TO_CONNECT_MESSAGE = "This instance was launced into VPC but does not have an Elastic IP address associated with it.  You must associate an Elastic IP address before you can connect to it.";
+        public const string NO_PUBLIC_IP_CONFIRM_CONNECT_PRIVATE_IP =
+                    "This EC2 instance is in a VPC and does not have a public DNS or Elastic IP Address. \r\n\r\n" +
+                    "To connect to an EC2 instance inside a VPC you should associate an Elastic IP address. " +
+                    "If you are currently connecting through a VPN to your VPC you can attempt to connect with the private IP address. \r\n\r\n" +
+                    "Do you want to attempt to connect using the private IP address?";
 
         public const string INSTANCE_STATE_PENDING = "pending";
         public const string INSTANCE_STATE_RUNNING = "running";

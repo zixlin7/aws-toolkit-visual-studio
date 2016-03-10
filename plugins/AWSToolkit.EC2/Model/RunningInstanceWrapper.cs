@@ -221,7 +221,24 @@ namespace Amazon.AWSToolkit.EC2.Model
                 {
                     lookupName = this.NativeInstance.PublicIpAddress;
                 }
+                else if (!string.IsNullOrEmpty(this.NativeInstance.PrivateIpAddress))
+                {
+                    lookupName = this.NativeInstance.PrivateIpAddress;
+                }
                 return lookupName;
+            }
+        }
+
+        [Browsable(false)]
+        public bool HasPublicAddress
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(this.NativeInstance.PublicDnsName))
+                    return true;
+                if (!string.IsNullOrEmpty(this.NativeInstance.PublicIpAddress))
+                    return true;
+                return false;
             }
         }
 
