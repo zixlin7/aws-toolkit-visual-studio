@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,7 +16,6 @@ using Amazon.AWSToolkit.DynamoDB.Controller;
 using Amazon.AWSToolkit.DynamoDB.Model;
 using Amazon.AWSToolkit.DynamoDB.View.Columns;
 using Amazon.AWSToolkit.Util;
-
 using Amazon.DynamoDBv2;
 
 namespace Amazon.AWSToolkit.DynamoDB.View.Components
@@ -144,14 +144,32 @@ namespace Amazon.AWSToolkit.DynamoDB.View.Components
             }
             else
             {
-                if ((this.Mode == EditingMode.GlobalModified || this.Mode == EditingMode.LocalModified) && IsCreateOrDeleteInAction())
+                // If the service is already processing a prior change, further updates are not permitted.
+                // If the index being actioned is a local edit, not submitted yet (== no status) then we can
+                // delete it. Note that the user cannot add a new index while a previous index is being processed.
+                var pendingIndexAction = IsCreateOrDeleteInAction();
+                var selectedIndex = (SecondaryIndex)this._ctlSecondaryIndexesGrid.SelectedItem;
+
+                if ((this.Mode == EditingMode.GlobalModified || this.Mode == EditingMode.LocalModified) && pendingIndexAction != null)
                 {
-                    ToolkitFactory.Instance.ShellProvider.ShowError("Index Action in Process", "Only one index can be created or deleted at a time.");
-                    return;
+                    var updateAllowed = true;
+
+                    // is service processing an update?
+                    if (!string.IsNullOrEmpty(pendingIndexAction.IndexStatus))
+                        updateAllowed = false;
+
+                    // user selected existing index on service but we have new index not yet committed
+                    if (selectedIndex != pendingIndexAction)
+                        updateAllowed = false;
+ 
+                    if (!updateAllowed)
+                    {
+                        ToolkitFactory.Instance.ShellProvider.ShowError("Index Action in Process", "Only one index can be created or deleted at a time.");
+                        return;
+                    }
                 }
 
-                var secondaryIndex = (SecondaryIndex)this._ctlSecondaryIndexesGrid.SelectedItem;
-                this.BoundIndexes.Remove(secondaryIndex);
+                this.BoundIndexes.Remove(selectedIndex);
 
                 if (this.BoundIndexes.Count == 0)
                 {
@@ -164,9 +182,11 @@ namespace Amazon.AWSToolkit.DynamoDB.View.Components
 
         private void OnAddSecondaryIndex(object sender, RoutedEventArgs e)
         {
-            if ((this.Mode == EditingMode.GlobalModified || this.Mode == EditingMode.LocalModified) && IsCreateOrDeleteInAction())
+            // if the service is still processing an index update, or we have a local change pending, addition is disallowed
+            var pendingIndexAction = IsCreateOrDeleteInAction();
+            if ((this.Mode == EditingMode.GlobalModified || this.Mode == EditingMode.LocalModified) && pendingIndexAction != null)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Index Action in Process", "Only one index can be created or deleted at a time.");
+                ToolkitFactory.Instance.ShellProvider.ShowError("Index Action in Process", "Only one index can be modified at a time.");
                 return;
             }
 
@@ -272,14 +292,14 @@ namespace Amazon.AWSToolkit.DynamoDB.View.Components
             }
         }
 
-        private bool IsCreateOrDeleteInAction()
+        private SecondaryIndex IsCreateOrDeleteInAction()
         {
             foreach (var index in this.BoundIndexes)
             {
                 if (index.IndexStatus == IndexStatus.DELETING.Value ||
                     index.IndexStatus == IndexStatus.CREATING.Value ||
                     string.IsNullOrEmpty(index.IndexStatus))
-                    return true;
+                    return index;
             }
 
             if (this._existingIndexes != null)
@@ -287,11 +307,11 @@ namespace Amazon.AWSToolkit.DynamoDB.View.Components
                 foreach (var index in this._existingIndexes)
                 {
                     if (!this.BoundIndexes.Any(x => x.Name == index.Name))
-                        return true;
+                        return index;
                 }
             }
 
-            return false;
+            return null;
         }
     }
 }
