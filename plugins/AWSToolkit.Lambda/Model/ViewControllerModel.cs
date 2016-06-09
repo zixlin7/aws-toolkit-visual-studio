@@ -142,6 +142,17 @@ namespace Amazon.AWSToolkit.Lambda.Model
             }
         }
 
+        RuntimeOption _runtime;
+        public RuntimeOption Runtime
+        {
+            get { return this._runtime; }
+            set
+            {
+                this._runtime = value;
+                this.NotifyPropertyChanged("Runtime");
+            }
+        }
+
         ObservableCollection<EventSourceWrapper> _eventSources = new ObservableCollection<EventSourceWrapper>();
         public ICollection<EventSourceWrapper> EventSources
         {
@@ -165,5 +176,29 @@ namespace Amazon.AWSToolkit.Lambda.Model
             get { return this._logs; }
         }
 
+
+        public static bool IsValidTimeout(string text)
+        {
+            var regex = new System.Text.RegularExpressions.Regex("[^0-9]+"); //regex that matches disallowed text
+            return !regex.IsMatch(text);
+        }
+    }
+
+    public class RuntimeOption
+    {
+        public static readonly RuntimeOption NodeJS_v0_10 = new RuntimeOption("nodejs", "Node.js v0.10.42");
+        public static readonly RuntimeOption NodeJS_v4_30 = new RuntimeOption("nodejs4.3", "Node.js v4.3");
+
+        public static readonly RuntimeOption[] ALL_OPTIONS = new RuntimeOption[] { NodeJS_v4_30, NodeJS_v0_10 };
+
+
+        public RuntimeOption(string value, string displayName)
+        {
+            this.Value = value;
+            this.DisplayName = displayName;
+        }
+
+        public string Value { get; private set; }
+        public string DisplayName { get; private set; }
     }
 }

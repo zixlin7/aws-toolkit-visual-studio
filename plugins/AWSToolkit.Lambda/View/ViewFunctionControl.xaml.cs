@@ -21,6 +21,7 @@ using Amazon.AWSToolkit.Navigator.Node;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Lambda.Controller;
+using Amazon.AWSToolkit.Lambda.Model;
 
 using log4net;
 
@@ -39,6 +40,9 @@ namespace Amazon.AWSToolkit.Lambda.View
         {
             InitializeComponent();
             this.FillAdvanceSettingsComboBoxes();
+
+            this._ctlRuntime.ItemsSource = RuntimeOption.ALL_OPTIONS;
+
             this._controller = controller;
             this._ctlDetailHeaders.Content = string.Format("Function: {0}", this._controller.Model.FunctionName);
 
@@ -117,18 +121,20 @@ namespace Amazon.AWSToolkit.Lambda.View
             }
         }
 
+        private void _ctlTimeout_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !ViewFunctionModel.IsValidTimeout(e.Text);
+        }
+
+
+
         void FillAdvanceSettingsComboBoxes()
         {
             this._ctlMemory.Items.Clear();
-            this._ctlTimeout.Items.Clear();
 
             foreach (var value in LambdaUtilities.GetValidMemorySizes())
             {
                 this._ctlMemory.Items.Add(value);
-            }
-            foreach (var value in LambdaUtilities.GetValidValuesForTimeout())
-            {
-                this._ctlTimeout.Items.Add(value);
             }
         }
 

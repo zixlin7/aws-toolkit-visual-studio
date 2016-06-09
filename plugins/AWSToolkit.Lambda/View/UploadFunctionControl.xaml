@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
-             xmlns:toolkitcomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"            
+             xmlns:toolkitcomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              Height="450"
@@ -123,6 +123,7 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
 
             <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
@@ -159,15 +160,34 @@
                    Grid.Column="0" 
                    VerticalAlignment="Center" 
                    Style="{DynamicResource awsTextBlockBaseStyle}" 
+                   >Runtime:</TextBlock>
+
+            <ComboBox Margin="5"
+                  Grid.Row="2"
+                  Grid.Column="1"
+                  Style="{DynamicResource awsComboBoxStyle}"
+                  SelectedIndex="0"
+                  Name="_ctlRuntime"
+                  IsEditable="False"
+                  DisplayMemberPath="DisplayName"
+                  >
+            </ComboBox>
+
+
+            <TextBlock Margin="15,5,5,5" 
+                   Grid.Row="3" 
+                   Grid.Column="0" 
+                   VerticalAlignment="Center" 
+                   Style="{DynamicResource awsTextBlockBaseStyle}" 
                    >Description:</TextBlock>            
             <TextBox Margin="5,5,5,5" 
-                     Grid.Row="2" 
+                     Grid.Row="3" 
                      Grid.Column="1" 
                      Name="_ctlDescription"
                      Style="{DynamicResource awsTextBoxStyle}"/>
 
             <TextBlock Margin="15,5,5,5" 
-                   Grid.Row="3" 
+                   Grid.Row="4" 
                    Grid.Column="0" 
                    VerticalAlignment="Center" 
                    Style="{DynamicResource awsTextBlockBaseStyle}"
@@ -175,21 +195,21 @@
                    >File Name:</TextBlock>
             <TextBox Margin="5,5,5,5" 
                      Name="_ctlFileName"
-                     Grid.Row="3" 
+                     Grid.Row="4" 
                      Grid.Column="1"
                      Style="{DynamicResource awsTextBoxStyle}"
                      ToolTip="Enter the file name within your .zip that contains the code for the Lambda function. This must be a valid .js file."
                      />
 
             <TextBlock Margin="15,5,5,5" 
-                   Grid.Row="4" 
+                   Grid.Row="5" 
                    Grid.Column="0" 
                    VerticalAlignment="Center" 
                    Style="{DynamicResource awsTextBlockBaseStyle}"
                    ToolTip="Specify which handler needs to run by entering your handler name from the code supplied above. The handler name can be found at &quot;exports.&lt;handlername&gt; = function(..&quot; in your code body."
                    >Handler:</TextBlock>
             <TextBox Margin="5,5,5,5" 
-                     Grid.Row="4" 
+                     Grid.Row="5" 
                      Grid.Column="1" 
                      Name="_ctlHandler"
                      Style="{DynamicResource awsTextBoxStyle}"
@@ -197,7 +217,7 @@
                      />
             <TextBlock 
                     Grid.Column="1"
-                    Grid.Row="5"   
+                    Grid.Row="6"   
                            FontStyle="Italic"
                            TextWrapping="Wrap"
                            Margin="12,4,4,0" 
@@ -206,12 +226,12 @@
             </TextBlock>
 
             <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
-                   Grid.Row="6" Grid.ColumnSpan="2">
+                   Grid.Row="7" Grid.ColumnSpan="2">
                 Advanced Settings
             </Label>
 
             <TextBlock Margin="15,5,5,5" 
-                   Grid.Row="7" 
+                   Grid.Row="8" 
                    Grid.Column="0" 
                    VerticalAlignment="Center" 
                    Style="{DynamicResource awsTextBlockBaseStyle}" 
@@ -219,13 +239,13 @@
                    >Role Name:</TextBlock>
             <toolkitcomponents:IAMCapabilityPicker 
                    Name="_ctlIAMPicker" 
-                   Grid.Row="7"
+                   Grid.Row="8"
                    Grid.Column="1"
                    ToolTip="Provide an IAM role for your code with appropriate permissions. For example, if your code needs to write to S3, the role you provide must have write permissions to S3. If you want Lambda to automatically write your logs to CloudWatch logs and generate CloudWatch metrics for you, make sure the role has permissions to write to CloudWatch logs and CloudWatch metrics."
                 />
             <TextBlock 
                     Grid.Column="1"
-                    Grid.Row="8"   
+                    Grid.Row="9"   
                            FontStyle="Italic"
                            TextWrapping="Wrap"
                            Margin="12,4,4,0" 
@@ -235,14 +255,14 @@
 
 
             <TextBlock Margin="15,5,5,5" 
-                   Grid.Row="9" 
+                   Grid.Row="10" 
                    Grid.Column="0" 
                    VerticalAlignment="Center" 
                    Style="{DynamicResource awsTextBlockBaseStyle}" 
                    ToolTip="Choose the memory available to your Lambda function. CPU will be assigned proportional to memory. The higher the setting, the more compute resources your code will have, which can improve its execution performance. You can specify memory in 64-MB increments up to 1024 MB. Changing this setting will impact your duration cost."
                    >Memory (MB):</TextBlock>
             <ComboBox Margin="5"
-                  Grid.Row="9"
+                  Grid.Row="10"
                   Grid.Column="1"
                   Name="_ctlMemory"
                   Style="{DynamicResource awsComboBoxStyle}"
@@ -253,25 +273,25 @@
                   />
 
             <TextBlock Margin="15,5,5,5" 
-                   Grid.Row="10" 
+                   Grid.Row="11" 
                    Grid.Column="0" 
                    VerticalAlignment="Center" 
                    Style="{DynamicResource awsTextBlockBaseStyle}" 
                    ToolTip="Choose a duration limit for your Lambda function. Lambda will terminate your Lambda function once it executes up to the duration limit. Changing this setting can potentially help you control duration costs."
                    >Timeout (S):</TextBlock>
-            <ComboBox Margin="5"
-                  Grid.Row="10"
+            <TextBox Margin="5"
+                  Grid.Row="11"
                   Grid.Column="1"
                   Name="_ctlTimeout"
-                  Style="{DynamicResource awsComboBoxStyle}"
-                  SelectedIndex="2"
+                  Style="{DynamicResource awsTextBoxStyle}"
                   MinWidth="50"
                   HorizontalAlignment="Left"
+                  PreviewTextInput="_ctlTimeout_PreviewTextInput"
                   ToolTip="Choose a duration limit for your Lambda function. Lambda will terminate your Lambda function once it executes up to the duration limit. Changing this setting can potentially help you control duration costs."
-                  />
+                  >10</TextBox>
             
             <CheckBox Margin="5,8,5,5"
-                 Grid.Row="11"
+                 Grid.Row="12"
                  Grid.Column="0"
                  Grid.ColumnSpan="2"
                  Name="_ctlOpenView"

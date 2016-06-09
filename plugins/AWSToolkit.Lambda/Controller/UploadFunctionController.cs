@@ -57,6 +57,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             seedValues[LambdaContants.SeedMemory] = response.MemorySize.ToString();
             seedValues[LambdaContants.SeedTimeout] = response.Timeout.ToString();
             seedValues[LambdaContants.SeedDescription] = response.Description;
+            seedValues[LambdaContants.SeedRuntime] = response.Runtime;
 
             this._control = new UploadFunctionControl(this, seedValues);
             ToolkitFactory.Instance.ShellProvider.ShowModal(this._control);
@@ -89,11 +90,11 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         {
             var request = new CreateFunctionRequest
             {
-                Runtime = Amazon.Lambda.Runtime.Nodejs,
                 FunctionName = this._control.FunctionName,
                 Description = this._control.Description,
                 MemorySize = this._control.Memory,
                 Timeout = this._control.Timeout,
+                Runtime = this._control.Runtime,
                 Handler = Path.GetFileNameWithoutExtension(this._control.FileName) + "." + this._control.Handler
             };
 
@@ -212,6 +213,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                                         !string.Equals(uploadState.Request.Handler, existingConfiguration.Handler) ||
                                         uploadState.Request.MemorySize != existingConfiguration.MemorySize ||
                                         !string.Equals(uploadState.Request.Role, existingConfiguration.Role) ||
+                                        !string.Equals(uploadState.Request.Runtime.ToString(), existingConfiguration.Runtime.ToString()) ||
                                         uploadState.Request.Timeout != existingConfiguration.Timeout)
                                     {
                                         var uploadConfigRequest = new UpdateFunctionConfigurationRequest
@@ -221,7 +223,8 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                                             Handler = uploadState.Request.Handler,
                                             MemorySize = uploadState.Request.MemorySize,
                                             Role = uploadState.Request.Role,
-                                            Timeout = uploadState.Request.Timeout
+                                            Timeout = uploadState.Request.Timeout,
+                                            Runtime = uploadState.Request.Runtime
                                         };
                                         lambdaClient.UpdateFunctionConfiguration(uploadConfigRequest);
                                     }

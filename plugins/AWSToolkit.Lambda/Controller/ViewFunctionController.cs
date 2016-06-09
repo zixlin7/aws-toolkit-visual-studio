@@ -102,6 +102,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             this._model.MemorySize = response.MemorySize;
             this._model.Role = response.Role;
             this._model.Timeout = response.Timeout;
+            this._model.Runtime = RuntimeOption.ALL_OPTIONS.FirstOrDefault(x => string.Equals(x.Value, response.Runtime.ToString(), StringComparison.OrdinalIgnoreCase));
 
             this._model.IsDirty = false;
         }
@@ -259,7 +260,8 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                 FunctionName = this._model.FunctionName,
                 Handler = this._model.Handler,
                 MemorySize = this._model.MemorySize,
-                Timeout = this._model.Timeout
+                Timeout = this._model.Timeout,
+                Runtime = this._model.Runtime.Value
             };
             var response = this._lambdaClient.UpdateFunctionConfiguration(request);
 

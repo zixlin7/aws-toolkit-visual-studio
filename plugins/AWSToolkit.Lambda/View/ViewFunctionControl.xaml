@@ -55,6 +55,7 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
 
             <ToolBar Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" ToolBarTray.IsLocked="True" >
@@ -95,6 +96,20 @@
 
             </Label>
 
+            <TextBlock Grid.Column="0" Grid.Row="2" Margin="15,5,5,5" Text="Runtime:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+            <ComboBox Margin="5"
+                  Grid.Row="2"
+                  Grid.Column="1"
+                  Style="{DynamicResource awsComboBoxStyle}"
+                  SelectedItem="{Binding Runtime}"
+                  DisplayMemberPath="DisplayName"
+                  SelectedIndex="0"
+                  HorizontalAlignment="Left"
+                  Name="_ctlRuntime"
+                  IsEditable="False"
+                  >
+            </ComboBox>
+
             <TextBlock Grid.Column="0" Grid.Row="3" Margin="15,5,5,5" Text="Description:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
             <TextBox Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="3" Margin="5" Text="{Binding Description}" Style="{DynamicResource awsTextBoxStyle}"/>
 
@@ -125,15 +140,15 @@
                   />
 
             <TextBlock Grid.Column="2" Grid.Row="6" Margin="5,5,5,5" Text="Timeout (S):"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
-            <ComboBox Margin="5"
+            <TextBox Margin="5"
                   Grid.Row="6"
                   Grid.Column="3"
                   Name="_ctlTimeout"
-                  Style="{DynamicResource awsComboBoxStyle}"
-                  SelectedIndex="2"
+                  Style="{DynamicResource awsTextBoxStyle}"
                   MinWidth="50"
                   HorizontalAlignment="Left"
-                  SelectedItem="{Binding Timeout}"
+                  Text="{Binding Timeout}"
+                  PreviewTextInput="_ctlTimeout_PreviewTextInput"
                   ToolTip="Choose a duration limit for your Lambda function. Lambda will terminate your Lambda function once it executes up to the duration limit. Changing this setting can potentially help you control duration costs."
                   />
 

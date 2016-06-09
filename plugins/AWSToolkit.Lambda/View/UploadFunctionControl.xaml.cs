@@ -26,6 +26,8 @@ using Amazon.IdentityManagement;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 
+using Amazon.AWSToolkit.Lambda.Model;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.Lambda.View
@@ -46,6 +48,10 @@ namespace Amazon.AWSToolkit.Lambda.View
             this._controller = controller;
             InitializeComponent();
             FillAdvanceSettingsComboBoxes();
+
+            this._ctlRuntime.ItemsSource = RuntimeOption.ALL_OPTIONS;
+            this._ctlRuntime.SelectedIndex = 0;
+
             this.ResetToDefaults();
 
             switch(controller.Mode)
@@ -127,6 +133,18 @@ namespace Amazon.AWSToolkit.Lambda.View
             {
                 this._ctlIAMPicker.SelectExistingRole(seedValues[LambdaContants.SeedIAMRole]);
             }
+
+            if(seedValues.ContainsKey(LambdaContants.SeedRuntime))
+            {
+                foreach(RuntimeOption option in this._ctlRuntime.Items)
+                {
+                    if (string.Equals(option.Value, seedValues[LambdaContants.SeedRuntime], StringComparison.OrdinalIgnoreCase))
+                    {
+                        this._ctlRuntime.SelectedItem = option;
+                        break;
+                    }
+                }
+            }
         }
 
         public override string Title
@@ -188,6 +206,28 @@ namespace Amazon.AWSToolkit.Lambda.View
             }
         }
 
+        public string Runtime
+        {
+            get
+            {
+                var item = this._ctlRuntime.SelectedItem as RuntimeOption;
+                if (item == null)
+                    return null;
+
+                return item.Value;
+            }
+        }
+
+        void FillAdvanceSettingsComboBoxes()
+        {
+            this._ctlMemory.Items.Clear();
+
+            foreach (var value in LambdaUtilities.GetValidMemorySizes())
+            {
+                this._ctlMemory.Items.Add(value.ToString());
+            }
+        }
+
         public IAMCapabilityPicker IAMPicker
         {
             get { return this._ctlIAMPicker; }
@@ -210,26 +250,16 @@ namespace Amazon.AWSToolkit.Lambda.View
             get { return this._ctlOpenView.IsChecked.GetValueOrDefault(); }
         }
 
-        void FillAdvanceSettingsComboBoxes()
+        private void _ctlTimeout_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            this._ctlMemory.Items.Clear();
-            this._ctlTimeout.Items.Clear();
-
-            foreach (var value in LambdaUtilities.GetValidMemorySizes())
-            {
-                this._ctlMemory.Items.Add(value.ToString());
-            }
-            foreach (var value in LambdaUtilities.GetValidValuesForTimeout())
-            {
-                this._ctlTimeout.Items.Add(value.ToString());
-            }
+            e.Handled = !ViewFunctionModel.IsValidTimeout(e.Text);
         }
 
         void ResetToDefaults()
         {
             this._ctlFunctionNamePicker.SelectedValue = null;
             this._ctlMemory.SelectedIndex = 1;
-            this._ctlTimeout.SelectedIndex = 9;
+            this._ctlTimeout.Text = "10";
             this._ctlIAMPicker.SelectExistingRole(null);
         }
 
@@ -475,5 +505,6 @@ namespace Amazon.AWSToolkit.Lambda.View
             if (!string.IsNullOrEmpty(startupFile))
                 this._ctlFileName.Text = startupFile;
         }
+
     }
 }

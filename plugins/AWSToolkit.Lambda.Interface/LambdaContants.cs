@@ -15,6 +15,7 @@ namespace Amazon.AWSToolkit.Lambda
         public const string SeedIAMRole = "SeedIAMRole";
         public const string SeedMemory = "SeedMemory";
         public const string SeedTimeout = "SeedTimeout";
+        public const string SeedRuntime = "SeedRuntime";
 
         public const string DefaultHandlerName = "handler";
 
