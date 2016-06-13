@@ -27,6 +27,15 @@
     /// </summary>
     public static class DeploymentWizardProperties
     {
+        /// <summary>
+        /// Used with propkey_ProjectType, this indicates a traditional asp.net project
+        /// </summary>
+        public static readonly string StandardWebProject = "standard";
+        /// <summary>
+        /// Used with propkey_ProjectType, this indicates a new CoreCLR based web project
+        /// </summary>
+        public static readonly string NetCoreWebProject = "netcore";
+
         public static class SeedData
         {
             /// <summary>
@@ -94,6 +103,11 @@
             public static readonly string propkey_VSProjectGuid = "vsProjectGuid";
 
             /// <summary>
+            /// Whether the project is targetting standard .Net framework or .Net Core
+            /// </summary>
+            public static readonly string propkey_ProjectType = "vsProjectType";
+
+            /// <summary>
             /// Optional, Dictionary<string, string>. Set of template property overrides 
             /// used with the template on the last deployment or cost estimation
             /// </summary>
@@ -127,6 +141,13 @@
             /// usage 
             /// </summary>
             public static readonly string propkey_VpcOnlyMode = "vpcOnlyMode";
+
+            /// <summary>
+            /// .NET framework (coreclr) or runtime (traditional) that can be used with the project.
+            /// Dictionary of UI text to the code that we send to our back-end deployment code to
+            /// set the apppool etc on the deployment host.
+            /// </summary>
+            public static readonly string propkey_ProjectFrameworks = "projectFrameworks";
         }
 
         public static class DeploymentTemplate

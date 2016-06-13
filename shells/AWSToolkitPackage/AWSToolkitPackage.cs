@@ -711,7 +711,12 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             try
             {
-                if (_msdeployInstallVerified != true)
+                var pi = VSUtility.SelectedWebProject;
+                if (pi == null || pi.VsProjectType == VSWebProjectInfo.VsWebProjectType.NotWebProjectType)
+                    return;
+
+                // don't pay the msdeploy install tax for coreclr project types
+                if (pi.VsProjectType != VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject && _msdeployInstallVerified != true)
                 {
                     var retry = false;
                     do
@@ -725,10 +730,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                     if (_msdeployInstallVerified != true)
                         return;
                 }
-
-                var pi = VSUtility.SelectedWebProject;
-                if (pi == null || pi.VsProjectType == VSWebProjectInfo.VsWebProjectType.NotWebProjectType)
-                    return;
 
                 IDictionary<string, object> wizardProperties;
                 var ret = InitializeAndRunDeploymentWizard(pi, out wizardProperties);
@@ -1417,7 +1418,13 @@ namespace Amazon.AWSToolkit.VisualStudio
                 var projectGuid = VSUtility.QueryProjectIDGuid(projectInfo.VsHierarchy);
                 seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_VSProjectGuid, projectGuid);
 
+                seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_ProjectType,
+                    projectInfo.VsProjectType == VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject 
+                        ? DeploymentWizardProperties.NetCoreWebProject 
+                        : DeploymentWizardProperties.StandardWebProject);
+
                 SeedAvailableBuildConfigurations(projectInfo, seedProperties);
+                SeedAvailableFrameworks(projectInfo, seedProperties);
 
                 if (_projectDeployments.PersistedDeployments(projectGuid) > 0)
                 {
@@ -1631,6 +1638,33 @@ namespace Amazon.AWSToolkit.VisualStudio
         }
 
         /// <summary>
+        /// For CoreCLR projects, sets up the available frameworks the user can deploy with. For traditional
+        /// projects, it sets up the runtimes that can be used for the apppool. For both case, the seeded output
+        /// is a dictionary of UI-visible text to the control code that is passed to the build/deployment handlers.
+        /// </summary>
+        /// <param name="projectInfo"></param>
+        /// <param name="seedProperties"></param>
+        void SeedAvailableFrameworks(VSWebProjectInfo projectInfo, Dictionary<string, object> seedProperties)
+        {
+            var frameworks = new Dictionary<string, string>();
+
+            if (projectInfo.VsProjectType == VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject)
+            {
+                // we'll parse these from project.json eventually
+                frameworks.Add("netcoreapp1.0", "netcoreapp1.0");
+                frameworks.Add("netcoreapp1.3", "netcoreapp1.3");
+                frameworks.Add("netcoreapp1.5", "netcoreapp1.5");
+            }
+            else
+            {
+                frameworks.Add("2.0 .NET Runtime", "2.0");
+                frameworks.Add("4.0 .NET Runtime", "4.0");
+            }
+
+            seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_ProjectFrameworks, frameworks);
+        }
+
+        /// <summary>
         /// Persists useful last-run data into the .suo file
         /// </summary>
         /// <param name="projectInfo"></param>
@@ -1747,9 +1781,19 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
 
             bdc.HostServiceProvider = GetService;
-            bdc.BuildProcessor = projectInfo.VsProjectType == VSWebProjectInfo.VsWebProjectType.WebApplicationProject
-                                        ? new WebAppProjectBuildProcessor() as IBuildProcessor
-                                        : new WebSiteProjectBuildProcessor() as IBuildProcessor;
+            switch (projectInfo.VsProjectType)
+            {
+                case VSWebProjectInfo.VsWebProjectType.WebApplicationProject:
+                    bdc.BuildProcessor = new WebAppProjectBuildProcessor();
+                    break;
+                case VSWebProjectInfo.VsWebProjectType.WebSiteProject:
+                    bdc.BuildProcessor = new WebSiteProjectBuildProcessor();
+                    break;
+                case VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject:
+                    bdc.BuildProcessor = new CoreCLRWebAppProjectBuildProcessor();
+                    break;
+            }
+
             bdc.ProjectInfo = projectInfo;
             bdc.Options = wizardProperties;
             bdc.Logger = new IDEConsoleLogger(_toolkitService);

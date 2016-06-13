@@ -73,10 +73,13 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
 
         public bool IsFirstAttempt { get { return BuildAttempt == 1; } }
 
-        public string RuntimeFromFramework
+        public string TargetRuntime
         {
             get
             {
+                if (this.ProjectInfo.VsProjectType == VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject)
+                    throw new System.InvalidOperationException("Use TargetFramework member for CoreCLR projects");
+
                 if (this.TargetFramework.StartsWith("4"))
                     return this.TargetFramework;
                 else

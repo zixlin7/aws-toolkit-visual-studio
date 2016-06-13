@@ -4,11 +4,20 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
+using System.Reflection;
+using System.IO;
 
 namespace Amazon.AWSToolkit.VisualStudio.Shared
 {
     internal static class VSUtility
     {
+        public static ServiceInterfaces.INetCoreProjectSupport NetCoreProjectSupport { get; private set; }
+
+        private static bool _attemptLoadNetCoreSupportLibrary = true;
+
+        private const string _netCoreSupportLibraryName = @"Plugins\AWSToolkitPackage.NetCoreSupport.dll";
+        private const string _netCoreProjectSupportTypeName = "Amazon.AWSToolkit.VisualStudio.NetCoreProjectSupport";
+
         public static string QueryProjectIDGuid(IVsHierarchy projectHier)
         {
             Guid projectGuid;
@@ -52,11 +61,50 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
                         var projHier = Marshal.GetTypedObjectForIUnknown(hierarchyPtr, typeof(IVsHierarchy)) as IVsHierarchy;
 
                         var projectTypeGuids = VSWebProjectInfo.QueryProjectTypeGuids(projHier);
-                        foreach (var typeGuid in projectTypeGuids)
+                        if (projectTypeGuids.Length > 0)
                         {
-                            if (VSWebProjectInfo.IsWebProjectType(typeGuid))
+                            foreach (var typeGuid in projectTypeGuids)
                             {
-                                return new VSWebProjectInfo(projHier, QueryProjectIDGuid(projHier), typeGuid);
+                                if (VSWebProjectInfo.IsWebProjectType(typeGuid))
+                                {
+                                    return new VSWebProjectInfo(projHier, QueryProjectIDGuid(projHier), typeGuid);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // CoreCLR projects have no type guid (at present) so we'll probe for using
+                            // capability apis present in 2012+. 2015 editions and higher can load these 
+                            // projects. We'll rely on inspection for the custom assembly to determine if 
+                            // we should probe, to avoid having to inspect on multiple shell versions for
+                            // this version of the toolkit.
+                            if (_attemptLoadNetCoreSupportLibrary)
+                            {
+                                try
+                                {
+                                    var baseLocation = Assembly.GetExecutingAssembly().Location;
+                                    var assemblyPath = Path.Combine(Path.GetDirectoryName(baseLocation),
+                                                                    _netCoreSupportLibraryName);
+                                    if (File.Exists(assemblyPath))
+                                    {
+                                        var assembly = Assembly.LoadFrom(assemblyPath);
+                                        Type type = assembly.GetType(_netCoreProjectSupportTypeName);
+                                        object typeInstance = Activator.CreateInstance(type);
+                                        NetCoreProjectSupport = typeInstance as ServiceInterfaces.INetCoreProjectSupport;
+                                    }
+
+                                }
+                                catch
+                                { /* worth logging we didn't load? */ }
+                                finally
+                                {
+                                    _attemptLoadNetCoreSupportLibrary = false;
+                                }
+                            }
+
+                            if (NetCoreProjectSupport != null && NetCoreProjectSupport.IsNetCoreWebProject(hierarchyPtr))
+                            {
+                                return new VSWebProjectInfo(projHier, QueryProjectIDGuid(projHier), VSWebProjectInfo.guidAWSPrivateCoreCLRWebProject);
                             }
                         }
                     }

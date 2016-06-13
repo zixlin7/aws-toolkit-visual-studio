@@ -92,7 +92,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
 
                     var msDeployWrapper = new MSDeployWrapper(TaskInfo.ProjectInfo.ProjectName,
                                                               stagedOutputLocation,
-                                                              TaskInfo.RuntimeFromFramework,
+                                                              TaskInfo.TargetRuntime,
                                                               iisAppPath,
                                                               TaskInfo.UseIncrementalDeployment);
 

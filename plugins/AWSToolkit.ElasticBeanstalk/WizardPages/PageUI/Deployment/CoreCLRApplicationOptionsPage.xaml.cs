@@ -16,17 +16,16 @@ using Amazon.ElasticBeanstalk.Model;
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 {
     /// <summary>
-    /// Interaction logic for ApplicationOptionsPage.xaml
+    /// Interaction logic for CoreCLRApplicationOptionsPage.xaml
     /// </summary>
-    public partial class ApplicationOptionsPage : INotifyPropertyChanged
+    public partial class CoreCLRApplicationOptionsPage : INotifyPropertyChanged
     {
         readonly object _syncObj = new object();
 
         public static readonly string uiProperty_HealthCheckUrl = "HealthCheckUri";
-        public static readonly string uiProperty_Enable32BitAppPool = "Enable32BitAppPool";
         public static readonly string uiProperty_DeploymentVersionLabel = "DeploymentVersionLabel";
 
-        public ApplicationOptionsPage()
+        public CoreCLRApplicationOptionsPage()
         {
             HealthCheckUri = "/";
 
@@ -34,22 +33,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             DataContext = this;
         }
 
-        public ApplicationOptionsPage(IAWSWizardPageController pageController)
+        public CoreCLRApplicationOptionsPage(IAWSWizardPageController pageController)
             : this()
         {
             PageController = pageController;
-
-            if (pageController.HostingWizard.IsPropertySet(DeploymentWizardProperties.AppOptions.propkey_ShowV2RuntimeOnly)
-                    && (bool)pageController.HostingWizard[DeploymentWizardProperties.AppOptions.propkey_ShowV2RuntimeOnly])
-            {
-                // can't modify collection whilst enumerating
-                var toRemove = _targetRuntime.Items.Cast<ComboBoxItem>().Where(cbi => (cbi.Tag as string).StartsWith("4")).ToList();
-
-                foreach (var cbi in toRemove)
-                {
-                    _targetRuntime.Items.Remove(cbi);
-                }
-            }
         }
 
         public IAWSWizardPageController PageController { get; set; }
@@ -60,23 +47,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         public string IISAppPath { get; set; }
 
-        private bool _enable32BitAppPool;
-        public bool Enable32BitAppPool
-        {
-            get { return _enable32BitAppPool; }
-            set
-            {
-                this._enable32BitAppPool = value;
-                NotifyPropertyChanged(uiProperty_Enable32BitAppPool);
-            }
-        }
-
-        public string TargetRuntime
+        public string TargetFramework
         {
             get
             {
-                if (_targetRuntime.SelectedItem != null)
-                    return (_targetRuntime.SelectedItem as ComboBoxItem).Tag as string;
+                if (_targetFramework.SelectedItem != null)
+                    return (_targetFramework.SelectedItem as ComboBoxItem).Tag as string;
 
                 return string.Empty;
             }
@@ -112,25 +88,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         {
             get 
             {
-                var dic = new Dictionary<string, string>();
-                foreach(var setting in this._appSettings.Settings)
-                {
-                    if (string.IsNullOrEmpty(setting.Value))
-                        continue;
-
-                    dic[setting.Key] = setting.Value;
-                }
-                return dic; 
+                // not currently applicable to CoreCLR
+                return new Dictionary<string, string>();
             }
             set
             {
-                this._appSettings.Settings.Clear();
-
-                foreach(var kvp in value)
-                {
-                    var setting = new AppSettingsControl.AppSetting { Key = kvp.Key, Value = kvp.Value };
-                    this._appSettings.Settings.Add(setting);
-                }
             }
         }
 
@@ -181,26 +143,26 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         }
 
 
-        public void SetDefaultRuntimesOrFrameworks(string targetRuntime, IDictionary<string, string> availableRuntimes)
+        public void SetDefaultRuntimesOrFrameworks(string targetFramework, IDictionary<string, string> availableFrameworks)
         {
-            ComboBoxItem runtimeToSelect = null;
+            ComboBoxItem frameworkToSelect = null;
 
-            foreach (var key in availableRuntimes.Keys)
+            foreach (var key in availableFrameworks.Keys)
             {
                 var item = new ComboBoxItem();
                 item.Content = key;
-                item.Tag = availableRuntimes[key];
+                item.Tag = availableFrameworks[key];
 
-                if (runtimeToSelect == null && key.Equals(targetRuntime, StringComparison.Ordinal))
-                    runtimeToSelect = item;
+                if (frameworkToSelect == null && key.Equals(targetFramework, StringComparison.Ordinal))
+                    frameworkToSelect = item;
 
-                _targetRuntime.Items.Add(item);
+                _targetFramework.Items.Add(item);
             }
 
-            if (runtimeToSelect != null)
-                _targetRuntime.SelectedItem = runtimeToSelect;
+            if (frameworkToSelect != null)
+                _targetFramework.SelectedItem = frameworkToSelect;
             else
-                _targetRuntime.SelectedIndex = _targetRuntime.Items.Count - 1;
+                _targetFramework.SelectedIndex = _targetFramework.Items.Count - 1;
         }
 
         bool _versionFetchPending = false;

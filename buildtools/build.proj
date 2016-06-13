@@ -39,7 +39,6 @@
     </Target>
 
     <Target Name="build-vstoolkit" DependsOnTargets="patch-vsixmanifest">
-	
 		<Message Text="Building Visual Studio toolkit integration"/>
 		<Exec Command="$(devenv2013) /Rebuild $(Configuration) ..\solutions\AWSToolkitPackage.VS2013.sln"/>
     </Target>
