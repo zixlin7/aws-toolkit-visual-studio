@@ -48,6 +48,8 @@ using Window = System.Windows.Window;
 using System.ComponentModel;
 using Amazon.AWSToolkit.MobileAnalytics;
 
+using ThirdParty.Json.LitJson;
+
 namespace Amazon.AWSToolkit.VisualStudio
 {
     /// <summary>
@@ -1650,8 +1652,20 @@ namespace Amazon.AWSToolkit.VisualStudio
 
             if (projectInfo.VsProjectType == VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject)
             {
-                // we'll parse these from project.json eventually
-                frameworks.Add("netcoreapp1.0", "netcoreapp1.0");
+                var projectJsonLocation = Path.Combine(projectInfo.VsProjectLocation, "project.json");
+                if(File.Exists(projectJsonLocation))
+                {
+                    JsonData root = JsonMapper.ToObject(File.ReadAllText(projectJsonLocation));
+                    JsonData frameworksNode = root["frameworks"] as JsonData;
+                    foreach(var key in frameworksNode.PropertyNames)
+                    {
+                        frameworks.Add(key, key);
+                    }
+                }
+
+                // Safety net in case MS changes the project.json system underneath us
+                if(frameworks.Count == 0)
+                    frameworks.Add("netcoreapp1.0", "netcoreapp1.0");
             }
             else
             {
