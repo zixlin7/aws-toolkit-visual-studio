@@ -6,6 +6,9 @@ using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using log4net;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
+
+using ICSharpCode.SharpZipLib.Zip;
+
 using Microsoft.Build.Framework;
 using MSBuildProject = Microsoft.Build.Evaluation.Project;
 using EnvDTEProject = EnvDTE.Project;
@@ -55,20 +58,28 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
                     platform = "AnyCPU";
 
                 var outputLocation = ConstructPackageTempDir(TaskInfo.ProjectInfo);
+                if (Directory.Exists(outputLocation))
+                    new DirectoryInfo(outputLocation).Delete(true);
 
+                var packagingLocation = Path.Combine(outputLocation, "package");
                 string iisAppPath = null;
                 if (taskInfo.Options.ContainsKey(DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath))
                     iisAppPath = taskInfo.Options[DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath] as string;
 
                 var dotnetCLIWrapper = new DotNetCLIWrapper(TaskInfo.ProjectInfo.VsProjectLocation);
 
-                dotnetCLIWrapper.Publish(outputLocation,
+                dotnetCLIWrapper.Publish(packagingLocation,
                                          TaskInfo.TargetFramework,
-                                         iisAppPath,
                                          projectConfigurationAndPlatform[0],
                                          TaskInfo.Logger);
+                SetupAWSDeploymentManifest(packagingLocation, iisAppPath);
 
-                if (Directory.Exists(_outputPackage))
+
+                this._outputPackage = Path.Combine(outputLocation, taskInfo.ProjectInfo.ProjectName + "-" + DateTime.Now.Ticks + ".zip");
+                var zip = new FastZip();
+                zip.CreateZip(this._outputPackage, packagingLocation, true, null);
+
+                if (File.Exists(_outputPackage))
                     ProcessorResult = ResultCodes.Succeeded;
                 else
                     taskInfo.Logger.OutputMessage(string.Format("...error, folder '{0}' could not be found", _outputPackage), true, true);
@@ -356,7 +367,51 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
                 startIndex++;
 
             var firstHyphen = projectGuid.IndexOf('-');
-            return projectGuid.Substring(startIndex, firstHyphen-1);
+            return projectGuid.Substring(startIndex, firstHyphen - 1);
+        }
+
+
+        const string DEFAULT_MANIFEST = @"
+{
+  ""manifestVersion"": 1,
+  ""deployments"": {
+
+    ""aspNetCoreWeb"": [
+      {
+        ""name"": ""WebApplication2"",
+        ""parameters"": {
+          ""appBundle"": ""."",
+          ""iisPath"": ""{iisPath}"",
+          ""iisWebSite"": ""{iisWebSite}""
+        }
+}
+    ]
+  }
+}
+";
+
+        private static void SetupAWSDeploymentManifest(string publishLocation, string iisPath)
+        {
+            string iisWebSite, iisAppPath;
+            int pos = iisPath.IndexOf("/");
+            if (pos == -1)
+            {
+                iisWebSite = "Default Web Site";
+                iisAppPath = "/" + iisPath;
+            }
+            else
+            {
+                iisWebSite = iisPath.Substring(0, pos);
+                iisAppPath = iisPath.Substring(pos);
+            }
+
+            var manifest = DEFAULT_MANIFEST.Replace("{iisPath}", iisAppPath).Replace("{iisWebSite}", iisWebSite);
+
+            var path = Path.Combine(publishLocation, "aws-windows-deployment-manifest.json");
+            if (File.Exists(path))
+                File.Delete(path);
+
+            File.WriteAllText(path, manifest);
         }
     }
 }

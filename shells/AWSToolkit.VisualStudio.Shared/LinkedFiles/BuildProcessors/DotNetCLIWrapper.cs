@@ -30,23 +30,18 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
         /// <param name="iisAppPath"></param>
         /// <param name="configuration"></param>
         /// <param name="logger"></param>
-        public void Publish(string outputLocation, string targetFramework, string iisAppPath, string configuration, IBuildAndDeploymentLogger logger)
+        public void Publish(string outputLocation, string targetFramework, string configuration, IBuildAndDeploymentLogger logger)
         {
-            logger.OutputMessage(string.Format("...invoking 'dotnet publish', working folder '{1}'", outputLocation), 
+            logger.OutputMessage(string.Format("...invoking 'dotnet publish', working folder '{0}'", outputLocation), 
                                  true, true);
 
             var psi = new ProcessStartInfo
             {
-                FileName = "dotnet publish",
-                Arguments = string.Format(dotNetPublishArgsTemplate,
-                                          targetFramework,
-                                          outputLocation,
-                                          configuration,
-                                          Path.Combine(_projectLocation, "project.json")),
-
+                FileName = @"C:\Program Files\dotnet\dotnet.exe",
+                Arguments = string.Format("publish --output \"{0}\" --configuration {1}", outputLocation, configuration),
                 WorkingDirectory = this._projectLocation,
-                //RedirectStandardOutput = true,
-                //RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
@@ -56,29 +51,22 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
                 proc.StartInfo = psi;
                 proc.Start();
 
-                if (psi.RedirectStandardOutput)
+                var outputLog = new StringBuilder();
+                var handler = (DataReceivedEventHandler)((o, e) =>
                 {
-                    while (true)
-                    {
-                        try
-                        {
-                            string output;
-                            if ((output = proc.StandardOutput.ReadLine()) != null)
-                                logger.OutputMessage("......publish: " + output, true, true);
-                            string error;
-                            if ((error = proc.StandardError.ReadLine()) != null)
-                                logger.OutputMessage("......publish error: " + error, true, true);
-                            if (output == null && error == null)
-                                break;
-                        }
-                        catch (Exception e)
-                        {
-                            logger.OutputMessage("......publish exception: " + e.Message, true, true);
-                        }
-                    }
-                }
-                else
-                    proc.WaitForExit();
+                    if (string.IsNullOrEmpty(e.Data))
+                        return;
+                    logger.OutputMessage("......publish: " + e.Data, true, true);
+                });
+
+                proc.ErrorDataReceived += handler;
+                proc.OutputDataReceived += handler;
+                proc.BeginOutputReadLine();
+                proc.BeginErrorReadLine();
+
+                proc.EnableRaisingEvents = true;
+
+                proc.WaitForExit();
             }
         }
 
