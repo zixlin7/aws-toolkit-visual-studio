@@ -35,10 +35,14 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
             logger.OutputMessage(string.Format("...invoking 'dotnet publish', working folder '{0}'", outputLocation), 
                                  true, true);
 
+            var dotnetCLI = Utility.FindExecutableInPath("dotnet.exe");
+            if (string.IsNullOrEmpty(dotnetCLI))
+                throw new Exception("Failed to locate dotnet.exe. Make sure the dotnet CLI is installed in the environment PATH.");
+
             var psi = new ProcessStartInfo
             {
-                FileName = @"C:\Program Files\dotnet\dotnet.exe",
-                Arguments = string.Format("publish --output \"{0}\" --configuration {1}", outputLocation, configuration),
+                FileName = dotnetCLI,
+                Arguments = string.Format("publish --output \"{0}\" --configuration {1} -f {2}", outputLocation, configuration, targetFramework),
                 WorkingDirectory = this._projectLocation,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,

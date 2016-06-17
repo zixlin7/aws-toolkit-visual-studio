@@ -117,5 +117,42 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
 
             return installFolder;
         }
+
+        /// <summary>
+        /// A collection of known paths for common utilities that are usually not found in the path
+        /// </summary>
+        static readonly IDictionary<string, string> KNOWN_LOCATIONS = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+        {
+            {"msdeploy.exe", @"C:\Program Files\IIS\Microsoft Web Deploy V3\msdeploy.exe" },
+            {"iisreset.exe", @"C:\Windows\System32\iisreset.exe" },
+            {"sc.exe", @"C:\Windows\System32\sc.exe" },
+            {"dotnet.exe", @"C:\Program Files\dotnet\dotnet.exe" },
+            {"taskkill.exe", @"C:\Windows\System32\taskkill.exe" }
+        };
+
+        /// <summary>
+        /// Search the path environment variable for the command given.
+        /// </summary>
+        /// <param name="command">The command to search for in the path</param>
+        /// <returns>The full path to the command if found otherwise it will return null</returns>
+        public static string FindExecutableInPath(string command)
+        {
+
+            if (File.Exists(command))
+                return Path.GetFullPath(command);
+
+            var envPath = Environment.GetEnvironmentVariable("PATH");
+            foreach (var path in envPath.Split(';'))
+            {
+                var fullPath = Path.Combine(path, command);
+                if (File.Exists(fullPath))
+                    return fullPath;
+            }
+
+            if (KNOWN_LOCATIONS.ContainsKey(command) && File.Exists(KNOWN_LOCATIONS[command]))
+                return KNOWN_LOCATIONS[command];
+
+            return null;
+        }
     }
 }

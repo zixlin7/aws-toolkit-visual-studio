@@ -1652,8 +1652,6 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 // we'll parse these from project.json eventually
                 frameworks.Add("netcoreapp1.0", "netcoreapp1.0");
-                frameworks.Add("netcoreapp1.3", "netcoreapp1.3");
-                frameworks.Add("netcoreapp1.5", "netcoreapp1.5");
             }
             else
             {
