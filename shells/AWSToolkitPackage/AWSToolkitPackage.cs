@@ -1528,6 +1528,11 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 SeedAvailableBuildConfigurations(projectInfo, seedProperties);
 
+                seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_ProjectType,
+                    projectInfo.VsProjectType == VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject
+                        ? DeploymentWizardProperties.NetCoreWebProject
+                        : DeploymentWizardProperties.StandardWebProject);
+
                 if (deploymentHistory is CloudFormationDeploymentHistory)
                 {
                     var cfppi = _projectDeployments[projectGuid].DeploymentForService(DeploymentServiceIdentifiers.CloudFormationServiceName, DeploymentTypeIdentifiers.VSToolkitDeployment)
@@ -1551,6 +1556,8 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                     seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_SeedAccountGuid, bppi.AccountUniqueID);
                     seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_LastRegionDeployedTo, bppi.LastRegionDeployedTo);
+
+                    SeedAvailableFrameworks(projectInfo, seedProperties);
                 }
 
                 seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_PreviousDeployments, previousDeployments);
@@ -1561,8 +1568,11 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch { }
             finally
             {
-                var targetRuntime = projectInfo.TargetRuntime;
-                seedProperties.Add(DeploymentWizardProperties.AppOptions.propkey_TargetRuntime, targetRuntime);
+                if (projectInfo.VsProjectType != VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject)
+                {
+                    var targetRuntime = projectInfo.TargetRuntime;
+                    seedProperties.Add(DeploymentWizardProperties.AppOptions.propkey_TargetRuntime, targetRuntime);
+                }
             }
 
             wizard.SetProperties(seedProperties);

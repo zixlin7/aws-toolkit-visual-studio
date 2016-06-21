@@ -66,6 +66,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             }
         }
 
+        public Visibility CoreCLRVisible { get; set; } = Visibility.Collapsed;
+
         public ObservableCollection<string> BuildConfigurations { get; set; }
 
         public string SelectedBuildConfiguration { get; set; }
@@ -81,6 +83,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         public string DeploymentVersionLabel { get; set; }
 
         public string IISAppPath { get; set; }
+
+        public string TargetFramework { get; set; }
 
         public void SetRedeploymentMessaging(AccountViewModel account, 
                                              RegionEndPointsManager.RegionEndPoints region, 
@@ -199,6 +203,19 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         {
             this._versionLabel.IsEnabled = !_usingIncrementalDeployment;
             this._versionValidationGroup.Visibility = _usingIncrementalDeployment ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        public void SetDefaultRuntimesOrFrameworks(string targetFramework, IDictionary<string, string> availableFrameworks)
+        {
+            foreach (var key in availableFrameworks.Keys)
+            {
+                _targetFramework.Items.Add(key);
+            }
+
+            if (targetFramework != null)
+                this.TargetFramework = targetFramework;
+            else if(_targetFramework.Items.Count > 0)
+                this.TargetFramework = _targetFramework.Items[0] as string ;
         }
     }
 }
