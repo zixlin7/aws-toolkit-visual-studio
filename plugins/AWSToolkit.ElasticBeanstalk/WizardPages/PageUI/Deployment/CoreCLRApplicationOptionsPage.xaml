@@ -26,20 +26,8 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Border BorderBrush="Red" BorderThickness="2" Margin="4">
-            <Grid>
-                <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}"
-                           Margin="2"
-                           FontWeight="SemiBold"
-                           FontSize="14"
-                           TextWrapping="Wrap"
-                           >
-                NOTE: Support for deploying CoreCLR-based web projects is in preview status and subject to change.
-                </TextBlock>
-            </Grid>
-        </Border>
         
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"  />
                 <RowDefinition Height="Auto" />
@@ -111,7 +99,7 @@
                      />
         </Grid>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"  />
                 <RowDefinition Height="Auto" />
@@ -213,6 +201,16 @@
                 </TextBox>
             </Grid>
         </Grid>
+
+        <Grid Grid.Row="2">
+            <TextBlock Style="{DynamicResource awsInfoTextStyle}"
+                        Margin="2,10,2,2"
+                        TextWrapping="Wrap"
+                        >
+            NOTE: Changes have been announced for .NET Core project files and the use of project.json. This wizard will be updated to be compatible with the upcoming changes which might break compatiblity with older project files.
+            </TextBlock>
+        </Grid>
+
     </Grid>
 
 </commonui:BaseAWSUserControl>
