@@ -40,6 +40,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         {
             InitializeComponent();
             DataContext = this;
+			CoreCLRVisible = Visibility.Collapsed;
         }
 
         public FastTrackRepublishPage(IAWSWizardPageController controller)
@@ -66,7 +67,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             }
         }
 
-        public Visibility CoreCLRVisible { get; set; } = Visibility.Collapsed;
+        public Visibility CoreCLRVisible { get; set; }
 
         public ObservableCollection<string> BuildConfigurations { get; set; }
 

@@ -197,6 +197,12 @@
     <Compile Include="..\AWSToolkit.VisualStudio.Shared\LinkedFiles\BuildProcessors\MSDeployWrapper.cs">
       <Link>BuildProcessors\MSDeployWrapper.cs</Link>
     </Compile>
+    <Compile Include="..\AWSToolkit.VisualStudio.Shared\LinkedFiles\BuildProcessors\CoreCLRWebAppProjectBuildProcessor.cs">
+      <Link>BuildProcessors\CoreCLRWebAppProjectBuildProcessor.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSToolkit.VisualStudio.Shared\LinkedFiles\BuildProcessors\DotNetCLIWrapper.cs">
+      <Link>BuildProcessors\DotNetCLIWrapper.cs</Link>
+    </Compile>
     <Compile Include="..\AWSToolkit.VisualStudio.Shared\LinkedFiles\BuildProcessors\WebAppProjectBuildProcessor.cs">
       <Link>BuildProcessors\WebAppProjectBuildProcessor.cs</Link>
     </Compile>
