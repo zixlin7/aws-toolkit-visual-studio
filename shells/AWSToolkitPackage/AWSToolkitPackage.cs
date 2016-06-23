@@ -586,7 +586,6 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// </remarks>
         void PublishMenuCommand_BeforeQueryStatus(object sender, EventArgs evnt)
         {
-            this.Logger.Error("Querying on publish menu status");
             var publishMenuCommand = sender as OleMenuCommand;
             publishMenuCommand.Visible = false;
 
@@ -595,16 +594,14 @@ namespace Amazon.AWSToolkit.VisualStudio
                 if (CloudFormationPluginAvailable || BeanstalkPluginAvailable)
                 {
                     var pi = VSUtility.SelectedWebProject;
-                    this.Logger.Error("Is selected web project null: " + (pi == null) + " is web project type: " + (pi != null ? pi.VsProjectType != VSWebProjectInfo.VsWebProjectType.NotWebProjectType : false));
                     publishMenuCommand.Visible
                         = (pi != null
                             && pi.VsProjectType != VSWebProjectInfo.VsWebProjectType.NotWebProjectType);
                     publishMenuCommand.Enabled = !_performingDeployment;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                this.Logger.Error("Error query status for publish menu", e);
             }
         }
 
