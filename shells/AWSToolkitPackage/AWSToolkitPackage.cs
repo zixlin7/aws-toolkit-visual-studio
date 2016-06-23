@@ -584,8 +584,9 @@ namespace Amazon.AWSToolkit.VisualStudio
         // Don't disable command if msdeploy not found; it's nicer for the user to be
         // able to download, install and re-run the command without VS restart
         /// </remarks>
-        void PublishMenuCommand_BeforeQueryStatus(object sender, EventArgs e)
+        void PublishMenuCommand_BeforeQueryStatus(object sender, EventArgs evnt)
         {
+            this.Logger.Error("Querying on publish menu status");
             var publishMenuCommand = sender as OleMenuCommand;
             publishMenuCommand.Visible = false;
 
@@ -594,14 +595,16 @@ namespace Amazon.AWSToolkit.VisualStudio
                 if (CloudFormationPluginAvailable || BeanstalkPluginAvailable)
                 {
                     var pi = VSUtility.SelectedWebProject;
+                    this.Logger.Error("Is selected web project null: " + (pi == null) + " is web project type: " + (pi != null ? pi.VsProjectType != VSWebProjectInfo.VsWebProjectType.NotWebProjectType : false));
                     publishMenuCommand.Visible
                         = (pi != null
                             && pi.VsProjectType != VSWebProjectInfo.VsWebProjectType.NotWebProjectType);
                     publishMenuCommand.Enabled = !_performingDeployment;
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                this.Logger.Error("Error query status for publish menu", e);
             }
         }
 
