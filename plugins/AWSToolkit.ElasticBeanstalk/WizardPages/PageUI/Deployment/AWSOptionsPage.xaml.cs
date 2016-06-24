@@ -115,7 +115,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             if (stacks != null)
             {
                 _solutionStack.ItemsSource = stacks;
-                if (!string.IsNullOrEmpty(autoSelectStack))
+                if (!string.IsNullOrEmpty(autoSelectStack) && stacks.Contains(autoSelectStack))
                     _solutionStack.SelectedItem = autoSelectStack;
                 else
                     _solutionStack.SelectedIndex = 0;
