@@ -17,6 +17,8 @@ using EnvDTEProject = EnvDTE.Project;
 
 using ServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
+using Amazon.AWSToolkit.MobileAnalytics;
+
 namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
 {
     /// <summary>
@@ -25,6 +27,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
     /// </summary>
     internal class CoreCLRWebAppProjectBuildProcessor : BuildProcessorBase, IBuildProcessor, IVsUpdateSolutionEvents
     {
+        const string ANALYTICS_VALUE = "NET_CORE";
+
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(CoreCLRWebAppProjectBuildProcessor));
 
         string _outputPackage = string.Empty;
@@ -91,12 +95,20 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
                 TaskInfo.Logger.OutputMessage(ProcessorResult == ResultCodes.Succeeded
                     ? "..deployment package created successfully..."
                     : "..build fail, unable to find expected deployment package.");
+
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.DeploymentSuccessType, ANALYTICS_VALUE);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }
             catch (Exception exc)
             {
                 var msg = string.Format("...caught exception during deployment package creation - {0}", exc.Message);
                 LOGGER.ErrorFormat(msg);
                 TaskInfo.Logger.OutputMessage(msg);
+
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.DeploymentErrorType, ANALYTICS_VALUE);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }
             finally
             {

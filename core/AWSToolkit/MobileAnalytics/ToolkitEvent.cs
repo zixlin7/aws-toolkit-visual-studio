@@ -16,7 +16,9 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         ServiceName,
         ViewName,
         ReadableTimestamp,
-        NavigationReason
+        NavigationReason,
+        DeploymentSuccessType,
+        DeploymentErrorType
     };
 
     public enum MetricKeys
