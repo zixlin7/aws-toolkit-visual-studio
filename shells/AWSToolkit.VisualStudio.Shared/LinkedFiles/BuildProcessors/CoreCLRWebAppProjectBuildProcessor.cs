@@ -88,7 +88,13 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
                 zip.CreateZip(this._outputPackage, packagingLocation, true, null);
 
                 if (File.Exists(_outputPackage))
+                {
+                    ToolkitEvent sizeEvent = new ToolkitEvent();
+                    sizeEvent.AddProperty(MetricKeys.DeploymentBundleSize, new FileInfo(this._outputPackage).Length);
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(sizeEvent);
+
                     ProcessorResult = ResultCodes.Succeeded;
+                }
                 else
                     taskInfo.Logger.OutputMessage(string.Format("...error, folder '{0}' could not be found", _outputPackage), true, true);
 
@@ -98,6 +104,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
 
                 ToolkitEvent evnt = new ToolkitEvent();
                 evnt.AddProperty(AttributeKeys.DeploymentSuccessType, ANALYTICS_VALUE);
+                evnt.AddProperty(AttributeKeys.DeploymentNetCoreTargetFramework, TaskInfo.TargetFramework);
                 SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }
             catch (Exception exc)
@@ -108,6 +115,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
 
                 ToolkitEvent evnt = new ToolkitEvent();
                 evnt.AddProperty(AttributeKeys.DeploymentErrorType, ANALYTICS_VALUE);
+                evnt.AddProperty(AttributeKeys.DeploymentNetCoreTargetFramework, TaskInfo.TargetFramework);
                 SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }
             finally

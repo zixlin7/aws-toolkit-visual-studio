@@ -114,7 +114,13 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
                 else
                 {
                     if (File.Exists(_outputPackage))
+                    {
+                        ToolkitEvent sizeEvent = new ToolkitEvent();
+                        sizeEvent.AddProperty(MetricKeys.DeploymentBundleSize, new FileInfo(this._outputPackage).Length);
+                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(sizeEvent);
+
                         ProcessorResult = ResultCodes.Succeeded;
+                    }
                     else
                         taskInfo.Logger.OutputMessage(string.Format("...error, package '{0}' could not be found", _outputPackage), true, true);
                 }

@@ -17,6 +17,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         ViewName,
         ReadableTimestamp,
         NavigationReason,
+        DeploymentNetCoreTargetFramework,
         DeploymentSuccessType,
         DeploymentErrorType
     };
@@ -26,7 +27,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         NumberOfServicesUsed,
         TimeSpentInView,
         PageIndex,
-        GroupIndex
+        GroupIndex,
+        DeploymentBundleSize
     };
 
     public class ToolkitEvent

@@ -190,7 +190,13 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
                             ProcessorResult = ResultCodes.Succeeded;
                     }
                     else if (File.Exists(_outputPackage))
+                    {
+                        ToolkitEvent sizeEvent = new ToolkitEvent();
+                        sizeEvent.AddProperty(MetricKeys.DeploymentBundleSize, new FileInfo(this._outputPackage).Length);
+                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(sizeEvent);
+
                         ProcessorResult = ResultCodes.Succeeded;
+                    }
 
                     string msg;
                     if (ProcessorResult == ResultCodes.Succeeded)
