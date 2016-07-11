@@ -115,7 +115,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 
                 Deployment.KeyPairName = getValue<string>(DeploymentWizardProperties.AWSOptions.propkey_KeyPairName);
                 if (getValue<bool>(DeploymentWizardProperties.AWSOptions.propkey_CreateKeyPair))
-                    CreateKeyPair(Deployment.KeyPairName);
+                    CreateKeyPair(Account, Deployment.RegionEndPoints, Deployment.KeyPairName);
 
                 Deployment.SolutionStack = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_SolutionStack);
                 Deployment.CustomAmiID = getValue<string>(DeploymentWizardProperties.AWSOptions.propkey_CustomAMIID);
@@ -452,12 +452,21 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             return bucketName;
         }
 
-        public void CreateKeyPair(string keyName)
+        public void CreateKeyPair(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region, string keyName)
         {
             Observer.Status("Creating keypair '{0}'", keyName);
 
+            var endpoint = region.GetEndpoint("EC2");
+            var config = new AmazonEC2Config()
+            {
+                ServiceURL = endpoint.Url,
+                AuthenticationRegion = endpoint.AuthRegion
+            };
+
+            var client = new AmazonEC2Client(account.Credentials, config);
+
             var request = new CreateKeyPairRequest() { KeyName = keyName };
-            var response = Deployment.EC2Client.CreateKeyPair(request);
+            var response = client.CreateKeyPair(request);
 
             IEC2RootViewModel ec2Root = Account.FindSingleChild<IEC2RootViewModel>(false);
             KeyPairLocalStoreManager.Instance.SavePrivateKey(Account,
