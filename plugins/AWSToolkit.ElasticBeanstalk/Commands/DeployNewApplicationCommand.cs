@@ -34,10 +34,13 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 
+using Amazon.IdentityManagement;
+using Amazon.IdentityManagement.Model;
+
 using AWSDeployment;
 
 using log4net;
-using Amazon.IdentityManagement.Model;
+
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 {
@@ -120,7 +123,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 Deployment.SolutionStack = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_SolutionStack);
                 Deployment.CustomAmiID = getValue<string>(DeploymentWizardProperties.AWSOptions.propkey_CustomAMIID);
 
-                Deployment.RoleName = ConfigureIAMRole();
+                Deployment.RoleName = ConfigureIAMRole(Account, Deployment.RegionEndPoints);
                 Deployment.ServiceRoleName = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ServiceRoleName);
 
                 Deployment.LaunchIntoVPC = getValue<bool>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_LaunchIntoVPC);
@@ -222,13 +225,23 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             }
         }
 
-        string ConfigureIAMRole()
+        string ConfigureIAMRole(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
         {
             var roleTemplates = getValue<Amazon.AWSToolkit.CommonUI.Components.IAMCapabilityPicker.PolicyTemplate[]>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_PolicyTemplates);
             if(roleTemplates != null)
             {
+                var endpoint = region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
+                var config = new AmazonIdentityManagementServiceConfig()
+                {
+                    ServiceURL = endpoint.Url,
+                    AuthenticationRegion = endpoint.AuthRegion
+                };
+
+                var client = new AmazonIdentityManagementServiceClient(account.Credentials, config);
+
+
                 var newRoleName = "aws-elasticbeanstalk-" + getValue<string>(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_EnvName);
-                var existingRoleNames = ExistingRoleNames();
+                var existingRoleNames = ExistingRoleNames(client);
 
                 if (existingRoleNames.Contains(newRoleName))
                 {
@@ -244,7 +257,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                     }
                 }
 
-                var role = this.Deployment.IAMClient.CreateRole(new CreateRoleRequest
+                var role = client.CreateRole(new CreateRoleRequest
                     {
                         RoleName = newRoleName,
                         AssumeRolePolicyDocument 
@@ -253,13 +266,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                     }).Role;
                 this.Observer.Status("Created IAM Role {0}", newRoleName);
 
-                var profile = this.Deployment.IAMClient.CreateInstanceProfile(new CreateInstanceProfileRequest
+                var profile = client.CreateInstanceProfile(new CreateInstanceProfileRequest
                     {
                         InstanceProfileName = newRoleName
                     }).InstanceProfile;
                 this.Observer.Status("Created IAM Instance Profile {0}", profile.InstanceProfileName);
 
-                this.Deployment.IAMClient.AddRoleToInstanceProfile(new AddRoleToInstanceProfileRequest
+                client.AddRoleToInstanceProfile(new AddRoleToInstanceProfileRequest
                     {
                         InstanceProfileName = profile.InstanceProfileName,
                         RoleName = role.RoleName
@@ -268,7 +281,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 
                 foreach(var template in roleTemplates)
                 {
-                    this.Deployment.IAMClient.PutRolePolicy(new PutRolePolicyRequest
+                    client.PutRolePolicy(new PutRolePolicyRequest
                         {
                             RoleName = role.RoleName,
                             PolicyName = template.IAMCompatibleName,
@@ -286,7 +299,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             }
         }
 
-        HashSet<string> ExistingRoleNames()
+        HashSet<string> ExistingRoleNames(IAmazonIdentityManagementService client)
         {
             HashSet<string> roles = new HashSet<string>();
 
@@ -296,7 +309,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 ListRolesRequest request = new ListRolesRequest();
                 if (response != null)
                     request.Marker = response.Marker;
-                response = this.Deployment.IAMClient.ListRoles(request);
+                response = client.ListRoles(request);
                 foreach(var role in response.Roles)
                 {
                     roles.Add(role.RoleName);
@@ -425,7 +438,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             // information we have at hand
             try
             {
-                var endpoint = region.GetEndpoint("ElasticBeanstalk");
+                var endpoint = region.GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME);
                 var config = new AmazonElasticBeanstalkConfig()
                 {
                     ServiceURL = endpoint.Url,
@@ -456,7 +469,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
         {
             Observer.Status("Creating keypair '{0}'", keyName);
 
-            var endpoint = region.GetEndpoint("EC2");
+            var endpoint = region.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
             var config = new AmazonEC2Config()
             {
                 ServiceURL = endpoint.Url,
