@@ -30,7 +30,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
         /// <param name="iisAppPath"></param>
         /// <param name="configuration"></param>
         /// <param name="logger"></param>
-        public void Publish(string outputLocation, string targetFramework, string configuration, IBuildAndDeploymentLogger logger)
+        public int Publish(string outputLocation, string targetFramework, string configuration, IBuildAndDeploymentLogger logger)
         {
             logger.OutputMessage(string.Format("...invoking 'dotnet publish', working folder '{0}'", outputLocation), 
                                  true, true);
@@ -71,6 +71,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
                 proc.EnableRaisingEvents = true;
 
                 proc.WaitForExit();
+
+                return proc.ExitCode;
             }
         }
 

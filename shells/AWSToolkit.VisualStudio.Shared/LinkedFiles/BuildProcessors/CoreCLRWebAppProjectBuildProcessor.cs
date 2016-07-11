@@ -74,38 +74,52 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
 
                 var dotnetCLIWrapper = new DotNetCLIWrapper(TaskInfo.ProjectInfo.VsProjectLocation);
 
-                dotnetCLIWrapper.Publish(packagingLocation,
+                var success = dotnetCLIWrapper.Publish(packagingLocation,
                                          TaskInfo.TargetFramework,
                                          projectConfigurationAndPlatform[0],
-                                         TaskInfo.Logger);
+                                         TaskInfo.Logger) == 0;
 
-                TaskInfo.Logger.OutputMessage("..preparing up aws deployment manifest file");
-                SetupAWSDeploymentManifest(packagingLocation, iisAppPath);
-
-                TaskInfo.Logger.OutputMessage("..zipping publishing directory");
-                this._outputPackage = Path.Combine(outputLocation, taskInfo.ProjectInfo.ProjectName + "-" + DateTime.Now.Ticks + ".zip");
-                var zip = new FastZip();
-                zip.CreateZip(this._outputPackage, packagingLocation, true, null);
-
-                if (File.Exists(_outputPackage))
+                if (success)
                 {
-                    ToolkitEvent sizeEvent = new ToolkitEvent();
-                    sizeEvent.AddProperty(MetricKeys.DeploymentBundleSize, new FileInfo(this._outputPackage).Length);
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(sizeEvent);
+                    TaskInfo.Logger.OutputMessage("..preparing up aws deployment manifest file");
+                    SetupAWSDeploymentManifest(packagingLocation, iisAppPath);
 
-                    ProcessorResult = ResultCodes.Succeeded;
+                    TaskInfo.Logger.OutputMessage("..zipping publishing directory");
+                    this._outputPackage = Path.Combine(outputLocation, taskInfo.ProjectInfo.ProjectName + "-" + DateTime.Now.Ticks + ".zip");
+                    var zip = new FastZip();
+                    zip.CreateZip(this._outputPackage, packagingLocation, true, null);
+
+                    if (File.Exists(_outputPackage))
+                    {
+                        ToolkitEvent sizeEvent = new ToolkitEvent();
+                        sizeEvent.AddProperty(MetricKeys.DeploymentBundleSize, new FileInfo(this._outputPackage).Length);
+                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(sizeEvent);
+
+                        ProcessorResult = ResultCodes.Succeeded;
+                    }
+                    else
+                        taskInfo.Logger.OutputMessage(string.Format("...error, folder '{0}' could not be found", _outputPackage), true, true);
+
+                    TaskInfo.Logger.OutputMessage(ProcessorResult == ResultCodes.Succeeded
+                        ? "..deployment package created successfully..."
+                        : "..build fail, unable to find expected deployment package.");
+
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.DeploymentSuccessType, ANALYTICS_VALUE);
+                    evnt.AddProperty(AttributeKeys.DeploymentNetCoreTargetFramework, TaskInfo.TargetFramework);
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
                 }
                 else
-                    taskInfo.Logger.OutputMessage(string.Format("...error, folder '{0}' could not be found", _outputPackage), true, true);
+                {
+                    var msg = "Error executing the dotnet publish command, stopping deployment";
+                    LOGGER.ErrorFormat(msg);
+                    taskInfo.Logger.OutputMessage(msg);
 
-                TaskInfo.Logger.OutputMessage(ProcessorResult == ResultCodes.Succeeded
-                    ? "..deployment package created successfully..."
-                    : "..build fail, unable to find expected deployment package.");
-
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.DeploymentSuccessType, ANALYTICS_VALUE);
-                evnt.AddProperty(AttributeKeys.DeploymentNetCoreTargetFramework, TaskInfo.TargetFramework);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.DeploymentErrorType, ANALYTICS_VALUE);
+                    evnt.AddProperty(AttributeKeys.DeploymentNetCoreTargetFramework, TaskInfo.TargetFramework);
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                }
             }
             catch (Exception exc)
             {
