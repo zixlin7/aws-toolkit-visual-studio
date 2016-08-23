@@ -4,6 +4,9 @@ using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
+using Amazon.AWSToolkit.MobileAnalytics;
+
+
 namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
 {
     /// <summary>
@@ -12,6 +15,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
     /// </summary>
     internal class WebSiteProjectBuildProcessor : BuildProcessorBase, IBuildProcessor, IVsUpdateSolutionEvents
     {
+        const string ANALYTICS_VALUE = "WEB_SITE";
+
         string _outputPackage = string.Empty;
 
         const string AspNetTargetPathPropertyPattern = "Project_{0}_AspNetTargetPath";
@@ -92,7 +97,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
 
                     var msDeployWrapper = new MSDeployWrapper(TaskInfo.ProjectInfo.ProjectName,
                                                               stagedOutputLocation,
-                                                              TaskInfo.RuntimeFromFramework,
+                                                              TaskInfo.TargetRuntime,
                                                               iisAppPath,
                                                               TaskInfo.UseIncrementalDeployment);
 
@@ -109,7 +114,13 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
                 else
                 {
                     if (File.Exists(_outputPackage))
+                    {
+                        ToolkitEvent sizeEvent = new ToolkitEvent();
+                        sizeEvent.AddProperty(MetricKeys.DeploymentBundleSize, new FileInfo(this._outputPackage).Length);
+                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(sizeEvent);
+
                         ProcessorResult = ResultCodes.Succeeded;
+                    }
                     else
                         taskInfo.Logger.OutputMessage(string.Format("...error, package '{0}' could not be found", _outputPackage), true, true);
                 }
@@ -117,9 +128,17 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
                 TaskInfo.Logger.OutputMessage(ProcessorResult == ResultCodes.Succeeded
                     ? "..deployment package created successfully..."
                     : "..build fail, unable to find expected deployment package.");
+
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.DeploymentSuccessType, ANALYTICS_VALUE);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }
             catch (Exception exc)
             {
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.DeploymentErrorType, ANALYTICS_VALUE);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
                 TaskInfo.Logger.OutputMessage("...caught exception during deployment package creation: " + exc.Message, true, true);
             }
             finally

@@ -15,9 +15,9 @@ using Amazon.ElasticBeanstalk.Model;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deployment
 {
-    internal class ApplicationOptionsPageController : IAWSWizardPageController
+    internal class CoreCLRApplicationOptionsPageController : IAWSWizardPageController
     {
-        private ApplicationOptionsPage _pageUI;
+        private CoreCLRApplicationOptionsPage _pageUI;
         private bool RedeployingAppVersion = false;
 
         public string PageID
@@ -52,29 +52,27 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
             if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_ProjectType))
             {
                 var projectType = HostingWizard.GetProperty(DeploymentWizardProperties.SeedData.propkey_ProjectType) as string;
-                return projectType.Equals(DeploymentWizardProperties.StandardWebProject, StringComparison.OrdinalIgnoreCase);
+                return projectType.Equals(DeploymentWizardProperties.NetCoreWebProject, StringComparison.OrdinalIgnoreCase);
             }
 
-            return true;
+            return false;
         }
 
         public UserControl PageActivating(AWSWizardConstants.NavigationReason navigationReason)
         {
             if (_pageUI == null)
             {
-                _pageUI = new ApplicationOptionsPage(this);
+                _pageUI = new CoreCLRApplicationOptionsPage(this);
                 _pageUI.PropertyChanged += OnPagePropertyChanged;
 
-                // these settings are based off the VS project settings, so we can get away with setting on construction
                 var targetRuntime = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] as string;
-                var enable32BitApps = false;
-                if (HostingWizard.IsPropertySet(DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications))
-                    enable32BitApps = (bool)HostingWizard[DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications];
+                //var enable32BitApps = false;
+                //if (HostingWizard.IsPropertySet(DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications))
+                //    enable32BitApps = (bool)HostingWizard[DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications];
+                //_pageUI.Enable32BitAppPool = enable32BitApps;
 
-                _pageUI.Enable32BitAppPool = enable32BitApps;
-
-                var availableRuntimes = HostingWizard[DeploymentWizardProperties.SeedData.propkey_ProjectFrameworks] as Dictionary<string, string>;
-                _pageUI.SetDefaultRuntimesOrFrameworks(targetRuntime, availableRuntimes);
+                var availableFrameworks = HostingWizard[DeploymentWizardProperties.SeedData.propkey_ProjectFrameworks] as Dictionary<string, string>;
+                _pageUI.SetDefaultRuntimesOrFrameworks(targetRuntime, availableFrameworks);
 
                 if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_RedeployingAppVersion))
                     RedeployingAppVersion = (bool)HostingWizard[DeploymentWizardProperties.SeedData.propkey_RedeployingAppVersion];
@@ -237,9 +235,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
                     ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
                     {
-                        this._originalEnable32bitAppPool = enable32Bit;
-                        this._pageUI.Enable32BitAppPool = enable32Bit;
-
                         this._originalHealthCheckUri = healthCheckUri;
                         this._pageUI.HealthCheckUri = healthCheckUri;
 
@@ -292,13 +287,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
         private void StorePageData()
         {
-            string targetRuntime = _pageUI.TargetRuntime;
-            if (!string.IsNullOrEmpty(targetRuntime))
-                HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] = targetRuntime;
+            string targetFramework = _pageUI.TargetFramework;
+            if (!string.IsNullOrEmpty(targetFramework))
+                HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] = targetFramework;
             else
                 HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] = null;
 
-            HostingWizard[DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications] = _pageUI.Enable32BitAppPool;
+            //HostingWizard[DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications] = _pageUI.Enable32BitAppPool;
             if (string.IsNullOrEmpty(_pageUI.IISAppPath) || string.Equals(_pageUI.IISAppPath, "/"))
                 HostingWizard[DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath] = AWSDeployment.CommonParameters.DefaultIisAppPathFormat;
             else
@@ -307,6 +302,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
             HostingWizard[DeploymentWizardProperties.AppOptions.propkey_HealthCheckUrl] = _pageUI.HealthCheckUri;
             HostingWizard[DeploymentWizardProperties.AppOptions.propkey_SelectedBuildConfiguration] = _pageUI.SelectedBuildConfiguration;
 
+            // currently always an empty dictionary for coreclr projects
             HostingWizard[DeploymentWizardProperties.AppOptions.propkey_EnvAppSettings] = this._pageUI.AppSettings;
 
             HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_VersionLabel] = _pageUI.DeploymentVersionLabel;
@@ -329,9 +325,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                     if(!string.Equals(kvp.Value, this._originalAppSettings[kvp.Key]))
                         return true;
                 }
-
-                if (this._pageUI.Enable32BitAppPool != this._originalEnable32bitAppPool)
-                    return true;
 
                 if (this._pageUI.HealthCheckUri != this._originalHealthCheckUri)
                     return true;

@@ -120,6 +120,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                 {
                     // may be same user, but might have gone back and changed template/environment type
                     var stacks = FilterStacksForSingleInstanceEnvironment(_windowsSolutionStacks);
+                    stacks = FilterStacksForNetCoreSupport(stacks);
+
                     var defaultStackName =
                         ToolkitAMIManifest.Instance.QueryDefaultWebDeploymentContainer(
                             ToolkitAMIManifest.HostService.ElasticBeanstalk);
@@ -318,6 +320,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                 }
 
                 var stacks = FilterStacksForSingleInstanceEnvironment(_windowsSolutionStacks);
+                stacks = FilterStacksForNetCoreSupport(stacks);
                 var defaultStackName = ToolkitAMIManifest.Instance.QueryDefaultWebDeploymentContainer(ToolkitAMIManifest.HostService.ElasticBeanstalk);
                 _pageUI.SetSolutionStacks(stacks, defaultStackName);
             }
@@ -372,6 +375,41 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
         {
             var singleInstanceEnvSelected = _pageUI.SingleInstanceEnvironment;
             return allWindowsSolutionStacks.Where(stack => !stack.Contains("legacy") || !singleInstanceEnvSelected).ToList();
+        }
+
+        private static readonly Version MINIMUM_NET_CORE_SOLUTIONSTACK = new Version("1.2.0");
+        IEnumerable<string> FilterStacksForNetCoreSupport(IEnumerable<string> allWindowsSolutionStacks)
+        {
+            var projectType = HostingWizard.GetProperty(DeploymentWizardProperties.SeedData.propkey_ProjectType) as string;
+            if (projectType == null || !projectType.Equals(DeploymentWizardProperties.NetCoreWebProject, StringComparison.OrdinalIgnoreCase))
+                return allWindowsSolutionStacks;
+
+            List<string> filtered = new List<string>();
+            foreach(var stack in allWindowsSolutionStacks)
+            {
+                var version = GetVersionFromSolutionStack(stack);
+                var compare = MINIMUM_NET_CORE_SOLUTIONSTACK.CompareTo(version);
+                if (compare <= 0)
+                    filtered.Add(stack);
+            }
+
+            return filtered;
+        }
+
+        Version GetVersionFromSolutionStack(string solutionStackName)
+        {
+            var tokens = solutionStackName.Split(' ');
+            foreach (var token in tokens)
+            {
+                if (token.Length >= 2 && token[0] == 'v' && token.IndexOf('.') != -1)
+                {
+                    Version v;
+                    if (Version.TryParse(token.Substring(1), out v))
+                        return v;
+                }
+            }
+
+            return new Version("1.0.0");
         }
 
         void LoadExistingKeyPairs(AccountViewModel selectedAccount, RegionEndPointsManager.RegionEndPoints region)

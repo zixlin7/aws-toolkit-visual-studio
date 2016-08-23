@@ -48,6 +48,8 @@ using Window = System.Windows.Window;
 using System.ComponentModel;
 using Amazon.AWSToolkit.MobileAnalytics;
 
+using ThirdParty.Json.LitJson;
+
 namespace Amazon.AWSToolkit.VisualStudio
 {
     /// <summary>
@@ -582,7 +584,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         // Don't disable command if msdeploy not found; it's nicer for the user to be
         // able to download, install and re-run the command without VS restart
         /// </remarks>
-        void PublishMenuCommand_BeforeQueryStatus(object sender, EventArgs e)
+        void PublishMenuCommand_BeforeQueryStatus(object sender, EventArgs evnt)
         {
             var publishMenuCommand = sender as OleMenuCommand;
             publishMenuCommand.Visible = false;
@@ -711,7 +713,12 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             try
             {
-                if (_msdeployInstallVerified != true)
+                var pi = VSUtility.SelectedWebProject;
+                if (pi == null || pi.VsProjectType == VSWebProjectInfo.VsWebProjectType.NotWebProjectType)
+                    return;
+
+                // don't pay the msdeploy install tax for coreclr project types
+                if (pi.VsProjectType != VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject && _msdeployInstallVerified != true)
                 {
                     var retry = false;
                     do
@@ -725,10 +732,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                     if (_msdeployInstallVerified != true)
                         return;
                 }
-
-                var pi = VSUtility.SelectedWebProject;
-                if (pi == null || pi.VsProjectType == VSWebProjectInfo.VsWebProjectType.NotWebProjectType)
-                    return;
 
                 IDictionary<string, object> wizardProperties;
                 var ret = InitializeAndRunDeploymentWizard(pi, out wizardProperties);
@@ -1417,7 +1420,13 @@ namespace Amazon.AWSToolkit.VisualStudio
                 var projectGuid = VSUtility.QueryProjectIDGuid(projectInfo.VsHierarchy);
                 seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_VSProjectGuid, projectGuid);
 
+                seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_ProjectType,
+                    projectInfo.VsProjectType == VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject 
+                        ? DeploymentWizardProperties.NetCoreWebProject 
+                        : DeploymentWizardProperties.StandardWebProject);
+
                 SeedAvailableBuildConfigurations(projectInfo, seedProperties);
+                SeedAvailableFrameworks(projectInfo, seedProperties);
 
                 if (_projectDeployments.PersistedDeployments(projectGuid) > 0)
                 {
@@ -1519,6 +1528,11 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 SeedAvailableBuildConfigurations(projectInfo, seedProperties);
 
+                seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_ProjectType,
+                    projectInfo.VsProjectType == VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject
+                        ? DeploymentWizardProperties.NetCoreWebProject
+                        : DeploymentWizardProperties.StandardWebProject);
+
                 if (deploymentHistory is CloudFormationDeploymentHistory)
                 {
                     var cfppi = _projectDeployments[projectGuid].DeploymentForService(DeploymentServiceIdentifiers.CloudFormationServiceName, DeploymentTypeIdentifiers.VSToolkitDeployment)
@@ -1542,6 +1556,8 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                     seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_SeedAccountGuid, bppi.AccountUniqueID);
                     seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_LastRegionDeployedTo, bppi.LastRegionDeployedTo);
+
+                    SeedAvailableFrameworks(projectInfo, seedProperties);
                 }
 
                 seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_PreviousDeployments, previousDeployments);
@@ -1552,8 +1568,11 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch { }
             finally
             {
-                var targetRuntime = projectInfo.TargetRuntime;
-                seedProperties.Add(DeploymentWizardProperties.AppOptions.propkey_TargetRuntime, targetRuntime);
+                if (projectInfo.VsProjectType != VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject)
+                {
+                    var targetRuntime = projectInfo.TargetRuntime;
+                    seedProperties.Add(DeploymentWizardProperties.AppOptions.propkey_TargetRuntime, targetRuntime);
+                }
             }
 
             wizard.SetProperties(seedProperties);
@@ -1628,6 +1647,43 @@ namespace Amazon.AWSToolkit.VisualStudio
 
             seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_ProjectBuildConfigurations, buildConfigurations);
             seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_ActiveBuildConfiguration, activeConfigurationKey);
+        }
+
+        /// <summary>
+        /// For CoreCLR projects, sets up the available frameworks the user can deploy with. For traditional
+        /// projects, it sets up the runtimes that can be used for the apppool. For both case, the seeded output
+        /// is a dictionary of UI-visible text to the control code that is passed to the build/deployment handlers.
+        /// </summary>
+        /// <param name="projectInfo"></param>
+        /// <param name="seedProperties"></param>
+        void SeedAvailableFrameworks(VSWebProjectInfo projectInfo, Dictionary<string, object> seedProperties)
+        {
+            var frameworks = new Dictionary<string, string>();
+
+            if (projectInfo.VsProjectType == VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject)
+            {
+                var projectJsonLocation = Path.Combine(projectInfo.VsProjectLocation, "project.json");
+                if(File.Exists(projectJsonLocation))
+                {
+                    JsonData root = JsonMapper.ToObject(File.ReadAllText(projectJsonLocation));
+                    JsonData frameworksNode = root["frameworks"] as JsonData;
+                    foreach(var key in frameworksNode.PropertyNames)
+                    {
+                        frameworks.Add(key, key);
+                    }
+                }
+
+                // Safety net in case MS changes the project.json system underneath us
+                if(frameworks.Count == 0)
+                    frameworks.Add("netcoreapp1.0", "netcoreapp1.0");
+            }
+            else
+            {
+                frameworks.Add("2.0 .NET Runtime", "2.0");
+                frameworks.Add("4.0 .NET Runtime", "4.0");
+            }
+
+            seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_ProjectFrameworks, frameworks);
         }
 
         /// <summary>
@@ -1747,9 +1803,19 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
 
             bdc.HostServiceProvider = GetService;
-            bdc.BuildProcessor = projectInfo.VsProjectType == VSWebProjectInfo.VsWebProjectType.WebApplicationProject
-                                        ? new WebAppProjectBuildProcessor() as IBuildProcessor
-                                        : new WebSiteProjectBuildProcessor() as IBuildProcessor;
+            switch (projectInfo.VsProjectType)
+            {
+                case VSWebProjectInfo.VsWebProjectType.WebApplicationProject:
+                    bdc.BuildProcessor = new WebAppProjectBuildProcessor();
+                    break;
+                case VSWebProjectInfo.VsWebProjectType.WebSiteProject:
+                    bdc.BuildProcessor = new WebSiteProjectBuildProcessor();
+                    break;
+                case VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject:
+                    bdc.BuildProcessor = new CoreCLRWebAppProjectBuildProcessor();
+                    break;
+            }
+
             bdc.ProjectInfo = projectInfo;
             bdc.Options = wizardProperties;
             bdc.Logger = new IDEConsoleLogger(_toolkitService);

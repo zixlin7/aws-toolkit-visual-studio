@@ -16,7 +16,10 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         ServiceName,
         ViewName,
         ReadableTimestamp,
-        NavigationReason
+        NavigationReason,
+        DeploymentNetCoreTargetFramework,
+        DeploymentSuccessType,
+        DeploymentErrorType
     };
 
     public enum MetricKeys
@@ -24,7 +27,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         NumberOfServicesUsed,
         TimeSpentInView,
         PageIndex,
-        GroupIndex
+        GroupIndex,
+        DeploymentBundleSize
     };
 
     public class ToolkitEvent

@@ -79,6 +79,20 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                 var regionName = HostingWizard[DeploymentWizardProperties.SeedData.propkey_LastRegionDeployedTo] as string;
                 _region = RegionEndPointsManager.Instance.GetRegion(regionName);
 
+                var projectType = HostingWizard[DeploymentWizardProperties.SeedData.propkey_ProjectType] as string;
+                if(projectType == DeploymentWizardProperties.NetCoreWebProject)
+                {
+                    _pageUI.CoreCLRVisible = System.Windows.Visibility.Visible;
+
+                    var targetRuntime = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] as string;
+                    var availableFrameworks = HostingWizard[DeploymentWizardProperties.SeedData.propkey_ProjectFrameworks] as Dictionary<string, string>;
+                    _pageUI.SetDefaultRuntimesOrFrameworks(targetRuntime, availableFrameworks);
+                }
+                else
+                {
+                    _pageUI.CoreCLRVisible = System.Windows.Visibility.Collapsed;
+                }
+
                 var bdh = DeploymentWizardHelper.DeploymentHistoryForAccountAndRegion(_account, _region.SystemName, HostingWizard.CollectedProperties);
 
                 // work around any loss of default location due to user switching between incremental/non-incremental (shouldn't
@@ -174,12 +188,21 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
         void StorePageData()
         {
+            string targetFramework = _pageUI.TargetFramework;
+            if (!string.IsNullOrEmpty(targetFramework))
+                HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] = targetFramework;
+            else
+                HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] = null;
+
             HostingWizard[DeploymentWizardProperties.AppOptions.propkey_SelectedBuildConfiguration] = _pageUI.SelectedBuildConfiguration;
             HostingWizard.SetProperty(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_VersionLabel, _pageUI.DeploymentVersionLabel);
             if (string.IsNullOrEmpty(_pageUI.IISAppPath))
                 HostingWizard[DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath] = AWSDeployment.CommonParameters.DefaultIisAppPathFormat;
             else
                 HostingWizard[DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath] = _pageUI.IISAppPath;
+
+            if (string.IsNullOrEmpty(_pageUI.TargetFramework))
+                HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] = _pageUI.TargetFramework;
         }
 
         bool IsForwardsNavigationAllowed

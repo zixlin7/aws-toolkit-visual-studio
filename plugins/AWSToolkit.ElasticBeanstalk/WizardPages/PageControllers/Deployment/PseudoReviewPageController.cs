@@ -292,13 +292,19 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
             DeploymentTemplateWrapperBase template = null;
             if (HostingWizard.IsPropertySet(DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate))
                 template = HostingWizard[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate] as DeploymentTemplateWrapperBase;
-            
-            var targetRuntime = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] as string;
+
+            var isCoreCLRDeployment = false;
+            if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_ProjectType))
+                isCoreCLRDeployment = (HostingWizard[DeploymentWizardProperties.SeedData.propkey_ProjectType] as string).Equals(DeploymentWizardProperties.NetCoreWebProject, StringComparison.Ordinal);
+            var targetRuntime = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] as string;     // this is framework if coreclr
             var iisAppPath = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath] as string;
 
             if (!string.IsNullOrEmpty(targetRuntime))
             {
-                sb.AppendFormat("Use an IIS application pool supporting .NET Runtime {0}", targetRuntime);
+                if (isCoreCLRDeployment)
+                    sb.AppendFormat("Deploy a web application supporting .NET Core Framework {0}", targetRuntime);
+                else
+                    sb.AppendFormat("Use an IIS application pool supporting .NET Runtime {0}", targetRuntime);
                 if (!redeployingAppVersion)
                 {
                     sb.AppendFormat(" with path '{0}'.", iisAppPath);
@@ -334,9 +340,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                 sb.AppendLine(string.Format("Set the IIS application path to '{0}'.", iisAppPath));
             }
             
-            if (HostingWizard.IsPropertySet(DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications) 
-                    && (bool)HostingWizard[DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications])
-                sb.AppendLine("Enable 32bit support for the application pool.");
+            if (!isCoreCLRDeployment)
+            {
+                if (HostingWizard.IsPropertySet(DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications)
+                        && (bool)HostingWizard[DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications])
+                    sb.AppendLine("Enable 32bit support for the application pool.");
+            }
 
             if (DeploymentWizardHelper.IsSingleInstanceEnvironment(HostingWizard))
                 sb.AppendLine("The status of the single EC2 instance will be used to determine environment health.");
@@ -347,17 +356,20 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                     sb.AppendLine(string.Format("Use '{0}' as the URL for health-checks.", healthUrl));
             }
 
-            IDictionary<string, string> appSettings = null;
-            if (HostingWizard.IsPropertySet(DeploymentWizardProperties.AppOptions.propkey_EnvAppSettings))
-                appSettings = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_EnvAppSettings] as IDictionary<string, string>;
-
-            if (appSettings != null && appSettings.Any())
+            if (!isCoreCLRDeployment)
             {
-                sb.AppendLine("Custom application settings:");
-                foreach (var k in appSettings.Keys)
+                IDictionary<string, string> appSettings = null;
+                if (HostingWizard.IsPropertySet(DeploymentWizardProperties.AppOptions.propkey_EnvAppSettings))
+                    appSettings = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_EnvAppSettings] as IDictionary<string, string>;
+
+                if (appSettings != null && appSettings.Any())
                 {
-                    sb.AppendFormat("    key='{0}', value='{1}'", k, appSettings[k]);
-                    sb.AppendLine();
+                    sb.AppendLine("Custom application settings:");
+                    foreach (var k in appSettings.Keys)
+                    {
+                        sb.AppendFormat("    key='{0}', value='{1}'", k, appSettings[k]);
+                        sb.AppendLine();
+                    }
                 }
             }
 

@@ -1464,12 +1464,17 @@ namespace AWSDeployment
             if (!string.IsNullOrEmpty(TargetRuntime) && configOptionSettings.FirstOrDefault(
                 x => (x.Namespace == "aws:elasticbeanstalk:container:dotnet:apppool" && x.OptionName == "Target Runtime")) == null)
             {
-                configOptionSettings.Add(new ConfigurationOptionSetting()
+                // .NET Runtimes that are set on the app pool will be either 2.0 or 4.0. The digit check is
+                // to make sure we don't pass in .NET Core runtime names which is not applicable to app pools.
+                if (char.IsDigit(this.TargetRuntime[0]))
                 {
-                    Namespace = "aws:elasticbeanstalk:container:dotnet:apppool",
-                    OptionName = "Target Runtime",
-                    Value = TargetRuntime // should be in x.y format
-                });
+                    configOptionSettings.Add(new ConfigurationOptionSetting()
+                    {
+                        Namespace = "aws:elasticbeanstalk:container:dotnet:apppool",
+                        OptionName = "Target Runtime",
+                        Value = TargetRuntime // should be in x.y format
+                    });
+                }
             }
 
             var request = new CreateEnvironmentRequest()

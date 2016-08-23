@@ -194,6 +194,12 @@
     <Compile Include="..\AWSToolkit.VisualStudio.Shared\LinkedFiles\BuildAndDeploymentControllerBase.cs">
       <Link>BuildAndDeploymentControllerBase.cs</Link>
     </Compile>
+    <Compile Include="..\AWSToolkit.VisualStudio.Shared\LinkedFiles\BuildProcessors\CoreCLRWebAppProjectBuildProcessor.cs">
+      <Link>BuildProcessors\CoreCLRWebAppProjectBuildProcessor.cs</Link>
+    </Compile>
+    <Compile Include="..\AWSToolkit.VisualStudio.Shared\LinkedFiles\BuildProcessors\DotNetCLIWrapper.cs">
+      <Link>BuildProcessors\DotNetCLIWrapper.cs</Link>
+    </Compile>
     <Compile Include="..\AWSToolkit.VisualStudio.Shared\LinkedFiles\BuildProcessors\IBuildProcessor.cs">
       <Link>BuildProcessors\IBuildProcessor.cs</Link>
     </Compile>
@@ -586,6 +592,11 @@
     </Content>
     <Content Include="..\..\Deployment\awsdeploy\host\AWSDeploymentCryptoUtility.dll">
       <Link>Plugins\AWSDeploymentCryptoUtility.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\Deployment\Plugins\AWSToolkitPackage.NetCoreSupport.dll">
+      <Link>Plugins\AWSToolkitPackage.NetCoreSupport.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

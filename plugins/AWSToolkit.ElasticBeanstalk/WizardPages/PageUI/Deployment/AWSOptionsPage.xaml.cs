@@ -115,7 +115,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             if (stacks != null)
             {
                 _solutionStack.ItemsSource = stacks;
-                if (!string.IsNullOrEmpty(autoSelectStack))
+                if (!string.IsNullOrEmpty(autoSelectStack) && stacks.Contains(autoSelectStack))
                     _solutionStack.SelectedItem = autoSelectStack;
                 else
                     _solutionStack.SelectedIndex = 0;
@@ -310,6 +310,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         private void SetVPCState()
         {
+            if (this._solutionStack.SelectedItem == null)
+                return;
+
             var isLegacy = BeanstalkDeploymentEngine.IsLegacyContainer(this._solutionStack.SelectedItem as string);
             if (isLegacy)
                 _useNonDefaultVpc.IsChecked = false;

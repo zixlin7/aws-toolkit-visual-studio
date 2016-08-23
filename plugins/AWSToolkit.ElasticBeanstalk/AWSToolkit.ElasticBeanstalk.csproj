@@ -246,6 +246,7 @@
     <Compile Include="WizardPages\PageControllers\Deployment\AWSOptionsPageController.cs" />
     <Compile Include="WizardPages\PageControllers\Deployment\ApplicationPageController.cs" />
     <Compile Include="WizardPages\PageControllers\Deployment\ConfigureRollingDeploymentsController.cs" />
+    <Compile Include="WizardPages\PageControllers\Deployment\CoreCLRApplicationOptionsPageController.cs" />
     <Compile Include="WizardPages\PageControllers\Deployment\PermissionsPageController.cs" />
     <Compile Include="WizardPages\PageControllers\Deployment\PseudoReviewPageController.cs" />
     <Compile Include="WizardPages\PageControllers\Deployment\StartPageController.cs" />
@@ -269,6 +270,9 @@
     </Compile>
     <Compile Include="WizardPages\PageUI\Deployment\ConfigureRollingDeploymentsPage.xaml.cs">
       <DependentUpon>ConfigureRollingDeploymentsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\Deployment\CoreCLRApplicationOptionsPage.xaml.cs">
+      <DependentUpon>CoreCLRApplicationOptionsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="WizardPages\PageUI\Deployment\PermissionsPage.xaml.cs">
       <DependentUpon>PermissionsPage.xaml</DependentUpon>
@@ -504,6 +508,10 @@
     <Page Include="WizardPages\PageUI\Deployment\ConfigureRollingDeploymentsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\PageUI\Deployment\CoreCLRApplicationOptionsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="WizardPages\PageUI\Deployment\PermissionsPage.xaml">
       <SubType>Designer</SubType>

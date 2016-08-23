@@ -79,6 +79,7 @@
     <CustomExtension Type="Plugins">NGit.dll</CustomExtension>
     <CustomExtension Type="Plugins">NSch.dll</CustomExtension>
     <CustomExtension Type="Plugins">Sharpen.dll</CustomExtension>
+    <CustomExtension Type="Plugins">AWSToolkitPackage.NetCoreSupport.dll</CustomExtension>
 	<CustomExtension Type="SDK">AWSSDK.Extensions.dll</CustomExtension>
 	<CustomExtension Type="SDK">AWSSDK.AutoScaling.dll</CustomExtension>
 	<CustomExtension Type="SDK">AWSSDK.AWSSupport.dll</CustomExtension>

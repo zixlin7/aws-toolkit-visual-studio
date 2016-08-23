@@ -10,6 +10,8 @@ using Microsoft.Build.Framework;
 using MSBuildProject = Microsoft.Build.Evaluation.Project;
 using EnvDTEProject = EnvDTE.Project;
 
+using Amazon.AWSToolkit.MobileAnalytics;
+
 using ServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
@@ -21,6 +23,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
     /// </summary>
     internal class WebAppProjectBuildProcessor : BuildProcessorBase, IBuildProcessor, IVsUpdateSolutionEvents
     {
+        const string ANALYTICS_VALUE = "WEB_APP";
+
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(WebAppProjectBuildProcessor));
 
         string _outputPackage = string.Empty;
@@ -186,7 +190,13 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
                             ProcessorResult = ResultCodes.Succeeded;
                     }
                     else if (File.Exists(_outputPackage))
+                    {
+                        ToolkitEvent sizeEvent = new ToolkitEvent();
+                        sizeEvent.AddProperty(MetricKeys.DeploymentBundleSize, new FileInfo(this._outputPackage).Length);
+                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(sizeEvent);
+
                         ProcessorResult = ResultCodes.Succeeded;
+                    }
 
                     string msg;
                     if (ProcessorResult == ResultCodes.Succeeded)
@@ -196,6 +206,10 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
 
                     TaskInfo.Logger.OutputMessage(msg);
                 }
+
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.DeploymentSuccessType, ANALYTICS_VALUE);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }
             catch (InvalidOperationException exc)
             {
@@ -211,6 +225,10 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared.BuildProcessors
             }
             catch (Exception exc)
             {
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.DeploymentErrorType, ANALYTICS_VALUE);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
                 var msg = string.Format("...caught exception during deployment package creation - {0}", exc.Message);
                 LOGGER.ErrorFormat(msg);
                 TaskInfo.Logger.OutputMessage(msg);

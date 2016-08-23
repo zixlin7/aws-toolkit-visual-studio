@@ -93,6 +93,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ServiceInterfaces\AWSToolkitService.cs" />
+    <Compile Include="ServiceInterfaces\NetCoreProjectSupport.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>

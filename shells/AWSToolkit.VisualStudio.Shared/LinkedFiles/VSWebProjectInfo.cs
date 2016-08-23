@@ -61,6 +61,10 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
         private const string guidWebApplicationProject = "{349C5851-65DF-11DA-9384-00065B846F21}"; // has project file
         private const string guidWebSiteProject = "{E24C65DC-7377-472B-9ABA-BC803B73C61A}"; // no project file, settings in sln file
 
+        // this makes our handling work more seamlessly across traditional web projects
+        // and coreclr web projects that currently have no type guid. 
+        public const string guidAWSPrivateCoreCLRWebProject = "{673502E5-F177-4CAA-B653-7C730A251794}";
+
         static readonly Dictionary<string, VsWebProjectType> VsWebProjectKinds 
             = new Dictionary<string, VsWebProjectType>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -68,7 +72,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
         {
             NotWebProjectType,
             WebApplicationProject,
-            WebSiteProject
+            WebSiteProject,
+            CoreCLRWebProject
         }
 
         static VSWebProjectInfo()
@@ -275,6 +280,14 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
         /// <remarks>Expects VsHierarchy to be set to valid IVsHierarchy instance if projectTypeGuid not supplied</remarks>
         void SetWebProjectType(string projectTypeGuid)
         {
+            // coreclr projects have no type guid, so this fake guid allows us to handle the
+            // different project type in roughly the same way
+            if (projectTypeGuid.Equals(guidAWSPrivateCoreCLRWebProject, StringComparison.OrdinalIgnoreCase))
+            {
+                VsProjectType = VsWebProjectType.CoreCLRWebProject;
+                return;
+            }
+
             var typeGuid = projectTypeGuid;
             if (string.IsNullOrEmpty(typeGuid))
             {

@@ -122,6 +122,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
                 };
             }
 
+            var isCoreCLRProject = false;
+            if (hostWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_ProjectType))
+            {
+                isCoreCLRProject = (hostWizard.GetProperty(DeploymentWizardProperties.SeedData.propkey_ProjectType) as string)
+                                        .Equals(DeploymentWizardProperties.NetCoreWebProject, StringComparison.OrdinalIgnoreCase);
+            }
+
             return new IAWSWizardPageController[]
             {
                 new WizardPages.PageControllers.Deployment.StartPageController(),
@@ -130,7 +137,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
                 new WizardPages.PageControllers.Deployment.VpcOptionsPageController(),
                 new WizardPages.PageControllers.Deployment.ConfigureRollingDeploymentsController(),
                 new WizardPages.PageControllers.Deployment.PermissionsPageController(),
-                new WizardPages.PageControllers.Deployment.ApplicationOptionsPageController(),
+                isCoreCLRProject ? new WizardPages.PageControllers.Deployment.CoreCLRApplicationOptionsPageController() as IAWSWizardPageController
+                                 : new WizardPages.PageControllers.Deployment.ApplicationOptionsPageController(),
                 new WizardPages.PageControllers.Deployment.PseudoReviewPageController()
             };
         }
