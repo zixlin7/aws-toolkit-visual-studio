@@ -194,10 +194,19 @@
             <PrivateKeyException Include="tests\AWSToolkit.Tests\CryptoTests.cs" />
             <PrivateKeyException Include="thirdparty\PemToPPKConverter\openssh.c" />
             <PrivateKeyException Include="thirdparty\PemToPPKConverter\Release\openssh.obj" />
+			
+		    <PrivateKeyException Include="Include\sdk\Models\acm-2015-12-08.normal.json" />
+            <PrivateKeyException Include="Include\sdk\Models\ec2-2014-02-01.normal.json" />
+            <PrivateKeyException Include="Include\sdk\Models\iam-2010-05-08.normal.json" />
+			
         </ItemGroup>
         
         <ItemGroup>
             <FileException Include="awsdeploy\tests\AWSDeploymentUnitTest\Resources\sample-configfile.txt" />
+			
+			<FileException Include="Include\sdk\Models\elasticbeanstalk.examples.json" />
+			<FileException Include="Include\sdk\Models\elasticbeanstalk.customizations.json" />
+			
         </ItemGroup>
         
         <KeyScannerTask 
