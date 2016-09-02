@@ -141,7 +141,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageUI
             var functionNames = new List<string>();
             foreach (var function in data)
             {
-                if(function.Runtime == Amazon.Lambda.Runtime.Nodejs)
+                if (function.Runtime == Amazon.Lambda.Runtime.Nodejs || function.Runtime == Amazon.Lambda.Runtime.Nodejs43)
                     functionNames.Add(function.FunctionName);
             }
 
