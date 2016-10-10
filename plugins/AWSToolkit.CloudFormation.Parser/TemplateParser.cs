@@ -1137,11 +1137,11 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
                 }
                 else if (this._jsonDocument.CurrentToken.Type == JsonDocument.JsonTokenType.StartElement)
                 {
-                    trueTemplateToken = ParseObject(keyTemplateToken.Schema);
+                    trueTemplateToken = ParseObject(keyTemplateToken.Schema ?? this._schema.DefaultJSONSchema);
                 }
                 else if (this._jsonDocument.CurrentToken.Type == JsonDocument.JsonTokenType.StartArray)
                 {
-                    trueTemplateToken = ParseArray(keyTemplateToken.Schema);
+                    trueTemplateToken = ParseArray(keyTemplateToken.Schema ?? this._schema.DefaultJSONSchema);
                 }
 
                 if (trueTemplateToken != null)
@@ -1168,11 +1168,11 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
                 }
                 else if (this._jsonDocument.CurrentToken.Type == JsonDocument.JsonTokenType.StartElement)
                 {
-                    falseTemplateToken = ParseObject(keyTemplateToken.Schema);
+                    falseTemplateToken = ParseObject(keyTemplateToken.Schema ?? this._schema.DefaultJSONSchema);
                 }
                 else if (this._jsonDocument.CurrentToken.Type == JsonDocument.JsonTokenType.StartArray)
                 {
-                    falseTemplateToken = ParseArray(keyTemplateToken.Schema);
+                    falseTemplateToken = ParseArray(keyTemplateToken.Schema ?? this._schema.DefaultJSONSchema);
                 }
 
                 if (falseTemplateToken != null)

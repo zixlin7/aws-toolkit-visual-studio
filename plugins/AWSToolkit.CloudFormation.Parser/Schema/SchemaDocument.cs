@@ -9,14 +9,24 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
     {
         Dictionary<string, IntrinsicFunction> _intrinsicFunctions;
         Dictionary<string, PseudoParameter> _pseudoParameters;
+
+
         public SchemaDocument(SchemaObject rootSchemaObject, Dictionary<string, IntrinsicFunction> intrinsicFunctions, Dictionary<string, PseudoParameter> pseudoParameters)
         {
             this.RootSchemaObject = rootSchemaObject;
             this._intrinsicFunctions = intrinsicFunctions;
             this._pseudoParameters = pseudoParameters;
+
+            this.DefaultJSONSchema = new SchemaObject(SchemaType.Json, null, null, null, false, null, false, false);
         }
 
         public SchemaObject RootSchemaObject
+        {
+            get;
+            private set;
+        }
+
+        public SchemaObject DefaultJSONSchema
         {
             get;
             private set;

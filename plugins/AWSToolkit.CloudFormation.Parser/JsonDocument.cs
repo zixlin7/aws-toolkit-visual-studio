@@ -444,7 +444,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
 
         public string PeekChildAttribueValue(string attribute)
         {
-            int pos = this.OriginalDocument.IndexOf(attribute, (int)this.Position);
+            int pos = this.OriginalDocument.IndexOf("\"" + attribute + "\"", (int)this.Position);
             if (pos < 0)
                 return null;
 
