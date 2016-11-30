@@ -202,6 +202,7 @@ namespace Amazon.Lambda.Tools
             {
                 throw new LambdaToolsException($"Error: S3 bucket must be in the same region as the configured region {configuredRegion}. {s3Bucket} is in the region {bucketRegion}.");
             }
+
         }
 
         public static async Task<string> GetBucketRegionAsync(IAmazonS3 s3Client, string bucket)
@@ -305,10 +306,10 @@ namespace Amazon.Lambda.Tools
         public static string DeterminePublishLocation(string workingDirectory, string projectLocation, string configuration, string targetFramework)
         {
             var path = Path.Combine(DetemineProjectLocation(workingDirectory, projectLocation),
-                                    "bin",
-                                    configuration,
-                                    targetFramework,
-                                    "publish");
+                    "bin",
+                    configuration,
+                    targetFramework,
+                    "publish");
             return path;
         }
 
