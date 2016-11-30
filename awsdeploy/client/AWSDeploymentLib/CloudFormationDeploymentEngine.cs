@@ -904,7 +904,7 @@ namespace AWSDeployment
             var fileInfo = new FileInfo(DeploymentPackage);
             Observer.Info("......uploading from file path {0}, size {1} bytes", DeploymentPackage, fileInfo.Length);
 
-            var config = new TransferUtilityConfig() { DefaultTimeout = Amazon.AWSToolkit.Constants.DEFAULT_S3_TIMEOUT };
+            var config = new TransferUtilityConfig();
             TransferUtility transfer = new TransferUtility(S3Client,config);
 
             var request = new TransferUtilityUploadRequest()

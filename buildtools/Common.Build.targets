@@ -1,0 +1,40 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
+  
+  <Choose>
+    <When Condition=" '$(VisualStudioVersion)'=='12.0'  Or '$(VSTarget)'=='12.0' ">
+      <PropertyGroup>
+        <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
+        <FileUpgradeFlags>
+        </FileUpgradeFlags>
+        <UpgradeBackupLocation>
+        </UpgradeBackupLocation>
+        <OldToolsVersion>4.0</OldToolsVersion>
+      </PropertyGroup>
+    </When>
+    <When Condition=" '$(VisualStudioVersion)'=='14.0'  Or '$(VSTarget)'=='14.0' ">
+      <PropertyGroup>
+        <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+        <FileUpgradeFlags>
+        </FileUpgradeFlags>
+        <UpgradeBackupLocation>
+        </UpgradeBackupLocation>
+        <OldToolsVersion>4.0</OldToolsVersion>
+      </PropertyGroup>
+    </When>
+  </Choose>
+  
+  <PropertyGroup>
+    <BuildRoot>$(MSBuildThisFileDirectory)..\</BuildRoot>
+  </PropertyGroup>
+  
+  <Import Project="$(MSBuildThisFileDirectory)\Common.Build.settings" />
+  
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"
+          Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+
+  <!-- helps suppress MSB4011 warning about re-importing an imported file -->
+  <PropertyGroup>
+    <CommonBuildTargetsImported>true</CommonBuildTargetsImported>
+  </PropertyGroup>
+  
+</Project>

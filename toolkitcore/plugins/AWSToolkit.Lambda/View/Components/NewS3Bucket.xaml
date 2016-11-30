@@ -1,0 +1,34 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.Lambda.View.Components.NewS3Bucket"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Amazon.AWSToolkit.Lambda.View.Components"
+             mc:Ignorable="d" 
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+            Loaded="OnLoaded"
+            Height="50" Width="300">
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}">Bucket Name:</TextBlock>
+        <TextBox Name="_ctlNewBucketName"  Grid.Column="1" Grid.Row="0" Margin="5,5,5,5" 
+                 Text="{Binding BucketName, UpdateSourceTrigger=PropertyChanged}"
+                 Style="{DynamicResource awsTextBoxStyle}"/>
+
+    </Grid>
+</commonui:BaseAWSControl>

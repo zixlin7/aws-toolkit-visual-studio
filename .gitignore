@@ -8,6 +8,7 @@
 # Build/Test folders
 ####################
 
+**/bin_vs2010/
 **/bin/
 **/obj/
 **/TestResults/
@@ -19,5 +20,3 @@
 
 Deployment/**
 Include/**
-
-shells/AWSToolkit.VisualStudio.Shared/bin_vs2010/

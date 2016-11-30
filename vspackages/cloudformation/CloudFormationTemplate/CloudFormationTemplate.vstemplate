@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" 
+            Type="Item" 
+            xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" 
+            xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>AWS CloudFormation Template</Name>
+    <Description>A template for defining the collection of AWS resources for your cloud application deployments.</Description>
+    <Icon>CloudFormationTemplate.ico</Icon>
+    <TemplateID>3dadc099-7bff-4883-99c1-aae81b4c59e9</TemplateID>
+    <ProjectType>AWS</ProjectType>
+    <SortOrder>10</SortOrder>
+    <DefaultName>cloudformation.template</DefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem TargetFileName="$fileinputname$.template" ReplaceParameters="true" ItemType="Compile">cloudformation.template</ProjectItem>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>AWSToolkit.CloudFormation.TemplateWizards,Culture=neutral,PublicKeyToken=8339e7e97bb08995</Assembly>
+    <FullClassName>Amazon.AWSToolkit.CloudFormation.TemplateWizards.NewTemplateWizardImplementation</FullClassName>
+  </WizardExtension>
+</VSTemplate>

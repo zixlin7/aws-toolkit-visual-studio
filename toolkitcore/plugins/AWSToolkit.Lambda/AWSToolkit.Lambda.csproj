@@ -1,0 +1,337 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7102B4CF-9B9D-4827-ADCA-D23971CD84C3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Amazon.AWSToolkit.Lambda</RootNamespace>
+    <AssemblyName>AWSToolkit.Lambda</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(BuildRoot)\buildtools\awstoolkit.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
+    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AWSSDK.MobileAnalytics">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.MobileAnalytics.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.CloudWatchEvents">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudWatchEvents.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.CloudWatchLogs">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudWatchLogs.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.Core">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.DynamoDBv2">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.DynamoDBv2.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.EC2">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.EC2.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.IdentityManagement">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.IdentityManagement.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.KeyManagementService">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.KeyManagementService.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.CloudFormation">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudFormation.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.Kinesis">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Kinesis.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.Lambda">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Lambda.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.S3">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.S3.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.SimpleNotificationService">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.SimpleNotificationService.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\thirdparty\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\thirdparty\log4net.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WPFTextBoxAutoComplete">
+      <HintPath>..\..\..\thirdparty\WPFTextBoxAutoComplete.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controller\AddEventSourceController.cs" />
+    <Compile Include="DeploymentWorkers\BaseUploadWorker.cs" />
+    <Compile Include="Controller\DeleteFunctionController.cs" />
+    <Compile Include="DeploymentWorkers\ILambdaFunctionUploadHelpers.cs" />
+    <Compile Include="DeploymentWorkers\PublishServerlessApplicationWorker.cs" />
+    <Compile Include="Controller\UploadFunctionController.cs" />
+    <Compile Include="DeploymentWorkers\UploadNETCoreWorker.cs" />
+    <Compile Include="DeploymentWorkers\UploadGenericWorker.cs" />
+    <Compile Include="Controller\ViewFunctionController.cs" />
+    <Compile Include="LambdaActivator.cs" />
+    <Compile Include="LambdaTools\Commands\BaseCommand.cs" />
+    <Compile Include="LambdaTools\Commands\DeleteFunctionCommand.cs" />
+    <Compile Include="LambdaTools\Commands\DeleteServerlessCommand.cs" />
+    <Compile Include="LambdaTools\Commands\DeployFunctionCommand.cs" />
+    <Compile Include="LambdaTools\Commands\DeployServerlessCommand.cs" />
+    <Compile Include="LambdaTools\Commands\GetFunctionConfigCommand.cs" />
+    <Compile Include="LambdaTools\Commands\ICommand.cs" />
+    <Compile Include="LambdaTools\Commands\InvokeFunctionCommand.cs" />
+    <Compile Include="LambdaTools\Commands\ListFunctionCommand.cs" />
+    <Compile Include="LambdaTools\Commands\ListServerlessCommand.cs" />
+    <Compile Include="LambdaTools\Commands\UpdateFunctionConfigCommand.cs" />
+    <Compile Include="LambdaTools\Constants.cs" />
+    <Compile Include="LambdaTools\DotNetCLIWrapper.cs" />
+    <Compile Include="LambdaTools\Exceptions.cs" />
+    <Compile Include="LambdaTools\IToolLogger.cs" />
+    <Compile Include="LambdaTools\LambdaToolsDefaults.cs" />
+    <Compile Include="LambdaTools\Options\CommandLineParser.cs" />
+    <Compile Include="LambdaTools\Options\CommandOption.cs" />
+    <Compile Include="LambdaTools\Options\CommandOptions.cs" />
+    <Compile Include="LambdaTools\Options\CommandOptionValue.cs" />
+    <Compile Include="LambdaTools\Options\DefinedCommandOptions.cs" />
+    <Compile Include="LambdaTools\RoleHelper.cs" />
+    <Compile Include="LambdaTools\Utilities.cs" />
+    <Compile Include="Model\EventSourceWrapper.cs" />
+    <Compile Include="Model\KeyAndAliasWrapper.cs" />
+    <Compile Include="Model\LogStreamWrapper.cs" />
+    <Compile Include="Model\RuntimeOption.cs" />
+    <Compile Include="Model\ViewControllerModel.cs" />
+    <Compile Include="Nodes\LambdaFunctionViewMetaNode.cs" />
+    <Compile Include="Nodes\LambdaFunctionViewModel.cs" />
+    <Compile Include="Nodes\LambdaRootViewMetaNode.cs" />
+    <Compile Include="Nodes\LambdaRootViewModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="View\AddEventSourceControl.xaml.cs">
+      <DependentUpon>AddEventSourceControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\AdvancedSettingsControl.xaml.cs">
+      <DependentUpon>AdvancedSettingsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\EventSourcesControl.xaml.cs">
+      <DependentUpon>EventSourcesControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\FunctionInvokeControl.xaml.cs">
+      <DependentUpon>FunctionInvokeControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\FunctionLogsControl.xaml.cs">
+      <DependentUpon>FunctionLogsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\KMSKeySelectorControl.xaml.cs">
+      <DependentUpon>KMSKeySelectorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\NewS3Bucket.xaml.cs">
+      <DependentUpon>NewS3Bucket.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\SecurityGroupMultiSelectionControl.xaml.cs">
+      <DependentUpon>SecurityGroupMultiSelectionControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\SubnetMultiSelectionControl.xaml.cs">
+      <DependentUpon>SubnetMultiSelectionControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\DesignData\LambdaDesignTimeData.cs" />
+    <Compile Include="View\ViewFunctionControl.xaml.cs">
+      <DependentUpon>ViewFunctionControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageControllers\PublishServerlessDetailsPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\ServerlessTemplateParametersPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\UploadFunctionAdvancedPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\UploadFunctionDetailsPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\UploadFunctionProgressPageController.cs" />
+    <Compile Include="WizardPages\PageUI\PublishServerlessDetailsPage.xaml.cs">
+      <DependentUpon>PublishServerlessDetailsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\UploadFunctionAdvancedPage.xaml.cs">
+      <DependentUpon>UploadFunctionAdvancedPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\UploadFunctionDetailsPage.xaml.cs">
+      <DependentUpon>UploadFunctionDetailsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\UploadFunctionProgressPage.xaml.cs">
+      <DependentUpon>UploadFunctionProgressPage.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\AWSToolkit.Util\AWSToolkit.Util.csproj">
+      <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
+      <Name>AWSToolkit.Util</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.CloudFormation.Interface\AWSToolkit.CloudFormation.Interface.csproj">
+      <Project>{5a78bf40-7d5b-467e-8ce4-9659f22669d0}</Project>
+      <Name>AWSToolkit.CloudFormation.Interface</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.CloudFormation\AWSToolkit.CloudFormation.csproj">
+      <Project>{6ae302db-2304-47c8-8e3c-96c85ac1d469}</Project>
+      <Name>AWSToolkit.CloudFormation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj">
+      <Project>{b8c28b72-63c0-406b-b5c6-405667db1d6d}</Project>
+      <Name>AWSToolkit.EC2.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj">
+      <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>
+      <Name>AWSToolkit.Lambda.Interface</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.S3.Interface\AWSToolkit.S3.Interface.csproj">
+      <Project>{C2D616BD-C2AB-4130-93E5-2ADA2172A08A}</Project>
+      <Name>AWSToolkit.S3.Interface</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\AWSToolkit\AWSToolkit.csproj">
+      <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
+      <Name>AWSToolkit</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\service-root.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="View\AddEventSourceControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\AdvancedSettingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\EventSourcesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\FunctionInvokeControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\FunctionLogsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\KMSKeySelectorControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\NewS3Bucket.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\SecurityGroupMultiSelectionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\SubnetMultiSelectionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ViewFunctionControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="WizardPages\PageUI\PublishServerlessDetailsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\PageUI\UploadFunctionAdvancedPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\PageUI\UploadFunctionDetailsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\PageUI\UploadFunctionProgressPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\upload.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\dynamodb-service.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\kinesis-service.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\s3-service.png" />
+    <EmbeddedResource Include="Resources\EmbeddedImages\sns-service.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\cloudwatch-service.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\new-bucket.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

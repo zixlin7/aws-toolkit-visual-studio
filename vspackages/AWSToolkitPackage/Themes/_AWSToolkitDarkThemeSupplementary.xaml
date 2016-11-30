@@ -1,0 +1,36 @@
+﻿<!-- Specific overrides for the dark theme in the VS2012 and upward shells -->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:Amazon.AWSToolkit.VisualStudio">
+
+    <SolidColorBrush x:Key="awsWizardBackplaneBackgroundBrushKey" Color="{DynamicResource {x:Static local:ThemeResources.BrandedUIBackground}}"/>
+    <SolidColorBrush x:Key="awsWizardPageGroupPanelBrushKey" Color="{DynamicResource {x:Static local:ThemeResources.BrandedUIBackground}}"/>
+    <SolidColorBrush x:Key="awsWizardPagesPanelBrushKey" Color="{DynamicResource {x:Static local:ThemeResources.BrandedUIBackground}}"/>
+    <SolidColorBrush x:Key="awsWizardFooterContainerBackgroundBrushKey" Color="{DynamicResource {x:Static local:ThemeResources.BrandedUIBackground}}"/>
+
+    <SolidColorBrush x:Key="awsWizardGroupHeaderForegroundBrushKey" Color="{DynamicResource {x:Static local:ThemeResources.BrandedUITitle}}"/>
+    <SolidColorBrush x:Key="awsWizardGroupSubHeaderForegroundBrushKey" Color="{DynamicResource {x:Static local:ThemeResources.BrandedUITitle}}"/>
+    
+    <SolidColorBrush x:Key="awsWizardReviewPanelsBackgroundBrushKey" Color="#444"/>
+    <SolidColorBrush x:Key="awsWizardReviewPanelSectionHeaderBrushKey" Color="{DynamicResource {x:Static local:ThemeResources.WindowText}}"/>
+    <SolidColorBrush x:Key="awsWizardReviewPanelSectionTextBrushKey" Color="{DynamicResource {x:Static local:ThemeResources.WindowText}}"/>
+    <SolidColorBrush x:Key="awsWizardReviewPanelSectionDividerBrushKey" Color="{DynamicResource {x:Static local:ThemeResources.BrandedUITitle}}"/>
+
+    <SolidColorBrush x:Key="awsListBoxPanelItemBackgroundBrushKey" Color="#858585" />
+
+    <SolidColorBrush x:Key="awsMenuSubmenuArrowGlyphHighlightedBrushKey" Color="{DynamicResource {x:Static local:ThemeResources.Highlight}}"/>
+
+    <!-- not quite so harsh as standard blue on a dark background -->
+    <!--<SolidColorBrush x:Key="awsUrlTextFieldForegroundBrushKey" Color="DarkBlue" />-->
+
+    <SolidColorBrush x:Key="awsButtonMouseOverBorderBrush" Color="#FF5593FF"/>
+
+    <!-- this allows us to retain black-on-white coloring for the checkbox button mark 
+         across light and dark themes (if we used simple foreground/background,
+         we'd have white-on-black checkbox marks
+    -->
+    <SolidColorBrush x:Key="awsCheckboxOrRadioBorderBrushKey" Color="#FFFFFFFF"/>
+    <SolidColorBrush x:Key="awsCheckboxOrRadioForegroundBrushKey" Color="#FF212121"/>
+    <SolidColorBrush x:Key="awsCheckboxOrRadioBackgroundBrushKey" Color="#FFFFFFFF"/>
+
+</ResourceDictionary>

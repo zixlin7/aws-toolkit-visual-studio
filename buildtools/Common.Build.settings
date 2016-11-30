@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Ensures that if this file changes it forces a rebuild -->
+  <PropertyGroup>
+    <MSBuildAllProjects>
+        $(MSBuildAllProjects);$(MSBuildThisFileFullPath)
+    </MSBuildAllProjects>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+
+    <!-- VS2013 is our lowest supported, and therefore default, target -->
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
+
+    <VSTarget Condition="$(VSTarget)=='' and '$(VisualStudioVersion)'=='14.0'">14.0</VSTarget>
+    <VSTarget Condition="$(VSTarget)=='' and '$(VisualStudioVersion)'=='12.0'">12.0</VSTarget>
+    <VSTarget Condition="$(VSTarget)==''">12.0</VSTarget>
+
+    <VsVersionName Condition="'$(VisualStudioVersion)'=='14.0'">VS2015</VsVersionName>
+    <VsVersionName Condition="'$(VisualStudioVersion)'=='12.0'">VS2013</VsVersionName>
+    <VsVersionName Condition="'$(VsVersionName)'==''">VS2013</VsVersionName>
+
+    <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.5</TargetFrameworkVersion>
+
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VSTarget)</VSToolsPath>
+
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+
+    <TargetsPath>$(BuildRoot)\buildtools</TargetsPath>
+
+    <OutputRoot Condition="'$(OutputRoot)' == '' and '$(OutDir)' != '' and $(OutDir.EndsWith(`\`))">$(OutDir)</OutputRoot>
+    <OutputRoot Condition="'$(OutputRoot)' == '' and '$(OutDir)' != '' and !$(OutDir.EndsWith(`\`))">$(OutDir)\</OutputRoot>
+    <OutputRoot Condition="'$(OutputRoot)' == '' and '$(OutDir)' == ''">$(BuildRoot)\Deployment\$(VSTarget)\$(Configuration)\</OutputRoot>
+
+    <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == '' and '$(IntDir)' != '' and $(IntDir.EndsWith(`\`))">$(IntDir)</IntermediateOutputPath>
+    <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == '' and '$(IntDir)' != '' and !$(IntDir.EndsWith(`\`))">$(IntDir)\</IntermediateOutputPath>
+    <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">$(MSBuildProjectDirectory)\obj\$(VSTarget)\$(Configuration)\</IntermediateOutputPath>
+
+	<!--
+    <OutDir>$(OutputRoot)</OutDir>
+	-->
+    <IntDir>$(IntermediateOutputPath)</IntDir>
+
+    <SuppressCommonAssemblyMetadata Condition="'$(SuppressCommonAssemblyMetadata)' == ''">False</SuppressCommonAssemblyMetadata>
+
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors Condition="'$(TreatWarningsAsErrors)' == ''">false</TreatWarningsAsErrors>
+    <!-- Suppress warning about multiply defined AssemblyVersionInfo -->
+    <NoWarn>436</NoWarn>
+
+    <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+
+    <DevEnvDir Condition="'$(VSTarget)'=='12.0'">$(VS120COMNTOOLS)..\IDE\</DevEnvDir>
+    <DevEnvDir Condition="'$(VSTarget)'=='14.0'">$(VS140COMNTOOLS)..\IDE\</DevEnvDir>
+
+    <VSSDKDir Condition="'$(VSTarget)'=='12.0'">$(VSSDK120Install)</VSSDKDir>
+    <VSSDKDir Condition="'$(VSTarget)'=='14.0'">$(VSSDK140Install)</VSSDKDir>
+
+  </PropertyGroup>
+
+  <Import Project="$(TargetsPath)\Common.Build.CSharp.settings" Condition="'$(MSBuildProjectExtension)' == '.csproj' or '$(MSBuildProjectExtension)' == '.tmp_proj'" />
+
+</Project>

@@ -1,86 +1,118 @@
-    <Project ToolsVersion="4.0" 
+    <Project ToolsVersion="4.0"
 	DefaultTargets="full-build"
 	xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <PropertyGroup>
         <InternalBuildTools Condition="'$(InternalBuildTools)'==''">..\..\AWSDotNetBuildTools</InternalBuildTools>
     </PropertyGroup>
-    
+
 	<Import Project="$(InternalBuildTools)\references.targets" Condition="Exists('$(InternalBuildTools)\references.targets')" />
 	<Import Project="$(InternalBuildTools)\common.targets" Condition="Exists('$(InternalBuildTools)\common.targets')" />
 
     <PropertyGroup>
+		<EnableGetReferences>true</EnableGetReferences>
+		
         <!-- perform a release build by default -->
-        <Configuration Condition="'$(Configuration)'==''">Release</Configuration>
-        
+        <Configuration Condition="'$(Configuration)'==''">Debug</Configuration>
+
         <!-- path to the root of the repo artifacts; locations for output content will be inferred from this -->
         <RootPath Condition="'$(RootPath)'==''">$(MSBuildProjectDirectory)\..</RootPath>
 
         <!-- default location for artifacts consolidation -->
         <Deployment Condition="'$(Deployment)'==''">$(RootPath)\Deployment</Deployment>
-        
+
         <RunKeyScan Condition="'$(RunKeyScan)'==''">false</RunKeyScan>
 
         <UpdateVersions Condition="'$(UpdateVersions)'==''">false</UpdateVersions>
         <AWSToolkitVersionNumber Condition="'$(AWSToolkitVersion)'==''"></AWSToolkitVersionNumber>
         <AWSDeployVersionNumber Condition="'$(AWSDeployVersion)'==''"></AWSDeployVersionNumber>
-	
+
     	<AWSToolkitPackageOutput>$(Deployment)\AWSToolkitPackage</AWSToolkitPackageOutput>
 
     </PropertyGroup>
-    
+	
+	<UsingTask
+		TaskName="DisableIncompatibleV12Features"
+		TaskFactory="CodeTaskFactory"
+		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+		<ParameterGroup />
+		<Task>
+		  <Using Namespace="System"/>
+		  <Using Namespace="System.IO"/>
+		  <Code Type="Fragment" Language="cs">
+	<![CDATA[
+	
+	var content = File.ReadAllText(@"../vspackages/AWSToolkitPackage/source.extension.vsixmanifest");
+	var replacedContent = content.Replace("DISABLE_FOR_V12_OPEN-->", "DISABLE_FOR_V12_OPEN").Replace("<!--DISABLE_FOR_V12_CLOSE", "DISABLE_FOR_V12_CLOSE");
+	if(string.Equals(content, replacedContent, StringComparison.Ordinal))
+		throw new Exception("source.extension.vsixmanifest format has changed and not able to remove unsupported VS12 features.");
+		
+	Log.LogMessage("Updated source.extension.vsixmanifest to remove unsupported VS12 features");
+	File.WriteAllText(@"../vspackages/AWSToolkitPackage/source.extension.vsixmanifest", replacedContent);
+	]]>
+		  </Code>
+		</Task>
+	</UsingTask>	
+	
+	<UsingTask
+		TaskName="EnableIncompatibleV12Features"
+		TaskFactory="CodeTaskFactory"
+		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+		<ParameterGroup />
+		<Task>
+		  <Using Namespace="System"/>
+		  <Using Namespace="System.IO"/>
+		  <Code Type="Fragment" Language="cs">
+	<![CDATA[
+	
+	var content = File.ReadAllText(@"../vspackages/AWSToolkitPackage/source.extension.vsixmanifest");
+	var replacedContent = content.Replace("DISABLE_FOR_V12_OPEN", "DISABLE_FOR_V12_OPEN-->").Replace("DISABLE_FOR_V12_CLOSE", "<!--DISABLE_FOR_V12_CLOSE");
+	if(string.Equals(content, replacedContent, StringComparison.Ordinal))
+		throw new Exception("source.extension.vsixmanifest format has changed and not able to remove unsupported VS12 features.");
+
+	Log.LogMessage("Updated source.extension.vsixmanifest to add back unsupported VS12 features");
+	File.WriteAllText(@"../vspackages/AWSToolkitPackage/source.extension.vsixmanifest", replacedContent);
+	]]>
+		  </Code>
+		</Task>
+	</UsingTask>	
+
 	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;update-version;build-awsdeploy;build-vstoolkit;keyscan;copy-artifacts;save-build">
 		<Message Text="Builds all components of the AWS Toolkit for Visual Studio"/>
 	</Target>
 
     <Target Name="build-awsdeploy">
-		<Message Text="Building client and host components for awsdeploy"/>
-		<Exec Command="$(devenv2013) /Rebuild $(Configuration) ..\solutions\AWSDeploymentHostManager.sln"/>
+		<Message Text="$(Configuration) - building host components for AWSDeploy."/>
+		
+        <MSBuild Projects="..\solutions\AWSDeploymentHostManager.sln" Properties="Configuration=$(Configuration)" />
     </Target>
 
     <Target Name="build-vstoolkit" DependsOnTargets="patch-vsixmanifest">
-		<Message Text="Building Visual Studio toolkit integration"/>
-		<Exec Command="$(devenv2013) /Rebuild $(Configuration) ..\solutions\AWSToolkitPackage.VS2013.sln"/>
+        <Message Text="$(Configuration) - building core toolkit, service plugin modules and Visual Studio packages."/>
+		
+		<DisableIncompatibleV12Features/>
+        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=12.0;Configuration=$(Configuration)" />
+		<EnableIncompatibleV12Features/>
+		
+        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=14.0;Configuration=$(Configuration)" />
     </Target>
 
 	<Target Name="patch-vsixmanifest" Condition="$(UpdateVersions)">
 		<!-- patch vsixmanifest with release package id if running on Jenkins (likely indicated by update version flag set) -->
+        <!-- DISABLE while setting up new project layouts
 		<PatchVsixManifestPackageIdTask
 			PackageRootFolder="..\shells\AWSToolkitPackage"
 			PackageIdPrefix="AWSToolkitPackage"
 			GuidSourceFile="Guids.cs"
 			GuidMemberName="guid_VSPackageString" />
+        -->
 	</Target>
-	
-    <Target Name="copy-artifacts" DependsOnTargets="build-vstoolkit;copy-templates;copy-icons;copy-shellartifacts" />
-    
-    <Target Name="copy-templates">
-		<Message Text="Consolidating project templates to deployment folder"/>
 
-        <PropertyGroup>
-            <ProjectTemplatesDest>$(AWSToolkitPackageOutput)\ProjectTemplates</ProjectTemplatesDest>
-            <ItemTemplatesDest>$(AWSToolkitPackageOutput)\ItemTemplates</ItemTemplatesDest>
-        </PropertyGroup>
-        
-		<MakeDir Directories="$(ProjectTemplatesDest)" />
-        <ItemGroup>
-            <ProjectTemplates Include="..\shells\AWSToolkitPackage\bin\$(Configuration)\ProjectTemplates\**" />
-        </ItemGroup>
-        <Copy
-            SourceFiles="@(ProjectTemplates)"
-            DestinationFolder="$(ProjectTemplatesDest)" />
-		
-		<MakeDir Directories="$(ItemTemplatesDest)" />
-        <ItemGroup>
-            <ItemTemplates Include="..\shells\AWSToolkitPackage\bin\$(Configuration)\ItemTemplates\**" />
-        </ItemGroup>
-        <Copy
-            SourceFiles="@(ItemTemplates)"
-            DestinationFolder="$(ItemTemplatesDest)" />
+    <Target Name="copy-artifacts" DependsOnTargets="build-vstoolkit;copy-awsdeploy;copy-icons;copy-awsdeploy;copy-cf-msbuild-targets" />
 
-    </Target>
 
-    <Target Name="copy-icons">
+
+    <Target Name="copy-icons" DependsOnTargets="build-vstoolkit">
 		<Message Text="Consolidating icons to deployment folder"/>
 
         <PropertyGroup>
@@ -88,78 +120,81 @@
         </PropertyGroup>
 
 		<MakeDir Directories="$(IconsDest)" />
-		
+
 		<Copy
-			SourceFiles="..\shells\AWSToolkitPackage\Templates\Projects\CloudFormationTemplateProject\CloudFormationTemplateProject.ico"
+			SourceFiles="..\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationProject.ico"
 			DestinationFiles="$(IconsDest)\AWSCloudFormationProject.ico" />
 		<Copy
-			SourceFiles="..\shells\AWSToolkitPackage\Templates\Items\Template\__TemplateIcon.ico"
+			SourceFiles="..\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationTemplate.ico"
 			DestinationFiles="$(IconsDest)\AWSCloudFormationTemplate.ico" />
     </Target>
-    
-    <Target Name="copy-shellartifacts">
-		<Message Text="Consolidating shell artifacts to deployment folder"/>
 
-        <MakeDir Directories="$(AWSToolkitPackageOutput)" />
+	<Target Name="copy-awsdeploy" DependsOnTargets="build-vstoolkit">
+        <PropertyGroup>
+            <AwsDeployDest>$(Deployment)\awsdeploy</AwsDeployDest>
+        </PropertyGroup>	
+		
+        <MakeDir Directories="$(AwsDeployDest)" />
         <ItemGroup>
-            <AWSToolkitPackageFiles Include="..\shells\AWSToolkitPackage\bin\$(Configuration)\AWSToolkitPackage.*" />
-            <ThirdPartyLibs Include="..\thirdparty\Microsoft.WindowsAPICodePack.dll;..\thirdparty\Microsoft.WindowsAPICodePack.Shell.dll;..\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll" />
-            <CustomMSBuildTargets Include="..\plugins\AWSToolkit.CloudFormation.MSBuildTasks\cloudformation.targets" />
-            <ImageFiles Include="..\shells\AWSToolkitPackage\aws_preview.gif;..\shells\AWSToolkitPackage\aws-icon.png" />
+            <AWSDeployBinaries Include="..\awsdeploy\client\AWSDeploymentTool\bin\$(Configuration)\awsdeploy.exe" />
+			<AWSDeployBinaries Include="..\awsdeploy\client\AWSDeploymentLib\bin\$(Configuration)\AWSDeploymentLib.dll" />
+			<AWSDeployBinaries Include="..\Deployment\14.0\$(Configuration)\AWSDeploymentCryptoUtility.dll"/>
+			<AWSDeployBinaries Include="..\Deployment\14.0\$(Configuration)\AWSDeploymentHostManagerClientLib.dll"/>
+			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.Core.dll"/>
+			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.AutoScaling.dll"/>
+			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.CloudFormation.dll"/>
+			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.CloudWatch.dll"/>
+			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.EC2.dll"/>
+			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.ElasticBeanstalk.dll"/>
+			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.ElasticLoadBalancing.dll"/>
+			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.IdentityManagement.dll"/>
+			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.Lambda.dll"/>
+			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.RDS.dll"/>
+			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.S3.dll"/>
+			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.SimpleNotificationService.dll"/>
+			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.SQS.dll"/>
+			<AWSDeployBinaries Include="..\Deployment\14.0\$(Configuration)\AWSSDK.Extensions.dll"/>
+			<AWSDeployBinaries Include="..\Deployment\14.0\$(Configuration)\AWSToolkit.Util.dll"/>
+			<AWSDeployBinaries Include="..\Deployment\14.0\$(Configuration)\AWSToolkit.dll"/>
+			
+			<AWSDeployBinaries Include="..\thirdparty\ICSharpCode.SharpZipLib.dll"/>
+			<AWSDeployBinaries Include="..\thirdparty\log4net.dll"/>
+			<AWSDeployBinaries Include="..\thirdparty\NGit.dll"/>
+			<AWSDeployBinaries Include="..\thirdparty\NSch.dll"/>
+			<AWSDeployBinaries Include="..\thirdparty\Mono.Security.dll"/>
+			<AWSDeployBinaries Include="..\thirdparty\Sharpen.dll"/>
+			<AWSDeployBinaries Include="..\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll"/>
+			
         </ItemGroup>
         <Copy
-            SourceFiles="@(AWSToolkitPackageFiles);@(ThirdPartyLibs);@(CustomMSBuildTargets);@(ImageFiles);@(Templates)"
-            DestinationFolder="$(AWSToolkitPackageOutput)" />
+            SourceFiles="@(AWSDeployBinaries)"
+            DestinationFolder="$(AwsDeployDest)" />
+			
+	</Target>
 
-        <Copy
-            SourceFiles="..\shells\AWSToolkitPackage\bin\$(Configuration)\extension.vsixmanifest"
-            DestinationFolder="$(AWSToolkitPackageOutput)" />
-            
+	<Target Name="copy-cf-msbuild-targets" DependsOnTargets="build-vstoolkit">
+        <PropertyGroup>
+            <CfMsbuildTargetsDest>$(Deployment)\cf-msbuild-targets</CfMsbuildTargetsDest>
+        </PropertyGroup>	
+		<MakeDir Directories="$(CfMsbuildTargetsDest)" />
+		
         <ItemGroup>
-            <AWSToolkitSharedFiles Include="..\shells\AWSToolkit.VisualStudio.Shared\bin_vs2010\$(Configuration)\AWSToolkitPackage.Shared.*" />
+            <CfMsBuildTargetBinaries Include="..\vspackages\cloudformation\AWSToolkit.CloudFormation.MSBuildTasks\cloudformation.targets" />
+			<CfMsBuildTargetBinaries Include="..\Deployment\14.0\$(Configuration)\AWSToolkit.CloudFormation.MSBuildTasks.dll" />
+			<CfMsBuildTargetBinaries Include="..\Deployment\14.0\$(Configuration)\AWSToolkit.CloudFormation.Parser.dll"/>
+			<CfMsBuildTargetBinaries Include="..\Deployment\14.0\$(Configuration)\AWSToolkit.Util.dll"/>
+			<CfMsBuildTargetBinaries Include="..\thirdparty\log4net.dll"/>
+			<CfMsBuildTargetBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.Core.dll"/>
+			<CfMsBuildTargetBinaries Include="..\Deployment\14.0\$(Configuration)\AWSDeploymentCryptoUtility.dll"/>
+			<CfMsBuildTargetBinaries Include="..\Deployment\14.0\$(Configuration)\AWSDeploymentHostManagerClientLib.dll"/>
         </ItemGroup>
         <Copy
-            SourceFiles="@(AWSToolkitSharedFiles)"
-            DestinationFolder="$(AWSToolkitPackageOutput)" />
-
-        <!-- copy the loose control template files to the corresponding output folder -->
-        <ItemGroup>
-            <TemplateFiles Include="..\shells\AWSToolkitPackage\Templates\*.*" />
-        </ItemGroup>
-        <Copy SourceFiles="@(TemplateFiles)"
-              DestinationFolder="$(AWSToolkitPackageOutput)\Templates" />
-
-        <!-- AWSStudio -->
-        <MakeDir Directories="$(Deployment)\AWSToolkit.Studio" />
-        <ItemGroup>
-            <AWSToolkitStudioFiles 
-                Include="..\shells\AWSToolkit.Studio\bin\$(Configuration)\**;..\shells\AWSToolkit.Studio\App.config" />
-        </ItemGroup>
-        <Copy
-            SourceFiles="@(AWSToolkitStudioFiles)"
-            DestinationFolder="$(Deployment)\AWSToolkit.Studio" />
-
-        <!-- misc 3rd party binaries and configs -->
-        <Copy
-            SourceFiles="..\thirdparty\PemToPPKConverter.exe"
-            DestinationFolder="$(Deployment)\Plugins" />
-        <Copy
-            SourceFiles="..\shells\AWSToolkitPackage\log4net.config"
-            DestinationFolder="$(Deployment)\AWSToolkitPackage" />
-            
-        <!-- snapshot the sdk the toolkit was built against; the installer will use these files in preference to
-             the sdk reference it gets (in case toolkit did not get rebuilt for an sdk update).
-        -->
-        <ItemGroup>
-            <SDKAssemblies Include="..\Include\sdk\assemblies\net35\AWSSDK.*.dll" />
-        </ItemGroup>
-        <Copy
-            SourceFiles="@(SDKAssemblies)"
-            DestinationFolder="$(Deployment)\sdk" />
-
-    </Target>
-    
-	<Target Name="update-version" DependsOnTargets="build-tools" Condition="$(UpdateVersions)">		
+            SourceFiles="@(CfMsBuildTargetBinaries)"
+            DestinationFolder="$(CfMsbuildTargetsDest)" />		
+		
+	</Target>
+	
+	<Target Name="update-version" DependsOnTargets="build-tools" Condition="$(UpdateVersions)">
 		<UpdateAssemblyInfoVersionTask
 			RepositoryRoot="$(MSBuildProjectDirectory)\.."
             AssemblyInfoPaths="awsdeploy\host"
@@ -169,28 +204,31 @@
 
 		<UpdateVSToolkitVersionTask
 			RepositoryRoot="$(MSBuildProjectDirectory)\.."
+			ExcludePaths="vspackages\templates\AWSProjectTemplates;vspackages\cloudformation\CloudFormationProjectTemplate;vspackages\cloudformation\CloudFormationTemplate"
 			VersionNumber="$(AWSToolkitVersionNumber)"
 			WaitForDebugger="false"
 			/>
 	</Target>
 
     <Target Name="keyscan" Condition="$(RunKeyScan)" DependsOnTargets="build-tools">
+
         <ItemGroup>
-            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Debug\View\Components\GetPasswordAskPrivateKey.baml" />
-            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Debug\View\OpenRemoteDesktopControl.baml" />
-            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Debug\View\OpenSCPSessionControl.baml" />
-            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Debug\View\OpenSSHSessionControl.baml" />
-            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Debug\AWSToolkit.EC2.g.resources" />
-            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Release\View\Components\GetPasswordAskPrivateKey.baml" />
-            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Release\View\OpenRemoteDesktopControl.baml" />
-            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Release\View\OpenSCPSessionControl.baml" />
-            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Release\View\OpenSSHSessionControl.baml" />
-            <PrivateKeyException Include="plugins\AWSToolkit.EC2\obj\Release\AWSToolkit.EC2.g.resources" />
-            <PrivateKeyException Include="plugins\AWSToolkit.EC2\View\Components\GetPasswordAskPrivateKey.xaml" />
-            <PrivateKeyException Include="plugins\AWSToolkit.EC2\View\GetPasswordControl.xaml.cs" />
-            <PrivateKeyException Include="plugins\AWSToolkit.EC2\View\OpenRemoteDesktopControl.xaml" />
-            <PrivateKeyException Include="plugins\AWSToolkit.EC2\View\OpenSCPSessionControl.xaml" />
-            <PrivateKeyException Include="plugins\AWSToolkit.EC2\View\OpenSSHSessionControl.xaml" />
+            <PrivateKeyException Include="toolkitcore\plugins\AWSToolkit.EC2\obj\Debug\View\Components\GetPasswordAskPrivateKey.baml" />
+            <PrivateKeyException Include="toolkitcore\plugins\AWSToolkit.EC2\obj\Debug\View\OpenRemoteDesktopControl.baml" />
+            <PrivateKeyException Include="toolkitcore\plugins\AWSToolkit.EC2\obj\Debug\View\OpenSCPSessionControl.baml" />
+            <PrivateKeyException Include="toolkitcore\plugins\AWSToolkit.EC2\obj\Debug\View\OpenSSHSessionControl.baml" />
+            <PrivateKeyException Include="toolkitcore\plugins\AWSToolkit.EC2\obj\12.0\Debug\AWSToolkit.EC2.g.resources" />
+            <PrivateKeyException Include="toolkitcore\plugins\AWSToolkit.EC2\obj\14.0\Debug\AWSToolkit.EC2.g.resources" />
+            <PrivateKeyException Include="toolkitcore\plugins\AWSToolkit.EC2\obj\Release\View\Components\GetPasswordAskPrivateKey.baml" />
+            <PrivateKeyException Include="toolkitcore\plugins\AWSToolkit.EC2\obj\Release\View\OpenRemoteDesktopControl.baml" />
+            <PrivateKeyException Include="toolkitcore\plugins\AWSToolkit.EC2\obj\Release\View\OpenSCPSessionControl.baml" />
+            <PrivateKeyException Include="toolkitcore\plugins\AWSToolkit.EC2\obj\Release\View\OpenSSHSessionControl.baml" />
+            <PrivateKeyException Include="toolkitcore\plugins\AWSToolkit.EC2\obj\Release\AWSToolkit.EC2.g.resources" />
+            <PrivateKeyException Include="toolkitcore\plugins\AWSToolkit.EC2\View\Components\GetPasswordAskPrivateKey.xaml" />
+            <PrivateKeyException Include="toolkitcore\plugins\AWSToolkit.EC2\View\GetPasswordControl.xaml.cs" />
+            <PrivateKeyException Include="toolkitcore\plugins\AWSToolkit.EC2\View\OpenRemoteDesktopControl.xaml" />
+            <PrivateKeyException Include="toolkitcore\plugins\AWSToolkit.EC2\View\OpenSCPSessionControl.xaml" />
+            <PrivateKeyException Include="toolkitcore\plugins\AWSToolkit.EC2\View\OpenSSHSessionControl.xaml" />			
             <PrivateKeyException Include="tests\AWSToolkit.Tests\CryptoTests.cs" />
             <PrivateKeyException Include="thirdparty\PemToPPKConverter\openssh.c" />
             <PrivateKeyException Include="thirdparty\PemToPPKConverter\Release\openssh.obj" />
@@ -200,25 +238,27 @@
             <PrivateKeyException Include="Include\sdk\Models\iam-2010-05-08.normal.json" />
 			
         </ItemGroup>
-        
+
         <ItemGroup>
+			<FileException Include="vspackages\templates\TemplateWizard\UserInputForm.resx" />
             <FileException Include="awsdeploy\tests\AWSDeploymentUnitTest\Resources\sample-configfile.txt" />
 			
 			<FileException Include="Include\sdk\Models\elasticbeanstalk.examples.json" />
 			<FileException Include="Include\sdk\Models\elasticbeanstalk.customizations.json" />
 			
         </ItemGroup>
-        
-        <KeyScannerTask 
+
+        <KeyScannerTask
             Folder="$(MSBuildProjectDirectory)\.."
             FilePattern="**"
             PrivateKeyExceptions="@(PrivateKeyException)"
             FileExceptions="@(FileException)"
             ParallelScan="true"
             />
+
     </Target>
-    
-	<Target Name="save-build"  DependsOnTargets="build-tools">		
+
+	<Target Name="save-build"  DependsOnTargets="build-tools">
 		<SaveBuildArtifactTask
 			RepositoryRoot="$(MSBuildProjectDirectory)\.."
 			BuildArtifactType="toolkit"
@@ -226,8 +266,8 @@
 			LocalArchiveRootFolder="$(LocalArchiveRootFolder)"
 			/>
 	</Target>
-	
-	<Target Name="get-references"  DependsOnTargets="build-tools">		
+
+	<Target Name="get-references"  DependsOnTargets="build-tools"  Condition="$(EnableGetReferences)">
 		<MSBuild Projects ="$(MSBuildProjectFullPath)" Targets="get-reference-sdk" Properties="TargetRepository=$(MSBuildProjectDirectory)\.."/>
 	</Target>
 

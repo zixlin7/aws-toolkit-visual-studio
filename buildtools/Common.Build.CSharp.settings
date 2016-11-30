@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Ensures that if this file changes it forces a rebuild -->
+  <PropertyGroup>
+    <MSBuildAllProjects>
+        $(MSBuildAllProjects);$(MSBuildThisFileFullPath)
+    </MSBuildAllProjects>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Language>C#</Language>
+    <Platform Condition="'$(Platform)'==''">x86</Platform>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(VSTarget)' == '14.0' ">
+    <DefineConstants>$(DefineConstants);VS2015;VS2015_OR_LATER;VS2013_OR_LATER</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(VSTarget)' == '12.0' ">
+    <DefineConstants>$(DefineConstants);VS2013;VS2013_OR_LATER</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <VSCTDefinitions Condition="'$(VSTarget)' == '14.0'">VS2015;VS2013_OR_LATER</VSCTDefinitions>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <VSCTDefinitions Condition="'$(VSTarget)' == '12.0'">VS2013;VS2013_OR_LATER</VSCTDefinitions>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(SuppressCommonAssemblyMetadata)">
+    <DefineConstants>$(DefineConstants);SUPPRESS_COMMON_ASSEMBLY_METADATA</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(BuildRoot)\buildtools\awstoolkit.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+</Project>

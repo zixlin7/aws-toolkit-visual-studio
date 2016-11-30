@@ -1,0 +1,41 @@
+﻿<UserControl
+    x:Class="Amazon.AWSToolkit.Lambda.View.Components.KMSKeySelectorControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:commoncomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.Lambda.View.Components"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="50"
+    d:DesignWidth="300"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <commoncomponents:ListViewComboBox
+            x:Name="_ctlKMSKey"
+            Margin="4,2"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Center"
+            DisplayMemberPath="FormattedDisplayName"
+            DropDownClosed="_ctlKMSKey_DropDownClosed"
+            IsEditable="False"
+            ItemsSource="{Binding AvailableKMSKeys}">
+            <!--  empty col to push alias header rightward away from group labels  -->
+            <GridViewColumn
+                Width="10"
+                DisplayMemberBinding="{Binding x:Null}"
+                Header="" />
+            <GridViewColumn DisplayMemberBinding="{Binding AliasName}" Header="Alias" />
+            <GridViewColumn DisplayMemberBinding="{Binding Key.KeyArn}" Header="Key ARN" />
+        </commoncomponents:ListViewComboBox>
+    </Grid>
+</UserControl>

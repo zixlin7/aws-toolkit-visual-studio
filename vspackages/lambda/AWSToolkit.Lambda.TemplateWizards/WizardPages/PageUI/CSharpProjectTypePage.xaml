@@ -1,0 +1,188 @@
+﻿<commonUi:BaseAWSUserControl
+    x:Class="Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageUI.CSharpProjectTypePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:commoncomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageUI"
+    xmlns:localmodel="clr-namespace:Amazon.AWSToolkit.Lambda.TemplateWizards.Model"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DataContext="{x:Static localmodel:BlueprintSampleDataModel.SampleData}"
+    d:DesignHeight="300"
+    d:DesignWidth="500"
+    mc:Ignorable="d">
+
+    <commonUi:BaseAWSUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <ItemsPanelTemplate x:Key="BlueprintItemsPanelTemplate">
+                <WrapPanel
+                    HorizontalAlignment="{Binding Path=HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                    VerticalAlignment="{Binding Path=VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                    Grid.IsSharedSizeScope="True"
+                    Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+
+            <DataTemplate x:Key="BlueprintItemTemplate">
+                <Grid
+                    Width="Auto"
+                    Height="Auto"
+                    Margin="8,4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition SharedSizeGroup="SharedHeight" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition SharedSizeGroup="SharedWidth" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border
+                        BorderBrush="{DynamicResource awsGridLineBrushKey}"
+                        BorderThickness="1"
+                        CornerRadius="2">
+                        <Grid Width="200">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0" Background="{DynamicResource awsPanelHeaderAccentBrushKey}">
+                                <TextBlock
+                                    Grid.Row="0"
+                                    Margin="2,0,2,0"
+                                    HorizontalAlignment="Left"
+                                    FontSize="14"
+                                    FontWeight="SemiBold"
+                                    Style="{DynamicResource awsTextBlockBaseStyle}"
+                                    Text="{Binding Name}"
+                                    TextTrimming="CharacterEllipsis"
+                                    TextWrapping="NoWrap" />
+                            </Grid>
+
+                            <Line
+                                Grid.Row="1"
+                                Margin="0"
+                                Stretch="Uniform"
+                                Stroke="{DynamicResource awsGridLineBrushKey}"
+                                StrokeThickness="1"
+                                X1="0"
+                                X2="1"
+                                Y1="0"
+                                Y2="0" />
+
+                            <TextBlock
+                                Grid.Row="2"
+                                Margin="8,2"
+                                HorizontalAlignment="Left"
+                                FontSize="12"
+                                Style="{DynamicResource awsTextBlockBaseStyle}"
+                                Text="{Binding Description}"
+                                TextTrimming="WordEllipsis"
+                                TextWrapping="Wrap" />
+
+                            <Line
+                                Grid.Row="3"
+                                Margin="8,0"
+                                Stretch="Uniform"
+                                Stroke="{DynamicResource awsDividerRuleBrushKey}"
+                                StrokeThickness="1"
+                                X1="0"
+                                X2="1"
+                                Y1="0"
+                                Y2="0" />
+
+                            <TextBlock
+                                Grid.Row="4"
+                                Margin="8,2"
+                                HorizontalAlignment="Left"
+                                FontSize="10"
+                                FontStyle="Italic"
+                                Opacity=".6"
+                                Style="{DynamicResource awsTextBlockBaseStyle}"
+                                Text="{Binding TagCollection}"
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="Wrap" />
+                        </Grid>
+                    </Border>
+
+                </Grid>
+            </DataTemplate>
+
+        </ResourceDictionary>
+    </commonUi:BaseAWSUserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock
+            Grid.Row="0"
+            Margin="12,0,4,0"
+            Style="{DynamicResource awsInfoTextStyle}"
+            TextWrapping="Wrap">
+            Blueprints are Lambda projects that contain getting started code for your functions and
+            a test project. Choose a blueprint that best aligns with your desired scenario and
+            customize as needed.
+        </TextBlock>
+
+        <!--  create from blueprint, with tag filtering  -->
+        <Grid Grid.Row="1" Margin="0,8,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <StackPanel
+                    Grid.Row="0"
+                    Margin="0,2,0,2"
+                    Orientation="Horizontal">
+                    <Label Margin="8,0,10,0" Style="{DynamicResource awsLabelBaseStyle}">_Filter:</Label>
+                    <TextBox
+                        Width="200"
+                        IsEnabled="{Binding ElementName=_ctlBlueprintProject, Path=IsChecked}"
+                        Style="{DynamicResource awsTextBoxStyle}"
+                        Text="{Binding FilterTags, Mode=TwoWay}"
+                        ToolTip="A space separated collection of tags to filter the available blueprints" />
+                    <Button
+                        Margin="4,2,0,2"
+                        Click="OnClickApplyFilter"
+                        IsEnabled="{Binding ElementName=_ctlBlueprintProject, Path=IsChecked}"
+                        Style="{DynamicResource awsButtonBaseStyle}">
+                        _Apply
+                    </Button>
+                </StackPanel>
+
+                <ListView
+                    Name="_ctlBlueprintList"
+                    Grid.Row="1"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Top"
+                    Background="{x:Null}"
+                    IsEnabled="{Binding ElementName=_ctlBlueprintProject, Path=IsChecked}"
+                    ItemTemplate="{StaticResource BlueprintItemTemplate}"
+                    ItemsPanel="{StaticResource BlueprintItemsPanelTemplate}"
+                    ItemsSource="{Binding SelectableBlueprints}"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    SelectedItem="{Binding BlueprintListSelection, Mode=TwoWay}"
+                    SelectionChanged="_ctlBlueprintList_SelectionChanged"
+                    Style="{DynamicResource awsListViewStyle}" />
+
+            </Grid>
+
+        </Grid>
+
+    </Grid>
+</commonUi:BaseAWSUserControl>

@@ -1,0 +1,197 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.S3.View.Components.BucketNotificationControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="700">
+    <commonui:BaseAWSUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <ControlTemplate TargetType="ListBox" x:Key="EventSourceControlTemplate">
+                <ScrollViewer HorizontalScrollBarVisibility="Hidden"
+                              VerticalScrollBarVisibility="Auto"
+                              Focusable="false" 
+                              Padding="{TemplateBinding Padding}"
+                              CanContentScroll="True">
+                    <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                </ScrollViewer>
+            </ControlTemplate>
+
+            <Style x:Key="EventSourceListBoxItemStyle" TargetType="ListBoxItem">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="Margin" Value="1" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Border x:Name="Root"
+                                    BorderBrush="{DynamicResource awsListBoxPanelItemBackgroundBrushKey}"
+                                    Background="{DynamicResource awsListBoxPanelItemBackgroundBrushKey}"
+                                    BorderThickness="2"
+                                    CornerRadius="4"
+                                    Padding="4"
+                                    >
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                      HorizontalAlignment="Left"
+                                                      VerticalAlignment="Center"
+                                                      />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource awsListBoxPanelItemHoverBorderBrushKey}" TargetName="Root" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="BorderBrush" Value="{DynamicResource awsListBoxPanelItemSelectedBorderBrushKey}" TargetName="Root" />
+                                    <Setter Property="Background" Value="{DynamicResource awsListBoxPanelItemSelectedBackgroundBrushKey}" TargetName="Root"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="EventSourcePanel" TargetType="{x:Type StackPanel}">
+                <Setter Property="Margin" Value="0,0,4,0"/>
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+            </Style>
+
+            <Style x:Key="EventSourceLabel" TargetType="{x:Type Label}" BasedOn="{StaticResource awsLabelBaseStyle}">
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+                <Setter Property="Foreground" Value="#050505" />
+                <Setter Property="FontWeight" Value="Bold" />
+                <Setter Property="Margin" Value="0"/>
+                <Setter Property="HorizontalAlignment" Value="Left" />
+                <Setter Property="Padding" Value="0"/>
+            </Style>
+
+            <Style x:Key="EventSourceField" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource awsTextBlockBaseStyle}">
+                <Setter Property="Margin" Value="2,4,2,2"  />
+                <Setter Property="VerticalAlignment" Value="Bottom" />
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            </Style>
+
+            <DataTemplate x:Key="EventSourceItemTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="22" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Button VerticalAlignment="Center" 
+                            HorizontalAlignment="Left" 
+                            Margin="0,16,0,2"
+                            Visibility="{Binding IsNonRootDevice, Converter={StaticResource Bool2VisConverter}}"
+                            ToolTip="Deletes the event source entry"
+                            Click="EventConfigurationDelete_OnClick"
+                            Tag="{Binding Path=ID}">
+                        <Image Width="16" Height="16" 
+                               DataContext="{DynamicResource CommonIcons}" 
+                               Source="{Binding RemoveIcon}"
+                               />
+                    </Button>
+
+
+                    <StackPanel Grid.Column="1" 
+                                Style="{StaticResource EventSourcePanel}"
+                                Margin="10,0,0,0"
+                                MinWidth="90">
+
+                        <Label Style="{StaticResource EventSourceLabel}" 
+                               Content="Type"
+                               Name="TypeLabel"/>
+                        <StackPanel Orientation="Horizontal">
+
+                            <Image Width="16" Height="16" 
+                                Source="{Binding ServiceIcon}"
+                                />
+
+                            <TextBlock Style="{StaticResource EventSourceField}"
+                                Text="{Binding ServiceName}"
+                                />
+
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" 
+                                Style="{StaticResource EventSourcePanel}"
+                                MinWidth="90">
+                        <Label Style="{StaticResource EventSourceLabel}" 
+                               Content="Resource"
+                               Name="ResourceLabel"/>
+                        <TextBlock Style="{StaticResource EventSourceField}"
+                            Text="{Binding FormattedResourceName}"
+                            />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="3" 
+                                Style="{StaticResource EventSourcePanel}"
+                                MinWidth="90">
+                        <Label Style="{StaticResource EventSourceLabel}" 
+                               Content="Events"/>
+                        <TextBlock Style="{StaticResource EventSourceField}"
+                            Text="{Binding FormattedEventTypes}"
+                            />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="4" 
+                                Style="{StaticResource EventSourcePanel}"
+                                MinWidth="90">
+                        <Label Style="{StaticResource EventSourceLabel}" 
+                               Content="Filter"/>
+                        <TextBlock Style="{StaticResource EventSourceField}"
+                            Text="{Binding FormattedFilter}"
+                            />
+                    </StackPanel>
+
+                </Grid>
+            </DataTemplate>
+
+        </ResourceDictionary>
+    </commonui:BaseAWSUserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}" TextWrapping="Wrap" Margin="4,8">
+            Event Notifications enable you to send alerts or trigger workflows. Notifications can be sent via Amazon Simple Notification Service (SNS) or Amazon Simple Queue Service (SQS) or to a Lambda function (depending on the bucket location).
+        </TextBlock>
+
+        <Button HorizontalAlignment="Left"
+                Grid.Row="1" 
+                Click="AddEventConfiguration_Click"
+                Margin="4,8,4,4">
+            <WrapPanel>
+                <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding AddIcon}"/>
+                <TextBlock Margin="4,0,4,0">Add</TextBlock>
+            </WrapPanel>
+        </Button>
+
+        <Border BorderBrush="{DynamicResource awsDefaultControlBorderBrushKey}" BorderThickness="2"
+                Grid.Row="2"
+                >
+            <ListBox x:Name="_ctlEventConfigurations" 
+                         ItemContainerStyle="{StaticResource EventSourceListBoxItemStyle}"
+                         Template="{StaticResource EventSourceControlTemplate}"
+                         ItemTemplate="{StaticResource EventSourceItemTemplate}"
+                         HorizontalContentAlignment="Stretch"
+                         VerticalAlignment="Stretch"
+                         ItemsSource="{Binding EventConfigurations}"
+                         SelectedItem="{Binding SelectedEventSource, Mode=TwoWay}"
+                         IsSynchronizedWithCurrentItem="True"
+                         />
+        </Border>
+
+    </Grid>
+</commonui:BaseAWSUserControl>

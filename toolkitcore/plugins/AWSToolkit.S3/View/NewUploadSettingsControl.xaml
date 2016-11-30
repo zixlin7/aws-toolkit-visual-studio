@@ -1,0 +1,60 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.S3.View.NewUploadSettingsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.S3.View.Components"                         
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"                         
+    Height="400" Width="600">
+    
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Margin="5,0,5,0" Grid.Row="0" Grid.Column="0" Style="{DynamicResource awsTextBlockBaseStyle}" >These settings will be applied to all the files being uploaded.</TextBlock>
+        <CheckBox Margin="5,0,5,0" Grid.Row="1" Grid.Column="0" 
+                  IsChecked="{Binding UseReduceStorage}" VerticalAlignment="Center"
+                  Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+            Use Reduced Redundancy Storage
+        </CheckBox>
+        
+        <CheckBox Margin="5,0,5,0" Grid.Row="2" Grid.Column="0" 
+                  IsChecked="{Binding UseServerSideEncryption}" 
+                  VerticalAlignment="Center"
+                  Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+            Use Server Side Encryption
+        </CheckBox>
+
+        <CheckBox Margin="5,0,5,0" Grid.Row="3" Grid.Column="0" 
+                  IsChecked="{Binding MakePublic}" 
+                  Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+            Make everything publicly readable
+        </CheckBox>
+
+        <TabControl Margin="10, 0, 10, 10" Grid.Column="0" Grid.Row="4" Style="{DynamicResource awsPropertyPageHorizontalTabStyle}">
+            <TabItem Header="Metadata">
+                <components:MetadataControl HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Width="auto" Height="auto"/>
+            </TabItem>
+            <TabItem Header="Permissions">
+                <components:ObjectPermissionsControl HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Width="auto" Height="auto"/>
+            </TabItem>
+            <TabItem Header="Tags">
+                <components:ObjectTagsControl HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Width="auto" Height="auto" x:Name="_ctlTags"/>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</commonui:BaseAWSControl>

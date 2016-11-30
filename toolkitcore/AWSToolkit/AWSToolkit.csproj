@@ -1,0 +1,751 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</ProjectGuid>
+    <OutputType>library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Amazon.AWSToolkit</RootNamespace>
+    <AssemblyName>AWSToolkit</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(BuildRoot)\buildtools\awstoolkit.snk</AssemblyOriginatorKeyFile>
+    <OldToolsVersion>3.5</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>$(OutputRoot)</OutputPath>
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>$(OutputRoot)</OutputPath>
+    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AWSSDK.CloudFormation">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudFormation.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.CloudWatch">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudWatch.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.CognitoIdentity">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CognitoIdentity.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.CognitoSync">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CognitoSync.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.Core">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.EC2">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.EC2.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.ElasticBeanstalk">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ElasticBeanstalk.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.IdentityManagement">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.IdentityManagement.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.KeyManagementService">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.KeyManagementService.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.Lambda">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Lambda.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.MobileAnalytics">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.MobileAnalytics.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.SimpleNotificationService">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.SimpleNotificationService.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\thirdparty\log4net.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework.Aero">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Controls.DataVisualization.Toolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CommonUI\SelectableItem.cs" />
+    <Compile Include="CommonUI\Components\IAMRolePicker.xaml.cs">
+      <DependentUpon>IAMRolePicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Shared\*.cs" />
+    <Compile Include="AbstractPluginActivator.cs" />
+    <Compile Include="Account\AccountTypes.cs" />
+    <Compile Include="Account\Controller\EditAccountController.cs" />
+    <Compile Include="Account\Controller\RegisterAccountController.cs" />
+    <Compile Include="Account\Controller\UnregisterAccountController.cs" />
+    <Compile Include="Account\Model\RegisterAccountModel.cs" />
+    <Compile Include="Account\AccountViewMetaNode.cs" />
+    <Compile Include="Account\AccountViewModel.cs" />
+    <Compile Include="Account\View\RegisterAccountControl.xaml.cs">
+      <DependentUpon>RegisterAccountControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\BaseAWSControl.cs" />
+    <Compile Include="CommonUI\BaseAWSView.cs" />
+    <Compile Include="CommonUI\BaseModel.cs" />
+    <Compile Include="CommonUI\Browser.xaml.cs">
+      <DependentUpon>Browser.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\Charts\CloudWatchChart.xaml.cs">
+      <DependentUpon>CloudWatchChart.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\Charts\CloudWatchDataFetcher.cs" />
+    <Compile Include="CommonUI\CheckedTree\CheckedTreeControl.xaml.cs">
+      <DependentUpon>CheckedTreeControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\CheckedTree\CheckedViewModel.cs" />
+    <Compile Include="CommonUI\CheckedTree\VirtualToggleButton.cs" />
+    <Compile Include="CommonUI\CommonIcons.cs" />
+    <Compile Include="CommonUI\CommonWizardProperties.cs" />
+    <Compile Include="CommonUI\Components\AccountAndRegionPicker.xaml.cs">
+      <DependentUpon>AccountAndRegionPicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\Components\AppSettingsControl.xaml.cs">
+      <DependentUpon>AppSettingsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\Components\HeaderedDropPanel.cs" />
+    <Compile Include="CommonUI\Components\IAMCapabilityPicker.xaml.cs">
+      <DependentUpon>IAMCapabilityPicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\Components\ListViewComboBox.cs" />
+    <Compile Include="CommonUI\Components\KeyPairList.xaml.cs">
+      <DependentUpon>KeyPairList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\Components\LoadingMessageAdorner.cs" />
+    <Compile Include="CommonUI\DeploymentWizard\PageControllers\DeploymentReviewPageController.cs" />
+    <Compile Include="CommonUI\DeploymentWizard\PageUI\DeploymentReviewPage.xaml.cs">
+      <DependentUpon>DeploymentReviewPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\ResourceTags\ResourceTagsControl.xaml.cs">
+      <DependentUpon>ResourceTagsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\Components\TemplatePickerControl.xaml.cs">
+      <DependentUpon>TemplatePickerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\FramelessDialogHost.xaml.cs">
+      <DependentUpon>FramelessDialogHost.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\DataGridHelper.cs" />
+    <Compile Include="CommonUI\LegacyDeploymentWizard\PageControllers\CommonAppOptionsPageControllerBase.cs" />
+    <Compile Include="CommonUI\LegacyDeploymentWizard\PageUI\CommonAppOptionsPage.xaml.cs">
+      <DependentUpon>CommonAppOptionsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\LegacyDeploymentWizard\PageWorkers\FetchCompatibleIAMUsersWorker.cs" />
+    <Compile Include="CommonUI\LegacyDeploymentWizard\PageWorkers\QueryExistingDeploymentsWorker.cs" />
+    <Compile Include="CommonUI\LegacyDeploymentWizard\Templating\BeanstalkTemplateWrapper.cs" />
+    <Compile Include="CommonUI\LegacyDeploymentWizard\Templating\CloudFormationTemplateWrapper.cs" />
+    <Compile Include="CommonUI\LegacyDeploymentWizard\Templating\DeploymentTemplateWrapperBase.cs" />
+    <Compile Include="CommonUI\DeploymentWizard\DeploymentWizardProperties.cs" />
+    <Compile Include="CommonUI\LegacyDeploymentWizard\PageControllers\DeploymentReviewPageController.cs" />
+    <Compile Include="CommonUI\LegacyDeploymentWizard\PageControllers\DeploymentTemplateSelectorPageController.cs" />
+    <Compile Include="CommonUI\LegacyDeploymentWizard\PageUI\DeploymentReviewPage.xaml.cs">
+      <DependentUpon>DeploymentReviewPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\LegacyDeploymentWizard\PageUI\DeploymentTemplateSelectorPage.xaml.cs">
+      <DependentUpon>DeploymentTemplateSelectorPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\DialogHostUtil.cs" />
+    <Compile Include="CommonUI\DirectoryBrowserDlgHelper.cs" />
+    <Compile Include="CommonUI\IconHelper.cs" />
+    <Compile Include="CommonUI\ImageButton.xaml.cs">
+      <DependentUpon>ImageButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\IPropertySupport.cs" />
+    <Compile Include="CommonUI\JobTracker\BaseJob.cs" />
+    <Compile Include="CommonUI\JobTracker\IJob.cs" />
+    <Compile Include="CommonUI\JobTracker\JobTrackerControl.xaml.cs">
+      <DependentUpon>JobTrackerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\JobTracker\QueueProcessingJob.cs" />
+    <Compile Include="CommonUI\LoadState.cs" />
+    <Compile Include="CommonUI\Notifications\AWSNotificationToaster.xaml.cs">
+      <DependentUpon>AWSNotificationToaster.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\Notifications\TaskWatcher.cs" />
+    <Compile Include="CommonUI\Notifications\ToasterPanels\TextualPanel.xaml.cs">
+      <DependentUpon>TextualPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\OkCancelDialogHost.xaml.cs">
+      <DependentUpon>OkCancelDialogHost.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\OkDialogHost.xaml.cs">
+      <DependentUpon>OkDialogHost.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\Private\__IconHelper.cs" />
+    <Compile Include="CommonUI\PropertiesModel.cs" />
+    <Compile Include="CommonUI\ResourceTags\ResourceTagsModel.cs" />
+    <Compile Include="CommonUI\ToolkitDataGridWrapper.cs" />
+    <Compile Include="CommonUI\UIUtils.cs" />
+    <Compile Include="CommonUI\ValueConverters.cs" />
+    <Compile Include="CommonUI\WizardFramework\AWSWizardConstants.cs" />
+    <Compile Include="CommonUI\WizardFramework\AWSWizardFactory.cs" />
+    <Compile Include="CommonUI\WizardFramework\BaseImpl\AWSBaseWizardImpl.cs" />
+    <Compile Include="CommonUI\WizardFramework\DesignData\WizardDesignTimeData.cs" />
+    <Compile Include="CommonUI\WizardFramework\PageComponents\ReviewPanel.xaml.cs">
+      <DependentUpon>ReviewPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\WizardFramework\PageComponents\ReviewPanelsContainer.xaml.cs">
+      <DependentUpon>ReviewPanelsContainer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\WizardFramework\IAWSWizard.cs" />
+    <Compile Include="CommonUI\WizardFramework\IAWSWizardPageController.cs" />
+    <Compile Include="CommonUI\WizardFramework\Standard\AWSStandardWizard.xaml.cs">
+      <DependentUpon>AWSStandardWizard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\WizardPages\PageControllers\AccountRegistrationPageController.cs" />
+    <Compile Include="CommonUI\WizardPages\PageUI\AccountRegistrationPage.xaml.cs">
+      <DependentUpon>AccountRegistrationPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonValidators\IntegerValidator.cs" />
+    <Compile Include="CommonValidators\StringHasValueValidator.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Feedback.xaml.cs">
+      <DependentUpon>Feedback.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="IPluginActivator.cs" />
+    <Compile Include="IRegisterDataConnectionService.cs" />
+    <Compile Include="MobileAnalytics\AnalyticsCognitoAWSCredentials.cs" />
+    <Compile Include="MobileAnalytics\AMAConstants.cs" />
+    <Compile Include="MobileAnalytics\AMAServiceCallHandler.cs" />
+    <Compile Include="MobileAnalytics\ClientContext.cs" />
+    <Compile Include="MobileAnalytics\ClientContextConfig.cs" />
+    <Compile Include="MobileAnalytics\SimpleMobileAnalytics.cs" />
+    <Compile Include="MobileAnalytics\ToolkitEvent.cs" />
+    <Compile Include="Navigator\Node\AbstractViewModel.cs" />
+    <Compile Include="Navigator\ActionHandlerWrapper.cs" />
+    <Compile Include="Navigator\ActionResults.cs" />
+    <Compile Include="Navigator\Node\AWSViewMetaNode.cs" />
+    <Compile Include="Navigator\Node\AWSViewModel.cs" />
+    <Compile Include="Navigator\BaseContextCommand.cs" />
+    <Compile Include="Navigator\CommandInstantiator.cs" />
+    <Compile Include="Navigator\IContextCommand.cs" />
+    <Compile Include="Navigator\Node\AbstractMetaNode.cs" />
+    <Compile Include="Navigator\Node\ErrorMetaNode.cs" />
+    <Compile Include="Navigator\Node\ErrorViewModel.cs" />
+    <Compile Include="Navigator\Node\IEndPointSupport.cs" />
+    <Compile Include="Navigator\Node\IMetaNode.cs" />
+    <Compile Include="Navigator\Node\InstanceDataRootViewModel.cs" />
+    <Compile Include="Navigator\Node\IServiceRootViewMetaNode.cs" />
+    <Compile Include="Navigator\Node\IServiceRootViewModel.cs" />
+    <Compile Include="Navigator\Node\ITreeNodeProperties.cs" />
+    <Compile Include="Navigator\Node\IViewModel.cs" />
+    <Compile Include="Navigator\NavigatorControl.xaml.cs">
+      <DependentUpon>NavigatorControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Navigator\NodeClickExecutor.cs" />
+    <Compile Include="Navigator\Node\LoadingMetaNode.cs" />
+    <Compile Include="Navigator\Node\LoadingViewModel.cs" />
+    <Compile Include="Navigator\Node\ServiceRootViewMetaNode.cs" />
+    <Compile Include="Navigator\Node\ServiceRootViewModel.cs" />
+    <Compile Include="Persistence\Deployment\BeanstalkProjectPersistenceInfo.cs" />
+    <Compile Include="Persistence\Deployment\CloudFormationProjectPersistenceInfo.cs" />
+    <Compile Include="Persistence\Deployment\CloudFormationTemplatePersistenceInfo.cs" />
+    <Compile Include="Persistence\Deployment\DeploymentHistories.cs" />
+    <Compile Include="Persistence\Deployment\ProjectDeployments.cs" />
+    <Compile Include="PluginServices\Deployment\IAWSToolkitDeploymentService.cs" />
+    <Compile Include="Primitives\DateTimePickerControl.xaml.cs">
+      <DependentUpon>DateTimePickerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Primitives\TwoListMover.xaml.cs">
+      <DependentUpon>TwoListMover.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="ProxyUtilities.cs" />
+    <Compile Include="RegionEndPointsManager.cs" />
+    <Compile Include="SimpleWorkers\CloudWatchDataFetcher.cs" />
+    <Compile Include="SimpleWorkers\QueryAMIInstancesWorker.cs" />
+    <Compile Include="SimpleWorkers\QueryAvailabilityZonesWorker.cs" />
+    <Compile Include="SimpleWorkers\QueryCloudFormationSamplesWorker.cs" />
+    <Compile Include="SimpleWorkers\QueryKMSKeysWorker.cs" />
+    <Compile Include="SimpleWorkers\QueryLambdaFunctionsWorker.cs" />
+    <Compile Include="SimpleWorkers\QueryKeyPairNamesWorker.cs" />
+    <Compile Include="SimpleWorkers\QueryLambdaFunctionSamplesWorker.cs" />
+    <Compile Include="SimpleWorkers\QuerySecurityGroupsWorker.cs" />
+    <Compile Include="SimpleWorkers\QueryCloudFormationStacksWorker.cs" />
+    <Compile Include="SimpleWorkers\QuerySubnetWorker.cs" />
+    <Compile Include="SimpleWorkers\QueryTopicArnsWorker.cs" />
+    <Compile Include="Themes\ThemeConstants.cs" />
+    <Compile Include="ThemeUtil.cs" />
+    <Compile Include="ToolkitFactory.cs" />
+    <Compile Include="Util\KeyPairLocalStoreManager.cs" />
+    <Compile Include="Util\RolePolicyFilter.cs" />
+    <Compile Include="VersionInfo\NewVersionAlertControl.xaml.cs">
+      <DependentUpon>NewVersionAlertControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="VersionInfo\VersionManager.cs" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Account\View\RegisterAccountControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\Browser.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\CheckedTree\CheckedTreeControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\Components\AccountAndRegionPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CommonUI\Components\AppSettingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CommonUI\Components\IAMCapabilityPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CommonUI\Components\IAMRolePicker.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\Components\KeyPairList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\DeploymentWizard\PageUI\DeploymentReviewPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\ResourceTags\ResourceTagsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CommonUI\FramelessDialogHost.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\LegacyDeploymentWizard\PageUI\CommonAppOptionsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\ImageButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\JobTracker\JobTrackerControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\Notifications\AWSNotificationToaster.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\Notifications\ToasterPanels\TextualPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\OkCancelDialogHost.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\OkDialogHost.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\WizardFramework\PageComponents\ReviewPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\WizardFramework\PageComponents\ReviewPanelsContainer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\WizardFramework\Standard\AWSStandardWizard.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Navigator\NavigatorControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Primitives\TwoListMover.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Default\Brushes.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Default\Buttons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Default\ComboBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Default\Converters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Default\DataGrid.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\DefaultTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Default\Expander.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Default\ListBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Default\ListView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Default\Scrollbar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Default\Text.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Default\Menu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Default\Popups.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Default\TreeView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Default\_ToolkitThemeDefaults.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Default\Toolbar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Default\Wizard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="VersionInfo\NewVersionAlertControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MainIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
+      <Project>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</Project>
+      <Name>AWSSDK.Extensions</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.Util\AWSToolkit.Util.csproj">
+      <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
+      <Name>AWSToolkit.Util</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\abort.png" />
+    <EmbeddedResource Include="Resources\Accounts\AddAccounts.png" />
+    <EmbeddedResource Include="Resources\Accounts\DeleteAccount.png" />
+    <EmbeddedResource Include="Resources\Accounts\EditAccount.png" />
+    <EmbeddedResource Include="Resources\Accounts\tree-node.png" />
+    <EmbeddedResource Include="Resources\cancel.png" />
+    <EmbeddedResource Include="Resources\clear-completed.png" />
+    <EmbeddedResource Include="Resources\complete.png" />
+    <EmbeddedResource Include="Resources\copy.png" />
+    <EmbeddedResource Include="Resources\cut.png" />
+    <EmbeddedResource Include="Resources\default.ico" />
+    <EmbeddedResource Include="Resources\delete.png" />
+    <EmbeddedResource Include="Resources\export.png" />
+    <EmbeddedResource Include="Resources\folder.png" />
+    <EmbeddedResource Include="Resources\generic-add.png" />
+    <EmbeddedResource Include="Resources\generic-file.png" />
+    <EmbeddedResource Include="Resources\generic-remove.png" />
+    <EmbeddedResource Include="Resources\help.png" />
+    <EmbeddedResource Include="Resources\import.png" />
+    <Resource Include="Resources\Logos\logo_aws.png" />
+    <EmbeddedResource Include="Resources\navback.png" />
+    <EmbeddedResource Include="Resources\navforward.png" />
+    <EmbeddedResource Include="Resources\paste.png" />
+    <EmbeddedResource Include="Resources\policy.png" />
+    <EmbeddedResource Include="Resources\properties.png" />
+    <EmbeddedResource Include="Resources\refresh.png" />
+    <EmbeddedResource Include="Resources\retry.png" />
+    <EmbeddedResource Include="Resources\save.png" />
+    <EmbeddedResource Include="Resources\upload.png" />
+    <EmbeddedResource Include="Resources\warning.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Logos\logo_aws_notext.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="CommonUI\Charts\CloudWatchChart.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\Components\TemplatePickerControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\LegacyDeploymentWizard\PageUI\DeploymentReviewPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\LegacyDeploymentWizard\PageUI\DeploymentTemplateSelectorPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\WizardPages\PageUI\AccountRegistrationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Feedback.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Primitives\DateTimePickerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Default\TabControls.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\pause.png" />
+    <EmbeddedResource Include="Resources\resume.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\green-circle.png" />
+    <EmbeddedResource Include="Resources\instance-generic.png" />
+    <EmbeddedResource Include="Resources\instance-windows.gif" />
+    <EmbeddedResource Include="Resources\red-circle.png" />
+    <EmbeddedResource Include="Resources\yellow-circle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\complete_24x24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\showhide.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\editable.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\editable_small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\add-column.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\commit-changes.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\execute.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\fetch_few_pages.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\fetch_one_page.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\windows-logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\beanstalk_deployment.png" />
+    <EmbeddedResource Include="Resources\cloudformation_deployment.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\beanstalk_deployment_small.png" />
+    <EmbeddedResource Include="Resources\cloudformation_deployment_small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\ok.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\invalid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\warning16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\blue-circle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\generic-leftarrow.png" />
+    <EmbeddedResource Include="Resources\generic-rightarrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\private-found.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\download.png" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

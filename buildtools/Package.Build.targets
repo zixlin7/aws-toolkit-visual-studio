@@ -1,0 +1,51 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Import Project="$(MSBuildThisFileDirectory)\Common.Build.targets" />
+
+  <Choose>
+    <When Condition="'$(Language)' == 'C#' and !$(SuppressCommonAssemblyMetadata)">
+      <PropertyGroup>
+        <TrackFileAccess>false</TrackFileAccess>
+        <!-- CHECK RELEVANCE -->
+      </PropertyGroup>
+      <ItemGroup>
+        <Compile Include="$(BuildRoot)\buildtools\AssemblyInfoCommon.cs">
+          <Link>AssemblyInfoCommon.cs</Link>
+        </Compile>
+        <Compile Include="$(BuildRoot)\buildtools\AssemblyVersion.cs">
+          <Link>AssemblyVersion.cs</Link>
+        </Compile>
+      </ItemGroup>
+      <PropertyGroup>
+        <TrackFileAccess>true</TrackFileAccess>
+        <!-- CHECK RELEVANCE -->
+      </PropertyGroup>
+    </When>
+  </Choose>
+
+  <PropertyGroup>
+    <Build_Version Condition=" '$(Build_Version)' == '' ">0.6.0.0</Build_Version>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- Package Guids; These need to be the same as the GUIDs in Guids.cs and AWSVisualStudioToolkit.vsct -->
+    <VsixGuid Condition=" '$(VSTarget)' == '12.0' ">9510184f-8135-4f8a-ab8a-23be77c345e2</VsixGuid>
+    <VsixGuid Condition=" '$(VSTarget)' == '14.0' ">f2884b07-5122-4e23-acd7-4d93df18709e</VsixGuid>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <VsixDisplayName Condition=" '$(VSTarget)' == '12.0' ">AWS Toolkit for Visual Studio 2013</VsixDisplayName>
+    <VsixDisplayName Condition=" '$(VSTarget)' == '14.0' ">AWS Toolkit for Visual Studio 2015</VsixDisplayName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <VsixVsTarget Condition=" '$(VSTarget)' == '12.0' ">[$(VSTarget)]</VsixVsTarget>
+    <VsixVsTarget Condition=" '$(VSTarget)' == '14.0' ">[$(VSTarget),)</VsixVsTarget>
+  </PropertyGroup>
+
+  <!-- Returns the current build version. Used in .vsixmanifests to substitute our build version into them -->
+  <Target Name="GetVsixVersion" Outputs="$(Build_Version)" />
+  <Target Name="GetVsixVSTarget" Outputs="$(VsixVsTarget)" />
+  <Target Name="GetVsixGuid" Outputs="$(VsixGuid)" />
+  <Target Name="GetVsixDisplayName" Outputs="$(VsixDisplayName)" />
+</Project>

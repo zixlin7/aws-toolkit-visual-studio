@@ -1,0 +1,490 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!--  This is the file that defines the actual layout and type of the commands.
+        It is divided in different sections (e.g. command definition, command
+        placement, ...), with each defining a specific set of properties.
+        See the comment before each section for more details about how to
+        use it. -->
+
+  <!--  The VSCT compiler (the tool that translates this file into the binary
+        format that VisualStudio will consume) has the ability to run a preprocessor
+        on the vsct file; this preprocessor is (usually) the C++ preprocessor, so
+        it is possible to define includes and macros with the same syntax used
+        in C++ files. Using this ability of the compiler here, we include some files
+        defining some of the constants that we will use inside the file. -->
+
+  <!--This is the file that defines the IDs for all the commands exposed by VisualStudio. -->
+  <Extern href="stdidcmd.h" />
+
+  <!--This header contains the command ids for the menus provided by the shell. -->
+  <Extern href="vsshlids.h" />
+
+  <!--This header contains the command ids for the menus provided by the Venus (web) part of the shell.
+      Unfortunately we can no longer rely on this header when building in VS2013; MSFT refactored the SDK files
+      for the VS2013 SDK and no longer includes a former dependency, sharedvenusids.h. The ids we need are in
+      venusids.h but now get a compile error on inclusion because of the missing file. Issue reported to MSFT
+      but so far no revised SDK issued :-(. We therefore have no choice now but to directly embed the ids we
+      need to place our Publish command into this file (not that MSFT can change them without breaking other
+      add-ins).
+  <Extern href="venusids.h" />
+  -->
+
+  <!--Defines VK_INSERT -->
+  <Extern href="virtkeys.h" />
+
+  <!--
+  The Commands section is where we the commands, menus and menu groups are defined.
+  This section uses a Guid to identify the package that provides the command defined inside it. 
+  -->
+  <Commands package="guidAWSToolkitPackage">
+
+    <!-- 
+    Inside this section we have different sub-sections: one for the menus, another
+    for the menu groups, one for the buttons (the actual commands), one for the combos
+    and the last one for the bitmaps used. Each element is identified by a command id that
+    is a unique pair of guid and numeric identifier; the guid part of the identifier is usually
+    called "command set" and is used to group different command inside a logically related
+    group; your package should define its own command set in order to avoid collisions
+    with command ids defined by other packages. 
+    -->
+
+    <Menus>
+    <!-- top-level 'Template' menu for CloudFormation template editing -->
+      <Menu guid="guid_VSPackageCmdSet" id="IDM_AWS_MM_CLOUDFORMATION_TEMPLATE" priority="0x700" type="Menu">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
+        <Strings>
+          <ButtonText>Template</ButtonText>
+        </Strings>
+      </Menu>
+    </Menus>
+
+    <Groups>
+      <!-- 
+      define cloudformation template editing commsands in terms of groups in the
+      shell's item context menu; placements will be used to post these to the main menu etc
+      -->
+      <Group guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_DEPLOYMENT_SOLUTION_EXPLORER" priority="0x0600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
+      </Group>
+      <Group guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_EDIT_SOLUTION_EXPLORER" priority="0x0601">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
+      </Group>
+
+      <Group guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_DEPLOYMENT_ACTIVE_DOCUMENT" priority="0x0600">
+      </Group>
+      <Group guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_EDIT_ACTIVE_DOCUMENT" priority="0x0601">
+      </Group>
+
+      <Group guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_ADD_TEMPLATE" priority="0x0602">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CSCD_PROJECT_ADD"/>
+      </Group>
+
+      <Group guid="guid_VSPackageCmdSet" id="IDG_ADD_AWS_SERVERLESS_TEMPLATE" priority="0x0603">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CSCD_PROJECT_ADD"/>
+      </Group>
+    </Groups>
+
+    <!--This section defines the elements the user can interact with, like a menu command or a button
+        or combo box in a toolbar. -->
+    <Buttons>
+
+      <!--
+      To define a menu group you have to specify its ID, the parent menu and its display priority.
+      The command is visible and enabled by default. If you need to change the visibility, status, etc, you can use
+      the CommandFlag node.
+      You can add more than one CommandFlag node e.g.:
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+      If you do not want an image next to your command, remove the Icon node or set it to <Icon guid="guidOfficeIcon" id="msotcidNoIcon" /> 
+      -->
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidAWSNavigator" priority="0x0000" type="Button">
+        <Icon guid="guidImages" id="bmpAWSExplorer" />
+        <Strings>
+          <CommandName>AWS.Explorer</CommandName>
+          <ButtonText>AWS Explorer</ButtonText>
+          <ToolTipText>Show the AWS Explorer tool window</ToolTipText>
+        </Strings>
+      </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" priority="0x0000" type="Button">
+        <Icon guid="guidImages" id="bmpPublishToAWSEB" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <CommandName>AWS.Publish</CommandName>
+          <ButtonText>Publish to AWS Elastic Beanstalk...</ButtonText>
+          <ToolTipText>Build and publish the selected project to AWS</ToolTipText>
+        </Strings>
+      </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidRepublishToAWS" priority="0x0000" type="Button">
+        <Icon guid="guidImages" id="bmpRepublishToAWS" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.Republish</CommandName>
+          <ButtonText>Republish to AWS...</ButtonText>
+          <ToolTipText>Builds and republishes the selected project to AWS</ToolTipText>
+        </Strings>
+      </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidDeployTemplateSolutionExplorer" priority="0x0000" type="Button">
+        <Icon guid="guidImages" id="bmpDeployTemplate" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.DeployTemplate</CommandName>
+          <ButtonText>Deploy to AWS CloudFormation...</ButtonText>
+          <ToolTipText>Deploys the template to AWS CloudFormation</ToolTipText>
+        </Strings>
+      </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidEstimateTemplateCostSolutionExplorer" priority="0x0000" type="Button">
+        <Icon guid="guidImages" id="bmpEstimateTemplateCost" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.EstimateCost</CommandName>
+          <ButtonText>Estimate Cost</ButtonText>
+          <ToolTipText>Launches the cost estimator using the current template as the template to be estimated</ToolTipText>
+        </Strings>
+      </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidFormatTemplateSolutionExplorer" priority="0x0000" type="Button">
+        <Icon guid="guidImages" id="bmpFormatTemplate" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.FormatTemplate</CommandName>
+          <ButtonText>Format Template</ButtonText>
+          <ToolTipText>Formats the current template</ToolTipText>
+        </Strings>
+      </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidDeployTemplateActiveDocument" priority="0x0000" type="Button">
+        <Icon guid="guidImages" id="bmpDeployTemplate" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.DeployTemplate.ActiveDocument</CommandName>
+          <ButtonText>Deploy to AWS CloudFormation...</ButtonText>
+          <ToolTipText>Deploys the template to AWS CloudFormation</ToolTipText>
+        </Strings>
+      </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidEstimateTemplateCostActiveDocument" priority="0x0000" type="Button">
+        <Icon guid="guidImages" id="bmpEstimateTemplateCost" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.EstimateCost.ActiveDocument</CommandName>
+          <ButtonText>Estimate Cost</ButtonText>
+          <ToolTipText>Launches the cost estimator using the current template as the template to be estimated</ToolTipText>
+        </Strings>
+      </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidFormatTemplateActiveDocument" priority="0x0000" type="Button">
+        <Icon guid="guidImages" id="bmpFormatTemplate" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.FormatTemplate.ActiveDocument</CommandName>
+          <ButtonText>Format Template</ButtonText>
+          <ToolTipText>Formats the current template</ToolTipText>
+        </Strings>
+      </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidAddAWSServerlessTemplate" priority="0x0000" type="Button">
+        <Icon guid="guidImages" id="bmpTemplate" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.AddAWSServerlessTemplate</CommandName>
+          <ButtonText>AWS Serverless Template</ButtonText>
+        </Strings>
+      </Button>      
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidAddCloudFormationTemplate" priority="0x0000" type="Button">
+        <Icon guid="guidImages" id="bmpTemplate" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.AddAWSCloudFormationTemplate</CommandName>
+          <ButtonText>AWS CloudFormation Template...</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidDeployToLambdaSolutionExplorer" priority="0x0000" type="Button">
+        <Icon guid="guidImages" id="bmpPublishToAWSLambda" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.DeployLambda</CommandName>
+          <ButtonText>Publish to AWS Lambda...</ButtonText>
+          <ToolTipText>Upload the project to AWS Lambda</ToolTipText>
+        </Strings>
+      </Button>
+
+    </Buttons>
+    
+    <Bitmaps>
+      <!--  
+      The bitmap id is defined in a way that is a little bit different from the others:
+      the declaration starts with a guid for the bitmap strip, then there is the resource id of the
+      bitmap strip containing the bitmaps and then there are the numeric ids of the elements used
+      inside a button definition. An important aspect of this declaration is that the element id
+      must be the actual index (1-based) of the bitmap inside the bitmap strip. 
+      -->
+      <Bitmap guid="guidImages" href="Resources\VsctImages_32bit.png" usedList="bmpAWSExplorer,bmpPublishToAWSEB,bmpRepublishToAWS,bmpDeployTemplate,bmpEstimateTemplateCost,bmpFormatTemplate,bmpTemplate,bmpPublishToAWSLambda" />
+
+    </Bitmaps>
+
+  </Commands>
+
+  <!--  
+  Within this section you can specify the set of commands defined somewhere else that your
+  packages uses; for instance if your package uses the standard ‘Copy’ command, you don’t
+  need to define it, because it is defined by the shell, but you have to use this section
+  of the VSCT file to notify the shell that your package uses it using this section. 
+
+  Note that with combo boxes we have effectively two commands in one. Below
+  we have two pairs of commands; 1st pair commandIDFontName and commandIDFontNameHandler,
+  2nd pair commandIDFontSize and commandIDFontSizeHandler. Note that:
+
+    - commandIDFontName and commandIDFontSize handle the displaying and setting of the font
+      name and font size respectively
+    - commandIDFontNameHandler and commandIDFontSizeHandler fill the drop down menus
+      with the available font names and font sizes respectively
+  
+  Note also that VS will call QueryStatus only on commandIDFontName and
+  commandIDFontSize, but not on cmdFontNameHandler and commandIDFontSizeHandler whereas
+  Exec will be called on all four commands.
+  Note also that Exec will be called for commandIDFontName and commandIDFontSize for
+  two cases; first to get the current font name or size and second to
+  set the font name or size whereas the Exec call for commandIDFontNameHandler and
+  commandIDFontSizeHandler always have the same meaning - fill the drop down menu.
+  Finally, note that placement for the combo boxes is defined in the combo
+  section below by the priority and not in the CommandPlacements section. 
+  -->
+
+  <!--
+  Inside this section, we have the ability to place menu groups inside some other menu or
+  menu / commands inside other groups.
+  For instance, it is possible to place one of VisualStudio's menus or commands inside one of our
+  groups or one of our groups inside a menu defined somewhere else. 
+  -->
+  <CommandPlacements>
+    <!-- 
+    ***********************************************************************************************
+    * AWS Explorer Tool Window Command Placement 
+    ***********************************************************************************************
+    -->
+
+    <!-- View Dropdown from IDE main menu -->
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidAWSNavigator" priority="0xFE00">
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_VIEW_ORG_WINDOWS" />
+    </CommandPlacement>
+
+    <!-- 
+    ***********************************************************************************************
+    * Publish/Republish to AWS command placements
+    ***********************************************************************************************
+    -->
+
+    <!-- Place mmediately after VS Publish on Web Application Project context menu -->
+    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" priority="0x0602">
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
+    </CommandPlacement>
+    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidRepublishToAWS" priority="0x0603">
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
+    </CommandPlacement>
+
+    <!-- Place immediately after Publish Web Site command on main Build menu -->
+    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" priority="0x0502">
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_BUILD_SELECTION" />
+    </CommandPlacement>
+    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidRepublishToAWS" priority="0x0503">
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_BUILD_SELECTION" />
+    </CommandPlacement>
+
+    <!-- Place immediately after Publish Selection (text changes) command on web site context menu -->
+    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" priority="0x0302">
+      <Parent guid="guidVenusCmdId" id="IDG_CTX_BUILD" />
+    </CommandPlacement>
+    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidRepublishToAWS" priority="0x0303">
+      <Parent guid="guidVenusCmdId" id="IDG_CTX_BUILD" />
+    </CommandPlacement>
+
+    <!-- 
+    ***********************************************************************************************
+    * CloudFormation command placements into groups, these groups will then be placed into
+    * IDE context and drop-down main menus
+    ***********************************************************************************************
+    -->
+
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidDeployTemplateSolutionExplorer" priority="0x0000">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_DEPLOYMENT_SOLUTION_EXPLORER" />
+    </CommandPlacement>
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidEstimateTemplateCostSolutionExplorer" priority="0x0000">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_EDIT_SOLUTION_EXPLORER" />
+    </CommandPlacement>
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidFormatTemplateSolutionExplorer" priority="0x0001">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_EDIT_SOLUTION_EXPLORER" />
+    </CommandPlacement>
+
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidDeployTemplateActiveDocument" priority="0x0000">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_DEPLOYMENT_ACTIVE_DOCUMENT" />
+    </CommandPlacement>
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidEstimateTemplateCostActiveDocument" priority="0x0000">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_EDIT_ACTIVE_DOCUMENT" />
+    </CommandPlacement>
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidFormatTemplateActiveDocument" priority="0x0001">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_EDIT_ACTIVE_DOCUMENT" />
+    </CommandPlacement>
+
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidAddCloudFormationTemplate" priority="0x0001">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_ADD_TEMPLATE"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidAddAWSServerlessTemplate" priority="0x0001">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_ADD_AWS_SERVERLESS_TEMPLATE"/>
+    </CommandPlacement>
+
+    
+
+    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidDeployToLambdaSolutionExplorer" priority="0x0602">
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
+    </CommandPlacement>
+
+    <!-- 
+    ***********************************************************************************************
+    * CloudFormation groups placement into AWS 'Template' drop-down from IDE main menu
+    ***********************************************************************************************
+    -->
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_DEPLOYMENT_ACTIVE_DOCUMENT" priority="0x0000">
+      <Parent guid="guid_VSPackageCmdSet" id="IDM_AWS_MM_CLOUDFORMATION_TEMPLATE" />
+    </CommandPlacement>
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_EDIT_ACTIVE_DOCUMENT" priority="0x0001">
+      <Parent guid="guid_VSPackageCmdSet" id="IDM_AWS_MM_CLOUDFORMATION_TEMPLATE" />
+    </CommandPlacement>
+
+    <!-- 
+    ***********************************************************************************************
+    * CloudFormation groups placement into shell item context menu
+    ***********************************************************************************************
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_DEPLOYMENT" priority="0x0600">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE" />
+    </CommandPlacement>
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_EDIT" priority="0x0601">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE" />
+    </CommandPlacement>
+    -->
+
+    <!-- 
+    ***********************************************************************************************
+    * Lambda groups
+    ***********************************************************************************************
+    -->
+    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidDeployToLambdaSolutionExplorer" priority="0x0602">
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
+    </CommandPlacement>
+    
+  </CommandPlacements>
+
+
+  <!-- 
+  This section is where you can associate a command with a keyboard shortcut; this association is
+  valid within a specific UI context, that is when the shell is inside a specific mode, e.g. during
+  debugging, editing a file or when the user is using a specific designer. 
+  -->
+  <VisibilityConstraints>
+    <VisibilityItem guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging" />
+    <VisibilityItem guid="guid_VSPackageCmdSet" id="cmdidRepublishToAWS" context="UICONTEXT_SolutionExistsAndNotBuildingAndNotDebugging" />
+    <VisibilityItem guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" context="UICONTEXT_SolutionHasSingleProject" />
+    <VisibilityItem guid="guid_VSPackageCmdSet" id="cmdidRepublishToAWS" context="UICONTEXT_SolutionHasSingleProject" />
+    <VisibilityItem guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" context="UICONTEXT_SolutionHasMultipleProjects" />
+    <VisibilityItem guid="guid_VSPackageCmdSet" id="cmdidRepublishToAWS" context="UICONTEXT_SolutionHasMultipleProjects" />
+  </VisibilityConstraints>
+
+  <KeyBindings>
+    <KeyBinding guid="guid_VSPackageCmdSet" id="cmdidAWSNavigator" editor="guidVSStd97" key1="K" mod1="Control" key2="A" />
+  </KeyBindings>
+
+  <Symbols>
+    <!-- The package guid is defined in the version-specific vsct files -->
+
+    <!-- This is the guid used to group the menu commands together -->
+    <GuidSymbol name="guid_VSPackageCmdSet" value="{8ba6f49c-ca32-4bc4-a71c-77b8503b93c2}">
+      <IDSymbol name="cmdidAWSNavigator" value="0x0101" />
+      <IDSymbol name="cmdidPublishToAWS" value="0x0102" />
+      <IDSymbol name="cmdidRepublishToAWS" value="0x0103" />
+
+      <IDSymbol name="cmdidDeployTemplateSolutionExplorer" value="0x0200" />
+      <IDSymbol name="cmdidEstimateTemplateCostSolutionExplorer" value="0x0201" />
+      <IDSymbol name="cmdidFormatTemplateSolutionExplorer" value="0x0202" />
+      <IDSymbol name="cmdidDeployTemplateActiveDocument" value="0x0203" />
+      <IDSymbol name="cmdidEstimateTemplateCostActiveDocument" value="0x0204" />
+      <IDSymbol name="cmdidFormatTemplateActiveDocument" value="0x0205" />
+      <IDSymbol name="cmdidAddCloudFormationTemplate" value="0x0206"/>
+      <IDSymbol name="cmdidAddAWSServerlessTemplate" value="0x0207"/>
+
+      <IDSymbol name="cmdidDeployToLambdaSolutionExplorer" value="0x0300"/>
+
+      <IDSymbol name="IDM_AWS_MM_CLOUDFORMATION_TEMPLATE" value="0x1000" />
+
+      <IDSymbol name="IDG_AWS_CLOUDFORMATION" value="0x1001"/>
+      <IDSymbol name="IDG_AWS_CLOUDFORMATION_DEPLOYMENT_SOLUTION_EXPLORER" value="0x1005" />
+      <IDSymbol name="IDG_AWS_CLOUDFORMATION_EDIT_SOLUTION_EXPLORER" value="0x1010" />
+      <IDSymbol name="IDG_AWS_CLOUDFORMATION_DEPLOYMENT_ACTIVE_DOCUMENT" value="0x1025" />
+      <IDSymbol name="IDG_AWS_CLOUDFORMATION_EDIT_ACTIVE_DOCUMENT" value="0x1020" />
+
+      <IDSymbol name="IDG_AWS_CLOUDFORMATION_ADD_TEMPLATE" value="0x1030"/>
+      <IDSymbol name="IDG_ADD_AWS_SERVERLESS_TEMPLATE" value="0x01035"/>
+
+    </GuidSymbol>
+
+    <GuidSymbol name="guid_VSPackageEditorFactory" value="{7b907bed-beab-4f29-b133-3bc88632e45a}" />
+
+    <GuidSymbol name="guidImages" value="{44633430-3a5d-441b-9f15-bbce1b57d289}">
+      <IDSymbol name="bmpAWSExplorer" value="1" />
+      <IDSymbol name="bmpPublishToAWSEB" value="2" />
+      <IDSymbol name="bmpRepublishToAWS" value="3" />
+      <IDSymbol name="bmpDeployTemplate" value="4" />
+      <IDSymbol name="bmpEstimateTemplateCost" value="5" />
+      <IDSymbol name="bmpFormatTemplate" value="6" />
+      <IDSymbol name="bmpTemplate" value="7" />
+      <IDSymbol name="bmpPublishToAWSLambda" value="8"/>
+    </GuidSymbol>
+
+    <!-- see comment at top of file regarding venusids.h; these are the two ids we need
+         to place our Publish command in the correct spot for VS2010/2012/2013.
+    -->
+    <GuidSymbol name="guidVenusCmdId" value="{C7547851-4E3A-4e5b-9173-FA6E9C8BD82C}">
+      <IDSymbol name="IDG_CTX_BUILD" value="0x0104" />
+    </GuidSymbol>
+  </Symbols>
+
+</CommandTable>

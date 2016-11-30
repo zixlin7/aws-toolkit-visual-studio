@@ -1,0 +1,58 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Amazon.AWSToolkit.Lambda
+{
+    public static class LambdaConstants
+    {
+        public const string PARAM_LAMBDA_FUNCTION = "ParamFunction";
+
+        public static readonly string LAMBDA_ASSUME_ROLE_POLICY =
+@"
+{
+  ""Version"": ""2012-10-17"",
+  ""Statement"": [
+    {
+      ""Sid"": """",
+      ""Effect"": ""Allow"",
+      ""Principal"": {
+        ""Service"": ""lambda.amazonaws.com""
+      },
+      ""Action"": ""sts:AssumeRole""
+    },
+    {
+      ""Sid"": """",
+      ""Effect"": ""Allow"",
+      ""Principal"": {
+        ""AWS"": ""arn:aws:iam::771762743097:root""
+      },
+      ""Action"": ""sts:AssumeRole""
+    },
+    {
+      ""Sid"": """",
+      ""Effect"": ""Allow"",
+      ""Principal"": {
+        ""AWS"": ""arn:aws:iam::147242972042:root""
+      },
+      ""Action"": ""sts:AssumeRole""
+    },
+    {
+      ""Sid"": """",
+      ""Effect"": ""Allow"",
+      ""Principal"": {
+        ""AWS"": ""arn:aws:iam::571267556732:root""
+      },
+      ""Action"": ""sts:AssumeRole""
+    }
+  ]
+}
+".Trim();
+
+
+        public const string ERROR_MESSAGE_CANT_BE_ASSUMED = " cannot be assumed by Lambda.";
+        public const string ERROR_MESSAGE_UNABLE_TO_VALIDATE_DESTINATION = "Unable to validate the following destination configurations";
+        public const string ERROR_MESSAGE_START_ADD_TRUST_ENTITY = "Please add Lambda as a Trusted Entity";
+    }
+}

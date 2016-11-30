@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" 
+            Type="Project" 
+            xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" 
+            xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
+  <TemplateData>
+    <Name>AWS CloudFormation Project</Name>
+    <Description>A project for defining the collection of AWS resources for your cloud application deployments.</Description>
+    <Icon>CloudFormationProjectTemplate.ico</Icon>
+    <ProjectType>AWS</ProjectType>
+    <TemplateID>68b69ef4-fed8-4075-944a-8305d19e189e</TemplateID>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>CloudFormationTemplate</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+  </TemplateData>
+  <TemplateContent>
+    <Project File="CloudFormationProjectTemplate.cfproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" OpenInEditor="true">cloudformation.template</ProjectItem>
+      <ProjectItem ReplaceParameters="true">ReadMe.txt</ProjectItem>
+    </Project>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>AWSToolkit.CloudFormation.TemplateWizards,Culture=neutral,PublicKeyToken=8339e7e97bb08995</Assembly>
+    <FullClassName>Amazon.AWSToolkit.CloudFormation.TemplateWizards.ProjectWizardImplementation</FullClassName>
+  </WizardExtension>
+</VSTemplate>

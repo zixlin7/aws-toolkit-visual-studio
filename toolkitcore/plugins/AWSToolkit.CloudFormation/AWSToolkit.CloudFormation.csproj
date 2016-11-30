@@ -1,0 +1,480 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6AE302DB-2304-47C8-8E3C-96C85AC1D469}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Amazon.AWSToolkit.CloudFormation</RootNamespace>
+    <AssemblyName>AWSToolkit.CloudFormation</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(BuildRoot)\buildtools\awstoolkit.snk</AssemblyOriginatorKeyFile>
+    <OldToolsVersion>3.5</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
+    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AWSDeploymentCryptoUtility">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\awsdeploy\host\AWSDeploymentCryptoUtility\bin\$(Configuration)\AWSDeploymentCryptoUtility.dll</HintPath>
+    </Reference>
+    <Reference Include="AWSDeploymentHostManagerClientLib">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\awsdeploy\host\AWSDeploymentHostManagerClient\bin\$(Configuration)\AWSDeploymentHostManagerClientLib.dll</HintPath>
+    </Reference>
+    <Reference Include="AWSSDK.AutoScaling">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.AutoScaling.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.CloudFormation">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudFormation.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.CloudWatch">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudWatch.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.Core">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.EC2">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.EC2.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.ElasticLoadBalancing">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ElasticLoadBalancing.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.RDS">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.RDS.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.S3">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.S3.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.SimpleNotificationService">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.SimpleNotificationService.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\thirdparty\log4net.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Windows.Controls.DataVisualization.Toolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UIAutomationProvider">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CloudFormationActivator.cs" />
+    <Compile Include="Controllers\BaseStackController.cs" />
+    <Compile Include="Controllers\CreateStackController.cs" />
+    <Compile Include="Controllers\DeleteStackController.cs" />
+    <Compile Include="Controllers\DeployApplicationController.cs" />
+    <Compile Include="Controllers\DeploymentControllerBase.cs" />
+    <Compile Include="Controllers\DeploymentControllerBaseObserver.cs" />
+    <Compile Include="Controllers\DeployTemplateController.cs" />
+    <Compile Include="Controllers\GetConfigurationController.cs" />
+    <Compile Include="Controllers\GetUrlToCostEstimateController.cs" />
+    <Compile Include="Controllers\RedeployApplicationController.cs" />
+    <Compile Include="Controllers\ViewDeploymentLogController.cs" />
+    <Compile Include="Controllers\ViewStackController.cs" />
+    <Compile Include="Model\AutoScalingGroupWrapper.cs" />
+    <Compile Include="Model\DBInstanceWrapper.cs" />
+    <Compile Include="Model\LoadBalancerDescriptionWrapper.cs" />
+    <Compile Include="Model\ResourceWrapper.cs" />
+    <Compile Include="Model\RunningInstanceWrapper.cs" />
+    <Compile Include="Model\S3Location.cs" />
+    <Compile Include="Model\StackEventWrapper.cs" />
+    <Compile Include="Model\ViewDeploymentLogModel.cs" />
+    <Compile Include="Model\ViewStackModel.cs" />
+    <Compile Include="Util\CloudFormationUtil.cs" />
+    <Compile Include="View\Components\DeploymentNotificationPanel.xaml.cs">
+      <DependentUpon>DeploymentNotificationPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\StackConfigSavedControl.xaml.cs">
+      <DependentUpon>StackConfigSavedControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\ResourceCharts\AutoScalingCharts.xaml.cs">
+      <DependentUpon>AutoScalingCharts.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\ResourceCharts\BaseResourceCharts.cs" />
+    <Compile Include="View\Components\ResourceCharts\InstanceCharts.xaml.cs">
+      <DependentUpon>InstanceCharts.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\ResourceCharts\LoadBalancerCharts.xaml.cs">
+      <DependentUpon>LoadBalancerCharts.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\ResourceCharts\RDSInstanceCharts.xaml.cs">
+      <DependentUpon>RDSInstanceCharts.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\ResourceDetails\AutoScalingGroupDetails.xaml.cs">
+      <DependentUpon>AutoScalingGroupDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\ResourceDetails\InstanceDetails.xaml.cs">
+      <DependentUpon>InstanceDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\ResourceDetails\LoadBalancerDetails.xaml.cs">
+      <DependentUpon>LoadBalancerDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\ResourceDetails\RDSInstanceDetails.xaml.cs">
+      <DependentUpon>RDSInstanceDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\StackEventControl.xaml.cs">
+      <DependentUpon>StackEventControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\StackMonitoringControl.xaml.cs">
+      <DependentUpon>StackMonitoringControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\StackResourceDetailHostControl.xaml.cs">
+      <DependentUpon>StackResourceDetailHostControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\StackResourcesControl.xaml.cs">
+      <DependentUpon>StackResourcesControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\TemplateOuputControl.xaml.cs">
+      <DependentUpon>TemplateOuputControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\TemplateParameterControl.xaml.cs">
+      <DependentUpon>TemplateParameterControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ViewDeploymentLogControl.xaml.cs">
+      <DependentUpon>ViewDeploymentLogControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ViewStackControl.xaml.cs">
+      <DependentUpon>ViewStackControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\ViewTemplateJson.xaml.cs">
+      <DependentUpon>ViewTemplateJson.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\DeploymentWizardHelper.cs" />
+    <Compile Include="Model\SelectTemplateModel.cs" />
+    <Compile Include="Nodes\CloudFormationRootViewMetaNode.cs" />
+    <Compile Include="Nodes\CloudFormationRootViewModel.cs" />
+    <Compile Include="Nodes\CloudFormationStackViewMetaNode.cs" />
+    <Compile Include="Nodes\CloudFormationStackViewModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WizardPages\PageControllers\AppOptionsPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\CostEstimatorParametersController.cs" />
+    <Compile Include="WizardPages\PageControllers\CreateStackReviewPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\AWSOptionsPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\FastTrackRepublishPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\PseudoReviewPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\SelectStackPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\SelectTemplateController.cs" />
+    <Compile Include="WizardPages\PageControllers\TemplateParametersController.cs" />
+    <Compile Include="WizardPages\PageUI\CostEstimatorParameterPage.xaml.cs">
+      <DependentUpon>CostEstimatorParameterPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\CreateStackReviewPage.xaml.cs">
+      <DependentUpon>CreateStackReviewPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\AWSOptionsPage.xaml.cs">
+      <DependentUpon>AWSOptionsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\FastTrackRepublishPage.xaml.cs">
+      <DependentUpon>FastTrackRepublishPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\SelectStackPage.xaml.cs">
+      <DependentUpon>SelectStackPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\SelectTemplatePage.xaml.cs">
+      <DependentUpon>SelectTemplatePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\TemplateParametersPage.xaml.cs">
+      <DependentUpon>TemplateParametersPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageWorkers\FetchStackConfigWorker.cs" />
+    <Compile Include="WizardPages\PageWorkers\QueryExistingStackNameWorker.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(BuildRoot)\awsdeploy\client\AWSDeploymentLib\AWSDeploymentLib.csproj">
+      <Project>{DFFE75F2-61CC-4CEA-87A5-1C573436DE9E}</Project>
+      <Name>AWSDeploymentLib</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
+      <Project>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</Project>
+      <Name>AWSSDK.Extensions</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.CloudFormation.Interface\AWSToolkit.CloudFormation.Interface.csproj">
+      <Project>{5A78BF40-7D5B-467E-8CE4-9659F22669D0}</Project>
+      <Name>AWSToolkit.CloudFormation.Interface</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj">
+      <Project>{B8C28B72-63C0-406B-B5C6-405667DB1D6D}</Project>
+      <Name>AWSToolkit.EC2.Interface</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.S3.Interface\AWSToolkit.S3.Interface.csproj">
+      <Project>{C2D616BD-C2AB-4130-93E5-2ADA2172A08A}</Project>
+      <Name>AWSToolkit.S3.Interface</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.SNS.Interface\AWSToolkit.SNS.Interface.csproj">
+      <Project>{4D9293CF-0D56-4BB9-B50D-BC829E53C16F}</Project>
+      <Name>AWSToolkit.SNS.Interface</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\AWSToolkit.Util\AWSToolkit.Util.csproj">
+      <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
+      <Name>AWSToolkit.Util</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\AWSToolkit\AWSToolkit.csproj">
+      <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
+      <Name>AWSToolkit</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\create_stack.png" />
+    <EmbeddedResource Include="Resources\EmbeddedImages\delete_stack.png" />
+    <EmbeddedResource Include="Resources\EmbeddedImages\service-root-node.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="View\Components\DeploymentNotificationPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Components\StackConfigSavedControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Components\ResourceCharts\AutoScalingCharts.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Components\ResourceCharts\InstanceCharts.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Components\ResourceCharts\LoadBalancerCharts.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Components\ResourceCharts\RDSInstanceCharts.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Components\ResourceDetails\AutoScalingGroupDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Components\ResourceDetails\InstanceDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Components\ResourceDetails\LoadBalancerDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Components\ResourceDetails\RDSInstanceDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Components\StackEventControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Components\StackMonitoringControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Components\StackResourceDetailHostControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Components\StackResourcesControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Components\TemplateOuputControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Components\TemplateParameterControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ViewDeploymentLogControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\ViewStackControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Components\ViewTemplateJson.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="WizardPages\PageUI\CostEstimatorParameterPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\PageUI\CreateStackReviewPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="WizardPages\PageUI\AWSOptionsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="WizardPages\PageUI\FastTrackRepublishPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="WizardPages\PageUI\SelectStackPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\PageUI\SelectTemplatePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="WizardPages\PageUI\TemplateParametersPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\create_topic.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\windows-logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\EmbeddedImages\Failed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\EmbeddedImages\Validated.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\connect.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\connect.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\scroll.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\stack-node.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\import.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\delete_stack.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

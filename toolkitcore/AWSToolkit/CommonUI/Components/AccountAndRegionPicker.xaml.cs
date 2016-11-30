@@ -1,0 +1,278 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Account.Controller;
+using Amazon.AWSToolkit.Account.Model;
+using Amazon.AWSToolkit.Account.View;
+
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Navigator.Node;
+
+namespace Amazon.AWSToolkit.CommonUI.Components
+{
+    /// <summary>
+    /// Interaction logic for AccountAndRegionPicker.xaml
+    /// </summary>
+    public partial class AccountAndRegionPicker : INotifyPropertyChanged
+    {
+        // property names used with NotifyPropertyChanged
+        public static readonly string uiProperty_Region = "region";
+        public static readonly string uiProperty_Account = "account";
+
+        readonly object _syncObj = new object();
+        RegisterAccountController _registerAccountController = null;
+
+        readonly HashSet<string> _verifiedAccounts = new HashSet<string>();
+
+        public AccountAndRegionPicker()
+        {
+            InitializeComponent();
+        }
+
+        public void Initialize(AccountViewModel selectedAccount, RegionEndPointsManager.RegionEndPoints selectedRegion, IEnumerable<string> serviceNames)
+        {
+            _rootViewModel = ToolkitFactory.Instance.RootViewModel;
+
+            this._accountSelector.ItemsSource = this.Accounts;
+            if (selectedAccount != null)
+                this._accountSelector.SelectedItem = selectedAccount;
+
+            var regions = new List<RegionEndPointsManager.RegionEndPoints>();
+            foreach (RegionEndPointsManager.RegionEndPoints rep in RegionEndPointsManager.Instance.Regions)
+            {
+                foreach (var name in serviceNames)
+                {
+                    if (rep.GetEndpoint(name) != null)
+                    {
+                        regions.Add(rep);
+                        break;
+                    }
+                }
+            }
+
+            this._regionSelector.ItemsSource = regions;
+            if (this._regionSelector.Items.Count != 0)
+            {
+                RegionEndPointsManager.RegionEndPoints region = null;
+                if (selectedRegion != null)
+                {
+                    // if the requested selection does not exist in our subset, attempt fallback to us-east-1
+                    // (regardless of any toolkit default) for safety and if that doesn't exist, go with the
+                    // first available region in the subset
+                    foreach (var r in regions.Where(r => r.SystemName.Equals(selectedRegion.SystemName, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        region = r;
+                        break;
+                    }
+
+                    if (region == null)
+                        region = regions.FirstOrDefault(r => r.SystemName.Equals(RegionEndPointsManager.US_EAST_1, StringComparison.OrdinalIgnoreCase));
+
+                    if (region == null)
+                        region = regions[0];
+                }
+                else
+                {
+                    region = RegionEndPointsManager.Instance.GetDefaultRegionEndPoints();
+                }
+
+                this._regionSelector.SelectedItem = region;
+            }
+        }
+
+        AWSViewModel _rootViewModel;
+
+        public AWSViewModel RootViewModel
+        {
+            get
+            {
+                return IsInitialized ? _rootViewModel : null;
+            }
+            set
+            {
+                this._rootViewModel = value;
+                this._accountSelector.IsEnabled = this.Accounts.Count != 0;
+            }
+        }
+
+        ObservableCollection<AccountViewModel> _accounts;
+        public ObservableCollection<AccountViewModel> Accounts
+        {
+            get
+            {
+                if (RootViewModel == null)
+                    return null;
+
+                if (this._accounts == null)
+                {
+                    this._accounts = new ObservableCollection<AccountViewModel>();
+
+                    foreach (var account in this.RootViewModel.RegisteredAccounts)
+                    {
+                        this._accounts.Add(account);
+                    }
+                }
+
+                return this._accounts;
+            }
+        }
+
+        public AccountViewModel SelectedAccount
+        {
+            get { return this._accountSelector.SelectedItem as AccountViewModel; }
+            protected set { if (IsInitialized) this._accountSelector.SelectedItem = value; }
+        }
+
+        bool _accountValidationPending = false;
+        public bool AccountValidationPending
+        {
+            get
+            {
+                lock (_syncObj)
+                    return _accountValidationPending;
+            }
+
+            set
+            {
+                lock (_syncObj)
+                    _accountValidationPending = value;
+            }
+        }
+
+        public bool IsSelectedAccountValid
+        {
+            get
+            {
+                if (AccountValidationPending)
+                    return false;
+
+                // collection only ever accessed on UI thread, no need to lock
+                AccountViewModel account = _accountSelector.SelectedItem as AccountViewModel;
+                return account != null && _verifiedAccounts.Contains(account.SettingsUniqueKey);
+            }
+        }
+
+        void _useOtherAccount_Click(object sender, RoutedEventArgs e)
+        {
+            RegisterAccountController command = new RegisterAccountController();
+            ActionResults results = command.Execute();
+            if (results.Success)
+            {
+                // a manual refresh is needed before the combo box updates...
+                RootViewModel.Refresh();
+                this._accounts.Clear();
+                AccountViewModel selectedAccount = null;
+                foreach (AccountViewModel account in RootViewModel.RegisteredAccounts)
+                {
+                    if (!account.HasRestrictions)
+                    {
+                        this._accounts.Add(account);
+
+                        if (string.Compare(account.AccountDisplayName, command.Model.DisplayName) == 0)
+                        {
+                            selectedAccount = account;
+                            return;
+                        }
+                    }
+                }
+
+                if (this.Accounts.Count > 0)
+                {
+                    _accountSelector.IsEnabled = true;
+
+                    if (selectedAccount != null)
+                    {
+                        SelectedAccount = selectedAccount;
+                    }
+                }
+            }
+        }
+
+        void _accountEntryPopup_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (_registerAccountController == null)
+            {
+                _registerAccountController = new RegisterAccountController();
+                RegisterAccountControl control = new RegisterAccountControl(_registerAccountController);
+                control.SetMandatoryFieldsReadyCallback(MandatoryFieldsReadinessChange);
+                _accountFieldContainer.Content = control;
+                _popupAccountOK.IsEnabled = false;
+            }
+        }
+
+        void _popupAccountOK_Click(object sender, RoutedEventArgs e)
+        {
+            _registerAccountController.Persist();
+            _useOtherAccount.IsChecked = false;
+
+            RootViewModel.Refresh();
+
+            this._accounts.Clear();
+            AccountViewModel selectedAccount = null;
+            foreach (AccountViewModel account in RootViewModel.RegisteredAccounts)
+            {
+                if (!account.HasRestrictions)
+                {
+                    this._accounts.Add(account);
+
+                    if (string.Compare(account.AccountDisplayName, _registerAccountController.Model.DisplayName) == 0)
+                    {
+                        selectedAccount = account;
+                    }
+                }
+            }
+
+            if (this.Accounts.Count > 0)
+            {
+                _accountSelector.IsEnabled = true;
+
+                if (selectedAccount != null)
+                {
+                    SelectedAccount = selectedAccount;
+                }
+            }
+        }
+
+        void _popupAccountCancel_Click(object sender, RoutedEventArgs e)
+        {
+            _useOtherAccount.IsChecked = false;
+        }
+
+        private void MandatoryFieldsReadinessChange(bool allCompleted)
+        {
+            _popupAccountOK.IsEnabled = allCompleted;
+        }
+
+        // Attempt to verify that the selected/added account is (a) valid and (b) signed up for CloudFormation.
+        // This is awkward to handle outside the page.
+        private void AccountSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            NotifyPropertyChanged(uiProperty_Account);
+        }
+
+        public RegionEndPointsManager.RegionEndPoints SelectedRegion
+        {
+            get { return this._regionSelector.SelectedItem as RegionEndPointsManager.RegionEndPoints; }
+            protected set { if (IsInitialized) this._regionSelector.SelectedItem = value; }
+        }
+
+        private void _regionSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            NotifyPropertyChanged(uiProperty_Region);
+        }
+    }
+}
