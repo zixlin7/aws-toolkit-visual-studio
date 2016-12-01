@@ -32,6 +32,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
             base.NotifyPropertyChanged("IsAWSServerlessStack");
             base.NotifyPropertyChanged("AWSServerlessURL");
             base.NotifyPropertyChanged("AWSServerlessFieldsVisibility");
+            base.NotifyPropertyChanged("AWSServerlessCopyVisibility");
         }
 
         void onOutputCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -172,6 +173,15 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
             {
                 return this.IsAWSServerlessStack ? Visibility.Visible : Visibility.Collapsed;
             }
+        }
+
+        public Visibility AWSServerlessCopyVisibility
+        {
+            get
+            {
+                return this.IsAWSServerlessStack && !string.IsNullOrWhiteSpace(this.AWSServerlessURL) ? Visibility.Visible : Visibility.Collapsed;
+            }
+
         }
 
 
