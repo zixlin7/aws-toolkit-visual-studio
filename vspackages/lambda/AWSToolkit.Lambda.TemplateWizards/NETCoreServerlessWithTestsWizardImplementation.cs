@@ -34,7 +34,6 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
 
         protected override void ApplyBlueprint(Dictionary<string, string> replacementsDictionary, ZipFile blueprintZipFile)
         {
-            base.ApplyBlueprint(replacementsDictionary, blueprintZipFile);
             ZipEntry srcEntry = blueprintZipFile.GetEntry("src.zip");
             if (srcEntry != null)
             {
