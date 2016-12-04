@@ -247,7 +247,7 @@ namespace Amazon.Lambda.Tools
 
                 foreach (var policy in response.Policies)
                 {
-                    if (policy.IsAttachable && policy.PolicyName.StartsWith("AWSLambda"))
+                    if (policy.IsAttachable && (policy.PolicyName.StartsWith("AWSLambda") || string.Equals(policy.PolicyName, "PowerUserAccess", StringComparison.Ordinal)))
                         lambdaPolicies.Add(policy);
 
                     if (lambdaPolicies.Count == maxPolicies)
@@ -342,6 +342,7 @@ namespace Amazon.Lambda.Tools
 
         static readonly Dictionary<string, string> KNOWN_MANAGED_POLICY_DESCRIPTIONS = new Dictionary<string, string>
         {
+            {"arn:aws:iam::aws:policy/PowerUserAccess","Provides full access to AWS services and resources, but does not allow management of Users and groups."},
             {"arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole","Provides write permissions to CloudWatch Logs."},
             {"arn:aws:iam::aws:policy/service-role/AWSLambdaDynamoDBExecutionRole","Provides list and read access to DynamoDB streams and write permissions to CloudWatch Logs."},
             {"arn:aws:iam::aws:policy/AWSLambdaExecute","Provides Put, Get access to S3 and full access to CloudWatch Logs."},
