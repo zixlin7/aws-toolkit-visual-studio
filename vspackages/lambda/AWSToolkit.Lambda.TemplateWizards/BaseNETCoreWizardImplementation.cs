@@ -120,6 +120,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
                 SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
                 CreateFromSampleFunction(replacementsDictionary, blueprint.File);
+                WriteGlobalJson(replacementsDictionary["$solutiondirectory$"]);
             }
             catch (WizardCancelledException)
             {
@@ -134,6 +135,30 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
         public abstract string ProjectType { get; }
 
         protected abstract void ApplyBlueprint(Dictionary<string, string> replacementsDictionary, ZipFile blueprintZipFile);
+
+
+        const string DEFAULT_PREVIEW2_SDK_VERSION = "1.0.0-preview2-003131";
+        static readonly string GLOBAL_JSON_CONTENT =
+"{" + System.Environment.NewLine +
+"  \"sdk\": {" + System.Environment.NewLine +
+"    \"version\": \"DOTNET-SDK\"" + System.Environment.NewLine +
+"  }" + System.Environment.NewLine +
+"}";
+
+
+        protected void WriteGlobalJson(string solutionDirectory)
+        {
+            if (solutionDirectory == null || !Directory.Exists(solutionDirectory))
+                return;
+
+            var globalJsonPath = Path.Combine(solutionDirectory, "global.json");
+
+            if (File.Exists(globalJsonPath))
+                return;
+
+            var content = GLOBAL_JSON_CONTENT.Replace("DOTNET-SDK", GetLatestPreview2SDK());
+            File.WriteAllText(globalJsonPath, content);           
+        }
 
         private void CreateFromSampleFunction(Dictionary<string, string> replacementsDictionary, string sampleFile)
         {
@@ -165,6 +190,25 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
                 }
             }
         }
+
+        private string GetLatestPreview2SDK()
+        {
+            var dotnetCLI = Utility.FindExecutableInPath("dotnet.exe");
+            if (dotnetCLI == null)
+                return DEFAULT_PREVIEW2_SDK_VERSION;
+
+            var sdkLocation = Path.Combine(Path.GetDirectoryName(dotnetCLI), "sdk");
+
+            var preview2SDKs = Directory.GetDirectories(sdkLocation, "*preview2*", SearchOption.TopDirectoryOnly);
+            if (preview2SDKs.Length == 0)
+                return DEFAULT_PREVIEW2_SDK_VERSION;
+
+            Array.Sort(preview2SDKs);
+
+
+            return new DirectoryInfo(preview2SDKs[preview2SDKs.Length - 1]).Name;
+        }
+
 
         public string Restore(string projectLocation)
         {
