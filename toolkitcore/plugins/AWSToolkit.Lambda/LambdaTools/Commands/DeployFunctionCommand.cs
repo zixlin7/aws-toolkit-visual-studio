@@ -48,6 +48,7 @@ namespace Amazon.Lambda.Tools.Commands
             DefinedCommandOptions.ARGUMENT_FUNCTION_RUNTIME,
             DefinedCommandOptions.ARGUMENT_FUNCTION_SUBNETS,
             DefinedCommandOptions.ARGUMENT_FUNCTION_SECURITY_GROUPS,
+            DefinedCommandOptions.ARGUMENT_DEADLETTER_TARGET_ARN,
             DefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES,
             DefinedCommandOptions.ARGUMENT_KMS_KEY_ARN,
             DefinedCommandOptions.ARGUMENT_S3_BUCKET,
@@ -160,6 +161,12 @@ namespace Amazon.Lambda.Tools.Commands
 
                         }
 
+                        var deadLetterQueue = this.GetStringValueOrDefault(this.DeadLetterTargetArn, DefinedCommandOptions.ARGUMENT_DEADLETTER_TARGET_ARN, false);
+                        if(!string.IsNullOrEmpty(deadLetterQueue))
+                        {
+                            createRequest.DeadLetterConfig = new DeadLetterConfig {TargetArn = deadLetterQueue };
+                        }
+
                         if (s3Bucket != null)
                         {
                             createRequest.Code = new FunctionCode
@@ -184,7 +191,7 @@ namespace Amazon.Lambda.Tools.Commands
 
                         try
                         {
-                            await this.LamdbaClient.CreateFunctionAsync(createRequest);
+                            await this.LambdaClient.CreateFunctionAsync(createRequest);
                             this.Logger.WriteLine("New Lambda function created");
                         }
                         catch (Exception e)
@@ -221,7 +228,7 @@ namespace Amazon.Lambda.Tools.Commands
 
                         try
                         {
-                            await this.LamdbaClient.UpdateFunctionCodeAsync(updateCodeRequest);
+                            await this.LambdaClient.UpdateFunctionCodeAsync(updateCodeRequest);
                         }
                         catch (Exception e)
                         {

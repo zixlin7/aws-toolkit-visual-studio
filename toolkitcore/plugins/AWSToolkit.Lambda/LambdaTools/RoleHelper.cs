@@ -27,10 +27,10 @@ namespace Amazon.Lambda.Tools
             this.IAMClient = iamClient;
         }
 
-        public  string PromptForRole()
+        public string PromptForRole()
         {
             var existingRoles = FindExistingLambdaRoles(DEFAULT_ITEM_MAX);
-            if(existingRoles.Count == 0)
+            if (existingRoles.Count == 0)
             {
                 return CreateRole();
             }
@@ -52,7 +52,7 @@ namespace Amazon.Lambda.Tools
 
             int chosenIndex = WaitForIndexResponse(1, existingRoles.Count + 1);
 
-            if(chosenIndex - 1 < existingRoles.Count)
+            if (chosenIndex - 1 < existingRoles.Count)
             {
                 return existingRoles[chosenIndex - 1].Arn;
             }
@@ -202,14 +202,14 @@ namespace Amazon.Lambda.Tools
                 // avoid error during function creation do a generous sleep.
                 Console.WriteLine("Waiting for new IAM Role to propagate to AWS regions");
                 long start = DateTime.Now.Ticks;
-                while(TimeSpan.FromTicks(DateTime.Now.Ticks - start).TotalSeconds < SLEEP_TIME_FOR_ROLE_PROPOGATION.TotalSeconds)
+                while (TimeSpan.FromTicks(DateTime.Now.Ticks - start).TotalSeconds < SLEEP_TIME_FOR_ROLE_PROPOGATION.TotalSeconds)
                 {
                     Thread.Sleep(TimeSpan.FromSeconds(1));
                     Console.Write(".");
                     Console.Out.Flush();
                 }
                 Console.WriteLine("\t Done");
-                
+
 
                 try
                 {
@@ -217,11 +217,11 @@ namespace Amazon.Lambda.Tools
                     if (getResponse.Role != null)
                         found = true;
                 }
-                catch(NoSuchEntityException)
+                catch (NoSuchEntityException)
                 {
-                    
+
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     throw new LambdaToolsException("Error confirming new role was created: " + e.Message);
                 }
@@ -306,7 +306,7 @@ namespace Amazon.Lambda.Tools
 
         private IList<Role> FindExistingLambdaRoles(int maxRoles)
         {
-            var task = Task.Run< IList<Role>>(async () =>
+            var task = Task.Run<IList<Role>>(async () =>
             {
                 return await FindExistingLambdaRolesAsync(this.IAMClient, maxRoles);
             });

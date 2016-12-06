@@ -58,7 +58,7 @@ namespace Amazon.Lambda.Tools.Commands
 
                 try
                 {
-                    response = await this.LamdbaClient.GetFunctionConfigurationAsync(this.GetStringValueOrDefault(this.FunctionName, DefinedCommandOptions.ARGUMENT_FUNCTION_NAME, true));
+                    response = await this.LambdaClient.GetFunctionConfigurationAsync(this.GetStringValueOrDefault(this.FunctionName, DefinedCommandOptions.ARGUMENT_FUNCTION_NAME, true));
                 }
                 catch (Exception e)
                 {
@@ -81,6 +81,11 @@ namespace Amazon.Lambda.Tools.Commands
                     this.Logger.WriteLine("KMS Key ARN:".PadRight(PAD_SIZE) + response.KMSKeyArn);
                 else
                     this.Logger.WriteLine("KMS Key ARN:".PadRight(PAD_SIZE) + "(default) aws/lambda");
+
+                if(!string.IsNullOrEmpty(response.DeadLetterConfig?.TargetArn))
+                {
+                    this.Logger.WriteLine("Dead Letter Target:".PadRight(PAD_SIZE) + response.DeadLetterConfig.TargetArn);
+                }
 
 
                 if (response.Environment?.Variables?.Count > 0)
