@@ -33,7 +33,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 var command = new DeployFunctionCommand(logger, uploadState.SourcePath, new string[0]);
                 command.EnableInteractive = false;
                 command.SkipHandlerValidation = true;
-                command.LamdbaClient = this.LambdaClient;
+                command.LambdaClient = this.LambdaClient;
 
                 command.FunctionName = uploadState.Request.FunctionName;
                 command.Description = uploadState.Request.Description;
