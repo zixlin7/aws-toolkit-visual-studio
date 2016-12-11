@@ -235,7 +235,7 @@ namespace Amazon.Lambda.Tools.Options
                 ShortSwitch = "-dc",
                 Switch = "--disable-capabilities",
                 ValueType = CommandOption.CommandOptionValueType.CommaDelimitedList,
-                Description = "CloudFormation template parameters. Format is "
+                Description = "Comma delimited list of capabilities to disable when creating a CloudFormation Stack."
             };
         public static readonly CommandOption ARGUMENT_STACK_WAIT =
             new CommandOption
