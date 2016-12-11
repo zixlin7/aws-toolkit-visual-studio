@@ -70,7 +70,7 @@ namespace Amazon.Lambda.Tools.Commands
                 }
                 catch(Exception e)
                 {
-                    throw new LambdaToolsException("Error deleting Lambda function: " + e.Message);
+                    throw new LambdaToolsException("Error deleting Lambda function: " + e.Message, LambdaToolsException.ErrorCode.LambdaDeleteFunction, e);
                 }
 
                 this.Logger.WriteLine($"Lambda function {deleteRequest.FunctionName} deleted");
@@ -78,6 +78,7 @@ namespace Amazon.Lambda.Tools.Commands
             catch (LambdaToolsException e)
             {
                 this.Logger.WriteLine(e.Message);
+                this.LastToolsException = e;
                 return false;
             }
             catch (Exception e)

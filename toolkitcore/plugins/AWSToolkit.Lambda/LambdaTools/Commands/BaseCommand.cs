@@ -59,6 +59,8 @@ namespace Amazon.Lambda.Tools.Commands
         public IToolLogger Logger { get; protected set; }
         public string WorkingDirectory { get; set; }
 
+        public LambdaToolsException LastToolsException { get; protected set; }
+
 
         LambdaToolsDefaults _defaultConfig;
         public LambdaToolsDefaults DefaultConfig
@@ -76,7 +78,7 @@ namespace Amazon.Lambda.Tools.Commands
         private static void SetUserAgentString()
         {
             string version = typeof(BaseCommand).GetTypeInfo().Assembly.GetName().Version.ToString();
-            Util.Internal.InternalSDKUtils.SetUserAgent("AmazonLambdaToolsDotnet",
+            Util.Internal.InternalSDKUtils.SetUserAgent("AWSLambdaToolsDotnet",
                                           version);
         }
 
@@ -258,11 +260,11 @@ namespace Amazon.Lambda.Tools.Commands
                 {
                     if (!StoredProfileAWSCredentials.IsProfileKnown(profile, this.ProfileLocation))
                     {
-                        throw new LambdaToolsException($"Profile {profile} cannot be found");
+                        throw new LambdaToolsException($"Profile {profile} cannot be found", LambdaToolsException.ErrorCode.ProfileNotFound);
                     }
                     if (!StoredProfileAWSCredentials.CanCreateFrom(profile, this.ProfileLocation))
                     {
-                        throw new LambdaToolsException($"Cannot create AWS credentials for profile {profile}");
+                        throw new LambdaToolsException($"Cannot create AWS credentials for profile {profile}", LambdaToolsException.ErrorCode.ProfileNotCreateable);
                     }
                     credentials = new StoredProfileAWSCredentials(profile, this.ProfileLocation);
                 }
@@ -402,7 +404,7 @@ namespace Amazon.Lambda.Tools.Commands
                 int i;
                 if (int.TryParse(userValue, out i))
                 {
-                    throw new LambdaToolsException($"{userValue} cannot be parsed into an integer for {option.Name}");
+                    throw new LambdaToolsException($"{userValue} cannot be parsed into an integer for {option.Name}", LambdaToolsException.ErrorCode.CommandLineParseError);
                 }
                 return i;
             }
@@ -437,7 +439,7 @@ namespace Amazon.Lambda.Tools.Commands
                 bool i;
                 if (bool.TryParse(userValue, out i))
                 {
-                    throw new LambdaToolsException($"{userValue} cannot be parsed into a boolean for {option.Name}");
+                    throw new LambdaToolsException($"{userValue} cannot be parsed into a boolean for {option.Name}", LambdaToolsException.ErrorCode.CommandLineParseError);
                 }
                 return i;
             }

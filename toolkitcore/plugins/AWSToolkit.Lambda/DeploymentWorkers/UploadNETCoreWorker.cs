@@ -84,6 +84,14 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 {
                     ToolkitEvent evnt = new ToolkitEvent();
                     evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentError, uploadState.Request.Runtime);
+                    if(command.LastToolsException != null)
+                    {
+                        if(string.IsNullOrEmpty(command.LastToolsException.ServiceCode))
+                            evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentErrorDetail, $"{command.LastToolsException.Code}");
+                        else
+                            evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentErrorDetail, $"{command.LastToolsException.Code}-{command.LastToolsException.ServiceCode}");
+                    }
+
                     SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
                     this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading function");

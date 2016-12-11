@@ -196,7 +196,7 @@ namespace Amazon.Lambda.Tools.Commands
                         }
                         catch (Exception e)
                         {
-                            throw new LambdaToolsException($"Error creating Lambda function: {e.Message}");
+                            throw new LambdaToolsException($"Error creating Lambda function: {e.Message}", LambdaToolsException.ErrorCode.LambdaCreateFunction, e);
                         }
                     }
                     else
@@ -232,7 +232,7 @@ namespace Amazon.Lambda.Tools.Commands
                         }
                         catch (Exception e)
                         {
-                            throw new LambdaToolsException($"Error updating code for Lambda function: {e.Message}");
+                            throw new LambdaToolsException($"Error updating code for Lambda function: {e.Message}", LambdaToolsException.ErrorCode.LambdaUpdateFunctionCode, e);
                         }
 
                         await base.UpdateConfigAsync(currentConfiguration);
@@ -244,6 +244,7 @@ namespace Amazon.Lambda.Tools.Commands
             catch (LambdaToolsException e)
             {
                 this.Logger.WriteLine(e.Message);
+                this.LastToolsException = e;
                 return false;
             }
             catch (Exception e)
