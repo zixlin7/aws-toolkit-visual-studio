@@ -142,11 +142,18 @@ namespace Amazon.AWSToolkit
                 return Path.GetFullPath(command);
 
             var envPath = Environment.GetEnvironmentVariable("PATH");
-            foreach (var path in envPath.Split(';'))
+            foreach (var path in envPath.Split(Path.PathSeparator))
             {
-                var fullPath = Path.Combine(path, command);
-                if (File.Exists(fullPath))
-                    return fullPath;
+                try
+                {
+                    var fullPath = Path.Combine(path, command);
+                    if (File.Exists(fullPath))
+                        return fullPath;
+                }
+                catch(Exception e)
+                {
+                    LOGGER.Error("Error combining path with \"" + path + "\" and \"" + command + "\"", e);
+                }
             }
 
             if (KNOWN_LOCATIONS.ContainsKey(command) && File.Exists(KNOWN_LOCATIONS[command]))
