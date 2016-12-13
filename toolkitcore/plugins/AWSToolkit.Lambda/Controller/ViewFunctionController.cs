@@ -614,7 +614,6 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             var request = new InvokeRequest
             {
                 FunctionName = this._model.FunctionName,
-                Payload = input,
                 InvocationType = InvocationType.RequestResponse,
                 LogType = LogType.Tail
             };
@@ -622,10 +621,12 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             if(!string.IsNullOrEmpty(input))
             {
                 request.Payload = request.Payload.Trim();
-                if(request.Payload[0] != '\"' && request.Payload[0] != '{')
+                if(request.Payload[0] != '\"' && request.Payload[0] != '{' && request.Payload[0] != '[')
                 {
                     double d;
-                    if(!double.TryParse(request.Payload, out d))
+                    long l;
+                    bool b;
+                    if(!double.TryParse(request.Payload, out d) && !long.TryParse(request.Payload, out l) && !bool.TryParse(request.Payload, out b))
                     {
                         request.Payload = "\"" + request.Payload + "\"";
                     }

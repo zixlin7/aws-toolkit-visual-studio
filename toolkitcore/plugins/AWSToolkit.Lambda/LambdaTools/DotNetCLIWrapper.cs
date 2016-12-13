@@ -231,6 +231,7 @@ namespace Amazon.Lambda.Tools
                 }
                 catch (Exception)
                 {
+                    // Catch exceptions and continue if there are invalid characters in the user's path.
                 }
             }
 
