@@ -40,6 +40,7 @@ namespace Amazon.Lambda.Tools.Commands
             DefinedCommandOptions.ARGUMENT_CLOUDFORMATION_TEMPLATE,
             DefinedCommandOptions.ARGUMENT_CLOUDFORMATION_TEMPLATE_PARAMETER,
             DefinedCommandOptions.ARGUMENT_STACK_NAME,
+            DefinedCommandOptions.ARGUMENT_CLOUDFORMATION_DISABLE_CAPABILITIES,
             DefinedCommandOptions.ARGUMENT_STACK_WAIT
         });
 
@@ -53,6 +54,8 @@ namespace Amazon.Lambda.Tools.Commands
         public string StackName { get; set; }
         public bool? WaitForStackToComplete { get; set; }
         public Dictionary<string, string> TemplateParameters { get; set; }
+
+        public string[] DisabledCapabilites { get; set; }
 
         /// <summary>
         /// Parse the CommandOptions into the Properties on the command.
@@ -111,7 +114,7 @@ namespace Amazon.Lambda.Tools.Commands
                 }
 
                 if (!File.Exists(templatePath))
-                    throw new LambdaToolsException($"Template file {templatePath} cannot be found.");
+                    throw new LambdaToolsException($"Template file {templatePath} cannot be found.", LambdaToolsException.ErrorCode.ServerlessTemplateNotFound);
 
                 // Build and bundle up the users project.
                 string publishLocation;
@@ -203,6 +206,18 @@ namespace Amazon.Lambda.Tools.Commands
                         }
                     }
 
+                    var capabilities = new List<string>();
+                    var disabledCapabilties = GetStringValuesOrDefault(this.DisabledCapabilites, DefinedCommandOptions.ARGUMENT_CLOUDFORMATION_DISABLE_CAPABILITIES, false);
+
+                    if(disabledCapabilties?.FirstOrDefault(x => string.Equals(x, "CAPABILITY_IAM", StringComparison.OrdinalIgnoreCase)) == null)
+                    {
+                        capabilities.Add("CAPABILITY_IAM");
+                    }
+                    if (disabledCapabilties?.FirstOrDefault(x => string.Equals(x, "CAPABILITY_NAMED_IAM", StringComparison.OrdinalIgnoreCase)) == null)
+                    {
+                        capabilities.Add("CAPABILITY_NAMED_IAM");
+                    }
+
                     // Create the change set which performs the transformation on the Serverless resources in the template.
                     changeSetResponse = await this.CloudFormationClient.CreateChangeSetAsync(new CreateChangeSetRequest
                     {
@@ -210,15 +225,17 @@ namespace Amazon.Lambda.Tools.Commands
                         Parameters = templateParameters,
                         ChangeSetName = changeSetName,
                         ChangeSetType = changeSetType,
-                        Capabilities = new List<string> { "CAPABILITY_IAM" },
+                        Capabilities = capabilities,
                         Tags = new List<Tag> { new Tag {Key = Constants.SERVERLESS_TAG_NAME, Value = "true" } },
                         TemplateURL = this.S3Client.GetPreSignedURL(new S3.Model.GetPreSignedUrlRequest { BucketName = s3Bucket, Key = s3KeyTemplate, Expires = DateTime.Now.AddHours(1) })
                     });
+
+
                     this.Logger.WriteLine("CloudFormation change set created");
                 }
                 catch(Exception e)
                 {
-                    throw new LambdaToolsException($"Error creating CloudFormation change set: {e.Message}");
+                    throw new LambdaToolsException($"Error creating CloudFormation change set: {e.Message}", LambdaToolsException.ErrorCode.CloudFormationCreateStack, e);
                 }
 
                 // The change set can take a few seconds to be reviewed and be ready to be executed.
@@ -244,7 +261,7 @@ namespace Amazon.Lambda.Tools.Commands
                 }
                 catch(Exception e)
                 {
-                    throw new LambdaToolsException($"Error executing CloudFormation change set: {e.Message}");
+                    throw new LambdaToolsException($"Error executing CloudFormation change set: {e.Message}", LambdaToolsException.ErrorCode.CloudFormationCreateChangeSet, e);
                 }
 
                 // Wait for the stack to finish unless the user opts out of waiting. The VS Toolkit opts out and
@@ -273,6 +290,7 @@ namespace Amazon.Lambda.Tools.Commands
             catch (LambdaToolsException e)
             {
                 this.Logger.WriteLine(e.Message);
+                this.LastToolsException = e;
                 return false;
             }
             catch (Exception e)
@@ -368,7 +386,7 @@ namespace Amazon.Lambda.Tools.Commands
                 }
                 catch(Exception e)
                 {
-                    throw new LambdaToolsException($"Error getting events for stack: {e.Message}");
+                    throw new LambdaToolsException($"Error getting events for stack: {e.Message}", LambdaToolsException.ErrorCode.CloudFormationDescribeStackEvents, e);
                 }
                 foreach (var evnt in response.StackEvents)
                 {
@@ -397,7 +415,7 @@ namespace Amazon.Lambda.Tools.Commands
             }
             catch(Exception e)
             {
-                throw new LambdaToolsException($"Error removing previous failed stack creation {stack.StackName}: {e.Message}");
+                throw new LambdaToolsException($"Error removing previous failed stack creation {stack.StackName}: {e.Message}", LambdaToolsException.ErrorCode.CloudFormationDeleteStack, e);
             }
         }
 
@@ -421,7 +439,7 @@ namespace Amazon.Lambda.Tools.Commands
             }
             catch (Exception e)
             {
-                throw new LambdaToolsException($"Error waiting for stack state change: {e.Message}");
+                throw new LambdaToolsException($"Error waiting for stack state change: {e.Message}", LambdaToolsException.ErrorCode.WaitingForStackError, e);
             }
         }
 
@@ -452,7 +470,7 @@ namespace Amazon.Lambda.Tools.Commands
             }
             catch(Exception e)
             {
-                throw new LambdaToolsException($"Error getting status of change set: {e.Message}");
+                throw new LambdaToolsException($"Error getting status of change set: {e.Message}", LambdaToolsException.ErrorCode.CloudFormationDescribeChangeSet, e);
             }
         }
 
@@ -518,7 +536,7 @@ namespace Amazon.Lambda.Tools.Commands
             }
             catch(Exception e)
             {
-                throw new LambdaToolsException($"Error parsing CloudFormation template: {e.Message}");
+                throw new LambdaToolsException($"Error parsing CloudFormation template: {e.Message}", LambdaToolsException.ErrorCode.ServerlessTemplateParseError, e);
             }
             
             var resources = root["Resources"] as JsonData;

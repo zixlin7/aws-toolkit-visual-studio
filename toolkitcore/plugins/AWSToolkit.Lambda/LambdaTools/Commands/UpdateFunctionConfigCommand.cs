@@ -129,6 +129,7 @@ namespace Amazon.Lambda.Tools.Commands
             catch(LambdaToolsException e)
             {
                 this.Logger.WriteLine(e.Message);
+                this.LastToolsException = e;
                 return false;
             }
             catch(Exception e)
@@ -151,7 +152,7 @@ namespace Amazon.Lambda.Tools.Commands
                 }
                 catch (Exception e)
                 {
-                    throw new LambdaToolsException($"Error updating configuration for Lambda function: {e.Message}");
+                    throw new LambdaToolsException($"Error updating configuration for Lambda function: {e.Message}", LambdaToolsException.ErrorCode.LambdaUpdateFunctionConfiguration, e);
                 }
             }
         }
@@ -173,7 +174,7 @@ namespace Amazon.Lambda.Tools.Commands
             }
             catch(Exception e)
             {
-                throw new LambdaToolsException($"Error retrieving configuration for function {request.FunctionName}: {e.Message}");
+                throw new LambdaToolsException($"Error retrieving configuration for function {request.FunctionName}: {e.Message}", LambdaToolsException.ErrorCode.LambdaGetConfiguration, e);
             }
         }
 

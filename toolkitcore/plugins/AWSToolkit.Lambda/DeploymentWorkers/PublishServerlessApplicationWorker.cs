@@ -77,6 +77,13 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 {
                     ToolkitEvent evnt = new ToolkitEvent();
                     evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentError, MOBILEANALYTICS_TYPE);
+                    if (command.LastToolsException != null)
+                    {
+                        if (string.IsNullOrEmpty(command.LastToolsException.ServiceCode))
+                            evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentErrorDetail, $"{command.LastToolsException.Code}");
+                        else
+                            evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentErrorDetail, $"{command.LastToolsException.Code}-{command.LastToolsException.ServiceCode}");
+                    }
                     SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
                     this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
@@ -87,6 +94,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             {
                 ToolkitEvent evnt = new ToolkitEvent();
                 evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentError, MOBILEANALYTICS_TYPE);
+
                 SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
                 LOGGER.Error("Error publishing AWS Serverless application.", e);

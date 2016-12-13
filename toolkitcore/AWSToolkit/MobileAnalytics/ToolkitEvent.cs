@@ -28,6 +28,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
 
         LambdaFunctionDeploymentSuccess,
         LambdaFunctionDeploymentError,
+        LambdaFunctionDeploymentErrorDetail,
 
         LambdaTestInvoke,
         LambdaEventSourceSetupSuccess,
