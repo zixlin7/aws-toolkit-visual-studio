@@ -137,6 +137,14 @@ namespace Amazon.AWSToolkit
         /// <returns>The full path to the command if found otherwise it will return null</returns>
         public static string FindExecutableInPath(string command)
         {
+            Func<string, string> quoteRemover = x =>
+            {
+                if (x.StartsWith("\""))
+                    x = x.Substring(1);
+                if (x.EndsWith("\""))
+                    x = x.Substring(0, x.Length - 1);
+                return x;
+            };
 
             if (File.Exists(command))
                 return Path.GetFullPath(command);
@@ -146,7 +154,7 @@ namespace Amazon.AWSToolkit
             {
                 try
                 {
-                    var fullPath = Path.Combine(path, command);
+                    var fullPath = Path.Combine(quoteRemover(path), command);
                     if (File.Exists(fullPath))
                         return fullPath;
                 }
