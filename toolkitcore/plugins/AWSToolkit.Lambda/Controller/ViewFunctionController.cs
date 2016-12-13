@@ -614,6 +614,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             var request = new InvokeRequest
             {
                 FunctionName = this._model.FunctionName,
+                Payload = input,
                 InvocationType = InvocationType.RequestResponse,
                 LogType = LogType.Tail
             };
