@@ -11,7 +11,7 @@
     <Icon>Package.ico</Icon>
     <PreviewImage>aws_preview.gif</PreviewImage>
   </Metadata>
-  <Installation InstalledByMsi="false">
+  <Installation InstalledByMsi="true">
     <InstallationTarget Version="|%CurrentProject%;GetVsixVSTarget|" Id="Microsoft.VisualStudio.Community" />
   </Installation>
   <Dependencies>
