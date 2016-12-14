@@ -208,6 +208,10 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="aws-icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -290,6 +294,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\AWSToolkitPackage.vsdir">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\hosted.control.awstoolkitpackage">
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
