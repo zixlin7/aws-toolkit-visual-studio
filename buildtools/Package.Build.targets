@@ -2,27 +2,6 @@
 
   <Import Project="$(MSBuildThisFileDirectory)\Common.Build.targets" />
 
-  <Choose>
-    <When Condition="'$(Language)' == 'C#' and !$(SuppressCommonAssemblyMetadata)">
-      <PropertyGroup>
-        <TrackFileAccess>false</TrackFileAccess>
-        <!-- CHECK RELEVANCE -->
-      </PropertyGroup>
-      <ItemGroup>
-        <Compile Include="$(BuildRoot)\buildtools\AssemblyInfoCommon.cs">
-          <Link>AssemblyInfoCommon.cs</Link>
-        </Compile>
-        <Compile Include="$(BuildRoot)\buildtools\AssemblyVersion.cs">
-          <Link>AssemblyVersion.cs</Link>
-        </Compile>
-      </ItemGroup>
-      <PropertyGroup>
-        <TrackFileAccess>true</TrackFileAccess>
-        <!-- CHECK RELEVANCE -->
-      </PropertyGroup>
-    </When>
-  </Choose>
-
   <PropertyGroup>
     <Build_Version Condition=" '$(Build_Version)' == '' ">0.6.0.0</Build_Version>
   </PropertyGroup>

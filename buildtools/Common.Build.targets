@@ -37,4 +37,25 @@
     <CommonBuildTargetsImported>true</CommonBuildTargetsImported>
   </PropertyGroup>
   
+  <Choose>
+    <When Condition="'$(Language)' == 'C#' and !$(SuppressCommonAssemblyMetadata)">
+      <PropertyGroup>
+        <TrackFileAccess>false</TrackFileAccess>
+        <!-- CHECK RELEVANCE -->
+      </PropertyGroup>
+      <ItemGroup>
+        <Compile Include="$(BuildRoot)\buildtools\AssemblyInfoCommon.cs">
+          <Link>AssemblyInfoCommon.cs</Link>
+        </Compile>
+        <Compile Include="$(BuildRoot)\buildtools\AssemblyVersion.cs">
+          <Link>AssemblyVersion.cs</Link>
+        </Compile>
+      </ItemGroup>
+      <PropertyGroup>
+        <TrackFileAccess>true</TrackFileAccess>
+        <!-- CHECK RELEVANCE -->
+      </PropertyGroup>
+    </When>
+  </Choose>
+  
 </Project>

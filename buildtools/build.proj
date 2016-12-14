@@ -204,7 +204,7 @@
 
 		<UpdateVSToolkitVersionTask
 			RepositoryRoot="$(MSBuildProjectDirectory)\.."
-			ExcludePaths="vspackages\templates\AWSProjectTemplates;vspackages\cloudformation\CloudFormationProjectTemplate;vspackages\cloudformation\CloudFormationTemplate"
+			ExcludePaths="vspackages\templates\AWSProjectTemplates;vspackages\cloudformation\CloudFormationProjectTemplate;vspackages\cloudformation\CloudFormationTemplate;vspackages\lambda\LambdaFunctionProjectTemplate;vspackages\lambda\LambdaNETCoreFlourishProjectTemplate;vspackages\lambda\LambdaNETCoreFlourishProjectWithTestTemplate;vspackages\lambda\LambdaNETCoreFunctionProjectTemplate;vspackages\lambda\LambdaNETCoreFunctionProjectWithTestTemplate"
 			VersionNumber="$(AWSToolkitVersionNumber)"
 			WaitForDebugger="false"
 			/>
