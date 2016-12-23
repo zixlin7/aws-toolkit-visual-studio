@@ -18,11 +18,12 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>TRACE;VS2015;VS2015_OR_LATER;VS2013_OR_LATER;DEBUG;TRACE</DefineConstants>
+    <DefineConstants>$(DefineConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CreateVsixContainer>True</CreateVsixContainer>
     <DeployExtension>True</DeployExtension>
+    <VSSDKTargetPlatformRegRootSuffix>Exp</VSSDKTargetPlatformRegRootSuffix>
     <DeployVSTemplates>True</DeployVSTemplates>
     <UseVSHostingProcess>true</UseVSHostingProcess>
     <StartProgram>$(DevEnvDir)devenv.exe</StartProgram>
@@ -35,7 +36,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+    <DefineConstants>$(DefineConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
@@ -224,7 +225,7 @@
     <EmbeddedResource Include="Resources\AWSCloudFormationProject.ico" />
   </ItemGroup>
   <ItemGroup>
-    <VSCTCompile Include="AWSToolkitPackage.$(VSTarget).vsct">
+    <VSCTCompile Include="AWSToolkitPackage.$(VSTarget)-$(Configuration).vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
       <SubType>Designer</SubType>
     </VSCTCompile>

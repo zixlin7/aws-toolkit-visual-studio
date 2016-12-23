@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!-- This include contains all common vsct items. -->
+  <Include href="AWSToolkitPackage.vsct"/>
+
+  <Symbols>
+    <GuidSymbol name="guidAWSToolkitPackage" value="{4497d0c0-8d6f-4975-9b40-b54728036e41}"/>
+  </Symbols>
+</CommandTable>

@@ -6,12 +6,26 @@ namespace Amazon.AWSToolkit.VisualStudio
 {
     static class GuidList
     {
+#if DEBUG
+
+#if VS2013
+        public const string guidPackageString = "4497d0c0-8d6f-4975-9b40-b54728036e41";
+#elif VS2015
+        public const string guidPackageString = "bbb1094e-d61e-43da-8ad3-e9f0e0e07c01";
+#else
+#error "No VS20xx conditional defined - cannot assign guidPackageString (see package.build.targets)"
+#endif
+
+#else
+
 #if VS2013
         public const string guidPackageString = "9510184f-8135-4f8a-ab8a-23be77c345e2";
 #elif VS2015
         public const string guidPackageString = "f2884b07-5122-4e23-acd7-4d93df18709e";
 #else
-#error "No Visual Studio Version Provided - cannot assign guidPackageString"
+#error "No VS20xx conditional defined - cannot assign guidPackageString (see package.build.targets)"
+#endif
+    
 #endif
 
         public static readonly Guid guidPackage = new Guid(guidPackageString);
