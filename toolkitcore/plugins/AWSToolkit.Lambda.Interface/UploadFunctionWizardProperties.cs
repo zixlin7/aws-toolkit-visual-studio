@@ -68,6 +68,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages
         /// <summary>
         /// 
         /// </summary>
+        public static readonly string SaveSettings = "saveSettings";
+
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly string Configuration = "configuration";
 
         /// <summary>

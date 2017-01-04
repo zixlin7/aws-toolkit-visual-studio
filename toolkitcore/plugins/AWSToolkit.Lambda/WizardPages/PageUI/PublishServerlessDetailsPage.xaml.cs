@@ -117,6 +117,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             set { this._ctlStackPicker.Text = value; }
         }
 
+        public bool SaveSettings
+        {
+            get { return this._ctlPersistSettings.IsChecked.GetValueOrDefault(); }
+        }
+
         public bool IsNewStack
         {
             get

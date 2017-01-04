@@ -8,7 +8,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Amazon.AWSToolkit.Lambda.WizardPages.PageUI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DesignHeight="400"
+    d:DesignHeight="420"
     d:DesignWidth="600"
     mc:Ignorable="d">
 
@@ -32,6 +32,8 @@
             <!--  function details, switchable  -->
             <RowDefinition Height="Auto" />
             <!--  open view on upload  -->
+            <RowDefinition Height="Auto" />
+            <!--  persist settings  -->
         </Grid.RowDefinitions>
 
         <!--  account and region panel  -->
@@ -393,6 +395,16 @@
             </Grid>
 
         </Grid>
+
+        <Grid x:Name="_ctlPersistPanel" Grid.Row="5">
+            <CheckBox
+                Name="_ctlPersistSettings"
+                Margin="18,10,4,4"
+                Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+                Save settings to aws-lambda-tools-defaults.json for future deployments.
+            </CheckBox>
+        </Grid>
+
 
     </Grid>
 </commonUi:BaseAWSUserControl>

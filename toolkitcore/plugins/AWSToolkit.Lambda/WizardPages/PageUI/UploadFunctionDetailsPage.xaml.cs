@@ -35,6 +35,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         public DeploymentType DeploymentType { get; private set; }
         public UploadOriginator UploadOriginator { get; private set; }
 
+        private string SeedFunctionName { get; set; }
+
         public UploadFunctionDetailsPage()
         {
             InitializeComponent();
@@ -72,8 +74,10 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
             if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.FunctionName))
             {
-                this._ctlFunctionNameText.Text = hostWizard.CollectedProperties[UploadFunctionWizardProperties.FunctionName] as string;
-                this._ctlFunctionNamePicker.SelectedValue = hostWizard.CollectedProperties[UploadFunctionWizardProperties.FunctionName];
+                this.SeedFunctionName = hostWizard.CollectedProperties[UploadFunctionWizardProperties.FunctionName] as string;
+                this._ctlFunctionNameText.Text = this.SeedFunctionName;
+                this._ctlFunctionNamePicker.Items.Add(this.SeedFunctionName);
+                this._ctlFunctionNamePicker.SelectedValue = this.SeedFunctionName;
             }
 
             if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.Handler))
@@ -163,6 +167,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 case UploadFunctionController.DeploymentType.Generic:
                     this._ctlGenericHandlerPanel.Visibility = Visibility.Visible;
                     this._ctlNETCoreHandlerPanel.Visibility = Visibility.Collapsed;
+                    this._ctlPersistPanel.Visibility = Visibility.Collapsed;
                     if (isFirstTimeConfig)
                     {
                         Runtime = RuntimeOption.NodeJS_v4_30;
@@ -171,6 +176,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 case UploadFunctionController.DeploymentType.NETCore:
                     this._ctlNETCoreHandlerPanel.Visibility = Visibility.Visible;
                     this._ctlGenericHandlerPanel.Visibility = Visibility.Collapsed;
+                    this._ctlPersistPanel.Visibility = Visibility.Visible;
                     Runtime = RuntimeOption.NetCore_v1_0;
                     if (isFirstTimeConfig)
                     {
@@ -229,6 +235,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                         return this._ctlFunctionNameText.Text;
                 }
             }
+        }
+
+        public bool SaveSettings
+        {
+            get { return this._ctlPersistSettings.IsChecked.GetValueOrDefault(); }
         }
 
         public AccountViewModel SelectedAccount
@@ -373,7 +384,14 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
         void ResetToDefaults()
         {
-            this._ctlFunctionNamePicker.SelectedValue = null;
+            if (!string.IsNullOrEmpty(this.SeedFunctionName) && this._ctlFunctionNamePicker.Items.Contains(this.SeedFunctionName))
+            {
+                this._ctlFunctionNamePicker.SelectedValue = this.SeedFunctionName;
+            }
+            else
+            {
+                this._ctlFunctionNamePicker.SelectedValue = null;
+            }
         }
 
         void _ctlAccountAndRegion_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -413,9 +431,17 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                         ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke(() =>
                         {
                             this._ctlFunctionNamePicker.Items.Clear();
+                            if(!string.IsNullOrEmpty(this.SeedFunctionName))
+                            {
+                                this._ctlFunctionNamePicker.Items.Add(this.SeedFunctionName);
+                            }
+
                             foreach (var functionName in this._existingFunctions.Keys.OrderBy(x => x.ToLowerInvariant()))
                             {
-                                this._ctlFunctionNamePicker.Items.Add(functionName);
+                                if(!string.Equals(functionName, this.SeedFunctionName, StringComparison.Ordinal))
+                                {
+                                    this._ctlFunctionNamePicker.Items.Add(functionName);
+                                }
                             }
 
                             this.ResetToDefaults();

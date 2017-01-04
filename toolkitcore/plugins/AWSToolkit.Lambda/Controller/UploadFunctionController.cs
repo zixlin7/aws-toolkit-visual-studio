@@ -85,7 +85,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                 try
                 {
                     var serverlessTemplatePath = Path.Combine(sourcePath, Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME);
-                    var defaults = LambdaToolsDefaultsReader.LoadDefaults(sourcePath);
+                    var defaults = LambdaToolsDefaultsReader.LoadDefaults(sourcePath, LambdaToolsDefaultsReader.DEFAULT_FILE_NAME);
                     if(File.Exists(serverlessTemplatePath) || !string.IsNullOrEmpty(defaults.CloudFormationTemplate))
                     {
                         string templateFile;
@@ -269,6 +269,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
             public string Configuration { get; set; }
             public string Framework { get; set; }
+            public bool SaveSettings { get; set; }
         }
 
     }
