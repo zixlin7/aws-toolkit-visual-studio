@@ -1,13 +1,13 @@
-﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI.FastTrackRepublishPage"
+﻿<commonui:BaseAWSUserControl
+    x:Class="Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI.FastTrackRepublishPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
-    >
-    
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit">
+
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -18,15 +18,20 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
-                   Margin="0,0,0,8">
+        <Label Margin="0,0,0,8" Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
             Deployment Target
         </Label>
 
-        <StackPanel x:Name="_stackDetailsPanel" Grid.Row="1" Margin="20,0,4,8" VerticalAlignment="Top">
-            <TextBlock TextWrapping="Wrap" Margin="4,20,4,0" 
-                       Style="{DynamicResource awsTextBlockBaseStyle}"
-                       Foreground="{DynamicResource awsDefaultControlForegroundBrushKey}">
+        <StackPanel
+            x:Name="_stackDetailsPanel"
+            Grid.Row="1"
+            Margin="20,0,4,8"
+            VerticalAlignment="Top">
+            <TextBlock
+                Margin="4,20,4,0"
+                Foreground="{DynamicResource awsDefaultControlForegroundBrushKey}"
+                Style="{DynamicResource awsTextBlockBaseStyle}"
+                TextWrapping="Wrap">
                 Fetching details of the last AWS CloudFormation Stack that the project was deployed to. Please wait...
             </TextBlock>
         </StackPanel>

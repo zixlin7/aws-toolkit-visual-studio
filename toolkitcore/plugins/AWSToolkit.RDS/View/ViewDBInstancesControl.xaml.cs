@@ -289,7 +289,7 @@ namespace Amazon.AWSToolkit.RDS.View
             MenuItem properties = new MenuItem() { Header = "Properties" };
             properties.Click += this.onPropertiesClick;
 
-            if (ToolkitFactory.Instance.ShellProvider.QueryShellProverService<IRegisterDataConnectionService>() != null)
+            if (ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<IRegisterDataConnectionService>() != null)
                 menu.Items.Add(registerKey);
             if (createSQLServerDBKey != null)
                 menu.Items.Add(createSQLServerDBKey);

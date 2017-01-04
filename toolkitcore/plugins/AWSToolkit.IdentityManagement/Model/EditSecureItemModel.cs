@@ -83,7 +83,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Model
             this.IsDirty = false;
         }
 
-        public string OrignalName
+        public string OriginalName
         {
             get;
             set;

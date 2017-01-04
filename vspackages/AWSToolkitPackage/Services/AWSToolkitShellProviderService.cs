@@ -339,7 +339,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             _hostPackage.Logger.InfoFormat("Request to AddToLog with unknown category '{0}', message is '{1}'", category, message);
         }
 
-        public T QueryShellProverService<T>() where T : class
+        public T QueryShellProviderService<T>() where T : class
         {
             var svc = this as T;
             if (svc != null)

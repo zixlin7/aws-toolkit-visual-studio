@@ -1,35 +1,45 @@
-﻿<!-- contains the default styling for the AWS Toolkit -->
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI">
+﻿<!--  contains the default styling for the AWS Toolkit  -->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI">
 
-    <commonui:CommonIcons x:Key="CommonIcons"/>
+    <commonui:CommonIcons x:Key="CommonIcons" />
 
     <ResourceDictionary.MergedDictionaries>
-        <!-- Elements in this dictionary apply to all shells hosting the toolkit. Shell-specific overrides
-             should be included at the highest level available in the host's visual tree (ie above this file).
+        <!--
+            This dictionary contains design-time override font keys and values so that the design
+            surfaces don't throw null reference exceptions due to the toolkit's shell provider instance
+            not being available.
         -->
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/_ToolkitThemeDefaults.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/DesignTimeFonts.xaml" />
 
-        <!-- these dictionaries remain constant and are define elements in terms of keys specified
-             in the preceeding dictionary (and overridden as necessary in the host shell)
+        <!--
+            Elements in this dictionary apply to all shells hosting the toolkit. Shell-specific overrides
+            should be included at the highest level available in the host's visual tree (ie above this file).
         -->
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Converters.xaml"/>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Brushes.xaml"/>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Buttons.xaml"/>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Scrollbar.xaml"/>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Menu.xaml"/>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Toolbar.xaml"/>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Text.xaml"/>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Popups.xaml"/>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/ComboBox.xaml"/>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/TreeView.xaml"/>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/ListBox.xaml"/>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/ListView.xaml"/>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/TabControls.xaml"/>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/DataGrid.xaml"/>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Expander.xaml"/>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Wizard.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/_ToolkitThemeDefaults.xaml" />
+
+        <!--
+            These dictionaries remain constant and are define elements in terms of keys specified
+            in the preceeding dictionary (and overridden as necessary in the host shell)
+        -->
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Converters.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Brushes.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Buttons.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Scrollbar.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Menu.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Toolbar.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Text.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Popups.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/ComboBox.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/TreeView.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/ListBox.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/ListView.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/TabControls.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/DataGrid.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Expander.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Wizard.xaml" />
     </ResourceDictionary.MergedDictionaries>
-    
+
 </ResourceDictionary>

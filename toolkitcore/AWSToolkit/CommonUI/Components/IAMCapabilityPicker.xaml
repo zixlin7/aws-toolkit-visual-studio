@@ -1,24 +1,30 @@
-﻿<UserControl x:Class="Amazon.AWSToolkit.CommonUI.Components.IAMCapabilityPicker"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:mwt="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
-             mc:Ignorable="d" 
-             d:DesignHeight="100" d:DesignWidth="300">
+﻿<UserControl
+    x:Class="Amazon.AWSToolkit.CommonUI.Components.IAMCapabilityPicker"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mwt="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
+    xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes"
+    d:DesignHeight="100"
+    d:DesignWidth="300"
+    mc:Ignorable="d">
 
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <DataTemplate x:Key="section-header">
-                <TextBlock FontWeight="SemiBold" Text="{Binding Description}"/>
+                <TextBlock FontWeight="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentBoldFontWeightKey}}" Text="{Binding Description}" />
             </DataTemplate>
             <DataTemplate x:Key="role-type-selection">
                 <StackPanel Margin="15,0,0,0" Orientation="Horizontal">
-                    <CheckBox IsChecked="{Binding IsSelected}" Click="CheckBox_Clicked" Margin="5,0,5,0"/>
+                    <CheckBox
+                        Margin="5,0,5,0"
+                        Click="CheckBox_Clicked"
+                        IsChecked="{Binding IsSelected}" />
                     <TextBlock>
                         <TextBlock.Text>
                             <MultiBinding StringFormat="{}{0} ({1})">
@@ -30,64 +36,81 @@
                 </StackPanel>
             </DataTemplate>
             <DataTemplate x:Key="role-selection">
-                <TextBlock Margin="15,0,0,0" Text="{Binding ExistingRole.Name}"/>
+                <TextBlock
+                    Margin="15,0,0,0"
+                    Style="{DynamicResource awsTextBlockBaseStyle}"
+                    Text="{Binding ExistingRole.Name}" />
             </DataTemplate>
 
-            <Style x:Key="awsIAMCapabilityPicker" BasedOn="{StaticResource awsComboBoxStyle}" TargetType="ComboBox">
+            <Style
+                x:Key="awsIAMCapabilityPicker"
+                BasedOn="{StaticResource awsComboBoxStyle}"
+                TargetType="ComboBox">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ComboBox">
                             <Grid>
-                                <ToggleButton Grid.ColumnSpan="2"
-                                              Background="{TemplateBinding Background}"
-                                              BorderBrush="{TemplateBinding BorderBrush}"
-                                              BorderThickness="{TemplateBinding Border.BorderThickness}"
-                                              Style="{StaticResource awsComboBoxToggleButton}"
-                                              IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"/>
+                                <ToggleButton
+                                    Grid.ColumnSpan="2"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding Border.BorderThickness}"
+                                    IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Style="{StaticResource awsComboBoxToggleButton}" />
 
-                                <ContentPresenter IsHitTestVisible="false"
-                                                  Name="ContentSite"
-                                                  Margin="{TemplateBinding Padding}"
-                                                  Content="{TemplateBinding SelectionBoxItem}"
-                                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                                  ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
-                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                                <ContentPresenter
+                                    Name="ContentSite"
+                                    Margin="{TemplateBinding Padding}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                    Content="{TemplateBinding SelectionBoxItem}"
+                                    ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
+                                    ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                    IsHitTestVisible="false"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
 
                                     <ContentPresenter.ContentTemplate>
                                         <DataTemplate>
-                                            <TextBlock Name="_ctlComboSelectedDisplay"/>
+                                            <TextBlock Name="_ctlComboSelectedDisplay" />
                                         </DataTemplate>
                                     </ContentPresenter.ContentTemplate>
                                 </ContentPresenter>
 
-                                <Popup Name="PART_Popup"
-                                       AllowsTransparency="true"
-                                       Grid.ColumnSpan="2"
-                                       Placement="Bottom"
-                                       Margin="1"
-                                       IsOpen="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
-                                       PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
-                                    <mwt:SystemDropShadowChrome Name="Shdw"
-                                                                Color="Transparent"
-                                                                MinWidth="{Binding ElementName=MainGrid,Path=ActualWidth}"
-                                                                MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                        <Border x:Name="DropDownBorder"
-                                                BorderThickness="1"
-                                                BorderBrush="{TemplateBinding Border.BorderBrush}"
-                                                Background="{DynamicResource awsComboBoxDropPanelBackgroundBrushKey}">
+                                <Popup
+                                    Name="PART_Popup"
+                                    Grid.ColumnSpan="2"
+                                    Margin="1"
+                                    AllowsTransparency="true"
+                                    IsOpen="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Placement="Bottom"
+                                    PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}">
+                                    <mwt:SystemDropShadowChrome
+                                        Name="Shdw"
+                                        MinWidth="{Binding ElementName=MainGrid, Path=ActualWidth}"
+                                        MaxHeight="{TemplateBinding MaxDropDownHeight}"
+                                        Color="Transparent">
+                                        <Border
+                                            x:Name="DropDownBorder"
+                                            Background="{DynamicResource awsComboBoxDropPanelBackgroundBrushKey}"
+                                            BorderBrush="{TemplateBinding Border.BorderBrush}"
+                                            BorderThickness="1">
                                             <ScrollViewer Name="DropDownScrollViewer">
                                                 <Grid RenderOptions.ClearTypeHint="Enabled">
-                                                    <Canvas Height="0" Width="0" HorizontalAlignment="Left" VerticalAlignment="Top">
-                                                        <Rectangle Name="OpaqueRect"
-                                                                   Height="{Binding ElementName=DropDownBorder,Path=ActualHeight}" 
-                                                                   Width="{Binding ElementName=DropDownBorder,Path=ActualWidth}" 
-                                                                   Fill="{Binding ElementName=DropDownBorder,Path=Background}" />
+                                                    <Canvas
+                                                        Width="0"
+                                                        Height="0"
+                                                        HorizontalAlignment="Left"
+                                                        VerticalAlignment="Top">
+                                                        <Rectangle
+                                                            Name="OpaqueRect"
+                                                            Width="{Binding ElementName=DropDownBorder, Path=ActualWidth}"
+                                                            Height="{Binding ElementName=DropDownBorder, Path=ActualHeight}"
+                                                            Fill="{Binding ElementName=DropDownBorder, Path=Background}" />
                                                     </Canvas>
-                                                    <ItemsPresenter Name="ItemsPresenter" 
-                                                                    KeyboardNavigation.DirectionalNavigation="Contained"
-                                                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                                    <ItemsPresenter
+                                                        Name="ItemsPresenter"
+                                                        KeyboardNavigation.DirectionalNavigation="Contained"
+                                                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                                                 </Grid>
                                             </ScrollViewer>
                                         </Border>
@@ -102,14 +125,14 @@
     </UserControl.Resources>
 
     <Grid>
-        <ComboBox Name="_ctlCombo" 
-                  Style="{DynamicResource awsIAMCapabilityPicker}"
-                  SelectionChanged="_ctlCombo_SelectionChanged"
-                  >
+        <ComboBox
+            Name="_ctlCombo"
+            SelectionChanged="_ctlCombo_SelectionChanged"
+            Style="{DynamicResource awsIAMCapabilityPicker}">
 
             <ComboBox.ItemContainerStyle>
                 <Style TargetType="ComboBoxItem">
-                    <Setter Property="IsHitTestVisible" Value="{Binding IsSelectable}"/>
+                    <Setter Property="IsHitTestVisible" Value="{Binding IsSelectable}" />
                 </Style>
             </ComboBox.ItemContainerStyle>
             <ComboBox.ItemTemplate>
@@ -119,16 +142,13 @@
                             <Style TargetType="ContentControl">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding ItemType}" Value="1">
-                                        <Setter Property="ContentTemplate"
-                                            Value="{StaticResource section-header}" />
+                                        <Setter Property="ContentTemplate" Value="{StaticResource section-header}" />
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding ItemType}" Value="2">
-                                        <Setter Property="ContentTemplate"
-                                            Value="{StaticResource role-type-selection}" />
+                                        <Setter Property="ContentTemplate" Value="{StaticResource role-type-selection}" />
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding ItemType}" Value="3">
-                                        <Setter Property="ContentTemplate"
-                                            Value="{StaticResource role-selection}" />
+                                        <Setter Property="ContentTemplate" Value="{StaticResource role-selection}" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>

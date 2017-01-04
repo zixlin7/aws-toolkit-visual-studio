@@ -47,7 +47,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
             this._iamClient = this._iamRoleViewModel.IAMClient;
             this._model = new EditRoleModel();
 
-            this._model.OrignalName = this._iamRoleViewModel.Role.RoleName;
+            this._model.OriginalName = this._iamRoleViewModel.Role.RoleName;
             this._model.NewName = this._iamRoleViewModel.Role.RoleName;
 
             EditRoleControl control = new EditRoleControl(this);
@@ -60,7 +60,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
         public void LoadModel()
         {
             var listPolicyRequest =
-                new ListRolePoliciesRequest() { RoleName = this.Model.OrignalName };
+                new ListRolePoliciesRequest() { RoleName = this.Model.OriginalName };
             ListRolePoliciesResponse listPolicyResponse = null;
             do
             {
@@ -76,7 +76,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
                     {
                         var response = this._iamClient.GetRolePolicy(new GetRolePolicyRequest()
                         {
-                            RoleName = this.Model.OrignalName,
+                            RoleName = this.Model.OriginalName,
                             PolicyName = policyName
                         });
 
@@ -123,7 +123,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
                 {
                     var request = new PutRolePolicyRequest()
                     {
-                        RoleName = this.Model.OrignalName,
+                        RoleName = this.Model.OriginalName,
                         PolicyName = policyModel.Name,
                         PolicyDocument = policyModel.Policy.ToJson()
                     };

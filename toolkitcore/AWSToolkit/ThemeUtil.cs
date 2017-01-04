@@ -119,7 +119,7 @@ namespace Amazon.AWSToolkit
 
                 IEnumerable<Uri> additions;
                 IEnumerable<Uri> removals;
-                (ToolkitFactory.Instance.ShellProvider.QueryShellProverService<IAWSToolkitShellThemeService>()).QueryShellThemeOverrides(out additions, out removals);
+                (ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<IAWSToolkitShellThemeService>()).QueryShellThemeOverrides(out additions, out removals);
 
                 var mergedDictionaries = controlResourceDictionary.MergedDictionaries;
 

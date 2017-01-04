@@ -48,12 +48,12 @@
                         <RowDefinition Height="auto"/>
                     </Grid.RowDefinitions>
 
-                    <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+                    <Label Style="{DynamicResource awsLabel122PercentStyle}"
                     Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">
                         Sample Input
                     </Label>
 
-                    <Button Grid.Column="1" Grid.Row="0" Margin="10" Click="Execute_Click">
+                    <Button Grid.Column="1" Grid.Row="0" Margin="6,10,10,10" Click="Execute_Click">
                         <WrapPanel>
                             <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding ExecuteIcon}"/>
                             <TextBlock Margin="4,0,4,0">Invoke</TextBlock>
@@ -111,7 +111,7 @@
                         <ColumnDefinition Width="auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+                    <Label Style="{DynamicResource awsLabel122PercentStyle}"
                        Grid.Row="0" VerticalAlignment="Center">
                         Response
                     </Label>
@@ -148,7 +148,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+            <Label Style="{DynamicResource awsLabel122PercentStyle}"
                    Grid.Row="0">
                 Log output
             </Label>

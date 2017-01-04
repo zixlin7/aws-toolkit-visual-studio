@@ -53,7 +53,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.View
         {
             get
             {
-                return "IAM:ROLE:" + this._controller.Model.OrignalName;
+                return "IAM:ROLE:" + this._controller.Model.OriginalName;
             }
         }
 
@@ -95,7 +95,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.View
         {
             try
             {
-                bool nameChange = this._controller.Model.OrignalName.Equals(this._controller.Model.NewName);
+                bool nameChange = this._controller.Model.OriginalName.Equals(this._controller.Model.NewName);
                 this._controller.Persist();
                 this._controller.Model.IsDirty = false;
                 base.NotifyPropertyChanged("Title");

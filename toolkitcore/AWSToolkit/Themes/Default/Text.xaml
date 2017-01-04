@@ -1,86 +1,212 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:s="clr-namespace:System;assembly=mscorlib">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:s="clr-namespace:System;assembly=mscorlib"
+    xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes">
 
     <!--
-    *************************************************************************************
-    * Label styles
-    *************************************************************************************
+        *************************************************************************************
+        * Label styles
+        *************************************************************************************
     -->
-    
-    <Style x:Key="awsLabelBaseStyle" TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
+
+    <Style
+        x:Key="awsLabelBaseStyle"
+        BasedOn="{StaticResource {x:Type Label}}"
+        TargetType="{x:Type Label}">
         <Setter Property="Foreground" Value="{DynamicResource awsDefaultControlForegroundBrushKey}" />
-        <Setter Property="FontFamily" Value="Segou UI" />
-        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontFamily" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontFamilyKey}}" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontSizeKey}}" />
     </Style>
 
-    <Style x:Key="awsSubHeaderLabelStyle" TargetType="{x:Type Label}" BasedOn="{StaticResource awsLabelBaseStyle}">
+    <Style
+        x:Key="awsSubHeaderLabelStyle"
+        BasedOn="{StaticResource awsLabelBaseStyle}"
+        TargetType="{x:Type Label}">
         <Setter Property="Foreground" Value="{DynamicResource awsSubHeaderLabelBrushKey}" />
-        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="FontWeight" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentBoldFontWeightKey}}" />
+    </Style>
+
+    <Style
+        x:Key="awsLabel122PercentStyle"
+        BasedOn="{StaticResource awsLabelBaseStyle}"
+        TargetType="{x:Type Label}">
+        <Setter Property="Foreground" Value="{DynamicResource awsInfoTextForegroundBrushKey}" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment122PercentFontSizeKey}}" />
+        <Setter Property="FontWeight" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment122PercentFontWeightKey}}" />
+    </Style>
+
+    <Style
+        x:Key="awsLabel133PercentStyle"
+        BasedOn="{StaticResource awsLabelBaseStyle}"
+        TargetType="{x:Type Label}">
+        <Setter Property="Foreground" Value="{DynamicResource awsInfoTextForegroundBrushKey}" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment133PercentFontSizeKey}}" />
+        <Setter Property="FontWeight" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment133PercentFontWeightKey}}" />
+    </Style>
+
+    <Style
+        x:Key="awsLabel155PercentStyle"
+        BasedOn="{StaticResource awsLabelBaseStyle}"
+        TargetType="{x:Type Label}">
+        <Setter Property="Foreground" Value="{DynamicResource awsInfoTextForegroundBrushKey}" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment155PercentFontSizeKey}}" />
+        <Setter Property="FontWeight" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment155PercentFontWeightKey}}" />
+    </Style>
+
+    <Style
+        x:Key="awsLabel200PercentStyle"
+        BasedOn="{StaticResource awsLabelBaseStyle}"
+        TargetType="{x:Type Label}">
+        <Setter Property="Foreground" Value="{DynamicResource awsInfoTextForegroundBrushKey}" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment200PercentFontSizeKey}}" />
+        <Setter Property="FontWeight" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment200PercentFontWeightKey}}" />
+    </Style>
+
+    <Style
+        x:Key="awsLabel310PercentStyle"
+        BasedOn="{StaticResource awsLabelBaseStyle}"
+        TargetType="{x:Type Label}">
+        <Setter Property="Foreground" Value="{DynamicResource awsInfoTextForegroundBrushKey}" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment310PercentFontSizeKey}}" />
+        <Setter Property="FontWeight" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment310PercentFontWeightKey}}" />
+    </Style>
+
+    <Style
+        x:Key="awsLabel375PercentStyle"
+        BasedOn="{StaticResource awsLabelBaseStyle}"
+        TargetType="{x:Type Label}">
+        <Setter Property="Foreground" Value="{DynamicResource awsInfoTextForegroundBrushKey}" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment375PercentFontSizeKey}}" />
+        <Setter Property="FontWeight" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment375PercentFontWeightKey}}" />
     </Style>
 
     <!--
-    *************************************************************************************
-    * TextBlock styles
-    *************************************************************************************
+        *************************************************************************************
+        * TextBlock styles
+        *************************************************************************************
     -->
 
-    <Style x:Key="awsTextBlockBaseStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+    <Style
+        x:Key="awsTextBlockBaseStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="{x:Type TextBlock}">
         <Setter Property="ToolTipService.ShowDuration">
             <Setter.Value>10000</Setter.Value>
         </Setter>
-        <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="Foreground" Value="{DynamicResource awsDefaultControlForegroundBrushKey}"/>
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="{DynamicResource awsDefaultControlForegroundBrushKey}" />
+        <Setter Property="FontFamily" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontFamilyKey}}" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontSizeKey}}" />
     </Style>
 
-    <Style x:Key="awsInfoTextStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource awsTextBlockBaseStyle}">
-        <Setter Property="Foreground" Value="{DynamicResource awsInfoTextForegroundBrushKey}"/>
-        <Setter Property="FontFamily" Value="Segou UI" />
-        <Setter Property="FontSize" Value="12"/>
+    <Style
+        x:Key="awsTextBlock122PercentStyle"
+        BasedOn="{StaticResource awsTextBlockBaseStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource awsInfoTextForegroundBrushKey}" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment122PercentFontSizeKey}}" />
+        <Setter Property="FontWeight" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment122PercentFontWeightKey}}" />
     </Style>
 
-    <Style x:Key="awsFieldHintTextStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource awsInfoTextStyle}">
-        <Setter Property="Foreground" Value="{DynamicResource awsFieldHintTextForegroundBrushKey}"/>
+    <Style
+        x:Key="awsTextBlock133PercentStyle"
+        BasedOn="{StaticResource awsTextBlockBaseStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource awsInfoTextForegroundBrushKey}" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment133PercentFontSizeKey}}" />
+        <Setter Property="FontWeight" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment133PercentFontWeightKey}}" />
     </Style>
 
-    <Style x:Key="awsUrlTextFieldStyle" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource awsTextBlockBaseStyle}">
-        <Setter Property="Foreground" Value="{DynamicResource awsUrlTextFieldForegroundBrushKey}"/>
+    <Style
+        x:Key="awsTextBlock155PercentStyle"
+        BasedOn="{StaticResource awsTextBlockBaseStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource awsInfoTextForegroundBrushKey}" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment155PercentFontSizeKey}}" />
+        <Setter Property="FontWeight" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment155PercentFontWeightKey}}" />
+    </Style>
+
+    <Style
+        x:Key="awsTextBlock200PercentStyle"
+        BasedOn="{StaticResource awsTextBlockBaseStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource awsInfoTextForegroundBrushKey}" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment200PercentFontSizeKey}}" />
+        <Setter Property="FontWeight" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment200PercentFontWeightKey}}" />
+    </Style>
+
+    <Style
+        x:Key="awsTextBlock310PercentStyle"
+        BasedOn="{StaticResource awsTextBlockBaseStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource awsInfoTextForegroundBrushKey}" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment310PercentFontSizeKey}}" />
+        <Setter Property="FontWeight" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment310PercentFontWeightKey}}" />
+    </Style>
+
+    <Style
+        x:Key="awsTextBlock375PercentStyle"
+        BasedOn="{StaticResource awsTextBlockBaseStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource awsInfoTextForegroundBrushKey}" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment375PercentFontSizeKey}}" />
+        <Setter Property="FontWeight" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.Environment375PercentFontWeightKey}}" />
+    </Style>
+
+    <Style
+        x:Key="awsInfoTextStyle"
+        BasedOn="{StaticResource awsTextBlockBaseStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource awsInfoTextForegroundBrushKey}" />
+    </Style>
+
+    <Style
+        x:Key="awsFieldHintTextStyle"
+        BasedOn="{StaticResource awsInfoTextStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource awsFieldHintTextForegroundBrushKey}" />
+    </Style>
+
+    <Style
+        x:Key="awsUrlTextFieldStyle"
+        BasedOn="{StaticResource awsTextBlockBaseStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource awsUrlTextFieldForegroundBrushKey}" />
     </Style>
 
     <!--
-    *************************************************************************************
-    * TextBox styles
-    *************************************************************************************
+        *************************************************************************************
+        * TextBox styles
+        *************************************************************************************
     -->
 
-    <Style x:Key="awsTextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
-        <Setter Property="VerticalAlignment" Value="Center"/>
+    <Style
+        x:Key="awsTextBoxStyle"
+        BasedOn="{StaticResource {x:Type TextBox}}"
+        TargetType="{x:Type TextBox}">
+        <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{DynamicResource awsTextBoxForegroundBrushKey}" />
-        <Setter Property="Panel.Background" Value="{DynamicResource awsTextBoxBackgroundBrushKey}"/>
-        <Setter Property="Border.BorderBrush" Value="{DynamicResource awsTextBoxBorderBrushKey}"/>
-        <Setter Property="CaretBrush" Value="{DynamicResource awsTextBoxForegroundBrushKey}"/>
-        <Setter Property="Padding" Value="1"/>
+        <Setter Property="Panel.Background" Value="{DynamicResource awsTextBoxBackgroundBrushKey}" />
+        <Setter Property="Border.BorderBrush" Value="{DynamicResource awsTextBoxBorderBrushKey}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource awsTextBoxForegroundBrushKey}" />
+        <Setter Property="Padding" Value="1" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="TextBoxBase" >
-                    <Border BorderThickness="{TemplateBinding Border.BorderThickness}" 
-                            BorderBrush="{TemplateBinding Border.BorderBrush}" 
-                            Background="{TemplateBinding Panel.Background}" 
-                            Name="Bd" 
-                            SnapsToDevicePixels="True"
-                            Padding="{TemplateBinding Padding}">
-                        <ScrollViewer Name="PART_ContentHost" 
-                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                <ControlTemplate TargetType="TextBoxBase">
+                    <Border
+                        Name="Bd"
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Panel.Background}"
+                        BorderBrush="{TemplateBinding Border.BorderBrush}"
+                        BorderThickness="{TemplateBinding Border.BorderThickness}"
+                        SnapsToDevicePixels="True">
+                        <ScrollViewer Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                     </Border>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsEnabled" Value="false">
-                            <!-- a grey border stands out too much, so blend in with the background here -->
-                            <Setter TargetName="Bd"
-                                    Property="BorderBrush"
-                                    Value="{DynamicResource awsTextBoxBackgroundBrushKey}"
-                                    />
-                            <Setter Property="Foreground"
-                                    Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Bd" Property="Opacity" Value=".5" />
+                            <Setter Property="TextBox.Foreground" Value="{DynamicResource awsWindowTextGrayBrushKey}" />
                         </Trigger>
                         <!-- Visual Studio does not exhibit any mouseover trigger behavior
                         <Trigger Property="UIElement.IsMouseOver">
@@ -93,9 +219,9 @@
                                 <s:Boolean>True</s:Boolean>
                             </Trigger.Value>
                         </Trigger>
-                         -->
+                        -->
                         <Trigger Property="IsKeyboardFocused" Value="True">
-                            <Setter Property="Border.BorderBrush" TargetName="Bd" Value="{DynamicResource awsTextBoxSelectedBorderBrushKey}"/>
+                            <Setter TargetName="Bd" Property="Border.BorderBrush" Value="{DynamicResource awsTextBoxSelectedBorderBrushKey}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -103,7 +229,10 @@
         </Setter>
     </Style>
 
-    <Style x:Key="awsSelectableTextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource awsTextBoxStyle}">
+    <Style
+        x:Key="awsSelectableTextBoxStyle"
+        BasedOn="{StaticResource awsTextBoxStyle}"
+        TargetType="{x:Type TextBox}">
         <Setter Property="Background">
             <Setter.Value>Transparent</Setter.Value>
         </Setter>
@@ -113,44 +242,53 @@
         <Setter Property="TextBox.IsReadOnly">
             <Setter.Value>True</Setter.Value>
         </Setter>
-        <Setter Property="Foreground" Value="{DynamicResource awsSelectableTextBoxBrushKey}"/>
-        <Setter Property="FontFamily" Value="Segou UI" />
-        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="{DynamicResource awsSelectableTextBoxBrushKey}" />
+        <Setter Property="FontFamily" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontFamilyKey}}" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontSizeKey}}" />
     </Style>
 
-    <Style x:Key="awsUrlFieldSelectableTextBoxStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource awsSelectableTextBoxStyle}">
-        <Setter Property="Foreground" Value="{DynamicResource awsUrlTextFieldForegroundBrushKey}"/>
+    <Style
+        x:Key="awsUrlFieldSelectableTextBoxStyle"
+        BasedOn="{StaticResource awsSelectableTextBoxStyle}"
+        TargetType="{x:Type TextBox}">
+        <Setter Property="Foreground" Value="{DynamicResource awsUrlTextFieldForegroundBrushKey}" />
     </Style>
 
     <!--
-    *************************************************************************************
-    * PasswordBox styles
-    *************************************************************************************
+        *************************************************************************************
+        * PasswordBox styles
+        *************************************************************************************
     -->
 
-    <Style x:Key="awsPasswordBoxStyle" TargetType="{x:Type PasswordBox}" BasedOn="{StaticResource {x:Type PasswordBox}}">
-        <Setter Property="VerticalAlignment" Value="Center"/>
+    <Style
+        x:Key="awsPasswordBoxStyle"
+        BasedOn="{StaticResource {x:Type PasswordBox}}"
+        TargetType="{x:Type PasswordBox}">
+        <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Foreground" Value="{DynamicResource awsTextBoxForegroundBrushKey}" />
-        <Setter Property="Panel.Background" Value="{DynamicResource awsTextBoxBackgroundBrushKey}"/>
-        <Setter Property="Border.BorderBrush" Value="{DynamicResource awsTextBoxBorderBrushKey}"/>
-        <Setter Property="CaretBrush" Value="{DynamicResource awsTextBoxForegroundBrushKey}"/>
-        <Setter Property="Padding" Value="1"/>
+        <Setter Property="Panel.Background" Value="{DynamicResource awsTextBoxBackgroundBrushKey}" />
+        <Setter Property="Border.BorderBrush" Value="{DynamicResource awsTextBoxBorderBrushKey}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource awsTextBoxForegroundBrushKey}" />
+        <Setter Property="Padding" Value="1" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="PasswordBox" >
-                    <Border BorderThickness="{TemplateBinding Border.BorderThickness}" 
-                            BorderBrush="{TemplateBinding Border.BorderBrush}" 
-                            Background="{TemplateBinding Panel.Background}" 
-                            Name="border" 
-                            SnapsToDevicePixels="True"
-                            Padding="{TemplateBinding Padding}">
-                        <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" 
-                                      Name="PART_ContentHost" 
-                                      Focusable="False" />
+                <ControlTemplate TargetType="PasswordBox">
+                    <Border
+                        Name="border"
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Panel.Background}"
+                        BorderBrush="{TemplateBinding Border.BorderBrush}"
+                        BorderThickness="{TemplateBinding Border.BorderThickness}"
+                        SnapsToDevicePixels="True">
+                        <ScrollViewer
+                            Name="PART_ContentHost"
+                            Focusable="False"
+                            HorizontalScrollBarVisibility="Hidden"
+                            VerticalScrollBarVisibility="Hidden" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="UIElement.IsEnabled">
-                            <Setter Property="UIElement.Opacity" TargetName="border">
+                            <Setter TargetName="border" Property="UIElement.Opacity">
                                 <Setter.Value>
                                     <s:Double>0.56</s:Double>
                                 </Setter.Value>
@@ -172,7 +310,7 @@
                             </Trigger.Value>
                         </Trigger>
                         <Trigger Property="UIElement.IsKeyboardFocused">
-                            <Setter Property="Border.BorderBrush" TargetName="border" Value="{DynamicResource awsTextBoxSelectedBorderBrushKey}"/>
+                            <Setter TargetName="border" Property="Border.BorderBrush" Value="{DynamicResource awsTextBoxSelectedBorderBrushKey}" />
                             <Trigger.Value>
                                 <s:Boolean>True</s:Boolean>
                             </Trigger.Value>

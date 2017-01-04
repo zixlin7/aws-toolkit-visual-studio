@@ -18,13 +18,13 @@
             <!-- style is referenced through codebehind, so don't delete -->
             <Style x:Key="{x:Static ToolBar.MenuStyleKey}" TargetType="Menu">
                 <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="Foreground" Value="{DynamicResource awsToolBarTextBrushKey}"/>
+                <Setter Property="Foreground" Value="{DynamicResource awsCommandBarTextKey}"/>
                 <Setter Property="Padding" Value="0,2,2,0"/>
             </Style>
             
             <!-- style is applied through codebehind, so don't delete -->
             <Style x:Key="menuItemStyle" TargetType="MenuItem">
-                <Setter Property="Foreground" Value="{DynamicResource awsToolBarTextBrushKey}"/>
+                <Setter Property="Foreground" Value="{DynamicResource awsCommandBarTextKey}"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
             </Style>
             
@@ -86,7 +86,7 @@
                             <StackPanel Orientation="Horizontal" Margin="0" HorizontalAlignment="Left">
                                 <TextBlock Margin="0">Environment</TextBlock>
                                 <Path x:Name="Arrow" Data="{DynamicResource awsDownArrowGeometry}" 
-                                      Fill="{DynamicResource awsToolBarTextBrushKey}" 
+                                      Fill="{DynamicResource awsCommandBarTextKey}" 
                                       HorizontalAlignment="Center" 
                                       Margin="3,1,0,0" 
                                       VerticalAlignment="Center"/>

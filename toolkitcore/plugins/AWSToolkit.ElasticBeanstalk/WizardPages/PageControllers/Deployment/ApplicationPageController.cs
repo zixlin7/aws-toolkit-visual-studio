@@ -39,7 +39,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
         public string PageDescription
         {
-            get { return "Enter the details for your new application environment. To create a new new environment for an existing application, select the appropriate application."; }
+            get { return "Enter the details for your new application environment. To create a new environment for an existing application, select the appropriate application."; }
         }
 
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)

@@ -42,7 +42,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Label Grid.Row="0" Style="{DynamicResource awsSubHeaderLabelStyle}">
+            <Label Grid.Row="0" Style="{DynamicResource awsLabel122PercentStyle}">
                 Execution
             </Label>
 
@@ -85,7 +85,7 @@
             <Label
                 Grid.Row="3"
                 Margin="0,20,0,0"
-                Style="{DynamicResource awsSubHeaderLabelStyle}">
+                Style="{DynamicResource awsLabel122PercentStyle}">
                 VPC
             </Label>
 
@@ -161,7 +161,7 @@
             <Label
                 Grid.Row="0"
                 Grid.ColumnSpan="2"
-                Style="{DynamicResource awsSubHeaderLabelStyle}">
+                Style="{DynamicResource awsLabel122PercentStyle}">
                 Environment
             </Label>
 

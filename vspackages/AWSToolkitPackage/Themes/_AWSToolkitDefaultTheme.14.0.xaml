@@ -1,0 +1,464 @@
+﻿<!--
+    AWS Toolkit theme defaults for Visual Studio 2015 shell.
+-->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:platformui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0">
+
+    <!--
+        ********************************************************************************
+        * Windows and dialogs
+        ********************************************************************************
+    -->
+    <SolidColorBrush x:Key="awsToolWindowBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowBackgroundColorKey}}" />
+    <SolidColorBrush x:Key="awsToolWindowTextBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowTextColorKey}}" />
+
+    <SolidColorBrush x:Key="awsDialogBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowBackgroundColorKey}}" />
+    <SolidColorBrush x:Key="awsDialogTextBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowTextColorKey}}" />
+
+    <SolidColorBrush x:Key="awsStatusPanelBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.BrandedUIFillColorKey}}" />
+
+    <!--
+        using tool window background for views seems the most cross-theme compatible; VsColors.BackgroundKey is dark
+        grey in light/blue themes
+    -->
+    <SolidColorBrush x:Key="awsWindowBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowBackgroundColorKey}}" />
+    <SolidColorBrush x:Key="awsWindowTextBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowTextColorKey}}" />
+    <SolidColorBrush x:Key="awsWindowTextGrayBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemGrayTextColorKey}}" />
+
+    <SolidColorBrush x:Key="awsPanelHeaderAccentBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.PanelTitleBarColorKey}}" />
+
+    <SolidColorBrush x:Key="awsPanelBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.PanelBorderColorKey}}" />
+
+    <Color x:Key="awsPanelBackgroundGradientStop0ColorKey">#C0C0C0</Color>
+    <Color x:Key="awsPanelBackgroundGradientStop1ColorKey">#F5F5F5</Color>
+
+    <SolidColorBrush x:Key="awsPanelBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.PanelGradientLightColorKey}}" />
+
+    <SolidColorBrush x:Key="awsPanelForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowTextColorKey}}" />
+
+    <!--
+        ********************************************************************************
+        * Buttons
+        ********************************************************************************
+    -->
+
+    <Color x:Key="awsButtonNormalBackgroundGradientStop0ColorKey">#F3F3F3</Color>
+    <Color x:Key="awsButtonNormalBackgroundGradientStop1ColorKey">#EBEBEB</Color>
+    <Color x:Key="awsButtonNormalBackgroundGradientStop2ColorKey">#DDDDDD</Color>
+    <Color x:Key="awsButtonNormalBackgroundGradientStop3ColorKey">#CDCDCD</Color>
+    <Color x:Key="awsButtonOverBackgroundGradientStop0ColorKey">#FFFAFAFA</Color>
+    <Color x:Key="awsButtonOverBackgroundGradientStop1ColorKey">#FFE0E0E3</Color>
+    <Color x:Key="awsButtonPressedBackgroundGradientStop0ColorKey">#FFE0E0E2</Color>
+    <Color x:Key="awsButtonPressedBackgroundGradientStop1ColorKey">#FFF8F8F8</Color>
+
+    <SolidColorBrush x:Key="awsButtonNormalBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ControlOutlineColorKey}}" />
+    <SolidColorBrush x:Key="awsButtonNormalBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemButtonFaceColorKey}}" />
+    <SolidColorBrush x:Key="awsButtonTextBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemButtonTextColorKey}}" />
+    <SolidColorBrush x:Key="awsButtonIsDefaultBorderBrush" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemHighlightColorKey}}" />
+    <SolidColorBrush x:Key="awsButtonPressedBorderBrush" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemHighlightColorKey}}" />
+    <SolidColorBrush x:Key="awsButtonMouseOverBorderBrush" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemHighlightColorKey}}" />
+
+    <SolidColorBrush x:Key="awsCheckboxOrRadioBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ControlOutlineColorKey}}" />
+    <SolidColorBrush x:Key="awsCheckboxOrRadioForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowTextColorKey}}" />
+    <SolidColorBrush x:Key="awsCheckboxOrRadioBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowColorKey}}" />
+
+    <!--
+        ********************************************************************************
+        * List/Grid controls
+        ********************************************************************************
+    -->
+
+    <SolidColorBrush x:Key="awsGridBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowFrameColorKey}}" />
+
+    <SolidColorBrush x:Key="awsGridSplitterTextForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.GridHeadingTextColorKey}}" />
+    <SolidColorBrush x:Key="awsGridSplitterBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.GridHeadingBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsGridHeadingBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.GridHeadingBackgroundColorKey}}" />
+    <SolidColorBrush x:Key="awsGridHeadingForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.GridHeadingTextColorKey}}" />
+
+    <!--  VsColors.WindowKey is too dark in light/blue themes  -->
+    <SolidColorBrush x:Key="awsGridBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowBackgroundColorKey}}" />
+    <SolidColorBrush x:Key="awsGridLineBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.GridLineColorKey}}" />
+    <SolidColorBrush x:Key="awsGridForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowTextColorKey}}" />
+
+    <SolidColorBrush x:Key="awsGridAttributeChangedForegroundBrushKey" Color="Red" />
+
+    <SolidColorBrush x:Key="awsGridSelectedRowBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemHighlightColorKey}}" />
+    <SolidColorBrush x:Key="awsGridSelectedCellForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemHighlightColorKey}}" />
+
+    <SolidColorBrush x:Key="awsGridSelectedNotFocussedRowBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsGridSplitterBackgroundGradientBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.PanelSeparatorColorKey}}" />
+
+    <!--
+        ********************************************************************************
+        * Popups
+        ********************************************************************************
+    -->
+    <SolidColorBrush x:Key="awsPopupBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.DropDownPopupBorderColorKey}}" />
+
+    <SolidColorBrush x:Key="awsDropShadowBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.DropShadowBackgroundColorKey}}" />
+    <DropShadowEffect
+        x:Key="awsDropShadowEffectKey"
+        Opacity=".5"
+        Color="{DynamicResource {x:Static platformui:EnvironmentColors.DropShadowBackgroundColorKey}}" />
+
+    <LinearGradientBrush x:Key="awsPopupBackgroundBrushKey" StartPoint="0.5, 0" EndPoint="0.5, 1">
+        <GradientStop Offset="0" Color="{DynamicResource {x:Static platformui:EnvironmentColors.DropDownPopupBackgroundBeginColorKey}}" />
+        <GradientStop Offset="1" Color="{DynamicResource {x:Static platformui:EnvironmentColors.DropDownPopupBackgroundEndColorKey}}" />
+    </LinearGradientBrush>
+
+    <!--
+        ********************************************************************************
+        * Tab controls
+        ********************************************************************************
+    -->
+    <SolidColorBrush x:Key="awsTabStripBackgroundBrushKey" Color="Transparent" />
+
+    <SolidColorBrush x:Key="awsTabContentBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowTabBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsTabContentBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowTabBorderColorKey}}" />
+
+    <SolidColorBrush x:Key="awsSelectedTabItemBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowTabSelectedTabColorKey}}" />
+    <SolidColorBrush x:Key="awsSelectedTabItemBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowTabSelectedTextColorKey}}" />
+    <SolidColorBrush x:Key="awsSelectedTabItemBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowTabSelectedTabColorKey}}" />
+
+    <SolidColorBrush x:Key="awsHotTabItemBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowTabMouseOverBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsHotTabItemBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowTabMouseOverTextColorKey}}" />
+    <LinearGradientBrush x:Key="awsHotTabItemBackgroundBrushKey" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowTabMouseOverBackgroundBeginColorKey}}" />
+        <GradientStop Offset="1" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowTabMouseOverBackgroundEndColorKey}}" />
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="awsDisabledTabItemBackgroundBrushKey" Color="#F4F4F4" />
+    <SolidColorBrush x:Key="awsDisabledTabItemBorderBrushKey" Color="#FFC9C7BA" />
+
+    <SolidColorBrush x:Key="awsTabControlForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowTabTextColorKey}}" />
+    <SolidColorBrush x:Key="awsTabControlDisabledForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemGrayTextColorKey}}" />
+
+    <LinearGradientBrush x:Key="awsTabControlUnselectedBackgroundBrushKey" StartPoint="0,0" EndPoint="1,0">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Offset="0" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowTabGradientBeginColorKey}}" />
+            <GradientStop Offset="1" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowTabGradientEndColorKey}}" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <!--
+        ********************************************************************************
+        * Menus
+        ********************************************************************************
+    -->
+    <LinearGradientBrush x:Key="awsMenuBackgroundBrushKey">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Offset="0" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarMenuBackgroundGradientBeginColorKey}}" />
+            <GradientStop Offset="1" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarMenuBackgroundGradientEndColorKey}}" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="awsMenuIconBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarMenuIconBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsMenuForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemMenuTextColorKey}}" />
+    <SolidColorBrush x:Key="awsMenuBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarMenuBorderColorKey}}" />
+
+    <SolidColorBrush x:Key="awsMenuSeparatorBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarMenuSeparatorColorKey}}" />
+
+    <SolidColorBrush x:Key="awsMenuDisabledForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarTextInactiveColorKey}}" />
+
+    <SolidColorBrush x:Key="awsMenuSelectedBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemButtonHighlightColorKey}}" />
+
+    <SolidColorBrush x:Key="awsMenuHighlightedBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarHoverColorKey}}" />
+    <SolidColorBrush x:Key="awsMenuHighlightedBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarHoverColorKey}}" />
+    <SolidColorBrush x:Key="awsMenuSubmenuArrowGlyphHighlightedBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemMenuTextColorKey}}" />
+
+    <!--
+        ********************************************************************************
+        * Scrollbars
+        ********************************************************************************
+    -->
+
+    <SolidColorBrush x:Key="awsScrollBarBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemScrollBarColorKey}}" />
+
+    <SolidColorBrush x:Key="awsScrollBarHorizontalBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ScrollBarBackgroundColorKey}}" />
+    <SolidColorBrush x:Key="awsScrollBarVerticalBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ScrollBarBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsScrollBarDisabledBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ScrollBarDisabledBackgroundColorKey}}" />
+
+    <!--
+        VS does not have a color key for scroll bar arrows, relying on fixed colors. For blue/light theme, this is #FF868999 (255, 134, 137, 153).
+        For dark theme, it uses #FF999999 (255, 153, 153, 153). As we don't (yet) detect theme change events so we could flip the color I've chosen
+        to average the tones to one we can use in all themes (255, 143, 145, 153). This looks better than adopting the white of the combobox glyph.
+    -->
+    <SolidColorBrush x:Key="awsScrollBarArrowBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ScrollBarArrowGlyphColorKey}}" />
+    <SolidColorBrush x:Key="awsScrollBarArrowBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ScrollBarArrowBackgroundColorKey}}" />
+    <SolidColorBrush x:Key="awsScrollBarArrowDisabledBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ScrollBarArrowDisabledBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsScrollBarArrowMouseOverBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ScrollBarArrowMouseOverBackgroundColorKey}}" />
+    <SolidColorBrush x:Key="awsScrollBarArrowMouseOverBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemHighlightColorKey}}" />
+
+    <SolidColorBrush x:Key="awsScrollBarArrowPressedBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ScrollBarArrowPressedBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsScrollBarThumbBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ScrollBarThumbBackgroundColorKey}}" />
+    <SolidColorBrush x:Key="awsScrollBarThumbBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ScrollBarThumbBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsScrollBarThumbGlyphBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ScrollBarThumbGlyphColorKey}}" />
+
+    <SolidColorBrush x:Key="awsScrollBarThumbMouseOverBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ScrollBarThumbMouseOverBackgroundColorKey}}" />
+    <SolidColorBrush x:Key="awsScrollBarThumbPressedBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ScrollBarThumbPressedBackgroundColorKey}}" />
+
+    <!--
+        ********************************************************************************
+        * Toolbars
+        ********************************************************************************
+    -->
+    <SolidColorBrush x:Key="awsCommandBarTextKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarTextActiveColorKey}}" />
+    <SolidColorBrush x:Key="awsCommandBarTextDisabledKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarTextInactiveColorKey}}" />
+
+    <SolidColorBrush x:Key="awsToolBarButtonHoverBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarHoverColorKey}}" />
+    <LinearGradientBrush x:Key="awsToolBarSubMenuBackgroundBrushKey">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Offset="0" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarMenuBackgroundGradientBeginColorKey}}" />
+            <GradientStop Offset="1" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarMenuBackgroundGradientEndColorKey}}" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="awsToolBarButtonHoverBorderBrushColorKey">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Offset="0" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarMouseOverBackgroundBeginColorKey}}" />
+            <GradientStop Offset="1" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarMouseOverBackgroundEndColorKey}}" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="awsToolBarButtonCheckedBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowButtonDownColorKey}}" />
+    <SolidColorBrush x:Key="awsToolBarButtonPressedBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowButtonDownBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsToolBarButtonPressedBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ToolWindowButtonDownColorKey}}" />
+
+    <LinearGradientBrush x:Key="awsHorizontalToolBarBackgroundBrushKey" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarGradientBeginColorKey}}" />
+        <GradientStop Offset="0.5" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarGradientMiddleColorKey}}" />
+        <GradientStop Offset="1" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarGradientEndColorKey}}" />
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="awsVerticalToolBarBackgroundBrushKey" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Offset="0" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarGradientBeginColorKey}}" />
+        <GradientStop Offset="0.5" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarGradientMiddleColorKey}}" />
+        <GradientStop Offset="1" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarGradientEndColorKey}}" />
+    </LinearGradientBrush>
+
+    <!--
+        ********************************************************************************
+        * List Boxes
+        ********************************************************************************
+    -->
+
+    <!--
+        These are used in custom list boxes where the items are a panel of controls, eg quicklaunch, storage.
+        Dark theme has some overrides to reduce the color.
+    -->
+    <SolidColorBrush x:Key="awsListBoxPanelItemBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.BrandedUIFillColorKey}}" />
+    <SolidColorBrush x:Key="awsListBoxPanelItemHoverBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemHighlightColorKey}}" />
+    <SolidColorBrush x:Key="awsListBoxPanelItemSelectedBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemHighlightColorKey}}" />
+    <SolidColorBrush x:Key="awsListBoxPanelItemSelectedBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemHighlightColorKey}}" />
+
+    <!--
+        ********************************************************************************
+        * Wizards
+        ********************************************************************************
+    -->
+
+    <SolidColorBrush x:Key="awsWizardBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowColorKey}}" />
+
+    <SolidColorBrush x:Key="awsWizardPageGroupPanelBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.WizardOrientationPanelBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsWizardPageGroupForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.StartPageTextSubHeadingColorKey}}" />
+    <SolidColorBrush x:Key="awsWizardPageGroupForegroundSelectedBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemHighlightColorKey}}" />
+
+    <SolidColorBrush x:Key="awsWizardPagesPanelBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.WizardOrientationPanelBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsWizardPanelVerticalDividerBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemThreeDFaceColorKey}}" />
+
+    <SolidColorBrush x:Key="awsWizardFooterContainerBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.WizardOrientationPanelBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsWizardPageHeaderForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowTextColorKey}}" />
+    <SolidColorBrush x:Key="awsWizardPageSubHeaderForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.StartPageTextSubHeadingColorKey}}" />
+
+    <SolidColorBrush x:Key="awsWizardGroupHeaderForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowTextColorKey}}" />
+    <SolidColorBrush x:Key="awsWizardGroupSubHeaderForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.StartPageTextSubHeadingColorKey}}" />
+
+    <SolidColorBrush x:Key="awsWizardReviewPanelsBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowColorKey}}" />
+    <SolidColorBrush x:Key="awsWizardReviewPanelSectionHeaderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowTextColorKey}}" />
+    <SolidColorBrush x:Key="awsWizardReviewPanelSectionTextBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowTextColorKey}}" />
+    <SolidColorBrush x:Key="awsWizardReviewPanelSectionDividerBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.PanelSeparatorColorKey}}" />
+
+    <!--
+        ********************************************************************************
+        * TextBoxes
+        ********************************************************************************
+    -->
+
+    <SolidColorBrush x:Key="awsTextBoxBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ControlOutlineColorKey}}" />
+    <SolidColorBrush x:Key="awsTextBoxForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowTextColorKey}}" />
+    <SolidColorBrush x:Key="awsTextBoxBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowColorKey}}" />
+
+    <!--  VS does not exhibit mouse-over behaviors for textboxes, so retain original border above  -->
+    <SolidColorBrush x:Key="awsTextBoxMouseOverBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ControlOutlineColorKey}}" />
+    <SolidColorBrush x:Key="awsTextBoxSelectedBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemHighlightColorKey}}" />
+
+    <!--
+        ********************************************************************************
+        * ComboBox overrides - so we gain the 'flatter' style present in VS and not the
+        * 'raised button' style used by default in WPF. Because the combobox control
+        * template uses hard-wired colors, we also need to copy the template to make
+        * use of these color remaps and can't just set them in style overrides.
+        ********************************************************************************
+    -->
+
+    <!--
+        readonly combobox color assignments
+    -->
+    <SolidColorBrush x:Key="awsComboBoxBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsComboBoxBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxBackgroundColorKey}}" />
+
+    <LinearGradientBrush x:Key="awsComboBoxDropPanelBackgroundBrushKey">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Offset="0" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxPopupBackgroundBeginColorKey}}" />
+            <GradientStop Offset="1" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxPopupBackgroundEndColorKey}}" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="awsComboBoxToggleButtonBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsComboBoxToggleButtonBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsComboBoxToggleButtonSplitBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsComboBoxToggleButtonSplitBorderBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsComboBoxArrowBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxGlyphColorKey}}" />
+
+    <SolidColorBrush x:Key="awsComboBoxDisabledBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxDisabledBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsComboBoxDisabledBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxDisabledBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsComboBoxArrowDisabledBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxDisabledGlyphColorKey}}" />
+
+    <SolidColorBrush x:Key="awsComboBoxMouseOverBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseOverBorderColorKey}}" />
+
+    <LinearGradientBrush x:Key="awsComboBoxMouseOverBackgroundBrushKey" StartPoint="0,0" EndPoint="0,1">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Offset="0" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseOverBackgroundBeginColorKey}}" />
+            <GradientStop Offset="1" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseOverBackgroundEndColorKey}}" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="awsComboBoxArrowMouseOverBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseOverGlyphColorKey}}" />
+
+    <SolidColorBrush x:Key="awsComboBoxMouseOverSplitBorderBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseOverBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsComboBoxMouseOverSplitBorderBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxButtonMouseOverBackgroundColorKey}}" />
+
+    <!--  note: VS 2013 only switches entire border for editable combo boxes  -->
+    <SolidColorBrush x:Key="awsComboBoxPressedBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseDownBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsComboBoxPressedBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseDownBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsComboBoxArrowPressedBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseDownGlyphColorKey}}" />
+
+    <SolidColorBrush x:Key="awsComboBoxPressedSplitBorderBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseDownBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsComboBoxPressedSplitBorderBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxButtonMouseDownBackgroundColorKey}}" />
+
+    <!--
+        editable combobox color assignments
+    -->
+    <SolidColorBrush x:Key="awsComboBoxEditableBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsComboBoxEditableBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsComboBoxEditableDisabledBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxDisabledBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsComboBoxEditableDisabledBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxDisabledBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsComboBoxEditableDisabledSplitBorderBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxDisabledBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsComboBoxEditableDisabledSplitBorderBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxDisabledBackgroundColorKey}}" />
+
+    <LinearGradientBrush x:Key="awsComboBoxEditableMouseOverBackgroundBrushKey">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Offset="0" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseOverBackgroundBeginColorKey}}" />
+            <GradientStop Offset="1" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseOverBackgroundEndColorKey}}" />
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="awsComboBoxEditableMouseOverBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseOverBorderColorKey}}" />
+
+    <SolidColorBrush x:Key="awsComboBoxEditableArrowMouseOverBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseOverGlyphColorKey}}" />
+
+    <SolidColorBrush x:Key="awsComboBoxEditableMouseOverSplitBorderBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseOverBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsComboBoxEditableMouseOverSplitBorderBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxButtonMouseOverBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsComboBoxEditableArrowPressedBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseDownGlyphColorKey}}" />
+
+    <SolidColorBrush x:Key="awsComboBoxEditablePressedBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseDownBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsComboBoxEditablePressedBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseDownBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsComboBoxEditablePressedSplitBorderBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxMouseDownBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsComboBoxEditablePressedSplitBorderBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxButtonMouseDownBackgroundColorKey}}" />
+
+    <!--
+        combobox item color assignments
+    -->
+
+    <SolidColorBrush x:Key="awsComboBoxItemTextBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxItemTextColorKey}}" />
+
+    <SolidColorBrush x:Key="awsComboBoxItemMouseOverBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxItemMouseOverBackgroundColorKey}}" />
+    <SolidColorBrush x:Key="awsComboBoxItemMouseOverBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxItemMouseOverBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsComboBoxItemMouseOverTextBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxItemMouseOverTextColorKey}}" />
+
+    <!--
+        ********************************************************************************
+        * TreeViews
+        ********************************************************************************
+    -->
+
+    <SolidColorBrush x:Key="awsTreeViewBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:TreeViewColors.BackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsTreeViewGlyphBrushKey" Color="{DynamicResource {x:Static platformui:TreeViewColors.GlyphColorKey}}" />
+    <SolidColorBrush x:Key="awsTreeViewGlyphMouseOverBrushKey" Color="{DynamicResource {x:Static platformui:TreeViewColors.GlyphMouseOverColorKey}}" />
+    <SolidColorBrush x:Key="awsTreeViewGlyphCheckedBrushKey" Color="{DynamicResource {x:Static platformui:TreeViewColors.SelectedItemActiveGlyphColorKey}}" />
+
+    <SolidColorBrush x:Key="awsTreeViewItemSelectedBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:TreeViewColors.SelectedItemActiveColorKey}}" />
+    <SolidColorBrush x:Key="awsTreeViewItemSelectedTextBrushKey" Color="{DynamicResource {x:Static platformui:TreeViewColors.SelectedItemActiveTextColorKey}}" />
+
+    <SolidColorBrush x:Key="awsTreeViewItemSelectedInactiveBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:TreeViewColors.SelectedItemInactiveColorKey}}" />
+    <SolidColorBrush x:Key="awsTreeViewItemSelectedInactiveTextBrushKey" Color="{DynamicResource {x:Static platformui:TreeViewColors.SelectedItemInactiveTextColorKey}}" />
+
+    <!--
+        ********************************************************************************
+        * Misc
+        ********************************************************************************
+    -->
+    <SolidColorBrush x:Key="awsDefaultControlBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ControlOutlineColorKey}}" />
+    <SolidColorBrush x:Key="awsDefaultControlForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowTextColorKey}}" />
+    <SolidColorBrush x:Key="awsDefaultControlBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowColorKey}}" />
+
+    <SolidColorBrush x:Key="awsDisabledControlForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarTextInactiveColorKey}}" />
+    <SolidColorBrush x:Key="awsDisabledControlBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ComboBoxDisabledBackgroundColorKey}}" />
+
+    <SolidColorBrush x:Key="awsSubHeaderLabelBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.StartPageTextSubHeadingColorKey}}" />
+    <!--  do not use InfoTextKey - it's almost black, even in dark theme  -->
+    <SolidColorBrush x:Key="awsInfoTextForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.BrandedUITextColorKey}}" />
+
+    <SolidColorBrush x:Key="awsFieldHintTextForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ControlEditHintTextColorKey}}" />
+
+    <SolidColorBrush x:Key="awsDividerRuleBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.PanelSeparatorColorKey}}" />
+
+    <SolidColorBrush x:Key="awsAccentBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.AccentBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsAccentDarkBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.AccentDarkColorKey}}" />
+    <SolidColorBrush x:Key="awsAccentMediumBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.AccentMediumColorKey}}" />
+    <SolidColorBrush x:Key="awsAccentLightBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.AccentLightColorKey}}" />
+
+    <SolidColorBrush x:Key="awsSelectableTextBoxBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowTextColorKey}}" />
+
+    <SolidColorBrush x:Key="awsUrlTextFieldForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ControlLinkTextColorKey}}" />
+
+    <SolidColorBrush x:Key="awsHeaderedDropPanelPopupBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.DropDownPopupBorderColorKey}}" />
+    <SolidColorBrush x:Key="awsHeaderedDropPanelHeaderBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.PanelTitleBarColorKey}}" />
+    <SolidColorBrush x:Key="awsHeaderedDropPanelHeaderTextBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.PanelTitleBarTextColorKey}}" />
+    <SolidColorBrush x:Key="awsHeaderedDropPanelFooterBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.DropDownPopupBorderColorKey}}" />
+
+    <SolidColorBrush x:Key="awsStatusTextInfoForeground" Color="Green" />
+    <SolidColorBrush x:Key="awsStatusTextWarnForeground" Color="Orange" />
+    <SolidColorBrush x:Key="awsStatusTextErrorForeground" Color="Red" />
+    <SolidColorBrush x:Key="awsStatusTextOKForeground" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowTextColorKey}}" />
+
+</ResourceDictionary>

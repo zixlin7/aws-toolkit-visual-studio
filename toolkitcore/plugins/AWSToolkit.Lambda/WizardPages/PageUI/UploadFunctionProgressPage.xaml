@@ -29,7 +29,7 @@
         <TextBlock
             Grid.Row="0"
             Margin="8"
-            Style="{DynamicResource awsWizardHeaderPageSubHeaderTextStyle}">
+            Style="{DynamicResource awsTextBlock122PercentStyle}">
             Publishing...
         </TextBlock>
 

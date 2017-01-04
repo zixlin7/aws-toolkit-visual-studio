@@ -20,13 +20,13 @@
             <!--  style is referenced through codebehind, so don't delete  -->
             <Style x:Key="{x:Static ToolBar.MenuStyleKey}" TargetType="Menu">
                 <Setter Property="Background" Value="Transparent" />
-                <Setter Property="Foreground" Value="{DynamicResource awsToolBarTextBrushKey}" />
+                <Setter Property="Foreground" Value="{DynamicResource awsCommandBarTextKey}" />
                 <Setter Property="Padding" Value="0,2,2,0" />
             </Style>
 
             <!--  style is applied through codebehind, so don't delete  -->
             <Style x:Key="menuItemStyle" TargetType="MenuItem">
-                <Setter Property="Foreground" Value="{DynamicResource awsToolBarTextBrushKey}" />
+                <Setter Property="Foreground" Value="{DynamicResource awsCommandBarTextKey}" />
                 <Setter Property="VerticalContentAlignment" Value="Center" />
             </Style>
 
@@ -105,8 +105,8 @@
                 Name="_ctlDetailHeaders"
                 Grid.Row="1"
                 Grid.ColumnSpan="4"
-                Margin="0,0,0,10"
-                Style="{DynamicResource awsWizardGroupHeaderStyle}">
+                Margin="4,6,0,10"
+                Style="{DynamicResource awsLabel133PercentStyle}">
                 Function Details
             </Label>
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Amazon.AWSToolkit.Themes;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace Amazon.AWSToolkit.CommonUI
         {
             SetResourceReference(Control.BackgroundProperty, "awsWindowBackgroundBrushKey");
             SetResourceReference(Control.ForegroundProperty, "awsWindowTextBrushKey");
+            SetResourceReference(Window.FontFamilyProperty, ShellProviderThemeResources.EnvironmentFontFamilyKey);
+            SetResourceReference(Window.FontSizeProperty, ShellProviderThemeResources.EnvironmentFontSizeKey);
         }
 
         public void ShowProperties(IList<PropertiesModel> objs)

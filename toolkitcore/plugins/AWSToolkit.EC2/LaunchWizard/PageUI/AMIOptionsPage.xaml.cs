@@ -35,6 +35,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
             DataContext = this;
             InstanceTypes = new ObservableCollection<InstanceType>();
             VpcSubnets = new ObservableCollection<VpcAndSubnetWrapper>();
+            InstanceCount = 1;
 
             InitializeComponent();
 
@@ -46,8 +47,6 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
             var vpcSubnetsView = (CollectionView)CollectionViewSource.GetDefaultView(_vpcSubnets.ItemsSource);
             var vpcGroupDescription = new PropertyGroupDescription("VpcGroupingHeader");
             vpcSubnetsView.GroupDescriptions.Add(vpcGroupDescription);
-
-            InstanceCount = 1;
         }
 
         public AMIOptionsPage(IAWSWizardPageController controller)

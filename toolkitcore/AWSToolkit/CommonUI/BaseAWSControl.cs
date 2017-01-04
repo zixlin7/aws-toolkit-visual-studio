@@ -10,6 +10,7 @@ using System.Windows.Threading;
 
 using Amazon.AWSToolkit.Shared;
 using log4net;
+using Amazon.AWSToolkit.Themes;
 
 namespace Amazon.AWSToolkit.CommonUI
 {
@@ -73,6 +74,8 @@ namespace Amazon.AWSToolkit.CommonUI
 
             SetResourceReference(Control.BackgroundProperty, "awsDialogBackgroundBrushKey");
             SetResourceReference(Control.ForegroundProperty, "awsDialogTextBrushKey");
+            SetResourceReference(Window.FontFamilyProperty, ShellProviderThemeResources.EnvironmentFontFamilyKey);
+            SetResourceReference(Window.FontSizeProperty, ShellProviderThemeResources.EnvironmentFontSizeKey);
         }
 
         public virtual string Title 

@@ -1,22 +1,23 @@
-﻿<commonui:BaseAWSUserControl 
+﻿<commonui:BaseAWSUserControl
     x:Class="Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment.PermissionsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkitcomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
-    mc:Ignorable="d" 
-    d:DesignHeight="350" d:DesignWidth="500">
+    d:DesignHeight="350"
+    d:DesignWidth="500"
+    mc:Ignorable="d">
 
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height=".5*" />
@@ -30,28 +31,31 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}" Grid.Row="0">
+            <Label Grid.Row="0" Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                 Deployed Application Permissions
             </Label>
 
             <Grid Grid.Row="1" Margin="8,4,0,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Label Target="{Binding ElementName=_iamPicker}"
-                       Style="{DynamicResource awsWizardFieldLabelStyle}">
+                <Label Style="{DynamicResource awsWizardFieldLabelStyle}" Target="{Binding ElementName=_iamPicker}">
                     _Role:
                 </Label>
-                <toolkitcomponents:IAMCapabilityPicker Name="_iamPicker" Grid.Column="1" Margin="0,1,0,-1"/>
+                <toolkitcomponents:IAMCapabilityPicker
+                    Name="_iamPicker"
+                    Grid.Column="1"
+                    Margin="0,1,0,-1" />
             </Grid>
 
-            <TextBlock Grid.Row="2"   
-                           FontStyle="Italic"
-                           TextWrapping="Wrap"
-                           Margin="12,8,0,0" 
-                           Style="{DynamicResource awsFieldHintTextStyle}">
-                This role is used to delivery AWS credentials to your application so that it can access AWS resources. The permissions for 
+            <TextBlock
+                Grid.Row="2"
+                Margin="12,8,0,0"
+                FontStyle="Italic"
+                Style="{DynamicResource awsFieldHintTextStyle}"
+                TextWrapping="Wrap">
+                This role is used to delivery AWS credentials to your application so that it can access AWS resources. The permissions for
                 the Identity and Access Management role can be updated after the environment is created.
             </TextBlock>
         </Grid>
@@ -63,32 +67,34 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}" Grid.Row="0">
+            <Label Grid.Row="0" Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                 Service Permissions
             </Label>
 
-            <Grid Grid.Row="1"  Margin="8,4,0,0">
+            <Grid Grid.Row="1" Margin="8,4,0,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <Label Target="{Binding ElementName=__ctlServicePermissions}"
-                       Style="{DynamicResource awsWizardFieldLabelStyle}">
+                <Label Style="{DynamicResource awsWizardFieldLabelStyle}" Target="{Binding ElementName=__ctlServicePermissions}">
                     _Role:
                 </Label>
-                <ComboBox Grid.Column="1" x:Name="_ctlServicePermissions"
-                      Style="{DynamicResource awsComboBoxStyle}"
-                      ItemsSource="{Binding ServicePermissionRoles}"
-                      SelectedItem="{Binding SelectedServicePermissionRole}"
-                      Margin="12,8,0,0"/>
+                <ComboBox
+                    x:Name="_ctlServicePermissions"
+                    Grid.Column="1"
+                    Margin="12,8,0,0"
+                    ItemsSource="{Binding ServicePermissionRoles}"
+                    SelectedItem="{Binding SelectedServicePermissionRole}"
+                    Style="{DynamicResource awsComboBoxStyle}" />
             </Grid>
 
-            <TextBlock Style="{DynamicResource awsFieldHintTextStyle}" 
-                       Grid.Row="2"
-                       FontStyle="Italic"
-                       TextWrapping="Wrap"
-                       Margin="12,4,0,0">
+            <TextBlock
+                Grid.Row="2"
+                Margin="12,4,0,0"
+                FontStyle="Italic"
+                Style="{DynamicResource awsFieldHintTextStyle}"
+                TextWrapping="Wrap">
                 A service role allows the Elastic Beanstalk service to monitor
                 environment resources on your behalf. See [Roles and Instance Profiles] in the
                 Elastic Beanstalk developer guide for details.

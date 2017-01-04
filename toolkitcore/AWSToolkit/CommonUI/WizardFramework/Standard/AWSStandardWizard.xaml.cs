@@ -169,15 +169,15 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
         {
         }
 
-        void StyleWizardFromProperties()
-        {
-            if (_awsBaseWizardImpl.IsPropertySet(AWSWizardConstants.WizardOptions.propkey_NavContainerBackground))
-            {
-                var navContainerBackgroundKey 
-                    = _awsBaseWizardImpl.GetProperty(AWSWizardConstants.WizardOptions.propkey_NavContainerBackground) as string;
-                _wizardFooterContainer.SetResourceReference(Panel.BackgroundProperty, navContainerBackgroundKey);
-            }
-        }
+        //void StyleWizardFromProperties()
+        //{
+        //    if (_awsbasewizardimpl.ispropertyset(awswizardconstants.wizardoptions.propkey_navcontainerbackground))
+        //    {
+        //        var navcontainerbackgroundkey 
+        //            = _awsbasewizardimpl.getproperty(awswizardconstants.wizardoptions.propkey_navcontainerbackground) as string;
+        //        _wizardfootercontainer.setresourcereference(panel.backgroundproperty, navcontainerbackgroundkey);
+        //    }
+        //}
 
         #region IAWSWizard implementation
 
@@ -300,8 +300,6 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
 
             try
             {
-                StyleWizardFromProperties();
-
                 _awsBaseWizardImpl.FinalizeForRun();
                 // if we have only one group, we can dispense with the nav panel
                 if (_awsBaseWizardImpl.PageGroupCount == 1)

@@ -1,17 +1,17 @@
-﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.RDS.WizardPages.PageUI.DBInstanceBackupsPage"
+﻿<commonui:BaseAWSUserControl
+    x:Class="Amazon.AWSToolkit.RDS.WizardPages.PageUI.DBInstanceBackupsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
-    >
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit">
 
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    
+
     <Grid Margin="4">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -31,56 +31,59 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
-                       Margin="-16,0,0,4"
-                       >
+                <Label Margin="-16,0,0,4" Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                     Automatic Backups
                 </Label>
 
-                <StackPanel Orientation="Horizontal" 
-                            Grid.Row="1" 
-                            Grid.ColumnSpan="2" 
-                            >
-                    <RadioButton Grid.Row="1" 
-                             GroupName="RetainGroup" 
-                             x:Name="_btnTurnOffBackups"
-                             Checked="_btnTurnOffBackups_Checked"
-                             VerticalAlignment="Center"
-                             Style="{DynamicResource awsRadioButtonBaseStyle}">
-                    _No automatic backups
+                <StackPanel
+                    Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    Orientation="Horizontal">
+                    <RadioButton
+                        x:Name="_btnTurnOffBackups"
+                        Grid.Row="1"
+                        VerticalAlignment="Center"
+                        Checked="_btnTurnOffBackups_Checked"
+                        GroupName="RetainGroup"
+                        Style="{DynamicResource awsRadioButtonBaseStyle}">
+                        _No automatic backups
                     </RadioButton>
-                    <RadioButton GroupName="RetainGroup" 
-                                 x:Name="_btnRetainBackups"
-                                 IsChecked="True"
-                                 Checked="_btnRetainBackups_Checked"
-                                 VerticalAlignment="Center"
-                                 Margin="16,0,0,0"
-                                 Style="{DynamicResource awsRadioButtonBaseStyle}">
+                    <RadioButton
+                        x:Name="_btnRetainBackups"
+                        Margin="16,0,0,0"
+                        VerticalAlignment="Center"
+                        Checked="_btnRetainBackups_Checked"
+                        GroupName="RetainGroup"
+                        IsChecked="True"
+                        Style="{DynamicResource awsRadioButtonBaseStyle}">
                         Backup and _retain for:
                     </RadioButton>
-                    <ComboBox x:Name="_retentionPeriod" 
-                              Width="80" 
-                              VerticalAlignment="Center" 
-                              Margin="4,0,0,0"
-                              Style="{DynamicResource awsComboBoxStyle}"/>
+                    <ComboBox
+                        x:Name="_retentionPeriod"
+                        Width="80"
+                        Margin="4,0,0,0"
+                        VerticalAlignment="Center"
+                        Style="{DynamicResource awsComboBoxStyle}" />
                 </StackPanel>
 
-                <CheckBox x:Name="_btnCustomBackupWindow" 
-                          Grid.Row="2"
-                          Margin="0,22,4,0"
-                          Click="_btnCustomBackupWindow_Click"
-                          IsChecked="False"
-                          Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+                <CheckBox
+                    x:Name="_btnCustomBackupWindow"
+                    Grid.Row="2"
+                    Margin="0,22,4,0"
+                    Click="_btnCustomBackupWindow_Click"
+                    IsChecked="False"
+                    Style="{DynamicResource awsCheckboxButtonBaseStyle}">
                     Use a custom _backup window:
                 </CheckBox>
 
-                <Border Margin="34,12,0,0" 
-                        BorderThickness="1" 
-                        BorderBrush="Silver" 
-                        Grid.Row="2" 
-                        Grid.RowSpan="2" 
-                        Grid.Column="1"
-                        Padding="4">
+                <Border
+                    Grid.Row="2"
+                    Grid.RowSpan="2"
+                    Grid.Column="1"
+                    Margin="34,12,0,0"
+                    Padding="4"
+                    BorderBrush="Silver"
+                    BorderThickness="1">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -95,65 +98,70 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <!-- ugh, this is awful but will do for now in the absence of better controls... -->
-                        <Label Target="{Binding ElementName=_backupStartHours}" Style="{DynamicResource awsLabelBaseStyle}">_Start time:</Label>
-                        <ComboBox x:Name="_backupStartHours" 
-                                  Grid.Column="1" 
-                                  Width="50" 
-                                  Margin="4,0,0,0"
-                                  VerticalAlignment="Center" 
-                                  IsEnabled="False"
-                                  SelectionChanged="BackupStart_SelectionChanged"
-                                  Style="{DynamicResource awsComboBoxStyle}"/>
+                        <!--  ugh, this is awful but will do for now in the absence of better controls...  -->
+                        <Label Style="{DynamicResource awsLabelBaseStyle}" Target="{Binding ElementName=_backupStartHours}">_Start time:</Label>
+                        <ComboBox
+                            x:Name="_backupStartHours"
+                            Grid.Column="1"
+                            Width="50"
+                            Margin="4,0,0,0"
+                            VerticalAlignment="Center"
+                            IsEnabled="False"
+                            SelectionChanged="BackupStart_SelectionChanged"
+                            Style="{DynamicResource awsComboBoxStyle}" />
                         <Label Grid.Column="2" Style="{DynamicResource awsLabelBaseStyle}">:</Label>
-                        <ComboBox x:Name="_backupStartMins" 
-                                  Grid.Column="3" 
-                                  Width="50" 
-                                  VerticalAlignment="Center" 
-                                  IsEnabled="False"
-                                  SelectionChanged="BackupStart_SelectionChanged"
-                                  Style="{DynamicResource awsComboBoxStyle}"/>
+                        <ComboBox
+                            x:Name="_backupStartMins"
+                            Grid.Column="3"
+                            Width="50"
+                            VerticalAlignment="Center"
+                            IsEnabled="False"
+                            SelectionChanged="BackupStart_SelectionChanged"
+                            Style="{DynamicResource awsComboBoxStyle}" />
                         <Label Grid.Column="4" Style="{DynamicResource awsLabelBaseStyle}">(UTC)</Label>
 
-                        <Label Grid.Row="1" 
-                               Target="{Binding ElementName=_backupDuration}" 
-                               Margin="0,2,0,0"
-                               Style="{DynamicResource awsLabelBaseStyle}">
+                        <Label
+                            Grid.Row="1"
+                            Margin="0,2,0,0"
+                            Style="{DynamicResource awsLabelBaseStyle}"
+                            Target="{Binding ElementName=_backupDuration}">
                             _Duration:
                         </Label>
-                        <Slider x:Name="_backupDuration" 
-                                Margin="4,2,0,0"
-                                Grid.Row="1" 
-                                Grid.Column="1" 
-                                Grid.ColumnSpan="3" 
-                                Orientation="Horizontal" 
-                                TickPlacement="BottomRight" 
-                                TickFrequency="0.5"
-                                IsSnapToTickEnabled="True"
-                                Minimum="0.5"
-                                Maximum="3"
-                                Value="0.5"
-                                SmallChange="0.5"
-                                LargeChange="1"
-                                ValueChanged="_backupDuration_ValueChanged"
-                                VerticalAlignment="Center"
-                                IsEnabled="False"
-                                />
-                        <Label x:Name="_lblBackupDurationHours" 
-                               Grid.Row="1" Grid.Column="4" 
-                               Margin="0,2,0,0"
-                               Style="{DynamicResource awsLabelBaseStyle}">
+                        <Slider
+                            x:Name="_backupDuration"
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Grid.ColumnSpan="3"
+                            Margin="4,2,0,0"
+                            VerticalAlignment="Center"
+                            IsEnabled="False"
+                            IsSnapToTickEnabled="True"
+                            LargeChange="1"
+                            Maximum="3"
+                            Minimum="0.5"
+                            Orientation="Horizontal"
+                            SmallChange="0.5"
+                            TickFrequency="0.5"
+                            TickPlacement="BottomRight"
+                            ValueChanged="_backupDuration_ValueChanged"
+                            Value="0.5" />
+                        <Label
+                            x:Name="_lblBackupDurationHours"
+                            Grid.Row="1"
+                            Grid.Column="4"
+                            Margin="0,2,0,0"
+                            Style="{DynamicResource awsLabelBaseStyle}">
                             0.5 hours
                         </Label>
-                        
-                        <TextBlock x:Name="_currentBackupWindow"
-                                   Grid.Row="2"
-                                   Grid.ColumnSpan="5"
-                                   FontStyle="Italic"
-                                   Visibility="Collapsed"
-                                   Margin="4,2,4,0"
-                                   Style="{DynamicResource awsTextBlockBaseStyle}"
-                                   />
+
+                        <TextBlock
+                            x:Name="_currentBackupWindow"
+                            Grid.Row="2"
+                            Grid.ColumnSpan="5"
+                            Margin="4,2,4,0"
+                            FontStyle="Italic"
+                            Style="{DynamicResource awsTextBlockBaseStyle}"
+                            Visibility="Collapsed" />
                     </Grid>
                 </Border>
             </Grid>
@@ -169,28 +177,28 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
-                   Margin="-16,0,0,4"
-                   >
+            <Label Margin="-16,0,0,4" Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                 System Maintenance
             </Label>
 
-            <CheckBox Grid.Row="1" 
-                      x:Name="_btnCustomMaintenanceWindow" 
-                      Margin="0,4,4,0"
-                      Click="_btnCustomMaintenanceWindow_Click"
-                      IsChecked="False"
-                      Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+            <CheckBox
+                x:Name="_btnCustomMaintenanceWindow"
+                Grid.Row="1"
+                Margin="0,4,4,0"
+                Click="_btnCustomMaintenanceWindow_Click"
+                IsChecked="False"
+                Style="{DynamicResource awsCheckboxButtonBaseStyle}">
                 Use a custom _maintenance window:
             </CheckBox>
 
-            <Border Margin="8,0,0,0" 
-                    BorderThickness="1" 
-                    BorderBrush="Silver" 
-                    Grid.Row="1" 
-                    Grid.RowSpan="2" 
-                    Grid.Column="1"
-                    Padding="4">
+            <Border
+                Grid.Row="1"
+                Grid.RowSpan="2"
+                Grid.Column="1"
+                Margin="8,0,0,0"
+                Padding="4"
+                BorderBrush="Silver"
+                BorderThickness="1">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -206,86 +214,107 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <Label Target="{Binding ElementName=_maintDay}" Style="{DynamicResource awsLabelBaseStyle}">_On:</Label>
-                    <ComboBox x:Name="_maintDay"
-                              Grid.Column="1"
-                              Grid.ColumnSpan="3"
-                              Margin="4,0,0,0"
-                              VerticalAlignment="Center" 
-                              IsEnabled="False"
-                              Style="{DynamicResource awsComboBoxStyle}"/>
-                    <Label Grid.Row="1" Target="{Binding ElementName=_maintStartHours}" Style="{DynamicResource awsLabelBaseStyle}">Star_t:</Label>
-                    <ComboBox x:Name="_maintStartHours" 
-                              Grid.Row="1"
-                              Grid.Column="1" 
-                              Width="50" 
-                              VerticalAlignment="Center" 
-                              Margin="4,0,0,0"
-                              IsEnabled="False"
-                              SelectionChanged="MaintenanceStart_SelectionChanged"
-                              Style="{DynamicResource awsComboBoxStyle}"/>
-                    <Label Grid.Row="1" Grid.Column="2" Style="{DynamicResource awsLabelBaseStyle}">:</Label>
-                    <ComboBox x:Name="_maintStartMins" 
-                              Grid.Row="1"
-                              Grid.Column="3" 
-                              Width="50" 
-                              VerticalAlignment="Center" 
-                              IsEnabled="False"
-                              SelectionChanged="MaintenanceStart_SelectionChanged"
-                              Style="{DynamicResource awsComboBoxStyle}"/>
-                    <Label Grid.Row="1" Grid.Column="4" Style="{DynamicResource awsLabelBaseStyle}">(UTC)</Label>
+                    <Label Style="{DynamicResource awsLabelBaseStyle}" Target="{Binding ElementName=_maintDay}">_On:</Label>
+                    <ComboBox
+                        x:Name="_maintDay"
+                        Grid.Column="1"
+                        Grid.ColumnSpan="3"
+                        Margin="4,0,0,0"
+                        VerticalAlignment="Center"
+                        IsEnabled="False"
+                        Style="{DynamicResource awsComboBoxStyle}" />
+                    <Label
+                        Grid.Row="1"
+                        Style="{DynamicResource awsLabelBaseStyle}"
+                        Target="{Binding ElementName=_maintStartHours}">
+                        Star_t:
+                    </Label>
+                    <ComboBox
+                        x:Name="_maintStartHours"
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Width="50"
+                        Margin="4,0,0,0"
+                        VerticalAlignment="Center"
+                        IsEnabled="False"
+                        SelectionChanged="MaintenanceStart_SelectionChanged"
+                        Style="{DynamicResource awsComboBoxStyle}" />
+                    <Label
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        Style="{DynamicResource awsLabelBaseStyle}">
+                        :
+                    </Label>
+                    <ComboBox
+                        x:Name="_maintStartMins"
+                        Grid.Row="1"
+                        Grid.Column="3"
+                        Width="50"
+                        VerticalAlignment="Center"
+                        IsEnabled="False"
+                        SelectionChanged="MaintenanceStart_SelectionChanged"
+                        Style="{DynamicResource awsComboBoxStyle}" />
+                    <Label
+                        Grid.Row="1"
+                        Grid.Column="4"
+                        Style="{DynamicResource awsLabelBaseStyle}">
+                        (UTC)
+                    </Label>
 
-                    <Label Grid.Row="2" 
-                           Target="{Binding ElementName=_maintDuration}" 
-                           Margin="0,2,0,0"
-                           Style="{DynamicResource awsLabelBaseStyle}">
+                    <Label
+                        Grid.Row="2"
+                        Margin="0,2,0,0"
+                        Style="{DynamicResource awsLabelBaseStyle}"
+                        Target="{Binding ElementName=_maintDuration}">
                         D_uration:
                     </Label>
-                    <Slider x:Name="_maintDuration" 
-                            Margin="4,2,0,0"
-                            Grid.Row="2" 
-                            Grid.Column="1" 
-                            Grid.ColumnSpan="3" 
-                            Orientation="Horizontal" 
-                            TickPlacement="BottomRight" 
-                            TickFrequency="0.5"
-                            IsSnapToTickEnabled="True"
-                            Minimum="0.5"
-                            Maximum="3"
-                            Value="0.5"
-                            SmallChange="0.5"
-                            LargeChange="1"
-                            ValueChanged="_mainDuration_ValueChanged"
-                            VerticalAlignment="Center"
-                            IsEnabled="False"
-                            />
-                    <Label x:Name="_lblMaintDurationHours" 
-                           Grid.Row="2" 
-                           Grid.Column="4" 
-                           Margin="0,2,0,0"
-                           Style="{DynamicResource awsLabelBaseStyle}">
+                    <Slider
+                        x:Name="_maintDuration"
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Grid.ColumnSpan="3"
+                        Margin="4,2,0,0"
+                        VerticalAlignment="Center"
+                        IsEnabled="False"
+                        IsSnapToTickEnabled="True"
+                        LargeChange="1"
+                        Maximum="3"
+                        Minimum="0.5"
+                        Orientation="Horizontal"
+                        SmallChange="0.5"
+                        TickFrequency="0.5"
+                        TickPlacement="BottomRight"
+                        ValueChanged="_mainDuration_ValueChanged"
+                        Value="0.5" />
+                    <Label
+                        x:Name="_lblMaintDurationHours"
+                        Grid.Row="2"
+                        Grid.Column="4"
+                        Margin="0,2,0,0"
+                        Style="{DynamicResource awsLabelBaseStyle}">
                         0.5 hours
                     </Label>
 
-                    <TextBlock x:Name="_currentMaintenanceWindow"
-                               Grid.Row="3"
-                               Grid.ColumnSpan="5"
-                               FontStyle="Italic"
-                               Visibility="Collapsed"
-                               Margin="4,2,4,0"
-                               Style="{DynamicResource awsTextBlockBaseStyle}"
-                               />
+                    <TextBlock
+                        x:Name="_currentMaintenanceWindow"
+                        Grid.Row="3"
+                        Grid.ColumnSpan="5"
+                        Margin="4,2,4,0"
+                        FontStyle="Italic"
+                        Style="{DynamicResource awsTextBlockBaseStyle}"
+                        Visibility="Collapsed" />
                 </Grid>
             </Border>
         </Grid>
-        
-        <TextBlock Grid.Row="2" 
-                   TextWrapping="Wrap" 
-                   FontStyle="Italic" 
-                   Foreground="Red"
-                   Margin="16,4,4,0"
-                   x:Name="_overlappingPeriodsMessage"
-                   Visibility="Hidden">
+
+        <TextBlock
+            x:Name="_overlappingPeriodsMessage"
+            Grid.Row="2"
+            Margin="16,4,4,0"
+            FontStyle="Italic"
+            Foreground="Red"
+            TextWrapping="Wrap"
+            Visibility="Hidden">
             The selected backup and maintenance window periods must not overlap.
         </TextBlock>
     </Grid>

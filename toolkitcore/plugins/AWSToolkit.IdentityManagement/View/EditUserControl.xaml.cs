@@ -54,7 +54,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.View
         {
             get
             {
-                return "IAM:User:" + this._controller.Model.OrignalName;
+                return "IAM:User:" + this._controller.Model.OriginalName;
             }
         }
 
@@ -108,7 +108,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.View
         {
             try
             {
-                bool nameChange = this._controller.Model.OrignalName.Equals(this._controller.Model.NewName);
+                bool nameChange = this._controller.Model.OriginalName.Equals(this._controller.Model.NewName);
                 this._controller.Persist();
                 this._controller.Model.IsDirty = false;
                 this._ctlTwoListMoverGroups.ResetDirty();

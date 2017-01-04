@@ -105,10 +105,10 @@
                                                                 <StackPanel Orientation="Horizontal" Margin="2">
                                                                     <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding CopyIcon}"/>
                                                                     <TextBlock Margin="4,0,2,0"
-                                                                               Foreground="{DynamicResource awsToolBarTextBrushKey}"> Copy from</TextBlock>
+                                                                               Foreground="{DynamicResource awsCommandBarTextKey}"> Copy from</TextBlock>
                                                                     <Path x:Name="ArrowDownPath" 
                                                                           Data="{DynamicResource awsDownArrowGeometry}" 
-                                                                          Fill="{DynamicResource awsToolBarTextBrushKey}" 
+                                                                          Fill="{DynamicResource awsCommandBarTextKey}" 
                                                                           VerticalAlignment="Center"/>
                                                             </StackPanel>
                                                         </Grid>
@@ -130,7 +130,7 @@
                                                                 <Setter Property="Background" TargetName="Chrome" Value="{DynamicResource awsToolBarButtonPressedBrushKey}"/>
                                                             </Trigger>
                                                             <Trigger Property="IsEnabled" Value="False">
-                                                                <Setter Property="Fill" TargetName="ArrowDownPath" Value="{DynamicResource awsToolBarDisabledTextBrushKey}"/>
+                                                                <Setter Property="Fill" TargetName="ArrowDownPath" Value="{DynamicResource awsCommandBarTextDisabledKey}"/>
                                                             </Trigger>
                                                         </ControlTemplate.Triggers>
                                                     </ControlTemplate>

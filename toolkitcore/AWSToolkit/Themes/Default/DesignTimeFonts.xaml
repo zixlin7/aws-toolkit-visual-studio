@@ -1,0 +1,53 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.Themes.Default"
+    xmlns:pc="clr-namespace:System.Windows;assembly=PresentationCore"
+    xmlns:pcmedia="clr-namespace:System.Windows.Media;assembly=PresentationCore"
+    xmlns:s="clr-namespace:System;assembly=mscorlib">
+
+    <!--
+        Design-time overrides for font resources that at runtime we will get from our
+        host shell. This avoids null ref exceptions in the design time surface due to
+        the host shell instance not being available.
+        
+        The ShellProviderThemeResources class will reference keys from this collection
+        when it detects the host shell is not available, the keys here thus have to match
+        1:1 with the keys available in the class.
+    -->
+
+    <pcmedia:FontFamily x:Key="dtCaptionFontFamilyKey">Segoe UI</pcmedia:FontFamily>
+    <!--  9pt  -->
+    <s:Double x:Key="dtCaptionFontSizeKey">12</s:Double>
+    <pc:FontWeight x:Key="dtCaptionFontWeightKey">Normal</pc:FontWeight>
+
+    <pc:FontWeight x:Key="dtEnvironmentBoldFontWeightKey">Bold</pc:FontWeight>
+    <pcmedia:FontFamily x:Key="dtEnvironmentFontFamilyKey">Segoe UI</pcmedia:FontFamily>
+    <!--  9pt  -->
+    <s:Double x:Key="dtEnvironmentFontSizeKey">12</s:Double>
+
+    <!--  11pt  -->
+    <s:Double x:Key="dtEnvironment122PercentFontSizeKey">14.667</s:Double>
+    <pc:FontWeight x:Key="dtEnvironment122PercentFontWeightKey">Normal</pc:FontWeight>
+
+    <!--  12pt  -->
+    <s:Double x:Key="dtEnvironment133PercentFontSizeKey">16</s:Double>
+    <pc:FontWeight x:Key="dtEnvironment133PercentFontWeightKey">Normal</pc:FontWeight>
+
+    <!--  14pt  -->
+    <s:Double x:Key="dtEnvironment155PercentFontSizeKey">18.66</s:Double>
+    <pc:FontWeight x:Key="dtEnvironment155PercentFontWeightKey">Normal</pc:FontWeight>
+
+    <!--  18pt  -->
+    <s:Double x:Key="dtEnvironment200PercentFontSizeKey">24</s:Double>
+    <pc:FontWeight x:Key="dtEnvironment200PercentFontWeightKey">Light</pc:FontWeight>
+
+    <!--  28pt  -->
+    <s:Double x:Key="dtEnvironment310PercentFontSizeKey">37.33</s:Double>
+    <pc:FontWeight x:Key="dtEnvironment310PercentFontWeightKey">Light</pc:FontWeight>
+
+    <!--  34pt  -->
+    <s:Double x:Key="dtEnvironment375PercentFontSizeKey">45.33</s:Double>
+    <pc:FontWeight x:Key="dtEnvironment375PercentFontWeightKey">Light</pc:FontWeight>
+
+</ResourceDictionary>

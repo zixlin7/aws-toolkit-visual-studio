@@ -56,7 +56,7 @@ namespace Amazon.AWSToolkit.RDS
             var instanceNode = instanceRootNode.FindChild<RDSInstanceViewMetaNode>();
             instanceNode.OnModify = new CommandInstantiator<ModifyDBInstanceController>().Execute;
             instanceNode.OnView = new CommandInstantiator<ViewDBInstancesController>().Execute;
-            if (ToolkitFactory.Instance.ShellProvider.QueryShellProverService<IRegisterDataConnectionService>() != null)
+            if (ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<IRegisterDataConnectionService>() != null)
             {
                 instanceNode.OnAddToServerExplorer = new CommandInstantiator<AddToServerExplorerController>().Execute;
             }
