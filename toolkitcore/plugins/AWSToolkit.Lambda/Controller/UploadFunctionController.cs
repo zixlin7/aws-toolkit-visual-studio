@@ -97,6 +97,9 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
                         seedValues[UploadFunctionWizardProperties.CloudFormationTemplate] = templateFile;
 
+                        if (defaults.CloudFormationTemplateParameters != null)
+                            seedValues[UploadFunctionWizardProperties.CloudFormationParameters] = defaults.CloudFormationTemplateParameters;
+
                         try
                         {
                             var wrapper = CloudFormationTemplateWrapper.FromLocalFile(templateFile);
@@ -132,6 +135,10 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                             seedValues[UploadFunctionWizardProperties.S3Bucket] = defaults.S3Bucket;
                         if (!string.IsNullOrEmpty(defaults.S3Prefix))
                             seedValues[UploadFunctionWizardProperties.S3Prefix] = defaults.S3Prefix;
+                        if (!string.IsNullOrEmpty(defaults.Configuration))
+                            seedValues[UploadFunctionWizardProperties.Configuration] = defaults.Configuration;
+                        if (!string.IsNullOrEmpty(defaults.Framework))
+                            seedValues[UploadFunctionWizardProperties.Framework] = defaults.Framework;
 
                         DisplayServerlessWizard(seedValues);
                     }
@@ -153,6 +160,10 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                             seedValues[UploadFunctionWizardProperties.SeedSecurityGroupIds] = defaults.FunctionSecurityGroups;
                         if (!string.IsNullOrEmpty(defaults.KMSKeyArn))
                             seedValues[UploadFunctionWizardProperties.KMSKey] = defaults.KMSKeyArn;
+                        if (!string.IsNullOrEmpty(defaults.Configuration))
+                            seedValues[UploadFunctionWizardProperties.Configuration] = defaults.Configuration;
+                        if (!string.IsNullOrEmpty(defaults.Framework))
+                            seedValues[UploadFunctionWizardProperties.Framework] = defaults.Framework;
 
                         if (defaults.EnvironmentVariables != null)
                         {

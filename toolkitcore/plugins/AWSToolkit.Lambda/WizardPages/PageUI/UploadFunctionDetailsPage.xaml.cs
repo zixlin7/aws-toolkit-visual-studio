@@ -69,6 +69,18 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             this._ctlAccountAndRegion.Initialize(userAccount, regionEndpoints, new string[] { LambdaRootViewMetaNode.LAMBDA_ENDPOINT_LOOKUP });
             this._ctlAccountAndRegion.PropertyChanged += _ctlAccountAndRegion_PropertyChanged;
 
+            var buildConfiguration = hostWizard[UploadFunctionWizardProperties.Configuration] as string;
+            if (!string.IsNullOrEmpty(buildConfiguration) && this._ctlConfigurationPicker.Items.Contains(buildConfiguration))
+            {
+                this.Configuration = buildConfiguration;
+            }
+
+            var targetFramework = hostWizard[UploadFunctionWizardProperties.Configuration] as string;
+            if (!string.IsNullOrEmpty(targetFramework) && this._ctlFrameworkPicker.Items.Contains(targetFramework))
+            {
+                this.Framework = targetFramework;
+            }
+
             if (UploadOriginator == UploadOriginator.FromSourcePath)
                 this.UpdateExistingFunctions();
 

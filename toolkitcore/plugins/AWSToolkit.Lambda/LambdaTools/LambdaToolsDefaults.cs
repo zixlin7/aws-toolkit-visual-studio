@@ -290,6 +290,16 @@ namespace Amazon.Lambda.Tools
             get { return GetValue(DefinedCommandOptions.ARGUMENT_S3_PREFIX)?.ToString(); }
         }
 
+        public string Configuration
+        {
+            get { return GetValue(DefinedCommandOptions.ARGUMENT_CONFIGURATION)?.ToString(); }
+        }
+
+        public string Framework
+        {
+            get { return GetValue(DefinedCommandOptions.ARGUMENT_FRAMEWORK)?.ToString(); }
+        }
+
         public static string FormatCommaDelimitedList(string[] values)
         {
             if (values == null)
@@ -308,7 +318,7 @@ namespace Amazon.Lambda.Tools
             foreach(var kvp in values)
             {
                 if (sb.Length > 0)
-                    sb.Append(":");
+                    sb.Append(";");
 
                 sb.Append($"\"{kvp.Key}\"=\"{kvp.Value}\"");
             }
