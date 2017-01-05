@@ -323,14 +323,14 @@ namespace Amazon.Lambda.Tools
         /// <param name="configuration"></param>
         /// <param name="publishLocation"></param>
         /// <param name="zipArchivePath"></param>
-        public static void CreateApplicationBundle(IToolLogger logger, string workingDirectory, string projectLocation, string configuration, string targetFramework,
+        public static void CreateApplicationBundle(LambdaToolsDefaults defaults, IToolLogger logger, string workingDirectory, string projectLocation, string configuration, string targetFramework,
             out string publishLocation, ref string zipArchivePath)
         {
             var cli = new DotNetCLIWrapper(logger, workingDirectory);
 
             publishLocation = Utilities.DeterminePublishLocation(workingDirectory, projectLocation, configuration, targetFramework);
             logger.WriteLine("Executing publish command");
-            if (cli.Publish(projectLocation, publishLocation, targetFramework, configuration) != 0)
+            if (cli.Publish(defaults, projectLocation, publishLocation, targetFramework, configuration) != 0)
                 return;
 
             var buildLocation = Utilities.DetermineBuildLocation(workingDirectory, projectLocation, configuration, targetFramework);
@@ -455,7 +455,7 @@ namespace Amazon.Lambda.Tools
         /// <param name="logger">Optional logger instance.</param>
         private static void BundleWithZipCLI(string zipCLI, string zipArchivePath, string publishLocation, IToolLogger logger)
         {
-            var args = new StringBuilder(zipArchivePath);
+            var args = new StringBuilder("\"" + zipArchivePath + "\"");
 
             // so that we can archive content in subfolders, take the length of the
             // path to the root publish location and we'll just substring the
@@ -467,7 +467,7 @@ namespace Amazon.Lambda.Tools
             var allFiles = Directory.GetFiles(publishLocation, "*.*", SearchOption.AllDirectories);
             foreach (var f in allFiles)
             {
-                args.AppendFormat(" {0}", f.Substring(publishRootLength));
+                args.AppendFormat(" \"{0}\"", f.Substring(publishRootLength));
             }
 
             var psiZip = new ProcessStartInfo

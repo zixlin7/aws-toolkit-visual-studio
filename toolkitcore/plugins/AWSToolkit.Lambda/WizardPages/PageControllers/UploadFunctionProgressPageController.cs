@@ -160,6 +160,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             settings.StackName = HostingWizard[UploadFunctionWizardProperties.StackName] as string;
             settings.S3Bucket = HostingWizard[UploadFunctionWizardProperties.S3Bucket] as string;
 
+            if (HostingWizard[UploadFunctionWizardProperties.SaveSettings] is bool)
+            {
+                settings.SaveSettings = (bool)HostingWizard[UploadFunctionWizardProperties.SaveSettings];
+            }
+
+
             var setParamterValues = HostingWizard[UploadFunctionWizardProperties.CloudFormationTemplateParameters] as Dictionary<string, CloudFormationTemplateWrapper.TemplateParameter>;
             if (setParamterValues != null)
             {
@@ -208,6 +214,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
             var environmentVariables = HostingWizard[UploadFunctionWizardProperties.EnvironmentVariables] as ICollection<EnvironmentVariable>;
 
+            bool saveSettings = false;
+            if (HostingWizard[UploadFunctionWizardProperties.SaveSettings] is bool)
+            {
+                saveSettings = (bool)HostingWizard[UploadFunctionWizardProperties.SaveSettings];
+            }
+
             var originator = (UploadOriginator)HostingWizard[UploadFunctionWizardProperties.UploadOriginator];
 
             var request = new CreateFunctionRequest
@@ -255,6 +267,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 Account = account,
                 Region = region,
                 SourcePath = sourcePath,
+                SaveSettings = saveSettings,
                 Request = request,
                 OpenView = _pageUI.OpenView,
                 SelectedRole = selectedRole,
