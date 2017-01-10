@@ -9,7 +9,6 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyTitle("AWS Toolkit for Visual Studio")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(false)]
 [assembly: NeutralResourcesLanguage("en-US")]

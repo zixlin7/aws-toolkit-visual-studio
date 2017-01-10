@@ -16,3 +16,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyCopyright("Copyright 2011-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.")]
+[assembly: AssemblyConfiguration("")]
