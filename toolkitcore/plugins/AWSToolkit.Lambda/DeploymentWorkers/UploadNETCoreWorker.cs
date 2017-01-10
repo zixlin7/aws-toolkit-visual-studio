@@ -34,6 +34,9 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 command.EnableInteractive = false;
                 command.SkipHandlerValidation = true;
                 command.LambdaClient = this.LambdaClient;
+                command.PersistConfigFile = uploadState.SaveSettings;
+                command.Profile = uploadState.Account.DisplayName;
+                command.Region = uploadState.Region.SystemName;
 
                 command.FunctionName = uploadState.Request.FunctionName;
                 command.Description = uploadState.Request.Description;

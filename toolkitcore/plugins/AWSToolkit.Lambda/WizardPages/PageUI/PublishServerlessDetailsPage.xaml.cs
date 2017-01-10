@@ -37,6 +37,10 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
         public IAWSWizardPageController PageController { get; private set; }
 
+        private string SeedS3Bucket { get; set; }
+        private string SeedStackName { get; set; }
+
+
         public PublishServerlessDetailsPage()
         {
             InitializeComponent();
@@ -57,9 +61,25 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             this._ctlAccountAndRegion.Initialize(userAccount, regionEndpoints, new string[] { LambdaRootViewMetaNode.LAMBDA_ENDPOINT_LOOKUP });
             this._ctlAccountAndRegion.PropertyChanged += _ctlAccountAndRegion_PropertyChanged;
 
+            this.SeedS3Bucket = hostWizard[UploadFunctionWizardProperties.S3Bucket] as string;
+            this.SeedStackName = hostWizard[UploadFunctionWizardProperties.StackName] as string;
+
             UpdateExistingResources();
 
             InitializeNETCoreFields();
+
+
+            var buildConfiguration = hostWizard[UploadFunctionWizardProperties.Configuration] as string;
+            if (!string.IsNullOrEmpty(buildConfiguration) && this._ctlConfigurationPicker.Items.Contains(buildConfiguration))
+            {
+                this.Configuration = buildConfiguration;
+            }
+
+            var targetFramework = hostWizard[UploadFunctionWizardProperties.Configuration] as string;
+            if (!string.IsNullOrEmpty(targetFramework) && this._ctlFrameworkPicker.Items.Contains(targetFramework))
+            {
+                this.Framework = targetFramework;
+            }
         }
 
         private void InitializeNETCoreFields()
@@ -115,6 +135,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         {
             get { return this._ctlStackPicker.Text; }
             set { this._ctlStackPicker.Text = value; }
+        }
+
+        public bool SaveSettings
+        {
+            get { return this._ctlPersistSettings.IsChecked.GetValueOrDefault(); }
         }
 
         public bool IsNewStack
@@ -194,7 +219,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                             {
                                 this._ctlStackPicker.Items.Add(stack.StackName);
                             }
-                            this._ctlStackPicker.Text = "";
+
+                            if (!string.IsNullOrEmpty(this.SeedStackName))
+                                this._ctlStackPicker.Text = this.SeedStackName;
+                            else
+                                this._ctlStackPicker.Text = "";
                         }));
                     }
                     catch(Exception e)
@@ -216,6 +245,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                                 this._ctlBucketPicker.Items.Add(bucket.BucketName);
                             }
 
+                            if (!string.IsNullOrEmpty(this.SeedS3Bucket) && this._ctlBucketPicker.Items.Contains(this.SeedS3Bucket))
+                                this._ctlBucketPicker.SelectedValue = this.SeedS3Bucket;
                         }));
                     }
                     catch(Exception e)

@@ -134,6 +134,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             HostingWizard[UploadFunctionWizardProperties.Framework] = _pageUI.Framework;
             HostingWizard[UploadFunctionWizardProperties.Handler] = _pageUI.FormattedHandler;
             HostingWizard[UploadFunctionWizardProperties.SourcePath] = _pageUI.SourcePath;
+            HostingWizard[UploadFunctionWizardProperties.SaveSettings] = _pageUI.SaveSettings;
 
             return true;
         }

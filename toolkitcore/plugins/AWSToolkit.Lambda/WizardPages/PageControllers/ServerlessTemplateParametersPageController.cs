@@ -71,8 +71,22 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             if (_pageUI == null)
             {
                 IDictionary<string, object> templateProps = null;
-                //if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_TemplateProperties))
-                //    templateProps = HostingWizard[DeploymentWizardProperties.SeedData.propkey_TemplateProperties] as IDictionary<string, object>;
+                if (HostingWizard.IsPropertySet(UploadFunctionWizardProperties.CloudFormationParameters))
+                {
+                    if (HostingWizard[UploadFunctionWizardProperties.CloudFormationParameters] is IDictionary<string, string>)
+                    {
+                        templateProps = new Dictionary<string, object>();
+                        var originalValues = HostingWizard[UploadFunctionWizardProperties.CloudFormationParameters] as IDictionary<string, string>;
+                        foreach(var kvp in originalValues)
+                        {
+                            templateProps[kvp.Key] = kvp.Value;
+                        }
+                    }
+                    else
+                    {
+                        templateProps = HostingWizard[UploadFunctionWizardProperties.CloudFormationParameters] as IDictionary<string, object>;
+                    }
+                }
 
                 bool disableLoadPrevious = true;
                 //if (HostingWizard.IsPropertySet(CloudFormationDeploymentWizardProperties.SelectTemplateProperties.propKey_DisableLoadPreviousValues))

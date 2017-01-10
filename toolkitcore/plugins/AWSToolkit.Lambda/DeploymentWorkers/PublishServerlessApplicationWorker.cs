@@ -49,6 +49,8 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 command.S3Client = this.S3Client;
                 command.CloudFormationClient = this.CloudFormationClient;
                 command.WaitForStackToComplete = false;
+                command.Profile = Settings.Account.DisplayName;
+                command.Region = Settings.Region.SystemName;
 
                 command.CloudFormationTemplate = this.Settings.Template;
                 command.TemplateParameters = this.Settings.TemplateParameters;
@@ -56,6 +58,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 command.TargetFramework = this.Settings.Framework;
                 command.Configuration = this.Settings.Configuration;
                 command.S3Bucket = this.Settings.S3Bucket;
+                command.PersistConfigFile = this.Settings.SaveSettings;
 
                 if (command.ExecuteAsync().Result)
                 {
@@ -115,5 +118,6 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
         public Dictionary<string,string> TemplateParameters { get; set; }
         public string StackName { get; set; }
         public string S3Bucket { get; set; }
+        public bool SaveSettings { get; set; }
     }
 }
