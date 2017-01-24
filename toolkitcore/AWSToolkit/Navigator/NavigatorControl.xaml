@@ -182,9 +182,9 @@
 
         <TreeView
             Name="_ctlResourceTree"
+            Style="{DynamicResource awsTreeViewStyle}"
             VerticalAlignment="Stretch"
             HorizontalContentAlignment="Stretch"
-            Background="{DynamicResource awsTreeViewBackgroundBrushKey}"
             BorderThickness="0"
             ItemContainerStyle="{StaticResource navigatorTreeViewItemStyle}"
             ItemsSource="{Binding Children}"

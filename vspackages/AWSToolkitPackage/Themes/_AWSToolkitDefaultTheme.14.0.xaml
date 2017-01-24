@@ -416,6 +416,8 @@
     <SolidColorBrush x:Key="awsTreeViewGlyphMouseOverBrushKey" Color="{DynamicResource {x:Static platformui:TreeViewColors.GlyphMouseOverColorKey}}" />
     <SolidColorBrush x:Key="awsTreeViewGlyphCheckedBrushKey" Color="{DynamicResource {x:Static platformui:TreeViewColors.SelectedItemActiveGlyphColorKey}}" />
 
+    <SolidColorBrush x:Key="awsTreeViewGlyphCheckedMouseOverBrushKey" Color="{DynamicResource {x:Static platformui:TreeViewColors.SelectedItemActiveGlyphMouseOverColorKey}}" />
+
     <SolidColorBrush x:Key="awsTreeViewItemSelectedBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:TreeViewColors.SelectedItemActiveColorKey}}" />
     <SolidColorBrush x:Key="awsTreeViewItemSelectedTextBrushKey" Color="{DynamicResource {x:Static platformui:TreeViewColors.SelectedItemActiveTextColorKey}}" />
 
