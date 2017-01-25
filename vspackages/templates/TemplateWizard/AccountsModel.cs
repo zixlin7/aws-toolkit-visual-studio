@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 
 using Amazon.AWSToolkit.Persistence;
+using Amazon.Util;
+using Amazon.Runtime;
+using Amazon.Runtime.Internal;
 
 namespace TemplateWizard
 {
@@ -64,22 +67,20 @@ namespace TemplateWizard
 
         public void AddNewAccount(Account account)
         {
-            var settings = PersistenceManager.Instance.GetSettings(SettingsConstants.RegisteredAccounts);
-            Guid uniqueId = Guid.NewGuid();
+            var profileStore = new NetSDKCredentialsFile();
+            var profileOptions = new CredentialProfileOptions
+            {
+                AccessKey = account.AccessKey,
+                SecretKey = account.SecretKey
+            };
+            var profile = new CredentialProfile(account.Name, profileOptions);
+            profile.UniqueKey = Guid.NewGuid().ToString();
 
-            var os = settings.NewObjectSettings(uniqueId.ToString());
-            os[SettingsConstants.AccessKeyField] = account.AccessKey;
-            os[SettingsConstants.DisplayNameField] = account.Name;
-            os[SettingsConstants.SecretKeyField] = account.SecretKey;
-            os[SettingsConstants.AccountNumberField] = account.Number;
-
+            CredentialProfileUtils.SetProperty(profile, SettingsConstants.AccountNumberField, account.Number);
             if (account.IsGovCloudAccount)
-                os[SettingsConstants.Restrictions] = "IsGovCloudAccount";
-            else
-                os[SettingsConstants.Restrictions] = null;
+                CredentialProfileUtils.SetProperty(profile, SettingsConstants.Restrictions, "IsGovCloudAccount");
 
-
-            PersistenceManager.Instance.SaveSettings(SettingsConstants.RegisteredAccounts, settings);
+            profileStore.RegisterProfile(profile);
         }
 
         public void DeleteAccount(Account account)
