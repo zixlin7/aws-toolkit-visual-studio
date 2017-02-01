@@ -17,7 +17,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <DataTemplate x:Key="section-header">
-                <TextBlock FontWeight="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentBoldFontWeightKey}}" Text="{Binding Description}" />
+                <TextBlock Style="{DynamicResource awsTextBlockBoldStyle}" Text="{Binding Description}" />
             </DataTemplate>
             <DataTemplate x:Key="role-type-selection">
                 <StackPanel Margin="15,0,0,0" Orientation="Horizontal">

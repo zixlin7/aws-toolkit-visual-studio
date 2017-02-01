@@ -69,10 +69,8 @@
                 Grid.Row="0"
                 Grid.Column="0"
                 Margin="5,3,5,3"
-                VerticalAlignment="Center"
-                FontWeight="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentBoldFontWeightKey}}"
                 Foreground="{DynamicResource awsToolWindowTextBrushKey}"
-                Style="{DynamicResource awsTextBlockBaseStyle}"
+                Style="{DynamicResource awsTextBlockBoldStyle}"
                 Text="Profile:" />
 
             <ComboBox
@@ -129,10 +127,8 @@
                 Grid.Row="1"
                 Grid.Column="0"
                 Margin="5,3,5,3"
-                VerticalAlignment="Center"
-                FontWeight="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentBoldFontWeightKey}}"
-                Foreground="{DynamicResource awsCommandBarTextKey}"
-                Style="{DynamicResource awsTextBlockBaseStyle}">
+                Foreground="{DynamicResource awsToolWindowTextBrushKey}"
+                Style="{DynamicResource awsTextBlockBoldStyle}">
                 Region:
             </TextBlock>
             <ComboBox

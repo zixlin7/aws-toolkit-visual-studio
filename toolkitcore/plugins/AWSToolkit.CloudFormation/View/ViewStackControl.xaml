@@ -5,6 +5,7 @@
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
     xmlns:components="clr-namespace:Amazon.AWSToolkit.CloudFormation.View.Components"
     xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
+    xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
     Width="600"
     Height="300">
 
@@ -129,7 +130,7 @@
             Grid.Row="2"
             Grid.Column="1"
             Margin="0,5,0,5"
-            FontWeight="SemiBold"
+            FontWeight="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentBoldFontWeightKey}}"
             Foreground="{Binding StatusColor}"
             Style="{DynamicResource awsSelectableTextBoxStyle}"
             Text="{Binding Status}" />
@@ -237,7 +238,7 @@
             <Hyperlink NavigateUri="{Binding ApplicationUrl, Mode=OneWay}" RequestNavigate="onApplicationURLRequestNavigate">
                 <TextBlock
                     Name="_ctlLinkInner"
-                    FontWeight="SemiBold"
+                    Style="{DynamicResource awsTextBlockBoldStyle}"
                     Text="{Binding ApplicationUrl}" />
             </Hyperlink>
         </TextBlock>
@@ -266,7 +267,7 @@
                 <Hyperlink NavigateUri="{Binding AWSServerlessURL, Mode=OneWay}" RequestNavigate="onApplicationURLRequestNavigate">
                     <TextBlock
                         Name="_ctlServerlessLinkInner"
-                        FontWeight="SemiBold"
+                        Style="{DynamicResource awsTextBlockBoldStyle}"
                         Text="{Binding AWSServerlessURL}" />
                 </Hyperlink>
             </TextBlock>

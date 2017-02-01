@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
              mc:Ignorable="d" 
              d:DesignHeight="140" d:DesignWidth="625">
 
@@ -209,7 +210,8 @@
         <commonui:ToolkitDataGridWrapper AutoGenerateColumns="False" x:Name="_ctlSecondaryIndexesGrid" Grid.Row="0" Grid.Column="1"
                      CanUserAddRows="False" CanUserDeleteRows="False" DockPanel.Dock="Top" CanUserSortColumns="False" 
                      GridLinesVisibility="All"  CellStyle="{DynamicResource awsDataGridCellCentering}"     
-                     HorizontalAlignment="Stretch" HeadersVisibility="Column" IsReadOnly="False" Margin="0" FontSize="11"
+                     HorizontalAlignment="Stretch" HeadersVisibility="Column" IsReadOnly="False" Margin="0" 
+                     FontSize="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontSizeKey}}"
                      CellEditEnding="onCellEditEnding" BeginningEdit="_ctlSecondaryIndexesGrid_BeginningEdit"
                      >
 

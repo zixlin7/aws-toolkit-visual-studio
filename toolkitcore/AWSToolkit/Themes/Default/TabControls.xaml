@@ -29,7 +29,7 @@
                     VerticalAlignment="Center"
                     ContentSource="Header"
                     RecognizesAccessKey="True"
-                    TextBlock.FontWeight="SemiBold" />
+                    TextBlock.FontWeight="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentBoldFontWeightKey}}" />
             </Border>
         </Grid>
 
@@ -181,7 +181,7 @@
                     VerticalAlignment="Center"
                     ContentSource="Header"
                     RecognizesAccessKey="True"
-                    TextBlock.FontWeight="SemiBold" />
+                    TextBlock.FontWeight="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentBoldFontWeightKey}}" />
             </Border>
         </Grid>
 

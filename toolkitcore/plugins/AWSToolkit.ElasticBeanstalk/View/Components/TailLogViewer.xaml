@@ -1,7 +1,8 @@
 ﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.ElasticBeanstalk.View.Components.TailLogViewer"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"         
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
     Height="auto" Width="auto">
     
     <UserControl.Resources>
@@ -48,7 +49,9 @@
         </Border>
         
         <DockPanel Grid.Row="2" Visibility="Hidden" Margin="5" Name="_ctlLogOuterContainer">
-            <TextBlock DockPanel.Dock="Top" FontWeight="SemiBold" TextDecorations="Underline" Style="{DynamicResource awsTextBlockBaseStyle}">Log Files:</TextBlock>
+            <TextBlock DockPanel.Dock="Top" 
+                       TextDecorations="Underline" 
+                       Style="{DynamicResource awsTextBlockBoldStyle}">Log Files:</TextBlock>
             <StackPanel Name="_ctlLogFileLinks" Orientation="Vertical" Margin="5">
             </StackPanel>
         </DockPanel>

@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:Amazon.AWSToolkit.CloudFormation.View.Components" 
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"                          
+    xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
     Loaded="onLoaded"             
     Height="auto" Width="auto">
     
@@ -27,7 +28,9 @@
 
         <DockPanel Grid.Row="0" Grid.Column="0">
             <StackPanel DockPanel.Dock="Top" Margin="5,5,5,5" Orientation="Horizontal">
-                <TextBlock FontWeight="SemiBold" Style="{DynamicResource awsTextBlockBaseStyle}" FontSize="16">EC2 Instances:</TextBlock>
+                <TextBlock Style="{DynamicResource awsTextBlock122PercentStyle}">
+                    EC2 Instances:
+                </TextBlock>
                 <TextBlock Grid.Column="1" Grid.Row="0" Margin="5,0,5,0" Name="_ctlLastRefresh" Style="{DynamicResource awsTextBlockBaseStyle}"/>
             </StackPanel> 
             <commonui:ToolkitDataGridWrapper AutoGenerateColumns="False" Name="_ctlEC2DataGrid"
@@ -80,7 +83,10 @@
                       Foreground="{DynamicResource awsGridSplitterTextForegroundBrushKey}"/>
 
         <DockPanel Grid.Row="2" Grid.Column="0">
-            <TextBlock DockPanel.Dock="Top" Margin="5,5,5,5" FontWeight="SemiBold" Style="{DynamicResource awsTextBlockBaseStyle}" FontSize="16">Template Resources:</TextBlock>
+            <TextBlock DockPanel.Dock="Top" Margin="5,5,5,5" 
+                       Style="{DynamicResource awsTextBlock122PercentStyle}"> 
+                Template Resources:
+            </TextBlock>
 
             <commonui:ToolkitDataGridWrapper AutoGenerateColumns="False" Name="_ctlResourcesDataGrid" ScrollViewer.CanContentScroll="False"
                     Grid.Row="4" Grid.Column="0"                          
@@ -93,7 +99,7 @@
                 <commonui:ToolkitDataGridWrapper.Resources>
                     <Style TargetType="{x:Type DataGridCell}">
                         <Setter Property="Foreground" Value="{DynamicResource awsDefaultControlForegroundBrushKey}" />
-                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="FontWeight" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentBoldFontWeightKey}}"/>
                         <Style.Triggers>
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter Property="Background" Value="{x:Null}" />

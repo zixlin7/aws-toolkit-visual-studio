@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
     Background="{x:Null}"
     IsVisibleChanged="OnIsVisibleChanged">
 
@@ -65,9 +66,7 @@
             <StackPanel Margin="0,8,0,0">
                 <TextBlock
                     Margin="0,0,0,4"
-                    FontSize="{DynamicResource dtEnvironment122PercentFontSizeKey}"
-                    FontWeight="{DynamicResource dtEnvironment122PercentFontWeightKey}"
-                    Style="{DynamicResource awsTextBlockBaseStyle}">
+                    Style="{DynamicResource awsTextBlock122PercentStyle}">
                     Your Tag Keys
                 </TextBlock>
                 <Border BorderBrush="{DynamicResource awsPopupBorderBrushKey}" BorderThickness="1" />
@@ -171,9 +170,7 @@
             <StackPanel Grid.ColumnSpan="2">
                 <TextBlock
                     Margin="0,0,0,4"
-                    FontSize="{DynamicResource dtEnvironment122PercentFontSizeKey}"
-                    FontWeight="{DynamicResource dtEnvironment122PercentFontWeightKey}"
-                    Style="{DynamicResource awsTextBlockBaseStyle}">
+                    Style="{DynamicResource awsTextBlock122PercentStyle}">
                     Image Attributes
                 </TextBlock>
                 <Border BorderBrush="{DynamicResource awsPopupBorderBrushKey}" BorderThickness="1" />

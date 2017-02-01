@@ -4,6 +4,7 @@
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
     xmlns:toolkitcomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
     xmlns:Microsoft_Windows_Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"                         
+    xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
 	xmlns:System="clr-namespace:System;assembly=mscorlib"
     Height="300" Width="300">
     
@@ -24,15 +25,20 @@
         </Grid.RowDefinitions>
 
         <WrapPanel Grid.Row="0" Grid.Column="0" Margin="5,5,5,5">
-            <TextBlock FontSize="12" FontWeight="Bold" Style="{DynamicResource awsTextBlockBaseStyle}">This image is currently </TextBlock>
-            <TextBlock Text="{Binding Image.FormattedVisibility}" Margin="3,0,0,0" FontSize="12" FontWeight="Bold" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+            <TextBlock Style="{DynamicResource awsTextBlockBoldStyle}">This image is currently </TextBlock>
+            <TextBlock Text="{Binding Image.FormattedVisibility}" 
+                       Margin="3,0,0,0" 
+                       Style="{DynamicResource awsTextBlockBoldStyle}"/>
         </WrapPanel>
         <WrapPanel Grid.Row="1" Grid.Column="0" Margin="10,0,5,5">
             <RadioButton GroupName="Visibility" IsChecked="{Binding IsPublic}" Style="{DynamicResource awsRadioButtonBaseStyle}">_Public</RadioButton>
             <RadioButton GroupName="Visibility" IsChecked="{Binding IsPrivate}" Margin="5,0,0,0" Style="{DynamicResource awsRadioButtonBaseStyle}">P_rivate</RadioButton>
         </WrapPanel>
 
-        <TextBlock Margin="5,5,5,5" Grid.Row="2" Grid.Column="0" FontSize="12" FontWeight="Bold" Style="{DynamicResource awsTextBlockBaseStyle}">Launch Permissions:</TextBlock>
+        <TextBlock Margin="5,5,5,5" 
+                   Grid.Row="2" 
+                   Grid.Column="0" 
+                   Style="{DynamicResource awsTextBlockBoldStyle}">Launch Permissions:</TextBlock>
         
         <DockPanel Grid.Row="3" Grid.Column="0" Margin="5, 5, 5, 5">
             <DockPanel.Resources>

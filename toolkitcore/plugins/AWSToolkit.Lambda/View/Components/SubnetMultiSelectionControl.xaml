@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Amazon.AWSToolkit.Lambda.View.Components"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
     d:DesignHeight="100"
     d:DesignWidth="300"
     mc:Ignorable="d">
@@ -81,9 +82,8 @@
                                                     <GroupStyle.HeaderTemplate>
                                                         <DataTemplate>
                                                             <TextBlock
-                                                                FontSize="14"
-                                                                FontWeight="SemiBold"
-                                                                Text="{Binding Name}" />
+                                                                Text="{Binding Name}" 
+                                                                Style="{DynamicResource awsTextBlock122PercentStyle}"/>
                                                         </DataTemplate>
                                                     </GroupStyle.HeaderTemplate>
                                                 </GroupStyle>

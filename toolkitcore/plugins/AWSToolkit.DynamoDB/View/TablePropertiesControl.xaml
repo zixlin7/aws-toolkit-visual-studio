@@ -4,6 +4,7 @@
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit" 
     xmlns:validators="clr-namespace:Amazon.AWSToolkit.CommonValidators;assembly=AWSToolkit"
     xmlns:components="clr-namespace:Amazon.AWSToolkit.DynamoDB.View.Components"
+    xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
     Height="600" Width="700">
     
     <commonui:BaseAWSControl.Resources>
@@ -52,8 +53,7 @@
         <Separator Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="4"/>
 
         <TextBlock Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Margin="4"  
-                   Style="{DynamicResource awsTextBlockBaseStyle}"
-                   FontSize="14">Keys:</TextBlock>
+                   Style="{DynamicResource awsTextBlock122PercentStyle}">Keys:</TextBlock>
 
         <TextBlock Grid.Column="0" Grid.Row="4" Margin="15,4,4,4" Style="{DynamicResource awsTextBlockBaseStyle}">Hash Key Name:</TextBlock>
         <TextBox Grid.Column="1" Grid.Row="4" Margin="4" Text="{Binding HashKeyName, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}"></TextBox>
@@ -82,10 +82,9 @@
         </Grid>
 
         <Separator Name="_ctlSeparator2" Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="2" Margin="4"/>
-        
+
         <TextBlock Name="_lblSecondaryIndexes" Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="2" Margin="4"  
-                   Style="{DynamicResource awsTextBlockBaseStyle}"
-                   FontSize="14">Local Secondary Indexes:</TextBlock>
+                   Style="{DynamicResource awsTextBlock122PercentStyle}">Local Secondary Indexes:</TextBlock>
 
         <commonui:ToolkitDataGridWrapper Height="100" ItemsSource="{Binding LocalSecondaryIndexes}" 
                                          AutoGenerateColumns="False" 
@@ -96,7 +95,8 @@
                                          GridLinesVisibility="All" 
                                          CellStyle="{DynamicResource awsDataGridCellCentering}" 
                                          IsReadOnly="True"
-                                         HorizontalAlignment="Stretch" HeadersVisibility="Column" FontSize="11"
+                                         HorizontalAlignment="Stretch" HeadersVisibility="Column" 
+                                         FontSize="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontSizeKey}}"
                                          Margin="15,0,4,0">
             <commonui:ToolkitDataGridWrapper.Columns>
                 <DataGridTextColumn  Header="Index Name" Binding="{Binding Name}" Width="80"/>
@@ -108,8 +108,7 @@
         <Separator Name="_ctlSeparator3" Grid.Column="0" Grid.Row="11" Grid.ColumnSpan="2" Margin="4" />
 
         <TextBlock Name="_lblGlobalSecondaryIndexes" Grid.Column="0" Grid.Row="12" Grid.ColumnSpan="2" Margin="4"  
-                   Style="{DynamicResource awsTextBlockBaseStyle}"
-                   FontSize="14">Global Secondary Indexes:</TextBlock>
+                   Style="{DynamicResource awsTextBlock122PercentStyle}">Global Secondary Indexes:</TextBlock>
 
         <components:TableIndexesControl Grid.Row="13" Margin="4,0,4,0" Grid.ColumnSpan="2" Height="100"
                                         x:Name="_ctlGlobalIndexes" DataContext="{Binding GlobalSecondaryIndexes}"/>
@@ -118,8 +117,7 @@
         <Separator Grid.Column="0" Grid.Row="14" Grid.ColumnSpan="2" Margin="4"/>
 
         <TextBlock Grid.Column="0" Grid.Row="15" Grid.ColumnSpan="2" Margin="4"  
-                   Style="{DynamicResource awsTextBlockBaseStyle}"
-                   FontSize="14">Provisioning Throughput:</TextBlock>
+                   Style="{DynamicResource awsTextBlock122PercentStyle}">Provisioning Throughput:</TextBlock>
 
         <TextBlock Grid.Column="0" Grid.Row="16" Margin="15,4,4,4" Style="{DynamicResource awsTextBlockBaseStyle}">Read Capacity:</TextBlock>
         <TextBox Grid.Column="1" Grid.Row="16" Margin="4" Style="{DynamicResource awsTextBoxStyle}">

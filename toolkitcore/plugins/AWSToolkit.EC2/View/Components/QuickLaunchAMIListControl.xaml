@@ -86,8 +86,7 @@
                         <TextBlock
                             Margin="0"
                             VerticalAlignment="Center"
-                            FontSize="12"
-                            FontWeight="Bold"
+                            Style="{DynamicResource awsTextBlock122PercentStyle}"
                             Foreground="{TemplateBinding TextBlock.Foreground}"
                             Text="{Binding Title}"
                             TextTrimming="WordEllipsis"
@@ -98,9 +97,9 @@
                             Orientation="Horizontal">
                             <RadioButton
                                 Margin="5,0,5,0"
-                                FontSize="12"
+                                FontSize="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontSizeKey}}"
                                 FontStyle="Italic"
-                                FontWeight="Bold"
+                                FontWeight="SemiBold"
                                 Foreground="{TemplateBinding TextBlock.Foreground}"
                                 GroupName="ArchitectureType"
                                 IsChecked="{Binding Is64BitSelected}"
@@ -109,9 +108,9 @@
                             </RadioButton>
                             <RadioButton
                                 Margin="5,0,5,0"
-                                FontSize="12"
+                                FontSize="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontSizeKey}}"
                                 FontStyle="Italic"
-                                FontWeight="Bold"
+                                FontWeight="SemiBold"
                                 Foreground="{TemplateBinding TextBlock.Foreground}"
                                 GroupName="ArchitectureType"
                                 IsChecked="{Binding Is32BitSelected}"
