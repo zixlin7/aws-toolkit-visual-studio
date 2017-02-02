@@ -33,11 +33,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         public static readonly string uiProperty_ExistingDeployments = "ExistingDeployments";
         public static readonly string uiProperty_SelectedDeployment = "SelectedDeployment";
 
-        RegisterAccountController _registerAccountController;
-
         public StartPage()
         {
             InitializeComponent();
+            this._accountSelector.PropertyChanged += _accountSelector_PropertyChanged;
             DataContext = this;
         }
 
@@ -51,19 +50,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         public void Initialize(AccountViewModel account)
         {
-            var regions = RegionEndPointsManager.Instance.Regions
-                            .Where(rep => rep.GetEndpoint(DeploymentServiceIdentifiers.BeanstalkServiceName) != null)
-                            .ToList();
+            this._accountSelector.Initialize(account, RegionEndPointsManager.Instance.GetDefaultRegionEndPoints(), new string[] { RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME });
+            this._accountSelector.IsEnabled = true;
+        }
 
-            this._regionSelector.ItemsSource = regions;
-            if (this._regionSelector.Items.Count != 0)
-            {
-                var region = RegionEndPointsManager.Instance.GetDefaultRegionEndPoints();
-                this._regionSelector.SelectedItem = region;
-            }
-
-            if (account != null)
-                this._accountSelector.SelectedItem = account;
+        private void _accountSelector_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            NotifyPropertyChanged(uiProperty_Region);
+            NotifyPropertyChanged(uiProperty_Account);
         }
 
         AWSViewModel _rootViewModel;
@@ -92,58 +86,21 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             }
         }
 
-        private void RefreshAccountOptions()
-        {
-            if (this._accounts == null)
-                this._accounts = new ObservableCollection<AccountViewModel>();
-
-            // cache current selection so that if it's still valid for the new region
-            // we can re-select it
-            var priorSelectedAccount = SelectedAccount;
-
-            this._accounts.Clear();
-            foreach (var account in this.RootViewModel.RegisteredAccounts)
-            {
-                if (!account.HasRestrictions && (SelectedRegion == null || !SelectedRegion.HasRestrictions))
-                    this._accounts.Add(account);
-                else if (SelectedRegion != null && SelectedRegion.ContainAnyRestrictions(account.Restrictions))
-                    this._accounts.Add(account);
-            }
-
-            if (priorSelectedAccount != null)
-            {
-                foreach (var a in Accounts)
-                {
-                    if (a.AccountDisplayName.Equals(priorSelectedAccount.AccountViewModel.AccountDisplayName, StringComparison.Ordinal))
-                    {
-                        this.SelectedAccount = a;
-                        break;
-                    }    
-                }
-            }
-
-            if(this.SelectedAccount == null && Accounts.Any())
-                this.SelectedAccount = Accounts[0];
-
-            this._accountSelector.IsEnabled = Accounts.Any();
-            NotifyPropertyChanged(uiProperty_Accounts);
-        }
-
         public AccountViewModel SelectedAccount
         {
-            get { return this._accountSelector.SelectedItem as AccountViewModel; }
-            protected set { if (IsInitialized) this._accountSelector.SelectedItem = value; }
+            get { return this._accountSelector.SelectedAccount; }
+            protected set { if (IsInitialized) this._accountSelector.SelectedAccount = value; }
         }
 
         public RegionEndPointsManager.RegionEndPoints SelectedRegion
         {
             get
             {
-                return _regionSelector.SelectedItem as RegionEndPointsManager.RegionEndPoints;
+                return this._accountSelector.SelectedRegion;
             }
             set
             {
-                _regionSelector.SelectedItem = value;
+                this._accountSelector.SelectedRegion = value;
             }
         }
 
@@ -194,74 +151,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             set { _btnUseLegacyWizard.Visibility = value ? Visibility.Hidden : Visibility.Visible; }
         }
 
-        void AccountEntryPopup_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (_registerAccountController == null)
-            {
-                _registerAccountController = new RegisterAccountController();
-                var control = new RegisterAccountControl(_registerAccountController);
-                control.SetMandatoryFieldsReadyCallback(MandatoryFieldsReadinessChange);
-                _accountFieldContainer.Content = control;
-                _popupAccountOK.IsEnabled = false;
-            }
-        }
-
-        void MandatoryFieldsReadinessChange(bool allCompleted)
-        {
-            _popupAccountOK.IsEnabled = allCompleted;
-        }
-
-        void PopupAccountOK_Click(object sender, RoutedEventArgs e)
-        {
-            _registerAccountController.Persist();
-            _useOtherAccount.IsChecked = false;
-
-            RootViewModel.Refresh();
-
-            this._accounts.Clear();
-            AccountViewModel selectedAccount = null;
-            foreach (AccountViewModel account in RootViewModel.RegisteredAccounts)
-            {
-                if (!account.HasRestrictions)
-                {
-                    this._accounts.Add(account);
-
-                    if (string.Compare(account.AccountDisplayName, _registerAccountController.Model.DisplayName, StringComparison.CurrentCulture) == 0)
-                    {
-                        selectedAccount = account;
-                    }
-                }
-            }
-
-            if (this.Accounts.Count > 0)
-            {
-                _accountSelector.IsEnabled = true;
-
-                if (selectedAccount != null)
-                {
-                    SelectedAccount = selectedAccount;
-                }
-            }
-        }
-
-        void PopupAccountCancel_Click(object sender, RoutedEventArgs e)
-        {
-            _useOtherAccount.IsChecked = false;
-        }
-
-        private void AccountSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (e.AddedItems.Count == 0)
-                return;
-
-            NotifyPropertyChanged(uiProperty_Account);
-        }
-
-        void RegionSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            RefreshAccountOptions();
-            NotifyPropertyChanged(uiProperty_Region);
-        }
 
         private void UseLegacyWizard_OnClick(object sender, RoutedEventArgs e)
         {

@@ -25,12 +25,12 @@
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="AWSToolkit.CloudFormation.TemplateWizards" Path="|AWSToolkit.CloudFormation.TemplateWizards|" AssemblyName="|AWSToolkit.CloudFormation.TemplateWizards;AssemblyName|" />
     <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="LambdaFunctionProjectTemplate" d:TargetPath="|LambdaFunctionProjectTemplate;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
 	
-	<!-- DISABLE_FOR_V12_OPEN-->
+	<!-- DISABLE_FOR_V12_OPEN
     <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="LambdaNETCoreServerlessProjectTemplate" d:TargetPath="|LambdaNETCoreServerlessProjectTemplate;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
     <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="LambdaNETCoreServerlessProjectWithTestTemplate" d:TargetPath="|LambdaNETCoreServerlessProjectWithTestTemplate;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
     <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="LambdaNETCoreFunctionProjectTemplate" d:TargetPath="|LambdaNETCoreFunctionProjectTemplate;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
     <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="LambdaNETCoreFunctionProjectWithTestTemplate" d:TargetPath="|LambdaNETCoreFunctionProjectWithTestTemplate;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
-    <!--DISABLE_FOR_V12_CLOSE -->
+    DISABLE_FOR_V12_CLOSE -->
 	
     <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="CloudFormationProjectTemplate" d:TargetPath="|CloudFormationProjectTemplate;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
     <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="CloudFormationTemplate" d:TargetPath="|CloudFormationTemplate;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />

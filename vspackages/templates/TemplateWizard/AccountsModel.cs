@@ -6,6 +6,8 @@ using Amazon.AWSToolkit.Persistence;
 using Amazon.Util;
 using Amazon.Runtime;
 using Amazon.Runtime.Internal;
+using Amazon.Runtime.CredentialManagement;
+using Amazon.Runtime.CredentialManagement.Internal;
 
 namespace TemplateWizard
 {
@@ -74,7 +76,7 @@ namespace TemplateWizard
                 SecretKey = account.SecretKey
             };
             var profile = new CredentialProfile(account.Name, profileOptions);
-            profile.UniqueKey = Guid.NewGuid().ToString();
+            CredentialProfileUtils.SetUniqueKey(profile, Guid.NewGuid());
 
             CredentialProfileUtils.SetProperty(profile, SettingsConstants.AccountNumberField, account.Number);
             if (account.IsGovCloudAccount)

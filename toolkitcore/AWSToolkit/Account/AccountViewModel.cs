@@ -11,12 +11,16 @@ using Amazon.AWSToolkit.Navigator.Node;
 using log4net;
 using Amazon.Util;
 using Amazon.Runtime;
+using Amazon.Runtime.Internal;
+using Amazon.Runtime.CredentialManagement.Internal;
+using Amazon.Runtime.CredentialManagement;
 
 namespace Amazon.AWSToolkit.Account
 {
     public class AccountViewModel : AbstractViewModel
     {
         ILog LOGGER = LogManager.GetLogger(typeof(AccountViewModel));
+
 
         public static readonly ObservableCollection<IViewModel> NO_CHILDREN = new ObservableCollection<IViewModel>();
 
@@ -25,57 +29,43 @@ namespace Amazon.AWSToolkit.Account
 
         // credentials obtained on-demand from the bound profile
         AWSCredentials _credentials;
+        CredentialProfile _profile;
+        ICredentialProfileStore _profileStore;
 
-        // data about the bound profile
-        string _profileSettingsKey;
         string _displayName;
         string _accountNumber;
         HashSet<string> _restrictions;
 
         ObservableCollection<IViewModel> _serviceViewModels;
 
-        public AccountViewModel(AccountViewMetaNode metaNode, AWSViewModel awsViewModel, SettingsCollection.ObjectSettings settings)
-            : base(metaNode, awsViewModel, settings[ToolkitSettingsConstants.DisplayNameField])
+        public AccountViewModel(AccountViewMetaNode metaNode, AWSViewModel awsViewModel, ICredentialProfileStore profileStore, CredentialProfile profile)
+            : base(metaNode, awsViewModel, profile.Name)
         {
             this._metaNode = metaNode;
             this._awsViewModel = awsViewModel;
-            this.parseObjectSettings(settings);
+            this._profileStore = profileStore;
+            this._profile = profile;
+            this._displayName = profile.Name;
+
+            this._credentials = this._profile.GetAWSCredentials(this._profileStore);
 
             this.CreateServiceChildren();
         }
 
         public void ReloadFromPersistence()
         {
-            var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
-            var os = settings[this._profileSettingsKey];
-            parseObjectSettings(os);
+            //var profile = ProfileStore.ListProfiles().FirstOrDefault(x =>
+            //{
+            //    CredentialProfileUtils.EnsureUniqueKeyAssigned(pr)
+            //    Guid.Parse()
+            //    return null;
+            //});
+            //    string.Equals(CredentialProfileUtils.GetUniqueKey(profile)))
+            //var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
+            //var os = settings[this._profileSettingsKey];
+//            parseObjectSettings(os);
         }
 
-        void parseObjectSettings(SettingsCollection.ObjectSettings settings)
-        {
-            this._profileSettingsKey = settings.UniqueKey;
-            this._displayName = settings[ToolkitSettingsConstants.DisplayNameField];
-
-            _credentials = new StoredProfileAWSCredentials(this._displayName);
-
-            this._accountNumber = settings[ToolkitSettingsConstants.AccountNumberField];
-
-            if (this._accountNumber != null)
-                this._accountNumber = this._accountNumber.Replace("-", "");
-
-            HashSet<string> restrictions = new HashSet<string>();
-            var str = settings[ToolkitSettingsConstants.Restrictions];
-            if (str != null)
-            {
-                foreach (var token in str.Split(','))
-                {
-                    if(!string.IsNullOrEmpty(token))
-                        restrictions.Add(token);
-                }
-            }
-
-            this._restrictions = restrictions;
-        }
 
 
         internal void CreateServiceChildren()
@@ -117,7 +107,11 @@ namespace Amazon.AWSToolkit.Account
 
         public string SettingsUniqueKey
         {
-            get { return this._profileSettingsKey; }
+            get
+            {
+                CredentialProfileUtils.EnsureUniqueKeyAssigned(this._profile, this._profileStore);
+                return CredentialProfileUtils.GetUniqueKey(this._profile).ToString();
+            }
         }
 
         public override string Name
@@ -127,7 +121,7 @@ namespace Amazon.AWSToolkit.Account
 
         public string DisplayName
         {
-            get { return this._displayName; }
+            get { return this._profile.Name; }
             set
             {
                 this._displayName = value;
@@ -149,6 +143,11 @@ namespace Amazon.AWSToolkit.Account
 
                 return _credentials;
             }
+        }
+
+        public ICredentialProfileStore ProfileStore
+        {
+            get { return this._profileStore; }
         }
 
         public string AccountNumber
@@ -174,7 +173,7 @@ namespace Amazon.AWSToolkit.Account
 
         public bool HasRestrictions
         {
-            get { return this._restrictions.Count > 0; }
+            get { return this._restrictions?.Count > 0; }
         }
         
         public HashSet<string> Restrictions

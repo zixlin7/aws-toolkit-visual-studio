@@ -206,8 +206,8 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\basic-serverless.template" />
     <Content Include="log4net.config">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="aws-icon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -828,6 +828,11 @@
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CloudFormation\AWSToolkit.CloudFormation.csproj">
       <Project>{6ae302db-2304-47c8-8e3c-96c85ac1d469}</Project>
       <Name>AWSToolkit.CloudFormation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk\AWSToolkit.ElasticBeanstalk.csproj">
+      <Project>{aa98ec2e-ac7c-4080-993b-f80592d31037}</Project>
+      <Name>AWSToolkit.ElasticBeanstalk</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.S3\AWSToolkit.S3.csproj">

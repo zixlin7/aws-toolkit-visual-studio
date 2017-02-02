@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"             
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"
+             xmlns:commoncomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components"
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="350">
     
@@ -24,6 +25,11 @@
                    Margin="4,0,0,0">
                 _Account profile to use:
             </Label>
+
+            <commoncomponents:RegisteredProfilesPicker Margin="5,3,5,3" Grid.Row="0" Grid.Column="1"
+                     x:Name="_accountSelector"
+                     />
+<!--
             <ComboBox 
                     Margin="4,0,2,0" 
                     Grid.Column="1" 
@@ -33,7 +39,8 @@
                     SelectionChanged="AccountSelector_SelectionChanged"
                     VerticalAlignment="Center"
                     Style="{DynamicResource awsComboBoxStyle}"/>
-
+-->
+            
             <ToggleButton x:Name="_useOtherAccount" 
                           Grid.Column="2" 
                           VerticalAlignment="Center"

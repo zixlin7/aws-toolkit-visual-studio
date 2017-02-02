@@ -18,14 +18,12 @@ using Microsoft.VisualStudio.TemplateWizard;
 using System.Windows.Forms;
 using EnvDTE;
 
+using Amazon.AWSToolkit;
+
 namespace TemplateWizard
 {
     public class IWizardImplementation : IWizard
     {
-        private UserInputForm inputForm;
-        private string accountName;
-        private string defaultRegion;
-
         // This method is called before opening any item that
         // has the OpenInEditor attribute.
         public void BeforeOpeningFile(ProjectItem projectItem)
@@ -54,20 +52,19 @@ namespace TemplateWizard
         {
             try
             {
-                // Display a form to the user. The form collects
-                // input for the custom message.
-                inputForm = new UserInputForm();
-                inputForm.ShowDialog();
+                string accountName = "";
+                string regionName = "";
 
-                Account account = inputForm.SelectedAccount;
-                if (account != null)
+                var control = new ProjectSetupControl();
+                if(ToolkitFactory.Instance.ShellProvider.ShowModal(control))
                 {
-                    accountName = account.Name;
+                    accountName = control.AccountName;
+                    regionName = control.RegionName;
                 }
 
                 // Add custom parameters.
                 replacementsDictionary.Add("$profileName$", accountName);
-                replacementsDictionary.Add("$defaultRegion$", inputForm.SelectedRegion.SystemName);
+                replacementsDictionary.Add("$defaultRegion$", regionName);
             }
             catch (Exception ex)
             {

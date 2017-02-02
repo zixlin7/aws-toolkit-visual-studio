@@ -43,23 +43,39 @@ namespace Amazon.AWSToolkit.CommonUI.Components
             InitializeComponent();
         }
 
+        public void Initialize()
+        {
+            Initialize(ToolkitFactory.Instance.Navigator.SelectedAccount, ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints, null);
+        }
+
         public void Initialize(AccountViewModel selectedAccount, RegionEndPointsManager.RegionEndPoints selectedRegion, IEnumerable<string> serviceNames)
         {
             _rootViewModel = ToolkitFactory.Instance.RootViewModel;
 
-            this._accountSelector.ItemsSource = this.Accounts;
+            this._accountSelector.PropertyChanged += _accountSelector_PropertyChanged;
+            this._accountSelector.PopulateComboBox(this.Accounts);
             if (selectedAccount != null)
-                this._accountSelector.SelectedItem = selectedAccount;
+            {
+                this._accountSelector.SelectedAccount = selectedAccount;
+                NotifyPropertyChanged(uiProperty_Account);
+            }
 
             var regions = new List<RegionEndPointsManager.RegionEndPoints>();
             foreach (RegionEndPointsManager.RegionEndPoints rep in RegionEndPointsManager.Instance.Regions)
             {
-                foreach (var name in serviceNames)
+                if(serviceNames == null)
                 {
-                    if (rep.GetEndpoint(name) != null)
+                    regions.Add(rep);
+                }
+                else
+                {
+                    foreach (var name in serviceNames)
                     {
-                        regions.Add(rep);
-                        break;
+                        if (rep.GetEndpoint(name) != null)
+                        {
+                            regions.Add(rep);
+                            break;
+                        }
                     }
                 }
             }
@@ -93,6 +109,8 @@ namespace Amazon.AWSToolkit.CommonUI.Components
                 this._regionSelector.SelectedItem = region;
             }
         }
+
+
 
         AWSViewModel _rootViewModel;
 
@@ -133,8 +151,8 @@ namespace Amazon.AWSToolkit.CommonUI.Components
 
         public AccountViewModel SelectedAccount
         {
-            get { return this._accountSelector.SelectedItem as AccountViewModel; }
-            protected set { if (IsInitialized) this._accountSelector.SelectedItem = value; }
+            get { return this._accountSelector.SelectedAccount as AccountViewModel; }
+            set { if (IsInitialized) this._accountSelector.SelectedAccount = value; }
         }
 
         bool _accountValidationPending = false;
@@ -161,7 +179,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
                     return false;
 
                 // collection only ever accessed on UI thread, no need to lock
-                AccountViewModel account = _accountSelector.SelectedItem as AccountViewModel;
+                AccountViewModel account = _accountSelector.SelectedAccount as AccountViewModel;
                 return account != null && _verifiedAccounts.Contains(account.SettingsUniqueKey);
             }
         }
@@ -259,15 +277,14 @@ namespace Amazon.AWSToolkit.CommonUI.Components
 
         // Attempt to verify that the selected/added account is (a) valid and (b) signed up for CloudFormation.
         // This is awkward to handle outside the page.
-        private void AccountSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void _accountSelector_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             NotifyPropertyChanged(uiProperty_Account);
         }
-
         public RegionEndPointsManager.RegionEndPoints SelectedRegion
         {
             get { return this._regionSelector.SelectedItem as RegionEndPointsManager.RegionEndPoints; }
-            protected set { if (IsInitialized) this._regionSelector.SelectedItem = value; }
+            set { if (IsInitialized) this._regionSelector.SelectedItem = value; }
         }
 
         private void _regionSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)

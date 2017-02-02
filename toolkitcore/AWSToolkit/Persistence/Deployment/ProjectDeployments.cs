@@ -125,6 +125,9 @@ namespace Amazon.AWSToolkit.Persistence.Deployment
                     if (LastServiceDeployment == DeploymentServiceIdentifiers.BeanstalkServiceName)
                     {
                         BeanstalkProjectPersistenceInfo bppi = serviceDeployments as BeanstalkProjectPersistenceInfo;
+                        if (bppi == null)
+                            return null;
+
                         var regionalDeployments = bppi.PreviousDeployments.DeploymentsForAccount(bppi.AccountUniqueID);
                         return regionalDeployments[bppi.LastRegionDeployedTo];
                     }

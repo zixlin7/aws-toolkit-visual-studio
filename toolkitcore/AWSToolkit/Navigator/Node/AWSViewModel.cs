@@ -9,11 +9,13 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Threading;
 
+using Amazon.Runtime;
 using Amazon.Runtime.Internal.Settings;
 
 using Amazon.AWSToolkit.Account;
 using log4net;
 using Amazon.Util;
+using Amazon.Runtime.CredentialManagement;
 
 namespace Amazon.AWSToolkit.Navigator.Node
 {
@@ -88,33 +90,31 @@ namespace Amazon.AWSToolkit.Navigator.Node
         {
             List<AccountViewModel> updatedAccounts = new List<AccountViewModel>();
 
-            var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
-            if (settings.InitializedEmpty)
-                return;
+            HashSet<string> netSDKStoreAccessKeys = new HashSet<string>();
 
-            foreach(var os in settings.OrderBy(x => ((string)x[ToolkitSettingsConstants.DisplayNameField]).ToLower()))
+            var netStore = new NetSDKCredentialsFile();
+            foreach (var profile in netStore.ListProfiles())
             {
-                // For now: make sure that corrupt/invalid profiles do not crash the toolkit/vs and simply skip them 
-                // (after logging the failure).
-                // Todo in future: move the validation into the AccountViewModel's parseObjectSettings member and
-                // set a valid/invalid state flag in the instance. In the profile drop down, we can then list the
-                // invalid profiles but make them non-selectable for use (but editable, so errors can be corrected).
-                // The entry in the drop down will need an indicator showing the profile is bad, with the validation
-                // fail message.
-                try
+                AWSCredentials credentials;
+                if (AWSCredentialsFactory.TryGetAWSCredentials(profile, netStore, out credentials))
                 {
-                    if (AWSCredentialsProfile.CanCreateFrom(os))
-                    {
-                        updatedAccounts.Add(new AccountViewModel(this._metaNode.FindChild<AccountViewMetaNode>(), this, os));
-                    }
-                    else
-                    {
-                        _logger.InfoFormat("Skipped non-AWS credential profile {0}", os[ToolkitSettingsConstants.DisplayNameField]);
-                    }
+                    // Cache access key to make sure we don't add the same account from the shared file.
+                    netSDKStoreAccessKeys.Add(credentials.GetCredentials().AccessKey);
+                    updatedAccounts.Add(new AccountViewModel(this._metaNode.FindChild<AccountViewMetaNode>(), this, netStore, profile));
                 }
-                catch (Exception e)
+            }
+
+            var sharedStore = new SharedCredentialsFile();
+            foreach (var profile in sharedStore.ListProfiles())
+            {
+                AWSCredentials credentials;
+                if (AWSCredentialsFactory.TryGetAWSCredentials(profile, netStore, out credentials))
                 {
-                    _logger.InfoFormat("Skipped credential profile {0} due to error: {1}", os[ToolkitSettingsConstants.DisplayNameField], e.Message);
+                    // Don't add account if it was added by the NET SDK Credential store
+                    if (!netSDKStoreAccessKeys.Contains(credentials.GetCredentials().AccessKey))
+                    {
+                        updatedAccounts.Add(new AccountViewModel(this._metaNode.FindChild<AccountViewMetaNode>(), this, sharedStore, profile));
+                    }
                 }
             }
 

@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:commoncomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
     xmlns:designData="clr-namespace:Amazon.AWSToolkit.ElasticBeanstalk.View.DesignData"
     xmlns:svcmodel="clr-namespace:Amazon.ElasticBeanstalk.Model;assembly=AWSSDK.ElasticBeanstalk"
     xmlns:model="clr-namespace:Amazon.AWSToolkit.ElasticBeanstalk.Model"
@@ -98,6 +99,13 @@
             Profile
         </Label>
 
+        <commoncomponents:AccountAndRegionPicker
+                Name="_accountSelector"
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
+                Margin="8,2,4,2" />
+
+        <!-- 
         <Grid Grid.Row="1" Grid.Column="0" Margin="12,0,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -139,11 +147,6 @@
                        >
 
                 <Popup.Resources>
-                    <!-- temp local definition of resources for account control, copied
-                                     from host dialog so we space the same etc; this needs to go into
-                                     a 'dialog style' sheet we can import with studio (but not today,
-                                     on eve of sprint demo!)
-                                -->
                     <Style TargetType="{x:Type Grid}">
                         <Setter Property="Margin" Value="10" />
                     </Style>
@@ -195,7 +198,7 @@
                 </Border>
             </Popup>
         </Grid>
-
+        
         <Grid Grid.Row="1" Grid.Column="1" Margin="0">
 
             <Grid>
@@ -227,7 +230,7 @@
                 </ComboBox>
             </Grid>
         </Grid>
-
+-->
         <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
                Margin="0,12,0,0"
                Grid.Row="2"

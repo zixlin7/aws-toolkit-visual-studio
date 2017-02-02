@@ -39,13 +39,36 @@ namespace Amazon.AWSToolkit.Navigator
         {
             InitializeComponent();
             this.Loaded += new RoutedEventHandler(onNavigatorLoad);
+            this._ctlAccounts.PropertyChanged += _ctlAccounts_PropertyChanged;
+        }
+
+        private void _ctlAccounts_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            var account = this._ctlAccounts.SelectedAccount;
+            this._ctlResourceTree.DataContext = account;
+
+            this.setInitialRegionSelection();
+
+            if (account == null)
+            {
+                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.LastAcountSelectedKey, null);
+            }
+            else
+            {
+                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.LastAcountSelectedKey, account.SettingsUniqueKey);
+                if (account.Children != null)
+                {
+                    this._ctlResourceTree.ItemsSource = account.Children;
+                }
+            }
         }
 
         public void Initialize(AWSViewModel viewModel)
         {
             this._viewModel = viewModel;
             this._ctlResourceTree.DataContext = this._viewModel;
-            this._ctlAccounts.DataContext = this._viewModel;
+
+            this.PopulateAccounts();
 
             this._ctlResourceTree.MouseRightButtonDown += new MouseButtonEventHandler(OnContextMenuOpening);
             this._ctlResourceTree.MouseDoubleClick += new MouseButtonEventHandler(OnDoubleClick);
@@ -69,11 +92,22 @@ namespace Amazon.AWSToolkit.Navigator
                 accountViewModel = this._viewModel.RegisteredAccounts[0];
             }
 
-            this._ctlAccounts.SelectedItem = accountViewModel;
+            this._ctlAccounts.SelectedAccount = accountViewModel;
             if (accountViewModel == null)
             {
                 setToolbarState(false);
             }
+        }
+
+        private void PopulateAccounts()
+        {
+            var accounts = new List<AccountViewModel>();
+            foreach(var accountModel in this._viewModel.RegisteredAccounts)
+            {
+                accounts.Add(accountModel);
+            }
+
+            this._ctlAccounts.PopulateComboBox(accounts);
         }
 
         public IViewModel SelectedNode
@@ -209,7 +243,7 @@ namespace Amazon.AWSToolkit.Navigator
             RegionEndPointsManager.Instance.Refresh();
             setInitialRegionSelection();
             updateActiveRegion();
-            onSelectionAccountChanged(this, null);
+            _ctlAccounts_PropertyChanged(this, null);
         }
 
         void onRegionChanged(object sender, SelectionChangedEventArgs e)
@@ -239,7 +273,7 @@ namespace Amazon.AWSToolkit.Navigator
 
         public AccountViewModel SelectedAccount
         {
-            get { return this._ctlAccounts.SelectedItem as AccountViewModel; }
+            get { return this._ctlAccounts.SelectedAccount; }
         }
 
         public AccountViewModel UpdateAccountSelection(Guid uniqueKey, bool refreshAccounts)
@@ -258,7 +292,7 @@ namespace Amazon.AWSToolkit.Navigator
                         {
                             this.Dispatcher.Invoke((Action)(() =>
                                 {
-                                    this._ctlAccounts.SelectedItem = vm;
+                                    this._ctlAccounts.SelectedAccount = vm;
                                 }));
                             viewModel = vm;
                             break;
@@ -291,7 +325,7 @@ namespace Amazon.AWSToolkit.Navigator
 
         void editAccount(object sender, RoutedEventArgs e)
         {
-            AccountViewModel viewModel = this._ctlAccounts.SelectedItem as AccountViewModel;
+            AccountViewModel viewModel = this._ctlAccounts.SelectedAccount;
             if(viewModel == null)
                 return;
 
@@ -299,7 +333,7 @@ namespace Amazon.AWSToolkit.Navigator
             var results = command.Execute(viewModel);
             if (results.Success)
             {
-                var accountModel = this._ctlAccounts.SelectedItem as AccountViewModel;
+                var accountModel = this._ctlAccounts.SelectedAccount;
                 accountModel.ReloadFromPersistence();
                 setInitialRegionSelection();
                 accountModel.CreateServiceChildren();
@@ -308,7 +342,7 @@ namespace Amazon.AWSToolkit.Navigator
 
         void deleteAccount(object sender, RoutedEventArgs e)
         {
-            AccountViewModel viewModel = this._ctlAccounts.SelectedItem as AccountViewModel;
+            AccountViewModel viewModel = this._ctlAccounts.SelectedAccount;
             if (viewModel == null)
                 return;
 
@@ -324,7 +358,7 @@ namespace Amazon.AWSToolkit.Navigator
                 this._viewModel.RegisteredAccounts.Remove(viewModel);
                 if (this._viewModel.RegisteredAccounts.Count > 0)
                 {
-                    this._ctlAccounts.SelectedItem = this._viewModel.RegisteredAccounts[0];
+                    this._ctlAccounts.SelectedAccount = this._viewModel.RegisteredAccounts[0];
                 }
             }
         }
@@ -542,26 +576,6 @@ namespace Amazon.AWSToolkit.Navigator
 
         }
 
-        void onSelectionAccountChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var account = this._ctlAccounts.SelectedItem as AccountViewModel;
-            this._ctlResourceTree.DataContext = account;
-
-            this.setInitialRegionSelection();
-
-            if (account == null)
-            {
-                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.LastAcountSelectedKey, null);
-            }
-            else
-            {
-                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.LastAcountSelectedKey, account.SettingsUniqueKey);
-                if (account.Children != null)
-                {
-                    this._ctlResourceTree.ItemsSource = account.Children;
-                }
-            }
-        }
 
         private void onFeedback(object sender, RequestNavigateEventArgs e)
         {

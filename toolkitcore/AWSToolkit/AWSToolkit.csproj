@@ -131,6 +131,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommonUI\Components\RegisteredProfilesPicker.xaml.cs">
+      <DependentUpon>RegisteredProfilesPicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CommonUI\SelectableItem.cs" />
     <Compile Include="CommonUI\Components\IAMRolePicker.xaml.cs">
       <DependentUpon>IAMRolePicker.xaml</DependentUpon>
@@ -403,6 +406,10 @@
       <Generator>MSBuild:Compile</Generator>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="CommonUI\Components\RegisteredProfilesPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="CommonUI\DeploymentWizard\PageUI\DeploymentReviewPage.xaml">
       <Generator>MSBuild:Compile</Generator>

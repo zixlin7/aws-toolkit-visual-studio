@@ -92,7 +92,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
             if (_pageUI == null)
             {
                 _pageUI = new StartPage(this);
-                _pageUI.PropertyChanged += OnPagePropertyChanged;
+                 _pageUI.PropertyChanged += OnPagePropertyChanged;
 
                 string templateManifest = S3FileFetcher.Instance.GetFileContent(DeploymentTemplateWrapperBase.TEMPLATEMANIFEST_FILE);
                 if (!string.IsNullOrEmpty(templateManifest))
@@ -310,7 +310,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
         void LoadDeploymentsForAccountAndRegion(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
         {
-            if (account == null)
+            if (account == null || region == null)
                 return;
 
             var cachedDeploymentsKey = ConstructCachedDeploymentsKey(account, region.SystemName);
