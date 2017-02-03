@@ -347,7 +347,7 @@
     <Compile Include="SimpleWorkers\QueryCloudFormationStacksWorker.cs" />
     <Compile Include="SimpleWorkers\QuerySubnetWorker.cs" />
     <Compile Include="SimpleWorkers\QueryTopicArnsWorker.cs" />
-    <Compile Include="Themes\ThemeConstants.cs" />
+    <Compile Include="Themes\ShellProviderThemeResources.cs" />
     <Compile Include="ThemeUtil.cs" />
     <Compile Include="ToolkitFactory.cs" />
     <Compile Include="Util\KeyPairLocalStoreManager.cs" />
@@ -518,6 +518,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\DefaultTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Default\DesignTimeFonts.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

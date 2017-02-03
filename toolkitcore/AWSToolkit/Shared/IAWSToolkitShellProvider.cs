@@ -162,11 +162,11 @@ namespace Amazon.AWSToolkit.Shared
         void AddToLog(string category, string message);
 
         /// <summary>
-        /// 
+        /// Requests a service implemented in our hosting shell.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        T QueryShellProverService<T>() where T : class;
+        /// <typeparam name="T">The interface of the requested service</typeparam>
+        /// <returns>The service or null if unknown</returns>
+        T QueryShellProviderService<T>() where T : class;
 
         /// <summary>
         /// Returns requested interface on a plugin loaded by the toolkit

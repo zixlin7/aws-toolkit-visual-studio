@@ -113,7 +113,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
                 Text = sb.ToString()
             };
 
-            _pageUI.AddReviewPanel("AMI", tb);
+            _pageUI.AddReviewPanel("Amazon Machine Image (AMI)", tb);
         }
 
         void AddAMIOptionsPanel()

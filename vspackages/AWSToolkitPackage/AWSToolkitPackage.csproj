@@ -100,6 +100,7 @@
     <Reference Include="Microsoft.VisualStudio.TextManager.Interop" />
     <Reference Include="Microsoft.VisualStudio.Shell.$(VSTarget)" />
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Immutable.11.0" />
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.$(VSTarget)" />
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=$(VSTarget).0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Threading, Version=$(VSTarget).0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -249,7 +250,7 @@
     <Compile Include="Loggers\*.cs" />
     <Compile Include="Services\AWSLegacyDeploymentPersistenceService.cs" />
     <Compile Include="Services\AWSToolkitShellProviderService.cs" />
-    <Compile Include="Themes\ThemeResources.cs" />
+    <Compile Include="Themes\ThemeFontResources.cs" />
     <Compile Include="IEditor.cs" />
     <Compile Include="NativeMethods.cs" />
   </ItemGroup>
@@ -315,13 +316,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Themes\_AWSToolkitDefaultTheme.xaml">
+    <Page Include="Themes\_AWSToolkitDefaultTheme.$(VSTarget).xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\_AWSToolkitDarkThemeSupplementary.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="ToolWindow\AWSNavigatorToolControl.xaml">
       <SubType>Designer</SubType>

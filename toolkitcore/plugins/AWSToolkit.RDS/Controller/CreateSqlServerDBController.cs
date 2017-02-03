@@ -107,7 +107,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
                 var command = new SqlCommand(string.Format("CREATE DATABASE [{0}]", this._model.DBName), connection);
                 command.ExecuteNonQuery();
 
-                var service = ToolkitFactory.Instance.ShellProvider.QueryShellProverService<IRegisterDataConnectionService>();
+                var service = ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<IRegisterDataConnectionService>();
                 if (service != null)
                 {
                     var title = string.Format("rds.{0}.{1}", this._dbInstance.DBInstanceIdentifier, this._model.DBName);

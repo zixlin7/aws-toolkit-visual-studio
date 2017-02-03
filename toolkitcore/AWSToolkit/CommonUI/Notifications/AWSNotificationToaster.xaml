@@ -1,6 +1,7 @@
 ﻿<Window x:Class="Amazon.AWSToolkit.CommonUI.Notifications.AWSNotificationToaster"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes"
         WindowStyle="None" 
         ResizeMode="NoResize" 
         ShowInTaskbar="False" 
@@ -40,8 +41,8 @@
                    Grid.RowSpan="2"
                    Grid.ColumnSpan="2" Source="/AWSToolkit;component/Resources/Logos/logo_aws_notext.png" Width="93.333" />
             
-            <TextBlock Grid.Column="1" x:Name="_header" HorizontalAlignment="Right" Margin="0,4,4,4" Text="Header" FontWeight="Bold" FontSize="14" 
-                       Style="{DynamicResource awsTextBlockBaseStyle}"/>
+            <TextBlock Grid.Column="1" x:Name="_header" HorizontalAlignment="Right" Margin="0,4,4,4" Text="Header" 
+                       Style="{DynamicResource awsTextBlock122PercentStyle}"/>
             
             <ContentControl 
                     Grid.Row="1" 

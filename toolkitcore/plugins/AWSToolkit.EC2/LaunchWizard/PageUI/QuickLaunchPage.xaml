@@ -1,38 +1,41 @@
-﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.EC2.LaunchWizard.PageUI.QuickLaunchPage"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:ec2components="clr-namespace:Amazon.AWSToolkit.EC2.View.Components"
-             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"             
-             xmlns:toolkitcomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
-             xmlns:validators="clr-namespace:Amazon.AWSToolkit.EC2.Validators"
-             Loaded="UserControl_Loaded"
-             Margin="4"
-             >
+﻿<commonui:BaseAWSUserControl
+    x:Class="Amazon.AWSToolkit.EC2.LaunchWizard.PageUI.QuickLaunchPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:ec2components="clr-namespace:Amazon.AWSToolkit.EC2.View.Components"
+    xmlns:toolkitcomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
+    xmlns:validators="clr-namespace:Amazon.AWSToolkit.EC2.Validators"
+    Margin="4"
+    Loaded="UserControl_Loaded">
 
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <ControlTemplate x:Key="nameValidationTemplate">
                 <DockPanel>
-                    <TextBlock Foreground="Red" Margin="4,0" 
-                               VerticalAlignment="Center"
-                               FontWeight="ExtraBold">!</TextBlock>
-                    <AdornedElementPlaceholder/>
+                    <TextBlock
+                        Margin="4,0"
+                        VerticalAlignment="Center"
+                        FontWeight="ExtraBold"
+                        Foreground="Red">
+                        !
+                    </TextBlock>
+                    <AdornedElementPlaceholder />
                 </DockPanel>
             </ControlTemplate>
 
-            <Style x:Key="instanceNameFieldStyle" 
-                   BasedOn="{StaticResource awsTextBoxStyle}"
-                   TargetType="{x:Type TextBox}">
+            <Style
+                x:Key="instanceNameFieldStyle"
+                BasedOn="{StaticResource awsTextBoxStyle}"
+                TargetType="{x:Type TextBox}">
                 <Style.Triggers>
                     <Trigger Property="Validation.HasError" Value="true">
-                        <Setter Property="ToolTip"
-                                Value="{Binding RelativeSource={x:Static RelativeSource.Self},
-                                            Path=(Validation.Errors)[0].ErrorContent}"/>
-                        <Setter Property="BorderBrush" Value="Red"/>
+                        <Setter Property="ToolTip" Value="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=(Validation.Errors)[0].ErrorContent}" />
+                        <Setter Property="BorderBrush" Value="Red" />
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -45,17 +48,16 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <ec2components:QuickLaunchAMIListControl 
-                    x:Name="_amiSelector" 
-                    Cursor="Wait"
-                    VerticalAlignment="Stretch"
-                    HorizontalAlignment="Stretch"
-             />
+        <ec2components:QuickLaunchAMIListControl
+            x:Name="_amiSelector"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Cursor="Wait" />
 
-        <Grid x:Name="_launchOptionsPanel" 
-              Grid.Column="1" 
-              Margin="4,18,4,0"
-              >
+        <Grid
+            x:Name="_launchOptionsPanel"
+            Grid.Column="1"
+            Margin="4,18,4,0">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -68,63 +70,72 @@
 
             <Label Style="{DynamicResource awsWizardGroupSubHeaderStyle}">Basic</Label>
 
-            <!-- instance type controls -->
+            <!--  instance type controls  -->
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <Label Target="{Binding ElementName=_instanceTypeSelector}"
-                        Style="{DynamicResource awsWizardFieldLabelStyle}"
-                       Grid.Row="0" Grid.Column="0">
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Style="{DynamicResource awsWizardFieldLabelStyle}"
+                    Target="{Binding ElementName=_instanceTypeSelector}">
                     _Type:
                 </Label>
 
-                <toolkitcomponents:ListViewComboBox 
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            x:Name="_instanceTypeSelector"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Stretch"
-                            DisplayMemberPath="Id"
-                            ItemContainerStyle="{DynamicResource awsListViewItemContainerStyle}"
-                            AlternationCount="2"
-                            SelectionChanged="_instanceTypeSelector_SelectionChanged"
-                            IsEnabled="{Binding HasSelectedAMI}"
-                            Margin="3,0,0,0"
-                            ItemsSource="{Binding InstanceTypes}">
-                    <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Id}" />
-                    <GridViewColumn Header="Requires VPC" DisplayMemberBinding="{Binding RequiresVPC}" />
-                    <GridViewColumn Header="vCPU" DisplayMemberBinding="{Binding NumberOfVirtualCores}" />
-                    <GridViewColumn Header="Memory" DisplayMemberBinding="{Binding MemoryWithUnits}" />
-                    <GridViewColumn Header="Disk Space" DisplayMemberBinding="{Binding DiskSpaceWithUnits}" />
+                <toolkitcomponents:ListViewComboBox
+                    x:Name="_instanceTypeSelector"
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="3,0,0,0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    AlternationCount="2"
+                    DisplayMemberPath="Id"
+                    IsEnabled="{Binding HasSelectedAMI}"
+                    ItemContainerStyle="{DynamicResource awsListViewItemContainerStyle}"
+                    ItemsSource="{Binding InstanceTypes}"
+                    SelectionChanged="_instanceTypeSelector_SelectionChanged">
+                    <GridViewColumn DisplayMemberBinding="{Binding Id}" Header="Type" />
+                    <GridViewColumn DisplayMemberBinding="{Binding RequiresVPC}" Header="Requires VPC" />
+                    <GridViewColumn DisplayMemberBinding="{Binding NumberOfVirtualCores}" Header="vCPU" />
+                    <GridViewColumn DisplayMemberBinding="{Binding MemoryWithUnits}" Header="Memory" />
+                    <GridViewColumn DisplayMemberBinding="{Binding DiskSpaceWithUnits}" Header="Disk Space" />
                 </toolkitcomponents:ListViewComboBox>
 
-                <!-- instance naming -->
-                <Label Target="{Binding ElementName=_instanceName}"
-                       Style="{DynamicResource awsWizardFieldLabelStyle}"
-                       Grid.Row="1" Grid.Column="0">
+                <!--  instance naming  -->
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Style="{DynamicResource awsWizardFieldLabelStyle}"
+                    Target="{Binding ElementName=_instanceName}">
                     _Name:
                 </Label>
 
-                <Grid Grid.Row="1" 
-                      Grid.Column="1" 
-                      Margin="3,0,0,0">
+                <Grid
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="3,0,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <TextBox x:Name="_instanceName" 
-                             IsEnabled="{Binding HasSelectedAMI}"
-                             Style="{StaticResource instanceNameFieldStyle}"
-                             MaxLength="256"
-                             Validation.ErrorTemplate="{StaticResource nameValidationTemplate}">
+                    <TextBox
+                        x:Name="_instanceName"
+                        IsEnabled="{Binding HasSelectedAMI}"
+                        MaxLength="256"
+                        Style="{StaticResource instanceNameFieldStyle}"
+                        Validation.ErrorTemplate="{StaticResource nameValidationTemplate}">
                         <TextBox.Text>
-                            <Binding Path="InstanceName" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                            <Binding
+                                Mode="TwoWay"
+                                Path="InstanceName"
+                                UpdateSourceTrigger="PropertyChanged">
                                 <Binding.ValidationRules>
                                     <validators:InstanceNameValidator />
                                 </Binding.ValidationRules>
@@ -134,140 +145,164 @@
                 </Grid>
             </Grid>
 
-            <Label Style="{DynamicResource awsWizardGroupSubHeaderStyle}"
-                   Grid.Row="2" Grid.Column="0"
-                   Margin="0,10,0,0">
+            <Label
+                Grid.Row="2"
+                Grid.Column="0"
+                Margin="0,10,0,0"
+                Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                 Security
             </Label>
 
             <Grid Grid.Row="3">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <!-- key pair -->
-                <Label Target="{Binding ElementName=_keyPairs}"
-                       Style="{DynamicResource awsWizardFieldLabelStyle}"
-                       Grid.Row="0" Grid.Column="0">
+                <!--  key pair  -->
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Style="{DynamicResource awsWizardFieldLabelStyle}"
+                    Target="{Binding ElementName=_keyPairs}">
                     _Key Pair:
                 </Label>
 
-                <toolkitcomponents:KeyPairList x:Name="_keyPairs" 
-                                               Grid.Row="0"
-                                               Grid.Column="1"
-                                               IsEnabled="{Binding HasSelectedAMI}"
-                                               AllowNoKeyPairSelection="True" 
-                                               AllowCreateKeyPairSelection="True"
-                                               Margin="3,0,0,0"
-                                               />
+                <toolkitcomponents:KeyPairList
+                    x:Name="_keyPairs"
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="3,0,0,0"
+                    AllowCreateKeyPairSelection="True"
+                    AllowNoKeyPairSelection="True"
+                    IsEnabled="{Binding HasSelectedAMI}" />
 
-                <!-- vpc -->
-                <Label Target="{Binding ElementName=_vpcSubnets}"
-                       Style="{DynamicResource awsWizardFieldLabelStyle}"
-                       Grid.Row="1" Grid.Column="0">
+                <!--  vpc  -->
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Style="{DynamicResource awsWizardFieldLabelStyle}"
+                    Target="{Binding ElementName=_vpcSubnets}">
                     VPC Subnet:
                 </Label>
 
-                <toolkitcomponents:ListViewComboBox  
-                          Grid.Row="1"
-                          Grid.Column="1"
-                          VerticalAlignment="Top"
-                          x:Name="_vpcSubnets" 
-                          DisplayMemberPath="FormattedSubnet"
-                          Cursor="Wait" 
-                          SelectionChanged="_vpcSubnets_SelectionChanged"
-                          Margin="2.897,3.04,0.103,0"
-                          ItemsSource="{Binding AvailableVpcSubnets}"
-                          ItemContainerStyle="{DynamicResource awsListViewItemContainerStyle}"
-                          AlternationCount="2">
-                    <GridViewColumn Header="Subnet ID" DisplayMemberBinding="{Binding Subnet.DisplayName}" />
-                    <GridViewColumn Header="Availability Zone" DisplayMemberBinding="{Binding Subnet.AvailabilityZone}" />
-                    <GridViewColumn Header="CIDR" DisplayMemberBinding="{Binding Subnet.CidrBlock}" />
+                <toolkitcomponents:ListViewComboBox
+                    x:Name="_vpcSubnets"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="2.897,3.04,0.103,0"
+                    VerticalAlignment="Top"
+                    AlternationCount="2"
+                    Cursor="Wait"
+                    DisplayMemberPath="FormattedSubnet"
+                    ItemContainerStyle="{DynamicResource awsListViewItemContainerStyle}"
+                    ItemsSource="{Binding AvailableVpcSubnets}"
+                    SelectionChanged="_vpcSubnets_SelectionChanged">
+                    <GridViewColumn DisplayMemberBinding="{Binding Subnet.DisplayName}" Header="Subnet ID" />
+                    <GridViewColumn DisplayMemberBinding="{Binding Subnet.AvailabilityZone}" Header="Availability Zone" />
+                    <GridViewColumn DisplayMemberBinding="{Binding Subnet.CidrBlock}" Header="CIDR" />
                 </toolkitcomponents:ListViewComboBox>
 
-                <!-- security group -->
-                <Label Target="{Binding ElementName=_securityGroups}"
-                       Style="{DynamicResource awsWizardFieldLabelStyle}"
-                       Grid.Row="2" Grid.Column="0">
+                <!--  security group  -->
+                <Label
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Style="{DynamicResource awsWizardFieldLabelStyle}"
+                    Target="{Binding ElementName=_securityGroups}">
                     Security _Group:
                 </Label>
 
-                <ComboBox Grid.Row="2"
-                          Grid.Column="1"
-                          VerticalAlignment="Center"
-                          x:Name="_securityGroups" 
-                          DisplayMemberPath="DisplayName"
-                          Cursor="Wait" 
-                          SelectionChanged="_securityGroups_SelectionChanged"
-                          IsEnabled="{Binding HasSecurityGroupsAndAMI}"
-                          Margin="3,0,0,0"
-                          Style="{DynamicResource awsComboBoxStyle}"
-                          ItemsSource="{Binding AvailableSecurityGroups}"/>
+                <ComboBox
+                    x:Name="_securityGroups"
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Margin="3,0,0,0"
+                    VerticalAlignment="Center"
+                    Cursor="Wait"
+                    DisplayMemberPath="DisplayName"
+                    IsEnabled="{Binding HasSecurityGroupsAndAMI}"
+                    ItemsSource="{Binding AvailableSecurityGroups}"
+                    SelectionChanged="_securityGroups_SelectionChanged"
+                    Style="{DynamicResource awsComboBoxStyle}" />
 
-                <!-- IAM role -->
-                <Label Target="{Binding ElementName=_iamProfile}"
-                       Style="{DynamicResource awsWizardFieldLabelStyle}"
-                       Grid.Row="3" Grid.Column="0">
+                <!--  IAM role  -->
+                <Label
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    Style="{DynamicResource awsWizardFieldLabelStyle}"
+                    Target="{Binding ElementName=_iamProfile}">
                     IAM _Role:
                 </Label>
-                <ComboBox x:Name="_iamProfile" 
-                          Grid.Row="3"
-                          Grid.Column="1"
-                          VerticalAlignment="Center"  
-                          IsEditable="False"
-                          IsEnabled="{Binding HasSelectedAMI}"
-                          Cursor="Wait"
-                          DisplayMemberPath="InstanceProfileName"
-                          Margin="3,0,0,0"
-                          Style="{DynamicResource awsComboBoxStyle}"
-                          ItemsSource="{Binding IAMInstanceProfiles}"/>
+                <ComboBox
+                    x:Name="_iamProfile"
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Margin="3,0,0,0"
+                    VerticalAlignment="Center"
+                    Cursor="Wait"
+                    DisplayMemberPath="InstanceProfileName"
+                    IsEditable="False"
+                    IsEnabled="{Binding HasSelectedAMI}"
+                    ItemsSource="{Binding IAMInstanceProfiles}"
+                    Style="{DynamicResource awsComboBoxStyle}" />
             </Grid>
 
-            <!-- Storage -->
-            <Label Style="{DynamicResource awsWizardGroupSubHeaderStyle}"
-                   Margin="0,10,0,0"
-                   Grid.Row="4">
+            <!--  Storage  -->
+            <Label
+                Grid.Row="4"
+                Margin="0,10,0,0"
+                Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                 Storage
             </Label>
 
             <Grid Grid.Row="5" Grid.Column="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <Label Grid.Row="0" Grid.Column="0" Style="{DynamicResource awsLabelBaseStyle}">
+                <Label
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Style="{DynamicResource awsLabelBaseStyle}">
                     _Volume Type:
                 </Label>
-                <ComboBox Grid.Row="0" 
-                          Grid.Column="1"
-                          IsEnabled="{Binding HasSelectedAMI}"
-                          ItemsSource="{Binding VolumeTypes}"
-                          SelectedItem="{Binding SelectedVolumeType, Mode=TwoWay}"
-                          DisplayMemberPath="Description"
-                          ToolTip="General Purpose (SSD) volumes provide the ability to burst to 3,000 IOPS per volume, independent of volume size, to meet the performance needs of most applications and also deliver a consistent baseline of 3 IOPS/GiB. To use a Provisioned IOPS volume type, use the Advanced mode of the wizard." 
-                          IsEditable="False"
-                          SelectionChanged="VolumeType_OnSelected"
-                          Style="{DynamicResource awsComboBoxStyle}"/>
-                <Label Grid.Row="1" Grid.Column="0" Style="{DynamicResource awsLabelBaseStyle}">Si_ze (GB):</Label>
-                <TextBox Grid.Row="1" 
-                         Grid.Column="1" 
-                         Width="50" 
-                         HorizontalAlignment="Left" 
-                         IsEnabled="{Binding HasSelectedAMI}"
-                         Text="{Binding VolumeSize, Mode=TwoWay}"
-                         Style="{DynamicResource awsTextBoxStyle}"/>
+                <ComboBox
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    DisplayMemberPath="Description"
+                    IsEditable="False"
+                    IsEnabled="{Binding HasSelectedAMI}"
+                    ItemsSource="{Binding VolumeTypes}"
+                    SelectedItem="{Binding SelectedVolumeType, Mode=TwoWay}"
+                    SelectionChanged="VolumeType_OnSelected"
+                    Style="{DynamicResource awsComboBoxStyle}"
+                    ToolTip="General Purpose (SSD) volumes provide the ability to burst to 3,000 IOPS per volume, independent of volume size, to meet the performance needs of most applications and also deliver a consistent baseline of 3 IOPS/GiB. To use a Provisioned IOPS volume type, use the Advanced mode of the wizard." />
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Style="{DynamicResource awsLabelBaseStyle}">
+                    Si_ze (GB):
+                </Label>
+                <TextBox
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Width="50"
+                    Margin="0,4,0,0"
+                    HorizontalAlignment="Left"
+                    IsEnabled="{Binding HasSelectedAMI}"
+                    Style="{DynamicResource awsTextBoxStyle}"
+                    Text="{Binding VolumeSize, Mode=TwoWay}" />
             </Grid>
         </Grid>
     </Grid>

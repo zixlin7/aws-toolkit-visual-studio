@@ -1,45 +1,62 @@
-﻿<commonui:BaseAWSView x:Class="Amazon.AWSToolkit.EC2.View.ViewAMIsControl"
+﻿<commonui:BaseAWSView
+    x:Class="Amazon.AWSToolkit.EC2.View.ViewAMIsControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
-    xmlns:uicomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"  
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
     xmlns:components="clr-namespace:Amazon.AWSToolkit.EC2.View.Components"
     xmlns:ec2datagrid="clr-namespace:Amazon.AWSToolkit.EC2.View.DataGrid"
-    Height="600" Width="800"
+    xmlns:uicomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
+    Width="800"
+    Height="600"
     Background="{DynamicResource EditorWindowBackgroundBrush}"
-    Foreground="{DynamicResource EditorWindowTextBrush}"
-    >
+    Foreground="{DynamicResource EditorWindowTextBrush}">
 
     <commonui:BaseAWSView.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </commonui:BaseAWSView.Resources>
-    
+
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0" Grid.Column="0" LastChildFill="True" Margin="0,0,0,0">
+        <DockPanel
+            Grid.Row="0"
+            Grid.Column="0"
+            Margin="0,0,0,0"
+            LastChildFill="True">
             <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True">
-                <Button Click="onLaunchInstanceClick" IsEnabled="False" Name="_ctlLaunchInstance">
+                <Button
+                    Name="_ctlLaunchInstance"
+                    Click="onLaunchInstanceClick"
+                    IsEnabled="False">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16" Source="..\Resources\Images\launch-instance.png"/>
+                            <Image
+                                Width="16"
+                                Height="16"
+                                Source="..\Resources\Images\launch-instance.png" />
                             <TextBlock>Launch Instance</TextBlock>
                         </WrapPanel>
                     </Button.Content>
                 </Button>
-                <Button Click="onDeregisterClick" IsEnabled="False" Name="_ctlDeregister">
+                <Button
+                    Name="_ctlDeregister"
+                    Click="onDeregisterClick"
+                    IsEnabled="False">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16" Source="..\Resources\Images\deregisterami.png"/>
+                            <Image
+                                Width="16"
+                                Height="16"
+                                Source="..\Resources\Images\deregisterami.png" />
                             <TextBlock>De-register</TextBlock>
                         </WrapPanel>
                     </Button.Content>
@@ -47,47 +64,75 @@
                 <Button Click="onRefreshClick">
                     <Button.Content>
                         <WrapPanel>
-                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                            <Image
+                                Width="16"
+                                Height="16"
+                                DataContext="{DynamicResource CommonIcons}"
+                                Source="{Binding RefreshIcon}" />
                             <TextBlock>Refresh</TextBlock>
                         </WrapPanel>
                     </Button.Content>
                 </Button>
                 <Separator />
-                <uicomponents:HeaderedDropPanel 
+                <uicomponents:HeaderedDropPanel
                     x:Name="_showHideColumns"
+                    ApplyPressed="OnColumnCustomizationApplyPressed"
                     DropDownImage="{Binding Source={StaticResource CommonIcons}, Path=ShowHideIcon}"
                     DropDownLabel="Show/Hide"
-                    PanelHeaderLabel="Show/Hide Columns"
-                    ApplyPressed="OnColumnCustomizationApplyPressed"
                     DropPanelOpening="OnColumnCustomizationDropPanelOpening"
-                    >
-                    <components:ShowHideColumnsPanel 
-                        x:Name="_columnCustomizationPanel" 
-                        ShowCustomAttributePanel="True"
-                        />
+                    PanelHeaderLabel="Show/Hide Columns">
+                    <components:ShowHideColumnsPanel x:Name="_columnCustomizationPanel" ShowCustomAttributePanel="True" />
                 </uicomponents:HeaderedDropPanel>
             </ToolBar>
-            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Background="{DynamicResource awsStatusPanelBackgroundBrushKey}">
-                <TextBlock Margin="5,5,5,5" VerticalAlignment="Center" Foreground="{DynamicResource awsToolBarTextBrushKey}">Viewing:</TextBlock>
-                <ComboBox Margin="5,5,5,5" Name="_ctlCommonFilters" DisplayMemberPath="DisplayName" Width="150"
-                          SelectedItem="{Binding CommonImageFilter}" SelectionChanged="onFilterChanged" 
-                          Style="{DynamicResource awsComboBoxStyle}"/>
-                <ComboBox Margin="5,5,5,5" Name="_ctlPlatformFilters" DisplayMemberPath="DisplayName" Width="100"
-                          SelectedItem="{Binding PlatformFilter}" SelectionChanged="onFilterChanged"
-                          Style="{DynamicResource awsComboBoxStyle}"/>
-                
-                <TextBox  Margin="5,5,5,5" Text="{Binding TextFilter,UpdateSourceTrigger=PropertyChanged}" 
-                          Width="150" TextChanged="onTextFilterChange" Style="{StaticResource awsTextBoxStyle}"/>
+            <StackPanel
+                Background="{DynamicResource awsStatusPanelBackgroundBrushKey}"
+                DockPanel.Dock="Top"
+                Orientation="Horizontal">
+                <TextBlock
+                    Margin="5"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource awsWindowTextBrushKey}"
+                    Style="{DynamicResource awsTextBlock122PercentStyle}">
+                    Viewing:
+                </TextBlock>
+                <ComboBox
+                    Name="_ctlCommonFilters"
+                    Width="150"
+                    Margin="5"
+                    DisplayMemberPath="DisplayName"
+                    SelectedItem="{Binding CommonImageFilter}"
+                    SelectionChanged="onFilterChanged"
+                    Style="{DynamicResource awsComboBoxStyle}" />
+                <ComboBox
+                    Name="_ctlPlatformFilters"
+                    Width="100"
+                    Margin="5"
+                    DisplayMemberPath="DisplayName"
+                    SelectedItem="{Binding PlatformFilter}"
+                    SelectionChanged="onFilterChanged"
+                    Style="{DynamicResource awsComboBoxStyle}" />
 
-                <TextBlock Margin="10,5,5,5" Name="_ctlLoadingMessage" VerticalAlignment="Center" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+                <TextBox
+                    Width="150"
+                    Margin="5"
+                    Style="{StaticResource awsTextBoxStyle}"
+                    Text="{Binding TextFilter, UpdateSourceTrigger=PropertyChanged}"
+                    TextChanged="onTextFilterChange" />
+
+                <TextBlock
+                    Name="_ctlLoadingMessage"
+                    Margin="10,5,5,5"
+                    VerticalAlignment="Center"
+                    Style="{DynamicResource awsTextBlockBaseStyle}" />
             </StackPanel>
 
-            <ec2datagrid:CustomizeColumnGrid x:Name="_ctlDataGrid" 
-                GridContextMenuOpening="onGridContextMenu"          
-                GridSelectionChanged="onSelectionChanged"    
-                KeyField="ImageId"                                             
-                ItemsSource="{Binding Images}"/>
-           
-        </DockPanel>        
+            <ec2datagrid:CustomizeColumnGrid
+                x:Name="_ctlDataGrid"
+                GridContextMenuOpening="onGridContextMenu"
+                GridSelectionChanged="onSelectionChanged"
+                ItemsSource="{Binding Images}"
+                KeyField="ImageId" />
+
+        </DockPanel>
     </Grid>
 </commonui:BaseAWSView>

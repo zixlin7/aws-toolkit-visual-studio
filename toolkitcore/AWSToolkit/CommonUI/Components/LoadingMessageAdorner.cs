@@ -26,7 +26,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
             _backgroundBrush = new SolidColorBrush(Color.FromRgb(192, 192, 192));
             _backgroundBrush.Opacity = 0.25;
             _borderPen = new Pen(_backgroundBrush, 1);
-            _typeface = new Typeface(new FontFamily("Verdana"), FontStyles.Italic, FontWeights.Bold, FontStretches.Normal);
+            _typeface = new Typeface(new FontFamily("Segoe UI"), FontStyles.Italic, FontWeights.Bold, FontStretches.Normal);
             _messagePointSize = 24;
             // found a darker brush, but not full black, works better :-)
             _messageBrush = new SolidColorBrush(Color.FromRgb(64, 64, 64));

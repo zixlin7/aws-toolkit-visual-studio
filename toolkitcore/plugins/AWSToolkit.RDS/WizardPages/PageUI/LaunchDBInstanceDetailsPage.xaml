@@ -1,18 +1,18 @@
-﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.RDS.WizardPages.PageUI.LaunchDBInstanceDetailsPage"
+﻿<commonui:BaseAWSUserControl
+    x:Class="Amazon.AWSToolkit.RDS.WizardPages.PageUI.LaunchDBInstanceDetailsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
-    xmlns:toolkitcomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
-    >
-    
+    xmlns:toolkitcomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit">
+
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    
+
     <Grid Margin="4">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -25,9 +25,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
-                   Margin="0"
-                   >
+            <Label Margin="0" Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                 DB Instance Engine and Class
             </Label>
             <Grid Grid.Row="1" Margin="16,4,4,0">
@@ -45,69 +43,88 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Style="{DynamicResource awsLabelBaseStyle}">License Model:</Label>
-                <TextBlock x:Name="_licenseModel" Grid.Column="1" FontStyle="Italic" VerticalAlignment="Center"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+                <TextBlock
+                    x:Name="_licenseModel"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    FontStyle="Italic"
+                    Style="{DynamicResource awsTextBlockBaseStyle}" />
 
-                <Border Grid.Column="3"
-                        Grid.RowSpan="3"
-                        Margin="8,-30,0,30"
-                        BorderBrush="Black" BorderThickness="2"
-                        Background="White">
-                    <Image x:Name="_logo"
-                       Width="100"
-                       Height="66"
-                       HorizontalAlignment="Right"
-                       VerticalAlignment="Center"
-                       />
+                <Border
+                    Grid.RowSpan="3"
+                    Grid.Column="3"
+                    Margin="8,-30,0,30"
+                    Background="White"
+                    BorderBrush="Black"
+                    BorderThickness="2">
+                    <Image
+                        x:Name="_logo"
+                        Width="100"
+                        Height="66"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center" />
                 </Border>
 
-                <Label Grid.Row="1" Target="{Binding ElementName=_dbEngineVersions}" Style="{DynamicResource awsLabelBaseStyle}">DB Engine _Version:</Label>
-                <toolkitcomponents:ListViewComboBox VerticalAlignment="Center" 
-                                                    x:Name="_dbEngineVersions" 
-                                                    Grid.Row="1" 
-                                                    Grid.Column="1" 
-                                                    SelectionChanged="_dbEngineVersions_SelectionChanged"
-                                                    DisplayMemberPath="FormattedEngineVersionAndDescription"
-                                                    ItemContainerStyle="{DynamicResource awsListViewItemContainerStyle}"
-                                                    AlternationCount="2"
-                                                    >
-                    <GridViewColumn Header="Version" DisplayMemberBinding="{Binding EngineVersion.EngineVersion}" />
-                    <GridViewColumn Header="Description" DisplayMemberBinding="{Binding EngineVersion.DBEngineVersionDescription}" />
+                <Label
+                    Grid.Row="1"
+                    Style="{DynamicResource awsLabelBaseStyle}"
+                    Target="{Binding ElementName=_dbEngineVersions}">
+                    DB Engine _Version:
+                </Label>
+                <toolkitcomponents:ListViewComboBox
+                    x:Name="_dbEngineVersions"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    AlternationCount="2"
+                    DisplayMemberPath="FormattedEngineVersionAndDescription"
+                    ItemContainerStyle="{DynamicResource awsListViewItemContainerStyle}"
+                    SelectionChanged="_dbEngineVersions_SelectionChanged">
+                    <GridViewColumn DisplayMemberBinding="{Binding EngineVersion.EngineVersion}" Header="Version" />
+                    <GridViewColumn DisplayMemberBinding="{Binding EngineVersion.DBEngineVersionDescription}" Header="Description" />
                 </toolkitcomponents:ListViewComboBox>
 
-                <Label Grid.Row="2" Target="{Binding ElementName=_instanceClass}" Style="{DynamicResource awsLabelBaseStyle}">DB Instance _Class:</Label>
-                <toolkitcomponents:ListViewComboBox Grid.Row="2" 
-                                                    Grid.Column="1" 
-                                                    x:Name="_instanceClass" 
-                                                    VerticalAlignment="Center"
-                                                    HorizontalAlignment="Stretch"
-                                                    DisplayMemberPath="Id"
-                                                    ItemContainerStyle="{DynamicResource awsListViewItemContainerStyle}"
-                                                    AlternationCount="2"
-                                                    SelectionChanged="_instanceClass_SelectionChanged" 
-                                                    >
-                    <GridViewColumn Header="Type" DisplayMemberBinding="{Binding Id}" />
-                    <GridViewColumn Header="vCPU" DisplayMemberBinding="{Binding NumberOfVirtualCores}" />
-                    <GridViewColumn Header="Memory" DisplayMemberBinding="{Binding MemoryWithUnits}" />
-                    <GridViewColumn Header="I/O Capacity" DisplayMemberBinding="{Binding IOCapacity}" />
+                <Label
+                    Grid.Row="2"
+                    Style="{DynamicResource awsLabelBaseStyle}"
+                    Target="{Binding ElementName=_instanceClass}">
+                    DB Instance _Class:
+                </Label>
+                <toolkitcomponents:ListViewComboBox
+                    x:Name="_instanceClass"
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    AlternationCount="2"
+                    DisplayMemberPath="Id"
+                    ItemContainerStyle="{DynamicResource awsListViewItemContainerStyle}"
+                    SelectionChanged="_instanceClass_SelectionChanged">
+                    <GridViewColumn DisplayMemberBinding="{Binding Id}" Header="Type" />
+                    <GridViewColumn DisplayMemberBinding="{Binding NumberOfVirtualCores}" Header="vCPU" />
+                    <GridViewColumn DisplayMemberBinding="{Binding MemoryWithUnits}" Header="Memory" />
+                    <GridViewColumn DisplayMemberBinding="{Binding IOCapacity}" Header="I/O Capacity" />
                 </toolkitcomponents:ListViewComboBox>
 
-                <CheckBox x:Name="_btnMultiAZDeployment"
-                          Grid.Row="3"
-                          Grid.Column="1"
-                          Grid.ColumnSpan="2"
-                          IsChecked="True"
-                          Margin="0,4"
-                          Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+                <CheckBox
+                    x:Name="_btnMultiAZDeployment"
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="2"
+                    Margin="0,4"
+                    IsChecked="True"
+                    Style="{DynamicResource awsCheckboxButtonBaseStyle}">
                     Perform a multi A_Z deployment
                 </CheckBox>
-                
-                <CheckBox x:Name="_btnAutoUpgradeMinorVersions"
-                          Grid.Row="4"
-                          Grid.Column="1"
-                          Grid.ColumnSpan="2"
-                          IsChecked="True"
-                          Margin="0,4"
-                          Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+
+                <CheckBox
+                    x:Name="_btnAutoUpgradeMinorVersions"
+                    Grid.Row="4"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="2"
+                    Margin="0,4"
+                    IsChecked="True"
+                    Style="{DynamicResource awsCheckboxButtonBaseStyle}">
                     _Upgrade minor versions automatically
                 </CheckBox>
             </Grid>
@@ -118,21 +135,19 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            
-            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
-                               Margin="0,4,0,0"
-                               >
+
+            <Label Margin="0,4,0,0" Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                 RDS Database Instance
             </Label>
-            
-            <Grid Grid.Row="1" Margin="16, 4,4,0">
+
+            <Grid Grid.Row="1" Margin="16,4,4,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>                
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
@@ -142,84 +157,127 @@
                 <Label Style="{DynamicResource awsLabelBaseStyle}">Allocated _Storage:</Label>
                 <StackPanel Grid.Column="1" Grid.ColumnSpan="2">
                     <StackPanel Orientation="Horizontal">
-                        <TextBox x:Name="_allocatedStorage" 
-                                 Width="80"
-                                 Margin="4,0,0,0" 
-                                 HorizontalContentAlignment="Right"
-                                 PreviewTextInput="_allocatedStorage_PreviewTextInput"
-                                 TextChanged="_allocatedStorage_TextChanged"
-                                 Style="{DynamicResource awsTextBoxStyle}"/>
-                        <TextBlock Margin="4,0" VerticalAlignment="Center" Style="{DynamicResource awsTextBlockBaseStyle}" Foreground="{DynamicResource awsDefaultControlForegroundBrushKey}">
+                        <TextBox
+                            x:Name="_allocatedStorage"
+                            Width="80"
+                            Margin="4,0,0,0"
+                            HorizontalContentAlignment="Right"
+                            PreviewTextInput="_allocatedStorage_PreviewTextInput"
+                            Style="{DynamicResource awsTextBoxStyle}"
+                            TextChanged="_allocatedStorage_TextChanged" />
+                        <TextBlock
+                            Margin="4,0"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource awsDefaultControlForegroundBrushKey}"
+                            Style="{DynamicResource awsTextBlockBaseStyle}">
                             GB
                         </TextBlock>
-                        <TextBlock Margin="8,0,4,0" 
-                                   x:Name="_lblStorageLimits"
-                                   VerticalAlignment="Center"
-                                   Style="{DynamicResource awsFieldHintTextStyle}">(Minimum: {0} GB, Maximum {1} GB)</TextBlock>
+                        <TextBlock
+                            x:Name="_lblStorageLimits"
+                            Margin="8,0,4,0"
+                            VerticalAlignment="Center"
+                            Style="{DynamicResource awsFieldHintTextStyle}">
+                            (Minimum: {0} GB, Maximum {1} GB)
+                        </TextBlock>
                     </StackPanel>
                 </StackPanel>
 
-                <Label Grid.Row="1" Target="{Binding ElementName=_txtInstanceIdentifier}" Style="{DynamicResource awsLabelBaseStyle}">DB Instance _Identifier*:</Label>
-                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
-                    <TextBox x:Name="_txtInstanceIdentifier" 
-                             Width="200" 
-                             Margin="4,0,0,0" 
-                             TextChanged="_txtInstanceIdentifier_TextChanged"
-                             Style="{DynamicResource awsTextBoxStyle}"
-                             />
-                    <TextBlock Margin="8,0,0,0" 
-                               x:Name="_instanceIdValidationMsg"
-                               Foreground="Red" 
-                               VerticalAlignment="Center" 
-                               FontStyle="Italic"
-                              />
+                <Label
+                    Grid.Row="1"
+                    Style="{DynamicResource awsLabelBaseStyle}"
+                    Target="{Binding ElementName=_txtInstanceIdentifier}">
+                    DB Instance _Identifier*:
+                </Label>
+                <StackPanel
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Orientation="Horizontal">
+                    <TextBox
+                        x:Name="_txtInstanceIdentifier"
+                        Width="200"
+                        Margin="4,0,0,0"
+                        Style="{DynamicResource awsTextBoxStyle}"
+                        TextChanged="_txtInstanceIdentifier_TextChanged" />
+                    <TextBlock
+                        x:Name="_instanceIdValidationMsg"
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        FontStyle="Italic"
+                        Foreground="Red" />
                 </StackPanel>
 
-                <Label Grid.Row="2" Target="{Binding ElementName=_txtMasterUserName}" Style="{DynamicResource awsLabelBaseStyle}">Master User _Name*:</Label>
-                <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1">
-                    <TextBox x:Name="_txtMasterUserName" 
-                             Margin="4,0,0,0" 
-                             Width="200" 
-                             TextChanged="_txtMasterUserName_TextChanged"
-                             Style="{DynamicResource awsTextBoxStyle}"/>
-                    <TextBlock Margin="8,0,0,0" 
-                               x:Name="_userNameValidationMsg"
-                               Foreground="Red" 
-                               VerticalAlignment="Center"
-                               FontStyle="Italic"
-                               />
+                <Label
+                    Grid.Row="2"
+                    Style="{DynamicResource awsLabelBaseStyle}"
+                    Target="{Binding ElementName=_txtMasterUserName}">
+                    Master User _Name*:
+                </Label>
+                <StackPanel
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Orientation="Horizontal">
+                    <TextBox
+                        x:Name="_txtMasterUserName"
+                        Width="200"
+                        Margin="4,0,0,0"
+                        Style="{DynamicResource awsTextBoxStyle}"
+                        TextChanged="_txtMasterUserName_TextChanged" />
+                    <TextBlock
+                        x:Name="_userNameValidationMsg"
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        FontStyle="Italic"
+                        Foreground="Red" />
                 </StackPanel>
 
-                <Label Grid.Row="3" Target="{Binding ElementName=_txtMasterUserPassword}" Style="{DynamicResource awsLabelBaseStyle}">Master User _Password*:</Label>
-                <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1">
-                    <PasswordBox x:Name="_txtMasterUserPassword" 
-                                 VerticalAlignment="Center" 
-                                 Width="200" 
-                                 Margin="4,0,0,0" 
-                                 PasswordChanged="OnPasswordFieldsChanged"
-                                 Style="{DynamicResource awsPasswordBoxStyle}"/>
-                    <TextBlock Margin="8,0,0,0" 
-                               x:Name="_passwordRequirementMsg"
-                               Foreground="Red" 
-                               FontStyle="Italic"
-                               VerticalAlignment="Center"
-                               />
+                <Label
+                    Grid.Row="3"
+                    Style="{DynamicResource awsLabelBaseStyle}"
+                    Target="{Binding ElementName=_txtMasterUserPassword}">
+                    Master User _Password*:
+                </Label>
+                <StackPanel
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Orientation="Horizontal">
+                    <PasswordBox
+                        x:Name="_txtMasterUserPassword"
+                        Width="200"
+                        Margin="4,0,0,0"
+                        VerticalAlignment="Center"
+                        PasswordChanged="OnPasswordFieldsChanged"
+                        Style="{DynamicResource awsPasswordBoxStyle}" />
+                    <TextBlock
+                        x:Name="_passwordRequirementMsg"
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        FontStyle="Italic"
+                        Foreground="Red" />
                 </StackPanel>
 
-                <Label Grid.Row="4" Target="{Binding ElementName=_txtPasswordConfirmation}" Style="{DynamicResource awsLabelBaseStyle}">Confirm Pass_word*:</Label>
-                <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1">
-                    <PasswordBox x:Name="_txtPasswordConfirmation" 
-                                 Margin="4,0,0,0" 
-                                 VerticalAlignment="Center" 
-                                 Width="200" 
-                                 PasswordChanged="OnPasswordFieldsChanged"
-                                 Style="{DynamicResource awsPasswordBoxStyle}"/>
-                    <TextBlock Margin="8,0,0,0" 
-                               x:Name="_passwordConfirmationMsg"
-                               Foreground="Red" 
-                               FontStyle="Italic"
-                               VerticalAlignment="Center"
-                               />
+                <Label
+                    Grid.Row="4"
+                    Style="{DynamicResource awsLabelBaseStyle}"
+                    Target="{Binding ElementName=_txtPasswordConfirmation}">
+                    Confirm Pass_word*:
+                </Label>
+                <StackPanel
+                    Grid.Row="4"
+                    Grid.Column="1"
+                    Orientation="Horizontal">
+                    <PasswordBox
+                        x:Name="_txtPasswordConfirmation"
+                        Width="200"
+                        Margin="4,0,0,0"
+                        VerticalAlignment="Center"
+                        PasswordChanged="OnPasswordFieldsChanged"
+                        Style="{DynamicResource awsPasswordBoxStyle}" />
+                    <TextBlock
+                        x:Name="_passwordConfirmationMsg"
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        FontStyle="Italic"
+                        Foreground="Red" />
                 </StackPanel>
             </Grid>
         </Grid>

@@ -6,6 +6,7 @@
              mc:Ignorable="d"
              xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
              xmlns:commoncomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
+             xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
              d:DesignHeight="300" d:DesignWidth="300"
              >
 
@@ -27,7 +28,10 @@
         </Grid.RowDefinitions>
 
         <RadioButton Margin="5,5,5,5" Grid.Row="0" Grid.Column="0" Name="_ctlCreateEmptyProject" GroupName="StackOperation" IsChecked="True" Style="{DynamicResource awsRadioButtonBaseStyle}">
-            <Label Style="{DynamicResource awsLabelBaseStyle}" FontWeight="SemiBold">Create with empty template</Label>
+            <Label Style="{DynamicResource awsLabelBaseStyle}" 
+                   FontWeight="SemiBold">
+                Create with empty template
+            </Label>
         </RadioButton>
         <RadioButton Margin="5,5,5,5" Grid.Row="1" Grid.Column="0" Name="_ctlCreateFromStack" GroupName="StackOperation" IsChecked="False" Style="{DynamicResource awsRadioButtonBaseStyle}">
             <Label Style="{DynamicResource awsLabelBaseStyle}" FontWeight="SemiBold">Create from existing AWS CloudFormation Stack</Label>

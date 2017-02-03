@@ -1,85 +1,143 @@
-﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CloudFront.View.Components.LoggingControl"
+﻿<commonui:BaseAWSUserControl
+    x:Class="Amazon.AWSToolkit.CloudFront.View.Components.LoggingControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"             
-    Height="300" Width="300"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Width="300"
+    Height="300"
     Background="{DynamicResource awsPanelBackgroundBrushKey}">
-    
+
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
-                <ResourceDictionary Source="../ResourceStrings.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
+                <ResourceDictionary Source="../ResourceStrings.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
 
-        <CheckBox Grid.Column="0" Grid.Row="0" Margin="5, 5, 0, 5" Name="_ctlIsLoggingEnabled" 
-                  IsChecked="{Binding IsLoggingEnabled, UpdateSourceTrigger=PropertyChanged}" 
-                  Content="Enabled"
-                  Style="{DynamicResource awsCheckboxButtonBaseStyle}"/>
+        <CheckBox
+            Name="_ctlIsLoggingEnabled"
+            Grid.Row="0"
+            Grid.Column="0"
+            Margin="5,5,0,5"
+            Content="Enabled"
+            IsChecked="{Binding IsLoggingEnabled, UpdateSourceTrigger=PropertyChanged}"
+            Style="{DynamicResource awsCheckboxButtonBaseStyle}" />
 
-        <Label Grid.Column="0" Grid.Row="1" Margin="5, 5, 0, 5" VerticalAlignment="Center" 
-               ToolTip="{StaticResource ToolTipLoggingBucket}" 
-               Style="{DynamicResource awsLabelBaseStyle}">Target Bucket:</Label>
-        <Grid Grid.Column="1" Grid.Row="1" Margin="5, 5, 0, 5">
+        <Label
+            Grid.Row="1"
+            Grid.Column="0"
+            Margin="5,5,0,5"
+            VerticalAlignment="Center"
+            Style="{DynamicResource awsLabelBaseStyle}"
+            ToolTip="{StaticResource ToolTipLoggingBucket}">
+            Target Bucket:
+        </Label>
+        <Grid
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="5,5,0,5">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
-            <ComboBox Grid.Column="0" Grid.Row="0" IsEditable="True" IsEnabled="{Binding ElementName=_ctlIsLoggingEnabled, Path=IsChecked}" 
-                      Text="{Binding LoggingTargetBucket, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{Binding AllBucketNames}"
-                      Style="{DynamicResource awsComboBoxStyle}"/>
-            <Button Grid.Column="1" Grid.Row="0" Margin="5,0,5,0" Click="onCreateLoggingBucketClick" IsEnabled="{Binding ElementName=_ctlIsLoggingEnabled, Path=IsChecked}">
+            <ComboBox
+                Grid.Row="0"
+                Grid.Column="0"
+                IsEditable="True"
+                IsEnabled="{Binding ElementName=_ctlIsLoggingEnabled, Path=IsChecked}"
+                ItemsSource="{Binding AllBucketNames}"
+                Style="{DynamicResource awsComboBoxStyle}"
+                Text="{Binding LoggingTargetBucket, UpdateSourceTrigger=PropertyChanged}" />
+            <Button
+                Grid.Row="0"
+                Grid.Column="1"
+                Margin="5,0,5,0"
+                Click="onCreateLoggingBucketClick"
+                IsEnabled="{Binding ElementName=_ctlIsLoggingEnabled, Path=IsChecked}">
                 <Button.Content>
                     <WrapPanel>
-                        <Image Width="16" Height="16" Source="..\..\Resources\Images\new-bucket.png"/>
-                        <TextBlock Margin="5,0,0,0">Create New Bucket</TextBlock>
+                        <Image
+                            Width="16"
+                            Height="16"
+                            Source="..\..\Resources\Images\new-bucket.png" />
+                        <TextBlock Margin="5,0">Create New Bucket</TextBlock>
                     </WrapPanel>
                 </Button.Content>
             </Button>
         </Grid>
 
-        <Label Grid.Column="0" Grid.Row="2" Margin="5, 5, 0, 5" 
-               VerticalAlignment="Center" 
-               ToolTip="{StaticResource ToolTipLoggingPrefix}" 
-               Style="{DynamicResource awsLabelBaseStyle}">Target Prefix:</Label>
-        <TextBox Grid.Column="1" Grid.Row="2" Margin="5, 5, 0, 5" IsEnabled="{Binding ElementName=_ctlIsLoggingEnabled, Path=IsChecked}" 
-                 Text="{Binding LoggingTargetPrefix, UpdateSourceTrigger=PropertyChanged}"
-                 Style="{DynamicResource awsTextBoxStyle}"/>
-        
-        <!-- Hiding this for now since we don't support users setting up cookies in the cache behaviors -->
-        <CheckBox Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Margin="5, 5, 0, 5" Name="_ctlIsLoggingCookies" 
-                  Visibility="Collapsed"
-                  IsChecked="{Binding IsLoggingCookiesEnabled, UpdateSourceTrigger=PropertyChanged}" 
-                  ToolTip="Select whether you want CloudFront to include cookies in access logs."
-                  IsEnabled="{Binding ElementName=_ctlIsLoggingEnabled, Path=IsChecked}" 
-                  Content="Cookie Logging"
-                  Style="{DynamicResource awsCheckboxButtonBaseStyle}"/>
-        
-        <StackPanel Margin="5,5,5,5" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
-            <TextBlock DockPanel.Dock="Bottom" TextWrapping="WrapWithOverflow" Style="{DynamicResource awsInfoTextStyle}" Background="Transparent">
-            Amazon CloudFront provides optional log files with information about end user access to your objects.
+        <Label
+            Grid.Row="2"
+            Grid.Column="0"
+            Margin="5,5,0,5"
+            VerticalAlignment="Center"
+            Style="{DynamicResource awsLabelBaseStyle}"
+            ToolTip="{StaticResource ToolTipLoggingPrefix}">
+            Target Prefix:
+        </Label>
+        <TextBox
+            Grid.Row="2"
+            Grid.Column="1"
+            Margin="5,5,0,5"
+            IsEnabled="{Binding ElementName=_ctlIsLoggingEnabled, Path=IsChecked}"
+            Style="{DynamicResource awsTextBoxStyle}"
+            Text="{Binding LoggingTargetPrefix, UpdateSourceTrigger=PropertyChanged}" />
+
+        <!--  Hiding this for now since we don't support users setting up cookies in the cache behaviors  -->
+        <CheckBox
+            Name="_ctlIsLoggingCookies"
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="5,5,0,5"
+            Content="Cookie Logging"
+            IsChecked="{Binding IsLoggingCookiesEnabled, UpdateSourceTrigger=PropertyChanged}"
+            IsEnabled="{Binding ElementName=_ctlIsLoggingEnabled, Path=IsChecked}"
+            Style="{DynamicResource awsCheckboxButtonBaseStyle}"
+            ToolTip="Select whether you want CloudFront to include cookies in access logs."
+            Visibility="Collapsed" />
+
+        <StackPanel
+            Grid.Row="4"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Margin="5,5,5,5">
+            <TextBlock
+                Background="Transparent"
+                DockPanel.Dock="Bottom"
+                Style="{DynamicResource awsInfoTextStyle}"
+                TextWrapping="WrapWithOverflow">
+                Amazon CloudFront provides optional log files with information about end user access to your objects.
             </TextBlock>
 
-            <TextBlock Margin="0,10,0,0" TextWrapping="WrapWithOverflow" Style="{DynamicResource awsInfoTextStyle}" > For more information go to the Amazon CloudFront documentation.</TextBlock>
+            <TextBlock
+                Margin="0,10,0,0"
+                Style="{DynamicResource awsInfoTextStyle}"
+                TextWrapping="WrapWithOverflow">
+                For more information go to the Amazon CloudFront documentation.
+            </TextBlock>
             <TextBlock>
                 <Hyperlink NavigateUri="" RequestNavigate="onRequestNavigate">
-                    <TextBlock Name="_ctlPrivateDocsLink" Text="Access Logs for Distributions" Foreground="{DynamicResource awsUrlTextFieldForegroundBrushKey}"/>
+                    <TextBlock
+                        Name="_ctlPrivateDocsLink"
+                        Foreground="{DynamicResource awsUrlTextFieldForegroundBrushKey}"
+                        Text="Access Logs for Distributions" />
                 </Hyperlink>
             </TextBlock>
 

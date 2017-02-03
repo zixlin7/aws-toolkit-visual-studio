@@ -43,7 +43,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
 
         public string PageTitle
         {
-            get { return "AMI"; }
+            get { return "Image Selection"; }
         }
 
         public string ShortPageTitle

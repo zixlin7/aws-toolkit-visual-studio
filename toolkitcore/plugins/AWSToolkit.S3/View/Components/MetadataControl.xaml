@@ -1,49 +1,66 @@
-﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.S3.View.Components.MetadataControl"
+﻿<commonui:BaseAWSUserControl
+    x:Class="Amazon.AWSToolkit.S3.View.Components.MetadataControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
-    Height="300" Width="300">
-    
+    Width="300"
+    Height="300">
+
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    
+
     <DockPanel>
 
-        <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
+        <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True">
             <Button Click="OnAddMetadata">
                 <Button.Content>
                     <WrapPanel>
-                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding AddIcon}"/>
-                        <TextBlock> Add</TextBlock>
+                        <Image
+                            Width="16"
+                            Height="16"
+                            DataContext="{DynamicResource CommonIcons}"
+                            Source="{Binding AddIcon}" />
+                        <TextBlock>Add</TextBlock>
                     </WrapPanel>
                 </Button.Content>
             </Button>
             <Button Click="OnRemoveMetadata">
                 <Button.Content>
                     <WrapPanel>
-                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RemoveIcon}"/>
-                        <TextBlock> Remove</TextBlock>
+                        <Image
+                            Width="16"
+                            Height="16"
+                            DataContext="{DynamicResource CommonIcons}"
+                            Source="{Binding RemoveIcon}" />
+                        <TextBlock>Remove</TextBlock>
                     </WrapPanel>
                 </Button.Content>
             </Button>
         </ToolBar>
 
 
-        <commonui:ToolkitDataGridWrapper x:Name="_ctlMetadataDataGrid" CellStyle="{DynamicResource awsDataGridCellCentering}"
-                    AutoGenerateColumns="False" ItemsSource="{Binding MetadataEntries}"
-                    HorizontalAlignment="Stretch" HeadersVisibility="Column"
-                    CanUserAddRows="False" CanUserDeleteRows="False" 
-                                  >
+        <commonui:ToolkitDataGridWrapper
+            x:Name="_ctlMetadataDataGrid"
+            HorizontalAlignment="Stretch"
+            AutoGenerateColumns="False"
+            CanUserAddRows="False"
+            CanUserDeleteRows="False"
+            CellStyle="{DynamicResource awsDataGridCellCentering}"
+            HeadersVisibility="Column"
+            ItemsSource="{Binding MetadataEntries}">
             <commonui:ToolkitDataGridWrapper.Columns>
-                <DataGridTemplateColumn Header="Key" Width="1*">
+                <DataGridTemplateColumn Width="1*" Header="Key">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <ComboBox IsEditable="True" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource awsComboBoxStyle}">
+                            <ComboBox
+                                IsEditable="True"
+                                Style="{DynamicResource awsComboBoxStyle}"
+                                Text="{Binding Key, UpdateSourceTrigger=PropertyChanged}">
                                 <ComboBoxItem>Cache-Control</ComboBoxItem>
                                 <ComboBoxItem>Content-Disposition</ComboBoxItem>
                                 <ComboBoxItem>Content-Type</ComboBoxItem>
@@ -56,7 +73,10 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
-                <DataGridTextColumn Header="Value" Binding="{Binding Value, UpdateSourceTrigger=PropertyChanged}" Width="1*"/>
+                <DataGridTextColumn
+                    Width="1*"
+                    Binding="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                    Header="Value" />
 
             </commonui:ToolkitDataGridWrapper.Columns>
         </commonui:ToolkitDataGridWrapper>

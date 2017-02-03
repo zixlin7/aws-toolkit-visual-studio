@@ -106,8 +106,8 @@ namespace Amazon.AWSToolkit.VisualStudio
     [ProvideOptionPage(typeof(ProxyOptionsPage), "AWS Toolkit", "Proxy", 150, 170, true)]
     [ProvideProfile(typeof(ProxyOptionsPage), "AWS Toolkit", "Proxy", 150, 170, true, DescriptionResourceID = 150)]
     public sealed class AWSToolkitPackage : ProjectPackage, 
-                                            IAWSToolkitShellThemeService, 
                                             IVsInstalledProduct, 
+                                            IAWSToolkitShellThemeService,
                                             IRegisterDataConnectionService, 
                                             IVsShellPropertyEvents, 
                                             IVsBroadcastMessageEvents,
@@ -1459,45 +1459,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             return host;
         }
 
-        #region IAWSToolkitShellThemeService
-
-        void IAWSToolkitShellThemeService.ThemeWizard(IAWSWizard wizard)
-        {
-            wizard.SetProperty(AWSWizardConstants.WizardOptions.propkey_NavContainerBackground, VsBrushes.EnvironmentBackgroundKey);
-        }
-
-        // The vsshell theme overrides for all VS shell placements are supplemented with additional overrides for colors in
-        // dark themes to fine tune appearance based on customer feedback.
-        static readonly Uri _vsshellThemeOverridesUri = new Uri("/AWSToolkitPackage;component/Themes/_AWSToolkitDefaultTheme.xaml",
-                                                                UriKind.RelativeOrAbsolute);
-        static readonly Uri _darkThemeSupplementaryUri = new Uri("/AWSToolkitPackage;component/Themes/_AWSToolkitDarkThemeSupplementary.xaml",
-                                                                 UriKind.RelativeOrAbsolute);
-
-        void IAWSToolkitShellThemeService.QueryShellThemeOverrides(out IEnumerable<Uri> apply, out IEnumerable<Uri> remove)
-        {
-            apply = null;
-            remove = null;
-
-            try
-            {
-                var a = new List<Uri> { _vsshellThemeOverridesUri };
-                apply = a;
-
-                if (ThemeUtil.GetCurrentTheme() == VsTheme.Dark)
-                    a.Add(_darkThemeSupplementaryUri);
-                else
-                {
-                    var r = new List<Uri> { _darkThemeSupplementaryUri };
-                    remove = r;
-                }
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        #endregion
-        
+       
         /// <summary>
         /// Checks whether the specified project is a solution folder
         /// </summary>
@@ -2066,7 +2028,146 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         #endregion
 
-        #region IRegisterDataConnectionService
+        #region IAWSToolkitShellThemeService
+
+        // platformui namespace reference in the xaml file needs to be to a specific
+        // shell version, and you can't just include references to prior shell version
+        // assemblies at the project level otherwise package attribute definitions collide,
+        // so we include a specific named copy of each file with just the namespace
+        // changed (oh for nested xaml files!)
+#if VS2013
+        static readonly Uri _vsshellThemeOverridesUri = new Uri("/AWSToolkitPackage;component/Themes/_AWSToolkitDefaultTheme.12.0.xaml",
+                                                                UriKind.RelativeOrAbsolute);
+#elif VS2015
+        static readonly Uri _vsshellThemeOverridesUri = new Uri("/AWSToolkitPackage;component/Themes/_AWSToolkitDefaultTheme.14.0.xaml",
+                                                                UriKind.RelativeOrAbsolute);
+#else
+#error "No shell-specific _AWSToolkitDefaultTheme.xx.y.xaml file to assign to _vsshellThemeOverridesUri"
+#endif
+
+        public void QueryShellThemeOverrides(out IEnumerable<Uri> apply, out IEnumerable<Uri> remove)
+        {
+            apply = null;
+            remove = null;
+
+            try
+            {
+                var a = new List<Uri> { _vsshellThemeOverridesUri };
+                apply = a;
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        public object CaptionFontFamilyKey { get { return ThemeFontResources.CaptionFontFamilyKey; } }
+        public object CaptionFontSizeKey { get { return ThemeFontResources.CaptionFontSizeKey; } }
+        public object CaptionFontWeightKey { get { return ThemeFontResources.CaptionFontWeightKey; } }
+
+        public object EnvironmentBoldFontWeightKey { get { return ThemeFontResources.EnvironmentBoldFontWeightKey; } }
+        public object EnvironmentFontFamilyKey { get { return ThemeFontResources.EnvironmentFontFamilyKey; } }
+        public object EnvironmentFontSizeKey { get { return ThemeFontResources.EnvironmentFontSizeKey; } }
+
+        public object Environment122PercentFontSizeKey
+        {
+            get
+            {
+                return ThemeFontResources.Environment122PercentFontSizeKey;
+            }
+        }
+
+        public object Environment122PercentFontWeightKey
+        {
+            get
+            {
+                return ThemeFontResources.Environment122PercentFontWeightKey;
+            }
+        }
+
+        public object Environment133PercentFontSizeKey
+        {
+            get
+            {
+                return ThemeFontResources.Environment133PercentFontSizeKey;
+            }
+        }
+
+        public object Environment133PercentFontWeightKey
+        {
+            get
+            {
+                return ThemeFontResources.Environment133PercentFontWeightKey;
+            }
+        }
+
+        public object Environment155PercentFontSizeKey
+        {
+            get
+            {
+                return ThemeFontResources.Environment155PercentFontSizeKey;
+            }
+        }
+
+        public object Environment155PercentFontWeightKey
+        {
+            get
+            {
+                return ThemeFontResources.Environment155PercentFontWeightKey;
+            }
+        }
+
+        public object Environment200PercentFontSizeKey
+        {
+            get
+            {
+                return ThemeFontResources.Environment200PercentFontSizeKey;
+            }
+        }
+
+        public object Environment200PercentFontWeightKey
+        {
+            get
+            {
+                return ThemeFontResources.Environment200PercentFontWeightKey;
+            }
+        }
+
+        public object Environment310PercentFontSizeKey
+        {
+            get
+            {
+                return ThemeFontResources.Environment310PercentFontSizeKey;
+            }
+        }
+
+        public object Environment310PercentFontWeightKey
+        {
+            get
+            {
+                return ThemeFontResources.Environment310PercentFontWeightKey;
+            }
+        }
+
+        public object Environment375PercentFontSizeKey
+        {
+            get
+            {
+                return ThemeFontResources.Environment375PercentFontSizeKey;
+            }
+        }
+
+        public object Environment375PercentFontWeightKey
+        {
+            get
+            {
+                return ThemeFontResources.Environment375PercentFontWeightKey;
+            }
+        }
+
+
+#endregion
+
+#region IRegisterDataConnectionService
 
         public void AddDataConnection(DatabaseTypes type, string connectionName, string connectionString)
         {
@@ -2181,9 +2282,9 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        #endregion
+#endregion
 		
-        #region IVsBroadcastMessageEvents
+#region IVsBroadcastMessageEvents
 
         const int WM_WININICHANGE = 0x001A;
         const int WM_DISPLAYCHANGE = 0x007E;
@@ -2204,6 +2305,6 @@ namespace Amazon.AWSToolkit.VisualStudio
         }
 
 
-        #endregion		
+#endregion
     }
 }

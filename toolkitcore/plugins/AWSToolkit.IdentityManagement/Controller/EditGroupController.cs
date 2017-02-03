@@ -46,7 +46,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
             this._iamClient = this._iamGroupViewModel.IAMClient;
             this._model = new EditGroupModel();
 
-            this._model.OrignalName = this._iamGroupViewModel.Group.GroupName;
+            this._model.OriginalName = this._iamGroupViewModel.Group.GroupName;
             this._model.NewName = this._iamGroupViewModel.Group.GroupName;
 
             EditGroupControl control = new EditGroupControl(this);
@@ -59,7 +59,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
         public void LoadModel()
         {
             var listPolicyRequest =
-                new ListGroupPoliciesRequest() { GroupName = this.Model.OrignalName };
+                new ListGroupPoliciesRequest() { GroupName = this.Model.OriginalName };
             ListGroupPoliciesResponse listPolicyResponse = null;
             do
             {
@@ -75,7 +75,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
                     {
                         var response = this._iamClient.GetGroupPolicy(new GetGroupPolicyRequest()
                         {
-                            GroupName = this.Model.OrignalName,
+                            GroupName = this.Model.OriginalName,
                             PolicyName = policyName
                         });
 
@@ -98,20 +98,20 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
 
         public void Persist()
         {
-            if (!this.Model.OrignalName.Equals(this.Model.NewName))
+            if (!this.Model.OriginalName.Equals(this.Model.NewName))
             {
                 var request = new UpdateGroupRequest()
                 {
-                    GroupName = this.Model.OrignalName,
+                    GroupName = this.Model.OriginalName,
                     NewGroupName = this.Model.NewName
                 };
                 this._iamClient.UpdateGroup(request);
 
-                this.Model.OrignalName = this.Model.NewName;
+                this.Model.OriginalName = this.Model.NewName;
 
                 if (this._iamGroupViewModel != null)
                 {
-                    this._iamGroupViewModel.UpdateGroup(this.Model.OrignalName);
+                    this._iamGroupViewModel.UpdateGroup(this.Model.OriginalName);
                 }
             }
 
@@ -134,7 +134,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
                 {
                     var request = new PutGroupPolicyRequest()
                     {
-                        GroupName = this.Model.OrignalName,
+                        GroupName = this.Model.OriginalName,
                         PolicyName = policyModel.Name,
                         PolicyDocument = policyModel.Policy.ToJson()
                     };

@@ -45,7 +45,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
                         return new ActionResults().WithSuccess(false);
                 }
 
-                var service = ToolkitFactory.Instance.ShellProvider.QueryShellProverService<IRegisterDataConnectionService>();
+                var service = ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<IRegisterDataConnectionService>();
                 if (service == null)
                     return new ActionResults().WithSuccess(true);
 

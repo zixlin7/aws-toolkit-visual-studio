@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
     xmlns:detailpanes="clr-namespace:Amazon.AWSToolkit.ElasticBeanstalk.View.Components.ResourceDetails"
+    xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
     Height="auto" Width="auto">
 
     <UserControl.Resources>
@@ -17,7 +18,7 @@
         <DockPanel.Resources>
             <Style TargetType="{x:Type DataGridCell}" x:Key="ResourceDetail">
                 <Setter Property="Foreground" Value="{DynamicResource awsDefaultControlForegroundBrushKey}" />
-                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="FontWeight" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentBoldFontWeightKey}}"/>
                 <Style.Triggers>
                     <Trigger Property="IsSelected" Value="True">
                         <Setter Property="Background" Value="{x:Null}" />
@@ -46,9 +47,12 @@
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,20,5" FontWeight="SemiBold" FontSize="15" Style="{DynamicResource awsTextBlockBaseStyle}">Resources last refreshed at: </TextBlock>
-                <TextBlock Grid.Column="1" Grid.Row="0" Margin="5,5,20,5" FontWeight="SemiBold"  FontSize="15" Name="_ctlLastRefresh" Style="{DynamicResource awsTextBlockBaseStyle}"/>
-                <TextBlock Grid.Column="0" Grid.Row="1"  Grid.ColumnSpan="2"  Margin="5,5,5,5" FontWeight="SemiBold" FontSize="14" Style="{DynamicResource awsTextBlockBaseStyle}">EC2 Instances:</TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,5,20,5" 
+                           Style="{DynamicResource awsTextBlock122PercentStyle}">Resources last refreshed at: </TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="0" Margin="5,5,20,5" 
+                           Name="_ctlLastRefresh" Style="{DynamicResource awsTextBlock122PercentStyle}"/>
+                <TextBlock Grid.Column="0" Grid.Row="1"  Grid.ColumnSpan="2"  Margin="5,5,5,5" 
+                           Style="{DynamicResource awsTextBlock122PercentStyle}">EC2 Instances:</TextBlock>
                 <commonui:ToolkitDataGridWrapper Grid.Column="0" Grid.Row="2"  Grid.ColumnSpan="2"  ScrollViewer.CanContentScroll="False"
                                 ItemsSource="{Binding Instances}" 
                                 AutoGenerateColumns="False"
@@ -76,7 +80,8 @@
                     </commonui:ToolkitDataGridWrapper.RowDetailsTemplate>
                 </commonui:ToolkitDataGridWrapper>
 
-                <TextBlock Grid.Column="0" Grid.Row="3"  Grid.ColumnSpan="2" Margin="5,5,5,5" FontWeight="SemiBold" FontSize="14" Style="{DynamicResource awsTextBlockBaseStyle}">Load Balancers:</TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="3"  Grid.ColumnSpan="2" Margin="5,5,5,5" 
+                           Style="{DynamicResource awsTextBlock122PercentStyle}">Load Balancers:</TextBlock>
                 <commonui:ToolkitDataGridWrapper Grid.Column="0" Grid.Row="4"  Grid.ColumnSpan="2" ItemsSource="{Binding LoadBalancers}" 
                                   RowDetailsVisibilityMode="Visible"
                                   AutoGenerateColumns="False" x:Name="_ctlLoadBalancerGrid" CellStyle="{DynamicResource ResourceDetail}"
@@ -94,7 +99,8 @@
                     </commonui:ToolkitDataGridWrapper.RowDetailsTemplate>
                 </commonui:ToolkitDataGridWrapper>
 
-                <TextBlock Grid.Column="0" Grid.Row="5"  Grid.ColumnSpan="2" Margin="5,5,5,5" FontWeight="SemiBold" FontSize="14" Style="{DynamicResource awsTextBlockBaseStyle}">Auto Scaling Groups:</TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="5"  Grid.ColumnSpan="2" Margin="5,5,5,5" 
+                           Style="{DynamicResource awsTextBlock122PercentStyle}">Auto Scaling Groups:</TextBlock>
                 <commonui:ToolkitDataGridWrapper Grid.Column="0" Grid.Row="6"  Grid.ColumnSpan="2" 
                                   ItemsSource="{Binding AutoScalingGroups}" 
                                   AutoGenerateColumns="False"
@@ -118,7 +124,8 @@
                     </commonui:ToolkitDataGridWrapper.RowDetailsTemplate>
                 </commonui:ToolkitDataGridWrapper>
 
-                <TextBlock Grid.Column="0" Grid.Row="7"  Grid.ColumnSpan="2" Margin="5,5,5,5" FontWeight="SemiBold" FontSize="14" Style="{DynamicResource awsTextBlockBaseStyle}">Triggers:</TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="7"  Grid.ColumnSpan="2" Margin="5,5,5,5" 
+                           Style="{DynamicResource awsTextBlock122PercentStyle}">Triggers:</TextBlock>
                 <commonui:ToolkitDataGridWrapper Grid.Column="0" Grid.Row="8"  Grid.ColumnSpan="2" ItemsSource="{Binding Triggers}" AutoGenerateColumns="False" x:Name="_ctlTriggerGrid"
                          CellStyle="{DynamicResource ResourceDetail}" CanUserAddRows="False" CanUserDeleteRows="False" HorizontalAlignment="Stretch" HeadersVisibility="Column">
 

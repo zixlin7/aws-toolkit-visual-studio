@@ -1,27 +1,31 @@
-﻿<Window x:Class="Amazon.AWSToolkit.CommonUI.OkCancelDialogHost"
+﻿<Window
+    x:Class="Amazon.AWSToolkit.CommonUI.OkCancelDialogHost"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    WindowStartupLocation="CenterOwner"        
-    Title="DialogHost" Height="300" Width="300" Icon="/AWSToolkit;component/MainIcon.ico"
-    Background="{DynamicResource awsDialogBackgroundBrushKey}">
+    Title="DialogHost"
+    Width="300"
+    Height="300"
+    Background="{DynamicResource awsDialogBackgroundBrushKey}"
+    Icon="/AWSToolkit;component/MainIcon.ico"
+    WindowStartupLocation="CenterOwner">
 
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <Style TargetType="{x:Type Grid}">
                 <Setter Property="Margin" Value="10" />
             </Style>
-            <Style TargetType="{x:Type Label}">
+            <Style BasedOn="{DynamicResource awsLabelBaseStyle}" TargetType="{x:Type Label}">
                 <Setter Property="Margin" Value="0,3,5,5" />
                 <Setter Property="Padding" Value="0,0,0,5" />
             </Style>
-            <Style TargetType="{x:Type TextBox}">
+            <Style BasedOn="{DynamicResource awsTextBoxStyle}" TargetType="{x:Type TextBox}">
                 <Setter Property="Margin" Value="0,0,0,5" />
                 <Style.Triggers>
                     <Trigger Property="Validation.HasError" Value="true">
-                        <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                        <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}" />
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -29,31 +33,49 @@
                 <Setter Property="Orientation" Value="Horizontal" />
                 <Setter Property="HorizontalAlignment" Value="Right" />
             </Style>
-            <Style x:Key="DialogButtons" TargetType="{x:Type Button}" BasedOn="{StaticResource awsButtonBaseStyle}">
+            <Style
+                x:Key="DialogButton"
+                BasedOn="{StaticResource awsButtonBaseStyle}"
+                TargetType="{x:Type Button}">
                 <Setter Property="Width" Value="70" />
                 <Setter Property="Height" Value="25" />
                 <Setter Property="Margin" Value="5,0,0,0" />
             </Style>
         </ResourceDictionary>
     </Window.Resources>
-    
+
     <Grid Name="_ctlMainGrid">
-        
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        
+
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" />
             <RowDefinition Height="1*" />
             <RowDefinition Height="1*" />
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="40" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" VerticalAlignment="Bottom">
-            <Button Name="_ctlAcceptButton" Style="{StaticResource DialogButtons}" Click="acceptButton_Click" IsDefault="True">OK</Button>
-            <Button Name="_ctlRejectButton" Style="{StaticResource DialogButtons}" IsCancel="True">Cancel</Button>
+        <StackPanel
+            Grid.Row="3"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            VerticalAlignment="Bottom">
+            <Button
+                Name="_ctlAcceptButton"
+                Click="acceptButton_Click"
+                IsDefault="True"
+                Style="{StaticResource DialogButton}">
+                OK
+            </Button>
+            <Button
+                Name="_ctlRejectButton"
+                IsCancel="True"
+                Style="{StaticResource DialogButton}">
+                Cancel
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

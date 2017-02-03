@@ -1,19 +1,20 @@
-﻿<commonui:BaseAWSUserControl 
+﻿<commonui:BaseAWSUserControl
     x:Class="Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment.ApplicationOptionsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkitcomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
     xmlns:validators="clr-namespace:Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.Validators"
-    mc:Ignorable="d" 
-    d:DesignHeight="300" d:DesignWidth="500">
+    d:DesignHeight="300"
+    d:DesignWidth="500"
+    mc:Ignorable="d">
 
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <!-- temp unused as we can't get them to work properly
@@ -22,8 +23,8 @@
                     <Setter.Value>
                         <ControlTemplate>
                             <DockPanel>
-                                <TextBlock Foreground="Red" 
-                                           Margin="4,0" 
+                                <TextBlock Foreground="Red"
+                                           Margin="4,0"
                                            VerticalAlignment="Center"
                                            FontWeight="ExtraBold"
                                            DockPanel.Dock="Left"
@@ -49,14 +50,14 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"  />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"  />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -68,139 +69,148 @@
                 <ColumnDefinition Width=".5*" />
             </Grid.ColumnDefinitions>
 
-            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
-                               Grid.ColumnSpan="2"
-                               Margin="0"
-                               >
+            <Label
+                Grid.ColumnSpan="2"
+                Margin="0"
+                Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                 Build and IIS Deployment Settings
             </Label>
 
-            <Label Grid.Row="1" 
-                   Grid.Column="0"
-                   Margin="8,2,4,0"
-                   Content="Project _build configuration:"
-                   x:Name="_buildConfigurationsLabel"
-                   />
+            <Label
+                x:Name="_buildConfigurationsLabel"
+                Grid.Row="1"
+                Grid.Column="0"
+                Margin="8,2,4,0"
+                Content="Project _build configuration:"
+                Style="{DynamicResource awsWizardFieldLabelStyle}" />
 
-            <ComboBox Grid.Row="1" 
-                      Grid.Column="1"
-                      Style="{DynamicResource awsComboBoxStyle}"
-                      ItemsSource="{Binding BuildConfigurations}"
-                      SelectedItem="{Binding SelectedBuildConfiguration}"
-                      x:Name="_buildConfigurations"
-                      />
+            <ComboBox
+                x:Name="_buildConfigurations"
+                Grid.Row="1"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                ItemsSource="{Binding BuildConfigurations}"
+                SelectedItem="{Binding SelectedBuildConfiguration}"
+                Style="{DynamicResource awsComboBoxStyle}" />
 
-            <Label Target="{Binding ElementName=_targetFramework}"
-                   Grid.Row="2"
-                   Style="{DynamicResource awsWizardFieldLabelStyle}"
-                   Margin="8,2,4,0"
-                   Content="App _pool runtime:"
-                   />
+            <Label
+                Grid.Row="2"
+                Margin="8,2,4,0"
+                Content="App _pool runtime:"
+                Style="{DynamicResource awsWizardFieldLabelStyle}"
+                Target="{Binding ElementName=_targetFramework}" />
             <Grid Grid.Row="2" Grid.Column="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <ComboBox x:Name="_targetRuntime"
-                          Style="{DynamicResource awsComboBoxStyle}" />
+                <ComboBox
+                    x:Name="_targetRuntime"
+                    VerticalAlignment="Center"
+                    Style="{DynamicResource awsComboBoxStyle}" />
 
-                <Image x:Name="_targetFrameworkWarnIcon" 
-                       Grid.Column="1"
-                       Margin="2"
-                       Width="16"
-                       Height="16"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"
-                       ToolTip="The selected framework is not supported for this template; a custom AMI needs to be used and setup appropriately"
-                       DataContext="{DynamicResource CommonIcons}" 
-                       Source="{Binding WarningIcon16x16}"
-                       Visibility="Collapsed"/>
+                <Image
+                    x:Name="_targetFrameworkWarnIcon"
+                    Grid.Column="1"
+                    Width="16"
+                    Height="16"
+                    Margin="2"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    DataContext="{DynamicResource CommonIcons}"
+                    Source="{Binding WarningIcon16x16}"
+                    ToolTip="The selected framework is not supported for this template; a custom AMI needs to be used and setup appropriately"
+                    Visibility="Collapsed" />
             </Grid>
 
-            <CheckBox Grid.Row="2"
-                      Grid.Column="2"
-                      Grid.ColumnSpan="2"
-                      Margin="8,2,8,0"
-                      Style="{DynamicResource awsCheckboxButtonBaseStyle}"
-                      IsChecked="{Binding Enable32BitAppPool}">
+            <CheckBox
+                Grid.Row="2"
+                Grid.Column="2"
+                Grid.ColumnSpan="2"
+                Margin="8,2,8,0"
+                IsChecked="{Binding Enable32BitAppPool}"
+                Style="{DynamicResource awsCheckboxButtonBaseStyle}">
                 Enable 32-_bit applications
             </CheckBox>
 
-            <Label Target="{Binding ElementName=_iisAppPath}"
-                   Grid.Row="3"
-                   Grid.Column="0"
-                   Style="{DynamicResource awsWizardFieldLabelStyle}"
-                   Margin="8,2,4,0"
-                   Content="App path:"
-                   x:Name="_iisAppPathLabel"
-                   />
+            <Label
+                x:Name="_iisAppPathLabel"
+                Grid.Row="3"
+                Grid.Column="0"
+                Margin="8,2,4,0"
+                Content="App path:"
+                Style="{DynamicResource awsWizardFieldLabelStyle}"
+                Target="{Binding ElementName=_iisAppPath}" />
 
-            <TextBox Grid.Row="3"
-                     Grid.Column="1"
-                     Grid.ColumnSpan="3"
-                     Style="{DynamicResource awsTextBoxStyle}"
-                     x:Name="_iisAppPath"
-                     Margin="0,0,8,0"
-                     Text="{Binding IISAppPath}"
-                     />
+            <TextBox
+                x:Name="_iisAppPath"
+                Grid.Row="3"
+                Grid.Column="1"
+                Grid.ColumnSpan="3"
+                Margin="0,0,8,0"
+                Style="{DynamicResource awsTextBoxStyle}"
+                Text="{Binding IISAppPath}" />
         </Grid>
 
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"  />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
-                   Margin="0,12,0,0"
-                   >
+            <Label Margin="0,12,0,0" Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                 Application Settings
             </Label>
 
             <Grid x:Name="_healthCheckViaURLPanel" Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                
-                <Label Target="{Binding ElementName=_healthCheckURL}" 
-                       Style="{DynamicResource awsWizardFieldLabelStyle}"
-                       Margin="8,2,4,0" 
-                       Content="_Health check URL:" 
-                       />
 
-                <TextBlock x:Name="_healthCheckFromInstanceMsg"
-                           Grid.Column="1"
-                           Grid.ColumnSpan="2"
-                           Margin="4,2,8,0"
-                           Visibility="Hidden"
-                           FontStyle="Italic"
-                           Style="{DynamicResource awsInfoTextStyle}">
+                <Label
+                    Margin="8,2,4,0"
+                    Content="_Health check URL:"
+                    Style="{DynamicResource awsWizardFieldLabelStyle}"
+                    Target="{Binding ElementName=_healthCheckURL}" />
+
+                <TextBlock
+                    x:Name="_healthCheckFromInstanceMsg"
+                    Grid.Column="1"
+                    Grid.ColumnSpan="2"
+                    Margin="4,2,8,0"
+                    FontStyle="Italic"
+                    Style="{DynamicResource awsInfoTextStyle}"
+                    Visibility="Hidden">
                     The status of the single EC2 instance is used to determine environment health.
                 </TextBlock>
 
-                <TextBlock Grid.Column="1"
-                           VerticalAlignment="Center"
-                           Margin="4,0"
-                           FontWeight="ExtraBold"
-                           Foreground="Red"
-                           Text="!"
-                           ToolTip="The relative Uri specified for the health check page is not valid or is empty."
-                           Visibility="Collapsed"
-                           x:Name="_healthCheckURLInvalid"/>
+                <TextBlock
+                    x:Name="_healthCheckURLInvalid"
+                    Grid.Column="1"
+                    Margin="4,0"
+                    VerticalAlignment="Center"
+                    FontWeight="ExtraBold"
+                    Foreground="Red"
+                    Text="!"
+                    ToolTip="The relative Uri specified for the health check page is not valid or is empty."
+                    Visibility="Collapsed" />
 
-                <TextBox x:Name="_healthCheckURL" 
-                         Grid.Column="2"
-                         Margin="4,0,8,0"
-                         TextChanged="_healthCheckURL_TextChanged"
-                         Style="{DynamicResource awsTextBoxStyle}"
-                         >
+                <TextBox
+                    x:Name="_healthCheckURL"
+                    Grid.Column="2"
+                    Margin="4,0,8,0"
+                    Style="{DynamicResource awsTextBoxStyle}"
+                    TextChanged="_healthCheckURL_TextChanged">
                     <TextBox.Text>
-                        <Binding Path="HealthCheckUri" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                        <Binding
+                            Mode="TwoWay"
+                            Path="HealthCheckUri"
+                            UpdateSourceTrigger="PropertyChanged">
                             <!--<Binding.ValidationRules>
                                 <validators:HealthCheckUriValidator />
                             </Binding.ValidationRules>-->
@@ -211,38 +221,40 @@
 
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <Label Target="{Binding ElementName=_versionLabel}" 
-                       Style="{DynamicResource awsWizardFieldLabelStyle}"
-                       Margin="8,2,4,0" 
-                       Content="Deployment _version label:" 
-                       />
+                <Label
+                    Margin="8,2,4,0"
+                    Content="Deployment _version label:"
+                    Style="{DynamicResource awsWizardFieldLabelStyle}"
+                    Target="{Binding ElementName=_versionLabel}" />
 
-                <TextBlock Grid.Column="1"
-                           VerticalAlignment="Center"
-                           Margin="4,0"
-                           FontWeight="ExtraBold"
-                           Foreground="Red"
-                           Text="!"
-                           ToolTip="Version label may not be empty or used previously."
-                           Visibility="Collapsed"
-                           x:Name="_versionLabelInvalid"/>
-                
-                <TextBox Margin="4,0,8,0"
-                        Grid.Column="2" 
-                        Name="_versionLabel" 
-                        TextChanged="_versionLabel_OnTextChanged"
-                        ToolTip="A label identifying this version"
-                        Style="{DynamicResource awsTextBoxStyle}"
-                        >
+                <TextBlock
+                    x:Name="_versionLabelInvalid"
+                    Grid.Column="1"
+                    Margin="4,0"
+                    VerticalAlignment="Center"
+                    FontWeight="ExtraBold"
+                    Foreground="Red"
+                    Text="!"
+                    ToolTip="Version label may not be empty or used previously."
+                    Visibility="Collapsed" />
+
+                <TextBox
+                    Name="_versionLabel"
+                    Grid.Column="2"
+                    Margin="4,0,8,0"
+                    Style="{DynamicResource awsTextBoxStyle}"
+                    TextChanged="_versionLabel_OnTextChanged"
+                    ToolTip="A label identifying this version">
                     <TextBox.Text>
-                        <Binding Path="DeploymentVersionLabel" 
-                                    Mode="TwoWay" 
-                                    UpdateSourceTrigger="PropertyChanged">
+                        <Binding
+                            Mode="TwoWay"
+                            Path="DeploymentVersionLabel"
+                            UpdateSourceTrigger="PropertyChanged">
                             <!--<Binding.ValidationRules>
                                 <validators:DeploymentVersionLabelValidator />
                             </Binding.ValidationRules>-->
@@ -251,10 +263,11 @@
                 </TextBox>
             </Grid>
 
-            <toolkitcomponents:AppSettingsControl Grid.Row="3" 
-                                                  Margin="8,4,8,0" 
-                                                  MinHeight="130" 
-                                                  x:Name="_appSettings"/>
+            <toolkitcomponents:AppSettingsControl
+                x:Name="_appSettings"
+                Grid.Row="3"
+                MinHeight="130"
+                Margin="8,4,8,0" />
         </Grid>
     </Grid>
 

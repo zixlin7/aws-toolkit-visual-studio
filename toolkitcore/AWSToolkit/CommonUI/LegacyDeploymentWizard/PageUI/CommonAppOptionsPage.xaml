@@ -1,27 +1,30 @@
-﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI.CommonAppOptionsPage"
+﻿<commonui:BaseAWSUserControl
+    x:Class="Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI.CommonAppOptionsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"                      
-    xmlns:toolkitcomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components"
-    >
-    
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"
+    xmlns:toolkitcomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components">
+
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <Style x:Key="OptionSpacer" TargetType="{x:Type RadioButton}" BasedOn="{StaticResource awsRadioButtonBaseStyle}">
+            <Style
+                x:Key="OptionSpacer"
+                BasedOn="{StaticResource awsRadioButtonBaseStyle}"
+                TargetType="{x:Type RadioButton}">
                 <Setter Property="Margin" Value="0,2,0,3" />
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
-    
+
     <AdornerDecorator>
-        <StackPanel Margin="4" x:Name="_pageRoot">
+        <StackPanel x:Name="_pageRoot" Margin="4">
 
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"  />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -31,67 +34,63 @@
                     <ColumnDefinition Width=".5*" />
                 </Grid.ColumnDefinitions>
 
-                <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
-                               Grid.ColumnSpan="2"
-                               Margin="0"
-                               >
+                <Label
+                    Grid.ColumnSpan="2"
+                    Margin="0"
+                    Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                     Application Pool Options
                 </Label>
 
-                <Label Target="{Binding ElementName=_targetFramework}"
-                           Grid.Row="1"
-                           Style="{DynamicResource awsWizardFieldLabelStyle}"
-                           Margin="8,2,4,0"
-                           Content="Target _framework:"
-                           />
+                <Label
+                    Grid.Row="1"
+                    Margin="8,2,4,0"
+                    Content="Target _framework:"
+                    Style="{DynamicResource awsWizardFieldLabelStyle}"
+                    Target="{Binding ElementName=_targetFramework}" />
                 <Grid Grid.Row="1" Grid.Column="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    
-                    <ComboBox x:Name="_targetFramework"
-                              VerticalAlignment="Center"
-                              SelectionChanged="_targetFramework_SelectionChanged"
-                              Style="{DynamicResource awsComboBoxStyle}">
-                        <ComboBoxItem Tag="2.0"
-                                      Content=".NET Framework 2.0" />
-                        <ComboBoxItem Tag="3.0"
-                                      Content=".NET Framework 3.0" />
-                        <ComboBoxItem Tag="3.5"
-                                      Content=".NET Framework 3.5" />
-                        <ComboBoxItem Tag="4.0"
-                                      Content=".NET Framework 4.0"
-                                      />
-                        <ComboBoxItem Tag="4.5"
-                                      Content=".NET Framework 4.5"
-                                      />
+
+                    <ComboBox
+                        x:Name="_targetFramework"
+                        VerticalAlignment="Center"
+                        SelectionChanged="_targetFramework_SelectionChanged"
+                        Style="{DynamicResource awsComboBoxStyle}">
+                        <ComboBoxItem Content=".NET Framework 2.0" Tag="2.0" />
+                        <ComboBoxItem Content=".NET Framework 3.0" Tag="3.0" />
+                        <ComboBoxItem Content=".NET Framework 3.5" Tag="3.5" />
+                        <ComboBoxItem Content=".NET Framework 4.0" Tag="4.0" />
+                        <ComboBoxItem Content=".NET Framework 4.5" Tag="4.5" />
                     </ComboBox>
-                    
-                    <Image x:Name="_targetFrameworkWarnIcon" 
-                           Grid.Column="1"
-                           Margin="2"
-                           Width="16"
-                           Height="16"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center"
-                           ToolTip="The selected framework is not supported for this template; a custom AMI needs to be used and setup appropriately"
-                           DataContext="{DynamicResource CommonIcons}" 
-                           Source="{Binding WarningIcon16x16}"
-                           Visibility="Collapsed"/>
+
+                    <Image
+                        x:Name="_targetFrameworkWarnIcon"
+                        Grid.Column="1"
+                        Width="16"
+                        Height="16"
+                        Margin="2"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        DataContext="{DynamicResource CommonIcons}"
+                        Source="{Binding WarningIcon16x16}"
+                        ToolTip="The selected framework is not supported for this template; a custom AMI needs to be used and setup appropriately"
+                        Visibility="Collapsed" />
                 </Grid>
 
-                <CheckBox x:Name="_enable32BitApplications"
-                              Grid.Row="1"
-                              Grid.Column="2"
-                              Grid.ColumnSpan="2"
-                              Margin="8,2,4,0"
-                              Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+                <CheckBox
+                    x:Name="_enable32BitApplications"
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    Grid.ColumnSpan="2"
+                    Margin="8,2,4,0"
+                    Style="{DynamicResource awsCheckboxButtonBaseStyle}">
                     Enable 32-_bit applications
                 </CheckBox>
             </Grid>
 
-            <Grid Margin="0,6,0,0">
+            <Grid Margin="0,16,0,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -101,17 +100,12 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
-                       Grid.ColumnSpan="2"
-                       Margin="0,2,0,0"
-                       >
+                <Label
+                    Grid.ColumnSpan="2"
+                    Margin="0,2,0,0"
+                    Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                     Miscellaneous
                 </Label>
-
-                <Border Grid.ColumnSpan="2" 
-                        VerticalAlignment="Top" 
-                        Height="2" 
-                        Background="LightGray" />
 
                 <Grid Grid.Row="1" Grid.ColumnSpan="2">
                     <Grid.ColumnDefinitions>
@@ -124,54 +118,59 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-                        
-                        <Label Target="{Binding ElementName=_healthCheckURL}" 
-                           Style="{DynamicResource awsWizardFieldLabelStyle}"
-                           Margin="8,2,4,0" 
-                           Content="Application _health check URL *:" 
-                           />
 
-                        <Grid x:Name="_healthCheckControlsGrid" 
-                          Grid.Row="1"
-                          Margin="8,0,4,0" 
-                          >
+                        <Label
+                            Margin="8,2,4,0"
+                            Content="Application _health check URL *:"
+                            Style="{DynamicResource awsWizardFieldLabelStyle}"
+                            Target="{Binding ElementName=_healthCheckURL}" />
+
+                        <Grid
+                            x:Name="_healthCheckControlsGrid"
+                            Grid.Row="1"
+                            Margin="8,0,4,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <TextBox x:Name="_healthCheckURL" 
-                                 VerticalAlignment="Center" 
-                                 TextChanged="_healthCheckURL_TextChanged"
-                                 Text="/" 
-                                 Style="{DynamicResource awsTextBoxStyle}"/>
-                            <Image x:Name="_healthcheckValidationFailIcon" 
-                               Grid.Column="1"
-                               Margin="2"
-                               Width="16"
-                               Height="16"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"
-                               ToolTip="Invalid/empty relative URL path"
-                               DataContext="{DynamicResource CommonIcons}" 
-                               Source="{Binding InvalidIcon}"
-                               Visibility="Collapsed"/>
+                            <TextBox
+                                x:Name="_healthCheckURL"
+                                VerticalAlignment="Center"
+                                Style="{DynamicResource awsTextBoxStyle}"
+                                Text="/"
+                                TextChanged="_healthCheckURL_TextChanged" />
+                            <Image
+                                x:Name="_healthcheckValidationFailIcon"
+                                Grid.Column="1"
+                                Width="16"
+                                Height="16"
+                                Margin="2"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                DataContext="{DynamicResource CommonIcons}"
+                                Source="{Binding InvalidIcon}"
+                                ToolTip="Invalid/empty relative URL path"
+                                Visibility="Collapsed" />
                         </Grid>
                     </Grid>
 
-                    <Grid x:Name="_healthCheckViaInstanceStatusPanel"
-                          Margin="16,0,4,10"
-                          Visibility="Collapsed"
-                          VerticalAlignment="Bottom">
-                        <TextBlock FontStyle="Italic"
-                                   TextWrapping="Wrap"
-                                   Style="{DynamicResource awsTextBlockBaseStyle}">
+                    <Grid
+                        x:Name="_healthCheckViaInstanceStatusPanel"
+                        Margin="16,0,4,10"
+                        VerticalAlignment="Bottom"
+                        Visibility="Collapsed">
+                        <TextBlock
+                            FontStyle="Italic"
+                            Style="{DynamicResource awsTextBlockBaseStyle}"
+                            TextWrapping="Wrap">
                             (Application health determined via EC2 instance status checks)
                         </TextBlock>
                     </Grid>
-                    
-                    <Grid x:Name="_emailControlsGrid"
-                          Margin="4,2,4,0"
-                          Grid.Column="1">
+
+                    <Grid
+                        x:Name="_emailControlsGrid"
+                        Grid.Column="1"
+                        Margin="4,2,4,0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -180,32 +179,35 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <Label Target="{Binding ElementName=_notificationEmail}" 
-                           Style="{DynamicResource awsWizardFieldLabelStyle}"
-                           Grid.ColumnSpan="2"
-                           Content="_Email address for notifications:" 
-                           />
-                        <TextBox x:Name="_notificationEmail"
-                                 Grid.Row="1"
-                                 VerticalAlignment="Center" 
-                                 TextChanged="_notificationEmail_TextChanged"
-                                 Style="{DynamicResource awsTextBoxStyle}"/>
-                        <Image x:Name="_emailValidationWarning" 
-                               Grid.Row="1" Grid.Column="1"
-                               Margin="2"
-                               Width="16"
-                               Height="16"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Center"
-                               ToolTip="Email address format may not be valid"
-                               DataContext="{DynamicResource CommonIcons}" 
-                               Source="{Binding WarningIcon16x16}"
-                               Visibility="Collapsed"/>
+                        <Label
+                            Grid.ColumnSpan="2"
+                            Content="_Email address for notifications:"
+                            Style="{DynamicResource awsWizardFieldLabelStyle}"
+                            Target="{Binding ElementName=_notificationEmail}" />
+                        <TextBox
+                            x:Name="_notificationEmail"
+                            Grid.Row="1"
+                            VerticalAlignment="Center"
+                            Style="{DynamicResource awsTextBoxStyle}"
+                            TextChanged="_notificationEmail_TextChanged" />
+                        <Image
+                            x:Name="_emailValidationWarning"
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Width="16"
+                            Height="16"
+                            Margin="2"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            DataContext="{DynamicResource CommonIcons}"
+                            Source="{Binding WarningIcon16x16}"
+                            ToolTip="Email address format may not be valid"
+                            Visibility="Collapsed" />
                     </Grid>
                 </Grid>
             </Grid>
 
-            <Grid Margin="0,8,0,0">
+            <Grid Margin="0,16,0,0">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -217,7 +219,7 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <!-- application parameters subgrid -->
+                <!--  application parameters subgrid  -->
                 <Grid>
 
                     <Grid.RowDefinitions>
@@ -225,17 +227,11 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
-                       Margin="0,4,0,0"
-                       >
+                    <Label Margin="0,4,0,0" Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                         Application Environment
                     </Label>
 
-                    <Border VerticalAlignment="Top" 
-                            Height="2" 
-                            Background="LightGray" />
-
-                    <Grid Margin="8,0,8,0" Grid.Row="1">
+                    <Grid Grid.Row="1" Margin="8,0,8,0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -248,52 +244,73 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Label Target="{Binding ElementName=_param1}"
-                               Style="{DynamicResource awsWizardFieldLabelStyle}"
-                               >
+                        <Label Style="{DynamicResource awsWizardFieldLabelStyle}" Target="{Binding ElementName=_param1}">
                             PARAM_1
                         </Label>
-                        <TextBox x:Name="_param1" Grid.Column="1" Style="{DynamicResource awsTextBoxStyle}"/>
+                        <TextBox
+                            x:Name="_param1"
+                            Grid.Column="1"
+                            Style="{DynamicResource awsTextBoxStyle}" />
 
-                        <Label Target="{Binding ElementName=_param2}" 
-                               Grid.Row="1"
-                               Style="{DynamicResource awsWizardFieldLabelStyle}"
-                               >
+                        <Label
+                            Grid.Row="1"
+                            Style="{DynamicResource awsWizardFieldLabelStyle}"
+                            Target="{Binding ElementName=_param2}">
                             PARAM_2
                         </Label>
-                        <TextBox x:Name="_param2" Grid.Row="1" Grid.Column="1" Style="{DynamicResource awsTextBoxStyle}"/>
+                        <TextBox
+                            x:Name="_param2"
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Style="{DynamicResource awsTextBoxStyle}" />
 
-                        <Label Target="{Binding ElementName=_param3}" 
-                               Grid.Row="2"
-                               Style="{DynamicResource awsWizardFieldLabelStyle}"
-                               >
+                        <Label
+                            Grid.Row="2"
+                            Style="{DynamicResource awsWizardFieldLabelStyle}"
+                            Target="{Binding ElementName=_param3}">
                             PARAM_3
                         </Label>
-                        <TextBox x:Name="_param3" Grid.Row="2" Grid.Column="1" Style="{DynamicResource awsTextBoxStyle}"/>
+                        <TextBox
+                            x:Name="_param3"
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Style="{DynamicResource awsTextBoxStyle}" />
 
-                        <Label Target="{Binding ElementName=_param4}" 
-                               Grid.Row="3"
-                               Style="{DynamicResource awsWizardFieldLabelStyle}"
-                               >
+                        <Label
+                            Grid.Row="3"
+                            Style="{DynamicResource awsWizardFieldLabelStyle}"
+                            Target="{Binding ElementName=_param4}">
                             PARAM_4
                         </Label>
-                        <TextBox x:Name="_param4" Grid.Row="3" Grid.Column="1" Style="{DynamicResource awsTextBoxStyle}"/>
+                        <TextBox
+                            x:Name="_param4"
+                            Grid.Row="3"
+                            Grid.Column="1"
+                            Style="{DynamicResource awsTextBoxStyle}" />
 
-                        <Label Target="{Binding ElementName=_param5}" 
-                               Grid.Row="4"
-                               Style="{DynamicResource awsWizardFieldLabelStyle}"
-                               >
+                        <Label
+                            Grid.Row="4"
+                            Style="{DynamicResource awsWizardFieldLabelStyle}"
+                            Target="{Binding ElementName=_param5}">
                             PARAM_5
                         </Label>
-                        <TextBox x:Name="_param5" Grid.Row="4" Grid.Column="1" Style="{DynamicResource awsTextBoxStyle}"/>
+                        <TextBox
+                            x:Name="_param5"
+                            Grid.Row="4"
+                            Grid.Column="1"
+                            Style="{DynamicResource awsTextBoxStyle}" />
                     </Grid>
 
                 </Grid>
 
-                <!-- separator line -->
-                <Border Grid.Column="1" BorderThickness="2,0,0,0" BorderBrush="LightGray" Margin="0,12,0,0" />
-                
-                <!-- application credentials subgrid -->
+                <!--  separator line  -->
+                <Border
+                    Grid.Column="1"
+                    Margin="0,12,0,0"
+                    BorderBrush="LightGray"
+                    BorderThickness="2,0,0,0" />
+
+                <!--  application credentials subgrid  -->
                 <Grid Grid.Column="2">
 
                     <Grid.RowDefinitions>
@@ -301,18 +318,12 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
-                       Margin="0,4,0,0"
-                       >
+                    <Label Margin="0,4,0,0" Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                         Application Credentials
                     </Label>
 
-                    <Border VerticalAlignment="Top" 
-                            Height="2" 
-                            Background="LightGray" />
+                    <Grid Grid.Row="1" Margin="12,0,8,0">
 
-                    <Grid Margin="12,0,8,0" Grid.Row="1">
-                        
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -321,39 +332,37 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <RadioButton GroupName="CredentialsMode" 
-                                     x:Name="btnUseNoCredentials"
-                                     Click="CredentialsModeButton_Click"
-                                     ToolTip="No credentials are needed by the application"
-                                     IsChecked="True"
-                                     Style="{DynamicResource awsRadioButtonBaseStyle}"
-                                     >
+                        <RadioButton
+                            x:Name="btnUseNoCredentials"
+                            Click="CredentialsModeButton_Click"
+                            GroupName="CredentialsMode"
+                            IsChecked="True"
+                            Style="{DynamicResource awsRadioButtonBaseStyle}"
+                            ToolTip="No credentials are needed by the application">
                             _No credentials are required
                         </RadioButton>
 
-                        <RadioButton GroupName="CredentialsMode" 
-                                     Grid.Row="1"
-                                     x:Name="btnReUseCredentials"
-                                     Style="{StaticResource OptionSpacer}"
-                                     Click="CredentialsModeButton_Click"
-                                     ToolTip="Use the same user credentials for the application as were used on the previous deployment, if any"
-                                     >
+                        <RadioButton
+                            x:Name="btnReUseCredentials"
+                            Grid.Row="1"
+                            Click="CredentialsModeButton_Click"
+                            GroupName="CredentialsMode"
+                            Style="{StaticResource OptionSpacer}"
+                            ToolTip="Use the same user credentials for the application as were used on the previous deployment, if any">
                             Re-use settings from _last deployment
                         </RadioButton>
-                        
+
                         <StackPanel Grid.Row="2" Orientation="Vertical">
-                            <RadioButton GroupName="CredentialsMode" 
-                                         x:Name="btnUseSpecifiedCredentials"
-                                         Style="{StaticResource OptionSpacer}"
-                                         Click="CredentialsModeButton_Click"
-                                         ToolTip="Enter the credentials of the user account to use in the application"
-                                         >
+                            <RadioButton
+                                x:Name="btnUseSpecifiedCredentials"
+                                Click="CredentialsModeButton_Click"
+                                GroupName="CredentialsMode"
+                                Style="{StaticResource OptionSpacer}"
+                                ToolTip="Enter the credentials of the user account to use in the application">
                                 Use _these credentials:
                             </RadioButton>
 
-                            <Grid Grid.Row="3"
-                                  Margin="20,0,0,2"
-                                  >
+                            <Grid Grid.Row="3" Margin="20,0,0,2">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
@@ -363,71 +372,72 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <Label Target="{Binding ElementName=_accessKey}"
-                                       Style="{DynamicResource awsWizardFieldLabelStyle}"
-                                       >
+                                <Label Style="{DynamicResource awsWizardFieldLabelStyle}" Target="{Binding ElementName=_accessKey}">
                                     _Access Key:
                                 </Label>
 
-                                <TextBox Grid.Column="1" 
-                                         x:Name="_accessKey" 
-                                         TextChanged="CredentialsTextChanged" 
-                                         IsEnabled="{Binding ElementName=btnUseSpecifiedCredentials, Path=IsChecked}"
-                                         Style="{DynamicResource awsTextBoxStyle}"/>
-                                
-                                <Label Grid.Row="1" Target="{Binding ElementName=_secretKey}"
-                                       Style="{DynamicResource awsWizardFieldLabelStyle}"
-                                       >
+                                <TextBox
+                                    x:Name="_accessKey"
+                                    Grid.Column="1"
+                                    IsEnabled="{Binding ElementName=btnUseSpecifiedCredentials, Path=IsChecked}"
+                                    Style="{DynamicResource awsTextBoxStyle}"
+                                    TextChanged="CredentialsTextChanged" />
+
+                                <Label
+                                    Grid.Row="1"
+                                    Style="{DynamicResource awsWizardFieldLabelStyle}"
+                                    Target="{Binding ElementName=_secretKey}">
                                     _Secret Key:
                                 </Label>
 
-                                <TextBox x:Name="_secretKey" 
-                                         Grid.Row="1" 
-                                         Grid.Column="1" 
-                                         TextChanged="CredentialsTextChanged" 
-                                         IsEnabled="{Binding ElementName=btnUseSpecifiedCredentials, Path=IsChecked}"
-                                         Style="{DynamicResource awsTextBoxStyle}"/>
+                                <TextBox
+                                    x:Name="_secretKey"
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    IsEnabled="{Binding ElementName=btnUseSpecifiedCredentials, Path=IsChecked}"
+                                    Style="{DynamicResource awsTextBoxStyle}"
+                                    TextChanged="CredentialsTextChanged" />
                             </Grid>
                         </StackPanel>
-                        
-                        <RadioButton GroupName="CredentialsMode" 
-                                     Grid.Row="3"
-                                     Style="{StaticResource OptionSpacer}"
-                                     x:Name="btnUseMyCredentials"
-                                     Click="CredentialsModeButton_Click"
-                                     ToolTip="Use the credentials from the profile selected for deployment"
-                                     >
+
+                        <RadioButton
+                            x:Name="btnUseMyCredentials"
+                            Grid.Row="3"
+                            Click="CredentialsModeButton_Click"
+                            GroupName="CredentialsMode"
+                            Style="{StaticResource OptionSpacer}"
+                            ToolTip="Use the credentials from the profile selected for deployment">
                             _Use credentials from profile 'test@'
                         </RadioButton>
-                        
+
                         <Grid Grid.Row="4">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            
-                            <RadioButton GroupName="CredentialsMode" 
-                                         Style="{StaticResource OptionSpacer}"
-                                         x:Name="btnUseIAMUserCredentials"
-                                         Click="CredentialsModeButton_Click"
-                                         ToolTip="Select from IAM users whose credentials are stored in the toolkit"
-                                         >
+
+                            <RadioButton
+                                x:Name="btnUseIAMUserCredentials"
+                                Click="CredentialsModeButton_Click"
+                                GroupName="CredentialsMode"
+                                Style="{StaticResource OptionSpacer}"
+                                ToolTip="Select from IAM users whose credentials are stored in the toolkit">
                                 Use an _IAM user:
                             </RadioButton>
-                            
-                            <toolkitcomponents:ListViewComboBox x:Name="iamUserList"
-                                                Grid.Column="1"
-                                                Margin="4,0,0,0"
-                                                VerticalAlignment="Center"
-                                                HorizontalAlignment="Stretch"
-                                                ItemContainerStyle="{DynamicResource awsListViewItemContainerStyle}"
-                                                AlternationCount="2"
-                                                DisplayMemberPath="UserName"
-                                                IsEnabled="{Binding ElementName=btnUseIAMUserCredentials, Path=IsChecked}"
-                                                SelectionChanged="iamUserList_SelectionChanged"
-                                                >
-                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding UserName}" />
-                                <GridViewColumn Header="Access Key" DisplayMemberBinding="{Binding AccessKey}" />
+
+                            <toolkitcomponents:ListViewComboBox
+                                x:Name="iamUserList"
+                                Grid.Column="1"
+                                Margin="4,0,0,0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                AlternationCount="2"
+                                DisplayMemberPath="UserName"
+                                IsEnabled="{Binding ElementName=btnUseIAMUserCredentials, Path=IsChecked}"
+                                ItemContainerStyle="{DynamicResource awsListViewItemContainerStyle}"
+                                SelectionChanged="iamUserList_SelectionChanged">
+                                <GridViewColumn DisplayMemberBinding="{Binding UserName}" Header="Name" />
+                                <GridViewColumn DisplayMemberBinding="{Binding AccessKey}" Header="Access Key" />
                             </toolkitcomponents:ListViewComboBox>
 
                         </Grid>
@@ -435,7 +445,7 @@
                     </Grid>
                 </Grid>
             </Grid>
-            
+
         </StackPanel>
     </AdornerDecorator>
 </commonui:BaseAWSUserControl>

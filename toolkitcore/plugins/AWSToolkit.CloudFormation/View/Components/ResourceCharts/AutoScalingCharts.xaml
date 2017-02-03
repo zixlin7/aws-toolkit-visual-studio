@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:Amazon.AWSToolkit.CloudFormation.View.Components.ResourceCharts"                          
     xmlns:charts="clr-namespace:Amazon.AWSToolkit.CommonUI.Charts;assembly=AWSToolkit"
+    xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
     Height="auto" Width="auto">
     
     <local:BaseResourceCharts.Resources>
@@ -24,7 +25,8 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,5,5,5" Grid.ColumnSpan="2" Name="_ctlLabel" FontWeight="SemiBold" Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,5,5,5" Grid.ColumnSpan="2" Name="_ctlLabel" 
+                   Style="{DynamicResource awsTextBlock122PercentStyle}"/>
 
         <charts:CloudWatchChart Name="_ctlCPUUtilizationSeries" Margin="5,5,5,5" Grid.Row="1" Grid.Column="0" Title="CPU Utilization"/>
         <charts:CloudWatchChart Name="_ctlNetworkInSeries" Margin="5,5,5,5" Grid.Row="1" Grid.Column="1" Title="Max Network In (Bytes)"/>

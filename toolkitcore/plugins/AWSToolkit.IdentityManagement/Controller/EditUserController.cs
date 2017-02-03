@@ -47,7 +47,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
             this._iamClient = this._iamUserViewModel.IAMClient;
             this._model = new EditUserModel();
 
-            this._model.OrignalName = this._iamUserViewModel.User.UserName;
+            this._model.OriginalName = this._iamUserViewModel.User.UserName;
             this._model.NewName = this._iamUserViewModel.User.UserName;
 
             EditUserControl control = new EditUserControl(this);
@@ -70,7 +70,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
         void loadGroups()
         {
             var assignedGroups = new HashSet<string>();
-            var listGroupsRequest = new ListGroupsForUserRequest() { UserName = this.Model.OrignalName };
+            var listGroupsRequest = new ListGroupsForUserRequest() { UserName = this.Model.OriginalName };
             ListGroupsForUserResponse listGroupResponse = null;
             do
             {
@@ -108,7 +108,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
         void loadPolicies()
         {
             var listPolicyRequest =
-                new ListUserPoliciesRequest() { UserName = this.Model.OrignalName };
+                new ListUserPoliciesRequest() { UserName = this.Model.OriginalName };
             ListUserPoliciesResponse listPolicyResponse = null;
             do
             {
@@ -124,7 +124,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
                     {
                         var response = this._iamClient.GetUserPolicy(new GetUserPolicyRequest()
                         {
-                            UserName = this.Model.OrignalName,
+                            UserName = this.Model.OriginalName,
                             PolicyName = policyName
                         });
                         policyModel.Policy = Policy.FromJson(response.GetDecodedPolicyDocument());
@@ -148,7 +148,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
             var listAccessKeysRequest =
                 new ListAccessKeysRequest()
                 {
-                    UserName = this.Model.OrignalName
+                    UserName = this.Model.OriginalName
                 };
             ListAccessKeysResponse listAccessKeysResponse = null;
             do
@@ -189,20 +189,20 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
 
         public void Persist()
         {
-            if (!this.Model.OrignalName.Equals(this.Model.NewName))
+            if (!this.Model.OriginalName.Equals(this.Model.NewName))
             {
                 var request = new UpdateUserRequest()
                 {
-                    UserName = this.Model.OrignalName,
+                    UserName = this.Model.OriginalName,
                     NewUserName = this.Model.NewName
                 };
                 this._iamClient.UpdateUser(request);
 
-                this.Model.OrignalName = this.Model.NewName;
+                this.Model.OriginalName = this.Model.NewName;
 
                 if (this._iamUserViewModel != null)
                 {
-                    this._iamUserViewModel.UpdateUser(this.Model.OrignalName);
+                    this._iamUserViewModel.UpdateUser(this.Model.OriginalName);
                 }
             }
 
@@ -249,7 +249,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
             {
                 var request = new PutUserPolicyRequest()
                 {
-                    UserName = this.Model.OrignalName,
+                    UserName = this.Model.OriginalName,
                     PolicyName = policyModel.Name,
                     PolicyDocument = policyModel.Policy.ToJson()
                 };
@@ -262,7 +262,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
 
         public AccessKeyModel CreateNewAccessKeys()
         {
-            var request = new CreateAccessKeyRequest() { UserName = this._model.OrignalName };
+            var request = new CreateAccessKeyRequest() { UserName = this._model.OriginalName };
             var response = this._iamClient.CreateAccessKey(request);
 
             var accessKey = response.AccessKey;
@@ -277,12 +277,12 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
         public void DeleteAccessKey(AccessKeyModel accessKeyModel)
         {
             // Sanity check so we don't accidently delete the root access keys.
-            if (string.IsNullOrEmpty(this._model.OrignalName))
+            if (string.IsNullOrEmpty(this._model.OriginalName))
                 throw new ApplicationException("Missing username");
 
             var request = new DeleteAccessKeyRequest()
             {
-                UserName = this._model.OrignalName,
+                UserName = this._model.OriginalName,
                 AccessKeyId = accessKeyModel.AccessKey
             };
             this._iamClient.DeleteAccessKey(request);
@@ -294,12 +294,12 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
         public void UpdateAccessKey(string accessKeyId, string status)
         {
             // Sanity check so we don't accidently delete the root access keys.
-            if (string.IsNullOrEmpty(this._model.OrignalName))
+            if (string.IsNullOrEmpty(this._model.OriginalName))
                 throw new ApplicationException("Missing username");
 
             var request = new UpdateAccessKeyRequest()
             {
-                UserName = this._model.OrignalName,
+                UserName = this._model.OriginalName,
                 AccessKeyId = accessKeyId,
                 Status = status
             };

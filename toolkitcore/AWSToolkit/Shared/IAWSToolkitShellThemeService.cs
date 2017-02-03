@@ -16,12 +16,6 @@ namespace Amazon.AWSToolkit.Shared
     public interface IAWSToolkitShellThemeService
     {
         /// <summary>
-        /// Called when the toolkit is about to launch a wizard
-        /// </summary>
-        /// <param name="wizard"></param>
-        void ThemeWizard(IAWSWizard wizard);
-
-        /// <summary>
         /// Called at control instantiation or on theme change detection to determine additional
         /// theme specific resource dictionary updates that need to be applied to the control.
         /// </summary>
@@ -39,5 +33,26 @@ namespace Amazon.AWSToolkit.Shared
         /// map to better colors as needed.
         /// </remarks>
         void QueryShellThemeOverrides(out IEnumerable<Uri> apply, out IEnumerable<Uri> remove);
+
+        object CaptionFontFamilyKey { get; }
+        object CaptionFontSizeKey { get; }
+        object CaptionFontWeightKey { get; }
+
+        object EnvironmentBoldFontWeightKey { get; }
+        object EnvironmentFontFamilyKey { get; }
+        object EnvironmentFontSizeKey { get; }
+
+        object Environment122PercentFontSizeKey { get; }
+        object Environment122PercentFontWeightKey { get; }
+        object Environment133PercentFontSizeKey { get; }
+        object Environment133PercentFontWeightKey { get; }
+        object Environment155PercentFontSizeKey { get; }
+        object Environment155PercentFontWeightKey { get; }
+        object Environment200PercentFontSizeKey { get; }
+        object Environment200PercentFontWeightKey { get; }
+        object Environment310PercentFontSizeKey { get; }
+        object Environment310PercentFontWeightKey { get; }
+        object Environment375PercentFontSizeKey { get; }
+        object Environment375PercentFontWeightKey { get; }
     }
 }

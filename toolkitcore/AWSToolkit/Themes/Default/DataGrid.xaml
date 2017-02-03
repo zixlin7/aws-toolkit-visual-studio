@@ -1,19 +1,20 @@
 ﻿<ResourceDictionary
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"
-    xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero">
+    xmlns:themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
+    xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes">
 
     <BooleanToVisibilityConverter x:Key="bool2VisConverter" />
 
     <Style x:Key="awsDataGridRowHeaderGripperStyle" TargetType="{x:Type Thumb}">
-        <Setter Property="Height" Value="8"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Cursor" Value="SizeNS"/>
+        <Setter Property="Height" Value="8" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Cursor" Value="SizeNS" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}"/>
+                    <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -21,39 +22,42 @@
 
     <Style TargetType="{x:Type DataGridRowHeader}">
         <Setter Property="Background" Value="{DynamicResource awsGridHeadingBackgroundBrushKey}" />
-        <Setter Property="MinWidth" Value="15"/>
+        <Setter Property="MinWidth" Value="15" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DataGridRowHeader}">
                     <Grid>
-                        <themes:DataGridHeaderBorder 
-                            IsSelected="{TemplateBinding IsRowSelected}"
-                            IsHovered ="{TemplateBinding IsMouseOver}"
-                            IsPressed="{TemplateBinding IsPressed}"
+                        <themes:DataGridHeaderBorder
+                            Margin="0,-1,0,0"
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
                             BorderBrush="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=HorizontalGridLinesBrush}"
-                            Background="{TemplateBinding Background}"                                    
                             BorderThickness="0,1,1,1"
-                            Padding ="{TemplateBinding Padding}"
+                            IsHovered="{TemplateBinding IsMouseOver}"
+                            IsPressed="{TemplateBinding IsPressed}"
+                            IsSelected="{TemplateBinding IsRowSelected}"
                             Orientation="Horizontal"
-                            SeparatorVisibility="{TemplateBinding SeparatorVisibility}"
-                            SeparatorBrush="{TemplateBinding SeparatorBrush}" Margin="0,-1,0,0">
+                            SeparatorBrush="{TemplateBinding SeparatorBrush}"
+                            SeparatorVisibility="{TemplateBinding SeparatorVisibility}">
 
                             <StackPanel Orientation="Horizontal">
-                                <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center"/>
-                                <Control SnapsToDevicePixels="false"
-                                         Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}},
-                                                        Path=(Validation.HasError),
-                                                        Converter={StaticResource bool2VisConverter}}"
-                                        Template="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}},
-                                                    Path=ValidationErrorTemplate}" />
+                                <ContentPresenter VerticalAlignment="Center" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                <Control
+                                    SnapsToDevicePixels="false"
+                                    Template="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}}, Path=ValidationErrorTemplate}"
+                                    Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGridRow}}, Path=(Validation.HasError), Converter={StaticResource bool2VisConverter}}" />
                             </StackPanel>
                         </themes:DataGridHeaderBorder>
-                        <Thumb x:Name="PART_TopHeaderGripper"
-                               VerticalAlignment="Top" Height="3"
-                               Style="{DynamicResource awsDataGridRowHeaderGripperStyle}"/>
-                        <Thumb x:Name="PART_BottomHeaderGripper"
-                               VerticalAlignment="Bottom" Height="3"
-                               Style="{DynamicResource awsDataGridRowHeaderGripperStyle}"/>
+                        <Thumb
+                            x:Name="PART_TopHeaderGripper"
+                            Height="3"
+                            VerticalAlignment="Top"
+                            Style="{DynamicResource awsDataGridRowHeaderGripperStyle}" />
+                        <Thumb
+                            x:Name="PART_BottomHeaderGripper"
+                            Height="3"
+                            VerticalAlignment="Bottom"
+                            Style="{DynamicResource awsDataGridRowHeaderGripperStyle}" />
                     </Grid>
 
                     <ControlTemplate.Triggers>
@@ -66,18 +70,17 @@
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
-            </Setter>
+        </Setter>
     </Style>
 
     <Style x:Key="awsDataGridColumnHeaderGripperStyle" TargetType="{x:Type Thumb}">
-        <Setter Property="Width" Value="8"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Cursor" Value="SizeWE"/>
+        <Setter Property="Width" Value="8" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Cursor" Value="SizeWE" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Border Background="{TemplateBinding Background}"
-                        Padding="{TemplateBinding Padding}"/>
+                    <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -97,57 +100,70 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        
-                        <Border x:Name="BackgroundBorder" BorderThickness="0,1,0,1" 
-                              Background="{DynamicResource awsGridHeadingBackgroundBrushKey}" 
-                              BorderBrush="{DynamicResource awsGridLineBrushKey}" 
-                              Grid.ColumnSpan="2" />
-                        
+
+                        <Border
+                            x:Name="BackgroundBorder"
+                            Grid.ColumnSpan="2"
+                            Background="{DynamicResource awsGridHeadingBackgroundBrushKey}"
+                            BorderBrush="{DynamicResource awsGridLineBrushKey}"
+                            BorderThickness="0,1,0,1" />
+
                         <ContentPresenter Margin="6,3,6,3" VerticalAlignment="Center" />
-                        
-                        <Path x:Name="SortArrow" Visibility="Collapsed" Data="M0,0 L1,0 0.5,1 z" Stretch="Fill" 
-                            Grid.Column="1" Width="8" Height="6" Fill="{DynamicResource awsGridHeadingForegroundBrushKey}" Margin="0,0,8,0" 
-                            VerticalAlignment="Center" RenderTransformOrigin="0.5,0.4" />
 
-                        <Rectangle Width="1" Fill="{DynamicResource awsGridLineBrushKey}" HorizontalAlignment="Right" Grid.ColumnSpan="2" />
+                        <Path
+                            x:Name="SortArrow"
+                            Grid.Column="1"
+                            Width="8"
+                            Height="6"
+                            Margin="0,0,8,0"
+                            VerticalAlignment="Center"
+                            Data="M0,0 L1,0 0.5,1 z"
+                            Fill="{DynamicResource awsGridHeadingForegroundBrushKey}"
+                            RenderTransformOrigin="0.5,0.4"
+                            Stretch="Fill"
+                            Visibility="Collapsed" />
 
-                        
+                        <Rectangle
+                            Grid.ColumnSpan="2"
+                            Width="1"
+                            HorizontalAlignment="Right"
+                            Fill="{DynamicResource awsGridLineBrushKey}" />
+
+
                         <!-- 2 pixel separator means we don't line up with vertical grid lines beneath
                         <Rectangle Width="1" Margin="0,0,1,0" Fill="{DynamicResource awsGridLineBrushKey}" HorizontalAlignment="Right" Grid.ColumnSpan="2" />
                         -->
-                        
-                        <Thumb x:Name="PART_LeftHeaderGripper" HorizontalAlignment="Left" 
-                             Style="{DynamicResource awsDataGridColumnHeaderGripperStyle}"/>
-                        
-                        <Thumb x:Name="PART_RightHeaderGripper" HorizontalAlignment="Right" 
-                             Style="{DynamicResource awsDataGridColumnHeaderGripperStyle}"/>
+
+                        <Thumb
+                            x:Name="PART_LeftHeaderGripper"
+                            HorizontalAlignment="Left"
+                            Style="{DynamicResource awsDataGridColumnHeaderGripperStyle}" />
+
+                        <Thumb
+                            x:Name="PART_RightHeaderGripper"
+                            HorizontalAlignment="Right"
+                            Style="{DynamicResource awsDataGridColumnHeaderGripperStyle}" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="SortDirection" Value="{x:Null}">
-                            <Setter TargetName="BackgroundBorder" Property="Background" 
-                                  Value="{DynamicResource awsGridHeadingBackgroundBrushKey}" />
-                            <Setter TargetName="BackgroundBorder" Property="BorderBrush"  
-                                  Value="Transparent" />
+                            <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource awsGridHeadingBackgroundBrushKey}" />
+                            <Setter TargetName="BackgroundBorder" Property="BorderBrush" Value="Transparent" />
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="True" />
                                 <Condition Property="SortDirection" Value="{x:Null}" />
                             </MultiTrigger.Conditions>
-                            <Setter Property="Background" TargetName="BackgroundBorder" 
-                                  Value="{DynamicResource awsGridHeadingBackgroundBrushKey}" />
-                            <Setter Property="BorderBrush" TargetName="BackgroundBorder" 
-                                  Value="{DynamicResource awsGridHeadingBackgroundBrushKey}" />
+                            <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource awsGridHeadingBackgroundBrushKey}" />
+                            <Setter TargetName="BackgroundBorder" Property="BorderBrush" Value="{DynamicResource awsGridHeadingBackgroundBrushKey}" />
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="true" />
                                 <Condition Property="SortDirection" Value="{x:Null}" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="BackgroundBorder" Property="Background" 
-                                  Value="{DynamicResource awsGridHeadingBackgroundBrushKey}" />
-                            <Setter TargetName="BackgroundBorder" Property="BorderBrush" 
-                                  Value="{DynamicResource awsGridHeadingBackgroundBrushKey}" />
+                            <Setter TargetName="BackgroundBorder" Property="Background" Value="{DynamicResource awsGridHeadingBackgroundBrushKey}" />
+                            <Setter TargetName="BackgroundBorder" Property="BorderBrush" Value="{DynamicResource awsGridHeadingBackgroundBrushKey}" />
                         </MultiTrigger>
 
                         <Trigger Property="SortDirection" Value="Ascending">
@@ -162,20 +178,19 @@
                             <Setter TargetName="SortArrow" Property="Visibility" Value="Visible" />
                         </Trigger>
                         <Trigger Property="DisplayIndex" Value="0">
-                            <Setter Property="Visibility" Value="Collapsed" 
-                                  TargetName="PART_LeftHeaderGripper"></Setter>
+                            <Setter TargetName="PART_LeftHeaderGripper" Property="Visibility" Value="Collapsed" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <Style TargetType="{x:Type DataGridRow}">
-        <Setter Property="Background" Value="{DynamicResource awsGridBackgroundBrushKey}"/>
+        <Setter Property="Background" Value="{DynamicResource awsGridBackgroundBrushKey}" />
         <Style.Triggers>
             <Trigger Property="IsSelected" Value="True">
-                <Setter Property="Background" Value="{DynamicResource awsGridSelectedRowBackgroundBrushKey}"/>
+                <Setter Property="Background" Value="{DynamicResource awsGridSelectedRowBackgroundBrushKey}" />
             </Trigger>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
@@ -194,14 +209,9 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DataGridCell}">
                     <Grid Background="{TemplateBinding Background}">
-                        <ContentPresenter  VerticalAlignment="Stretch">
+                        <ContentPresenter VerticalAlignment="Stretch">
                             <ContentPresenter.LayoutTransform>
-                                <ScaleTransform ScaleX="{Binding Path=ZoomLevel, 
-                                                                 Mode=TwoWay, 
-                                                                 RelativeSource={RelativeSource AncestorType={x:Type commonui:ToolkitDataGridWrapper}}}" 
-                                                ScaleY="{Binding Path=ZoomLevel, 
-                                                                 Mode=TwoWay, 
-                                                                 RelativeSource={RelativeSource AncestorType={x:Type commonui:ToolkitDataGridWrapper}}}"/>
+                                <ScaleTransform ScaleX="{Binding Path=ZoomLevel, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type commonui:ToolkitDataGridWrapper}}}" ScaleY="{Binding Path=ZoomLevel, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type commonui:ToolkitDataGridWrapper}}}" />
                             </ContentPresenter.LayoutTransform>
                         </ContentPresenter>
                     </Grid>
@@ -223,19 +233,17 @@
         </Setter>
     </Style>
 
-    <Style x:Key="awsDataGridCellCentering" TargetType="{x:Type DataGridCell}" BasedOn="{StaticResource {x:Type DataGridCell}}">
+    <Style
+        x:Key="awsDataGridCellCentering"
+        BasedOn="{StaticResource {x:Type DataGridCell}}"
+        TargetType="{x:Type DataGridCell}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DataGridCell}">
                     <Grid Background="{TemplateBinding Background}">
-                        <ContentPresenter  VerticalAlignment="Stretch">
+                        <ContentPresenter VerticalAlignment="Stretch">
                             <ContentPresenter.LayoutTransform>
-                                <ScaleTransform ScaleX="{Binding Path=ZoomLevel, 
-                                                                 Mode=TwoWay, 
-                                                                 RelativeSource={RelativeSource AncestorType={x:Type commonui:ToolkitDataGridWrapper}}}" 
-                                                ScaleY="{Binding Path=ZoomLevel, 
-                                                                 Mode=TwoWay, 
-                                                                 RelativeSource={RelativeSource AncestorType={x:Type commonui:ToolkitDataGridWrapper}}}"/>
+                                <ScaleTransform ScaleX="{Binding Path=ZoomLevel, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type commonui:ToolkitDataGridWrapper}}}" ScaleY="{Binding Path=ZoomLevel, Mode=TwoWay, RelativeSource={RelativeSource AncestorType={x:Type commonui:ToolkitDataGridWrapper}}}" />
                             </ContentPresenter.LayoutTransform>
                         </ContentPresenter>
                     </Grid>
@@ -244,114 +252,113 @@
         </Setter>
     </Style>
 
-    <!-- DataGrid Style -->
+    <!--  DataGrid Style  -->
     <Style TargetType="{x:Type commonui:ToolkitDataGridWrapper}">
-        <Setter Property="Background" Value="{DynamicResource awsGridBackgroundBrushKey}"/>
+        <Setter Property="Background" Value="{DynamicResource awsGridBackgroundBrushKey}" />
         <Setter Property="BorderBrush" Value="{DynamicResource awsGridBorderBrushKey}" />
-        <Setter Property="Foreground" Value="{DynamicResource awsGridForegroundBrushKey}"/>
+        <Setter Property="Foreground" Value="{DynamicResource awsGridForegroundBrushKey}" />
         <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource awsGridLineBrushKey}" />
         <Setter Property="VerticalGridLinesBrush" Value="{DynamicResource awsGridLineBrushKey}" />
-        <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="true" />
         <Setter Property="BorderThickness" Value="1" />
-        <!-- This is needed to force DG to have a non-default value.  Otherwise the DGR.DetailsVisibility cannot have a value of VisibleWhenSelected by default. -->
+        <!--  This is needed to force DG to have a non-default value.  Otherwise the DGR.DetailsVisibility cannot have a value of VisibleWhenSelected by default.  -->
         <Setter Property="RowDetailsVisibilityMode" Value="VisibleWhenSelected" />
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FontFamily" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontFamilyKey}}" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontSizeKey}}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type DataGrid}">
                     <Border
-						Background="{TemplateBinding Background}"
-						BorderBrush="{TemplateBinding BorderBrush}"
-						BorderThickness="{TemplateBinding BorderThickness}"
-						SnapsToDevicePixels="True"
-						Padding="{TemplateBinding Padding}">
-                        <ScrollViewer Focusable="false" Name="DG_ScrollViewer">
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        SnapsToDevicePixels="True">
+                        <ScrollViewer Name="DG_ScrollViewer" Focusable="false">
                             <ScrollViewer.Template>
                                 <ControlTemplate TargetType="{x:Type ScrollViewer}">
                                     <Grid>
                                         <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="*"/>
-                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
 
-                                        <!--Left Column Header Corner -->
-                                        <Button 
-											Command="{x:Static DataGrid.SelectAllCommand}"
-											Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, 
-                                                        Path=CellsPanelHorizontalOffset}"
-											Focusable="false"
-											Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, 
-                                                            Path=HeadersVisibility, 
-                                                            Converter={x:Static DataGrid.HeadersVisibilityConverter}, 
-                                                            ConverterParameter={x:Static DataGridHeadersVisibility.All}}" 
+                                        <!--  Left Column Header Corner  -->
+                                        <Button
+                                            Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=CellsPanelHorizontalOffset}"
                                             Background="{TemplateBinding Background}"
                                             BorderBrush="{DynamicResource awsGridLineBrushKey}"
                                             BorderThickness="0,0,1,1"
-                                            ToolTip="Select all rows">
-                                        </Button>
-                                        
-                                        <!--Column Headers-->
+                                            Command="{x:Static DataGrid.SelectAllCommand}"
+                                            Focusable="false"
+                                            ToolTip="Select all rows"
+                                            Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=HeadersVisibility, Converter={x:Static DataGrid.HeadersVisibilityConverter}, ConverterParameter={x:Static DataGridHeadersVisibility.All}}" />
+
+                                        <!--  Column Headers  -->
                                         <DataGridColumnHeadersPresenter
-                                            Grid.Row="0" Grid.Column="1" 
-											Name="PART_ColumnHeadersPresenter"
-											Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, 
-                                                            Path=HeadersVisibility, 
-                                                            Converter={x:Static DataGrid.HeadersVisibilityConverter}, 
-                                                            ConverterParameter={x:Static DataGridHeadersVisibility.Column}}"
-                                            >
+                                            Name="PART_ColumnHeadersPresenter"
+                                            Grid.Row="0"
+                                            Grid.Column="1"
+                                            Visibility="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=HeadersVisibility, Converter={x:Static DataGrid.HeadersVisibilityConverter}, ConverterParameter={x:Static DataGridHeadersVisibility.Column}}">
                                             <!--<DataGridColumnHeadersPresenter.LayoutTransform>
-                                                <ScaleTransform ScaleX="{Binding Path=ZoomLevel, 
-                                                                            Mode=TwoWay, 
-                                                                            RelativeSource={RelativeSource AncestorType={x:Type commonui:ToolkitDataGridWrapper}}}" 
-                                                                ScaleY="{Binding Path=ZoomLevel, 
-                                                                            Mode=TwoWay, 
+                                                <ScaleTransform ScaleX="{Binding Path=ZoomLevel,
+                                                                            Mode=TwoWay,
+                                                                            RelativeSource={RelativeSource AncestorType={x:Type commonui:ToolkitDataGridWrapper}}}"
+                                                                ScaleY="{Binding Path=ZoomLevel,
+                                                                            Mode=TwoWay,
                                                                             RelativeSource={RelativeSource AncestorType={x:Type commonui:ToolkitDataGridWrapper}}}"/>
                                             </DataGridColumnHeadersPresenter.LayoutTransform>-->
                                         </DataGridColumnHeadersPresenter>
 
-                                        <!--DataGrid content-->
-                                        <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" Grid.Row="1" Grid.ColumnSpan="2"
-                                                                Grid.Column="0"
-                                                                CanContentScroll="{TemplateBinding CanContentScroll}">
+                                        <!--  DataGrid content  -->
+                                        <ScrollContentPresenter
+                                            x:Name="PART_ScrollContentPresenter"
+                                            Grid.Row="1"
+                                            Grid.Column="0"
+                                            Grid.ColumnSpan="2"
+                                            CanContentScroll="{TemplateBinding CanContentScroll}">
                                             <!--<ScrollContentPresenter.LayoutTransform>
-                                                <ScaleTransform ScaleX="{Binding Path=ZoomLevel, 
-                                                                            Mode=TwoWay, 
-                                                                            RelativeSource={RelativeSource AncestorType={x:Type commonui:ToolkitDataGridWrapper}}}" 
-                                                                ScaleY="{Binding Path=ZoomLevel, 
-                                                                            Mode=TwoWay, 
+                                                <ScaleTransform ScaleX="{Binding Path=ZoomLevel,
+                                                                            Mode=TwoWay,
+                                                                            RelativeSource={RelativeSource AncestorType={x:Type commonui:ToolkitDataGridWrapper}}}"
+                                                                ScaleY="{Binding Path=ZoomLevel,
+                                                                            Mode=TwoWay,
                                                                             RelativeSource={RelativeSource AncestorType={x:Type commonui:ToolkitDataGridWrapper}}}"/>
                                             </ScrollContentPresenter.LayoutTransform>-->
                                         </ScrollContentPresenter>
 
                                         <ScrollBar
-											Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Name="PART_VerticalScrollBar"
-											Orientation="Vertical"
-											Maximum="{TemplateBinding ScrollableHeight}"
-											ViewportSize="{TemplateBinding ViewportHeight}"
-											Value="{Binding Path=VerticalOffset, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
-											Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+                                            Name="PART_VerticalScrollBar"
+                                            Grid.Row="0"
+                                            Grid.RowSpan="2"
+                                            Grid.Column="2"
+                                            Maximum="{TemplateBinding ScrollableHeight}"
+                                            Orientation="Vertical"
+                                            ViewportSize="{TemplateBinding ViewportHeight}"
+                                            Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                                            Value="{Binding Path=VerticalOffset, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
 
                                         <Grid Grid.Row="2" Grid.Column="1">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, 
-                                                                            Path=NonFrozenColumnsViewportHorizontalOffset}"/>
-                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type DataGrid}}, Path=NonFrozenColumnsViewportHorizontalOffset}" />
+                                                <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <ScrollBar 
-												Grid.Column="1"
-												Name="PART_HorizontalScrollBar"
-												Orientation="Horizontal"
-												Maximum="{TemplateBinding ScrollableWidth}"
-												ViewportSize="{TemplateBinding ViewportWidth}"
-												Value="{Binding Path=HorizontalOffset, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
-												Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+                                            <ScrollBar
+                                                Name="PART_HorizontalScrollBar"
+                                                Grid.Column="1"
+                                                Maximum="{TemplateBinding ScrollableWidth}"
+                                                Orientation="Horizontal"
+                                                ViewportSize="{TemplateBinding ViewportWidth}"
+                                                Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+                                                Value="{Binding Path=HorizontalOffset, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}" />
                                         </Grid>
                                     </Grid>
                                 </ControlTemplate>
@@ -364,7 +371,7 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsGrouping" Value="true">
-                <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
+                <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
             </Trigger>
         </Style.Triggers>
     </Style>

@@ -106,7 +106,7 @@ namespace Amazon.AWSToolkit.Tests
             Console.WriteLine("OutputToHostConsole: " + message);
         }
 
-        public T QueryShellProverService<T>() where T : class
+        public T QueryShellProviderService<T>() where T : class
         {
             return this as T;
         }

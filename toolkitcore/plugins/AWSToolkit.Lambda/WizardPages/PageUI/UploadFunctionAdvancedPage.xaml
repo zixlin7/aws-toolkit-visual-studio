@@ -40,7 +40,7 @@
             <Label
                 Grid.Row="0"
                 Grid.ColumnSpan="2"
-                Style="{DynamicResource awsSubHeaderLabelStyle}">
+                Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                 Permissions
             </Label>
 
@@ -99,7 +99,7 @@
                 <Label
                     Grid.Row="0"
                     Margin="0,8,0,0"
-                    Style="{DynamicResource awsSubHeaderLabelStyle}">
+                    Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                     Execution
                 </Label>
 
@@ -155,7 +155,7 @@
                 <Label
                     Grid.Row="3"
                     Margin="0,16,0,0"
-                    Style="{DynamicResource awsSubHeaderLabelStyle}">
+                    Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                     VPC
                 </Label>
 
@@ -231,7 +231,7 @@
                     Grid.Row="0"
                     Grid.ColumnSpan="2"
                     Margin="0,8,0,0"
-                    Style="{DynamicResource awsSubHeaderLabelStyle}">
+                    Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                     Environment
                 </Label>
 

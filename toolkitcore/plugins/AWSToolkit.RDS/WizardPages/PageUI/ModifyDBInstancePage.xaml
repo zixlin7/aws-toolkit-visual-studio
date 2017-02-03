@@ -26,7 +26,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+            <Label Style="{DynamicResource awsWizardGroupSubHeaderStyle}"
                    Margin="0"
                    >
                 DB Instance Engine and Class
@@ -101,7 +101,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+            <Label Style="{DynamicResource awsWizardGroupSubHeaderStyle}"
                                Margin="0,4,0,0"
                                >
                 RDS Database Instance
@@ -199,7 +199,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Label Style="{DynamicResource awsWizardGroupHeaderStyle}"
+            <Label Style="{DynamicResource awsWizardGroupSubHeaderStyle}"
                                Margin="0,2,0,0"
                                >
                 Parameter and Security Groups

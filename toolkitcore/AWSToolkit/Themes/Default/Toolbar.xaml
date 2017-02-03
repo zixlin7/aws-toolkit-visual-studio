@@ -15,7 +15,7 @@
             <Style TargetType="{x:Type TextBlock}">
                 <Setter Property="Margin" Value="5,0,10,0"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="Foreground" Value="{DynamicResource awsToolBarTextBrushKey}"/>
+                <Setter Property="Foreground" Value="{DynamicResource awsCommandBarTextKey}"/>
             </Style>
         </Style.Resources>
         <Setter Property="Background" Value="{DynamicResource awsHorizontalToolBarBackgroundBrushKey}"/>
@@ -45,7 +45,7 @@
                   <Setter Property="Background" Value="{DynamicResource awsVerticalToolBarBackgroundBrushKey}"/>
                 </Trigger>
                 <Trigger Property="IsEnabled" Value="false">
-                  <Setter Property="Foreground" Value="{DynamicResource awsToolBarDisabledTextBrushKey}"/>
+                  <Setter Property="Foreground" Value="{DynamicResource awsCommandBarTextDisabledKey}"/>
                 </Trigger>
               </ControlTemplate.Triggers>
             </ControlTemplate>
