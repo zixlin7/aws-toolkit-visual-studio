@@ -56,15 +56,20 @@ namespace TemplateWizard
                 string regionName = "";
 
                 var control = new ProjectSetupControl();
-                if(ToolkitFactory.Instance.ShellProvider.ShowModal(control))
+                if(!ToolkitFactory.Instance.ShellProvider.ShowModal(control))
                 {
-                    accountName = control.AccountName;
-                    regionName = control.RegionName;
+                    throw new WizardCancelledException();
                 }
+                accountName = control.AccountName;
+                regionName = control.RegionName;
 
                 // Add custom parameters.
                 replacementsDictionary.Add("$profileName$", accountName);
                 replacementsDictionary.Add("$defaultRegion$", regionName);
+            }
+            catch(WizardCancelledException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

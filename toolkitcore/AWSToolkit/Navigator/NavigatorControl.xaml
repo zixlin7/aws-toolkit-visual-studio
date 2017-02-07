@@ -151,8 +151,8 @@
                 Grid.Row="1"
                 Grid.Column="4"
                 Margin="0,3,0,3"
-                Click="onRegionRefreshClick"
-                ToolTip="Refresh Regions">
+                Click="onNavigatorRefreshClick"
+                ToolTip="Refresh">
                 <Image
                     Width="16"
                     Height="16"

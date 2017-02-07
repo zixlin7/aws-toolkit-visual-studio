@@ -31,11 +31,13 @@
                        FontStyle="Italic" 
                        TextWrapping="Wrap"
                        Style="{DynamicResource awsInfoTextStyle}">
-                Configure an AWS profile and region that the AWS SDK for .NET will use when making service calls.
+                Please specify your access credentials and a default region, these will be added to the App or Web.config file.
         </TextBlock>
         
         <commoncomponents:AccountAndRegionPicker
                 Name="_accountSelector"
+                HorizontalAlignment="Left"
+                HorizontalContentAlignment="Left"
                 Grid.Row="1"
                 Grid.ColumnSpan="2"
                 Margin="4,2,4,2" />

@@ -11,6 +11,9 @@ namespace Amazon.AWSToolkit
         public const string MiscSettings = Amazon.Runtime.Internal.Settings.SettingsConstants.MiscSettings;
 
         public const string RegisteredProfiles = Amazon.Runtime.Internal.Settings.SettingsConstants.RegisteredProfiles;
+
+        public const string NonNetSDKCredentialStoreMetadata = "NonNetSDKCredentialStoreMetadata";
+
         public const string RecentUsages = "RecentUsages";
 
         public const string DisplayNameField = Amazon.Runtime.Internal.Settings.SettingsConstants.DisplayNameField;

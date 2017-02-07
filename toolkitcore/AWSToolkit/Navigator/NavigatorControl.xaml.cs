@@ -23,6 +23,9 @@ using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.VersionInfo;
 using Amazon.Runtime.Internal.Settings;
 
+using Amazon.Runtime.CredentialManagement;
+using Amazon.Runtime.CredentialManagement.Internal;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.Navigator
@@ -47,6 +50,9 @@ namespace Amazon.AWSToolkit.Navigator
             var account = this._ctlAccounts.SelectedAccount;
             this._ctlResourceTree.DataContext = account;
 
+            // The toolkit only supports editing credential profiles of just access and secret key.
+            this._ctlEditAccount.IsEnabled = account != null && CredentialProfileUtils.GetProfileType(account.Profile) == CredentialProfileType.Basic;
+
             this.setInitialRegionSelection();
 
             if (account == null)
@@ -66,6 +72,7 @@ namespace Amazon.AWSToolkit.Navigator
         public void Initialize(AWSViewModel viewModel)
         {
             this._viewModel = viewModel;
+            this._viewModel.PropertyChanged += _viewModel_PropertyChanged;
             this._ctlResourceTree.DataContext = this._viewModel;
 
             this.PopulateAccounts();
@@ -97,6 +104,11 @@ namespace Amazon.AWSToolkit.Navigator
             {
                 setToolbarState(false);
             }
+        }
+
+        private void _viewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            this.PopulateAccounts();
         }
 
         private void PopulateAccounts()
@@ -238,8 +250,10 @@ namespace Amazon.AWSToolkit.Navigator
                 this._ctlRegions.SelectedItem = this._ctlRegions.Items[0];
         }
 
-        void onRegionRefreshClick(object sender, RoutedEventArgs e)
+        void onNavigatorRefreshClick(object sender, RoutedEventArgs e)
         {
+            RefreshAccounts();
+
             RegionEndPointsManager.Instance.Refresh();
             setInitialRegionSelection();
             updateActiveRegion();
@@ -283,7 +297,7 @@ namespace Amazon.AWSToolkit.Navigator
                 {
                     if (refreshAccounts)
                     {
-                        this._viewModel.Refresh();
+                        RefreshAccounts();
                     }
 
                     foreach (var vm in this._viewModel.RegisteredAccounts)
@@ -306,6 +320,12 @@ namespace Amazon.AWSToolkit.Navigator
             return viewModel;
         }
 
+        public void RefreshAccounts()
+        {
+            this._viewModel.Refresh();
+            PopulateAccounts();
+        }
+
         public void UpdateRegionSelection(string regionSystemName)
         {
             var region = RegionEndPointsManager.Instance.GetRegion(regionSystemName);
@@ -323,20 +343,27 @@ namespace Amazon.AWSToolkit.Navigator
             }
         }
 
-        void editAccount(object sender, RoutedEventArgs e)
+        void editAccount(object sender, RoutedEventArgs evnt)
         {
             AccountViewModel viewModel = this._ctlAccounts.SelectedAccount;
             if(viewModel == null)
                 return;
 
-            var command = new EditAccountController();
-            var results = command.Execute(viewModel);
-            if (results.Success)
+            try
             {
-                var accountModel = this._ctlAccounts.SelectedAccount;
-                accountModel.ReloadFromPersistence();
-                setInitialRegionSelection();
-                accountModel.CreateServiceChildren();
+                var command = new EditAccountController();
+                var results = command.Execute(viewModel);
+                if (results.Success)
+                {
+                    var accountModel = this._ctlAccounts.SelectedAccount;
+                    accountModel.ReloadFromPersistence();
+                    setInitialRegionSelection();
+                    accountModel.CreateServiceChildren();
+                }
+            }
+            catch(Exception e)
+            {
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error", e.Message);
             }
         }
 

@@ -24,7 +24,9 @@ namespace Amazon.AWSToolkit.Navigator.Node
         Dispatcher _dispatcher;
         AWSViewMetaNode _metaNode;
         ObservableCollection<AccountViewModel> _accounts = new ObservableCollection<AccountViewModel>();
-        SettingsWatcher _watcher;
+        SettingsWatcher _sdkCredentialWatcher;
+        FileSystemWatcher _sharedCredentialWatcher;
+
         ILog _logger = LogManager.GetLogger(typeof(AWSViewModel));
 
         public AWSViewModel(Dispatcher dispatcher, AWSViewMetaNode metaNode)
@@ -32,16 +34,39 @@ namespace Amazon.AWSToolkit.Navigator.Node
         {
             this._dispatcher = dispatcher;
             this._metaNode = metaNode;
-            this._watcher = PersistenceManager.Instance.Watch(ToolkitSettingsConstants.RegisteredProfiles);
-            this._watcher.SettingsChanged += new EventHandler((o, e) =>
+
+            SetupCredentialWatchers();
+
+            Refresh();
+        }
+
+        private void SetupCredentialWatchers()
+        {
+            this._sdkCredentialWatcher = PersistenceManager.Instance.Watch(ToolkitSettingsConstants.RegisteredProfiles);
+            this._sdkCredentialWatcher.SettingsChanged += new EventHandler((o, e) =>
             {
-                this._dispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate()
+                this._dispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate ()
                 {
                     this.Refresh();
                 });
             });
 
-            Refresh();
+            var sharedStore = new SharedCredentialsFile();
+
+            this._sharedCredentialWatcher = new FileSystemWatcher(Path.GetDirectoryName(sharedStore.FilePath), Path.GetFileName(sharedStore.FilePath));
+
+            Action<object, FileSystemEventArgs> callback = (o, e) => 
+                {
+                    this._dispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate ()
+                    {
+                        this.Refresh();
+                    });
+                };
+            this._sharedCredentialWatcher.Changed += new FileSystemEventHandler(callback);
+            this._sharedCredentialWatcher.Created += new FileSystemEventHandler(callback);
+            this._sharedCredentialWatcher.Renamed += new RenamedEventHandler(callback);
+
+            this._sharedCredentialWatcher.EnableRaisingEvents = true;
         }
 
         public ObservableCollection<AccountViewModel> RegisteredAccounts
@@ -108,7 +133,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
             foreach (var profile in sharedStore.ListProfiles())
             {
                 AWSCredentials credentials;
-                if (AWSCredentialsFactory.TryGetAWSCredentials(profile, netStore, out credentials))
+                if (AWSCredentialsFactory.TryGetAWSCredentials(profile, sharedStore, out credentials))
                 {
                     // Don't add account if it was added by the NET SDK Credential store
                     if (!netSDKStoreAccessKeys.Contains(credentials.GetCredentials().AccessKey))
@@ -125,6 +150,8 @@ namespace Amazon.AWSToolkit.Navigator.Node
             var added = updatedAccounts.Except(_accounts, AccountViewModelEqualityComparer.Instance).ToList();
             foreach (var add in added)
                 _accounts.Add(add);
+
+            base.NotifyPropertyChanged("RegisteredAccounts");
         }
 
         public void Refresh()

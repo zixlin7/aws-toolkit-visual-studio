@@ -25,8 +25,17 @@ namespace TemplateWizard
         public ProjectSetupControl()
         {
             InitializeComponent();
-
+            this.Height = 200;
+            this._accountSelector.SwitchToVerticalLayout();
             this._accountSelector.Initialize();
+        }
+
+        public override string Title
+        {
+            get
+            {
+                return "AWS Access Credentials";
+            }
         }
 
         public override bool OnCommit()

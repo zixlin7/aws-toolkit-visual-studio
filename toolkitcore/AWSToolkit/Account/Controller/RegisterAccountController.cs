@@ -8,6 +8,8 @@ using Amazon.Runtime.Internal.Settings;
 using Amazon.AWSToolkit.Account.View;
 using Amazon.AWSToolkit.Account.Model;
 
+using Amazon.Runtime.CredentialManagement;
+
 namespace Amazon.AWSToolkit.Account.Controller
 {
     public class RegisterAccountController

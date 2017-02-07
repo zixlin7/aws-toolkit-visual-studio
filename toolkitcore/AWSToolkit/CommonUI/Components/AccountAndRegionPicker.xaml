@@ -12,142 +12,194 @@
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
     </UserControl.Resources>
 
-    <StackPanel Orientation="Horizontal" Margin="0" HorizontalAlignment="Left">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Label Target="{Binding ElementName=_accountSelector}" 
-                   Style="{DynamicResource awsWizardFieldLabelStyle}"
-                   VerticalAlignment="Center"
-                   Margin="4,0,0,0">
-                _Account profile to use:
-            </Label>
-
-            <commoncomponents:RegisteredProfilesPicker Margin="5,3,5,3" Grid.Row="0" Grid.Column="1"
-                     x:Name="_accountSelector"
-                     />
-<!--
-            <ComboBox 
-                    Margin="4,0,2,0" 
-                    Grid.Column="1" 
-                    x:Name="_accountSelector" 
-                    DisplayMemberPath="DisplayName" 
-                    ItemsSource="{Binding Path=Accounts}"
-                    SelectionChanged="AccountSelector_SelectionChanged"
-                    VerticalAlignment="Center"
-                    Style="{DynamicResource awsComboBoxStyle}"/>
--->
-            
-            <ToggleButton x:Name="_useOtherAccount" 
-                          Grid.Column="2" 
-                          VerticalAlignment="Center"
-                          ToolTip="Add another account"
-                          Margin="2">
-                <Image DataContext="{DynamicResource CommonIcons}" Source="{Binding AddAccountIcon}" Width="16" Height="16"></Image>
-            </ToggleButton>
-            <Popup x:Name="_accountEntryPopup"
-                       AllowsTransparency="True"
-                       IsOpen="{Binding ElementName=_useOtherAccount, Path=IsChecked}"
-                       PlacementTarget="{Binding ElementName=_useOtherAccount}"
-                       Placement="Left"
-                       PopupAnimation="Slide"
-                       VerticalOffset="{Binding ElementName=_useOtherAccount, Path=ActualHeight}"
-                       HorizontalOffset="{Binding ElementName=_useOtherAccount, Path=ActualWidth}"
-                       Loaded="_accountEntryPopup_Loaded"
-                       >
-
-                <Popup.Resources>
-                    <!-- temp local definition of resources for account control, copied
-                                     from host dialog so we space the same etc; this needs to go into
-                                     a 'dialog style' sheet we can import with studio (but not today,
-                                     on eve of sprint demo!)
-                                -->
-                    <Style TargetType="{x:Type Grid}">
-                        <Setter Property="Margin" Value="10" />
-                    </Style>
-                    <Style TargetType="{x:Type Label}">
-                        <Setter Property="Margin" Value="0,3,5,5" />
-                        <Setter Property="Padding" Value="0,0,0,5" />
-                    </Style>
-                    <Style TargetType="{x:Type TextBox}">
-                        <Setter Property="Margin" Value="0,0,0,5" />
-                        <Style.Triggers>
-                            <Trigger Property="Validation.HasError" Value="true">
-                                <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                    <Style TargetType="{x:Type StackPanel}">
-                        <Setter Property="Orientation" Value="Horizontal" />
-                        <Setter Property="HorizontalAlignment" Value="Right" />
-                    </Style>
-                </Popup.Resources>
-
-                <Border Style="{DynamicResource awsPopupBorderStyle}">
-
-                    <Grid Margin="4">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <ContentControl x:Name="_accountFieldContainer" />
-
-                        <StackPanel Grid.Row="1" 
-                                        Orientation="Horizontal" 
-                                        Margin="0,10,4,4"
-                                        HorizontalAlignment="Right"
-                                        >
-                            <Button x:Name="_popupAccountOK" 
-                                        Click="_popupAccountOK_Click"
-                                        Style="{DynamicResource awsPopupDialogButtonStyle}">
-                                OK
-                            </Button>
-                            <Button x:Name="_popupAccountCancel" 
-                                        Click="_popupAccountCancel_Click" 
-                                        Style="{DynamicResource awsPopupDialogButtonStyle}">
-                                Cancel
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-            </Popup>
-        </Grid>
-
-        <Grid>
-
+    <Grid>
+        <StackPanel Orientation="Horizontal" Name="_ctlHorizontalLayout" Margin="0" HorizontalAlignment="Left">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-
-                <Label Target="{Binding ElementName=_regionSelector}" 
+                <Label Target="{Binding ElementName=_accountSelector}" 
                        Style="{DynamicResource awsWizardFieldLabelStyle}"
-                       Margin="2,0,0,0">
-                    Region:
+                       VerticalAlignment="Center"
+                       Margin="4,0,0,0">
+                    _Account profile to use:
                 </Label>
 
-                <ComboBox x:Name="_regionSelector"
-                          Grid.Column="1"
-                          Margin="2"
-                          VerticalAlignment="Center"
-                          SelectionChanged="_regionSelector_SelectionChanged"
-                          Style="{DynamicResource awsComboBoxStyle}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <Image Margin="5,0,0,0" Width="13" Height="12" Source="{Binding FlagIcon}"/>
-                                <TextBlock Margin="5,0,0,0" Text="{Binding DisplayName}" Style="{DynamicResource awsTextBlockBaseStyle}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+                <Grid Grid.Column="1" Name="_ctlHorizontalHolderAccount" Margin="0">
+                    <Grid Name="_ctlAccount" Margin="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <commoncomponents:RegisteredProfilesPicker Margin="5,3,5,3" Grid.Row="0" Grid.Column="0"
+                         x:Name="_accountSelector"
+                         />
+
+
+                        <ToggleButton x:Name="_useOtherAccount" 
+                              Grid.Column="2" 
+                              VerticalAlignment="Center"
+                              ToolTip="Add another account"
+                              Margin="2">
+                            <Image DataContext="{DynamicResource CommonIcons}" Source="{Binding AddAccountIcon}" Width="16" Height="16"></Image>
+                        </ToggleButton>
+                        <Popup x:Name="_accountEntryPopup"
+                           AllowsTransparency="True"
+                           IsOpen="{Binding ElementName=_useOtherAccount, Path=IsChecked}"
+                           PlacementTarget="{Binding ElementName=_useOtherAccount}"
+                           Placement="Left"
+                           PopupAnimation="Slide"
+                           VerticalOffset="{Binding ElementName=_useOtherAccount, Path=ActualHeight}"
+                           HorizontalOffset="{Binding ElementName=_useOtherAccount, Path=ActualWidth}"
+                           Loaded="_accountEntryPopup_Loaded"
+                           >
+
+                            <Popup.Resources>
+                                <!-- temp local definition of resources for account control, copied
+                                         from host dialog so we space the same etc; this needs to go into
+                                         a 'dialog style' sheet we can import with studio (but not today,
+                                         on eve of sprint demo!)
+                                    -->
+                                <Style TargetType="{x:Type Grid}">
+                                    <Setter Property="Margin" Value="10" />
+                                </Style>
+                                <Style TargetType="{x:Type Label}">
+                                    <Setter Property="Margin" Value="0,3,5,5" />
+                                    <Setter Property="Padding" Value="0,0,0,5" />
+                                </Style>
+                                <Style TargetType="{x:Type TextBox}">
+                                    <Setter Property="Margin" Value="0,0,0,5" />
+                                    <Style.Triggers>
+                                        <Trigger Property="Validation.HasError" Value="true">
+                                            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                                <Style TargetType="{x:Type StackPanel}">
+                                    <Setter Property="Orientation" Value="Horizontal" />
+                                    <Setter Property="HorizontalAlignment" Value="Right" />
+                                </Style>
+                            </Popup.Resources>
+
+                            <Border Style="{DynamicResource awsPopupBorderStyle}">
+
+                                <Grid Margin="4">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <ContentControl x:Name="_accountFieldContainer" />
+
+                                    <StackPanel Grid.Row="1" 
+                                            Orientation="Horizontal" 
+                                            Margin="0,10,4,4"
+                                            HorizontalAlignment="Right"
+                                            >
+                                        <Button x:Name="_popupAccountOK" 
+                                            Click="_popupAccountOK_Click"
+                                            Style="{DynamicResource awsPopupDialogButtonStyle}">
+                                            OK
+                                        </Button>
+                                        <Button x:Name="_popupAccountCancel" 
+                                            Click="_popupAccountCancel_Click" 
+                                            Style="{DynamicResource awsPopupDialogButtonStyle}">
+                                            Cancel
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Popup>
+                    </Grid>
+
+                </Grid>
             </Grid>
+
+            <Grid Margin="0">
+
+                <Grid Margin="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    
+                    <Label Target="{Binding ElementName=_regionSelector}" 
+                           Style="{DynamicResource awsWizardFieldLabelStyle}"
+                           Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Margin="2,0,0,0">
+                        Region:
+                    </Label>
+
+                    <Grid Name="_ctlHorizontalHolderRegion" Grid.Column="1"  Margin="0">
+                        <ComboBox x:Name="_regionSelector"
+                                  
+                                  Margin="2"
+                                  VerticalAlignment="Center"
+                                  SelectionChanged="_regionSelector_SelectionChanged"
+                                  Style="{DynamicResource awsComboBoxStyle}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Margin="5,0,0,0" Width="13" Height="12" Source="{Binding FlagIcon}"/>
+                                        <TextBlock Margin="5,0,0,0" Text="{Binding DisplayName}" Style="{DynamicResource awsTextBlockBaseStyle}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </StackPanel>
+
+        <Grid Name="_ctlVerticalLayout" Visibility="Collapsed" Margin="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Target="{Binding ElementName=_regionSelector}" 
+                           Style="{DynamicResource awsWizardFieldLabelStyle}"
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            HorizontalAlignment="Center"
+                            HorizontalContentAlignment="Center"
+                            VerticalAlignment="Center"
+                           Margin="2,0,0,0">
+                Account Profile:
+            </Label>
+
+            <Grid Name="_ctlVerticalHolderAccount"
+                  Grid.Row="0"
+                  Grid.Column="1"
+                  Margin="0"
+                  HorizontalAlignment="Center"
+                  ></Grid>
+
+            <Label Target="{Binding ElementName=_regionSelector}" 
+                           Style="{DynamicResource awsWizardFieldLabelStyle}"
+                           Grid.Row="1"
+                           Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Margin="2,0,0,0">
+                Region:
+            </Label>
+
+            <Grid Name="_ctlVerticalHolderRegion"
+                  Grid.Row="1"
+                  Grid.Column="1"
+                  Margin="30,0,0,0"
+                  HorizontalAlignment="Center"
+                  ></Grid>
+
         </Grid>
-    </StackPanel>
+    </Grid>
 
 </commonui:BaseAWSUserControl>

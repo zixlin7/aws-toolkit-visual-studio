@@ -35,12 +35,25 @@ namespace Amazon.AWSToolkit.CommonUI.Components
 
         readonly object _syncObj = new object();
         RegisterAccountController _registerAccountController = null;
+        IEnumerable<string> _serviceNames;
 
         readonly HashSet<string> _verifiedAccounts = new HashSet<string>();
 
         public AccountAndRegionPicker()
         {
             InitializeComponent();
+        }
+
+        public void SwitchToVerticalLayout()
+        {
+            this._ctlHorizontalLayout.Visibility = Visibility.Collapsed;
+            this._ctlVerticalLayout.Visibility = Visibility.Visible;
+
+            this._ctlHorizontalHolderAccount.Children.Remove(this._ctlAccount);
+            this._ctlHorizontalHolderRegion.Children.Remove(this._regionSelector);
+
+            this._ctlVerticalHolderAccount.Children.Add(this._ctlAccount);
+            this._ctlVerticalHolderRegion.Children.Add(this._regionSelector);
         }
 
         public void Initialize()
@@ -51,6 +64,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
         public void Initialize(AccountViewModel selectedAccount, RegionEndPointsManager.RegionEndPoints selectedRegion, IEnumerable<string> serviceNames)
         {
             _rootViewModel = ToolkitFactory.Instance.RootViewModel;
+            this._serviceNames = serviceNames;
 
             this._accountSelector.PropertyChanged += _accountSelector_PropertyChanged;
             this._accountSelector.PopulateComboBox(this.Accounts);
@@ -60,16 +74,30 @@ namespace Amazon.AWSToolkit.CommonUI.Components
                 NotifyPropertyChanged(uiProperty_Account);
             }
 
+            UpdateRegions(selectedRegion);
+
+        }
+
+        private void UpdateRegions(RegionEndPointsManager.RegionEndPoints selectedRegion)
+        {
             var regions = new List<RegionEndPointsManager.RegionEndPoints>();
             foreach (RegionEndPointsManager.RegionEndPoints rep in RegionEndPointsManager.Instance.Regions)
             {
-                if(serviceNames == null)
+                if (this.SelectedAccount.HasRestrictions || rep.HasRestrictions)
+                {
+                    if (!rep.ContainAnyRestrictions(this.SelectedAccount.Restrictions))
+                    {
+                        continue;
+                    }
+                }
+
+                if (this._serviceNames == null)
                 {
                     regions.Add(rep);
                 }
                 else
                 {
-                    foreach (var name in serviceNames)
+                    foreach (var name in this._serviceNames)
                     {
                         if (rep.GetEndpoint(name) != null)
                         {
@@ -152,7 +180,14 @@ namespace Amazon.AWSToolkit.CommonUI.Components
         public AccountViewModel SelectedAccount
         {
             get { return this._accountSelector.SelectedAccount as AccountViewModel; }
-            set { if (IsInitialized) this._accountSelector.SelectedAccount = value; }
+            set
+            {
+                if (IsInitialized)
+                {
+                    this._accountSelector.SelectedAccount = value;
+                    UpdateRegions(this.SelectedRegion);
+                }
+            }
         }
 
         bool _accountValidationPending = false;
@@ -279,6 +314,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
         // This is awkward to handle outside the page.
         private void _accountSelector_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            UpdateRegions(this.SelectedRegion);
             NotifyPropertyChanged(uiProperty_Account);
         }
         public RegionEndPointsManager.RegionEndPoints SelectedRegion

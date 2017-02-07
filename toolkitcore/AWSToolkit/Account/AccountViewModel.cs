@@ -33,8 +33,6 @@ namespace Amazon.AWSToolkit.Account
         ICredentialProfileStore _profileStore;
 
         string _displayName;
-        string _accountNumber;
-        HashSet<string> _restrictions;
 
         ObservableCollection<IViewModel> _serviceViewModels;
 
@@ -54,16 +52,13 @@ namespace Amazon.AWSToolkit.Account
 
         public void ReloadFromPersistence()
         {
-            //var profile = ProfileStore.ListProfiles().FirstOrDefault(x =>
-            //{
-            //    CredentialProfileUtils.EnsureUniqueKeyAssigned(pr)
-            //    Guid.Parse()
-            //    return null;
-            //});
-            //    string.Equals(CredentialProfileUtils.GetUniqueKey(profile)))
-            //var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
-            //var os = settings[this._profileSettingsKey];
-//            parseObjectSettings(os);
+            this._profile = ProfileStore.ListProfiles().FirstOrDefault(x =>
+            {
+                return string.Equals(CredentialProfileUtils.GetUniqueKey(x), this.SettingsUniqueKey, StringComparison.Ordinal);
+            });
+
+            this._displayName = this._profile.Name;
+            this._credentials = this._profile.GetAWSCredentials(ProfileStore);
         }
 
 
@@ -150,10 +145,33 @@ namespace Amazon.AWSToolkit.Account
             get { return this._profileStore; }
         }
 
+        public CredentialProfile Profile
+        {
+            get { return this._profile; }
+        }
+
         public string AccountNumber
         {
-            get { return this._accountNumber; }
-            set { this._accountNumber = value; }
+            get
+            {
+                SettingsCollection settings = null;
+                if(this.ProfileStore is NetSDKCredentialsFile)
+                {
+                    settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
+                }
+                else if (this.ProfileStore is SharedCredentialsFile)
+                {
+                    settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.NonNetSDKCredentialStoreMetadata);
+                }
+
+                if(settings != null)
+                {
+                    var os = settings[this.SettingsUniqueKey];
+                    return os?[ToolkitSettingsConstants.AccountNumberField];
+                }
+
+                return null;
+            }
         }
 
         public string UniqueIdentifier
@@ -173,15 +191,47 @@ namespace Amazon.AWSToolkit.Account
 
         public bool HasRestrictions
         {
-            get { return this._restrictions?.Count > 0; }
+            get { return GetRestrictions()?.Count > 0; }
         }
         
         public HashSet<string> Restrictions
         {
             get
             {
-                return this._restrictions;
+                return GetRestrictions();
             }
+        }
+
+        private HashSet<string> GetRestrictions()
+        {
+            HashSet<string> restrictions = new HashSet<string>();
+
+            SettingsCollection settings = null;
+            if (this.ProfileStore is NetSDKCredentialsFile)
+            {
+                settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
+            }
+            else if (this.ProfileStore is SharedCredentialsFile)
+            {
+                settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.NonNetSDKCredentialStoreMetadata);
+            }
+
+            if(settings != null)
+            {
+                var os = settings[this.SettingsUniqueKey];
+
+                var str = os?[ToolkitSettingsConstants.Restrictions];
+                if (str != null)
+                {
+                    foreach (var token in str.Split(','))
+                    {
+                        if (!string.IsNullOrEmpty(token))
+                            restrictions.Add(token);
+                    }
+                }
+            }
+
+            return restrictions;
         }
 
 

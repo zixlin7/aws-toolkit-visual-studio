@@ -90,6 +90,8 @@ namespace Amazon.AWSToolkit.CommonUI.Components
 
         public void PopulateComboBox(IList<AccountViewModel> accounts)
         {
+            string currentUniqueKey = this.SelectedAccount?.SettingsUniqueKey;
+
             var netSdkAccounts = new List<ProfileComboItem>();
             var sharedCredentialsAccounts = new List<ProfileComboItem>();
 
@@ -118,7 +120,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
                 combinedList.AddRange(netSdkAccounts);
             }
 
-            if (netSdkAccounts.Count > 0)
+            if (sharedCredentialsAccounts.Count > 0)
             {
                 if (useCategories)
                 {
@@ -128,6 +130,19 @@ namespace Amazon.AWSToolkit.CommonUI.Components
             }
 
             this._ctlCombo.ItemsSource = combinedList;
+            if(!string.IsNullOrEmpty(currentUniqueKey))
+            {
+                var selectedAccount = combinedList.FirstOrDefault(x =>
+                {
+                    var pci = x as ProfileComboItem;
+                    return string.Equals(pci.Account?.SettingsUniqueKey, currentUniqueKey, StringComparison.Ordinal);
+                });
+
+                if(selectedAccount != null)
+                {
+                    this._ctlCombo.SelectedItem = selectedAccount;
+                }
+            }
         }
 
         private void FormatDisplayValue()
