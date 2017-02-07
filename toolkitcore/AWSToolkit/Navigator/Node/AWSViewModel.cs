@@ -16,6 +16,7 @@ using Amazon.AWSToolkit.Account;
 using log4net;
 using Amazon.Util;
 using Amazon.Runtime.CredentialManagement;
+using Amazon.Runtime.CredentialManagement.Internal;
 
 namespace Amazon.AWSToolkit.Navigator.Node
 {
@@ -123,8 +124,22 @@ namespace Amazon.AWSToolkit.Navigator.Node
                 AWSCredentials credentials;
                 if (AWSCredentialsFactory.TryGetAWSCredentials(profile, netStore, out credentials))
                 {
+                    ImmutableCredentials immutableCredentials = null;
+                    try
+                    {
+                        immutableCredentials = credentials.GetCredentials();
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.Warn($"Skipping adding profile {profile.Name} because getting credentials failed.", e);
+                        continue;
+                    }
+
                     // Cache access key to make sure we don't add the same account from the shared file.
-                    netSDKStoreAccessKeys.Add(credentials.GetCredentials().AccessKey);
+                    if (CredentialProfileUtils.GetProfileType(profile) == CredentialProfileType.Basic)
+                    {
+                        netSDKStoreAccessKeys.Add(immutableCredentials.AccessKey);
+                    }
                     updatedAccounts.Add(new AccountViewModel(this._metaNode.FindChild<AccountViewMetaNode>(), this, netStore, profile));
                 }
             }
@@ -135,8 +150,20 @@ namespace Amazon.AWSToolkit.Navigator.Node
                 AWSCredentials credentials;
                 if (AWSCredentialsFactory.TryGetAWSCredentials(profile, sharedStore, out credentials))
                 {
+                    ImmutableCredentials immutableCredentials = null;
+                    try
+                    {
+                        immutableCredentials = credentials.GetCredentials();
+                    }
+                    catch(Exception e)
+                    {
+                        _logger.Warn($"Skipping adding profile {profile.Name} because getting credentials failed.", e);
+                        continue;
+                    }
+
                     // Don't add account if it was added by the NET SDK Credential store
-                    if (!netSDKStoreAccessKeys.Contains(credentials.GetCredentials().AccessKey))
+                    if (CredentialProfileUtils.GetProfileType(profile) != CredentialProfileType.Basic ||
+                        !netSDKStoreAccessKeys.Contains(immutableCredentials.AccessKey))
                     {
                         updatedAccounts.Add(new AccountViewModel(this._metaNode.FindChild<AccountViewMetaNode>(), this, sharedStore, profile));
                     }
