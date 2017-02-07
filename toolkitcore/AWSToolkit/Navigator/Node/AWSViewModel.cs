@@ -112,17 +112,36 @@ namespace Amazon.AWSToolkit.Navigator.Node
             return null;
         }
 
+
         private void LoadRegisteredProfiles()
         {
             List<AccountViewModel> updatedAccounts = new List<AccountViewModel>();
 
-            HashSet<string> netSDKStoreAccessKeys = new HashSet<string>();
+            HashSet<string> netSDKStoreAccessKeys = ProcessStore(updatedAccounts, new HashSet<string>(), new NetSDKCredentialsFile());
+            ProcessStore(updatedAccounts, netSDKStoreAccessKeys, new SharedCredentialsFile());
 
-            var netStore = new NetSDKCredentialsFile();
-            foreach (var profile in netStore.ListProfiles())
+            var deleted = _accounts.Except(updatedAccounts, AccountViewModelEqualityComparer.Instance).ToList();
+            foreach (var del in deleted)
+                _accounts.Remove(del);
+
+            var added = updatedAccounts.Except(_accounts, AccountViewModelEqualityComparer.Instance).ToList();
+            foreach (var add in added)
+                _accounts.Add(add);
+
+            base.NotifyPropertyChanged("RegisteredAccounts");
+        }
+
+        private HashSet<string> ProcessStore(List<AccountViewModel> accounts, HashSet<string> alreadyAddedAccessKeys, ICredentialProfileStore store)
+        {
+            HashSet<string> accessKeys = new HashSet<string>();
+            foreach (var profile in store.ListProfiles())
             {
+                // Toolkit doesn't currently support profiles requiring callbacks for MFA tokens
+                if (CredentialProfileUtils.IsCallbackRequired(profile))
+                    continue;
+
                 AWSCredentials credentials;
-                if (AWSCredentialsFactory.TryGetAWSCredentials(profile, netStore, out credentials))
+                if (AWSCredentialsFactory.TryGetAWSCredentials(profile, store, out credentials))
                 {
                     ImmutableCredentials immutableCredentials = null;
                     try
@@ -136,50 +155,23 @@ namespace Amazon.AWSToolkit.Navigator.Node
                     }
 
                     // Cache access key to make sure we don't add the same account from the shared file.
-                    if (CredentialProfileUtils.GetProfileType(profile) == CredentialProfileType.Basic)
+                    if (CredentialProfileUtils.GetProfileType(profile) == CredentialProfileType.Basic && !accessKeys.Contains(immutableCredentials.AccessKey))
                     {
-                        netSDKStoreAccessKeys.Add(immutableCredentials.AccessKey);
-                    }
-                    updatedAccounts.Add(new AccountViewModel(this._metaNode.FindChild<AccountViewMetaNode>(), this, netStore, profile));
-                }
-            }
-
-            var sharedStore = new SharedCredentialsFile();
-            foreach (var profile in sharedStore.ListProfiles())
-            {
-                AWSCredentials credentials;
-                if (AWSCredentialsFactory.TryGetAWSCredentials(profile, sharedStore, out credentials))
-                {
-                    ImmutableCredentials immutableCredentials = null;
-                    try
-                    {
-                        immutableCredentials = credentials.GetCredentials();
-                    }
-                    catch(Exception e)
-                    {
-                        _logger.Warn($"Skipping adding profile {profile.Name} because getting credentials failed.", e);
-                        continue;
+                        accessKeys.Add(immutableCredentials.AccessKey);
                     }
 
                     // Don't add account if it was added by the NET SDK Credential store
                     if (CredentialProfileUtils.GetProfileType(profile) != CredentialProfileType.Basic ||
-                        !netSDKStoreAccessKeys.Contains(immutableCredentials.AccessKey))
+                        !alreadyAddedAccessKeys.Contains(immutableCredentials.AccessKey))
                     {
-                        updatedAccounts.Add(new AccountViewModel(this._metaNode.FindChild<AccountViewMetaNode>(), this, sharedStore, profile));
+                        accounts.Add(new AccountViewModel(this._metaNode.FindChild<AccountViewMetaNode>(), this, store, profile));
                     }
                 }
             }
 
-            var deleted = _accounts.Except(updatedAccounts, AccountViewModelEqualityComparer.Instance).ToList();
-            foreach (var del in deleted)
-                _accounts.Remove(del);
-
-            var added = updatedAccounts.Except(_accounts, AccountViewModelEqualityComparer.Instance).ToList();
-            foreach (var add in added)
-                _accounts.Add(add);
-
-            base.NotifyPropertyChanged("RegisteredAccounts");
+            return accessKeys;
         }
+
 
         public void Refresh()
         {
