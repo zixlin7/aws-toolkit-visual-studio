@@ -41,6 +41,7 @@ namespace Amazon.Lambda.Tools.Commands
             DefinedCommandOptions.ARGUMENT_S3_PREFIX,
             DefinedCommandOptions.ARGUMENT_CLOUDFORMATION_TEMPLATE,
             DefinedCommandOptions.ARGUMENT_CLOUDFORMATION_TEMPLATE_PARAMETER,
+            DefinedCommandOptions.ARGUMENT_CLOUDFORMATION_ROLE,
             DefinedCommandOptions.ARGUMENT_STACK_NAME,
             DefinedCommandOptions.ARGUMENT_CLOUDFORMATION_DISABLE_CAPABILITIES,
             DefinedCommandOptions.ARGUMENT_STACK_WAIT,
@@ -57,6 +58,7 @@ namespace Amazon.Lambda.Tools.Commands
         public string CloudFormationTemplate { get; set; }
         public string StackName { get; set; }
         public bool? WaitForStackToComplete { get; set; }
+        public string CloudFormationRole { get; set; }
         public Dictionary<string, string> TemplateParameters { get; set; }
 
         public bool? PersistConfigFile { get; set; }
@@ -97,6 +99,8 @@ namespace Amazon.Lambda.Tools.Commands
                 this.TemplateParameters = tuple.Item2.KeyValuePairs;
             if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE.Switch)) != null)
                 this.PersistConfigFile = tuple.Item2.BoolValue;
+            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_CLOUDFORMATION_ROLE.Switch)) != null)
+                this.CloudFormationRole = tuple.Item2.StringValue;
         }
 
 
@@ -245,20 +249,35 @@ namespace Amazon.Lambda.Tools.Commands
                         capabilities.Add("CAPABILITY_NAMED_IAM");
                     }
 
-                    // Create the change set which performs the transformation on the Serverless resources in the template.
-                    changeSetResponse = await this.CloudFormationClient.CreateChangeSetAsync(new CreateChangeSetRequest
+                    var changeSetRequest = new CreateChangeSetRequest
                     {
                         StackName = stackName,
                         Parameters = templateParameters,
                         ChangeSetName = changeSetName,
                         ChangeSetType = changeSetType,
                         Capabilities = capabilities,
-                        Tags = new List<Tag> { new Tag { Key = Constants.SERVERLESS_TAG_NAME, Value = "true" } },
-                        TemplateURL = this.S3Client.GetPreSignedURL(new S3.Model.GetPreSignedUrlRequest { BucketName = s3Bucket, Key = s3KeyTemplate, Expires = DateTime.Now.AddHours(1) })
-                    });
+                        RoleARN = this.GetStringValueOrDefault(this.CloudFormationRole, DefinedCommandOptions.ARGUMENT_CLOUDFORMATION_ROLE, false),
+                        Tags = new List<Tag> { new Tag { Key = Constants.SERVERLESS_TAG_NAME, Value = "true" } }
+                    };
+
+                    if(new FileInfo(templatePath).Length < Constants.MAX_TEMPLATE_BODY_IN_REQUEST_SIZE)
+                    {
+                        changeSetRequest.TemplateBody = templateBody;
+                    }
+                    else
+                    {
+                        changeSetRequest.TemplateURL = this.S3Client.GetPreSignedURL(new S3.Model.GetPreSignedUrlRequest { BucketName = s3Bucket, Key = s3KeyTemplate, Expires = DateTime.Now.AddHours(1) });
+                    }
+
+                    // Create the change set which performs the transformation on the Serverless resources in the template.
+                    changeSetResponse = await this.CloudFormationClient.CreateChangeSetAsync(changeSetRequest);
 
 
                     this.Logger.WriteLine("CloudFormation change set created");
+                }
+                catch(LambdaToolsException)
+                {
+                    throw;
                 }
                 catch (Exception e)
                 {
