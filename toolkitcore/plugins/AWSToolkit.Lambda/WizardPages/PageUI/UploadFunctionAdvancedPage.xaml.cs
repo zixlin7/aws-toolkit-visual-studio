@@ -176,7 +176,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.Role))
                 role = hostWizard[UploadFunctionWizardProperties.Role] as string;
 
-            IntializeIAMPickerForAccountAsync(role).Wait();
+            IntializeIAMPickerForAccountAsync(role);
         }
 
         private IAMRolePicker IAMPicker
@@ -245,7 +245,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
         }
 
-        private async Task IntializeIAMPickerForAccountAsync(string selectedRole)
+        private void IntializeIAMPickerForAccountAsync(string selectedRole)
         {
             // could check here if we're already bound to this a/c and region
             var account = PageController.HostingWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
@@ -258,13 +258,56 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             {
                 var taskRole = RoleHelper.FindExistingLambdaRolesAsync(iamClient, RoleHelper.DEFAULT_ITEM_MAX);
                 var taskPolicies = RoleHelper.FindLambdaManagedPoliciesAsync(iamClient, RoleHelper.DEFAULT_ITEM_MAX);
-                Task.WaitAll(taskRole, taskPolicies);
-                var roles = taskRole.Result;
-                var policies = taskPolicies.Result;
-                this._ctlIAMRolePicker.Initialize(roles, policies, selectedRole);
-            }
+                IList<Amazon.IdentityManagement.Model.Role> roles = null;
+                IList<Amazon.IdentityManagement.Model.ManagedPolicy> policies = null;
 
-            
+                var errorMessages = new List<string>();
+                try
+                {
+                    Task.WaitAll(taskRole, taskPolicies);
+                    roles = taskRole.Result;
+                }
+                catch(AggregateException e)
+                {
+                    foreach(var inner in e.InnerExceptions)
+                    {
+                        if(!(inner is AggregateException))
+                        {
+                            errorMessages.Add(inner.Message);
+                        }
+                    }
+
+                }
+                catch(Exception e)
+                {
+                    errorMessages.Add(e.Message);
+                }
+
+                if(taskRole.IsCompleted && taskRole .Exception == null)
+                {
+                    roles = taskRole.Result;
+                }
+                if (taskPolicies.IsCompleted && taskPolicies.Exception == null)
+                {
+                    policies = taskPolicies.Result;
+                }
+
+                if (roles != null)
+                {
+                    this._ctlIAMRolePicker.Initialize(roles, policies, selectedRole);
+                }
+                else
+                {
+                    var finalErrorMessage = "Failed to retrieve list of IAM roles and policies. Your profile must have the permissions iam:ListRoles and iam:ListPolicies.";
+
+                    foreach(var message in errorMessages)
+                    {
+                        finalErrorMessage += $"\n\n  {message}";
+                    }
+
+                    ToolkitFactory.Instance.ShellProvider.ShowError("Loading Roles Error", finalErrorMessage);
+                }
+            }
         }
 
         private void PreviewIntTextInput(object sender, TextCompositionEventArgs e)

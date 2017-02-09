@@ -62,8 +62,8 @@ namespace Amazon.AWSToolkit.CommonUI.Components
 
         public void Initialize(IList<Role> availableRoles, IList<ManagedPolicy> availableManagedPolicies, string selectedRole)
         {
-            this._availableManagedPolicies = availableManagedPolicies;
-            this._availableRoles = availableRoles;
+            this._availableManagedPolicies = availableManagedPolicies ?? new List<ManagedPolicy>();
+            this._availableRoles = availableRoles ?? new List<Role>();
 
             this.PopulateComboBox(selectedRole);
         }
