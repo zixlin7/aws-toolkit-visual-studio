@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\buildtools\Package.Build.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Amazon.AWSToolkit.VisualStudio</RootNamespace>
     <AssemblyName>AWSToolkitPackage</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <VsixType>v3</VsixType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -23,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
     <CreateVsixContainer>True</CreateVsixContainer>
     <DeployExtension>True</DeployExtension>
+    <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
     <VSSDKTargetPlatformRegRootSuffix>Exp</VSSDKTargetPlatformRegRootSuffix>
     <DeployVSTemplates>True</DeployVSTemplates>
     <UseVSHostingProcess>true</UseVSHostingProcess>
@@ -101,7 +102,8 @@
     <Reference Include="Microsoft.VisualStudio.Shell.$(VSTarget)" />
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0" />
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.11.0" />
-    <Reference Include="Microsoft.VisualStudio.Shell.Immutable.$(VSTarget)" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Framework" />
+    <Reference Include="Microsoft.VisualStudio.Utilities, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" Condition="'$(VSTarget)' == '15.0'" />
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=$(VSTarget).0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Threading, Version=$(VSTarget).0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Data, Version=$(VSTarget).0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -214,8 +216,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <None Include="source.extension.vsixmanifest">
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\manifests\$(VSTarget)\source.extension.vsixmanifest">
       <SubType>Designer</SubType>
+      <Link>\source.extension.vsixmanifest</Link>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -311,10 +316,6 @@
     <Page Include="ShellOptions\GeneralOptionsPageControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\_AWSToolkitDefaultTheme.$(VSTarget).xaml">
       <SubType>Designer</SubType>
@@ -323,10 +324,6 @@
     <Page Include="ToolWindow\AWSNavigatorToolControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -843,6 +840,13 @@
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
+    <ProjectReference Include="..\cloudformation\AWSToolkit.CloudFormation.MSBuildTasks\AWSToolkit.CloudFormation.MSBuildTasks.csproj">
+      <Project>{fe98588c-7fee-414e-9eab-f36bf64c88c0}</Project>
+      <Name>AWSToolkit.CloudFormation.MSBuildTasks</Name>
+      <InstallRoot>MSBuild</InstallRoot>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+    </ProjectReference>
     <ProjectReference Include="..\cloudformation\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
       <Project>{4cee1a45-e01e-4bcc-8145-5c593adf28bc}</Project>
       <Name>AWSToolkit.CloudFormation.Parser</Name>
@@ -873,7 +877,7 @@
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
-    <ProjectReference Include="..\lambda\LambdaFunctionProjectTemplate\LambdaFunctionProjectTemplate.csproj">
+   <ProjectReference Include="..\lambda\LambdaFunctionProjectTemplate\LambdaFunctionProjectTemplate.csproj">
       <Project>{AF0AE340-7C91-40F9-A074-0F1A4F03F8E9}</Project>
       <Name>LambdaFunctionProjectTemplate</Name>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
@@ -884,58 +888,58 @@
       <Project>{81552efa-46b0-4ebe-bc29-5ba6a7628207}</Project>
       <Name>AWSToolkit.VisualStudio.Shared</Name>
     </ProjectReference>
-    <ProjectReference Include="..\templates\AWSProjectTemplates\AWSProjectTemplates.csproj">
-      <Project>{BD8B477F-4A67-4CB4-A9A9-019D3A60A671}</Project>
-      <Name>AWSProjectTemplates</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
     <ProjectReference Include="..\templates\TemplateWizard\TemplateWizard.csproj">
       <Project>{C854A806-ACE3-4401-8DA3-037A370190E5}</Project>
       <Name>TemplateWizard</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
+
+    <!-- temp disabled for VS2017 due to path length issue in experimental hive -->
+    <ProjectReference Include="..\templates\AWSProjectTemplates\AWSProjectTemplates.csproj" Condition="'$(VSTarget)' != '15.0'">
+      <Project>{BD8B477F-4A67-4CB4-A9A9-019D3A60A671}</Project>
+      <Name>AWSProjectTemplates</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    
   </ItemGroup>
-  <Choose>
-    <When Condition=" '$(VSTarget)' == '12.0'">
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <ProjectReference Include="..\lambda\LambdaNETCoreFunctionProjectTemplate\LambdaNETCoreFunctionProjectTemplate.csproj">
-          <Project>{1b68e98a-6d93-4ac2-bfa4-7a9553e9cd3d}</Project>
-          <Name>LambdaNETCoreFunctionProjectTemplate</Name>
-          <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-          <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-          <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-        </ProjectReference>
-        <ProjectReference Include="..\lambda\LambdaNETCoreFunctionProjectWithTestTemplate\LambdaNETCoreFunctionProjectWithTestTemplate.csproj">
-          <Project>{4632ab71-e5a7-4cc6-9142-76fb88a87751}</Project>
-          <Name>LambdaNETCoreFunctionProjectWithTestTemplate</Name>
-          <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-          <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-          <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-        </ProjectReference>
-        <ProjectReference Include="..\lambda\LambdaNETCoreFlourishProjectTemplate\LambdaNETCoreServerlessProjectTemplate.csproj">
-          <Project>{8b4aeee3-87a0-445c-bbc9-d0ee91191a24}</Project>
-          <Name>LambdaNETCoreServerlessProjectTemplate</Name>
-          <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-          <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-          <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-          <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-        </ProjectReference>
-        <ProjectReference Include="..\lambda\LambdaNETCoreFlourishProjectWithTestTemplate\LambdaNETCoreServerlessProjectWithTestTemplate.csproj">
-          <Project>{a4422591-b589-4e2e-b06e-fbd74a3d7a79}</Project>
-          <Name>LambdaNETCoreServerlessProjectWithTestTemplate</Name>
-          <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-          <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-          <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-          <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-        </ProjectReference>
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
+  <ItemGroup Condition="'$(VSTarget)' != '12.0'">
+    <ProjectReference Include="..\lambda\LambdaNETCoreFunctionProjectTemplate\LambdaNETCoreFunctionProjectTemplate.csproj">
+      <Project>{1b68e98a-6d93-4ac2-bfa4-7a9553e9cd3d}</Project>
+      <Name>LambdaNETCoreFunctionProjectTemplate</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+    <ProjectReference Include="..\lambda\LambdaNETCoreFunctionProjectWithTestTemplate\LambdaNETCoreFunctionProjectWithTestTemplate.csproj">
+      <Project>{4632ab71-e5a7-4cc6-9142-76fb88a87751}</Project>
+      <Name>LambdaNETCoreFunctionProjectWithTestTemplate</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+    <ProjectReference Include="..\lambda\LambdaNETCoreFlourishProjectTemplate\LambdaNETCoreServerlessProjectTemplate.csproj">
+      <Project>{8b4aeee3-87a0-445c-bbc9-d0ee91191a24}</Project>
+      <Name>LambdaNETCoreServerlessProjectTemplate</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+    
+    <!-- temp disabled for VS2017 due to path length issue in experimental hive -->
+    <ProjectReference Include="..\lambda\LambdaNETCoreFlourishProjectWithTestTemplate\LambdaNETCoreServerlessProjectWithTestTemplate.csproj" Condition="'$(VSTarget)' != '15.0'">
+      <Project>{a4422591-b589-4e2e-b06e-fbd74a3d7a79}</Project>
+      <Name>LambdaNETCoreServerlessProjectWithTestTemplate</Name>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+    
+  </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>

@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <Import Project="$(MSBuildThisFileDirectory)\Common.Build.targets" />
 
@@ -10,22 +10,26 @@
     <!-- Package Guids; These need to be the same as the GUIDs in Guids.cs and AWSVisualStudioToolkit.$(VSTarget)-Debug.vsct -->
     <VsixGuid Condition=" '$(VSTarget)' == '12.0' ">4497d0c0-8d6f-4975-9b40-b54728036e41</VsixGuid>
     <VsixGuid Condition=" '$(VSTarget)' == '14.0' ">bbb1094e-d61e-43da-8ad3-e9f0e0e07c01</VsixGuid>
+    <VsixGuid Condition=" '$(VSTarget)' == '15.0' ">c6191995-d1d1-4dab-b263-ccf92b85b469</VsixGuid>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <!-- Package Guids; These need to be the same as the GUIDs in Guids.cs and AWSVisualStudioToolkit.$(VSTarget)-Release.vsct -->
     <VsixGuid Condition=" '$(VSTarget)' == '12.0' ">9510184f-8135-4f8a-ab8a-23be77c345e2</VsixGuid>
     <VsixGuid Condition=" '$(VSTarget)' == '14.0' ">f2884b07-5122-4e23-acd7-4d93df18709e</VsixGuid>
+    <VsixGuid Condition=" '$(VSTarget)' == '15.0' ">12ed248b-6d4a-47eb-be9e-8eabea0ff119</VsixGuid>
   </PropertyGroup>
 
   <PropertyGroup>
     <VsixDisplayName Condition=" '$(VSTarget)' == '12.0' ">AWS Toolkit for Visual Studio 2013</VsixDisplayName>
     <VsixDisplayName Condition=" '$(VSTarget)' == '14.0' ">AWS Toolkit for Visual Studio 2015</VsixDisplayName>
+    <VsixDisplayName Condition=" '$(VSTarget)' == '15.0' ">AWS Toolkit for Visual Studio 2017</VsixDisplayName>
   </PropertyGroup>
 
   <PropertyGroup>
     <VsixVsTarget Condition=" '$(VSTarget)' == '12.0' ">[$(VSTarget)]</VsixVsTarget>
     <VsixVsTarget Condition=" '$(VSTarget)' == '14.0' ">[$(VSTarget),)</VsixVsTarget>
+    <VsixVsTarget Condition=" '$(VSTarget)' == '15.0' ">[$(VSTarget),)</VsixVsTarget>
   </PropertyGroup>
 
   <!-- Returns the current build version. Used in .vsixmanifests to substitute our build version into them -->

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- Ensures that if this file changes it forces a rebuild -->
   <PropertyGroup>
@@ -14,15 +13,13 @@
     <!-- VS2013 is our lowest supported, and therefore default, target -->
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
 
+    <VSTarget Condition="$(VSTarget)=='' and '$(VisualStudioVersion)'=='15.0'">15.0</VSTarget>
     <VSTarget Condition="$(VSTarget)=='' and '$(VisualStudioVersion)'=='14.0'">14.0</VSTarget>
     <VSTarget Condition="$(VSTarget)=='' and '$(VisualStudioVersion)'=='12.0'">12.0</VSTarget>
     <VSTarget Condition="$(VSTarget)==''">12.0</VSTarget>
 
-    <VsVersionName Condition="'$(VisualStudioVersion)'=='14.0'">VS2015</VsVersionName>
-    <VsVersionName Condition="'$(VisualStudioVersion)'=='12.0'">VS2013</VsVersionName>
-    <VsVersionName Condition="'$(VsVersionName)'==''">VS2013</VsVersionName>
-
-    <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == '' And '$(VSTarget)' != '15.0'">v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == '' And '$(VSTarget)' == '15.0'">v4.6</TargetFrameworkVersion>
 
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VSTarget)</VSToolsPath>
 
@@ -58,9 +55,11 @@
 
     <DevEnvDir Condition="'$(VSTarget)'=='12.0'">$(VS120COMNTOOLS)..\IDE\</DevEnvDir>
     <DevEnvDir Condition="'$(VSTarget)'=='14.0'">$(VS140COMNTOOLS)..\IDE\</DevEnvDir>
+    <DevEnvDir Condition="'$(VSTarget)'=='15.0'">$(VS150COMNTOOLS)..\IDE\</DevEnvDir>
 
     <VSSDKDir Condition="'$(VSTarget)'=='12.0'">$(VSSDK120Install)</VSSDKDir>
     <VSSDKDir Condition="'$(VSTarget)'=='14.0'">$(VSSDK140Install)</VSSDKDir>
+    <VSSDKDir Condition="'$(VSTarget)'=='15.0'">$(VSSDK150Install)</VSSDKDir>
 
   </PropertyGroup>
 

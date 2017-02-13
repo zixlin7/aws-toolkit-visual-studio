@@ -2,6 +2,9 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\..\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
   <PropertyGroup>
+    <CfMsBuildTargetsOutputPath>$(BuildRoot)\Deployment\cf-msbuild-targets</CfMsBuildTargetsOutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
@@ -11,9 +14,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AWSToolkit.CloudFormation.MSBuildTasks</RootNamespace>
     <AssemblyName>AWSToolkit.CloudFormation.MSBuildTasks</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(BuildRoot)\buildtools\awstoolkit.snk</AssemblyOriginatorKeyFile>
@@ -61,11 +61,50 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <PropertyGroup Condition="'$(VSTarget)' == '15.0'">
+    <!-- <ContentFilesProjectOutputGroupDependencies Include="$(BuildRoot)\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationProject.ico" /> -->
+    <!-- <ContentFilesProjectOutputGroupDependencies Include="$(BuildRoot)\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationTemplate.ico" /> -->
+    <!-- <ContentFilesProjectOutputGroupDependencies Include="$(CfMsBuildTargetsOutputPath)\log4net.dll" /> -->
+    <!-- <ContentFilesProjectOutputGroupDependencies Include="$(CfMsBuildTargetsOutputPath)\AWSDeploymentCryptoUtility.dll" /> -->
+    <!-- <ContentFilesProjectOutputGroupDependencies Include="$(CfMsBuildTargetsOutputPath)\AWSDeploymentHostManagerClientLib.dll" /> -->
+    <!-- <ContentFilesProjectOutputGroupDependencies Include="$(CfMsBuildTargetsOutputPath)\AWSSDK.Core.dll" /> -->
+    <!-- <ContentFilesProjectOutputGroupDependencies Include="$(CfMsBuildTargetsOutputPath)\AWSToolkit.Util.dll" /> -->
+  </PropertyGroup>
+  <ItemGroup Condition="'$(VSTarget)' == '15.0'">
+    <Content Include="$(BuildRoot)\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationProject.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>AWSCloudFormationProject.ico</Link>
+    </Content>
+    <Content Include="$(BuildRoot)\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationTemplate.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>AWSCloudFormationTemplate.ico</Link>
+    </Content>
+    <Content Include="$(CfMsBuildTargetsOutputPath)\log4net.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>log4net.dll</Link>
+    </Content>
+    <Content Include="$(CfMsBuildTargetsOutputPath)\AWSDeploymentCryptoUtility.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>AWSDeploymentCryptoUtility.dll</Link>
+    </Content>
+    <Content Include="$(CfMsBuildTargetsOutputPath)\AWSDeploymentHostManagerClientLib.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>AWSDeploymentHostManagerClientLib.dll</Link>
+    </Content>
+    <Content Include="$(CfMsBuildTargetsOutputPath)\AWSSDK.Core.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>AWSSDK.Core.dll</Link>
+    </Content>
+    <Content Include="$(CfMsBuildTargetsOutputPath)\AWSToolkit.Util.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>AWSToolkit.Util.dll</Link>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
       <Project>{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}</Project>
       <Name>AWSToolkit.CloudFormation.Parser</Name>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

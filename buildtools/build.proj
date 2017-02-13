@@ -1,6 +1,4 @@
-    <Project ToolsVersion="4.0"
-	DefaultTargets="full-build"
-	xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="full-build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <PropertyGroup>
         <InternalBuildTools Condition="'$(InternalBuildTools)'==''">..\..\AWSDotNetBuildTools</InternalBuildTools>
@@ -31,52 +29,6 @@
 
     </PropertyGroup>
 	
-	<UsingTask
-		TaskName="DisableIncompatibleV12Features"
-		TaskFactory="CodeTaskFactory"
-		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
-		<ParameterGroup />
-		<Task>
-		  <Using Namespace="System"/>
-		  <Using Namespace="System.IO"/>
-		  <Code Type="Fragment" Language="cs">
-	<![CDATA[
-	
-	var content = File.ReadAllText(@"../vspackages/AWSToolkitPackage/source.extension.vsixmanifest");
-	var replacedContent = content.Replace("DISABLE_FOR_V12_OPEN-->", "DISABLE_FOR_V12_OPEN").Replace("<!--DISABLE_FOR_V12_CLOSE", "DISABLE_FOR_V12_CLOSE");
-	if(string.Equals(content, replacedContent, StringComparison.Ordinal))
-		throw new Exception("source.extension.vsixmanifest format has changed and not able to remove unsupported VS12 features.");
-		
-	Log.LogMessage("Updated source.extension.vsixmanifest to remove unsupported VS12 features");
-	File.WriteAllText(@"../vspackages/AWSToolkitPackage/source.extension.vsixmanifest", replacedContent);
-	]]>
-		  </Code>
-		</Task>
-	</UsingTask>	
-	
-	<UsingTask
-		TaskName="EnableIncompatibleV12Features"
-		TaskFactory="CodeTaskFactory"
-		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
-		<ParameterGroup />
-		<Task>
-		  <Using Namespace="System"/>
-		  <Using Namespace="System.IO"/>
-		  <Code Type="Fragment" Language="cs">
-	<![CDATA[
-	
-	var content = File.ReadAllText(@"../vspackages/AWSToolkitPackage/source.extension.vsixmanifest");
-	var replacedContent = content.Replace("DISABLE_FOR_V12_OPEN", "DISABLE_FOR_V12_OPEN-->").Replace("DISABLE_FOR_V12_CLOSE", "<!--DISABLE_FOR_V12_CLOSE");
-	if(string.Equals(content, replacedContent, StringComparison.Ordinal))
-		throw new Exception("source.extension.vsixmanifest format has changed and not able to remove unsupported VS12 features.");
-
-	Log.LogMessage("Updated source.extension.vsixmanifest to add back unsupported VS12 features");
-	File.WriteAllText(@"../vspackages/AWSToolkitPackage/source.extension.vsixmanifest", replacedContent);
-	]]>
-		  </Code>
-		</Task>
-	</UsingTask>	
-
 	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;update-version;build-awsdeploy;build-vstoolkit;keyscan;copy-artifacts;save-build">
 		<Message Text="Builds all components of the AWS Toolkit for Visual Studio"/>
 	</Target>
@@ -90,13 +42,21 @@
     <Target Name="build-vstoolkit" DependsOnTargets="patch-vsixmanifest">
         <Message Text="$(Configuration) - building core toolkit, service plugin modules and Visual Studio packages."/>
 		
-		<DisableIncompatibleV12Features/>
         <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=12.0;Configuration=$(Configuration)" />
-		<EnableIncompatibleV12Features/>
 		
         <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=14.0;Configuration=$(Configuration)" />
     </Target>
 
+    <Target Name="build-vs2017-toolkit" DependsOnTargets="copy-cf-msbuild-targets">
+        <Message Text="$(Configuration) - launching shell to build 2017 vsix package."/>
+
+        <!--
+        <Exec Command="cmd.exe /k $(MSBuildProjectDirectory)\vs2017buildshell.bat $(RootPath) $(Configuration)" 
+              WorkingDirectory="$(RootPath)"
+              />
+        -->
+    </Target>
+    
 	<Target Name="patch-vsixmanifest" Condition="$(UpdateVersions)">
 		<!-- patch vsixmanifest with release package id if running on Jenkins (likely indicated by update version flag set) -->
         <!-- DISABLE while setting up new project layouts
@@ -108,7 +68,7 @@
         -->
 	</Target>
 
-    <Target Name="copy-artifacts" DependsOnTargets="build-vstoolkit;copy-awsdeploy;copy-icons;copy-awsdeploy;copy-cf-msbuild-targets" />
+    <Target Name="copy-artifacts" DependsOnTargets="build-vstoolkit;copy-awsdeploy;copy-icons;copy-awsdeploy;copy-cf-msbuild-targets;build-vs2017-toolkit" />
 
 
 

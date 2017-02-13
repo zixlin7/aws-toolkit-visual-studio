@@ -2041,6 +2041,9 @@ namespace Amazon.AWSToolkit.VisualStudio
 #elif VS2015
         static readonly Uri _vsshellThemeOverridesUri = new Uri("/AWSToolkitPackage;component/Themes/_AWSToolkitDefaultTheme.14.0.xaml",
                                                                 UriKind.RelativeOrAbsolute);
+#elif VS2017
+        static readonly Uri _vsshellThemeOverridesUri = new Uri("/AWSToolkitPackage;component/Themes/_AWSToolkitDefaultTheme.15.0.xaml",
+                                                                UriKind.RelativeOrAbsolute);
 #else
 #error "No shell-specific _AWSToolkitDefaultTheme.xx.y.xaml file to assign to _vsshellThemeOverridesUri"
 #endif

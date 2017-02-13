@@ -47,8 +47,10 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                     {
                         if (dte.Version.StartsWith("12"))
                             _knownShell = Constants.VS2013HostShell.ShellName;
-                        else
+                        else if (dte.Version.StartsWith("14"))
                             _knownShell = Constants.VS2015HostShell.ShellName;
+                        else
+                            _knownShell = Constants.VS2017HostShell.ShellName;
                     }
                 }
 
@@ -68,8 +70,10 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                     {
                         if (dte.Version.StartsWith("12"))
                             _shellVersion = "2013";
-                        else
+                        else if (dte.Version.StartsWith("14"))
                             _shellVersion = "2015";
+                        else
+                            _shellVersion = "2017";
                     }
                 }
 
