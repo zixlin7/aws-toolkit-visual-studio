@@ -83,6 +83,9 @@ namespace Amazon.AWSToolkit.CommonUI.Components
             var regions = new List<RegionEndPointsManager.RegionEndPoints>();
             foreach (RegionEndPointsManager.RegionEndPoints rep in RegionEndPointsManager.Instance.Regions)
             {
+                if (this.SelectedAccount == null)
+                    continue;
+
                 if (this.SelectedAccount.HasRestrictions || rep.HasRestrictions)
                 {
                     if (!rep.ContainAnyRestrictions(this.SelectedAccount.Restrictions))
@@ -243,6 +246,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
                     }
                 }
 
+                this._accountSelector.PopulateComboBox(this._accounts);
                 if (this.Accounts.Count > 0)
                 {
                     _accountSelector.IsEnabled = true;
@@ -289,6 +293,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
                 }
             }
 
+            this._accountSelector.PopulateComboBox(this._accounts);
             if (this.Accounts.Count > 0)
             {
                 _accountSelector.IsEnabled = true;

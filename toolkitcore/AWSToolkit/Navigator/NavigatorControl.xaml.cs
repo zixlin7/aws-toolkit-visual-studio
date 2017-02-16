@@ -355,10 +355,7 @@ namespace Amazon.AWSToolkit.Navigator
                 var results = command.Execute(viewModel);
                 if (results.Success)
                 {
-                    var accountModel = this._ctlAccounts.SelectedAccount;
-                    accountModel.ReloadFromPersistence();
-                    setInitialRegionSelection();
-                    accountModel.CreateServiceChildren();
+                    UpdateAccountSelection(command.Model.UniqueKey, true);
                 }
             }
             catch(Exception e)
@@ -383,10 +380,14 @@ namespace Amazon.AWSToolkit.Navigator
             if (command.Execute(viewModel).Success)
             {
                 this._viewModel.RegisteredAccounts.Remove(viewModel);
+
+                Guid selectedId = Guid.Empty;
                 if (this._viewModel.RegisteredAccounts.Count > 0)
                 {
-                    this._ctlAccounts.SelectedAccount = this._viewModel.RegisteredAccounts[0];
+                    selectedId = Guid.Parse(this._viewModel.RegisteredAccounts[0].SettingsUniqueKey);
                 }
+
+                UpdateAccountSelection(selectedId, true);
             }
         }
 
