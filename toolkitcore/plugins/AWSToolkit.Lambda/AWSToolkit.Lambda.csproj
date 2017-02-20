@@ -110,6 +110,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
@@ -152,6 +153,7 @@
     <Compile Include="LambdaTools\Exceptions.cs" />
     <Compile Include="LambdaTools\ExtensionMethods.cs" />
     <Compile Include="LambdaTools\IToolLogger.cs" />
+    <Compile Include="LambdaTools\LambdaPackager.cs" />
     <Compile Include="LambdaTools\LambdaToolsDefaults.cs" />
     <Compile Include="LambdaTools\Options\CommandLineParser.cs" />
     <Compile Include="LambdaTools\Options\CommandOption.cs" />
@@ -334,6 +336,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\new-bucket.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="LambdaTools\Resources\netcore.runtime.hierarchy.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

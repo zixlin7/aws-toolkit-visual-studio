@@ -123,7 +123,7 @@ namespace Amazon.Lambda.Tools.Commands
 
                 if (!Path.IsPathRooted(templatePath))
                 {
-                    templatePath = Path.Combine(Utilities.DetemineProjectLocation(this.WorkingDirectory, projectLocation), templatePath);
+                    templatePath = Path.Combine(Utilities.DetermineProjectLocation(this.WorkingDirectory, projectLocation), templatePath);
                 }
 
                 if (!File.Exists(templatePath))
@@ -138,7 +138,7 @@ namespace Amazon.Lambda.Tools.Commands
                 {
                     string configuration = this.GetStringValueOrDefault(this.Configuration, DefinedCommandOptions.ARGUMENT_CONFIGURATION, true);
                     string targetFramework = this.GetStringValueOrDefault(this.TargetFramework, DefinedCommandOptions.ARGUMENT_FRAMEWORK, true);
-                    Utilities.CreateApplicationBundle(this.DefaultConfig, this.Logger, this.WorkingDirectory, projectLocation, configuration, targetFramework, out publishLocation, ref zipArchivePath);
+                    LambdaPackager.CreateApplicationBundle(this.DefaultConfig, this.Logger, this.WorkingDirectory, projectLocation, configuration, targetFramework, out publishLocation, ref zipArchivePath);
                     if (string.IsNullOrEmpty(zipArchivePath))
                         return false;
                 }
@@ -641,7 +641,7 @@ namespace Amazon.Lambda.Tools.Commands
                 if(Path.IsPathRooted(template))
                 {
                     string projectLocation = this.GetStringValueOrDefault(this.ProjectLocation, DefinedCommandOptions.ARGUMENT_PROJECT_LOCATION, false);
-                    var projectRoot = Utilities.DetemineProjectLocation(this.WorkingDirectory, projectLocation);
+                    var projectRoot = Utilities.DetermineProjectLocation(this.WorkingDirectory, projectLocation);
                     if(template.StartsWith(projectRoot))
                     {
                         template = template.Substring(projectRoot.Length + 1);
