@@ -50,11 +50,9 @@
     <Target Name="build-vs2017-toolkit" DependsOnTargets="copy-cf-msbuild-targets">
         <Message Text="$(Configuration) - launching shell to build 2017 vsix package."/>
 
-        <!--
         <Exec Command="cmd.exe /k $(MSBuildProjectDirectory)\vs2017buildshell.bat $(RootPath) $(Configuration)" 
               WorkingDirectory="$(RootPath)"
               />
-        -->
     </Target>
     
 	<Target Name="patch-vsixmanifest" Condition="$(UpdateVersions)">
