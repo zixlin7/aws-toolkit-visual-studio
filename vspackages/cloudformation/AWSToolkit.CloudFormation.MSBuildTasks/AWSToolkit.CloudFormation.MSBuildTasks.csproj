@@ -61,15 +61,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <PropertyGroup Condition="'$(VSTarget)' == '15.0'">
-    <!-- <ContentFilesProjectOutputGroupDependencies Include="$(BuildRoot)\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationProject.ico" /> -->
-    <!-- <ContentFilesProjectOutputGroupDependencies Include="$(BuildRoot)\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationTemplate.ico" /> -->
-    <!-- <ContentFilesProjectOutputGroupDependencies Include="$(CfMsBuildTargetsOutputPath)\log4net.dll" /> -->
-    <!-- <ContentFilesProjectOutputGroupDependencies Include="$(CfMsBuildTargetsOutputPath)\AWSDeploymentCryptoUtility.dll" /> -->
-    <!-- <ContentFilesProjectOutputGroupDependencies Include="$(CfMsBuildTargetsOutputPath)\AWSDeploymentHostManagerClientLib.dll" /> -->
-    <!-- <ContentFilesProjectOutputGroupDependencies Include="$(CfMsBuildTargetsOutputPath)\AWSSDK.Core.dll" /> -->
-    <!-- <ContentFilesProjectOutputGroupDependencies Include="$(CfMsBuildTargetsOutputPath)\AWSToolkit.Util.dll" /> -->
-  </PropertyGroup>
+  <!--
   <ItemGroup Condition="'$(VSTarget)' == '15.0'">
     <Content Include="$(BuildRoot)\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationProject.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -100,6 +92,7 @@
       <Link>AWSToolkit.Util.dll</Link>
     </Content>
   </ItemGroup>
+  -->
   <ItemGroup>
     <ProjectReference Include="..\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
       <Project>{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}</Project>
