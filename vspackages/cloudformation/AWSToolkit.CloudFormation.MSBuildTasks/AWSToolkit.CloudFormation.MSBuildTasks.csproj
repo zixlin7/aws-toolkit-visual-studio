@@ -61,34 +61,38 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <!--
+  <!-- Additional dependency content for the tasks, which we handle in the package project 
+       right now, as this triggers the content to also be placed at the vsix root, causing 
+       load errors due to multiple copies of awssdk.core. When we figure out output groups, 
+       we should be able to do this bundling work here and have it be picked up automatically
+       when the package builds.
   <ItemGroup Condition="'$(VSTarget)' == '15.0'">
     <Content Include="$(BuildRoot)\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationProject.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>AWSCloudFormationProject.ico</Link>
     </Content>
     <Content Include="$(BuildRoot)\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationTemplate.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>AWSCloudFormationTemplate.ico</Link>
     </Content>
     <Content Include="$(CfMsBuildTargetsOutputPath)\log4net.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>log4net.dll</Link>
     </Content>
     <Content Include="$(CfMsBuildTargetsOutputPath)\AWSDeploymentCryptoUtility.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>AWSDeploymentCryptoUtility.dll</Link>
     </Content>
     <Content Include="$(CfMsBuildTargetsOutputPath)\AWSDeploymentHostManagerClientLib.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>AWSDeploymentHostManagerClientLib.dll</Link>
     </Content>
     <Content Include="$(CfMsBuildTargetsOutputPath)\AWSSDK.Core.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>AWSSDK.Core.dll</Link>
     </Content>
     <Content Include="$(CfMsBuildTargetsOutputPath)\AWSToolkit.Util.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>AWSToolkit.Util.dll</Link>
     </Content>
   </ItemGroup>
