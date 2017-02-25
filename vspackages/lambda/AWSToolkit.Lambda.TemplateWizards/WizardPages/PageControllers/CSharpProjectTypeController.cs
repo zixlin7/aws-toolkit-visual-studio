@@ -19,6 +19,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageControllers
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(CSharpProjectTypePage));
 
+        string _blueprintTypes;
         BlueprintsModel _blueprintsModel;
         CSharpProjectTypePage _pageUI;
 
@@ -26,11 +27,12 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageControllers
         string _pageDescription;
         string[] _requiredTags;
 
-        public CSharpProjectTypeController(string pageTitle, string pageDescription, string[] requiredTags)
+        public CSharpProjectTypeController(string pageTitle, string pageDescription, string[] requiredTags, string blueprintTypes)
         {
             this._pageTitle = pageTitle;
             this._pageDescription = pageDescription;
             this._requiredTags = requiredTags;
+            this._blueprintTypes = blueprintTypes;
         }
 
         public IAWSWizard HostingWizard { get; set; }
@@ -77,7 +79,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageControllers
             {
                 try
                 {
-                    _blueprintsModel = BlueprintsManifest.Deserialize();
+                    _blueprintsModel = BlueprintsManifest.Deserialize(this._blueprintTypes);
                 }
                 catch(Exception e)
                 {

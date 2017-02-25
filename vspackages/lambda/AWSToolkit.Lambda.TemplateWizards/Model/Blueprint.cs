@@ -207,20 +207,22 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Model
 
     internal abstract class BlueprintsManifest
     {
-        public static readonly string BlueprintsManifestPath = @"LambdaSampleFunctions\NETCore\v1\";
+        public static readonly string BlueprintsManifestPathV1 = @"LambdaSampleFunctions\NETCore\v1\";
+
+        public static readonly string BlueprintsManifestPathMsbuildV1 = @"LambdaSampleFunctions\NETCore\msbuild-v1\";
         public static readonly string BlueprintsManifestFile = "vs-lambda-blueprint-manifest.xml";
 
-        public static string BlueprintsFile
+        public static string GetBlueprintManifest(string blueprintTypes)
         {
-            get { return Path.Combine(BlueprintsManifestPath, BlueprintsManifestFile); }
+            return Path.Combine(blueprintTypes, BlueprintsManifestFile);
         }
 
-        public static BlueprintsModel Deserialize()
+        public static BlueprintsModel Deserialize(string blueprintTypes)
         {
             try
             {
                 var serializer = new XmlSerializer(typeof(BlueprintsModel));
-                using (var fs = S3FileFetcher.Instance.OpenFileStream(BlueprintsFile, S3FileFetcher.CacheMode.PerInstance))
+                using (var fs = S3FileFetcher.Instance.OpenFileStream(GetBlueprintManifest(blueprintTypes), S3FileFetcher.CacheMode.PerInstance))
                 {
                     using (var reader = new StreamReader(fs))
                     {
@@ -230,7 +232,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Model
             }
             catch (Exception e)
             {
-                throw new InvalidDataException("Unable to retrieve content for file " + BlueprintsFile, e);
+                throw new InvalidDataException("Unable to retrieve content for file " + GetBlueprintManifest(blueprintTypes), e);
             }
         }
     }

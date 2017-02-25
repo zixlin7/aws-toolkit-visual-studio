@@ -146,10 +146,14 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
                 try
                 {
                     var project = GetSelectedProject();
-                    if (project == null || !project.FileName.EndsWith(".xproj"))
+                    if (project == null)
                         return false;
 
-                    using (var reader = new XmlTextReader(new StringReader(File.ReadAllText(project.FileName))))
+                    var projectContent = File.ReadAllText(project.FileName);
+                    if (projectContent.Contains("\"Amazon.Lambda.Tools\""))
+                        return true;
+
+                    using (var reader = new XmlTextReader(new StringReader(projectContent)))
                     {
                         var evalProject = new MSBuildProject(reader);
                         var value = evalProject.QueryPropertyValue("IsLambdaFunction");

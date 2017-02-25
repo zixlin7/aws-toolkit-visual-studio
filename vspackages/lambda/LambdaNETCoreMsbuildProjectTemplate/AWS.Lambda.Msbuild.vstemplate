@@ -17,14 +17,14 @@
 
   <TemplateContent>
     <Project File="BlueprintBaseName.csproj" ReplaceParameters="true">
-      <ProjectItem ReplaceParameters="true" TargetFileName="Properties\AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Readme.md">Readme.md</ProjectItem>
     </Project>
   </TemplateContent>
 
 
   <WizardExtension>
     <Assembly>AWSToolkit.Lambda.TemplateWizards,Culture=neutral,PublicKeyToken=8339e7e97bb08995</Assembly>
-    <FullClassName>Amazon.AWSToolkit.Lambda.TemplateWizards.MsbuildNetCoreWizardImplementation</FullClassName>
+    <FullClassName>Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild.NETCoreFunctionWizard</FullClassName>
   </WizardExtension>
 
 </VSTemplate>

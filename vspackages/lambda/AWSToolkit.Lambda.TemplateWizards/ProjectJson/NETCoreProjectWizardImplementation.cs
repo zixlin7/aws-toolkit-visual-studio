@@ -27,13 +27,13 @@ using ICSharpCode.SharpZipLib.Zip;
 using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.Lambda.TemplateWizards.Model;
 
-namespace Amazon.AWSToolkit.Lambda.TemplateWizards
+namespace Amazon.AWSToolkit.Lambda.TemplateWizards.ProjectJson
 {
-    public class NETCoreServerlessWizardImplementation : BaseNETCoreWizardImplementation
+    public class NETCoreProjectWizardImplementation : BaseNETCoreWizardImplementation
     {
-        public static readonly string[] REQUIRED_TAGS = new string[] { "C#", "ServerlessProject" };
-        public const string TITLE = "New AWS Serverless Application";
-        public const string DESCRIPTION = "Choose the contents of the C# AWS Serverless application.";
+        public static readonly string[] REQUIRED_TAGS = new string[] { "C#", "LambdaProject" };
+        public const string TITLE = "New AWS Lambda C# Project";
+        public const string DESCRIPTION = "Choose the contents of the C# project for your AWS Lambda function.";
 
         public override string Title
         {
@@ -47,7 +47,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
         {
             get
             {
-                return "ServerlessProject";
+                return "LambdaProject";
             }
         }
 

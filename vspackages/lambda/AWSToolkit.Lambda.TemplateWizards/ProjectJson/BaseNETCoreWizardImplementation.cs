@@ -29,7 +29,7 @@ using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Lambda.TemplateWizards.Model;
 
-namespace Amazon.AWSToolkit.Lambda.TemplateWizards
+namespace Amazon.AWSToolkit.Lambda.TemplateWizards.ProjectJson
 {
     public abstract class BaseNETCoreWizardImplementation : IWizard
     {
@@ -102,7 +102,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
 
                 IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
                 {
-                    new CSharpProjectTypeController("Select Blueprint", this.Description, this.RequiredTags)
+                    new CSharpProjectTypeController("Select Blueprint", this.Description, this.RequiredTags, BlueprintsManifest.BlueprintsManifestPathV1)
                 };
 
                 wizard.RegisterPageControllers(defaultPages, 0);
@@ -162,7 +162,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
 
         private void CreateFromSampleFunction(Dictionary<string, string> replacementsDictionary, string sampleFile)
         {
-            using (var stream = S3FileFetcher.Instance.OpenFileStream(Path.Combine(BlueprintsManifest.BlueprintsManifestPath, sampleFile), S3FileFetcher.CacheMode.PerInstance))
+            using (var stream = S3FileFetcher.Instance.OpenFileStream(Path.Combine(BlueprintsManifest.BlueprintsManifestPathV1, sampleFile), S3FileFetcher.CacheMode.PerInstance))
             using (var zipStream = new ZipInputStream(stream))
             {
                 var localZipFile = Path.GetTempFileName() + ".zip";

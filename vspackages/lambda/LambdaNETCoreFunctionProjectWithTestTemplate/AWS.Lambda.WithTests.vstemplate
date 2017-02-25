@@ -24,7 +24,7 @@
 
   <WizardExtension>
     <Assembly>AWSToolkit.Lambda.TemplateWizards,Culture=neutral,PublicKeyToken=8339e7e97bb08995</Assembly>
-    <FullClassName>Amazon.AWSToolkit.Lambda.TemplateWizards.NETCoreProjectWithTestsWizardImplementation</FullClassName>
+    <FullClassName>Amazon.AWSToolkit.Lambda.TemplateWizards.ProjectJson.NETCoreProjectWithTestsWizardImplementation</FullClassName>
   </WizardExtension>
 
 </VSTemplate>

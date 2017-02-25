@@ -27,7 +27,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.Lambda.TemplateWizards.Model;
 
-namespace Amazon.AWSToolkit.Lambda.TemplateWizards
+namespace Amazon.AWSToolkit.Lambda.TemplateWizards.ProjectJson
 {
     public class NETCoreServerlessWithTestsWizardImplementation : NETCoreServerlessWizardImplementation
     {
