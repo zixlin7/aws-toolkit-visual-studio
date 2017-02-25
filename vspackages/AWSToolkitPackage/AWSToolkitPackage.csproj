@@ -915,12 +915,19 @@
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
-   <ProjectReference Include="..\lambda\LambdaFunctionProjectTemplate\LambdaFunctionProjectTemplate.csproj">
+    <ProjectReference Include="..\lambda\LambdaFunctionProjectTemplate\LambdaFunctionProjectTemplate.csproj">
       <Project>{AF0AE340-7C91-40F9-A074-0F1A4F03F8E9}</Project>
       <Name>LambdaFunctionProjectTemplate</Name>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+    </ProjectReference>
+    <ProjectReference Include="..\lambda\LambdaNETCoreMsbuildProjectTemplate\LambdaNETCoreMsbuildProjectTemplate.csproj">
+      <Project>{cbde5be9-4047-445a-82a2-ade0d06708be}</Project>
+      <Name>LambdaNETCoreMsbuildProjectTemplate</Name>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
     <ProjectReference Include="..\shared\AWSToolkit.VisualStudio.Shared\AWSToolkit.VisualStudio.Shared.csproj">
       <Project>{81552efa-46b0-4ebe-bc29-5ba6a7628207}</Project>
@@ -932,7 +939,6 @@
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
-
     <!-- temp disabled for VS2017 due to path length issue in experimental hive -->
     <ProjectReference Include="..\templates\AWSProjectTemplates\AWSProjectTemplates.csproj" Condition="'$(VSTarget)' != '15.0'">
       <Project>{BD8B477F-4A67-4CB4-A9A9-019D3A60A671}</Project>
@@ -941,7 +947,6 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
-    
   </ItemGroup>
   <ItemGroup Condition="'$(VSTarget)' != '12.0'">
     <ProjectReference Include="..\lambda\LambdaNETCoreFunctionProjectTemplate\LambdaNETCoreFunctionProjectTemplate.csproj">
@@ -966,7 +971,6 @@
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
-    
     <!-- temp disabled for VS2017 due to path length issue in experimental hive -->
     <ProjectReference Include="..\lambda\LambdaNETCoreFlourishProjectWithTestTemplate\LambdaNETCoreServerlessProjectWithTestTemplate.csproj" Condition="'$(VSTarget)' != '15.0'">
       <Project>{a4422591-b589-4e2e-b06e-fbd74a3d7a79}</Project>
@@ -976,7 +980,6 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
-    
   </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>

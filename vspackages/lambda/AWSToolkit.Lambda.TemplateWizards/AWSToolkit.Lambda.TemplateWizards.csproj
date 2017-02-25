@@ -90,6 +90,7 @@
   <ItemGroup>
     <Compile Include="BaseNETCoreWizardImplementation.cs" />
     <Compile Include="Model\Blueprint.cs" />
+    <Compile Include="MsbuildNetCoreWizardImplementation.cs" />
     <Compile Include="NETCoreServerlessWithTestsWizardImplementation.cs" />
     <Compile Include="NETCoreProjectWithTestsWizardImplementation.cs" />
     <Compile Include="NETCoreServerlessWizardImplementation.cs" />

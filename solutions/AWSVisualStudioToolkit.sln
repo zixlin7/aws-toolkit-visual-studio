@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26206.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "buildtools", "buildtools", "{77A27C21-7B4C-4137-8959-88861F5EAE73}"
 	ProjectSection(SolutionItems) = preProject
@@ -121,6 +121,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaNETCoreServerlessProjectTemplate", "..\vspackages\lambda\LambdaNETCoreFlourishProjectTemplate\LambdaNETCoreServerlessProjectTemplate.csproj", "{8B4AEEE3-87A0-445C-BBC9-D0EE91191A24}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaNETCoreServerlessProjectWithTestTemplate", "..\vspackages\lambda\LambdaNETCoreFlourishProjectWithTestTemplate\LambdaNETCoreServerlessProjectWithTestTemplate.csproj", "{A4422591-B589-4E2E-B06E-FBD74A3D7A79}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaNETCoreMsbuildProjectTemplate", "..\vspackages\lambda\LambdaNETCoreMsbuildProjectTemplate\LambdaNETCoreMsbuildProjectTemplate.csproj", "{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -312,6 +314,10 @@ Global
 		{A4422591-B589-4E2E-B06E-FBD74A3D7A79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4422591-B589-4E2E-B06E-FBD74A3D7A79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4422591-B589-4E2E-B06E-FBD74A3D7A79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -369,5 +375,6 @@ Global
 		{4632AB71-E5A7-4CC6-9142-76FB88A87751} = {9B2AC37E-7281-4E07-848C-AB32327476A1}
 		{8B4AEEE3-87A0-445C-BBC9-D0EE91191A24} = {9B2AC37E-7281-4E07-848C-AB32327476A1}
 		{A4422591-B589-4E2E-B06E-FBD74A3D7A79} = {9B2AC37E-7281-4E07-848C-AB32327476A1}
+		{CBDE5BE9-4047-445A-82A2-ADE0D06708BE} = {9B2AC37E-7281-4E07-848C-AB32327476A1}
 	EndGlobalSection
 EndGlobal
