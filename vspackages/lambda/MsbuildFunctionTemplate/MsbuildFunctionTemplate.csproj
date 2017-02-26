@@ -8,11 +8,11 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <ProjectGuid>{1B68E98A-6D93-4AC2-BFA4-7A9553E9CD3D}</ProjectGuid>
+    <ProjectGuid>{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LambdaNETCoreFunctionProjectTemplate</RootNamespace>
-    <AssemblyName>LambdaNETCoreFunctionProjectTemplate</AssemblyName>
+    <RootNamespace>MsbuildFunctionTemplate</RootNamespace>
+    <AssemblyName>MsbuildFunctionTemplate</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>false</IncludeAssemblyInVSIXContainer>
@@ -44,14 +44,16 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="LambdaTemplateProject.ico" />
-    <None Include="AssemblyInfo.cs" />
-    <None Include="LambdaFunctionProject.xproj" />
+    <None Include="BlueprintBaseName.csproj" />
   </ItemGroup>
   <ItemGroup>
     <VSTemplate Include="AWS.Lambda.vstemplate">
       <OutputSubPath>AWS Lambda</OutputSubPath>
       <SubType>Designer</SubType>
     </VSTemplate>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Readme.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />

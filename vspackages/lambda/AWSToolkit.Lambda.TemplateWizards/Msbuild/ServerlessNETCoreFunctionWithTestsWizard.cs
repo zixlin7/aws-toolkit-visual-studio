@@ -29,9 +29,9 @@ using Amazon.AWSToolkit.Lambda.TemplateWizards.Model;
 
 namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
 {
-    public class NETCoreFunctionWithTestsWizard : NETCoreFunctionWizard
+    public class ServerlessNETCoreFunctionWithTestsWizard : ServerlessNETCoreFunctionWizard
     {
-        public override string ProjectType => "LambdaProject-Tests-Msbuild";
+        public override string ProjectType => "ServerlessProject-Tests-Msbuild";
 
         public override bool CreateTestProject => true;
     }

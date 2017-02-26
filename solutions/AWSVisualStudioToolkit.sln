@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26206.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "buildtools", "buildtools", "{77A27C21-7B4C-4137-8959-88861F5EAE73}"
 	ProjectSection(SolutionItems) = preProject
@@ -114,15 +114,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TemplateWizard", "..\vspackages\templates\TemplateWizard\TemplateWizard.csproj", "{C854A806-ACE3-4401-8DA3-037A370190E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaNETCoreFunctionProjectTemplate", "..\vspackages\lambda\LambdaNETCoreFunctionProjectTemplate\LambdaNETCoreFunctionProjectTemplate.csproj", "{1B68E98A-6D93-4AC2-BFA4-7A9553E9CD3D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MsbuildProjectTemplates", "MsbuildProjectTemplates", "{60D866A4-6F20-4C7D-876B-3014884AE2FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaNETCoreFunctionProjectWithTestTemplate", "..\vspackages\lambda\LambdaNETCoreFunctionProjectWithTestTemplate\LambdaNETCoreFunctionProjectWithTestTemplate.csproj", "{4632AB71-E5A7-4CC6-9142-76FB88A87751}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProjectJsonProjectTemplates", "ProjectJsonProjectTemplates", "{E531B742-3A09-44F8-B2A5-B90D9E416228}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaNETCoreServerlessProjectTemplate", "..\vspackages\lambda\LambdaNETCoreFlourishProjectTemplate\LambdaNETCoreServerlessProjectTemplate.csproj", "{8B4AEEE3-87A0-445C-BBC9-D0EE91191A24}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionTemplate", "..\vspackages\lambda\MsbuildFunctionTemplate\MsbuildFunctionTemplate.csproj", "{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaNETCoreServerlessProjectWithTestTemplate", "..\vspackages\lambda\LambdaNETCoreFlourishProjectWithTestTemplate\LambdaNETCoreServerlessProjectWithTestTemplate.csproj", "{A4422591-B589-4E2E-B06E-FBD74A3D7A79}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionWithTestsTemplate", "..\vspackages\lambda\MsbuildFunctionWithTestsTemplate\MsbuildFunctionWithTestsTemplate.csproj", "{418C57E1-B2B9-441F-8B88-1C7776011724}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LambdaNETCoreMsbuildProjectTemplate", "..\vspackages\lambda\LambdaNETCoreMsbuildProjectTemplate\LambdaNETCoreMsbuildProjectTemplate.csproj", "{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerlessTemplate", "..\vspackages\lambda\MsbuildServerlessTemplate\MsbuildServerlessTemplate.csproj", "{12205D6A-E262-4F8B-8344-2B5A93BBB775}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerlessWithTestsTemplate", "..\vspackages\lambda\MsbuildServerlessWithTestsTemplate\MsbuildServerlessWithTestsTemplate.csproj", "{22C00710-A6E5-4F49-92CE-A5A2DD71C24A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionTemplate", "..\vspackages\lambda\ProjectJsonFunctionTemplate\ProjectJsonFunctionTemplate.csproj", "{1B68E98A-6D93-4AC2-BFA4-7A9553E9CD3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionWithTestsTemplate", "..\vspackages\lambda\ProjectJsonFunctionWithTestsTemplate\ProjectJsonFunctionWithTestsTemplate.csproj", "{4632AB71-E5A7-4CC6-9142-76FB88A87751}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerlessTemplate", "..\vspackages\lambda\ProjectJsonServerlessTemplate\ProjectJsonServerlessTemplate.csproj", "{8B4AEEE3-87A0-445C-BBC9-D0EE91191A24}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerlessWithTestsTemplate", "..\vspackages\lambda\ProjectJsonServerlessWithTestsTemplate\ProjectJsonServerlessWithTestsTemplate.csproj", "{A4422591-B589-4E2E-B06E-FBD74A3D7A79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -298,6 +308,22 @@ Global
 		{C854A806-ACE3-4401-8DA3-037A370190E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C854A806-ACE3-4401-8DA3-037A370190E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C854A806-ACE3-4401-8DA3-037A370190E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{418C57E1-B2B9-441F-8B88-1C7776011724}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{418C57E1-B2B9-441F-8B88-1C7776011724}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{418C57E1-B2B9-441F-8B88-1C7776011724}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{418C57E1-B2B9-441F-8B88-1C7776011724}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12205D6A-E262-4F8B-8344-2B5A93BBB775}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12205D6A-E262-4F8B-8344-2B5A93BBB775}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12205D6A-E262-4F8B-8344-2B5A93BBB775}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12205D6A-E262-4F8B-8344-2B5A93BBB775}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22C00710-A6E5-4F49-92CE-A5A2DD71C24A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22C00710-A6E5-4F49-92CE-A5A2DD71C24A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22C00710-A6E5-4F49-92CE-A5A2DD71C24A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22C00710-A6E5-4F49-92CE-A5A2DD71C24A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1B68E98A-6D93-4AC2-BFA4-7A9553E9CD3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1B68E98A-6D93-4AC2-BFA4-7A9553E9CD3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B68E98A-6D93-4AC2-BFA4-7A9553E9CD3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -314,10 +340,6 @@ Global
 		{A4422591-B589-4E2E-B06E-FBD74A3D7A79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4422591-B589-4E2E-B06E-FBD74A3D7A79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4422591-B589-4E2E-B06E-FBD74A3D7A79}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -371,10 +393,15 @@ Global
 		{BD8B477F-4A67-4CB4-A9A9-019D3A60A671} = {6B2DE77C-378F-4371-B315-046839223DE8}
 		{6B2DE77C-378F-4371-B315-046839223DE8} = {7C126B63-12FD-4829-A22A-EB2A93815ACD}
 		{C854A806-ACE3-4401-8DA3-037A370190E5} = {6B2DE77C-378F-4371-B315-046839223DE8}
-		{1B68E98A-6D93-4AC2-BFA4-7A9553E9CD3D} = {9B2AC37E-7281-4E07-848C-AB32327476A1}
-		{4632AB71-E5A7-4CC6-9142-76FB88A87751} = {9B2AC37E-7281-4E07-848C-AB32327476A1}
-		{8B4AEEE3-87A0-445C-BBC9-D0EE91191A24} = {9B2AC37E-7281-4E07-848C-AB32327476A1}
-		{A4422591-B589-4E2E-B06E-FBD74A3D7A79} = {9B2AC37E-7281-4E07-848C-AB32327476A1}
-		{CBDE5BE9-4047-445A-82A2-ADE0D06708BE} = {9B2AC37E-7281-4E07-848C-AB32327476A1}
+		{60D866A4-6F20-4C7D-876B-3014884AE2FF} = {9B2AC37E-7281-4E07-848C-AB32327476A1}
+		{E531B742-3A09-44F8-B2A5-B90D9E416228} = {9B2AC37E-7281-4E07-848C-AB32327476A1}
+		{CBDE5BE9-4047-445A-82A2-ADE0D06708BE} = {60D866A4-6F20-4C7D-876B-3014884AE2FF}
+		{418C57E1-B2B9-441F-8B88-1C7776011724} = {60D866A4-6F20-4C7D-876B-3014884AE2FF}
+		{12205D6A-E262-4F8B-8344-2B5A93BBB775} = {60D866A4-6F20-4C7D-876B-3014884AE2FF}
+		{22C00710-A6E5-4F49-92CE-A5A2DD71C24A} = {60D866A4-6F20-4C7D-876B-3014884AE2FF}
+		{1B68E98A-6D93-4AC2-BFA4-7A9553E9CD3D} = {E531B742-3A09-44F8-B2A5-B90D9E416228}
+		{4632AB71-E5A7-4CC6-9142-76FB88A87751} = {E531B742-3A09-44F8-B2A5-B90D9E416228}
+		{8B4AEEE3-87A0-445C-BBC9-D0EE91191A24} = {E531B742-3A09-44F8-B2A5-B90D9E416228}
+		{A4422591-B589-4E2E-B06E-FBD74A3D7A79} = {E531B742-3A09-44F8-B2A5-B90D9E416228}
 	EndGlobalSection
 EndGlobal

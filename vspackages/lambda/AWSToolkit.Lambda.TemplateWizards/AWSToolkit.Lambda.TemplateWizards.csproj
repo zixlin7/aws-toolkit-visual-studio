@@ -89,7 +89,9 @@
     <EmbeddedResource Include="Resources\basic-startupfiles.zip" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Msbuild\ServerlessNETCoreFunctionWithTestsWizard.cs" />
     <Compile Include="Msbuild\NETCoreFunctionWithTestsWizard.cs" />
+    <Compile Include="Msbuild\ServerlessNETCoreFunctionWizard.cs" />
     <Compile Include="Msbuild\NETCoreFunctionWizard.cs" />
     <Compile Include="ProjectJson\BaseNETCoreWizardImplementation.cs" />
     <Compile Include="Model\Blueprint.cs" />

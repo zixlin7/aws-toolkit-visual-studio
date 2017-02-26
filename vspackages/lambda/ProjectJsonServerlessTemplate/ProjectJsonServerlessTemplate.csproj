@@ -11,8 +11,8 @@
     <ProjectGuid>{8B4AEEE3-87A0-445C-BBC9-D0EE91191A24}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LambdaNETCoreFlourishProjectTemplate</RootNamespace>
-    <AssemblyName>LambdaNETCoreFlourishProjectTemplate</AssemblyName>
+    <RootNamespace>ProjectJsonServerlessTemplate</RootNamespace>
+    <AssemblyName>ProjectJsonServerlessTemplate</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <GeneratePkgDefFile>false</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>false</IncludeAssemblyInVSIXContainer>

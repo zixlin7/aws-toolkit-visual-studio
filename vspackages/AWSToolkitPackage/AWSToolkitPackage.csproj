@@ -915,6 +915,8 @@
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
+	
+	
     <ProjectReference Include="..\lambda\LambdaFunctionProjectTemplate\LambdaFunctionProjectTemplate.csproj">
       <Project>{AF0AE340-7C91-40F9-A074-0F1A4F03F8E9}</Project>
       <Name>LambdaFunctionProjectTemplate</Name>
@@ -922,13 +924,69 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
-    <ProjectReference Include="..\lambda\LambdaNETCoreMsbuildProjectTemplate\LambdaNETCoreMsbuildProjectTemplate.csproj">
+	
+	
+	
+    <ProjectReference Include="..\lambda\MsbuildFunctionTemplate\MsbuildFunctionTemplate.csproj" Condition="'$(VSTarget)' != '14.0' AND '$(VSTarget)' != '12.0'">
       <Project>{cbde5be9-4047-445a-82a2-ade0d06708be}</Project>
-      <Name>LambdaNETCoreMsbuildProjectTemplate</Name>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <Name>MsbuildFunctionTemplate</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
+    <ProjectReference Include="..\lambda\MsbuildFunctionWithTestsTemplate\MsbuildFunctionWithTestsTemplate.csproj" Condition="'$(VSTarget)' != '14.0' AND '$(VSTarget)' != '12.0'">
+      <Project>{418C57E1-B2B9-441F-8B88-1C7776011724}</Project>
+      <Name>MsbuildFunctionWithTestsTemplate</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+    <ProjectReference Include="..\lambda\MsbuildServerlessTemplate\MsbuildServerlessTemplate.csproj" Condition="'$(VSTarget)' != '14.0' AND '$(VSTarget)' != '12.0'">
+      <Project>{12205d6a-e262-4f8b-8344-2b5a93bbb775}</Project>
+      <Name>MsbuildServerlessTemplate</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>	  
+    </ProjectReference>
+    <ProjectReference Include="..\lambda\MsbuildServerlessWithTestsTemplate\MsbuildServerlessWithTestsTemplate.csproj" Condition="'$(VSTarget)' != '14.0' AND '$(VSTarget)' != '12.0'">
+      <Project>{22c00710-a6e5-4f49-92ce-a5a2dd71c24a}</Project>
+      <Name>MsbuildServerlessWithTestsTemplate</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>	  
+    </ProjectReference>
+	
+	
+    <ProjectReference Include="..\lambda\ProjectJsonFunctionTemplate\ProjectJsonFunctionTemplate.csproj" Condition="'$(VSTarget)' == '14.0'">
+      <Project>{1b68e98a-6d93-4ac2-bfa4-7a9553e9cd3d}</Project>
+      <Name>ProjectJsonFunctionTemplate</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>	  
+    </ProjectReference>
+    <ProjectReference Include="..\lambda\ProjectJsonFunctionWithTestsTemplate\ProjectJsonFunctionWithTestsTemplate.csproj" Condition="'$(VSTarget)' == '14.0'">
+      <Project>{4632ab71-e5a7-4cc6-9142-76fb88a87751}</Project>
+      <Name>ProjectJsonFunctionWithTestsTemplate</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+	</ProjectReference>
+    <ProjectReference Include="..\lambda\ProjectJsonServerlessTemplate\ProjectJsonServerlessTemplate.csproj" Condition="'$(VSTarget)' == '14.0'">
+      <Project>{8b4aeee3-87a0-445c-bbc9-d0ee91191a24}</Project>
+      <Name>ProjectJsonServerlessTemplate</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>	  
+    </ProjectReference>
+    <ProjectReference Include="..\lambda\ProjectJsonServerlessWithTestsTemplate\ProjectJsonServerlessWithTestsTemplate.csproj" Condition="'$(VSTarget)' == '14.0'">
+      <Project>{a4422591-b589-4e2e-b06e-fbd74a3d7a79}</Project>
+      <Name>ProjectJsonServerlessWithTestsTemplate</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>    
+	</ProjectReference>
+	
+	
     <ProjectReference Include="..\shared\AWSToolkit.VisualStudio.Shared\AWSToolkit.VisualStudio.Shared.csproj">
       <Project>{81552efa-46b0-4ebe-bc29-5ba6a7628207}</Project>
       <Name>AWSToolkit.VisualStudio.Shared</Name>
@@ -946,39 +1004,6 @@
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(VSTarget)' != '12.0'">
-    <ProjectReference Include="..\lambda\LambdaNETCoreFunctionProjectTemplate\LambdaNETCoreFunctionProjectTemplate.csproj">
-      <Project>{1b68e98a-6d93-4ac2-bfa4-7a9553e9cd3d}</Project>
-      <Name>LambdaNETCoreFunctionProjectTemplate</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-    </ProjectReference>
-    <ProjectReference Include="..\lambda\LambdaNETCoreFunctionProjectWithTestTemplate\LambdaNETCoreFunctionProjectWithTestTemplate.csproj">
-      <Project>{4632ab71-e5a7-4cc6-9142-76fb88a87751}</Project>
-      <Name>LambdaNETCoreFunctionProjectWithTestTemplate</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-    </ProjectReference>
-    <ProjectReference Include="..\lambda\LambdaNETCoreFlourishProjectTemplate\LambdaNETCoreServerlessProjectTemplate.csproj">
-      <Project>{8b4aeee3-87a0-445c-bbc9-d0ee91191a24}</Project>
-      <Name>LambdaNETCoreServerlessProjectTemplate</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-    </ProjectReference>
-    <!-- temp disabled for VS2017 due to path length issue in experimental hive -->
-    <ProjectReference Include="..\lambda\LambdaNETCoreFlourishProjectWithTestTemplate\LambdaNETCoreServerlessProjectWithTestTemplate.csproj" Condition="'$(VSTarget)' != '15.0'">
-      <Project>{a4422591-b589-4e2e-b06e-fbd74a3d7a79}</Project>
-      <Name>LambdaNETCoreServerlessProjectWithTestTemplate</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

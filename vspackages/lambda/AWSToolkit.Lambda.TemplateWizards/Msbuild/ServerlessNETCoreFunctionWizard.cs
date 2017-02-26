@@ -29,10 +29,20 @@ using Amazon.AWSToolkit.Lambda.TemplateWizards.Model;
 
 namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
 {
-    public class NETCoreFunctionWithTestsWizard : NETCoreFunctionWizard
+    public class ServerlessNETCoreFunctionWizard : BaseNetCoreMsbuildWizard
     {
-        public override string ProjectType => "LambdaProject-Tests-Msbuild";
+        public static readonly string[] REQUIRED_TAGS = new string[] { "C#", "ServerlessProject" };
+        public const string TITLE = "New AWS Serverless Application";
+        public const string DESCRIPTION = "Choose the contents of the C# AWS Serverless application.";
 
-        public override bool CreateTestProject => true;
+        public override string Title => TITLE;
+
+        public override string ProjectType => "ServerlessProject-Msbuild";
+
+        public override string Description => DESCRIPTION;
+
+        public override string[] RequiredTags => REQUIRED_TAGS;
+
+        public override bool CreateTestProject => false;
     }
 }
