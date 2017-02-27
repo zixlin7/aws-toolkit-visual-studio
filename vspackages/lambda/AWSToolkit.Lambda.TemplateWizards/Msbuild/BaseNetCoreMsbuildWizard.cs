@@ -70,6 +70,12 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
                         }
                         else
                         {
+                            var parentDir = new DirectoryInfo(Path.GetDirectoryName(fullPath));
+                            if(!parentDir.Exists)
+                            {
+                                parentDir.Create();
+                            }
+
                             File.WriteAllBytes(fullPath, ms.ToArray());
                         }
                     }
@@ -125,6 +131,8 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
                 {
                     var srcProjectFile = ProcessProject(zipArchive, srcDirInfo, "src/BlueprintBaseName/");
 
+                    // Visual Studio will not pickup the new project file changes done by pushing in the blueprint.
+                    // To get VS to refresh remove and re add the project.
                     this._dte.Solution.Remove(project);
                     this._dte.Solution.AddFromFile(srcProjectFile);
 
