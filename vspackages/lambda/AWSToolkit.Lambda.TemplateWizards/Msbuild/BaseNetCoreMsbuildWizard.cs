@@ -63,7 +63,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
                             projectFile = Directory.GetFiles(destinationDirectory.FullName, "*.csproj").FirstOrDefault();
                             if (projectFile == null)
                             {
-                                projectFile = Path.Combine(destinationDirectory.FullName, destinationDirectory.Name + ".Tests.csproj");
+                                projectFile = Path.Combine(destinationDirectory.FullName, destinationDirectory.Name + ".csproj");
                             }
 
                             File.WriteAllBytes(projectFile, ms.ToArray());
@@ -88,6 +88,10 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
                     {
                         replacedContent = replacedContent.Replace("DefaultProfile", ToolkitFactory.Instance.Navigator.SelectedAccount.DisplayName);
                         replacedContent = replacedContent.Replace("DefaultRegion", ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints.SystemName);
+                    }
+                    else if(file.EndsWith(".Tests.csproj"))
+                    {
+                        replacedContent = replacedContent.Replace(@"..\..\src\", @"..\");
                     }
 
                     if (!string.Equals(originalContent, replacedContent))
@@ -119,7 +123,10 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
                 using (var stream = File.OpenRead(localZipFile))
                 using (var zipArchive = new ZipArchive(stream))
                 {
-                    ProcessProject(zipArchive, srcDirInfo, "src/BlueprintBaseName/");
+                    var srcProjectFile = ProcessProject(zipArchive, srcDirInfo, "src/BlueprintBaseName/");
+
+                    this._dte.Solution.Remove(project);
+                    this._dte.Solution.AddFromFile(srcProjectFile);
 
                     if (this.CreateTestProject)
                     {
@@ -130,9 +137,9 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
 
                         targetDirInfo.Create();
 
-                        var projectFile = ProcessProject(zipArchive, targetDirInfo, "test/BlueprintBaseName.Tests/");
+                        var testProjectFile = ProcessProject(zipArchive, targetDirInfo, "test/BlueprintBaseName.Tests/");
 
-                        this._dte.Solution.AddFromFile(projectFile);
+                        this._dte.Solution.AddFromFile(testProjectFile);
                     }
                 }
             }

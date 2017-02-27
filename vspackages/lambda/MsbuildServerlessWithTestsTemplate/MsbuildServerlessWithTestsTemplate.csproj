@@ -47,7 +47,7 @@
     <None Include="BlueprintBaseName.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <VSTemplate Include="AWS.Serverless.WithTests.vstemplate">
+    <VSTemplate Include="Serverless.WithTests.vstemplate">
       <OutputSubPath>AWS Lambda</OutputSubPath>
       <SubType>Designer</SubType>
     </VSTemplate>

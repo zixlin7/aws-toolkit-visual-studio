@@ -2,14 +2,14 @@
 <VSTemplate Version="2.0.0" Type="Project"
     xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
   <TemplateData>
-    <Name>AWS Serverless Application with Tests (.NET Core)</Name>
+    <Name>AWS Serverless Application (.NET Core)</Name>
     <Description>An AWS Serverless application uses the power of AWS Lambda and AWS CloudFormation to build a cloud-enabled serverless application.</Description>
     <Icon>LambdaTemplateProject.ico</Icon>
     <ProjectType>CSharp</ProjectType>
-    <DefaultName>AWSLambda</DefaultName>
+    <DefaultName>AWSServerless</DefaultName>
     <RequiredFrameworkVersion>4.5</RequiredFrameworkVersion>
     <SortOrder>200</SortOrder>
-    <TemplateID>D4E05EC1-46A6-4178-866E-0E40D7789A21</TemplateID>
+    <TemplateID>5C9C25D4-E4C5-4FF6-9690-4B03E4EC286B</TemplateID>
     <CreateNewFolder>true</CreateNewFolder>
     <CreateInPlace>true</CreateInPlace>
     <ProvideDefaultName>true</ProvideDefaultName>
@@ -24,7 +24,7 @@
 
   <WizardExtension>
     <Assembly>AWSToolkit.Lambda.TemplateWizards,Culture=neutral,PublicKeyToken=8339e7e97bb08995</Assembly>
-    <FullClassName>Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild.ServerlessNETCoreFunctionWithTestsWizard</FullClassName>
+    <FullClassName>Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild.ServerlessNETCoreFunctionWizard</FullClassName>
   </WizardExtension>
 
 </VSTemplate>
