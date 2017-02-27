@@ -27,9 +27,11 @@
 
     	<AWSToolkitPackageOutput>$(Deployment)\AWSToolkitPackage</AWSToolkitPackageOutput>
 
+		<SignVsixPackages Condition="'$(SignVsixPackages)'==''">false</SignVsixPackages>
+        
     </PropertyGroup>
 	
-	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;update-version;build-awsdeploy;build-vstoolkit;keyscan;copy-artifacts;save-build">
+	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;update-version;build-awsdeploy;build-vstoolkit;keyscan;copy-artifacts;sign-packages;save-build">
 		<Message Text="Builds all components of the AWS Toolkit for Visual Studio"/>
 	</Target>
 
@@ -216,6 +218,19 @@
 
     </Target>
 
+    <Target Name="sign-packages" DependsOnTargets="copy-artifacts" Condition="'$(SignVsixPackages)'">
+    
+		<PropertyGroup>
+            <SigningScriptArgs>-ExecutionPolicy Unrestricted -NoProfile -Command "$(MSBuildProjectDirectory)\SignVsixPackage.ps1" -VsixPackage "$(Deployment)\15.0\$(Configuration)\AWSToolkitPackage.vsix"</SigningScriptArgs>
+		</PropertyGroup>
+        
+        <Message Text="Signing VS2017 vsix package deployed to $(Deployment)\15.0\$(Configuration) folder" />
+        
+		<Exec LogStandardErrorAsError="true"
+              Command="$(powershell) $(SigningScriptArgs)" />
+        
+    </Target>
+    
 	<Target Name="save-build"  DependsOnTargets="build-tools">
 		<SaveBuildArtifactTask
 			RepositoryRoot="$(MSBuildProjectDirectory)\.."
