@@ -92,8 +92,8 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
 
                     if(file.EndsWith("aws-lambda-tools-defaults.json"))
                     {
-                        replacedContent = replacedContent.Replace("DefaultProfile", ToolkitFactory.Instance.Navigator.SelectedAccount.DisplayName);
-                        replacedContent = replacedContent.Replace("DefaultRegion", ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints.SystemName);
+                        replacedContent = replacedContent.Replace("DefaultProfile", ToolkitFactory.Instance.Navigator.SelectedAccount?.DisplayName);
+                        replacedContent = replacedContent.Replace("DefaultRegion", ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints?.SystemName);
                     }
                     else if(file.EndsWith(".Tests.csproj"))
                     {
