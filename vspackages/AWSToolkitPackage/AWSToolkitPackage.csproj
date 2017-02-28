@@ -813,6 +813,20 @@
       <InstallRoot>MSBuild</InstallRoot>
       <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
     </Content>
+    <Content Include="$(BuildRoot)\thirdparty\License.log4net.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>License.JsonChecker.txt</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <InstallRoot>MSBuild</InstallRoot>
+      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+    </Content>
+    <Content Include="$(BuildRoot)\thirdparty\License.JsonChecker.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>License.JsonChecker.txt</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <InstallRoot>MSBuild</InstallRoot>
+      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(OutputRoot)\AWSSDK.Extensions.dll">
@@ -882,7 +896,7 @@
       <Project>{fe98588c-7fee-414e-9eab-f36bf64c88c0}</Project>
       <Name>AWSToolkit.CloudFormation.MSBuildTasks</Name>
       <InstallRoot>MSBuild</InstallRoot>
-      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3b</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
     </ProjectReference>
     <ProjectReference Include="..\cloudformation\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
