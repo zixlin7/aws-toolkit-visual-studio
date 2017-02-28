@@ -1047,6 +1047,8 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
             finally
             {
+                seedProperties.Add(CommonWizardProperties.propkey_HostShellVersion, ToolkitShellProviderService.ShellVersion);
+
                 if (!seedProperties.ContainsKey(DeploymentWizardProperties.SeedData.propkey_SeedName))
                 {
                     object value;
@@ -1142,6 +1144,8 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch { }
             finally
             {
+                seedProperties.Add(CommonWizardProperties.propkey_HostShellVersion, ToolkitShellProviderService.ShellVersion);
+
                 if (projectInfo.VsProjectType != VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject)
                 {
                     var targetRuntime = projectInfo.TargetRuntime;

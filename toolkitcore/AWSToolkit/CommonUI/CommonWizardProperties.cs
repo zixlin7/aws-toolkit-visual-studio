@@ -20,6 +20,11 @@ namespace Amazon.AWSToolkit.CommonUI
         /// </summary>
         public static readonly string propkey_NavigatorRootViewModel = "navigatorRootViewModel";
 
+        /// <summary>
+        /// The logical VS shell version number: '2013', '2015' or '2017'
+        /// </summary>
+        public static readonly string propkey_HostShellVersion = "hostShellVersion";
+
         public static class AccountSelection
         {
             /// <summary>

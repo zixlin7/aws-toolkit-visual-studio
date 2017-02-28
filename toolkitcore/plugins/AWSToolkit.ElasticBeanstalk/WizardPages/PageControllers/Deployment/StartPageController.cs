@@ -146,10 +146,20 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                 if (!string.IsNullOrEmpty(lastRegionDeployedTo))
                     _pageUI.SelectedRegion = RegionEndPointsManager.Instance.GetRegion(lastRegionDeployedTo);
 
-                // if we've been called from the redeploy-app-version command in the Beanstalk plugin, lock the
-                // wizard to only the new version
-                if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_RedeployingAppVersion))
-                    _pageUI.LockToNewWizard = (bool)HostingWizard[DeploymentWizardProperties.SeedData.propkey_RedeployingAppVersion];
+                // If we are running in vs2017 or higher, disable the legacy deployment wizard.
+                // If we're running in vs2013 or vs2015, disable the legacy wizard if we've been 
+                // called from the redeploy-app-version command in the Beanstalk plugin.
+                var lockToNewWizard = true;
+                var hostShellVersion = HostingWizard[CommonWizardProperties.propkey_HostShellVersion] as string;
+                if (hostShellVersion == "2013" || hostShellVersion == "2015")
+                {
+                    if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_RedeployingAppVersion))
+                        lockToNewWizard = (bool) HostingWizard[DeploymentWizardProperties.SeedData.propkey_RedeployingAppVersion];
+                    else
+                        lockToNewWizard = false;
+                }
+
+                _pageUI.LockToNewWizard = lockToNewWizard;
             }
 
             // since our default is to deploy a new app environment, we can enable forward nav immediately

@@ -148,7 +148,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         public bool LockToNewWizard
         {
-            set { _btnUseLegacyWizard.Visibility = value ? Visibility.Hidden : Visibility.Visible; }
+            set { _btnUseLegacyWizard.Visibility = value ? Visibility.Collapsed : Visibility.Visible; }
         }
 
 
