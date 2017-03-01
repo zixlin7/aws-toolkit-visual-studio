@@ -29,10 +29,12 @@
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="Microsoft.WindowsAPICodePack.dll" AssemblyName="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="Microsoft.WindowsAPICodePack.Shell.dll" AssemblyName="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     
-    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="LambdaFunctionProjectTemplate" d:TargetPath="|LambdaFunctionProjectTemplate;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="AWSProjectTemplates" d:TargetPath="|AWSProjectTemplates;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+
     <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="CloudFormationProjectTemplate" d:TargetPath="|CloudFormationProjectTemplate;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
     <Asset Type="Microsoft.VisualStudio.ItemTemplate" d:Source="Project" d:ProjectName="CloudFormationTemplate" d:TargetPath="|CloudFormationTemplate;TemplateProjectOutputGroup|" Path="ItemTemplates" d:VsixSubPath="ItemTemplates" />
-    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="AWSProjectTemplates" d:TargetPath="|AWSProjectTemplates;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
+
+    <Asset Type="Microsoft.VisualStudio.ProjectTemplate" d:Source="Project" d:ProjectName="LambdaFunctionProjectTemplate" d:TargetPath="|LambdaFunctionProjectTemplate;TemplateProjectOutputGroup|" Path="ProjectTemplates" d:VsixSubPath="ProjectTemplates" />
     
     <CustomExtension Type="Plugins">AWSToolkit.DynamoDB.dll</CustomExtension>
     <CustomExtension Type="Plugins">AWSToolkit.DynamoDB.Interface.dll</CustomExtension>
