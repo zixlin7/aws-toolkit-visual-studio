@@ -214,7 +214,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="aws-icon.png">
+    <Content Include="Resources\aws-icon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -329,7 +329,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="aws_preview.gif">
+    <Content Include="Resources\aws_preview.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

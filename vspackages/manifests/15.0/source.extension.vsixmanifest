@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="|%CurrentProject%;GetVsixGuid|" Version="|%CurrentProject%;GetVsixVersion|" Language="en-US" Publisher="Amazon Web Services LLC" />
+    <Identity Id="|%CurrentProject%;GetVsixGuid|" Version="1.12.0.0" Language="en-US" Publisher="Amazon Web Services LLC" />
     <DisplayName>|%CurrentProject%;GetVsixDisplayName|</DisplayName>
     <Name>AWSToolkitPackage</Name>
     <Description xml:space="preserve">The AWS Toolkit for Visual Studio is an extension for Microsoft Visual Studio that makes it easier for developers to develop, debug, and deploy .NET applications using Amazon Web Services. With the AWS Toolkit for Visual Studio, you'll be able to get started faster and be more productive when building AWS applications.</Description>
     <MoreInfo>http://aws.amazon.com/sdkfornet</MoreInfo>
     <License>License.txt</License>
     <GettingStartedGuide>http://docs.aws.amazon.com/AWSToolkitVS/latest/UserGuide/welcome.html</GettingStartedGuide>
-    <Icon>Package.ico</Icon>
-    <PreviewImage>aws_preview.gif</PreviewImage>
+    <Icon>Resources\Package.ico</Icon>
+    <PreviewImage>Resources\aws_preview.gif</PreviewImage>
+    <Tags>AWS;Cloud;Web Services;Amazon</Tags>
   </Metadata>
   <Installation InstalledByMsi="|%CurrentProject%;GetVsixInstalledByMsiFlag|" AllUsers="true">
     <InstallationTarget Version="|%CurrentProject%;GetVsixVSTarget|" Id="Microsoft.VisualStudio.Community" />
