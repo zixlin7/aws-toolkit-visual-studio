@@ -153,13 +153,13 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
                     if (projectContent.Contains("\"Amazon.Lambda.Tools\""))
                         return true;
 
-                    using (var reader = new XmlTextReader(new StringReader(projectContent)))
-                    {
-                        var evalProject = new MSBuildProject(reader);
-                        var value = evalProject.QueryPropertyValue("IsLambdaFunction");
-                        if (string.Equals("true", value, StringComparison.OrdinalIgnoreCase))
-                            return true;
-                    }
+                    //using (var reader = new XmlTextReader(new StringReader(projectContent)))
+                    //{
+                    //    var evalProject = new MSBuildProject(reader);
+                    //    var value = evalProject.QueryPropertyValue("IsLambdaFunction");
+                    //    if (string.Equals("true", value, StringComparison.OrdinalIgnoreCase))
+                    //        return true;
+                    //}
 
                     var projectJsonPath = Path.Combine(new FileInfo(project.FileName).DirectoryName, "project.json");
                     if(File.Exists(projectJsonPath))
