@@ -3,18 +3,16 @@
   <Import Project="$(MSBuildThisFileDirectory)\Common.Build.targets" />
 
   <PropertyGroup>
-    <Build_Version Condition=" '$(Build_Version)' == '' ">0.6.0.0</Build_Version>
+    <!-- set an unlikely-to-be-reached version for debug so the vssdk registration targets don't
+         don't complain about same-or-lower-version installed (for vs2015). VS2017 doesn't seem
+         to care.
+    -->
+    <Build_Version Condition=" '$(Build_Version)' == '' And '$(Configuration)' == 'Debug'">99.99.0.0</Build_Version>
+    <Build_Version Condition=" '$(Build_Version)' == '' And '$(Configuration)' == 'Release'">0.6.0.0</Build_Version>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <!-- Package Guids; These need to be the same as the GUIDs in Guids.cs and AWSVisualStudioToolkit.$(VSTarget)-Debug.vsct -->
-    <VsixGuid Condition=" '$(VSTarget)' == '12.0' ">4497d0c0-8d6f-4975-9b40-b54728036e41</VsixGuid>
-    <VsixGuid Condition=" '$(VSTarget)' == '14.0' ">bbb1094e-d61e-43da-8ad3-e9f0e0e07c01</VsixGuid>
-    <VsixGuid Condition=" '$(VSTarget)' == '15.0' ">c6191995-d1d1-4dab-b263-ccf92b85b469</VsixGuid>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <!-- Package Guids; These need to be the same as the GUIDs in Guids.cs and AWSVisualStudioToolkit.$(VSTarget)-Release.vsct -->
+  <PropertyGroup>
+    <!-- Package Guids; These need to be the same as the GUIDs in Guids.cs and AWSVisualStudioToolkit.$(VSTarget).vsct -->
     <VsixGuid Condition=" '$(VSTarget)' == '12.0' ">9510184f-8135-4f8a-ab8a-23be77c345e2</VsixGuid>
     <VsixGuid Condition=" '$(VSTarget)' == '14.0' ">f2884b07-5122-4e23-acd7-4d93df18709e</VsixGuid>
     <VsixGuid Condition=" '$(VSTarget)' == '15.0' ">12ed248b-6d4a-47eb-be9e-8eabea0ff119</VsixGuid>
@@ -31,10 +29,24 @@
     <VsixVsTarget Condition=" '$(VSTarget)' == '14.0' ">[$(VSTarget),)</VsixVsTarget>
     <VsixVsTarget Condition=" '$(VSTarget)' == '15.0' ">[$(VSTarget),)</VsixVsTarget>
   </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <ExperimentalBuild>true</ExperimentalBuild>
+    <InstalledByMsi>false</InstalledByMsi>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <ExperimentalBuild>false</ExperimentalBuild>
+    <InstalledByMsi Condition="'$(VSTarget)' == '12.0' Or '$(VSTarget)' == '14.0'">true</InstalledByMsi>
+    <InstalledByMsi Condition="'$(VSTarget)' == '15.0'">false</InstalledByMsi>
+  </PropertyGroup>
 
-  <!-- Returns the current build version. Used in .vsixmanifests to substitute our build version into them -->
+  <!-- Returns the current build version metadata. Used in .vsixmanifests to substitute our build version
+       and other version or configuration specific settings.
+  -->
   <Target Name="GetVsixVersion" Outputs="$(Build_Version)" />
   <Target Name="GetVsixVSTarget" Outputs="$(VsixVsTarget)" />
   <Target Name="GetVsixGuid" Outputs="$(VsixGuid)" />
   <Target Name="GetVsixDisplayName" Outputs="$(VsixDisplayName)" />
+  <Target Name="GetVsixExperimentalBuildFlag" Outputs="$(ExperimentalBuild)" />
+  <Target Name="GetVsixInstalledByMsiFlag" Outputs="$(InstalledByMsi)" />
 </Project>

@@ -11,8 +11,9 @@
     <Icon>Package.ico</Icon>
     <PreviewImage>aws_preview.gif</PreviewImage>
   </Metadata>
-  <Installation InstalledByMsi="true">
+  <Installation InstalledByMsi="|%CurrentProject%;GetVsixInstalledByMsiFlag|">
     <InstallationTarget Version="|%CurrentProject%;GetVsixVSTarget|" Id="Microsoft.VisualStudio.Community" />
+    <Experimental>|%CurrentProject%;GetVsixExperimentalBuildFlag|</Experimental>
   </Installation>
   <Dependencies>
     <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />

@@ -23,9 +23,9 @@
     <WarningLevel>4</WarningLevel>
     <CreateVsixContainer>True</CreateVsixContainer>
     <DeployExtension>True</DeployExtension>
-    <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
-    <VSSDKTargetPlatformRegRootSuffix>Exp</VSSDKTargetPlatformRegRootSuffix>
     <DeployVSTemplates>True</DeployVSTemplates>
+    <IncludeDebugSymbolsInVSIXContainer>True</IncludeDebugSymbolsInVSIXContainer>
+    <VSSDKTargetPlatformRegRootSuffix>Exp</VSSDKTargetPlatformRegRootSuffix>
     <UseVSHostingProcess>true</UseVSHostingProcess>
     <StartProgram>$(DevEnvDir)devenv.exe</StartProgram>
     <StartArguments>/rootsuffix Exp</StartArguments>
@@ -43,6 +43,8 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CreateVsixContainer>True</CreateVsixContainer>
     <DeployExtension>False</DeployExtension>
+    <DeployVSTemplates>False</DeployVSTemplates>
+    <IncludeDebugSymbolsInVSIXContainer>False</IncludeDebugSymbolsInVSIXContainer>
     <RunRegRiched>true</RunRegRiched>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
@@ -231,7 +233,7 @@
     <EmbeddedResource Include="Resources\AWSCloudFormationProject.ico" />
   </ItemGroup>
   <ItemGroup>
-    <VSCTCompile Include="AWSToolkitPackage.$(VSTarget)-$(Configuration).vsct">
+    <VSCTCompile Include="AWSToolkitPackage.$(VSTarget).vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
       <SubType>Designer</SubType>
     </VSCTCompile>
@@ -941,7 +943,6 @@
       <Name>AWSToolkit.VisualStudio.Shared</Name>
     </ProjectReference>
   </ItemGroup>
-  
   <ItemGroup Condition="'$(VSTarget)' != '14.0' AND '$(VSTarget)' != '12.0'">
     <ProjectReference Include="..\lambda\MsbuildFunctionTemplate\MsbuildFunctionTemplate.csproj">
       <Project>{cbde5be9-4047-445a-82a2-ade0d06708be}</Project>
@@ -962,24 +963,23 @@
       <Name>MsbuildServerlessTemplate</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>	  
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
     <ProjectReference Include="..\lambda\MsbuildServerlessWithTestsTemplate\MsbuildServerlessWithTestsTemplate.csproj">
       <Project>{22c00710-a6e5-4f49-92ce-a5a2dd71c24a}</Project>
       <Name>MsbuildServerlessWithTestsTemplate</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>	  
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
   </ItemGroup>
-  
   <ItemGroup Condition="'$(VSTarget)' == '14.0'">
     <ProjectReference Include="..\lambda\ProjectJsonFunctionTemplate\ProjectJsonFunctionTemplate.csproj">
       <Project>{1b68e98a-6d93-4ac2-bfa4-7a9553e9cd3d}</Project>
       <Name>ProjectJsonFunctionTemplate</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>	  
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
     <ProjectReference Include="..\lambda\ProjectJsonFunctionWithTestsTemplate\ProjectJsonFunctionWithTestsTemplate.csproj">
       <Project>{4632ab71-e5a7-4cc6-9142-76fb88a87751}</Project>
@@ -987,23 +987,22 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-	</ProjectReference>
+    </ProjectReference>
     <ProjectReference Include="..\lambda\ProjectJsonServerlessTemplate\ProjectJsonServerlessTemplate.csproj">
       <Project>{8b4aeee3-87a0-445c-bbc9-d0ee91191a24}</Project>
       <Name>ProjectJsonServerlessTemplate</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>	  
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
     <ProjectReference Include="..\lambda\ProjectJsonServerlessWithTestsTemplate\ProjectJsonServerlessWithTestsTemplate.csproj">
       <Project>{a4422591-b589-4e2e-b06e-fbd74a3d7a79}</Project>
       <Name>ProjectJsonServerlessWithTestsTemplate</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>    
-	</ProjectReference>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
   </ItemGroup>
-	
   <ItemGroup>
     <ProjectReference Include="..\templates\TemplateWizard\TemplateWizard.csproj">
       <Project>{C854A806-ACE3-4401-8DA3-037A370190E5}</Project>
@@ -1020,7 +1019,6 @@
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
   </ItemGroup>
-  
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>
