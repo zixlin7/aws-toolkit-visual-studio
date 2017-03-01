@@ -20,3 +20,10 @@
 
 Deployment/**
 Include/**
+
+####################
+# Solution upgrades
+####################
+solutions/Backup*/**
+Solutions/UpgradeLog*.htm
+
