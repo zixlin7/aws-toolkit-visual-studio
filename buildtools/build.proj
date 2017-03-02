@@ -68,9 +68,7 @@
         -->
 	</Target>
 
-    <Target Name="copy-artifacts" DependsOnTargets="build-vstoolkit;copy-awsdeploy;copy-icons;copy-awsdeploy;copy-cf-msbuild-targets;build-vs2017-toolkit" />
-
-
+    <Target Name="copy-artifacts" DependsOnTargets="build-vstoolkit;copy-awsdeploy;copy-icons;copy-awsdeploy;copy-cf-msbuild-targets;copy-templates;build-vs2017-toolkit" />
 
     <Target Name="copy-icons" DependsOnTargets="build-vstoolkit">
 		<Message Text="Consolidating icons to deployment folder"/>
@@ -89,6 +87,36 @@
 			DestinationFiles="$(IconsDest)\AWSCloudFormationTemplate.ico" />
     </Target>
 
+    <Target Name="copy-templates" DependsOnTargets="build-vstoolkit">
+		<Message Text="Copying IDE project templates to deployment folder"/>
+        
+        <PropertyGroup>
+            <ProjectTemplatesDest>$(Deployment)\ProjectTemplates</ProjectTemplatesDest>
+        </PropertyGroup>
+        
+        <ItemGroup>
+            <SampleProjectTemplates Include="$(RootPath)\vspackages\templates\AWSProjectTemplates\AWS Samples\**\*" />
+            <ConsoleProjectTemplates Include="$(RootPath)\vspackages\templates\AWSProjectTemplates\AWS_Console\**\*" />
+            <EmptyProjectTemplates Include="$(RootPath)\vspackages\templates\AWSProjectTemplates\AWS_Empty\**\*" />
+            <WebProjectTemplates Include="$(RootPath)\vspackages\templates\AWSProjectTemplates\AWS_Web\**\*" />
+        </ItemGroup>
+        
+        <Copy
+            SourceFiles="@(SampleProjectTemplates)"
+            DestinationFolder="$(ProjectTemplatesDest)\AWS Samples\%(RecursiveDir)" />
+        
+        <Copy
+            SourceFiles="@(ConsoleProjectTemplates)"
+            DestinationFolder="$(ProjectTemplatesDest)\AWS_Console\%(RecursiveDir)" />
+        <Copy
+            SourceFiles="@(EmptyProjectTemplates)"
+            DestinationFolder="$(ProjectTemplatesDest)\AWS_Empty\%(RecursiveDir)" />
+        <Copy
+            SourceFiles="@(WebProjectTemplates)"
+            DestinationFolder="$(ProjectTemplatesDest)\AWS_Web\%(RecursiveDir)" />
+            
+    </Target>
+    
 	<Target Name="copy-awsdeploy" DependsOnTargets="build-vstoolkit">
         <PropertyGroup>
             <AwsDeployDest>$(Deployment)\awsdeploy</AwsDeployDest>
