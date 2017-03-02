@@ -34,12 +34,13 @@
     <ExperimentalBuild>true</ExperimentalBuild>
     <InstalledByMsi>false</InstalledByMsi>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <ExperimentalBuild>false</ExperimentalBuild>
-    <InstalledByMsi Condition="'$(VSTarget)' == '12.0' Or '$(VSTarget)' == '14.0'">true</InstalledByMsi>
+    <InstalledByMsi Condition="'$(VSTarget)' != '15.0'">true</InstalledByMsi>
     <InstalledByMsi Condition="'$(VSTarget)' == '15.0'">false</InstalledByMsi>
   </PropertyGroup>
-
+  
   <!-- Returns the current build version metadata. Used in .vsixmanifests to substitute our build version
        and other version or configuration specific settings.
   -->
