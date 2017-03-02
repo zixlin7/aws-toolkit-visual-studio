@@ -7,7 +7,7 @@
          don't complain about same-or-lower-version installed (for vs2015). VS2017 doesn't seem
          to care.
     -->
-    <Build_Version Condition=" '$(Build_Version)' == '' And '$(Configuration)' == 'Debug'">99.99.0.0</Build_Version>
+    <Build_Version Condition=" '$(Build_Version)' == '' And '$(Configuration)' == 'Debug'">9.9.9.9</Build_Version>
     <Build_Version Condition=" '$(Build_Version)' == '' And '$(Configuration)' == 'Release'">0.6.0.0</Build_Version>
   </PropertyGroup>
 
@@ -32,7 +32,8 @@
   
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <ExperimentalBuild>true</ExperimentalBuild>
-    <InstalledByMsi>false</InstalledByMsi>
+    <InstalledByMsi Condition="'$(VSTarget)' != '15.0'">true</InstalledByMsi>
+    <InstalledByMsi Condition="'$(VSTarget)' == '15.0'">false</InstalledByMsi>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
