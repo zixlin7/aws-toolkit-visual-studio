@@ -1010,8 +1010,7 @@
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
-    <!-- temp disabled for VS2017 due to path length issue in experimental hive -->
-    <ProjectReference Include="..\templates\AWSProjectTemplates\AWSProjectTemplates.csproj" Condition="'$(VSTarget)' != '15.0'">
+    <ProjectReference Include="..\templates\AWSProjectTemplates\AWSProjectTemplates.csproj">
       <Project>{BD8B477F-4A67-4CB4-A9A9-019D3A60A671}</Project>
       <Name>AWSProjectTemplates</Name>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>

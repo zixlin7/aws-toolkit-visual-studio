@@ -24,12 +24,12 @@
     <CopyOutputSymbolsToOutputDirectory>false</CopyOutputSymbolsToOutputDirectory>
   </PropertyGroup>
   <PropertyGroup>
-    <AWSSampleProjectsRoot>AWS Sample Projects</AWSSampleProjectsRoot>
+    <AWSSampleProjectsRoot>AWS Samples</AWSSampleProjectsRoot>
     <AppServicesSubRoot>App Services</AppServicesSubRoot>
-    <ComputeNetworkingSubRoot>Compute and Networking</ComputeNetworkingSubRoot>
+    <ComputeNetworkingSubRoot>Compute</ComputeNetworkingSubRoot>
     <DatabaseSubRoot>Database</DatabaseSubRoot>
-    <DeploymentManagementSubRoot>Deployment and Management</DeploymentManagementSubRoot>
-    <StorageContentDeliverySubRoot>Storage and Content Delivery</StorageContentDeliverySubRoot>
+    <DeploymentManagementSubRoot>Management</DeploymentManagementSubRoot>
+    <StorageContentDeliverySubRoot>Storage</StorageContentDeliverySubRoot>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,293 +49,293 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_ElasticTranscoderSample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_ElasticTranscoderSample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_ElasticTranscoderSample_Template\ElasticTranscoderSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_ElasticTranscoderSample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_ElasticTranscoderSample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_ElasticTranscoderSample_Template\AWS_ElasticTranscoderSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\ElasticTranscoder\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\ElasticTranscoder\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\ElasticTranscoder\ElasticTranscoderSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\ElasticTranscoder\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\ElasticTranscoder\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\ElasticTranscoder\ElasticTranscoder.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SESSample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SESSample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SESSample_Template\AmazonSesSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SESSample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SESSample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SESSample_Template\AWS_SESSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SES\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SES\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SES\SESSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SES\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SES\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SES\SES.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SESSMTPSample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SESSMTPSample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SESSMTPSample_Template\AmazonSesSmtpSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SESSMTPSample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SESSMTPSample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SESSMTPSample_Template\AWS_SESSMTPSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SESSMTP\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SESSMTP\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SESSMTP\SESSMTPSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SESSMTP\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SESSMTP\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SESSMTP\SESSMTP.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SNSSample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SNSSample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SNSSample_Template\AwsSnsSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SNSSample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SNSSample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SNSSample_Template\AWS_SNSSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SNS\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SNS\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SNS\SNSSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SNS\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SNS\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SNS\SNS.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SQSSample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SQSSample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SQSSample_Template\AwsSqsSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SQSSample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SQSSample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SQSSample_Template\AWS_SQSSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SQS\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SQS\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SQS\SQSSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SQS\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SQS\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SQS\SQS.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\Properties\Resources.Designer.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\Properties\Resources.resx" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\Properties\Settings.Designer.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\Properties\Settings.resx" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\SWF\Constants.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\SWF\HistoryIterator.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\SWF\ImageActivityWorker.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\SWF\ImageProcessWorkflow.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\SWF\StartWorkflowExecutionProcessor.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\SWF\StateClasses.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\SWF\Utils.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\App.xaml" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\App.xaml.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\aws.ico" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\AwsImageProcessWorkflowSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\MainWindow.xaml" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\MainWindow.xaml.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\__TemplateIcon.ico" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\VirtualConsole.cs" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\AWS_SWF_Image_Processor_Template\AWS_SWF_Image_Processor.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\Properties\Resources.Designer.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\Properties\Resources.resx" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\Properties\Settings.Designer.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\Properties\Settings.resx" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\SWF\Constants.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\SWF\HistoryIterator.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\SWF\ImageActivityWorker.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\SWF\ImageProcessWorkflow.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\SWF\StartWorkflowExecutionProcessor.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\SWF\StateClasses.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\SWF\Utils.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\App.xaml" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\App.xaml.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\aws.ico" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\SWFImageProcessorSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\MainWindow.xaml" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\MainWindow.xaml.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\__TemplateIcon.ico" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\VirtualConsole.cs" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\SWFImageProcessor.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\AWS_EC2Sample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\AWS_EC2Sample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\AWS_EC2Sample_Template\AwsEC2Sample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\AWS_EC2Sample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\AWS_EC2Sample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\AWS_EC2Sample_Template\AwsEC2Sample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2\EC2Sample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2\EC2.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\AWS_SpotInstanceSample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\AWS_SpotInstanceSample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\AWS_SpotInstanceSample_Template\AwsSpotInstanceSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\AWS_SpotInstanceSample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\AWS_SpotInstanceSample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\AWS_SpotInstanceSample_Template\AwsSpotInstanceSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2SpotInstance\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2SpotInstance\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2SpotInstance\EC2SpotInstanceSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2SpotInstance\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2SpotInstance\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2SpotInstance\EC2SpotInstance.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_DataModelSample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_DataModelSample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_DataModelSample_Template\AwsDynamoDBSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_DataModelSample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_DataModelSample_Template\DataModelSample.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_DataModelSample_Template\DataModelSchema.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_DataModelSample_Template\TableOperations.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_DataModelSample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_DataModelSample_Template\AwsDynamoDBSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDataModel\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDataModel\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDataModel\DynamoDBDataModelSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDataModel\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDataModel\DataModelSample.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDataModel\DataModelSchema.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDataModel\TableOperations.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDataModel\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDataModel\DynamoDBDataModel.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_DocumentSample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_DocumentSample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_DocumentSample_Template\AwsDynamoDBSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_DocumentSample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_DocumentSample_Template\DocumentModelSample.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_DocumentSample_Template\TableOperations.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_DocumentSample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_DocumentSample_Template\AwsDynamoDBSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDocument\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDocument\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDocument\DynamoDBDocumentModelSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDocument\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDocument\DocumentModelSample.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDocument\TableOperations.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDocument\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDocument\DynamoDBDocumentModel.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_S3Link_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_S3Link_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_S3Link_Template\AwsDynamoDBS3LinkSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_S3Link_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_S3Link_Template\bezos.jpg" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_S3Link_Template\DataModelSchema.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_S3Link_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_S3Link_Template\S3LinkOperations.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_S3Link_Template\TableOperations.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_S3Link_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDB_S3Link_Template\AwsDynamoDBS3LinkSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBS3Link\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBS3Link\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBS3Link\DynamoDBS3LinkSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBS3Link\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBS3Link\bezos.jpg" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBS3Link\DataModelSchema.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBS3Link\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBS3Link\S3LinkOperations.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBS3Link\TableOperations.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBS3Link\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBS3Link\DynamoDBS3Link.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDBSessionProviderSample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDBSessionProviderSample_Template\styles\styles.css" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDBSessionProviderSample_Template\AwsDynamoDBSessionProviderSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDBSessionProviderSample_Template\aws-sessionprovider-sample.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDBSessionProviderSample_Template\Default.aspx" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDBSessionProviderSample_Template\Default.aspx.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDBSessionProviderSample_Template\Default.aspx.designer.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDBSessionProviderSample_Template\packages.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDBSessionProviderSample_Template\web.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDBSessionProviderSample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_DynamoDBSessionProviderSample_Template\AwsDynamoDBSessionProviderSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\styles\styles.css" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\DynamoDBSessionProviderSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\aws-sessionprovider-sample.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\Default.aspx" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\Default.aspx.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\Default.aspx.designer.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\packages.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\web.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\DynamoDBSessionProvider.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_RDSSample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_RDSSample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_RDSSample_Template\AmazonRdsSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_RDSSample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_RDSSample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_RDSSample_Template\AmazonRdsSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\RDS\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\RDS\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\RDS\RDSSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\RDS\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\RDS\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\RDS\RDS.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_SimpleDBAsyncSample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_SimpleDBAsyncSample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_SimpleDBAsyncSample_Template\AwsSimpleDBAsyncSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_SimpleDBAsyncSample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_SimpleDBAsyncSample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_SimpleDBAsyncSample_Template\AwsSimpleDBAsyncSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDBAsync\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDBAsync\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDBAsync\SimpleDBAsyncSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDBAsync\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDBAsync\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDBAsync\SimpleDBAsync.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_SimpleDBSample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_SimpleDBSample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_SimpleDBSample_Template\AwsSimpleDBSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_SimpleDBSample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_SimpleDBSample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\AWS_SimpleDBSample_Template\AwsSimpleDBSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDB\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDB\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDB\SimpleDBSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDB\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDB\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDB\SimpleDB.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_CloudWatchSample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_CloudWatchSample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_CloudWatchSample_Template\AwsCloudWatchSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_CloudWatchSample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_CloudWatchSample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_CloudWatchSample_Template\AwsCloudWatchSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\CloudWatch\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\CloudWatch\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\CloudWatch\CloudWatchSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\CloudWatch\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\CloudWatch\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\CloudWatch\CloudWatch.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_IAMInstanceProfileSample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_IAMInstanceProfileSample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_IAMInstanceProfileSample_Template\IAMInstanceProfileSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_IAMInstanceProfileSample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_IAMInstanceProfileSample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_IAMInstanceProfileSample_Template\IAMInstanceProfileSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMInstanceProfile\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMInstanceProfile\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMInstanceProfile\IAMInstanceProfileSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMInstanceProfile\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMInstanceProfile\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMInstanceProfile\IAMInstanceProfile.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_IAMUserSample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_IAMUserSample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_IAMUserSample_Template\IAMUserSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_IAMUserSample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_IAMUserSample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\AWS_IAMUserSample_Template\IAMUserSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMUser\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMUser\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMUser\IAMUserSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMUser\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMUser\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMUser\IAMUser.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_GlacierSample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_GlacierSample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_GlacierSample_Template\AwsGlacierSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_GlacierSample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_GlacierSample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_GlacierSample_Template\AwsGlacierSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\Glacier\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\Glacier\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\Glacier\GlacierSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\Glacier\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\Glacier\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\Glacier\Glacier.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3FileSystemSample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3FileSystemSample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3FileSystemSample_Template\AwsS3FileSystemSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3FileSystemSample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3FileSystemSample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3FileSystemSample_Template\AwsS3FileSystemSample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3FileSystem\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3FileSystem\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3FileSystem\S3FileSystemSample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3FileSystem\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3FileSystem\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3FileSystem\S3FileSystem.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3Sample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3Sample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3Sample_Template\AwsS3Sample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3Sample_Template\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3Sample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3Sample_Template\AwsS3Sample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3\S3Sample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3\Program.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3\S3.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3TransferUtilitySample_Template\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3TransferUtilitySample_Template\App.xaml" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3TransferUtilitySample_Template\App.xaml.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3TransferUtilitySample_Template\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3TransferUtilitySample_Template\AwsS3TransferUtilitySample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3TransferUtilitySample_Template\S3TransferWindow.xaml" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3TransferUtilitySample_Template\S3TransferWindow.xaml.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3TransferUtilitySample_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\AWS_S3TransferUtilitySample_Template\AwsS3TransferUtilitySample.vstemplate">
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\App.config" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\App.xaml" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\App.xaml.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\Properties\AssemblyInfo.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\S3TransferUtilitySample.csproj" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\S3TransferWindow.xaml" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\S3TransferWindow.xaml.cs" />
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\__TemplateIcon.ico" />
+    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\S3TransferUtility.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="AWS_Console_Template\App.config" />
-    <None Include="AWS_Console_Template\Properties\AssemblyInfo.cs" />
-    <None Include="AWS_Console_Template\AwsConsoleApp.csproj" />
-    <None Include="AWS_Console_Template\Program.cs" />
-    <None Include="AWS_Console_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="AWS_Console_Template\AwsConsoleApp.vstemplate">
+    <None Include="AWS_Console\App.config" />
+    <None Include="AWS_Console\Properties\AssemblyInfo.cs" />
+    <None Include="AWS_Console\AwsConsoleApp.csproj" />
+    <None Include="AWS_Console\Program.cs" />
+    <None Include="AWS_Console\__TemplateIcon.ico" />
+    <VSTemplate Include="AWS_Console\AwsConsoleApp.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="AWS_Empty_Template\App.config" />
-    <None Include="AWS_Empty_Template\Properties\AssemblyInfo.cs" />
-    <None Include="AWS_Empty_Template\AwsEmptyApp.csproj" />
-    <None Include="AWS_Empty_Template\Program.cs" />
-    <None Include="AWS_Empty_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="AWS_Empty_Template\AwsEmptyApp.vstemplate">
+    <None Include="AWS_Empty\App.config" />
+    <None Include="AWS_Empty\Properties\AssemblyInfo.cs" />
+    <None Include="AWS_Empty\AwsEmptyApp.csproj" />
+    <None Include="AWS_Empty\Program.cs" />
+    <None Include="AWS_Empty\__TemplateIcon.ico" />
+    <VSTemplate Include="AWS_Empty\AwsEmptyApp.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="AWS_Web_Template\images\database.png" />
-    <None Include="AWS_Web_Template\images\drive.png" />
-    <None Include="AWS_Web_Template\images\README" />
-    <None Include="AWS_Web_Template\images\server.png" />
-    <None Include="AWS_Web_Template\styles\styles.css" />
-    <None Include="AWS_Web_Template\Web.config" />
-    <None Include="AWS_Web_Template\Default.aspx" />
-    <None Include="AWS_Web_Template\Default.aspx.cs" />
-    <None Include="AWS_Web_Template\Default.aspx.designer.cs" />
-    <None Include="AWS_Web_Template\Properties\AssemblyInfo.cs" />
-    <None Include="AWS_Web_Template\AwsWebApp.csproj" />
-    <None Include="AWS_Web_Template\__TemplateIcon.ico" />
-    <VSTemplate Include="AWS_Web_Template\AwsWebApp.vstemplate">
+    <None Include="AWS_Web\images\database.png" />
+    <None Include="AWS_Web\images\drive.png" />
+    <None Include="AWS_Web\images\README" />
+    <None Include="AWS_Web\images\server.png" />
+    <None Include="AWS_Web\styles\styles.css" />
+    <None Include="AWS_Web\Web.config" />
+    <None Include="AWS_Web\Default.aspx" />
+    <None Include="AWS_Web\Default.aspx.cs" />
+    <None Include="AWS_Web\Default.aspx.designer.cs" />
+    <None Include="AWS_Web\Properties\AssemblyInfo.cs" />
+    <None Include="AWS_Web\AwsWebApp.csproj" />
+    <None Include="AWS_Web\__TemplateIcon.ico" />
+    <VSTemplate Include="AWS_Web\AwsWebApp.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)</OutputSubPath>
     </VSTemplate>
   </ItemGroup>

@@ -1,0 +1,36 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+  <TemplateData>
+    <Name>AWS S3 Transfer Utility Sample</Name>
+    <Description>This sample demonstrates using the AWS SDK for .NET and Windows Presentation Framework to upload files and directories, with progress tracking, to Amazon S3 using the TransferUtility object with multi-part uploading of large files.</Description>
+    <ProjectType>CSharp</ProjectType>
+    <ProjectSubType>
+    </ProjectSubType>
+    <SortOrder>1000</SortOrder>
+    <CreateNewFolder>true</CreateNewFolder>
+    <DefaultName>S3TransferUtilitySample</DefaultName>
+    <ProvideDefaultName>true</ProvideDefaultName>
+    <LocationField>Enabled</LocationField>
+    <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+    <Icon>__TemplateIcon.ico</Icon>
+  </TemplateData>
+  <TemplateContent>
+    <Project TargetFileName="S3TransferUtilitySample.csproj" File="S3TransferUtilitySample.csproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" TargetFileName="App.config">App.config</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="App.xaml">App.xaml</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="App.xaml.cs">App.xaml.cs</ProjectItem>
+      <Folder Name="Properties" TargetFolderName="Properties">
+        <ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="Resources.resx">Resources.resx</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="Resources.Designer.cs">Resources.Designer.cs</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="Settings.settings">Settings.settings</ProjectItem>
+        <ProjectItem ReplaceParameters="true" TargetFileName="Settings.Designer.cs">Settings.Designer.cs</ProjectItem>
+      </Folder>
+      <ProjectItem ReplaceParameters="true" TargetFileName="S3TransferWindow.xaml">S3TransferWindow.xaml</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="S3TransferWindow.xaml.cs">S3TransferWindow.xaml.cs</ProjectItem>
+    </Project>
+  </TemplateContent>
+	<WizardExtension>
+		<Assembly>AWSTemplateWizard,Version=2.1.1.0,Culture=neutral,PublicKeyToken=0b37b66c91780a48</Assembly>
+		<FullClassName>TemplateWizard.IWizardImplementation</FullClassName>
+	</WizardExtension>
+</VSTemplate>
