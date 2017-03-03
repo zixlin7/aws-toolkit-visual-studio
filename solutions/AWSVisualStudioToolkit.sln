@@ -108,7 +108,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudFormationProjectTempla
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudFormationTemplate", "..\vspackages\cloudformation\CloudFormationTemplate\CloudFormationTemplate.csproj", "{877BECE0-1933-4BA8-8D68-78140A541B67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSProjectTemplates", "..\vspackages\templates\AWSProjectTemplates\AWSProjectTemplates.csproj", "{BD8B477F-4A67-4CB4-A9A9-019D3A60A671}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSProjectTemplates", "..\vspackages\templates\AWSProjectTemplates\AWSProjectTemplates.csproj", "{EE9E2A3C-35F9-48E9-858E-B5AD00A5EFF0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Templates", "Templates", "{6B2DE77C-378F-4371-B315-046839223DE8}"
 EndProject
@@ -118,21 +118,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MsbuildProjectTemplates", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProjectJsonProjectTemplates", "ProjectJsonProjectTemplates", "{E531B742-3A09-44F8-B2A5-B90D9E416228}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionTemplate", "..\vspackages\lambda\MsbuildFunctionTemplate\MsbuildFunctionTemplate.csproj", "{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbuildFunctionTemplate", "..\vspackages\lambda\MsbuildFunctionTemplate\MsbuildFunctionTemplate.csproj", "{CBDE5BE9-4047-445A-82A2-ADE0D06708BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionWithTestsTemplate", "..\vspackages\lambda\MsbuildFunctionWithTestsTemplate\MsbuildFunctionWithTestsTemplate.csproj", "{418C57E1-B2B9-441F-8B88-1C7776011724}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbuildFunctionWithTestsTemplate", "..\vspackages\lambda\MsbuildFunctionWithTestsTemplate\MsbuildFunctionWithTestsTemplate.csproj", "{418C57E1-B2B9-441F-8B88-1C7776011724}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerlessTemplate", "..\vspackages\lambda\MsbuildServerlessTemplate\MsbuildServerlessTemplate.csproj", "{12205D6A-E262-4F8B-8344-2B5A93BBB775}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbuildServerlessTemplate", "..\vspackages\lambda\MsbuildServerlessTemplate\MsbuildServerlessTemplate.csproj", "{12205D6A-E262-4F8B-8344-2B5A93BBB775}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerlessWithTestsTemplate", "..\vspackages\lambda\MsbuildServerlessWithTestsTemplate\MsbuildServerlessWithTestsTemplate.csproj", "{22C00710-A6E5-4F49-92CE-A5A2DD71C24A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbuildServerlessWithTestsTemplate", "..\vspackages\lambda\MsbuildServerlessWithTestsTemplate\MsbuildServerlessWithTestsTemplate.csproj", "{22C00710-A6E5-4F49-92CE-A5A2DD71C24A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionTemplate", "..\vspackages\lambda\ProjectJsonFunctionTemplate\ProjectJsonFunctionTemplate.csproj", "{1B68E98A-6D93-4AC2-BFA4-7A9553E9CD3D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectJsonFunctionTemplate", "..\vspackages\lambda\ProjectJsonFunctionTemplate\ProjectJsonFunctionTemplate.csproj", "{1B68E98A-6D93-4AC2-BFA4-7A9553E9CD3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionWithTestsTemplate", "..\vspackages\lambda\ProjectJsonFunctionWithTestsTemplate\ProjectJsonFunctionWithTestsTemplate.csproj", "{4632AB71-E5A7-4CC6-9142-76FB88A87751}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectJsonFunctionWithTestsTemplate", "..\vspackages\lambda\ProjectJsonFunctionWithTestsTemplate\ProjectJsonFunctionWithTestsTemplate.csproj", "{4632AB71-E5A7-4CC6-9142-76FB88A87751}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerlessTemplate", "..\vspackages\lambda\ProjectJsonServerlessTemplate\ProjectJsonServerlessTemplate.csproj", "{8B4AEEE3-87A0-445C-BBC9-D0EE91191A24}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectJsonServerlessTemplate", "..\vspackages\lambda\ProjectJsonServerlessTemplate\ProjectJsonServerlessTemplate.csproj", "{8B4AEEE3-87A0-445C-BBC9-D0EE91191A24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerlessWithTestsTemplate", "..\vspackages\lambda\ProjectJsonServerlessWithTestsTemplate\ProjectJsonServerlessWithTestsTemplate.csproj", "{A4422591-B589-4E2E-B06E-FBD74A3D7A79}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectJsonServerlessWithTestsTemplate", "..\vspackages\lambda\ProjectJsonServerlessWithTestsTemplate\ProjectJsonServerlessWithTestsTemplate.csproj", "{A4422591-B589-4E2E-B06E-FBD74A3D7A79}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSProjectTemplates.Legacy", "..\vspackages\templates\AWSProjectTemplates.Legacy\AWSProjectTemplates.Legacy.csproj", "{BD8B477F-4A67-4CB4-A9A9-019D3A60A671}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -300,10 +302,10 @@ Global
 		{877BECE0-1933-4BA8-8D68-78140A541B67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{877BECE0-1933-4BA8-8D68-78140A541B67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{877BECE0-1933-4BA8-8D68-78140A541B67}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BD8B477F-4A67-4CB4-A9A9-019D3A60A671}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BD8B477F-4A67-4CB4-A9A9-019D3A60A671}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BD8B477F-4A67-4CB4-A9A9-019D3A60A671}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BD8B477F-4A67-4CB4-A9A9-019D3A60A671}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE9E2A3C-35F9-48E9-858E-B5AD00A5EFF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE9E2A3C-35F9-48E9-858E-B5AD00A5EFF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE9E2A3C-35F9-48E9-858E-B5AD00A5EFF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE9E2A3C-35F9-48E9-858E-B5AD00A5EFF0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C854A806-ACE3-4401-8DA3-037A370190E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C854A806-ACE3-4401-8DA3-037A370190E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C854A806-ACE3-4401-8DA3-037A370190E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -340,6 +342,10 @@ Global
 		{A4422591-B589-4E2E-B06E-FBD74A3D7A79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4422591-B589-4E2E-B06E-FBD74A3D7A79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4422591-B589-4E2E-B06E-FBD74A3D7A79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD8B477F-4A67-4CB4-A9A9-019D3A60A671}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD8B477F-4A67-4CB4-A9A9-019D3A60A671}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD8B477F-4A67-4CB4-A9A9-019D3A60A671}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD8B477F-4A67-4CB4-A9A9-019D3A60A671}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -390,7 +396,7 @@ Global
 		{AF0AE340-7C91-40F9-A074-0F1A4F03F8E9} = {9B2AC37E-7281-4E07-848C-AB32327476A1}
 		{EB2C31E6-3ED8-4F0E-A726-194DA87C8F95} = {63BEB71C-D666-4F32-B8D0-620763DDA61A}
 		{877BECE0-1933-4BA8-8D68-78140A541B67} = {63BEB71C-D666-4F32-B8D0-620763DDA61A}
-		{BD8B477F-4A67-4CB4-A9A9-019D3A60A671} = {6B2DE77C-378F-4371-B315-046839223DE8}
+		{EE9E2A3C-35F9-48E9-858E-B5AD00A5EFF0} = {6B2DE77C-378F-4371-B315-046839223DE8}
 		{6B2DE77C-378F-4371-B315-046839223DE8} = {7C126B63-12FD-4829-A22A-EB2A93815ACD}
 		{C854A806-ACE3-4401-8DA3-037A370190E5} = {6B2DE77C-378F-4371-B315-046839223DE8}
 		{60D866A4-6F20-4C7D-876B-3014884AE2FF} = {9B2AC37E-7281-4E07-848C-AB32327476A1}
@@ -403,5 +409,6 @@ Global
 		{4632AB71-E5A7-4CC6-9142-76FB88A87751} = {E531B742-3A09-44F8-B2A5-B90D9E416228}
 		{8B4AEEE3-87A0-445C-BBC9-D0EE91191A24} = {E531B742-3A09-44F8-B2A5-B90D9E416228}
 		{A4422591-B589-4E2E-B06E-FBD74A3D7A79} = {E531B742-3A09-44F8-B2A5-B90D9E416228}
+		{BD8B477F-4A67-4CB4-A9A9-019D3A60A671} = {6B2DE77C-378F-4371-B315-046839223DE8}
 	EndGlobalSection
 EndGlobal
