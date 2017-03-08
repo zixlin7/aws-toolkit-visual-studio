@@ -192,6 +192,11 @@
     <Compile Include="Editors\CloudFormation\CloudFormationTemplateProjectNode.cs" />
     <Compile Include="Editors\CloudFormation\TemplateEditorFactory.cs" />
     <Compile Include="Editors\CloudFormation\TemplateFileNode.cs" />
+    <Compile Include="FirstRun\Controller\FirstRunController.cs" />
+    <Compile Include="FirstRun\Model\FirstRunModel.cs" />
+    <Compile Include="FirstRun\View\FirstRunControl.xaml.cs">
+      <DependentUpon>FirstRunControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Registration\AWSCommandLineRegistrationAttribute.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="Messaging.cs" />
@@ -310,6 +315,13 @@
     <Compile Include="ToolWindow\AWSNavigatorToolWindow.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\FirstRun\rightbluearrow.png" />
+    <EmbeddedResource Include="Resources\FirstRun\explorerlocation_light.png" />
+    <EmbeddedResource Include="Resources\FirstRun\publishbeanstalk_light.png" />
+    <EmbeddedResource Include="Resources\FirstRun\publishlambda_light.png" />
+    <EmbeddedResource Include="Resources\FirstRun\explorerlocation_dark.png" />
+    <EmbeddedResource Include="Resources\FirstRun\publishbeanstalk_dark.png" />
+    <EmbeddedResource Include="Resources\FirstRun\publishlambda_dark.png" />
     <Content Include="Templates\AWSToolkitPackage.vsdir">
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -323,6 +335,10 @@
     <Compile Include="PkgCmdID.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="FirstRun\View\FirstRunControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ShellOptions\GeneralOptionsPageControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

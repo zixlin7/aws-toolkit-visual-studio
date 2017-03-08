@@ -40,6 +40,7 @@
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/DataGrid.xaml" />
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Expander.xaml" />
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Wizard.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/ProgressControls.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

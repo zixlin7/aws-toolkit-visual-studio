@@ -83,7 +83,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 /* 
                  * Initialize the Amazon Cognito credentials provider.
                  * Using the Analytics extended CognitoAWSCredentials will
-                 * ensure caching of the identityID for unauthticated session logging. 
+                 * ensure caching of the identityID for unauthenticated session logging. 
                  */
                 LOGGER.InfoFormat("Attempting to create credentials via Cognito using poolId: {0} and RegionEndpoint.USEast1.", AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID);
                 _credentialsProvider = new AnalyticsCognitoAWSCredentials(

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -12,6 +13,7 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Shared;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Amazon.AWSToolkit.VisualStudio.Services
@@ -137,9 +139,10 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                     }
                 }
 
+                var documentMoniker = Path.Combine(_hostPackage.GetTempFileLocation(), filename);
                 IVsWindowFrame frame;
                 var result = openShell.OpenSpecificEditor(0,  // grfOpenSpecific 
-                                                          _hostPackage.GetTempFileLocation() + "/" + filename, // pszMkDocument 
+                                                          documentMoniker, // pszMkDocument 
                                                           ref editorFactoryGuid,  // rGuidEditorType 
                                                           null, // pszPhysicalView 
                                                           ref logicalView, // rguidLogicalView +++
@@ -360,6 +363,88 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
         public object QueryAWSToolkitPluginService(string pluginServiceType)
         {
             throw new NotImplementedException();
+        }
+
+        public void OpenInBrowser(string url, bool preferInternalBrowser)
+        {
+            if (preferInternalBrowser)
+            {
+                var service = _hostPackage.GetVSShellService(typeof(SVsWebBrowsingService)) as IVsWebBrowsingService;
+
+                if (service != null)
+                {
+                    __VSCREATEWEBBROWSER createFlags = __VSCREATEWEBBROWSER.VSCWB_AutoShow;
+                    VSPREVIEWRESOLUTION resolution = VSPREVIEWRESOLUTION.PR_Default;
+                    int result = ErrorHandler.CallWithCOMConvention(() => service.CreateExternalWebBrowser((uint)createFlags, resolution, new Uri(url).AbsoluteUri));
+                    if (ErrorHandler.Succeeded(result))
+                        return;
+                }
+            }
+
+            // prefer not set, or internal service not available - launch the system
+            // default browser in a separate process
+            var u = new UriBuilder(url)
+            {
+                Scheme = "https"
+            };
+
+            Process.Start(new ProcessStartInfo(u.Uri.ToString()));
+        }
+
+        public void CloseEditor(IAWSToolkitControl editorControl)
+        {
+            var uniqueId = editorControl.UniqueId;
+
+            // OpenInEditor can append account and region data to the control
+            // key, so try and find a filename entry that starts with the key
+            string filename = null;
+            foreach (var k in _hostPackage.ControlUniqueNameToFileName.Keys)
+            {
+                if (k.StartsWith(uniqueId, StringComparison.OrdinalIgnoreCase))
+                {
+                    filename = _hostPackage.ControlUniqueNameToFileName[k];
+                    break;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(filename))
+            {
+                CloseEditor(filename);
+            }
+        }
+
+        public void CloseEditor(string fileName)
+        {
+            WeakReference editorControlReference = null;
+            foreach (var k in _hostPackage.OpenedEditors.Keys)
+            {
+                if (k.Equals(fileName, StringComparison.OrdinalIgnoreCase))
+                {
+                    editorControlReference = _hostPackage.OpenedEditors[k];
+                    break;
+                }
+            }
+
+            if (editorControlReference == null)
+            {
+                return;
+            }
+
+            if (editorControlReference.IsAlive)
+            {
+                var documentMoniker = Path.IsPathRooted(fileName) 
+                    ? fileName 
+                    : Path.Combine(_hostPackage.GetTempFileLocation(), fileName);
+
+                IVsHierarchy ownerHier;
+                uint itemid, cookie;
+                var rdt = new RunningDocumentTable(_hostPackage);
+                var docObj = rdt.FindDocument(documentMoniker, out ownerHier, out itemid, out cookie);
+                if (docObj != null)
+                {
+                    rdt.CloseDocument(__FRAMECLOSE.FRAMECLOSE_NoSave, cookie);
+                }
+            }
         }
 
         #endregion

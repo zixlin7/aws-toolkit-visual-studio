@@ -182,6 +182,29 @@ namespace Amazon.AWSToolkit.Shared
         /// <returns>Plugin interface instance or null if plugin not loaded</returns>
         object QueryAWSToolkitPluginService(string pluginServiceType);
 
+        /// <summary>
+        /// Opens a web browser view onto the specified url.
+        /// </summary>
+        /// <param name="url">The url to open</param>
+        /// <param name="preferInternalBrowser">
+        /// If the host shell supports internal browsing and preferInternalBrowser is set true
+        /// then the url will be opened using the host shell's built-in browser, falling back
+        /// to the system default browser (in a separate process) if necessary.
+        /// </param>
+        void OpenInBrowser(string url, bool preferInternalBrowser);
+
+        /// <summary>
+        /// Uses the unique id of the supplied control to find an opened editor window
+        /// to be closed.
+        /// </summary>
+        /// <param name="editorControl"></param>
+        void CloseEditor(IAWSToolkitControl editorControl);
+
+        /// <summary>
+        /// Uses the supplied filename to find an opened editor window to be closed.
+        /// </summary>
+        /// <param name="fileName"></param>
+        void CloseEditor(string fileName);
     }
 
     /// <summary>

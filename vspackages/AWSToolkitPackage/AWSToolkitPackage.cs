@@ -5,15 +5,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.ComponentModel.Design;
-using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Threading;
-using System.ComponentModel;
-
 using EnvDTE;
 using Microsoft.Samples.VisualStudio.IDE.OptionsPage;
 using Microsoft.VisualStudio;
@@ -55,6 +50,7 @@ using Amazon.AWSToolkit.Lambda;
 using ThirdParty.Json.LitJson;
 using Amazon.AWSToolkit.Lambda.WizardPages;
 using System.Xml;
+using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -487,7 +483,12 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployToLambdaSolutionExplorer, UploadToLambda, UploadToLambdaMenuCommand_BeforeQueryStatus);
                 SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAddAWSServerlessTemplate, AddAWSServerlessTemplate, AddAWSServerlessTemplate_BeforeQueryStatus);
+            }
 
+            var shellService = GetService(typeof(SVsShell)) as IVsShell;
+            if (shellService != null)
+            {
+                ErrorHandler.ThrowOnFailure(shellService.AdviseShellPropertyChanges(this, out _vsShellPropertyChangeEventSinkCookie));
             }
         }
 
@@ -519,7 +520,11 @@ namespace Amazon.AWSToolkit.VisualStudio
                     {
                         try
                         {
-                            ToolkitFactory.Instance.RunFirstTimeSetup();
+                            if (FirstRunController.ShouldShowFirstRunSetupPage)
+                            {
+                                var controller = new FirstRunController(this);
+                                controller.Execute();
+                            }
                         }
                         catch (Exception e)
                         {
@@ -2185,7 +2190,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
 #endregion
 
-#region IRegisterDataConnectionService
+        #region IRegisterDataConnectionService
 
         public void AddDataConnection(DatabaseTypes type, string connectionName, string connectionString)
         {
@@ -2300,9 +2305,9 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-#endregion
+        #endregion
 		
-#region IVsBroadcastMessageEvents
+        #region IVsBroadcastMessageEvents
 
         const int WM_WININICHANGE = 0x001A;
         const int WM_DISPLAYCHANGE = 0x007E;
@@ -2323,6 +2328,6 @@ namespace Amazon.AWSToolkit.VisualStudio
         }
 
 
-#endregion
+        #endregion
     }
 }

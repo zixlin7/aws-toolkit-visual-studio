@@ -196,15 +196,24 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBoxBase">
-                    <Border
-                        Name="Bd"
-                        Padding="{TemplateBinding Padding}"
-                        Background="{TemplateBinding Panel.Background}"
-                        BorderBrush="{TemplateBinding Border.BorderBrush}"
-                        BorderThickness="{TemplateBinding Border.BorderThickness}"
-                        SnapsToDevicePixels="True">
+                    <Grid>
+                        <Border
+                            Name="Bd"
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Panel.Background}"
+                            BorderBrush="{TemplateBinding Border.BorderBrush}"
+                            BorderThickness="{TemplateBinding Border.BorderThickness}"
+                            SnapsToDevicePixels="True" />
                         <ScrollViewer Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                    </Border>
+                        <TextBlock
+                            Name="PART_Watermark"
+                            Margin="2,0,0,0"
+                            VerticalAlignment="Center"
+                            Text="{TemplateBinding Tag}"
+                            Visibility="Collapsed" 
+                            Opacity=".25"
+                            FontStyle="Italic"/>
+                    </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Bd" Property="Opacity" Value=".5" />
@@ -225,6 +234,12 @@
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="Bd" Property="Border.BorderBrush" Value="{DynamicResource awsTextBoxSelectedBorderBrushKey}" />
                         </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="TextBox.Text" Value="" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="PART_Watermark" Property="Visibility" Value="Visible" />
+                        </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
