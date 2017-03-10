@@ -5,7 +5,7 @@
     xmlns:validators="clr-namespace:Amazon.AWSToolkit.CommonValidators;assembly=AWSToolkit"
     xmlns:components="clr-namespace:Amazon.AWSToolkit.DynamoDB.View.Components"
     xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
-    Height="600" Width="700">
+    Width="700" Height="700">
     
     <commonui:BaseAWSControl.Resources>
         <ResourceDictionary>
@@ -24,6 +24,11 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
@@ -140,5 +145,34 @@
                 </Binding>
             </TextBox.Text>
         </TextBox>
+
+
+        <Separator Grid.Column="0" Grid.Row="18" Grid.ColumnSpan="2" Margin="4"/>
+        
+        <TextBlock Grid.Column="0" Grid.Row="19" Grid.ColumnSpan="2" Margin="4"  
+                   Style="{DynamicResource awsTextBlock122PercentStyle}">Time-to-Live (TTL):</TextBlock>
+
+        <TextBlock Grid.Column="0" Grid.Row="20" Margin="15,4,4,4" Style="{DynamicResource awsTextBlockBaseStyle}">TTL Enabled:</TextBlock>
+        <CheckBox Grid.Column="1" Grid.Row="20" Margin="4" Style="{DynamicResource awsCheckboxButtonBaseStyle}"
+                  IsChecked="{Binding TTLEnabled}" IsEnabled="{Binding TTLInfoAvailable}" />
+
+
+        <TextBlock Grid.Column="0" Grid.Row="21" Margin="15,4,4,4" Style="{DynamicResource awsTextBlockBaseStyle}">TTL Attribute:</TextBlock>
+
+        <TextBox Grid.Column="1" Grid.Row="21" Margin="4" Style="{DynamicResource awsTextBoxStyle}" IsEnabled="{Binding TTLEnabled}">
+            <TextBox.Text>
+                <Binding Path="TTLAttributeName" UpdateSourceTrigger="PropertyChanged">
+                    <Binding.ValidationRules>
+                        <validators:StringHasValueValidator FieldName="TTL Attribute" />
+                    </Binding.ValidationRules>
+                </Binding>
+            </TextBox.Text>
+        </TextBox>
+
+        <TextBlock Grid.Column="0" Grid.Row="22" Style="{DynamicResource awsTextBlockBoldStyle}"
+                   Visibility="{Binding TTLInfoUnavailable, Converter={StaticResource Bool2VisConverter}}">
+            Unable to retrieve Time-to-Live information.
+        </TextBlock>
+
     </Grid>
 </commonui:BaseAWSControl>

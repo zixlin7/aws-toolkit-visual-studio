@@ -177,6 +177,31 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
                 this.Model.WriteCapacityUnits = table.ProvisionedThroughput.WriteCapacityUnits.ToString();
                 this.Model.OriginalWriteCapacityUnits = table.ProvisionedThroughput.WriteCapacityUnits.ToString();
             }
+
+            DescribeTimeToLiveResponse ttlResponse = null;
+            try
+            {
+                ttlResponse = this._rootModel.DynamoDBClient.DescribeTimeToLive(new DescribeTimeToLiveRequest { TableName = this.Model.TableName });
+            }
+            catch
+            {
+                this.Model.TTLInfoAvailable = false;
+            }
+
+            this.Model.TTLAttributeName = "Expiration";
+            if (ttlResponse != null)
+            {
+                this.Model.TTLInfoAvailable = true;
+                this.Model.TTLEnabled =
+                    ttlResponse.TimeToLiveDescription.TimeToLiveStatus == TimeToLiveStatus.ENABLED ||
+                    ttlResponse.TimeToLiveDescription.TimeToLiveStatus == TimeToLiveStatus.ENABLING;
+                if (!string.IsNullOrEmpty(ttlResponse.TimeToLiveDescription.AttributeName))
+                {
+                    this.Model.TTLAttributeName = ttlResponse.TimeToLiveDescription.AttributeName;
+                }
+            }
+            this.Model.OriginalTTLAttributeName = this.Model.TTLAttributeName;
+            this.Model.OriginalTTLEnabled = this.Model.TTLEnabled;
         }
 
         public bool Persist()
@@ -186,6 +211,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
                 this.PerformThroughputUpdates();
                 this.PerformGlobalIndexCreate();
                 this.PerformGlobalSecondaryDeletes();
+                this.PerformTTLUpdate();
 
                 this._results = new ActionResults()
                     .WithSuccess(true)
@@ -337,6 +363,23 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
                 this._rootModel.DynamoDBClient.UpdateTable(request);
         }
 
+        private void PerformTTLUpdate()
+        {
+            if (HasTtlChanged())
+            {
+                var request = new UpdateTimeToLiveRequest
+                {
+                    TableName = this._model.TableName,
+                    TimeToLiveSpecification = new TimeToLiveSpecification
+                    {
+                        AttributeName = this._model.TTLAttributeName,
+                        Enabled = this._model.TTLEnabled
+                    }
+                };
+                this._rootModel.DynamoDBClient.UpdateTimeToLive(request);
+            }
+        }
+
         private bool HasChanged()
         {
             if (!string.Equals(this._model.OriginalReadCapacityUnits, this._model.ReadCapacityUnits) ||
@@ -353,7 +396,18 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
                     return true;
             }
 
+            if (HasTtlChanged())
+            {
+                return true;
+            }
+
             return false;
+        }
+
+        private bool HasTtlChanged()
+        {
+            return this._model.OriginalTTLEnabled != this._model.TTLEnabled ||
+                            !string.Equals(this._model.OriginalTTLAttributeName, this._model.TTLAttributeName);
         }
     }
 }
