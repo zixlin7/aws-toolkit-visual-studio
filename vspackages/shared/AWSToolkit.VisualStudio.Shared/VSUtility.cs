@@ -12,6 +12,7 @@ using System.Xml;
 
 using MSBuildProject = Microsoft.Build.Evaluation.Project;
 using System.Collections.Generic;
+using Microsoft.Build.Evaluation;
 
 namespace Amazon.AWSToolkit.VisualStudio.Shared
 {
@@ -183,25 +184,35 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
         {
             var frameworks = new List<string>();
 
-            var project = VSUtility.GetSelectedProject();
-            var projectContent = File.ReadAllText(project.FileName);
-
-            using (var reader = new XmlTextReader(new StringReader(projectContent)))
+            try
             {
-                var evalProject = new MSBuildProject(reader);
-                var value = evalProject.QueryPropertyValue("TargetFramework");
-                if(!string.IsNullOrWhiteSpace(value))
+                var project = VSUtility.GetSelectedProject();
+                var projectContent = File.ReadAllText(project.FullName);
+
+                XmlDocument xmlDoc = new XmlDocument();
+                xmlDoc.LoadXml(projectContent);
+
+                var singleFrameworkNode = xmlDoc.SelectSingleNode("//PropertyGroup/TargetFramework");
+                if(singleFrameworkNode != null && !string.IsNullOrEmpty(singleFrameworkNode.InnerText))
                 {
-                    frameworks.Add(value);
+                    frameworks.Add(singleFrameworkNode.InnerText);
                 }
-                else
+
+                if (frameworks.Count == 0)
                 {
-                    var values = evalProject.QueryPropertyValue("TargetFrameworks");
-                    foreach(var framework in values.Split(';'))
+                    var multipleFrameworkNode = xmlDoc.SelectSingleNode("//PropertyGroup/TargetFrameworks");
+                    if (multipleFrameworkNode != null && !string.IsNullOrEmpty(multipleFrameworkNode.InnerText))
                     {
-                        frameworks.Add(framework);
+                        foreach (var framework in multipleFrameworkNode.InnerText.Split(';'))
+                        {
+                            frameworks.Add(framework);
+                        }
                     }
                 }
+            }
+            catch
+            {
+                
             }
 
             return frameworks;
