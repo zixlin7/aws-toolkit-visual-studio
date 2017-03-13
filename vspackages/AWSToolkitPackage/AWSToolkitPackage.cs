@@ -54,6 +54,7 @@ using Amazon.AWSToolkit.Lambda;
 
 using ThirdParty.Json.LitJson;
 using Amazon.AWSToolkit.Lambda.WizardPages;
+using System.Xml;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -1250,10 +1251,20 @@ namespace Amazon.AWSToolkit.VisualStudio
                         frameworks.Add(key, key);
                     }
                 }
+                else
+                {
+                    foreach(var framework in VSUtility.GetSelectedNetCoreProjectFrameworks())
+                    {
+                        frameworks.Add(framework, framework);
+                    }
+                }
 
                 // Safety net in case MS changes the project.json system underneath us
                 if (frameworks.Count == 0)
+                {
                     frameworks.Add("netcoreapp1.0", "netcoreapp1.0");
+                    frameworks.Add("netcoreapp1.1", "netcoreapp1.1");
+                }
             }
             else
             {

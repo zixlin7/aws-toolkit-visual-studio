@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.Project;
 using System.Xml;
 
 using MSBuildProject = Microsoft.Build.Evaluation.Project;
+using System.Collections.Generic;
 
 namespace Amazon.AWSToolkit.VisualStudio.Shared
 {
@@ -176,6 +177,34 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
                     return false;
                 }
             }
+        }
+
+        public static IList<string> GetSelectedNetCoreProjectFrameworks()
+        {
+            var frameworks = new List<string>();
+
+            var project = VSUtility.GetSelectedProject();
+            var projectContent = File.ReadAllText(project.FileName);
+
+            using (var reader = new XmlTextReader(new StringReader(projectContent)))
+            {
+                var evalProject = new MSBuildProject(reader);
+                var value = evalProject.QueryPropertyValue("TargetFramework");
+                if(!string.IsNullOrWhiteSpace(value))
+                {
+                    frameworks.Add(value);
+                }
+                else
+                {
+                    var values = evalProject.QueryPropertyValue("TargetFrameworks");
+                    foreach(var framework in values.Split(';'))
+                    {
+                        frameworks.Add(framework);
+                    }
+                }
+            }
+
+            return frameworks;
         }
 
         public static string GetSelectedProjectLocation()
