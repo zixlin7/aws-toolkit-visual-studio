@@ -125,7 +125,7 @@ namespace Amazon.Lambda.Tools.Commands
 
                     ValidateTargetFrameworkAndLambdaRuntime();
 
-                    Utilities.CreateApplicationBundle(this.DefaultConfig, this.Logger, this.WorkingDirectory, projectLocation, configuration, targetFramework, out publishLocation, ref zipArchivePath);
+                    LambdaPackager.CreateApplicationBundle(this.DefaultConfig, this.Logger, this.WorkingDirectory, projectLocation, configuration, targetFramework, out publishLocation, ref zipArchivePath);
                     if (string.IsNullOrEmpty(zipArchivePath))
                         return false;
                 }
@@ -173,7 +173,7 @@ namespace Amazon.Lambda.Tools.Commands
                             VpcConfig = new VpcConfig
                             {
                                 SubnetIds = this.GetStringValuesOrDefault(this.SubnetIds, DefinedCommandOptions.ARGUMENT_FUNCTION_SUBNETS, false)?.ToList(),
-                                SecurityGroupIds = this.GetStringValuesOrDefault(this.SecurityGroupIds, DefinedCommandOptions.ARGUMENT_FUNCTION_SUBNETS, false)?.ToList()
+                                SecurityGroupIds = this.GetStringValuesOrDefault(this.SecurityGroupIds, DefinedCommandOptions.ARGUMENT_FUNCTION_SECURITY_GROUPS, false)?.ToList()
                             }
                         };
 

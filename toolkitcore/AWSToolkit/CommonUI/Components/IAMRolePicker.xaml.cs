@@ -62,8 +62,8 @@ namespace Amazon.AWSToolkit.CommonUI.Components
 
         public void Initialize(IList<Role> availableRoles, IList<ManagedPolicy> availableManagedPolicies, string selectedRole)
         {
-            this._availableManagedPolicies = availableManagedPolicies;
-            this._availableRoles = availableRoles;
+            this._availableManagedPolicies = availableManagedPolicies ?? new List<ManagedPolicy>();
+            this._availableRoles = availableRoles ?? new List<Role>();
 
             this.PopulateComboBox(selectedRole);
         }
@@ -78,14 +78,26 @@ namespace Amazon.AWSToolkit.CommonUI.Components
             }
             else
             {
+                IAMPickerItem selectedItem = null;
                 foreach (IAMPickerItem item in this._ctlCombo.Items)
                 {
                     if (item.ExistingRole != null && IsRoleMatch(item.ExistingRole, role))
                     {
-                        this._ctlCombo.SelectedItem = item;
+                        selectedItem = item;
                         break;
                     }
                 }
+
+                if (selectedItem == null)
+                {
+                    var tokens = role.Split('/');
+                    var roleName = tokens[tokens.Length - 1];
+                    selectedItem = new IAMPickerItem {ExistingRole = new Role { RoleName = roleName, Arn = role }, IsSelected = true};
+
+                    this._ctlCombo.Items.Insert(1, selectedItem);
+                }
+
+                this._ctlCombo.SelectedItem = selectedItem;
             }
         }
 

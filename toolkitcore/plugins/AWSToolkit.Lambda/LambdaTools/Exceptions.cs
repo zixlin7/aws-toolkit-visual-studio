@@ -33,6 +33,8 @@ namespace Amazon.Lambda.Tools
             ProfileNotFound,
             ProfileNotCreateable,
             PersistConfigError,
+            RegionNotConfigured,
+            RoleNotFound,
 
             IAMAttachRole,
             IAMCreateRole,

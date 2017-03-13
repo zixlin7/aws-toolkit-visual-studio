@@ -77,6 +77,64 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
             }
         }
 
+
+        bool _ttlEnabled;
+        public bool TTLEnabled
+        {
+            get { return this._ttlEnabled; }
+            set
+            {
+                this._ttlEnabled = value;
+                base.NotifyPropertyChanged("TTLEnabled");
+            }
+        }
+
+        string _ttlAttributeName;
+        public string TTLAttributeName
+        {
+            get { return this._ttlAttributeName; }
+            set
+            {
+                this._ttlAttributeName = value;
+                base.NotifyPropertyChanged("TTLAttributeName");
+            }
+        }
+
+        bool _originalTtlEnabled;
+        public bool OriginalTTLEnabled
+        {
+            get { return this._originalTtlEnabled; }
+            set
+            {
+                this._originalTtlEnabled = value;
+                base.NotifyPropertyChanged("OriginalTTLEnabled");
+            }
+        }
+
+        string _originalTtlAttributeName;
+        public string OriginalTTLAttributeName
+        {
+            get { return this._originalTtlAttributeName; }
+            set
+            {
+                this._originalTtlAttributeName = value;
+                base.NotifyPropertyChanged("OriginalTTLAttributeName");
+            }
+        }
+
+        bool _ttlInfoAvailable;
+        public bool TTLInfoAvailable
+        {
+            get { return this._ttlInfoAvailable; }
+            set
+            {
+                this._ttlInfoAvailable = value;
+                base.NotifyPropertyChanged("TTLInfoAvailable");
+            }
+        }
+
+        public bool TTLInfoUnavailable { get { return !TTLInfoAvailable; } }
+
         public Dictionary<string, SecondaryIndex> ExistingGlobalSecondaryIndexes
         {
             get;
