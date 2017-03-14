@@ -301,10 +301,11 @@
                             Grid.Row="5"
                             Grid.Column="1"
                             Padding="4,2"
+                            Margin="0,8,0,0"
                             HorizontalAlignment="Right"
                             Click="ImportAWSCredentials_OnClick"
                             Style="{DynamicResource awsButtonBaseStyle}">
-                            Import...
+                            Import from CSV...
                         </Button>
                     </Grid>
                 </Grid>
@@ -464,7 +465,7 @@
             <StackPanel
                 Grid.Row="2"
                 Margin="4"
-                HorizontalAlignment="Right"
+                HorizontalAlignment="Left"
                 Orientation="Horizontal">
 
                 <CheckBox
