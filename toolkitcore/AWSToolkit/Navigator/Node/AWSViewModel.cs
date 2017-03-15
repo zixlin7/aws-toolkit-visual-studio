@@ -46,15 +46,37 @@ namespace Amazon.AWSToolkit.Navigator.Node
             this._sdkCredentialWatcher = PersistenceManager.Instance.Watch(ToolkitSettingsConstants.RegisteredProfiles);
             this._sdkCredentialWatcher.SettingsChanged += new EventHandler((o, e) =>
             {
-                this._dispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate ()
+                this._dispatcher.Invoke((System.Windows.Forms.MethodInvoker) delegate()
                 {
                     this.Refresh();
                 });
             });
 
+            SetupSharedCredentialFileMonitoring();
+        }
+
+        /// <summary>
+        /// If the shared credential file path exists, sets up a file monitor if 
+        /// we have not already done so. If we had a monitor, but the path no longer
+        /// exists we leave the existing monitor alone.
+        /// </summary>
+        /// <remarks>
+        /// Factored into method so that in future, if the toolkit supports writing
+        /// new profiles to the shared credential file, we can enable monitoring
+        /// if we did not do so on initialization due to the path not existing.
+        /// </remarks>
+        internal void SetupSharedCredentialFileMonitoring()
+        {
+            if (this._sharedCredentialWatcher != null)
+                return;
+
             var sharedStore = new SharedCredentialsFile();
 
-            this._sharedCredentialWatcher = new FileSystemWatcher(Path.GetDirectoryName(sharedStore.FilePath), Path.GetFileName(sharedStore.FilePath));
+            var sharedCredentialPath = Path.GetDirectoryName(sharedStore.FilePath);
+            if (!Directory.Exists(sharedCredentialPath))
+                return;
+
+            this._sharedCredentialWatcher = new FileSystemWatcher(sharedCredentialPath, Path.GetFileName(sharedStore.FilePath));
 
             Action<object, FileSystemEventArgs> callback = (o, e) => 
                 {
