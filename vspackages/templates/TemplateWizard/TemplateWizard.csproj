@@ -11,7 +11,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TemplateWizard</RootNamespace>
     <AssemblyName>AWSTemplateWizard</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>templatewizard.snk</AssemblyOriginatorKeyFile>
@@ -31,6 +30,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -121,8 +121,8 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\toolkitcore\AWSToolkit\AWSToolkit.csproj">
-      <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
+      <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
       <Name>AWSToolkit</Name>
       <Private>False</Private>
     </ProjectReference>
