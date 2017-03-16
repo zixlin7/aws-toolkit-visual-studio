@@ -322,14 +322,6 @@
     <EmbeddedResource Include="Resources\FirstRun\explorerlocation_dark.png" />
     <EmbeddedResource Include="Resources\FirstRun\publishbeanstalk_dark.png" />
     <EmbeddedResource Include="Resources\FirstRun\publishlambda_dark.png" />
-    <Content Include="Templates\AWSToolkitPackage.vsdir">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Templates\hosted.control.awstoolkitpackage">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PkgCmdID.cs" />
