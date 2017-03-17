@@ -27,12 +27,13 @@
 
     	<AWSToolkitPackageOutput>$(Deployment)\AWSToolkitPackage</AWSToolkitPackageOutput>
 
-        <Build2017Package Condition="'$(Build2017Package)' == ''">false</Build2017Package>
+        <Build2017Package Condition="'$(Build2017Package)' == '' And '$(Configuration)' == 'Debug'">true</Build2017Package>
+        <Build2017Package Condition="'$(Build2017Package)' == '' And '$(Configuration)' == 'Release'">false</Build2017Package>
         
 		<SignVsixPackages Condition="'$(SignVsixPackages)'==''">false</SignVsixPackages>
         
     </PropertyGroup>
-	
+
 	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;update-version;build-awsdeploy;build-vstoolkit;keyscan;copy-artifacts;sign-packages;save-build">
 		<Message Text="Builds all components of the AWS Toolkit for Visual Studio"/>
 	</Target>
