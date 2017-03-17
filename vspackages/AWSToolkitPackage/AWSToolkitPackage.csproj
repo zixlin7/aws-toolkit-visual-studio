@@ -1027,24 +1027,30 @@
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup Condition="'$(VSTarget)' == '15.0'">
-    <ProjectReference Include="..\templates\AWSProjectTemplates\AWSProjectTemplates.csproj">
-      <Project>{EE9E2A3C-35F9-48E9-858E-B5AD00A5EFF0}</Project>
-      <Name>AWSProjectTemplates</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup Condition="'$(VSTarget)' == '12.0' Or '$(VSTarget)' == '14.0'">
-    <ProjectReference Include="..\templates\AWSProjectTemplates.Legacy\AWSProjectTemplates.Legacy.csproj">
-      <Project>{BD8B477F-4A67-4CB4-A9A9-019D3A60A671}</Project>
-      <Name>AWSProjectTemplates.Legacy</Name>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-    </ProjectReference>
-  </ItemGroup>
+  <Choose>
+    <When Condition="'$(VSTarget)' == '12.0' Or '$(VSTarget)' == '14.0'">  
+      <ItemGroup>
+        <ProjectReference Include="..\templates\AWSProjectTemplates.Legacy\AWSProjectTemplates.Legacy.csproj">
+          <Project>{BD8B477F-4A67-4CB4-A9A9-019D3A60A671}</Project>
+          <Name>AWSProjectTemplates.Legacy</Name>
+          <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+          <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+          <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <ProjectReference Include="..\templates\AWSProjectTemplates\AWSProjectTemplates.csproj">
+          <Project>{EE9E2A3C-35F9-48E9-858E-B5AD00A5EFF0}</Project>
+          <Name>AWSProjectTemplates</Name>
+          <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+          <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+          <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+        </ProjectReference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>
