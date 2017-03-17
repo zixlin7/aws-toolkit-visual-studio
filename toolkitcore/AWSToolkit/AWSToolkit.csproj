@@ -130,6 +130,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Account\Controller\RegisterServiceCredentialsController.cs" />
+    <Compile Include="Account\Model\RegisterServiceCredentialsModel.cs" />
+    <Compile Include="Account\View\RegisterServiceCredentialsControl.xaml.cs">
+      <DependentUpon>RegisterServiceCredentialsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\CommandHandler.cs" />
     <Compile Include="CommonUI\Components\RegisteredProfilesPicker.xaml.cs">
       <DependentUpon>RegisteredProfilesPicker.xaml</DependentUpon>
     </Compile>
@@ -349,8 +355,10 @@
     <Compile Include="Themes\ShellProviderThemeResources.cs" />
     <Compile Include="ThemeUtil.cs" />
     <Compile Include="ToolkitFactory.cs" />
+    <Compile Include="Util\HeaderedCsvFile.cs" />
     <Compile Include="Util\KeyPairLocalStoreManager.cs" />
     <Compile Include="Util\RolePolicyFilter.cs" />
+    <Compile Include="Util\ServiceSpecificCredentialStoreManager.cs" />
     <Compile Include="VersionInfo\NewVersionAlertControl.xaml.cs">
       <DependentUpon>NewVersionAlertControl.xaml</DependentUpon>
     </Compile>
@@ -371,6 +379,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Account\View\RegisterServiceCredentialsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="CommonUI\Browser.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -22,7 +22,7 @@
   </Dependencies>
   <Assets>
     <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="AWSToolkit.CloudFormation.EditorExtensions" Path="|AWSToolkit.CloudFormation.EditorExtensions|" />
 
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="AWSToolkit.Lambda.TemplateWizards" Path="|AWSToolkit.Lambda.TemplateWizards|" AssemblyName="|AWSToolkit.Lambda.TemplateWizards;AssemblyName|" />
@@ -49,6 +49,8 @@
     <CustomExtension Type="Plugins">AWSToolkit.CloudFormation.Interface.dll</CustomExtension>
     <CustomExtension Type="Plugins">AWSToolkit.CloudFront.dll</CustomExtension>
     <CustomExtension Type="Plugins">AWSToolkit.CloudFront.Interface.dll</CustomExtension>
+    <CustomExtension Type="Plugins">AWSToolkit.CodeCommit.dll</CustomExtension>
+    <CustomExtension Type="Plugins">AWSToolkit.CodeCommit.Interface.dll</CustomExtension>
     <CustomExtension Type="Plugins">AWSToolkit.EC2.dll</CustomExtension>
     <CustomExtension Type="Plugins">AWSToolkit.EC2.Interface.dll</CustomExtension>
     <CustomExtension Type="Plugins">AWSToolkit.DynamoDB.dll</CustomExtension>

@@ -44,5 +44,8 @@ namespace Amazon.AWSToolkit
         public const string AnalyticsCognitoIdentityId = "AnalyticsCognitoIdentityId";
         public const string AnalyticsAnonymousCustomerId = "AnalyticsAnonymousCustomerId";
         public const string AnalyticsMostRecentlyUsedCognitoIdentityPoolId = "AnalyticsMostRecentlyUsedCognitoIdentityPoolId";
+
+        public const string ServiceCredentialsUserName = "UserName";
+        public const string ServiceCredentialsPassword = "Password";
     }
 }

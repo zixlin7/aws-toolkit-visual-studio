@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Threading;
-
 using Amazon.Runtime.Internal.Settings;
+
 using Amazon.AWSToolkit.Navigator.Node;
-using log4net;
-using Amazon.Util;
+using Amazon.AWSToolkit.Util;
 using Amazon.Runtime;
-using Amazon.Runtime.Internal;
 using Amazon.Runtime.CredentialManagement.Internal;
 using Amazon.Runtime.CredentialManagement;
+
+using log4net;
 
 namespace Amazon.AWSToolkit.Account
 {
@@ -21,10 +19,9 @@ namespace Amazon.AWSToolkit.Account
     {
         ILog LOGGER = LogManager.GetLogger(typeof(AccountViewModel));
 
-
         public static readonly ObservableCollection<IViewModel> NO_CHILDREN = new ObservableCollection<IViewModel>();
 
-        AccountViewMetaNode _metaNode;
+        readonly AccountViewMetaNode _metaNode;
         AWSViewModel _awsViewModel;
 
         // credentials obtained on-demand from the bound profile
@@ -35,6 +32,8 @@ namespace Amazon.AWSToolkit.Account
         string _displayName;
 
         ObservableCollection<IViewModel> _serviceViewModels;
+
+        private Dictionary<string, ServiceSpecificCredentials> _cachedServiceCredentials;
 
         public AccountViewModel(AccountViewMetaNode metaNode, AWSViewModel awsViewModel, ICredentialProfileStore profileStore, CredentialProfile profile)
             : base(metaNode, awsViewModel, profile.Name)
@@ -59,6 +58,11 @@ namespace Amazon.AWSToolkit.Account
 
             this._displayName = this._profile.Name;
             this._credentials = this._profile.GetAWSCredentials(ProfileStore);
+
+            if (_cachedServiceCredentials != null)
+                _cachedServiceCredentials.Clear();
+            else
+                _cachedServiceCredentials = new Dictionary<string, ServiceSpecificCredentials>(StringComparer.OrdinalIgnoreCase);
         }
 
 
@@ -200,6 +204,37 @@ namespace Amazon.AWSToolkit.Account
             {
                 return GetRestrictions();
             }
+        }
+
+        /// <summary>
+        /// Returns any service specific credentials persisted for a service.
+        /// </summary>
+        /// <param name="serviceName"></param>
+        /// <returns></returns>
+        public ServiceSpecificCredentials GetCredentialsForService(string serviceName)
+        {
+            var serviceCredentials = ServiceSpecificCredentialStoreManager
+                                        .Instance
+                                        .GetCredentialsForService(this.SettingsUniqueKey, serviceName);
+            if (serviceCredentials != null)
+                _cachedServiceCredentials[serviceName] = serviceCredentials;
+
+            return serviceCredentials;
+        }
+
+        public void SaveCredentialsForService(string serviceName, string userName, string password)
+        {
+            var serviceCredentials = ServiceSpecificCredentialStoreManager
+                                        .Instance
+                                        .SaveCredentialsForService(this.SettingsUniqueKey, serviceName, userName, password);
+            _cachedServiceCredentials[serviceName] = serviceCredentials;
+        }
+
+        public void ClearCredentialsForService(string serviceName)
+        {
+            ServiceSpecificCredentialStoreManager.Instance.ClearCredentialsForService(this.SettingsUniqueKey, serviceName);
+            if (_cachedServiceCredentials.ContainsKey(serviceName))
+                _cachedServiceCredentials.Remove(serviceName);
         }
 
         private HashSet<string> GetRestrictions()

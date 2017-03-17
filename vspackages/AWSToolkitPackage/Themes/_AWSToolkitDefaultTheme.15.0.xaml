@@ -452,6 +452,7 @@
     <SolidColorBrush x:Key="awsSelectableTextBoxBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowTextColorKey}}" />
 
     <SolidColorBrush x:Key="awsUrlTextFieldForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ControlLinkTextColorKey}}" />
+    <SolidColorBrush x:Key="awsActionLinkForegroundBrushKey" Color="#FF0E70C0"/>
 
     <SolidColorBrush x:Key="awsHeaderedDropPanelPopupBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.DropDownPopupBorderColorKey}}" />
     <SolidColorBrush x:Key="awsHeaderedDropPanelHeaderBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.PanelTitleBarColorKey}}" />

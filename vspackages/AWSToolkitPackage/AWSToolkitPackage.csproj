@@ -136,6 +136,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
@@ -166,6 +167,56 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
+  <Choose>
+    <When Condition="'$(VSTarget)' != '12.0'">
+      <ItemGroup>
+        <Reference Include="Microsoft.TeamFoundation.Common">
+          <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Common.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.TeamFoundation.Client">
+          <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Client.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.TeamFoundation.Controls">
+          <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Controls.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.TeamFoundation.Git.Controls">
+          <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Git.Controls.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.TeamFoundation.Git.Provider">
+          <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Git.Provider.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+      <ItemGroup>
+        <Compile Include="TeamExplorer\Base\TeamExplorerBase.cs" />
+        <Compile Include="TeamExplorer\Base\TeamExplorerInvitationBase.cs" />
+        <Compile Include="TeamExplorer\CodeCommit\ConnectionsManager.cs" />
+        <Compile Include="TeamExplorer\CodeCommit\Connect\ConnectionSection.cs" />
+        <Compile Include="TeamExplorer\CodeCommit\Connect\InvitationSection.cs" />
+        <Compile Include="TeamExplorer\CodeCommit\Controllers\ConnectController.cs" />
+        <Compile Include="TeamExplorer\CodeCommit\Controls\ConnectControl.xaml.cs">
+          <DependentUpon>ConnectControl.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="TeamExplorer\CodeCommit\Controls\ConnectionSectionControl.xaml.cs">
+          <DependentUpon>ConnectionSectionControl.xaml</DependentUpon>
+        </Compile>
+        <Compile Include="TeamExplorer\CodeCommit\Model\ConnectSectionViewModel.cs" />
+        <Page Include="TeamExplorer\CodeCommit\Controls\ConnectControl.xaml">
+          <SubType>Designer</SubType>
+          <Generator>MSBuild:Compile</Generator>
+        </Page>
+        <Page Include="TeamExplorer\CodeCommit\Controls\ConnectionSectionControl.xaml">
+          <SubType>Designer</SubType>
+          <Generator>MSBuild:Compile</Generator>
+        </Page>
+      </ItemGroup>
+    </When>
+    <Otherwise />
+  </Choose>
   <ItemGroup>
     <COMReference Include="Microsoft.VisualStudio.CommandBars">
       <Guid>{1CBA492E-7263-47BB-87FE-639000619B15}</Guid>
@@ -322,6 +373,8 @@
     <EmbeddedResource Include="Resources\FirstRun\explorerlocation_dark.png" />
     <EmbeddedResource Include="Resources\FirstRun\publishbeanstalk_dark.png" />
     <EmbeddedResource Include="Resources\FirstRun\publishlambda_dark.png" />
+    <Resource Include="Resources\CodeCommit32x32.png" />
+    <Resource Include="Resources\SignUp.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PkgCmdID.cs" />
@@ -367,6 +420,14 @@
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CloudFormation.Interface.dll">
       <Link>Plugins\AWSToolkit.CloudFormation.Interface.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeCommit.dll">
+      <Link>Plugins\AWSToolkit.CodeCommit.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeCommit.Interface.dll">
+      <Link>Plugins\AWSToolkit.CodeCommit.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.DynamoDB.dll">
@@ -899,6 +960,14 @@
       <Name>AWSToolkit.ElasticBeanstalk</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeCommit.Interface\AWSToolkit.CodeCommit.Interface.csproj">
+      <Project>{b8cfce12-d441-46a5-a415-c763e1e2beb0}</Project>
+      <Name>AWSToolkit.CodeCommit.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CodeCommit\AWSToolkit.CodeCommit.csproj">
+      <Project>{9aa7dd53-7bc4-4971-bc0c-0540a391dc22}</Project>
+      <Name>AWSToolkit.CodeCommit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.S3\AWSToolkit.S3.csproj">
       <Project>{a01edd42-f7f5-4e20-8deb-9f66f2980662}</Project>
       <Name>AWSToolkit.S3</Name>
@@ -1027,8 +1096,9 @@
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
-    <When Condition="'$(VSTarget)' == '12.0' Or '$(VSTarget)' == '14.0'">  
+    <When Condition="'$(VSTarget)' == '12.0' Or '$(VSTarget)' == '14.0'">
       <ItemGroup>
         <ProjectReference Include="..\templates\AWSProjectTemplates.Legacy\AWSProjectTemplates.Legacy.csproj">
           <Project>{BD8B477F-4A67-4CB4-A9A9-019D3A60A671}</Project>

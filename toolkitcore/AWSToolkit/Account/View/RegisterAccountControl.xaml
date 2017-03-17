@@ -37,7 +37,8 @@
         <Label Grid.Column="0" Grid.Row="0" Target="{Binding ElementName=_ctlDisplayName}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Bottom">Profile _Name:</Label>
         <TextBox Margin="4" Name="_ctlDisplayName" Grid.Column="1" Grid.Row="0" 
                  Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}" 
-                 TextChanged="MandatoryFieldTextChanged" Style="{DynamicResource awsTextBoxStyle}"/>
+                 TextChanged="MandatoryFieldTextChanged" Style="{DynamicResource awsTextBoxStyle}"
+                 Tag="Required"/>
 
         <TextBlock Grid.Row="1" Grid.Column="1" 
                    Style="{DynamicResource awsInfoTextStyle}" 
@@ -54,12 +55,14 @@
         <Label Grid.Column="0" Grid.Row="2" Target="{Binding ElementName=_ctlAccessKey}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Bottom">_Access Key ID:</Label>
         <TextBox Margin="4" Grid.Column="1" Grid.Row="2" x:Name="_ctlAccessKey" 
                  Text="{Binding AccessKey, UpdateSourceTrigger=PropertyChanged}" 
-                 TextChanged="MandatoryFieldTextChanged" Style="{DynamicResource awsTextBoxStyle}"/>
+                 TextChanged="MandatoryFieldTextChanged" Style="{DynamicResource awsTextBoxStyle}"
+                 Tag="Required"/>
 
         <Label Grid.Column="0" Grid.Row="3" Target="{Binding ElementName=_ctlSecretKey}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Bottom">_Secret Access Key:</Label>
         <TextBox Margin="4" Grid.Column="1" Grid.Row="3" x:Name="_ctlSecretKey" 
                  Text="{Binding SecretKey, UpdateSourceTrigger=PropertyChanged}" 
-                 TextChanged="MandatoryFieldTextChanged" Style="{DynamicResource awsTextBoxStyle}"/>
+                 TextChanged="MandatoryFieldTextChanged" Style="{DynamicResource awsTextBoxStyle}"
+                 Tag="Required"/>
 
         <Label Grid.Column="0" Grid.Row="4" Target="{Binding ElementName=_ctlAccountNumber}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Bottom">A_ccount Number*:</Label>
         <TextBox Margin="4" Grid.Column="1" Grid.Row="4" x:Name="_ctlAccountNumber" 

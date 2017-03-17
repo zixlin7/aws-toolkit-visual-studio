@@ -1,0 +1,211 @@
+﻿<commonui:BaseAWSControl 
+    x:Class="Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls.CloneRepositorySelectorControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
+    mc:Ignorable="d" 
+    Height="340" Width="450"
+    FontFamily="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontFamilyKey}}"
+    FontSize="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontSizeKey}}"
+    >
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="VerticalHeaderBar" TargetType="{x:Type Rectangle}">
+                <Setter Property="MinHeight" Value="25" />
+                <Setter Property="Width" Value="2" />
+                <Setter Property="Fill" Value="{DynamicResource awsPanelBorderBrushKey}" />
+                <Setter Property="Margin" Value="0,0,8,0" />
+            </Style>
+
+            <Style x:Key="RepositoryListBoxItemStyle" TargetType="ListBoxItem">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                <Setter Property="Margin" Value="4" />
+                <Setter Property="TextBlock.Foreground" Value="{DynamicResource awsDefaultControlForegroundBrushKey}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ListBoxItem">
+                            <Border
+                                x:Name="Root"
+                                Padding="4"
+                                BorderBrush="Transparent"
+                                BorderThickness="1">
+                                <ContentPresenter
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Content="{TemplateBinding Content}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Root" Property="BorderBrush" Value="{DynamicResource awsPanelBorderBrushKey}" />
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter TargetName="Root" Property="Background" Value="{DynamicResource awsPanelBorderBrushKey}" />
+                                    <Setter Property="Background" Value="{DynamicResource awsPanelBorderBrushKey}" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <DataTemplate x:Key="RepositoryListItemTemplate">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Rectangle Grid.Row="0"
+                               Grid.RowSpan="2"
+                               Grid.Column="0"
+                               Style="{StaticResource VerticalHeaderBar}" />
+                    
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="1"
+                               Style="{DynamicResource awsTextBlockBoldStyle}"
+                               Text="{Binding Name}"/>
+                    
+                    <TextBlock Grid.Row="1"
+                               Grid.Column="1"
+                               Style="{DynamicResource awsTextBlockBaseStyle}"
+                               Text="{Binding Description}"/>
+                </Grid>
+            </DataTemplate>
+
+            <ControlTemplate x:Key="RepositoryListControlTemplate" TargetType="ListBox">
+                <ScrollViewer
+                    Padding="{TemplateBinding Padding}"
+                    CanContentScroll="True"
+                    Focusable="false"
+                    HorizontalScrollBarVisibility="Hidden"
+                    VerticalScrollBarVisibility="Auto">
+                    <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                </ScrollViewer>
+            </ControlTemplate>
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>    
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <TextBlock Grid.Row="0"
+                   Grid.ColumnSpan="2"
+                   Style="{DynamicResource awsTextBlock122PercentStyle}"
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,16">
+            AWS CodeCommit repositories are organized by region. Select a 
+            region to see the available repositories for cloning.
+        </TextBlock>
+        
+        <Label Grid.Row="1" 
+               Grid.Column="0" 
+               Style="{DynamicResource awsLabelBaseStyle}"
+               Margin="-4,0,0,0">
+            _Region:
+        </Label>
+
+        <ComboBox Grid.Row="1"
+                  Grid.Column="1"
+                  Margin="2"
+                  VerticalAlignment="Center"
+                  Style="{DynamicResource awsComboBoxStyle}"
+                  SelectionChanged="OnRegionSelectionChanged"
+                  ItemsSource="{Binding AvailableRegions}"
+                  SelectedItem="{Binding SelectedRegion}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Margin="4,0,0,0" Width="13" Height="12" Source="{Binding FlagIcon}"/>
+                        <TextBlock Margin="4,0,0,0" Text="{Binding DisplayName}" Style="{DynamicResource awsTextBlockBaseStyle}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <Grid
+            x:Name="_ctlQueryingResourcesOverlay"
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Visibility="Hidden">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Control Style="{DynamicResource awsBusyAnimationStyle}" />
+            <TextBlock
+                Grid.Column="1"
+                Margin="12,0,0,0"
+                Style="{DynamicResource awsTextBlock133PercentStyle}">
+                Querying repositories...
+            </TextBlock>
+        </Grid>
+
+        <Border
+            Grid.Row="2"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            BorderBrush="{DynamicResource awsDefaultControlBorderBrushKey}"
+            BorderThickness="1">
+            
+            <ListBox HorizontalContentAlignment="Stretch"
+                     ItemContainerStyle="{StaticResource RepositoryListBoxItemStyle}"
+                     ItemTemplate="{StaticResource RepositoryListItemTemplate}"
+                     ItemsSource="{Binding Repositories}"
+                     Template="{StaticResource RepositoryListControlTemplate}" 
+                     Margin="4"
+                     SelectedItem="{Binding SelectedRepository}"/>
+        </Border>
+        
+        <Grid Grid.Row="3"
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
+              Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <Label Grid.Column="0"
+                   Style="{DynamicResource awsLabelBaseStyle}">
+                _Clone to:
+            </Label>
+            <TextBox Grid.Column="1"
+                     Style="{DynamicResource awsTextBoxStyle}"
+                     VerticalAlignment="Center"
+                     Text="{Binding LocalFolder}"/>
+            <Button Grid.Column="2"
+                    VerticalAlignment="Center"
+                    Margin="2"
+                    Padding="4,0"
+                    Click="OnClickBrowseFolder"
+                    Content="..."/>
+        </Grid>
+    </Grid>
+</commonui:BaseAWSControl>

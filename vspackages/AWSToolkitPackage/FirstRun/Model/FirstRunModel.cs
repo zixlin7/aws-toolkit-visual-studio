@@ -9,6 +9,7 @@ using System.Windows.Media;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Persistence;
+using Amazon.AWSToolkit.Util;
 using log4net;
 using ThirdParty.Json.LitJson;
 
@@ -130,7 +131,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
 
         internal void AWSCredentialsFromCSV(string csvCredentialsFile)
         {
-            var csvData = new HeaderedCsvFileContent(csvCredentialsFile);
+            var csvData = new HeaderedCsvFile(csvCredentialsFile);
             // we expect to see User name,Password,Access key ID,Secret access key
 
             var akeyIndex = csvData.ColumnIndexOfHeader("Access key ID");
@@ -271,63 +272,6 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
         private bool _openAwsExplorerOnClose = true;
 
         internal static ILog LOGGER = LogManager.GetLogger(typeof(FirstRunModel));
-    }
-
-    internal class HeaderedCsvFileContent
-    {
-        public HeaderedCsvFileContent(string csvFilename)
-        {
-            using (var sr = new StreamReader(csvFilename))
-            {
-                var line = sr.ReadLine();
-                while (line != null)
-                {
-                    if (ColumnHeaders == null)
-                    {
-                        var headerValues = line.Split(new[] { ',' }, StringSplitOptions.None);
-                        ColumnHeaders = new List<string>(headerValues);
-                    }
-                    else
-                    {
-                        var values = line.Split(new[] { ',' }, StringSplitOptions.None);
-                        RowData.Add(values);
-                    }
-
-                    line = sr.ReadLine();
-                }
-            }
-        }
-
-        public IEnumerable<string> ColumnHeaders { get; }
-
-        public int ColumnIndexOfHeader(string header)
-        {
-            var index = 0;
-            foreach (var h in ColumnHeaders)
-            {
-                if (h.Equals(header, StringComparison.OrdinalIgnoreCase))
-                    return index;
-
-                index++;
-            }
-
-            return -1;
-        }
-
-        public IEnumerable<string> ColumnValuesForRow(int rowIndex)
-        {
-            if (rowIndex < 0 || rowIndex >= RowData.Count)
-                throw new ArgumentOutOfRangeException();
-
-            return RowData[rowIndex];
-        }
-
-        public int RowCount
-        {
-            get { return RowData.Count; }
-        }
-
-        private readonly List<string[]> RowData = new List<string[]>();
     }
 
     public class ShowMeHowToListItem

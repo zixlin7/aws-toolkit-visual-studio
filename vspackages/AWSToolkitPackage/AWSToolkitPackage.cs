@@ -50,6 +50,7 @@ using Amazon.AWSToolkit.Lambda;
 using ThirdParty.Json.LitJson;
 using Amazon.AWSToolkit.Lambda.WizardPages;
 using System.Xml;
+using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 
 namespace Amazon.AWSToolkit.VisualStudio
@@ -121,6 +122,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         private IAWSCloudFormation _cloudformationPlugin;
         private IAWSElasticBeanstalk _beanstalkPlugin;
         private IAWSLambda _lambdaPlugin;
+        private IAWSCodeCommit _codeCommitPlugin;
 
         internal readonly NavigatorVsUIHierarchy _navigatorVsUIHierarchy;
 
@@ -353,6 +355,37 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
+        IAWSCodeCommit CodeCommitPlugin
+        {
+            get
+            {
+                try
+                {
+                    if (_codeCommitPlugin == null)
+                    {
+                        var shell = GetService(typeof(SAWSToolkitShellProvider)) as IAWSToolkitShellProvider;
+                        if (shell != null)
+                        {
+                            _codeCommitPlugin = shell.QueryAWSToolkitPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    LOGGER.ErrorFormat("Exception attempting to obtain IAWSCodeCommit, {0}", e);
+                }
+
+                return _codeCommitPlugin;
+            }
+        }
+
+        bool CodeCommitPluginAvailable
+        {
+            get
+            {
+                return CodeCommitPlugin != null;
+            }
+        }
 
         private object CreateService(IServiceContainer container, Type serviceType)
         {
