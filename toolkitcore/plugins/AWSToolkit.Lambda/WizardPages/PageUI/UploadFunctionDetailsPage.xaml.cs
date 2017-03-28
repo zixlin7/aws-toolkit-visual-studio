@@ -182,7 +182,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                     this._ctlPersistPanel.Visibility = Visibility.Collapsed;
                     if (isFirstTimeConfig)
                     {
-                        Runtime = RuntimeOption.NodeJS_v4_30;
+                        Runtime = RuntimeOption.NodeJS_v6_10;
                     }
                     break;
                 case UploadFunctionController.DeploymentType.NETCore:
