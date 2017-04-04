@@ -2,21 +2,20 @@
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Controller;
 using Amazon.AWSToolkit.CodeCommit.Interface;
+using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
 using log4net;
-using LibGit2Sharp;
+using Amazon.AWSToolkit.CodeCommit.Interface.Model;
+using Amazon.AWSToolkit.CodeCommit.Model;
+using Amazon.AWSToolkit.CodeCommit.Services;
 
 namespace Amazon.AWSToolkit.CodeCommit
 {
     public class CodeCommitActivator : AbstractPluginActivator, IAWSCodeCommit
     {
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(CodeCommitActivator));
-        private const string CodeCommitServiceCredentialsName = "codecommit";
 
-        public override string PluginName
-        {
-            get { return "CodeCommit"; }
-        }
+        public override string PluginName => "CodeCommit";
 
         public override void RegisterMetaNodes()
         {
@@ -28,22 +27,22 @@ namespace Amazon.AWSToolkit.CodeCommit
             if (serviceType == typeof(IAWSCodeCommit))
                 return this;
 
+            if (serviceType == typeof(IAWSToolkitGitServices))
+                return new AWSToolkitGitServices(this);
+
             return null;
         }
 
         #region IAWSCodeCommit Members
 
-        public string ServiceSpecificCredentialsStorageName
-        {
-            get { return CodeCommitServiceCredentialsName; }
-        }
+        public string ServiceSpecificCredentialsStorageName => CodeCommitConstants.CodeCommitServiceCredentialsName;
 
         public void AssociateCredentialsWithProfile(string profileArtifactsId, string userName, string password)
         {
             ServiceSpecificCredentialStoreManager
                 .Instance
                 .SaveCredentialsForService(profileArtifactsId,
-                                           CodeCommitServiceCredentialsName,
+                                           CodeCommitConstants.CodeCommitServiceCredentialsName,
                                            userName,
                                            password);
         }
@@ -53,20 +52,19 @@ namespace Amazon.AWSToolkit.CodeCommit
             return 
                 ServiceSpecificCredentialStoreManager
                     .Instance
-                    .GetCredentialsForService(profileArtifactsId, CodeCommitServiceCredentialsName);
+                    .GetCredentialsForService(profileArtifactsId, CodeCommitConstants.CodeCommitServiceCredentialsName);
         }
 
-        public bool CloneRepository(AccountViewModel account)
+        public IRepository SelectRepositoryToClone(AccountViewModel account, RegionEndPointsManager.RegionEndPoints initialRegion, string defaultFolder)
         {
-            var controller = new CloneRepositoryController(account);
-            return controller.Execute().Success;
+            var controller = new RepositorySelectionController(account, initialRegion);
+            if (!controller.Execute().Success)
+                return null;
+
+            return new RepositoryWrapper(controller.Model.SelectedRepository, controller.Model.LocalFolder);
         }
 
-        public bool CloneRepository(ServiceSpecificCredentials credentials, string cloneUrlHttp, string  localFolder)
-        {
-            var controller = new CloneRepositoryController(credentials, cloneUrlHttp, localFolder);
-            return controller.Execute().Success;
-        }
+        public IAWSToolkitGitServices ToolkitGitServices => ToolkitFactory.Instance.QueryPluginService(typeof(IAWSToolkitGitServices)) as IAWSToolkitGitServices;
 
         #endregion
     }

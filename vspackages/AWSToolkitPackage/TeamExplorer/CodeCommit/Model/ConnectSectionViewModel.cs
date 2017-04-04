@@ -1,12 +1,18 @@
 ﻿using System;
+using System.CodeDom;
 using System.ComponentModel;
 using System.Windows.Input;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Account.Controller;
+using Amazon.AWSToolkit.CodeCommit;
 using Microsoft.TeamFoundation.Controls.WPF.TeamExplorer;
 
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.CommonUI;
-
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Util;
+using Amazon.AWSToolkit.VisualStudio.Services;
 using log4net;
 
 namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
@@ -71,25 +77,48 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
 
         private void OnClone()
         {
-            var codeCommitPlugin 
-                = ToolkitFactory.Instance.ShellProvider.QueryAWSToolkitPluginService(typeof(IAWSCodeCommit))
-                                as IAWSCodeCommit;
+            var codeCommitPlugin = ToolkitFactory.Instance.QueryPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
+            if (codeCommitPlugin == null)
+            {
+                LOGGER.Error("Called to clone repository but CodeCommit plugin not loaded");
+                return;
+            }
 
-            try
+            // by now we'll have made sure the user has a profile set up, so default account and region
+            // bindings are always available
+            var account = ConnectionsManager.Instance.TeamExplorerAccount;
+            var region = ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints;
+            var selectedRepository = codeCommitPlugin.SelectRepositoryToClone(account, region, null);
+            if (selectedRepository == null)
+                return;
+
+            // if the account doesn't have service-specific credentials for CodeCommit, now would be
+            // a good time to get and store them
+            var svcCredentials
+                = ServiceSpecificCredentialStoreManager
+                    .Instance
+                    .GetCredentialsForService(account.SettingsUniqueKey, CodeCommitConstants.CodeCommitServiceCredentialsName);
+            if (svcCredentials == null)
             {
-                if (codeCommitPlugin.CloneRepository(ConnectionsManager.Instance.TeamExplorerAccount))
-                {
-                    
-                }
-                else
-                {
-                    
-                }
+                var registerCredentialsController = new RegisterServiceCredentialsController(account);
+                if (!registerCredentialsController.Execute().Success)
+                    return;
+
+                svcCredentials = registerCredentialsController.Credentials;
             }
-            catch (Exception e)
+
+            // delegate the actual clone operation to either Team Explorer or the CodeCommit plugin
+            var gitServices = ToolkitFactory
+                                .Instance
+                                .ShellProvider
+                                .QueryShellProviderService<IAWSToolkitGitServices>();
+            if (gitServices == null)
             {
-                LOGGER.Error("Exception during repository selection/clone", e);
+                gitServices = ToolkitFactory
+                                .Instance
+                                .QueryPluginService(typeof(IAWSToolkitGitServices)) as IAWSToolkitGitServices;
             }
+            gitServices?.Clone(selectedRepository.RepositoryUrl, selectedRepository.LocalFolder, account);
         }
 
         private void OnCreate()

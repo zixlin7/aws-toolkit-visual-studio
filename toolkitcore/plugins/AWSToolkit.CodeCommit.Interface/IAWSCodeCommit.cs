@@ -1,4 +1,6 @@
 ﻿using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CodeCommit.Interface.Model;
+using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.CodeCommit.Interface
@@ -32,21 +34,21 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         ServiceSpecificCredentials CredentialsForProfile(string profileArtifactsId);
 
         /// <summary>
-        /// Displays a dialog containing a list of repositories for the specified account. The chosen
-        /// repository is then cloned locally. If the account does not have associated service-specific
-        /// credentials for CodeCommit the user is prompted to supply them.
+        /// Prompts the user to select a repository to clone. The account and initial region
+        /// are usually seeded from the current AWS Explorer bindings.
         /// </summary>
-        /// <param name="account"></param>
-        /// <returns>True if the command succeeded.</returns>
-        bool CloneRepository(AccountViewModel account);
+        /// <param name="account">The account for the repositories to list for selection.</param>
+        /// <param name="initialRegion">Initial region selection or null.</param>
+        /// <param name="defaultFolder">Suggested folder for the cloned repository, or null.</param>
+        /// <returns>Null if the user cancels selection, otherwise details of the repository to clone.</returns>
+        IRepository SelectRepositoryToClone(AccountViewModel account, RegionEndPointsManager.RegionEndPoints initialRegion, string defaultFolder);
 
         /// <summary>
-        /// Makes a local clone of the specified repository.
+        /// Returns an implementation for accessing git operations against CodeCommit repositories. 
+        /// If running inside Visual Studio this returns the package level implementation that will 
+        /// forward operations onto Team Explorer otherwise the CodeCommit plugin implementation is 
+        /// returned.
         /// </summary>
-        /// <param name="credentials">Service specific credentials appropriate for the repository</param>
-        /// <param name="repositoryUrl">Http(s) url of the repository to clone</param>
-        /// <param name="localFolder">Folder to clone into (does not need to exist but if it does it should be empty)</param>
-        /// <returns>True if the command succeeded.</returns>
-        bool CloneRepository(ServiceSpecificCredentials credentials, string repositoryUrl, string localFolder);
+        IAWSToolkitGitServices ToolkitGitServices { get; }
     }
 }

@@ -6,27 +6,28 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 
 using Amazon.AWSToolkit.CodeCommit.Controller;
+using Amazon.AWSToolkit.CommonUI;
 
-namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
+namespace Amazon.AWSToolkit.CodeCommit.Controls
 {
     /// <summary>
-    /// Interaction logic for CloneRepositorySelectorControl.xaml
+    /// Interaction logic for RepositorySelectionControl.xaml
     /// </summary>
-    public partial class CloneRepositorySelectorControl
+    public partial class RepositorySelectionControl : BaseAWSControl
     {
-        public CloneRepositorySelectorControl()
+        public RepositorySelectionControl()
         {
             InitializeComponent();
         }
 
-        public CloneRepositorySelectorControl(CloneRepositoryController controller)
+        public RepositorySelectionControl(RepositorySelectionController controller)
             : this()
         {
             Controller = controller;
             DataContext = Controller.Model;
         }
 
-        public CloneRepositoryController Controller { get; }
+        public RepositorySelectionController Controller { get; }
 
         public override string Title => "Clone AWS CodeCommit Repository";
 

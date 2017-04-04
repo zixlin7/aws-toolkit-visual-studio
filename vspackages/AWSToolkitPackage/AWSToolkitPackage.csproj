@@ -320,6 +320,7 @@
     <Compile Include="DeploymentProcessors\*.cs" />
     <Compile Include="Loggers\*.cs" />
     <Compile Include="Services\AWSLegacyDeploymentPersistenceService.cs" />
+    <Compile Include="Services\AWSToolkitGitServices.cs" />
     <Compile Include="Services\AWSToolkitShellProviderService.cs" />
     <Compile Include="Themes\ThemeFontResources.cs" />
     <Compile Include="IEditor.cs" />

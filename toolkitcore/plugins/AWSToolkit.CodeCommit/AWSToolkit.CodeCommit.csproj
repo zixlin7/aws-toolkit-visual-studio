@@ -81,13 +81,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeCommitActivator.cs" />
-    <Compile Include="Controller\CloneRepositoryController.cs" />
-    <Compile Include="Controls\CloneRepositorySelectorControl.xaml.cs">
-      <DependentUpon>CloneRepositorySelectorControl.xaml</DependentUpon>
+    <Compile Include="Controller\RepositorySelectionController.cs" />
+    <Compile Include="Controls\RepositorySelectionControl.xaml.cs">
+      <DependentUpon>RepositorySelectionControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\CloneRepositoryModel.cs" />
+    <Compile Include="Model\RepositorySelectionModel.cs" />
     <Compile Include="Model\RepositoryWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AWSToolkitGitServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
@@ -114,7 +115,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Controls\CloneRepositorySelectorControl.xaml">
+    <Page Include="Controls\RepositorySelectionControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

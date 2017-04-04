@@ -1,21 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+using System.Threading;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Util;
 using Amazon.CodeCommit;
 using Amazon.CodeCommit.Model;
-using Amazon.Runtime.Internal;
+using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommit.Model
 {
-    public class CloneRepositoryModel : BaseModel
+    public class RepositorySelectionModel : BaseModel
     {
+        private readonly ILog LOGGER = LogManager.GetLogger(typeof(RepositorySelectionModel));
+
+        private readonly object _syncLock = new object();
+        private int _backgroundWorkersActive = 0;
+
+        public bool QueryWorkersActive
+        {
+            get
+            {
+                int count;
+                lock (_syncLock)
+                {
+                    count = _backgroundWorkersActive;
+                }
+                return count != 0;
+            }
+        }
+
+
         /// <summary>
         /// The account to use to list available repositories. We will look
         /// for service-specific credentials for CodeCommit on the profile
@@ -29,10 +46,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             {
                 _account = value;
                 LoadValidServiceRegionsForAccount();
-
-                var initialRegion = ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints ??
-                                    RegionEndPointsManager.Instance.GetRegion("us-east-1");
-                SelectedRegion = initialRegion;
             }
         }
 
@@ -74,45 +87,57 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
         public void RefreshRepositoryList()
         {
-            _repositories.Clear();
-            QueryRepositories(GetClientForRegion(SelectedRegion.SystemName));
+            RefreshRepositoriesList(GetClientForRegion(SelectedRegion.SystemName));
         }
 
-        private void QueryRepositories(IAmazonCodeCommit client)
+        private void RefreshRepositoriesList(IAmazonCodeCommit codecommitClient)
         {
-            string nextToken = null;
-            do
-            {
-                client.ListRepositoriesAsync(new ListRepositoriesRequest
-                {
-                    NextToken = nextToken,
-                    SortBy = SortByEnum.LastModifiedDate
-                }).ContinueWith(listRepositoriesTask =>
-                {
-                    if (listRepositoriesTask.Exception == null)
-                    {
-                        nextToken = listRepositoriesTask.Result.NextToken;
+            Interlocked.Increment(ref _backgroundWorkersActive);
 
-                        foreach (var r in listRepositoriesTask.Result.Repositories)
+            ThreadPool.QueueUserWorkItem(x =>
+            {
+                var repositoryList = new List<RepositoryMetadata>();
+                string nextToken = null;
+                do
+                {
+                    try
+                    {
+                        var response = codecommitClient.ListRepositories(new ListRepositoriesRequest
                         {
-                            client.GetRepositoryAsync(new GetRepositoryRequest
+                            NextToken = nextToken,
+                            SortBy = SortByEnum.LastModifiedDate
+                        });
+
+                        nextToken = response.NextToken;
+
+                        foreach (var r in response.Repositories)
+                        {
+                            var getRepositoryResponse = codecommitClient.GetRepository(new GetRepositoryRequest
                             {
                                 RepositoryName = r.RepositoryName
-                            }).ContinueWith(getRepositoryTask =>
-                            {
-                                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
-                                {
-                                    _repositories.Add(new RepositoryWrapper(getRepositoryTask.Result.RepositoryMetadata));
-                                }));
                             });
+
+                            repositoryList.Add(getRepositoryResponse.RepositoryMetadata);
                         }
                     }
-                    else
+                    catch (Exception e)
                     {
+                        LOGGER.Error("Failed to retrieve repository list", e);
                         nextToken = null;
                     }
-                });
-            } while (!string.IsNullOrEmpty(nextToken));
+                } while (!string.IsNullOrEmpty(nextToken));
+
+                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                {
+                    _repositories.Clear();
+                    foreach (var r in repositoryList)
+                    {
+                        _repositories.Add(new RepositoryWrapper(r));
+                    }
+
+                    Interlocked.Decrement(ref _backgroundWorkersActive);
+                }));
+            });
         }
 
         private IAmazonCodeCommit GetClientForRegion(string region)
@@ -145,6 +170,8 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
                     _availableRegions.Add(rep);
                 }
             }
+
+            SelectedRegion = _availableRegions.FirstOrDefault();
         }
 
         private AccountViewModel _account;

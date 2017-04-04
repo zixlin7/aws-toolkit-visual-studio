@@ -20,8 +20,8 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface.Model
         string UniqueId { get; }
 
         /// <summary>
-        /// The folder root of the local clone. Null if the repo has not been cloned 
-        /// locally or we have no persisted association to the local clone yet.
+        /// The folder root of the repository. If this is a clone operation the
+        /// folder should not exist.
         /// </summary>
         string LocalFolder { get; }
 
@@ -29,13 +29,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface.Model
         /// The URL to the CodeCommit remote.
         /// </summary>
         string RepositoryUrl { get; }
-
-        /// <summary>
-        /// The AWS credential account associated with the repository. To enable
-        /// git operations against the repo the account should have associated
-        /// service-specific credentials.
-        /// </summary>
-        AccountViewModel Account { get; }
 
         /// <summary>
         /// Tests whether service-specific credentials have been associated with the
