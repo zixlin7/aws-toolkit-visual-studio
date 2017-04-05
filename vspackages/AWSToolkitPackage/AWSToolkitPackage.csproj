@@ -112,8 +112,6 @@
     <Reference Include="Microsoft.VisualStudio.Shell.$(VSTarget)" />
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0" />
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.11.0" />
-    <Reference Include="Microsoft.VisualStudio.Shell.Framework" />
-    <Reference Include="Microsoft.VisualStudio.Utilities, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" Condition="'$(VSTarget)' == '15.0'" />
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=$(VSTarget).0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Threading, Version=$(VSTarget).0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Data, Version=$(VSTarget).0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -166,6 +164,10 @@
       <HintPath>$(BuildRoot)\thirdparty\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
       <Private>False</Private>
     </Reference>
+  </ItemGroup>
+  <ItemGroup Condition="'$(VSTarget)' == '15.0'">
+    <Reference Include="Microsoft.VisualStudio.Shell.Framework, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Utilities, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VSTarget)' != '12.0'">
