@@ -7,7 +7,9 @@ using Amazon.AWSToolkit.Util;
 using log4net;
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
 using Amazon.AWSToolkit.CodeCommit.Model;
+using Amazon.AWSToolkit.CodeCommit.Nodes;
 using Amazon.AWSToolkit.CodeCommit.Services;
+using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.CodeCommit
 {
@@ -19,7 +21,20 @@ namespace Amazon.AWSToolkit.CodeCommit
 
         public override void RegisterMetaNodes()
         {
-            
+            var rootMetaNode = new CodeCommitRootViewMetaNode();
+            var repositoryMetaNode = new CodeCommitRepositoryViewMetaNode();
+
+            rootMetaNode.Children.Add(repositoryMetaNode);
+            setupContextMenuHooks(rootMetaNode);
+
+            var accountMetaNode = ToolkitFactory.Instance.RootViewMetaNode.FindChild<AccountViewMetaNode>();
+            accountMetaNode.Children.Add(rootMetaNode);
+        }
+
+        void setupContextMenuHooks(CodeCommitRootViewMetaNode rootNode)
+        {
+            rootNode.CodeCommitRepositoryViewMetaNode.OnOpenRepositoryView =
+                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewRepositoryController>().Execute);
         }
 
         public override object QueryPluginService(Type serviceType)
