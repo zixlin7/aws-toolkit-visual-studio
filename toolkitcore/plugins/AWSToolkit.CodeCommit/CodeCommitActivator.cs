@@ -70,9 +70,9 @@ namespace Amazon.AWSToolkit.CodeCommit
                     .GetCredentialsForService(profileArtifactsId, CodeCommitConstants.CodeCommitServiceCredentialsName);
         }
 
-        public IRepository SelectRepositoryToClone(AccountViewModel account, RegionEndPointsManager.RegionEndPoints initialRegion, string defaultFolder)
+        public IRepository SelectRepositoryToClone(AccountViewModel account, RegionEndPointsManager.RegionEndPoints initialRegion, string defaultCloneFolderRoot)
         {
-            var controller = new RepositorySelectionController(account, initialRegion);
+            var controller = new RepositorySelectionController(account, initialRegion, defaultCloneFolderRoot);
             if (!controller.Execute().Success)
                 return null;
 

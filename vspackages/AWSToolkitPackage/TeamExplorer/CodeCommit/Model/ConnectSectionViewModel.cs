@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows.Input;
 using Microsoft.TeamFoundation.Controls.WPF.TeamExplorer;
 
@@ -10,6 +11,7 @@ using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
 using log4net;
+using Microsoft.Win32;
 
 namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
 {
@@ -84,7 +86,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
             // bindings are always available
             var account = ConnectionsManager.Instance.TeamExplorerAccount;
             var region = ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints;
-            var selectedRepository = codeCommitPlugin.SelectRepositoryToClone(account, region, null);
+            var selectedRepository = codeCommitPlugin.SelectRepositoryToClone(account, region, GetLocalClonePathFromGitProvider());
             if (selectedRepository == null)
                 return;
 
@@ -103,16 +105,6 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
                 svcCredentials = registerCredentialsController.Credentials;
             }
 
-            var repoUrl = selectedRepository.RepositoryUrl.TrimEnd('/');
-
-            // experiment: push the service specific credentials to the Windows credential store
-            var uri = new Uri(repoUrl);
-            var credentialKey = string.Format("git:{0}://{1}", uri.Scheme, uri.DnsSafeHost);
-            var gitCredentials 
-                = new GitCredentials(svcCredentials.Username, svcCredentials.Password, credentialKey);
-
-            gitCredentials.Save();
-
             // delegate the actual clone operation to either Team Explorer or the CodeCommit plugin
             var gitServices = ToolkitFactory
                                 .Instance
@@ -124,7 +116,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
                                 .Instance
                                 .QueryPluginService(typeof(IAWSToolkitGitServices)) as IAWSToolkitGitServices;
             }
-            gitServices?.Clone(repoUrl, selectedRepository.LocalFolder, account);
+            gitServices?.Clone(selectedRepository.RepositoryUrl, selectedRepository.LocalFolder, svcCredentials);
        }
 
         private void OnCreate()
@@ -135,6 +127,40 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
         {
             var currentConnection = ConnectionsManager.Instance.TeamExplorerAccount;
             ConnectionsManager.Instance.DeregisterProfileConnection(currentConnection);
+        }
+
+        // The Default Repository Path that VS uses is hidden in an internal
+        // service 'ISccSettingsService' registered in an internal service
+        // 'ISccServiceHost' in an assembly with no public types that's
+        // always loaded with VS if the git service provider is loaded
+        public string GetLocalClonePathFromGitProvider()
+        {
+            var clonePath = string.Empty;
+
+            try
+            {
+#if VS2017_OR_LATER
+                const string TEGitKey = @"SOFTWARE\Microsoft\VisualStudio\15.0\TeamFoundation\GitSourceControl";
+#else
+                const string TEGitKey = @"SOFTWARE\Microsoft\VisualStudio\14.0\TeamFoundation\GitSourceControl";
+#endif
+
+                using (var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(TEGitKey + "\\General", true))
+                {
+                    clonePath = (string)key?.GetValue("DefaultRepositoryPath", string.Empty, RegistryValueOptions.DoNotExpandEnvironmentNames);
+                }
+            }
+            catch (Exception e)
+            {
+                LOGGER.ErrorFormat("Error loading the default cloning path from the registry '{0}'", e);
+            }
+
+            if (string.IsNullOrEmpty(clonePath))
+            {
+                clonePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Source", "Repos");
+            }
+
+            return clonePath;
         }
 
     }

@@ -23,12 +23,14 @@ namespace Amazon.AWSToolkit.CodeCommit.Controller
         /// </summary>
         /// <param name="account"></param>
         /// <param name="initialRegion">The initial region binding for the dialog</param>
-        public RepositorySelectionController(AccountViewModel account, RegionEndPointsManager.RegionEndPoints initialRegion)
+        /// <param name="defaultCloneFolderRoot">The system default folder for cloned repos, discovered from the registry or a fallback default</param>
+        public RepositorySelectionController(AccountViewModel account, RegionEndPointsManager.RegionEndPoints initialRegion, string defaultCloneFolderRoot)
         {
             Model = new RepositorySelectionModel
             {
                 Account = account,
-                SelectedRegion = initialRegion ?? RegionEndPointsManager.Instance.GetRegion("us-east-1")
+                SelectedRegion = initialRegion ?? RegionEndPointsManager.Instance.GetRegion("us-east-1"),
+                LocalFolder = defaultCloneFolderRoot
             };
         }
 

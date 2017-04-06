@@ -39,9 +39,11 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// </summary>
         /// <param name="account">The account for the repositories to list for selection.</param>
         /// <param name="initialRegion">Initial region selection or null.</param>
-        /// <param name="defaultFolder">Suggested folder for the cloned repository, or null.</param>
+        /// <param name="defaultCloneFolderRoot">Suggested folder for the cloned repository, or null.</param>
         /// <returns>Null if the user cancels selection, otherwise details of the repository to clone.</returns>
-        IRepository SelectRepositoryToClone(AccountViewModel account, RegionEndPointsManager.RegionEndPoints initialRegion, string defaultFolder);
+        IRepository SelectRepositoryToClone(AccountViewModel account, 
+                                            RegionEndPointsManager.RegionEndPoints initialRegion, 
+                                            string defaultCloneFolderRoot);
 
         /// <summary>
         /// Returns an implementation for accessing git operations against CodeCommit repositories. 

@@ -26,10 +26,14 @@ namespace Amazon.AWSToolkit.Shared
         /// The destination folder for the cloned repository. This folder should not
         /// exist, or if it does, it must be empty.
         /// </param>
-        /// <param name="account">
-        /// The owning account for the repository. Service-specific credentials for CodeCommit
-        /// will be extracted from the account profile, or the user prompted to supply them.
+        /// <param name="credentials">
+        /// The service-specific credentials for the operation. If the clone operation is
+        /// delegated to Team Explorer, these credentials will be written to the OS
+        /// credential store for later retrieval by Team Explorer. Once the clone operation
+        /// is completed, we delete the stored credentials so we do not affect other sessions
+        /// due to the credential store key being the regional CodeCommit endpoint, not the
+        /// specific repo endpoint.
         /// </param>
-        void Clone(string repositoryUrl, string destinationFolder, AccountViewModel account);
+        void Clone(string repositoryUrl, string destinationFolder, ServiceSpecificCredentials credentials);
     }
 }
