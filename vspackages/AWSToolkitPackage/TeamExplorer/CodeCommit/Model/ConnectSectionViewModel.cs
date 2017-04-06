@@ -1,18 +1,14 @@
 ﻿using System;
-using System.CodeDom;
-using System.ComponentModel;
 using System.Windows.Input;
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Account.Controller;
-using Amazon.AWSToolkit.CodeCommit;
 using Microsoft.TeamFoundation.Controls.WPF.TeamExplorer;
 
-using Amazon.AWSToolkit.CodeCommit.Interface;
+using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
-using Amazon.AWSToolkit.VisualStudio.Services;
+using Amazon.AWSToolkit.CodeCommit.Interface;
+using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
 using log4net;
 
 namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
@@ -107,6 +103,16 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
                 svcCredentials = registerCredentialsController.Credentials;
             }
 
+            var repoUrl = selectedRepository.RepositoryUrl.TrimEnd('/');
+
+            // experiment: push the service specific credentials to the Windows credential store
+            var uri = new Uri(repoUrl);
+            var credentialKey = string.Format("git:{0}://{1}", uri.Scheme, uri.DnsSafeHost);
+            var gitCredentials 
+                = new GitCredentials(svcCredentials.Username, svcCredentials.Password, credentialKey);
+
+            gitCredentials.Save();
+
             // delegate the actual clone operation to either Team Explorer or the CodeCommit plugin
             var gitServices = ToolkitFactory
                                 .Instance
@@ -118,8 +124,8 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
                                 .Instance
                                 .QueryPluginService(typeof(IAWSToolkitGitServices)) as IAWSToolkitGitServices;
             }
-            gitServices?.Clone(selectedRepository.RepositoryUrl, selectedRepository.LocalFolder, account);
-        }
+            gitServices?.Clone(repoUrl, selectedRepository.LocalFolder, account);
+       }
 
         private void OnCreate()
         {
