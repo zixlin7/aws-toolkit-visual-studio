@@ -8,6 +8,5 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
 {
     public abstract class CodeCommitConstants
     {
-        public static readonly string CodeCommitServiceCredentialsName = "codecommit";
     }
 }

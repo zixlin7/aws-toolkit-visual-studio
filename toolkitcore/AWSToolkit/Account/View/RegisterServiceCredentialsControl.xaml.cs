@@ -46,9 +46,7 @@ namespace Amazon.AWSToolkit.Account.View
 
         public override bool OnCommit()
         {
-            var accountKey = Controller.Model.Account.SettingsUniqueKey;
-            ServiceSpecificCredentialStoreManager.Instance.SaveCredentialsForService(accountKey, "codecommit", Credentials);
-            return true;
+            return Controller.Model.PersistCredentials(Credentials);
         }
 
         public ServiceSpecificCredentials Credentials

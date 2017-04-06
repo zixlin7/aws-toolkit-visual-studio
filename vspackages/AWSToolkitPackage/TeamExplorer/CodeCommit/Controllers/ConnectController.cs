@@ -1,4 +1,6 @@
-﻿using Amazon.AWSToolkit.Account;
+﻿using System.Linq;
+using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls;
 
@@ -15,15 +17,36 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers
 
         public ActionResults Execute()
         {
-            this._selectionControl = new ConnectControl(this);
+            var accounts = ToolkitFactory.Instance.RootViewModel.RegisteredAccounts;
+            return accounts.Any() ? SelectFromExistingProfiles() : CreateNewProfile();
+        }
+
+        public AccountViewModel SelectedAccount { get; private set; }
+
+        private ActionResults SelectFromExistingProfiles()
+        {
+            _selectionControl = new ConnectControl(this);
             if (ToolkitFactory.Instance.ShellProvider.ShowModal(_selectionControl))
             {
+                SelectedAccount = _selectionControl.SelectedAccount;
                 return new ActionResults().WithSuccess(true);
             }
 
             return new ActionResults().WithSuccess(false);
         }
 
-        public AccountViewModel SelectedAccount => _selectionControl?.SelectedAccount;
+        private ActionResults CreateNewProfile()
+        {
+            var registrationController = new RegisterAccountController();
+            var results = registrationController.Execute();
+            if (results.Success)
+            {
+                ToolkitFactory.Instance.RootViewModel.Refresh();
+                SelectedAccount = ToolkitFactory.Instance.RootViewModel.RegisteredAccounts.FirstOrDefault();
+                return results;
+            }
+
+            return new ActionResults().WithSuccess(false);
+        }
     }
 }

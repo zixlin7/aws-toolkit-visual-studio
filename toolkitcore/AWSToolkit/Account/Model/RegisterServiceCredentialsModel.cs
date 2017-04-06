@@ -59,6 +59,15 @@ namespace Amazon.AWSToolkit.Account.Model
             OnPropertyChanged(Password);
         }
 
+        public bool PersistCredentials(ServiceSpecificCredentials credentials)
+        {
+            var accountKey = Account.SettingsUniqueKey;
+            ServiceSpecificCredentialStoreManager
+                .Instance
+                .SaveCredentialsForService(accountKey, ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName, credentials);
+            return true;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

@@ -15,26 +15,19 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface.Model
     public interface IRepository
     {
         /// <summary>
-        /// Unique id for the repo. In practice, this is the repository's ARN.
+        /// Unique id for the repo.
         /// </summary>
         string UniqueId { get; }
 
         /// <summary>
         /// The folder root of the repository. If this is a clone operation the
-        /// folder should not exist.
+        /// folder should not exist (or if it does, it must be empty).
         /// </summary>
-        string LocalFolder { get; }
+        string LocalFolder { get; set; }
 
         /// <summary>
         /// The URL to the CodeCommit remote.
         /// </summary>
         string RepositoryUrl { get; }
-
-        /// <summary>
-        /// Tests whether service-specific credentials have been associated with the
-        /// credential profile referenced by OwnerAccount. Service-specific credentials
-        /// are required in order to perform git operations against the repository.
-        /// </summary>
-        bool HasServiceSpecificCredentials { get; }
     }
 }

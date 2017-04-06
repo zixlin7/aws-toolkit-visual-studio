@@ -244,6 +244,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
                 return false;
             }
             LastWriteTimeUtc = DateTime.UtcNow;
+            PersistedCredentials.RegisterPersistedTarget(Target);
             return true;
         }
 
@@ -275,6 +276,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
                 return false;
             }
             LastWriteTimeUtc = DateTime.UtcNow;
+            PersistedCredentials.RegisterPersistedTarget(Target);
             return true;
         }
 
@@ -288,9 +290,26 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
                 throw new InvalidOperationException("Target must be specified to delete a credential.");
             }
 
-            StringBuilder target = string.IsNullOrEmpty(Target) ? new StringBuilder() : new StringBuilder(Target);
-            bool result = NativeMethods.CredDelete(target, _credentialType, 0);
+            var target = string.IsNullOrEmpty(Target) ? new StringBuilder() : new StringBuilder(Target);
+            var result = NativeMethods.CredDelete(target, _credentialType, 0);
+            if (result)
+            {
+                PersistedCredentials.DeregisterPersistedTarget(Target);
+            }
+
             return result;
+        }
+
+        public static bool Delete(string target, CredentialType credentialType)
+        {
+            _unmanagedCodePermission.Demand();
+
+            if (string.IsNullOrEmpty(target))
+            {
+                throw new ArgumentException("target must be specified to delete a credential.");
+            }
+
+            return NativeMethods.CredDelete(new StringBuilder(target), credentialType, 0);
         }
 
         public bool Load()

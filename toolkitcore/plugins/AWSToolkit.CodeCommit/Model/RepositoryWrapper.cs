@@ -33,11 +33,9 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
         public string UniqueId => RepositoryMetadata.RepositoryId;
 
-        public string LocalFolder { get; private set; }
+        public string LocalFolder { get; set; }
 
         public string RepositoryUrl => RepositoryMetadata.CloneUrlHttp;
-
-        public bool HasServiceSpecificCredentials => false;
 
         #endregion
     }

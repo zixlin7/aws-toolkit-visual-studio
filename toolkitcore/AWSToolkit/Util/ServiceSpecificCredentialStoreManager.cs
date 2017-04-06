@@ -14,6 +14,8 @@ namespace Amazon.AWSToolkit.Util
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(ServiceSpecificCredentialStoreManager));
         private static readonly ServiceSpecificCredentialStoreManager _instance = new ServiceSpecificCredentialStoreManager();
 
+        public static readonly string CodeCommitServiceCredentialsName = "codecommit";
+
         private ServiceSpecificCredentialStoreManager()
         {
         }
@@ -25,7 +27,7 @@ namespace Amazon.AWSToolkit.Util
 
         public ServiceSpecificCredentials GetCredentialsForService(string accountArtifactsId, string serviceName)
         {
-            var fullpath = GetFullPath(accountArtifactsId, serviceName, false);
+            var fullpath = ConstructArtifactsFilePath(accountArtifactsId, serviceName, false);
             if (!File.Exists(fullpath))
                 return null;
 
@@ -62,7 +64,7 @@ namespace Amazon.AWSToolkit.Util
             try
             {
                 var encryptedCredentials = serviceCredentials.ToJson();
-                var fullpath = GetFullPath(accountArtifactsId, serviceName, true);
+                var fullpath = ConstructArtifactsFilePath(accountArtifactsId, serviceName, true);
                 using (var writer = new StreamWriter(fullpath))
                 {
                     writer.Write(encryptedCredentials);
@@ -78,7 +80,7 @@ namespace Amazon.AWSToolkit.Util
 
         public void ClearCredentialsForService(string accountArtifactsId, string serviceName)
         {
-            var fullpath = GetFullPath(accountArtifactsId, serviceName, false);
+            var fullpath = ConstructArtifactsFilePath(accountArtifactsId, serviceName, false);
             if (File.Exists(fullpath))
             {
                 File.Delete(fullpath);
@@ -88,11 +90,11 @@ namespace Amazon.AWSToolkit.Util
 
         public bool ServiceSpecificCredentialsExist(string accountArtifactsId, string serviceName)
         {
-            var fullpath = GetFullPath(accountArtifactsId, serviceName, false);
+            var fullpath = ConstructArtifactsFilePath(accountArtifactsId, serviceName, false);
             return File.Exists(fullpath);
         }
 
-        private static string GetFullPath(string accountArtifactsId, string serviceName, bool autoCreate)
+        private static string ConstructArtifactsFilePath(string accountArtifactsId, string serviceName, bool autoCreate)
         {
             var accountLocation = GetDirectory(accountArtifactsId, autoCreate);
             var fullpath = string.Format(@"{0}\{1}.encrypted", accountLocation, serviceName);

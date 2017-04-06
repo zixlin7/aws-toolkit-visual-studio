@@ -50,14 +50,14 @@ namespace Amazon.AWSToolkit.CodeCommit
 
         #region IAWSCodeCommit Members
 
-        public string ServiceSpecificCredentialsStorageName => CodeCommitConstants.CodeCommitServiceCredentialsName;
+        public string ServiceSpecificCredentialsStorageName => ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName;
 
         public void AssociateCredentialsWithProfile(string profileArtifactsId, string userName, string password)
         {
             ServiceSpecificCredentialStoreManager
                 .Instance
                 .SaveCredentialsForService(profileArtifactsId,
-                                           CodeCommitConstants.CodeCommitServiceCredentialsName,
+                                           ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName,
                                            userName,
                                            password);
         }
@@ -67,7 +67,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             return 
                 ServiceSpecificCredentialStoreManager
                     .Instance
-                    .GetCredentialsForService(profileArtifactsId, CodeCommitConstants.CodeCommitServiceCredentialsName);
+                    .GetCredentialsForService(profileArtifactsId, ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName);
         }
 
         public IRepository SelectRepositoryToClone(AccountViewModel account, RegionEndPointsManager.RegionEndPoints initialRegion, string defaultCloneFolderRoot)

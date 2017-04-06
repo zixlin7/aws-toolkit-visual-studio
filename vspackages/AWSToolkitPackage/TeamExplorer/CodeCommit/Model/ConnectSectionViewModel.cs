@@ -95,7 +95,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
             var svcCredentials
                 = ServiceSpecificCredentialStoreManager
                     .Instance
-                    .GetCredentialsForService(account.SettingsUniqueKey, CodeCommitConstants.CodeCommitServiceCredentialsName);
+                    .GetCredentialsForService(account.SettingsUniqueKey, ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName);
             if (svcCredentials == null)
             {
                 var registerCredentialsController = new RegisterServiceCredentialsController(account);
@@ -127,6 +127,10 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
         {
             var currentConnection = ConnectionsManager.Instance.TeamExplorerAccount;
             ConnectionsManager.Instance.DeregisterProfileConnection(currentConnection);
+
+            // remove all credentials we have placed into the OS credential store -
+            // this follows the behavior of the GitHub plugin.
+            PersistedCredentials.ClearAllPersistedTargets();
         }
 
         // The Default Repository Path that VS uses is hidden in an internal
@@ -145,7 +149,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
                 const string TEGitKey = @"SOFTWARE\Microsoft\VisualStudio\14.0\TeamFoundation\GitSourceControl";
 #endif
 
-                using (var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(TEGitKey + "\\General", true))
+                using (var key = Registry.CurrentUser.OpenSubKey(TEGitKey + "\\General", true))
                 {
                     clonePath = (string)key?.GetValue("DefaultRepositoryPath", string.Empty, RegistryValueOptions.DoNotExpandEnvironmentNames);
                 }

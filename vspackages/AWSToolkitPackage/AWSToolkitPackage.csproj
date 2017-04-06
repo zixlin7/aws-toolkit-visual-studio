@@ -326,6 +326,7 @@
     <Compile Include="Services\AWSToolkitShellProviderService.cs" />
     <Compile Include="TeamExplorer\CredentialManagement\GitCredentials.cs" />
     <Compile Include="TeamExplorer\CredentialManagement\NativeMethods.cs" />
+    <Compile Include="TeamExplorer\CredentialManagement\PersistedCredentials.cs" />
     <Compile Include="Themes\ThemeFontResources.cs" />
     <Compile Include="IEditor.cs" />
     <Compile Include="NativeMethods.cs" />

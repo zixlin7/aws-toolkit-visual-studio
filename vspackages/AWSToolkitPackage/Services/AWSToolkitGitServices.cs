@@ -44,9 +44,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 // seems to want only the domain host - specifying the full repo path yields a 'repo doesn't
                 // exist' exception.
                 var uri = new Uri(repoUrl);
-                var credentialKey = string.Format("git:{0}://{1}", uri.Scheme, uri.DnsSafeHost);
-                gitCredentials = new GitCredentials(credentials.Username, credentials.Password, credentialKey);
-
+                var gitCredentialKey = string.Format("git:{0}://{1}", uri.Scheme, uri.DnsSafeHost);
+                gitCredentials = new GitCredentials(credentials.Username, credentials.Password, gitCredentialKey);
                 gitCredentials.Save();
 
 #if VS2017_OR_LATER
@@ -56,8 +55,11 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
                 {
                     progress.ProgressChanged += (s, e) => _statusBar.SetText(e.ProgressText);
-                    await gitExt.CloneAsync(repositoryUrl, destinationFolder, recurseSubmodules,
-                        default(CancellationToken), progress);
+                    await gitExt.CloneAsync(repositoryUrl, 
+                                            destinationFolder, 
+                                            recurseSubmodules,
+                                            default(CancellationToken), 
+                                            progress);
                 });
 #elif VS2015
                 var gitExt = HostPackage.GetVSShellService(typeof(IGitRepositoriesExt)) as IGitRepositoriesExt;
