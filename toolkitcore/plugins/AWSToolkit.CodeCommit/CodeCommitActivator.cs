@@ -79,7 +79,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             return new RepositoryWrapper(controller.Model.SelectedRepository, controller.Model.LocalFolder);
         }
 
-        public IAWSToolkitGitServices ToolkitGitServices => ToolkitFactory.Instance.QueryPluginService(typeof(IAWSToolkitGitServices)) as IAWSToolkitGitServices;
+        public IAWSToolkitGitServices ToolkitGitServices => new AWSToolkitGitServices(this);
 
         #endregion
     }

@@ -46,10 +46,10 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
                                             string defaultCloneFolderRoot);
 
         /// <summary>
-        /// Returns an implementation for accessing git operations against CodeCommit repositories. 
-        /// If running inside Visual Studio this returns the package level implementation that will 
-        /// forward operations onto Team Explorer otherwise the CodeCommit plugin implementation is 
-        /// returned.
+        /// Returns the CodeCommit plugin implementation of git services for the toolkit. This 
+        /// implementation performs operations using LibGit2Sharp and CodeCommit, and bypasses
+        /// the implementation based around Team Explorer that you get if you query for this
+        /// interface on the VS shell provider.
         /// </summary>
         IAWSToolkitGitServices ToolkitGitServices { get; }
     }
