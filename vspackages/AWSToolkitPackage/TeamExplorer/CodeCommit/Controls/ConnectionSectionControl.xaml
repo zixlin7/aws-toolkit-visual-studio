@@ -13,68 +13,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
-            <Style x:Key="ActionLinkButton" TargetType="{x:Type Button}">
-                <Setter Property="Background" Value="Transparent" />
-                <Setter Property="Focusable" Value="True" />
-                <Setter Property="Foreground" Value="{DynamicResource awsActionLinkForegroundBrushKey}" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <TextBlock>
-                                <Hyperlink Command="{TemplateBinding Command}"
-                                           CommandParameter="{TemplateBinding CommandParameter}">
-                                    <Hyperlink.Resources>
-                                    <Style TargetType="{x:Type Hyperlink}">
-                                      <Style.Triggers>
-                                        <MultiTrigger>
-                                          <MultiTrigger.Conditions>
-                                            <Condition Property="UIElement.IsMouseOver" Value="false" />
-                                            <Condition Property="IsEnabled" Value="true" />
-                                          </MultiTrigger.Conditions>
-                                          <MultiTrigger.Setters>
-                                            <Setter Property="TextDecorations" Value="None" />
-                                            <Setter Property="FrameworkElement.Cursor" Value="None" />
-                                          </MultiTrigger.Setters>
-                                        </MultiTrigger>
-                                        <MultiTrigger>
-                                          <MultiTrigger.Conditions>
-                                            <Condition Property="IsMouseOver" Value="true" />
-                                            <Condition Property="IsEnabled" Value="true" />
-                                          </MultiTrigger.Conditions>
-                                          <MultiTrigger.Setters>
-                                            <Setter Property="TextDecorations" Value="Underline" />
-                                            <Setter Property="FrameworkElement.Cursor" Value="Hand" />
-                                          </MultiTrigger.Setters>
-                                        </MultiTrigger>
-                                        <MultiTrigger>
-                                          <MultiTrigger.Conditions>
-                                            <Condition Property="IsEnabled" Value="false" />
-                                          </MultiTrigger.Conditions>
-                                          <MultiTrigger.Setters>
-                                            <Setter Property="TextDecorations" Value="None" />
-                                          </MultiTrigger.Setters>
-                                        </MultiTrigger>
-                                      </Style.Triggers>
-                                    </Style>
-                                  </Hyperlink.Resources>
-                                    <Run Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}" />
-                                </Hyperlink>
-                            </TextBlock>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <Style x:Key="VerticalSeparator" TargetType="{x:Type Separator}">
-                <Setter Property="Background" Value="{DynamicResource awsDividerRuleBrushKey}"/>
-                <Setter Property="Margin" Value="3,0"/>
-                <Setter Property="LayoutTransform">
-                    <Setter.Value>
-                        <RotateTransform Angle="90"/>
-                    </Setter.Value>
-                </Setter>
-            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 

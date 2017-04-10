@@ -10,6 +10,7 @@ using Amazon.AWSToolkit.CodeCommit.Model;
 using Amazon.AWSToolkit.CodeCommit.Nodes;
 using Amazon.AWSToolkit.CodeCommit.Services;
 using Amazon.AWSToolkit.Navigator;
+using Amazon.IdentityManagement.Model;
 
 namespace Amazon.AWSToolkit.CodeCommit
 {
@@ -77,6 +78,12 @@ namespace Amazon.AWSToolkit.CodeCommit
                 return null;
 
             return new RepositoryWrapper(controller.Model.SelectedRepository, controller.Model.LocalFolder);
+        }
+
+        public string PromptToSaveGeneratedCredentials(ServiceSpecificCredential generatedCredentials)
+        {
+            var controller = new SaveServiceSpecificCredentialsController(generatedCredentials);
+            return controller.Execute().Success ? controller.SelectedFilename : null;
         }
 
         public IAWSToolkitGitServices ToolkitGitServices => new AWSToolkitGitServices(this);

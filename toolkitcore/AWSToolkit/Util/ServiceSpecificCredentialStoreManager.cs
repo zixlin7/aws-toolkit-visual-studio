@@ -2,6 +2,7 @@
 using System.IO;
 
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Account.Model;
 using Amazon.Runtime.Internal.Settings;
 
 using log4net;
@@ -146,6 +147,17 @@ namespace Amazon.AWSToolkit.Util
             {
                 Username = UserCrypto.Decrypt((string)jdata[ToolkitSettingsConstants.ServiceCredentialsUserName]),
                 Password = UserCrypto.Decrypt((string)jdata[ToolkitSettingsConstants.ServiceCredentialsPassword])
+            };
+        }
+
+        public static ServiceSpecificCredentials FromCsvFile(string csvFile)
+        {
+            string username, password;
+            RegisterServiceCredentialsModel.ImportCredentialsFromCSV(csvFile, out username, out password);
+            return new ServiceSpecificCredentials
+            {
+                Username = username,
+                Password = password
             };
         }
     }

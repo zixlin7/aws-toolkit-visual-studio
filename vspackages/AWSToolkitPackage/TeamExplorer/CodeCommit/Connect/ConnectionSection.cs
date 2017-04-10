@@ -60,12 +60,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Connect
         private void OnTeamExplorerBindingChanged(AccountViewModel boundAccount)
         {
             IsVisible = boundAccount != null;
-            if (_viewModel != null)
-            {
-                _viewModel.RefreshRepositoriesList();
-            }
+            _viewModel?.RefreshRepositoriesList();
         }
-
-
     }
 }

@@ -2,6 +2,7 @@
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
+using Amazon.IdentityManagement.Model;
 
 namespace Amazon.AWSToolkit.CodeCommit.Interface
 {
@@ -44,6 +45,13 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         IRepository SelectRepositoryToClone(AccountViewModel account, 
                                             RegionEndPointsManager.RegionEndPoints initialRegion, 
                                             string defaultCloneFolderRoot);
+
+        /// <summary>
+        /// Prompts the user to stores a set of newly generated credentials to disk.
+        /// </summary>
+        /// <param name="generatedCredentials">The details of the generated credentials returned by IAM.</param>
+        /// <returns>The path and name of the file holding the stored credentials.</returns>
+        string PromptToSaveGeneratedCredentials(ServiceSpecificCredential generatedCredentials);
 
         /// <summary>
         /// Returns the CodeCommit plugin implementation of git services for the toolkit. This 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace Amazon.AWSToolkit.Util
 {
@@ -21,7 +23,7 @@ namespace Amazon.AWSToolkit.Util
                     else
                     {
                         var values = line.Split(new[] { ',' }, StringSplitOptions.None);
-                        RowData.Add(values);
+                        _rowData.Add(values);
                     }
 
                     line = sr.ReadLine();
@@ -29,7 +31,53 @@ namespace Amazon.AWSToolkit.Util
             }
         }
 
+        public HeaderedCsvFile(IEnumerable<string> columnHeaders)
+        {
+            ColumnHeaders = columnHeaders;
+        }
+
         public IEnumerable<string> ColumnHeaders { get; }
+
+        public void AddRowData(IEnumerable<string> values)
+        {
+            var valArray = new string[values.Count()];
+            int colIndex = 0;
+            foreach (var v in values)
+            {
+                valArray[colIndex++] = v;
+            }
+
+            _rowData.Add(valArray);
+        }
+
+        public void WriteTo(string filename)
+        {
+            using (var f = new StreamWriter(filename))
+            {
+                var headers = new StringBuilder();
+                foreach (var c in ColumnHeaders)
+                {
+                    if (headers.Length > 0)
+                        headers.Append(',');
+                    headers.Append(c);
+                }
+
+                f.WriteLine(headers.ToString());
+
+                foreach (var r in _rowData)
+                {
+                    var row = new StringBuilder();
+                    foreach (var d in r)
+                    {
+                        if (row.Length > 0)
+                            row.Append(',');
+                        row.Append(d);
+                    }
+
+                    f.WriteLine(row);
+                }
+            }
+        }
 
         public int ColumnIndexOfHeader(string header)
         {
@@ -47,18 +95,15 @@ namespace Amazon.AWSToolkit.Util
 
         public IEnumerable<string> ColumnValuesForRow(int rowIndex)
         {
-            if (rowIndex < 0 || rowIndex >= RowData.Count)
+            if (rowIndex < 0 || rowIndex >= _rowData.Count)
                 throw new ArgumentOutOfRangeException();
 
-            return RowData[rowIndex];
+            return _rowData[rowIndex];
         }
 
-        public int RowCount
-        {
-            get { return RowData.Count; }
-        }
+        public int RowCount => _rowData.Count;
 
-        private readonly List<string[]> RowData = new List<string[]>();
+        private readonly List<string[]> _rowData = new List<string[]>();
     }
 
 }

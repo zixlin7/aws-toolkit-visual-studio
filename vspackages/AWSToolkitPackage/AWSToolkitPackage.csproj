@@ -67,6 +67,11 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AWSSDK.IdentityManagement">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.IdentityManagement.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="AWSSDK.Lambda">
       <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Lambda.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -324,6 +329,7 @@
     <Compile Include="Services\AWSLegacyDeploymentPersistenceService.cs" />
     <Compile Include="Services\AWSToolkitGitServices.cs" />
     <Compile Include="Services\AWSToolkitShellProviderService.cs" />
+    <Compile Include="TeamExplorer\CodeCommit\Controllers\CloneController.cs" />
     <Compile Include="TeamExplorer\CredentialManagement\GitCredentials.cs" />
     <Compile Include="TeamExplorer\CredentialManagement\NativeMethods.cs" />
     <Compile Include="TeamExplorer\CredentialManagement\PersistedCredentials.cs" />

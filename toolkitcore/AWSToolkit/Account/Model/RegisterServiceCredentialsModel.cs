@@ -11,6 +11,9 @@ namespace Amazon.AWSToolkit.Account.Model
 {
     public class RegisterServiceCredentialsModel : INotifyPropertyChanged
     {
+        private const string UserNameHeader = "User Name";
+        private const string PasswordHeader = "Password";
+
         public RegisterServiceCredentialsModel(AccountViewModel account)
         {
             Account = account;
@@ -46,8 +49,8 @@ namespace Amazon.AWSToolkit.Account.Model
             var csvData = new HeaderedCsvFile(csvCredentialsFile);
 
             // we expect to see User Name,Password
-            var unameIndex = csvData.ColumnIndexOfHeader("User Name");
-            var psswdIndex = csvData.ColumnIndexOfHeader("Password");
+            var unameIndex = csvData.ColumnIndexOfHeader(UserNameHeader);
+            var psswdIndex = csvData.ColumnIndexOfHeader(PasswordHeader);
             if (unameIndex == -1 || psswdIndex == -1)
                 throw new InvalidOperationException("Csv file does not conform to expected layout");
 
@@ -59,9 +62,28 @@ namespace Amazon.AWSToolkit.Account.Model
             OnPropertyChanged(Password);
         }
 
+        public static void ImportCredentialsFromCSV(string csvCredentialsFile, out string username, out string password)
+        {
+            var csvData = new HeaderedCsvFile(csvCredentialsFile);
+
+            // we expect to see User Name,Password
+            var unameIndex = csvData.ColumnIndexOfHeader(UserNameHeader);
+            var psswdIndex = csvData.ColumnIndexOfHeader(PasswordHeader);
+            if (unameIndex == -1 || psswdIndex == -1)
+                throw new InvalidOperationException("Csv file does not conform to expected layout");
+
+            var rowData = csvData.ColumnValuesForRow(0);
+            username = rowData.ElementAt(unameIndex);
+            password = rowData.ElementAt(psswdIndex);
+        }
+
         public bool PersistCredentials(ServiceSpecificCredentials credentials)
         {
-            var accountKey = Account.SettingsUniqueKey;
+            return PersistCredentials(credentials, Account.SettingsUniqueKey);
+        }
+
+        public static bool PersistCredentials(ServiceSpecificCredentials credentials, string accountKey)
+        {
             ServiceSpecificCredentialStoreManager
                 .Instance
                 .SaveCredentialsForService(accountKey, ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName, credentials);

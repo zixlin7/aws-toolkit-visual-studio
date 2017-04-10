@@ -35,14 +35,15 @@
         <Image Grid.Row="0" 
                Grid.Column="0"
                Source="/AWSToolkitPackage;component/Resources/CodeCommit32x32.png"
-               VerticalAlignment="Top"
+               VerticalAlignment="Center"
+               Margin="0,-6,4,0"
                />
         
         <TextBlock Grid.Row="0"
                    Grid.Column="1"
                    Style="{DynamicResource awsTextBlock122PercentStyle}"
                    TextWrapping="Wrap"
-                   Margin="4,0,0,16">
+                   Margin="4,4,0,16">
             To connect to AWS CodeCommit, select an AWS credential profile from the list below.
         </TextBlock>
 

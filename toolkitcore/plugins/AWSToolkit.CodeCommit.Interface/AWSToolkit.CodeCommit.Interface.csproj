@@ -40,6 +40,11 @@
       <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CodeCommit.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AWSSDK.IdentityManagement">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.IdentityManagement.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
