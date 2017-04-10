@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Amazon.AWSToolkit.CodeCommit.Controller;
+using Microsoft.Win32;
 
 namespace Amazon.AWSToolkit.CodeCommit.View
 {
@@ -49,6 +50,16 @@ namespace Amazon.AWSToolkit.CodeCommit.View
 
         private void OnClickBrowseForFile(object sender, RoutedEventArgs e)
         {
+            var dlg = new SaveFileDialog
+            {
+                Title = "Save Generated Credentials to File",
+                Filter = "CSV Files|*.csv|All Files|*.*",
+                OverwritePrompt = true
+            };
+            if (dlg.ShowDialog().GetValueOrDefault())
+            {
+                Controller.Model.Filename = dlg.FileName;
+            }
         }
     }
 }

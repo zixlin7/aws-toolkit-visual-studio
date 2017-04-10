@@ -71,7 +71,7 @@
                 Margin="0,2,4,8"
                 Padding="2,0"
                 Click="OnClickImportFromCSV">
-            Import from CSV...
+            Import from csv file...
         </Button>
         
         <Label Grid.Column="0" Grid.Row="5" Target="{Binding ElementName=_ctlAccountNumber}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Bottom">A_ccount Number*:</Label>

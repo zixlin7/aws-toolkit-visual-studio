@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Util;
 using Amazon.IdentityManagement.Model;
 
 namespace Amazon.AWSToolkit.CodeCommit.Model
 {
-    public class SaveServiceSpecificCredentialsModel
+    public class SaveServiceSpecificCredentialsModel : BaseModel
     {
         // matches what the user can download from the console
         private readonly string[] _fileHeaders = {"User Name", "Password"};
@@ -20,7 +21,12 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
         private ServiceSpecificCredential GeneratedCredentials { get; }
 
-        public string Filename { get; set; }
+        private string _filename;
+        public string Filename
+        {
+            get { return _filename; }
+            set { _filename = value; NotifyPropertyChanged("Filename"); }
+        }
 
         public bool SaveToFile()
         {
