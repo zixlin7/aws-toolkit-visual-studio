@@ -12,42 +12,9 @@ using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommit.Model
 {
-    public class RepositorySelectionModel : BaseModel
+    public class SelectRepositoryModel : BaseRepositoryModel
     {
-        private readonly ILog LOGGER = LogManager.GetLogger(typeof(RepositorySelectionModel));
-
-        private readonly object _syncLock = new object();
-        private int _backgroundWorkersActive = 0;
-
-        public bool QueryWorkersActive
-        {
-            get
-            {
-                int count;
-                lock (_syncLock)
-                {
-                    count = _backgroundWorkersActive;
-                }
-                return count != 0;
-            }
-        }
-
-
-        /// <summary>
-        /// The account to use to list available repositories. We will look
-        /// for service-specific credentials for CodeCommit on the profile
-        /// represented by these credentials to use in the clone operation,
-        /// prompting the user to supply them if necessary.
-        /// </summary>
-        public AccountViewModel Account
-        {
-            get { return _account; }
-            set
-            {
-                _account = value;
-                LoadValidServiceRegionsForAccount();
-            }
-        }
+        private readonly ILog LOGGER = LogManager.GetLogger(typeof(SelectRepositoryModel));
 
         /// <summary>
         /// The service-specific credentials for CodeCommit to be used on the
@@ -80,10 +47,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         }
 
         public ObservableCollection<RepositoryWrapper> Repositories => _repositories;
-
-        public IEnumerable<RegionEndPointsManager.RegionEndPoints> AvailableRegions => _availableRegions;
-
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion { get; set; }
 
         public void RefreshRepositoryList()
         {
@@ -140,17 +103,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             });
         }
 
-        private IAmazonCodeCommit GetClientForRegion(string region)
-        {
-            if (!_codeCommitClients.ContainsKey(region))
-            {
-                var client = new AmazonCodeCommitClient(Account.Credentials, RegionEndpoint.GetBySystemName(region));
-                _codeCommitClients.Add(region, client);
-            }
-
-            return _codeCommitClients[region];
-        }
-
         private void LoadValidServiceRegionsForAccount()
         {
             _availableRegions.Clear();
@@ -179,7 +131,5 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         private RepositoryWrapper _selectedRepository;
         private readonly ObservableCollection<RepositoryWrapper> _repositories = new ObservableCollection<RepositoryWrapper>();
         private readonly List<RegionEndPointsManager.RegionEndPoints> _availableRegions = new List<RegionEndPointsManager.RegionEndPoints>();
-
-        private readonly Dictionary<string, IAmazonCodeCommit> _codeCommitClients = new Dictionary<string, IAmazonCodeCommit>();
     }
 }

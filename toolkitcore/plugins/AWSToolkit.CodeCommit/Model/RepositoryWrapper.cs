@@ -21,13 +21,11 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             LocalFolder = localFolder;
         }
 
-        public string Name => RepositoryMetadata.RepositoryName;
+        public string Name => RepositoryMetadata?.RepositoryName;
 
-        public string Description => RepositoryMetadata.RepositoryDescription;
+        public string Description => RepositoryMetadata?.RepositoryDescription;
 
         public RepositoryMetadata RepositoryMetadata { get; }
-
-        private RepositoryWrapper() { }
 
         #region IRepository
 

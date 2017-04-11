@@ -29,5 +29,15 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface.Model
         /// The URL to the CodeCommit remote.
         /// </summary>
         string RepositoryUrl { get; }
+
+        /// <summary>
+        /// The name of the repository.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        /// The user-supplied description of the repository, if any.
+        /// </summary>
+        string Description { get; }
     }
 }

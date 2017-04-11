@@ -329,7 +329,9 @@
     <Compile Include="Services\AWSLegacyDeploymentPersistenceService.cs" />
     <Compile Include="Services\AWSToolkitGitServices.cs" />
     <Compile Include="Services\AWSToolkitShellProviderService.cs" />
-    <Compile Include="TeamExplorer\CodeCommit\Controllers\CloneController.cs" />
+    <Compile Include="TeamExplorer\CodeCommit\Controllers\BaseCodeCommitController.cs" />
+    <Compile Include="TeamExplorer\CodeCommit\Controllers\CloneRepositoryController.cs" />
+    <Compile Include="TeamExplorer\CodeCommit\Controllers\CreateRepositoryController.cs" />
     <Compile Include="TeamExplorer\CredentialManagement\GitCredentials.cs" />
     <Compile Include="TeamExplorer\CredentialManagement\NativeMethods.cs" />
     <Compile Include="TeamExplorer\CredentialManagement\PersistedCredentials.cs" />

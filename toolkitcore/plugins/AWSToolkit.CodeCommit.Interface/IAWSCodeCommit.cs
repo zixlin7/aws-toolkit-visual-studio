@@ -35,6 +35,16 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         ServiceSpecificCredentials CredentialsForProfile(string profileArtifactsId);
 
         /// <summary>
+        /// Obtains and returns the service-specific credentials to enable git operations
+        /// against a CodeCommit repo owned by the specified account.
+        /// </summary>
+        /// <param name="account"></param>
+        /// <param name="initialRegion"></param>
+        /// <returns></returns>
+        ServiceSpecificCredentials ObtainGitCredentials(AccountViewModel account, 
+                                                        RegionEndPointsManager.RegionEndPoints initialRegion);
+
+        /// <summary>
         /// Prompts the user to select a repository to clone. The account and initial region
         /// are usually seeded from the current AWS Explorer bindings.
         /// </summary>
@@ -42,9 +52,22 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// <param name="initialRegion">Initial region selection or null.</param>
         /// <param name="defaultCloneFolderRoot">Suggested folder for the cloned repository, or null.</param>
         /// <returns>Null if the user cancels selection, otherwise details of the repository to clone.</returns>
-        IRepository SelectRepositoryToClone(AccountViewModel account, 
-                                            RegionEndPointsManager.RegionEndPoints initialRegion, 
-                                            string defaultCloneFolderRoot);
+        IRepository PromptForRepositoryToClone(AccountViewModel account, 
+                                               RegionEndPointsManager.RegionEndPoints initialRegion, 
+                                               string defaultCloneFolderRoot);
+
+        /// <summary>
+        /// Prompts the user to fill out the data necessary to create a new repository hosted
+        /// in CodeCommit, returning details of the newly created repository so that it can be
+        /// cloned locally.
+        /// </summary>
+        /// <param name="account"></param>
+        /// <param name="initialRegion"></param>
+        /// <param name="defaultFolderRoot"></param>
+        /// <returns></returns>
+        IRepository PromptForRepositoryToCreate(AccountViewModel account, 
+                                                RegionEndPointsManager.RegionEndPoints initialRegion,
+                                                string defaultFolderRoot);
 
         /// <summary>
         /// Prompts the user to stores a set of newly generated credentials to disk.

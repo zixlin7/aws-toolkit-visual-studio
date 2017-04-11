@@ -1,39 +1,34 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
-
 using Amazon.AWSToolkit.CodeCommit.Controller;
-using Amazon.AWSToolkit.CommonUI;
 
-namespace Amazon.AWSToolkit.CodeCommit.Controls
+namespace Amazon.AWSToolkit.CodeCommit.View
 {
     /// <summary>
-    /// Interaction logic for RepositorySelectionControl.xaml
+    /// Interaction logic for CreateRepositoryControl.xaml
     /// </summary>
-    public partial class RepositorySelectionControl : BaseAWSControl
+    public partial class CreateRepositoryControl 
     {
-        public RepositorySelectionControl()
+        public CreateRepositoryControl()
         {
             InitializeComponent();
         }
 
-        public RepositorySelectionControl(RepositorySelectionController controller)
+        public CreateRepositoryControl(CreateRepositoryController controller)
             : this()
         {
             Controller = controller;
             DataContext = Controller.Model;
         }
 
-        public RepositorySelectionController Controller { get; }
+        public CreateRepositoryController Controller { get; }
 
         public override string Title => "Clone AWS CodeCommit Repository";
 
         public override bool Validated()
         {
-            return Controller.Model.SelectedRepository != null && !string.IsNullOrEmpty(Controller.Model.LocalFolder);
+            return !string.IsNullOrEmpty(Controller.Model.Name) && !string.IsNullOrEmpty(Controller.Model.LocalFolder);
         }
 
         public override bool OnCommit()
@@ -41,14 +36,8 @@ namespace Amazon.AWSToolkit.CodeCommit.Controls
             return true;
         }
 
-        public void ShowQueryingStatus(bool queryActive)
-        {
-            _ctlQueryingResourcesOverlay.Visibility = queryActive ? Visibility.Visible : Visibility.Hidden;
-        }
-
         private void OnRegionSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Controller.Model.RefreshRepositoryList();
         }
 
         private void OnClickBrowseFolder(object sender, RoutedEventArgs e)
@@ -78,5 +67,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Controls
                 Controller.Model.LocalFolder = repositoryFolder;
             }
         }
+
+
     }
 }

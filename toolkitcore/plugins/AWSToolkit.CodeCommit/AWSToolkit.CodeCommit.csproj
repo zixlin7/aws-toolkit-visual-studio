@@ -86,13 +86,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeCommitActivator.cs" />
-    <Compile Include="Controller\RepositorySelectionController.cs" />
+    <Compile Include="Controller\CreateRepositoryController.cs" />
+    <Compile Include="Controller\SelectRepositoryController.cs" />
     <Compile Include="Controller\SaveServiceSpecificCredentialsController.cs" />
     <Compile Include="Controller\ViewRepositoryController.cs" />
-    <Compile Include="Controls\RepositorySelectionControl.xaml.cs">
-      <DependentUpon>RepositorySelectionControl.xaml</DependentUpon>
+    <Compile Include="Controls\SelectRepositoryControl.xaml.cs">
+      <DependentUpon>SelectRepositoryControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Model\RepositorySelectionModel.cs" />
+    <Compile Include="Model\BaseRepositoryModel.cs" />
+    <Compile Include="Model\CreateRepositoryModel.cs" />
+    <Compile Include="Model\SelectRepositoryModel.cs" />
     <Compile Include="Model\RepositoryWrapper.cs" />
     <Compile Include="Model\SaveServiceSpecificCredentialsModel.cs" />
     <Compile Include="Model\ViewRepositoryModel.cs" />
@@ -102,6 +105,9 @@
     <Compile Include="Nodes\CodeCommitRootViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AWSToolkitGitServices.cs" />
+    <Compile Include="View\CreateRepositoryControl.xaml.cs">
+      <DependentUpon>CreateRepositoryControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\SaveServiceSpecificCredentialsControl.xaml.cs">
       <DependentUpon>SaveServiceSpecificCredentialsControl.xaml</DependentUpon>
     </Compile>
@@ -137,9 +143,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Controls\RepositorySelectionControl.xaml">
+    <Page Include="Controls\SelectRepositoryControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\CreateRepositoryControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\SaveServiceSpecificCredentialsControl.xaml">
       <Generator>MSBuild:Compile</Generator>

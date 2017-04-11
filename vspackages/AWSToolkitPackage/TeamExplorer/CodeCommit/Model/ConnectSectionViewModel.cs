@@ -1,18 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using Microsoft.TeamFoundation.Controls.WPF.TeamExplorer;
 
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.Shared;
-using Amazon.AWSToolkit.Util;
-using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
-using log4net;
-using Microsoft.Win32;
 
 namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
 {
@@ -59,11 +51,12 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
 
         private void OnClone()
         {
-            new CloneController().Execute();
+            new CloneRepositoryController().Execute();
         }
 
         private void OnCreate()
         {
+            new CreateRepositoryController().Execute();
         }
 
         private void OnDisconnect()
