@@ -52,7 +52,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers
                                   .QueryShellProviderService<IAWSToolkitGitServices>() ?? ToolkitFactory
                                   .Instance
                                   .QueryPluginService(typeof(IAWSToolkitGitServices)) as IAWSToolkitGitServices;
-            gitServices?.Clone(selectedRepository.RepositoryUrl, selectedRepository.LocalFolder, gitCredentials);
+            gitServices?.Clone(gitCredentials, selectedRepository.RepositoryUrl, selectedRepository.LocalFolder);
         }
     }
 }

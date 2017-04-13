@@ -3,6 +3,7 @@ using System.Linq;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.CodeCommit;
+using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.CodeCommit.Model
 {
@@ -65,11 +66,16 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         {
             if (!_codeCommitClients.ContainsKey(region))
             {
-                var client = new AmazonCodeCommitClient(Account.Credentials, RegionEndpoint.GetBySystemName(region));
+                var client = GetClientForRegion(Account.Credentials, region);
                 _codeCommitClients.Add(region, client);
             }
 
             return _codeCommitClients[region];
+        }
+
+        internal static IAmazonCodeCommit GetClientForRegion(AWSCredentials credentials, string region)
+        {
+            return new AmazonCodeCommitClient(credentials, RegionEndpoint.GetBySystemName(region));
         }
 
         protected AccountViewModel _account;

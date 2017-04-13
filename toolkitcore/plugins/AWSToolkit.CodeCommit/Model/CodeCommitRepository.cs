@@ -1,21 +1,21 @@
-﻿using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CodeCommit.Interface.Model;
+﻿using Amazon.AWSToolkit.CodeCommit.Interface.Model;
 using Amazon.CodeCommit.Model;
 
 namespace Amazon.AWSToolkit.CodeCommit.Model
 {
     /// <summary>
-    /// Wrapper around a CodeCommit repository object providing
-    /// bindable metadata for UI purposes.
+    /// Wrapper around an existing CodeCommit repository object providing
+    /// bindable metadata for UI purposes. The repository may exist locally
+    /// or may only be remote.
     /// </summary>
-    public class RepositoryWrapper : IRepository
+    public class CodeCommitRepository : ICodeCommitRepository
     {
-        public RepositoryWrapper(RepositoryMetadata repository)
+        public CodeCommitRepository(RepositoryMetadata repository)
         {
             RepositoryMetadata = repository;
         }
 
-        public RepositoryWrapper(RepositoryWrapper source, string localFolder)
+        public CodeCommitRepository(CodeCommitRepository source, string localFolder)
         {
             RepositoryMetadata = source.RepositoryMetadata;
             LocalFolder = localFolder;

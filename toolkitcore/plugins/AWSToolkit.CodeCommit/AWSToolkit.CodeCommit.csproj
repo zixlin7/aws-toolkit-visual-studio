@@ -95,8 +95,9 @@
     </Compile>
     <Compile Include="Model\BaseRepositoryModel.cs" />
     <Compile Include="Model\CreateRepositoryModel.cs" />
+    <Compile Include="Model\NewRepositoryInfo.cs" />
     <Compile Include="Model\SelectRepositoryModel.cs" />
-    <Compile Include="Model\RepositoryWrapper.cs" />
+    <Compile Include="Model\CodeCommitRepository.cs" />
     <Compile Include="Model\SaveServiceSpecificCredentialsModel.cs" />
     <Compile Include="Model\ViewRepositoryModel.cs" />
     <Compile Include="Nodes\CodeCommitRepositoryViewMetaNode.cs" />

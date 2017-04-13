@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CodeCommit.Interface;
+using Amazon.AWSToolkit.CodeCommit.Interface.Model;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
@@ -29,9 +32,9 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             _statusBar = hostPackage.GetVSShellService(typeof(IVsStatusbar)) as IVsStatusbar;
         }
 
-        private AWSToolkitPackage HostPackage { get; set; }
+        private AWSToolkitPackage HostPackage { get; }
 
-        public async void Clone(string repositoryUrl, string destinationFolder, ServiceSpecificCredentials credentials)
+        public async void Clone(ServiceSpecificCredentials credentials, string repositoryUrl, string destinationFolder)
         {
             var recurseSubmodules = true;
             GitCredentials gitCredentials = null;
@@ -91,5 +94,58 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 }
             }
         }
+
+        public object Create(AccountViewModel account,
+                             RegionEndPointsManager.RegionEndPoints region,
+                             string name,
+                             string description,
+                             string localFolder,
+                             AWSToolkitGitCallbackDefinitions.PostCloneContentPopulationCallback contentPopulationCallback)
+        {
+            try
+            {
+                // delegate the repo creation to the CodeCommit plugin, then we'll take over for the
+                // clone operation so that the new repo is recognized inside Team Explorer
+                var codeCommitPlugin =
+                    HostPackage.ToolkitShellProviderService
+                        .QueryAWSToolkitPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
+
+                var codeCommitGitServices = codeCommitPlugin.ToolkitGitServices;
+                var repository = codeCommitGitServices.Create(account, 
+                                                              region, 
+                                                              name, 
+                                                              description,
+                                                              null, 
+                                                              null) as ICodeCommitRepository;
+
+                var svcCredentials 
+                    = account.GetCredentialsForService(ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName);
+
+                Clone(svcCredentials, repository.RepositoryUrl, localFolder);
+                repository.LocalFolder = localFolder;
+
+                // if content needs to be populated, make the callback
+                if (contentPopulationCallback != null)
+                {
+                    var contentAdded = contentPopulationCallback(repository.LocalFolder);
+                    if (contentAdded)
+                    {
+                        
+                    }
+                }
+
+                return repository;
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Failed to create repository", e);
+
+                var msg = string.Format("Failed to create repository {0}. Error message: {1}.", name, e.Message);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Repository Creation Failed", msg);
+            }
+
+            return null;
+        }
+
     }
 }

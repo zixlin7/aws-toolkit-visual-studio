@@ -24,23 +24,29 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers
                 return;
             }
 
-            var repository = CodeCommitPlugin.PromptForRepositoryToCreate(Account, Region, GetLocalClonePathFromGitProvider());
-            if (repository == null)
+            var newRepoInfo = CodeCommitPlugin.PromptForRepositoryToCreate(Account, Region, GetLocalClonePathFromGitProvider());
+            if (newRepoInfo == null)
                 return;
 
             var gitCredentials = ObtainGitCredentials();
             if (gitCredentials == null)
                 return;
 
-            // delegate the actual clone operation via an intermediary; this allows us to use either
-            // Team Explorer or CodeCommit to do the clone operation depending on the host shell.
+            // Create the repo at the service first, then clone locally so that Team Explorer becomes
+            // aware of it. We will then call an optional delegate so that external tooling/wizards
+            // can populate the repo with initial content that we will then commit and push.
             var gitServices = ToolkitFactory
                                   .Instance
                                   .ShellProvider
                                   .QueryShellProviderService<IAWSToolkitGitServices>() ?? ToolkitFactory
                                   .Instance
                                   .QueryPluginService(typeof(IAWSToolkitGitServices)) as IAWSToolkitGitServices;
-            gitServices?.Clone(repository.RepositoryUrl, repository.LocalFolder, gitCredentials);
+            gitServices.Create(newRepoInfo.OwnerAccount, 
+                               newRepoInfo.Region, 
+                               newRepoInfo.Name, 
+                               newRepoInfo.Description, 
+                               newRepoInfo.LocalFolder, 
+                               null);
         }
     }
 }

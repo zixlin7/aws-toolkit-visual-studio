@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Annotations;
-
-namespace Amazon.AWSToolkit.CodeCommit.Interface.Model
+﻿namespace Amazon.AWSToolkit.CodeCommit.Interface.Model
 {
     /// <summary>
     /// Wrapper around a CodeCommit repository. The repository may exist only
     /// on the remote or may have also been cloned locally.
     /// </summary>
-    public interface IRepository
+    public interface ICodeCommitRepository
     {
         /// <summary>
         /// Unique id for the repo.

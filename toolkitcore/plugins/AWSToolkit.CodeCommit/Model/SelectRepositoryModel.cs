@@ -40,13 +40,13 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         /// <summary>
         /// Selected repository item from the UI.
         /// </summary>
-        public RepositoryWrapper SelectedRepository
+        public CodeCommitRepository SelectedRepository
         {
             get { return _selectedRepository; }
             set { _selectedRepository = value; NotifyPropertyChanged("SelectedRepository"); }
         }
 
-        public ObservableCollection<RepositoryWrapper> Repositories => _repositories;
+        public ObservableCollection<CodeCommitRepository> Repositories => _repositories;
 
         public void RefreshRepositoryList()
         {
@@ -95,7 +95,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
                     _repositories.Clear();
                     foreach (var r in repositoryList)
                     {
-                        _repositories.Add(new RepositoryWrapper(r));
+                        _repositories.Add(new CodeCommitRepository(r));
                     }
 
                     Interlocked.Decrement(ref _backgroundWorkersActive);
@@ -128,8 +128,8 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
         private AccountViewModel _account;
         private string _localFolder;
-        private RepositoryWrapper _selectedRepository;
-        private readonly ObservableCollection<RepositoryWrapper> _repositories = new ObservableCollection<RepositoryWrapper>();
+        private CodeCommitRepository _selectedRepository;
+        private readonly ObservableCollection<CodeCommitRepository> _repositories = new ObservableCollection<CodeCommitRepository>();
         private readonly List<RegionEndPointsManager.RegionEndPoints> _availableRegions = new List<RegionEndPointsManager.RegionEndPoints>();
     }
 }

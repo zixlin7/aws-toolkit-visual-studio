@@ -7,21 +7,21 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 {
     public class ViewRepositoryModel : INotifyPropertyChanged
     {
-        public ViewRepositoryModel(RepositoryWrapper repositoryWrapper)
+        public ViewRepositoryModel(CodeCommitRepository repositoryWrapper)
         {
             RepositoryWrapper = repositoryWrapper;
         }
 
         public ViewRepositoryModel(RepositoryMetadata repositoryMetadata)
         {
-            RepositoryWrapper = new RepositoryWrapper(repositoryMetadata);
+            RepositoryWrapper = new CodeCommitRepository(repositoryMetadata);
         }
 
         public ViewRepositoryModel()
         {
         }
 
-        public RepositoryWrapper RepositoryWrapper { get; internal set; }
+        public CodeCommitRepository RepositoryWrapper { get; internal set; }
 
         public string Name => RepositoryWrapper?.Name;
 

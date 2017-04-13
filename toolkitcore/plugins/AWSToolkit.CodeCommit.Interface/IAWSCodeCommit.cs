@@ -52,9 +52,9 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// <param name="initialRegion">Initial region selection or null.</param>
         /// <param name="defaultCloneFolderRoot">Suggested folder for the cloned repository, or null.</param>
         /// <returns>Null if the user cancels selection, otherwise details of the repository to clone.</returns>
-        IRepository PromptForRepositoryToClone(AccountViewModel account, 
-                                               RegionEndPointsManager.RegionEndPoints initialRegion, 
-                                               string defaultCloneFolderRoot);
+        ICodeCommitRepository PromptForRepositoryToClone(AccountViewModel account, 
+                                                         RegionEndPointsManager.RegionEndPoints initialRegion, 
+                                                         string defaultCloneFolderRoot);
 
         /// <summary>
         /// Prompts the user to fill out the data necessary to create a new repository hosted
@@ -64,10 +64,10 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// <param name="account"></param>
         /// <param name="initialRegion"></param>
         /// <param name="defaultFolderRoot"></param>
-        /// <returns></returns>
-        IRepository PromptForRepositoryToCreate(AccountViewModel account, 
-                                                RegionEndPointsManager.RegionEndPoints initialRegion,
-                                                string defaultFolderRoot);
+        /// <returns>Details of the repository to be created.</returns>
+        INewCodeCommitRepositoryInfo PromptForRepositoryToCreate(AccountViewModel account, 
+                                                                 RegionEndPointsManager.RegionEndPoints initialRegion,
+                                                                 string defaultFolderRoot);
 
         /// <summary>
         /// Prompts the user to stores a set of newly generated credentials to disk.

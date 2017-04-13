@@ -24,7 +24,7 @@ namespace Amazon.AWSToolkit.CodeCommit.View
 
         public CreateRepositoryController Controller { get; }
 
-        public override string Title => "Clone AWS CodeCommit Repository";
+        public override string Title => "Create a New AWS CodeCommit Repository";
 
         public override bool Validated()
         {

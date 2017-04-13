@@ -61,7 +61,8 @@
   <ItemGroup>
     <Compile Include="CodeCommitConstants.cs" />
     <Compile Include="IAWSCodeCommit.cs" />
-    <Compile Include="Model\IRepository.cs" />
+    <Compile Include="Model\ICodeCommitRepository.cs" />
+    <Compile Include="Model\INewCodeCommitRepositoryInfo.cs" />
     <Compile Include="Nodes\ICodeCommitRepositoryViewMetaNode.cs" />
     <Compile Include="Nodes\ICodeCommitRepositoryViewModel.cs" />
     <Compile Include="Nodes\ICodeCommitRootViewMetaNode.cs" />

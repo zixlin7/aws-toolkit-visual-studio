@@ -87,6 +87,7 @@
                  Style="{DynamicResource awsTextBoxStyle}"
                  Tag="Required"
                  Margin="0,8,2,0"
+                 Text="{Binding Name}"
                  />
 
         <Label Grid.Row="3"
@@ -100,6 +101,7 @@
                  Grid.ColumnSpan="2"
                  Style="{DynamicResource awsTextBoxStyle}"
                  Margin="0,4,2,0"
+                 Text="{Binding Description}"
         />
 
         <Label Grid.Row="4" 
@@ -111,9 +113,9 @@
         <TextBox Grid.Row="4" 
                  Grid.Column="1"
                  Style="{DynamicResource awsTextBoxStyle}"
-                 Text="{Binding LocalFolder}"
                  Tag="Required"
                  Margin="0,16,2,0"
+                 Text="{Binding LocalFolder}"
                  />
         <Button Grid.Row="4" 
                 Grid.Column="2"

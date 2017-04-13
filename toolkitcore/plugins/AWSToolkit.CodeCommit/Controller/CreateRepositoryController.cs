@@ -38,23 +38,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Controller
         public ActionResults Execute()
         {
             View = new CreateRepositoryControl(this);
-            if (ToolkitFactory.Instance.ShellProvider.ShowModal(View))
-            {
-                // for now, append the repo name onto the selected path - we'll want to show
-                // this in the dialog eventually
-                /*
-                var finalPathComponent = Path.GetFileName(Model.LocalFolder);
-                if (!finalPathComponent.Equals(Model.SelectedRepository.Name, StringComparison.OrdinalIgnoreCase))
-                {
-                    Model.LocalFolder = Path.Combine(Model.LocalFolder, Model.SelectedRepository.Name);
-                }
-
-                Model.RepositoryUrl = Model.SelectedRepository.RepositoryMetadata.CloneUrlHttp;
-                return new ActionResults().WithSuccess(true);
-                */
-            }
-
-            return new ActionResults().WithSuccess(false);
+            return new ActionResults().WithSuccess(ToolkitFactory.Instance.ShellProvider.ShowModal(View));
         }
 
     }

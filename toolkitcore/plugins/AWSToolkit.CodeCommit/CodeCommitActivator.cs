@@ -104,22 +104,24 @@ namespace Amazon.AWSToolkit.CodeCommit
             return !registerCredentialsController.Execute().Success ? null : registerCredentialsController.Credentials;
         }
 
-        public IRepository PromptForRepositoryToClone(AccountViewModel account, RegionEndPointsManager.RegionEndPoints initialRegion, string defaultCloneFolderRoot)
+        public ICodeCommitRepository PromptForRepositoryToClone(AccountViewModel account, 
+                                                                RegionEndPointsManager.RegionEndPoints initialRegion, 
+                                                                string defaultCloneFolderRoot)
         {
             var controller = new SelectRepositoryController(account, initialRegion, defaultCloneFolderRoot);
-            if (!controller.Execute().Success)
-                return null;
-
-            return new RepositoryWrapper(controller.Model.SelectedRepository, controller.Model.LocalFolder);
+            return !controller.Execute().Success 
+                ? null 
+                : new CodeCommitRepository(controller.Model.SelectedRepository, controller.Model.LocalFolder);
         }
 
-        public IRepository PromptForRepositoryToCreate(AccountViewModel account, RegionEndPointsManager.RegionEndPoints initialRegion, string defaultFolderRoot)
+        public INewCodeCommitRepositoryInfo PromptForRepositoryToCreate(AccountViewModel account, 
+                                                                       RegionEndPointsManager.RegionEndPoints initialRegion, 
+                                                                       string defaultFolderRoot)
         {
             var controller = new CreateRepositoryController(account, initialRegion, defaultFolderRoot);
-            if (!controller.Execute().Success)
-                return null;
-
-            return null; // new RepositoryWrapper(controller.Model.SelectedRepository, controller.Model.LocalFolder);
+            return !controller.Execute().Success 
+                ? null 
+                : controller.Model.GetNewRepositoryInfo();
         }
 
         public string PromptToSaveGeneratedCredentials(ServiceSpecificCredential generatedCredentials)
