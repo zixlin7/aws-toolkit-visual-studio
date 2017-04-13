@@ -70,15 +70,15 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
             _lastWriteTime = DateTime.MinValue;
         }
 
-        bool disposed;
+        bool _disposed;
         void Dispose(bool disposing)
         {
             if (disposing)
             {
-                if (disposed) return;
+                if (_disposed) return;
                 SecurePassword.Clear();
                 SecurePassword.Dispose();
-                disposed = true;
+                _disposed = true;
             }
         }
 
@@ -90,7 +90,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
 
         private void CheckNotDisposed()
         {
-            if (disposed)
+            if (_disposed)
             {
                 throw new ObjectDisposedException("Credential object is already disposed.");
             }
@@ -112,10 +112,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
         
         public string Password
         {
-            get
-            {
-                return CreateString(SecurePassword);
-            }
+            get => CreateString(SecurePassword);
             set
             {
                 CheckNotDisposed();
@@ -130,7 +127,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
             {
                 CheckNotDisposed();
                 _unmanagedCodePermission.Demand();
-                return _password == null ? new SecureString() : _password.Copy();
+                return _password?.Copy() ?? new SecureString();
             }
             set
             {
@@ -140,7 +137,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
                     _password.Clear();
                     _password.Dispose();
                 }
-                _password = null == value ? new SecureString() : value.Copy();
+                _password = value?.Copy() ?? new SecureString();
             }
         }
 
@@ -172,13 +169,8 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
             }
         }
 
-        public DateTime LastWriteTime
-        {
-            get
-            {
-                return LastWriteTimeUtc.ToLocalTime();
-            }
-        }
+        public DateTime LastWriteTime => LastWriteTimeUtc.ToLocalTime();
+
         public DateTime LastWriteTimeUtc
         {
             get
@@ -186,7 +178,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
                 CheckNotDisposed();
                 return _lastWriteTime;
             }
-            private set { _lastWriteTime = value; }
+            private set => _lastWriteTime = value;
         }
 
         /*
@@ -238,13 +230,12 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
                 Persist = (int)_persistenceType
             };
 
-            bool result = NativeMethods.CredWrite(ref credential, 0);
+            var result = NativeMethods.CredWrite(ref credential, 0);
             if (!result)
             {
                 return false;
             }
             LastWriteTimeUtc = DateTime.UtcNow;
-            PersistedCredentials.RegisterPersistedTarget(Target);
             return true;
         }
 
@@ -269,14 +260,13 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
                 Persist = (int)_persistenceType
             };
 
-            bool result = NativeMethods.CredWrite(ref credential, 0);
+            var result = NativeMethods.CredWrite(ref credential, 0);
             Marshal.FreeCoTaskMem(blob);
             if (!result)
             {
                 return false;
             }
             LastWriteTimeUtc = DateTime.UtcNow;
-            PersistedCredentials.RegisterPersistedTarget(Target);
             return true;
         }
 
@@ -291,13 +281,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
             }
 
             var target = string.IsNullOrEmpty(Target) ? new StringBuilder() : new StringBuilder(Target);
-            var result = NativeMethods.CredDelete(target, _credentialType, 0);
-            if (result)
-            {
-                PersistedCredentials.DeregisterPersistedTarget(Target);
-            }
-
-            return result;
+            return NativeMethods.CredDelete(target, _credentialType, 0);
         }
 
         public static bool Delete(string target, CredentialType credentialType)
@@ -317,14 +301,12 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
             CheckNotDisposed();
             _unmanagedCodePermission.Demand();
 
-            IntPtr credPointer;
-
-            bool result = NativeMethods.CredRead(Target, _credentialType, 0, out credPointer);
+            bool result = NativeMethods.CredRead(Target, _credentialType, 0, out IntPtr credPointer);
             if (!result)
             {
                 return false;
             }
-            using (NativeMethods.CriticalCredentialHandle credentialHandle = new NativeMethods.CriticalCredentialHandle(credPointer))
+            using (var credentialHandle = new NativeMethods.CriticalCredentialHandle(credPointer))
             {
                 LoadInternal(credentialHandle.GetCredential());
             }
@@ -408,6 +390,5 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
             }
             return str;
         }
-
     }
 }

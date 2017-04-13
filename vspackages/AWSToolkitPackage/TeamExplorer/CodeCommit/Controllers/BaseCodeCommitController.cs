@@ -8,7 +8,7 @@ using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.Account.Model;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.Util;
-
+using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 
@@ -34,7 +34,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers
             // Before commencing any work, we'll have gotten the user to supply their
             // AWS credentials so by now we have access to the account bound to Team Explorer 
             // as well as a default region from the navigator.
-            Account = ConnectionsManager.Instance.TeamExplorerAccount;
+            Account = TeamExplorerConnection.ActiveConnection.Account;
             Region = ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints;
         }
 

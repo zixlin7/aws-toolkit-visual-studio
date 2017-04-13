@@ -46,7 +46,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 var uri = new Uri(repoUrl);
                 var gitCredentialKey = string.Format("git:{0}://{1}", uri.Scheme, uri.DnsSafeHost);
                 gitCredentials = new GitCredentials(credentials.Username, credentials.Password, gitCredentialKey);
-                gitCredentials.Save();
+
+                TeamExplorerConnection.ActiveConnection.RegisterCredentials(gitCredentials);
 
 #if VS2017_OR_LATER
                 var gitExt = HostPackage.GetVSShellService(typeof(IGitActionsExt)) as IGitActionsExt;
@@ -86,12 +87,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             {
                 if (gitCredentials != null && gitCredentials.Exists())
                 {
-                    // todo: 
-                    // we may have to consider deleting credentials from the store due to
-                    // them only being bound by domain - if we have multiple accounts, there
-                    // is a side effect that we've just trashed over other credentials for the
-                    // same domain.
-                    //gitCredentials.Delete();
                     gitCredentials.Dispose();
                 }
             }

@@ -32,8 +32,8 @@
             <Separator Style="{StaticResource VerticalSeparator}" />
             <Button Style="{StaticResource ActionLinkButton}" 
                     KeyboardNavigation.TabIndex="2" 
-                    Command="{Binding DisconnectCommand}"
-                    Content="{Binding DisconnectLabel, UpdateSourceTrigger=PropertyChanged}"
+                    Command="{Binding SignoutCommand}"
+                    Content="{Binding SignoutLabel, UpdateSourceTrigger=PropertyChanged}"
                     />
         </WrapPanel>
     </DockPanel>

@@ -12,36 +12,30 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
     {
         public ConnectSectionViewModel()
         {
-            ConnectionsManager.Instance.CollectionChanged += ConnectionsCollectionChanged;
-            ConnectionsManager.Instance.OnTeamExplorerBindingChanged += OnTeamExplorerBindingChanged;
+            TeamExplorerConnection.OnTeamExplorerBindingChanged += OnTeamExplorerBindingChanged;
 
-            _disconnectCommand = new CommandHandler(OnDisconnect, true);
             _cloneCommand = new CommandHandler(OnClone, true);
             _createCommand = new CommandHandler(OnCreate, true);
+            _signoutCommand = new CommandHandler(OnSignout, true);
         }
 
-        // triggers a refresh of the repos collection in the panel
-        private void ConnectionsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        // used to trigger notification that the Sign-out button label should update
+        // to include the active profile name
+        private void OnTeamExplorerBindingChanged(TeamExplorerConnection connection)
         {
-            RefreshRepositoriesList();
-        }
-
-        // used to trigger notification that the Disconnect button label should update
-        private void OnTeamExplorerBindingChanged(AccountViewModel boundAccount)
-        {
-            RaisePropertyChanged("DisconnectLabel");
+            RaisePropertyChanged("SignoutLabel");
         }
 
         public void RefreshRepositoriesList()
         {
         }
 
-        public string DisconnectLabel => ConnectionsManager.Instance.TeamExplorerAccount == null 
-            ? "Disconnect" 
-            : string.Concat("Disconnect ", ConnectionsManager.Instance.TeamExplorerAccount.DisplayName);
+        public string SignoutLabel=> TeamExplorerConnection.ActiveConnection == null 
+            ? "Sign out" 
+            : string.Concat("Sign out ", TeamExplorerConnection.ActiveConnection.Account.DisplayName);
 
-        private readonly CommandHandler _disconnectCommand;
-        public ICommand DisconnectCommand => _disconnectCommand;
+        private readonly CommandHandler _signoutCommand;
+        public ICommand SignoutCommand => _signoutCommand;
 
         private readonly CommandHandler _cloneCommand;
         public ICommand CloneCommand => _cloneCommand;
@@ -59,14 +53,9 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
             new CreateRepositoryController().Execute();
         }
 
-        private void OnDisconnect()
+        private void OnSignout()
         {
-            var currentConnection = ConnectionsManager.Instance.TeamExplorerAccount;
-            ConnectionsManager.Instance.DeregisterProfileConnection(currentConnection);
-
-            // remove all credentials we have placed into the OS credential store -
-            // this follows the behavior of the GitHub plugin.
-            PersistedCredentials.ClearAllPersistedTargets();
+            TeamExplorerConnection.ActiveConnection.Signout();
         }
 
     }

@@ -5,6 +5,7 @@ using Microsoft.TeamFoundation.Controls.WPF.TeamExplorer;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model;
+using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
 using log4net;
 
 namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Connect
@@ -41,8 +42,8 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Connect
         {
             base.Initialize(sender, e);
 
-            IsVisible = ConnectionsManager.Instance.TeamExplorerAccount != null;
-            ConnectionsManager.Instance.OnTeamExplorerBindingChanged += OnTeamExplorerBindingChanged;
+            IsVisible = TeamExplorerConnection.ActiveConnection != null;
+            TeamExplorerConnection.OnTeamExplorerBindingChanged += OnTeamExplorerBindingChanged;
         }
 
         protected override object CreateView(SectionInitializeEventArgs e)
@@ -57,9 +58,9 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Connect
 
         // triggers a change of visibility of the section, and a refresh of the repos collection
         // in the panel
-        private void OnTeamExplorerBindingChanged(AccountViewModel boundAccount)
+        private void OnTeamExplorerBindingChanged(TeamExplorerConnection connection)
         {
-            IsVisible = boundAccount != null;
+            IsVisible = connection != null;
             _viewModel?.RefreshRepositoriesList();
         }
     }

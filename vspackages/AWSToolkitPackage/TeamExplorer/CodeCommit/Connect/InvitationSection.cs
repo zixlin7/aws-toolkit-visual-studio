@@ -6,7 +6,7 @@ using Microsoft.TeamFoundation.Controls;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.Base;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers;
-
+using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
 using log4net;
 
 namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Connect
@@ -38,10 +38,8 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Connect
                 = ToolkitFactory.Instance.ShellProvider.QueryAWSToolkitPluginService(typeof(IAWSCodeCommit))
                                 as IAWSCodeCommit;
 
-            IsVisible = CodeCommitPlugin != null && ConnectionsManager.Instance.TeamExplorerAccount == null;
-
-            ConnectionsManager.Instance.OnTeamExplorerBindingChanged +=
-                account => IsVisible = account == null;
+            IsVisible = CodeCommitPlugin != null && TeamExplorerConnection.ActiveConnection == null;
+            TeamExplorerConnection.OnTeamExplorerBindingChanged += (connection) => { IsVisible = connection == null; };
         }
 
         public override void Connect()
@@ -53,7 +51,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Connect
             var results = controller.Execute();
             if (results.Success)
             {
-                ConnectionsManager.Instance.RegisterProfileConnection(controller.SelectedAccount, true);
+                TeamExplorerConnection.Signin(controller.SelectedAccount);
             }
         }
 

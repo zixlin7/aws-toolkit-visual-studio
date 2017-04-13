@@ -94,7 +94,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             svcCredentials = ProbeIamForServiceSpecificCredentials(account, region);
             if (svcCredentials != null)
             {
-                RegisterServiceCredentialsModel.PersistCredentials(svcCredentials, account.SettingsUniqueKey);
+                AssociateCredentialsWithProfile(account.SettingsUniqueKey, svcCredentials.Username, svcCredentials.Password);
                 return svcCredentials;
             }
 

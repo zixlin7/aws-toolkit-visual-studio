@@ -33,7 +33,8 @@ namespace Amazon.AWSToolkit.Account
 
         ObservableCollection<IViewModel> _serviceViewModels;
 
-        private Dictionary<string, ServiceSpecificCredentials> _cachedServiceCredentials;
+        private Dictionary<string, ServiceSpecificCredentials> _cachedServiceCredentials 
+            = new Dictionary<string, ServiceSpecificCredentials>(StringComparer.OrdinalIgnoreCase);
 
         public AccountViewModel(AccountViewMetaNode metaNode, AWSViewModel awsViewModel, ICredentialProfileStore profileStore, CredentialProfile profile)
             : base(metaNode, awsViewModel, profile.Name)
@@ -59,13 +60,8 @@ namespace Amazon.AWSToolkit.Account
             this._displayName = this._profile.Name;
             this._credentials = this._profile.GetAWSCredentials(ProfileStore);
 
-            if (_cachedServiceCredentials != null)
-                _cachedServiceCredentials.Clear();
-            else
-                _cachedServiceCredentials = new Dictionary<string, ServiceSpecificCredentials>(StringComparer.OrdinalIgnoreCase);
+            _cachedServiceCredentials.Clear();
         }
-
-
 
         internal void CreateServiceChildren()
         {
