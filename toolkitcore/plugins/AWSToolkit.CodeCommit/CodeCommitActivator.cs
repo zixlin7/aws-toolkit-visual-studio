@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Windows;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.Account.Model;
@@ -79,8 +80,6 @@ namespace Amazon.AWSToolkit.CodeCommit
 
         public ServiceSpecificCredentials ObtainGitCredentials(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
         {
-            // if the account doesn't have service-specific credentials for CodeCommit, now would be
-            // a good time to get and store them
             var svcCredentials
                 = ServiceSpecificCredentialStoreManager
                     .Instance
@@ -135,9 +134,10 @@ namespace Amazon.AWSToolkit.CodeCommit
         #endregion
 
         /// <summary>
-        /// If the user has no credentials for codecommit, then try and create some and prompt them to
-        /// save the downloaded csv file. Note that that auto-create can fail if the user is using root 
-        /// credentials or does not have the necessary permissions.
+        /// If the user has no credentials for codecommit and their account is compatible, ask them
+        /// if they'd like us to do the work on their behalf. If they decline, or the account isn't
+        /// compatible, or auto-create fails, we'll display the regular dialog so they can paste in
+        /// their credentials.
         /// </summary>
         /// <returns></returns>
         public ServiceSpecificCredentials ProbeIamForServiceSpecificCredentials(AccountViewModel account, 
@@ -183,6 +183,17 @@ namespace Amazon.AWSToolkit.CodeCommit
                     LOGGER.InfoFormat("User profile {0} already has the maximum amount of service-specific credentials for CodeCommit; user will have to activate and import credentials", account.DisplayName);
                     return null;
                 }
+
+                // account is compatible, so let's see if the user wants us to go ahead
+                const string msg = "Your account needs Git credentials to be generated to work with AWS CodeCommit. "
+                                   +
+                                   "The toolkit can try and create these credentials for you, and download them for you to save for future use. "
+                                   + "\r\n"
+                                   + "\r\n"
+                                   + "Proceed to try and create credentials?";
+
+                if (!ToolkitFactory.Instance.ShellProvider.Confirm("Auto-create Git Credentials", msg, MessageBoxButton.YesNo))
+                    return null;
 
                 // attempt to create a set of credentials and if successful, prompt the user to save them
                 var createCredentialRequest = new CreateServiceSpecificCredentialRequest
