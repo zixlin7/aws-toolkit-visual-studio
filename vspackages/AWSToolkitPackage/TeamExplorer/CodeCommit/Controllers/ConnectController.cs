@@ -18,6 +18,13 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers
         public ActionResults Execute()
         {
             var accounts = ToolkitFactory.Instance.RootViewModel.RegisteredAccounts;
+            // if the user has only one profile, we can just proceed
+            if (accounts.Count == 1)
+            {
+                SelectedAccount = accounts.First();
+                return new ActionResults().WithSuccess(true);
+            }
+
             return accounts.Any() ? SelectFromExistingProfiles() : CreateNewProfile();
         }
 
