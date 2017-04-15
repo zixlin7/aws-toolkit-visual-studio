@@ -8,9 +8,23 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 {
     public class CreateRepositoryModel : BaseRepositoryModel
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string LocalFolder { get; set; }
+        public string Name
+        {
+            get => _name;
+            set { _name = value; NotifyPropertyChanged(nameof(Name)); }
+        }
+
+        public string Description
+        {
+            get => _description;
+            set { _description = value; NotifyPropertyChanged(nameof(Description)); }
+        }
+
+        public string LocalFolder
+        {
+            get => _localFolder;
+            set { _localFolder = value; NotifyPropertyChanged(nameof(LocalFolder)); }
+        }
 
         public INewCodeCommitRepositoryInfo GetNewRepositoryInfo()
         {
@@ -30,5 +44,9 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
             return info;
         }
+
+        private string _name;
+        private string _description;
+        private string _localFolder;
     }
 }

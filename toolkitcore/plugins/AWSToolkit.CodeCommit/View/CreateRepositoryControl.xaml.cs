@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Forms;
 using Amazon.AWSToolkit.CodeCommit.Controller;
+using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.CodeCommit.View
 {
@@ -20,6 +21,10 @@ namespace Amazon.AWSToolkit.CodeCommit.View
         {
             Controller = controller;
             DataContext = Controller.Model;
+            Controller.Model.PropertyChanged += (sender, args) =>
+            {
+                SetOkButtonEnablement(Validated());
+            };
         }
 
         public CreateRepositoryController Controller { get; }
@@ -34,6 +39,27 @@ namespace Amazon.AWSToolkit.CodeCommit.View
         public override bool OnCommit()
         {
             return true;
+        }
+
+        private OkCancelDialogHost _host;
+        private OkCancelDialogHost Host
+        {
+            get
+            {
+                if (_host == null)
+                {
+                    _host = FindHost<OkCancelDialogHost>();
+                }
+
+                return _host;
+            }
+        }
+
+        public void SetOkButtonEnablement(bool okEnabled)
+        {
+            var host = Host;
+            if (host != null)
+                host.IsOkEnabled = okEnabled;
         }
 
         private void OnRegionSelectionChanged(object sender, SelectionChangedEventArgs e)

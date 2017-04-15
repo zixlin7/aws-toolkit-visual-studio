@@ -16,6 +16,7 @@ using Amazon.AWSToolkit.CodeCommit.Model;
 using Amazon.AWSToolkit.CodeCommit.Nodes;
 using Amazon.AWSToolkit.CodeCommit.Services;
 using Amazon.AWSToolkit.Navigator;
+using Amazon.CodeCommit;
 using Amazon.CodeCommit.Model;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
@@ -70,25 +71,28 @@ namespace Amazon.AWSToolkit.CodeCommit
             ServiceSpecificCredentialStoreManager
                 .Instance
                 .SaveCredentialsForService(profileArtifactsId,
-                                           ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName,
-                                           userName,
-                                           password);
+                    ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName,
+                    userName,
+                    password);
         }
 
         public ServiceSpecificCredentials CredentialsForProfile(string profileArtifactsId)
         {
-            return 
+            return
                 ServiceSpecificCredentialStoreManager
                     .Instance
-                    .GetCredentialsForService(profileArtifactsId, ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName);
+                    .GetCredentialsForService(profileArtifactsId,
+                        ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName);
         }
 
-        public ServiceSpecificCredentials ObtainGitCredentials(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
+        public ServiceSpecificCredentials ObtainGitCredentials(AccountViewModel account,
+            RegionEndPointsManager.RegionEndPoints region)
         {
             var svcCredentials
                 = ServiceSpecificCredentialStoreManager
                     .Instance
-                    .GetCredentialsForService(account.SettingsUniqueKey, ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName);
+                    .GetCredentialsForService(account.SettingsUniqueKey,
+                        ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName);
 
             if (svcCredentials != null)
                 return svcCredentials;
@@ -98,7 +102,8 @@ namespace Amazon.AWSToolkit.CodeCommit
             svcCredentials = ProbeIamForServiceSpecificCredentials(account, region);
             if (svcCredentials != null)
             {
-                AssociateCredentialsWithProfile(account.SettingsUniqueKey, svcCredentials.Username, svcCredentials.Password);
+                AssociateCredentialsWithProfile(account.SettingsUniqueKey, svcCredentials.Username,
+                    svcCredentials.Password);
                 return svcCredentials;
             }
 
@@ -108,23 +113,23 @@ namespace Amazon.AWSToolkit.CodeCommit
             return !registerCredentialsController.Execute().Success ? null : registerCredentialsController.Credentials;
         }
 
-        public ICodeCommitRepository PromptForRepositoryToClone(AccountViewModel account, 
-                                                                RegionEndPointsManager.RegionEndPoints initialRegion, 
-                                                                string defaultCloneFolderRoot)
+        public ICodeCommitRepository PromptForRepositoryToClone(AccountViewModel account,
+            RegionEndPointsManager.RegionEndPoints initialRegion,
+            string defaultCloneFolderRoot)
         {
             var controller = new SelectRepositoryController(account, initialRegion, defaultCloneFolderRoot);
-            return !controller.Execute().Success 
-                ? null 
+            return !controller.Execute().Success
+                ? null
                 : new CodeCommitRepository(controller.Model.SelectedRepository, controller.Model.LocalFolder);
         }
 
-        public INewCodeCommitRepositoryInfo PromptForRepositoryToCreate(AccountViewModel account, 
-                                                                       RegionEndPointsManager.RegionEndPoints initialRegion, 
-                                                                       string defaultFolderRoot)
+        public INewCodeCommitRepositoryInfo PromptForRepositoryToCreate(AccountViewModel account,
+            RegionEndPointsManager.RegionEndPoints initialRegion,
+            string defaultFolderRoot)
         {
             var controller = new CreateRepositoryController(account, initialRegion, defaultFolderRoot);
-            return !controller.Execute().Success 
-                ? null 
+            return !controller.Execute().Success
+                ? null
                 : controller.Model.GetNewRepositoryInfo();
         }
 
@@ -156,55 +161,68 @@ namespace Amazon.AWSToolkit.CodeCommit
             return false;
         }
 
-        public IEnumerable<ICodeCommitRepository> GetRepositories(AccountViewModel account, IEnumerable<string> pathsToRepositories)
+        public IEnumerable<ICodeCommitRepository> GetRepositories(AccountViewModel account,
+            IEnumerable<string> pathsToRepositories)
         {
             if (account == null)
                 throw new ArgumentNullException(nameof(account));
             if (pathsToRepositories == null)
                 throw new ArgumentNullException(nameof(pathsToRepositories));
 
-            var foundRepositories = new List<ICodeCommitRepository>();
+            var validRepositories = new List<ICodeCommitRepository>();
 
-            foreach (var path in pathsToRepositories)
+            var repositoryNameAndPathByRegion = GroupLocalRepositoriesByRegion(pathsToRepositories);
+
+            // now that we have the data batched, query the repos by region and then cross-match
+            // with the ones we found locally to return the full active set of repos...all this to
+            // avoid throttling!
+            foreach (var region in repositoryNameAndPathByRegion.Keys)
             {
-                // find the remote for CodeCommit, and from that we can infer the region and the
-                // actual repo name. Trying to auto-discover this info without needing to perist
-                // data about the repos we've seen
-                if (!Repository.IsValid(path))
-                    continue;
-
-                var repo = new Repository(path);
-                var codeCommitRemoteUrl = FindCommitRemoteUrl(repo);
-                if (codeCommitRemoteUrl == null)
-                    continue;
-
-                string region;
-                string repoName;
-                ExtractRepoNameAndRegion(codeCommitRemoteUrl, out repoName, out region);
-
                 var client = BaseRepositoryModel.GetClientForRegion(account.Credentials, region);
+
                 try
                 {
-                    var response = client.GetRepository(new GetRepositoryRequest
-                    {
-                        RepositoryName = repoName
-                    });
+                    // build the list of all repos for the region
+                    var serviceReposForRegion = QueryAvailableRepositoryNames(client);
 
-                    var wrapper = new CodeCommitRepository(response.RepositoryMetadata)
+                    // now we have the names of all available repos for the user in the region
+                    // use it to determine which of those found locally we should return
+                    var repoNamesToQuery = FilterLocalReposFromKnownRepos(repositoryNameAndPathByRegion[region], serviceReposForRegion);
+
+                    // and now query the repo metadata by batch - note we're not expecting any match fails
+                    // here since we just got these names back from the service, but be prepared for anything!
+                    var request = new BatchGetRepositoriesRequest
                     {
-                        LocalFolder = path
+                        RepositoryNames = repoNamesToQuery.Keys.ToList()
                     };
+                    var batchGetResponse = client.BatchGetRepositories(request);
+                    foreach (var repo in batchGetResponse.Repositories)
+                    {
+                        var wrapper = new CodeCommitRepository(repo)
+                        {
+                            LocalFolder = repoNamesToQuery[repo.RepositoryName]
+                        };
 
-                    foundRepositories.Add(wrapper);
+                        validRepositories.Add(wrapper);
+                    }
+
+                    if (batchGetResponse.RepositoriesNotFound != null)
+                    {
+                        foreach (var r in batchGetResponse.RepositoriesNotFound)
+                        {
+                            LOGGER.InfoFormat(
+                                "Repository {0} was not found during metadata query despite being returned by ListRepositories",
+                                r);
+                        }
+                    }
                 }
                 catch (Exception e)
                 {
-                    LOGGER.Error(string.Format("Failed to query repository metadata for repo name {0}, expected to find in region {1}", repoName, region), e);
+                    LOGGER.Error("Exception batch querying for repos in region " + region, e);
                 }
-
             }
 
-            return foundRepositories;
+            return validRepositories;
         }
 
         #endregion
@@ -216,8 +234,8 @@ namespace Amazon.AWSToolkit.CodeCommit
         /// their credentials.
         /// </summary>
         /// <returns></returns>
-        public ServiceSpecificCredentials ProbeIamForServiceSpecificCredentials(AccountViewModel account, 
-                                                                                RegionEndPointsManager.RegionEndPoints region)
+        public ServiceSpecificCredentials ProbeIamForServiceSpecificCredentials(AccountViewModel account,
+            RegionEndPointsManager.RegionEndPoints region)
         {
             const string iamEndpointsName = "IAM";
             const string codeCommitServiceName = "codecommit.amazonaws.com";
@@ -235,7 +253,9 @@ namespace Amazon.AWSToolkit.CodeCommit
                 var getUserResponse = iamClient.GetUser();
                 if (string.IsNullOrEmpty(getUserResponse.User.UserName))
                 {
-                    LOGGER.InfoFormat("User profile {0} contains root credentials; cannot be used to create service-specific credentials.", account.DisplayName);
+                    LOGGER.InfoFormat(
+                        "User profile {0} contains root credentials; cannot be used to create service-specific credentials.",
+                        account.DisplayName);
                     return null;
                 }
 
@@ -245,10 +265,13 @@ namespace Amazon.AWSToolkit.CodeCommit
                     UserName = getUserResponse.User.UserName
                 };
                 var listCredentialsReponse = iamClient.ListServiceSpecificCredentials(listCredentialsRequest);
-                var credentialsExist = listCredentialsReponse.ServiceSpecificCredentials.Any(ssc => ssc.Status == StatusType.Active);
+                var credentialsExist =
+                    listCredentialsReponse.ServiceSpecificCredentials.Any(ssc => ssc.Status == StatusType.Active);
                 if (credentialsExist)
                 {
-                    LOGGER.InfoFormat("User profile {0} already has service-specific credentials for CodeCommit; user must import credentials", account.DisplayName);
+                    LOGGER.InfoFormat(
+                        "User profile {0} already has service-specific credentials for CodeCommit; user must import credentials",
+                        account.DisplayName);
                     return null;
                 }
 
@@ -256,7 +279,9 @@ namespace Amazon.AWSToolkit.CodeCommit
                 // if we already have two inactive sets, give up
                 if (listCredentialsReponse.ServiceSpecificCredentials.Count == maxServiceSpecificCredentials)
                 {
-                    LOGGER.InfoFormat("User profile {0} already has the maximum amount of service-specific credentials for CodeCommit; user will have to activate and import credentials", account.DisplayName);
+                    LOGGER.InfoFormat(
+                        "User profile {0} already has the maximum amount of service-specific credentials for CodeCommit; user will have to activate and import credentials",
+                        account.DisplayName);
                     return null;
                 }
 
@@ -268,7 +293,8 @@ namespace Amazon.AWSToolkit.CodeCommit
                                    + "\r\n"
                                    + "Proceed to try and create credentials?";
 
-                if (!ToolkitFactory.Instance.ShellProvider.Confirm("Auto-create Git Credentials", msg, MessageBoxButton.YesNo))
+                if (!ToolkitFactory.Instance.ShellProvider.Confirm("Auto-create Git Credentials", msg,
+                    MessageBoxButton.YesNo))
                     return null;
 
                 // attempt to create a set of credentials and if successful, prompt the user to save them
@@ -310,17 +336,104 @@ namespace Amazon.AWSToolkit.CodeCommit
         private void ExtractRepoNameAndRegion(string codeCommitRemoteUrl, out string repoName, out string region)
         {
             // possibly fragile, but expecting host to be 'git-codecommit.REGION.suffix/.../reponame
-            var serviceNameStart = codeCommitRemoteUrl.IndexOf(CodeCommitUrlPrefix, 0, StringComparison.OrdinalIgnoreCase);
+            var serviceNameStart =
+                codeCommitRemoteUrl.IndexOf(CodeCommitUrlPrefix, 0, StringComparison.OrdinalIgnoreCase);
             if (serviceNameStart == -1)
                 throw new ArgumentException("Not a CodeCommit remote url");
 
-            var regionStartPos = codeCommitRemoteUrl.IndexOf(".", serviceNameStart, StringComparison.OrdinalIgnoreCase) + 1;
+            var regionStartPos =
+                codeCommitRemoteUrl.IndexOf(".", serviceNameStart, StringComparison.OrdinalIgnoreCase) + 1;
             var regionEndPos = codeCommitRemoteUrl.IndexOf(".", regionStartPos, StringComparison.OrdinalIgnoreCase);
 
             region = codeCommitRemoteUrl.Substring(regionStartPos, regionEndPos - regionStartPos);
 
             var lastSlashPos = codeCommitRemoteUrl.LastIndexOf("/", StringComparison.OrdinalIgnoreCase);
             repoName = codeCommitRemoteUrl.Substring(lastSlashPos + 1);
+        }
+
+        private Dictionary<string, List<Tuple<string, string>>> GroupLocalRepositoriesByRegion(
+            IEnumerable<string> pathsToRepositories)
+        {
+            var repositoryNameAndPathByRegion = new Dictionary<string, List<Tuple<string, string>>>();
+
+            foreach (var path in pathsToRepositories)
+            {
+                // find the remote for CodeCommit, and from that we can infer the region and the
+                // actual repo name. Trying to auto-discover this info without needing to perist
+                // data about the repos we've seen
+                if (!Repository.IsValid(path))
+                    continue;
+
+                var repo = new Repository(path);
+                var codeCommitRemoteUrl = FindCommitRemoteUrl(repo);
+                if (codeCommitRemoteUrl == null)
+                    continue;
+
+                string region;
+                string repoName;
+                ExtractRepoNameAndRegion(codeCommitRemoteUrl, out repoName, out region);
+
+                if (repositoryNameAndPathByRegion.ContainsKey(region))
+                {
+                    repositoryNameAndPathByRegion[region].Add(new Tuple<string, string>(repoName, path));
+                }
+                else
+                {
+                    var names = new List<Tuple<string, string>> {new Tuple<string, string>(repoName, path)};
+                    repositoryNameAndPathByRegion.Add(region, names);
+                }
+            }
+
+            return repositoryNameAndPathByRegion;
+        }
+
+        private HashSet<string> QueryAvailableRepositoryNames(IAmazonCodeCommit client)
+        {
+            var serviceReposForRegion = new HashSet<string>();
+            string nextToken = null;
+            do
+            {
+                try
+                {
+                    var listReposRequest = new ListRepositoriesRequest {NextToken = nextToken};
+                    var listResponse = client.ListRepositories(listReposRequest);
+                    nextToken = listResponse.NextToken;
+                    foreach (var r in listResponse.Repositories)
+                    {
+                        serviceReposForRegion.Add(r.RepositoryName);
+                    }
+                }
+                catch (Exception e)
+                {
+                    LOGGER.Error(
+                        "Error attempting to list repositories for region " + client.Config.RegionEndpoint.SystemName,
+                        e);
+                    nextToken = null;
+                }
+
+            } while (!string.IsNullOrEmpty(nextToken));
+
+            return serviceReposForRegion;
+        }
+
+        private Dictionary<string, string> FilterLocalReposFromKnownRepos(IEnumerable<Tuple<string, string>> repoNamesAndPaths,
+                                                                          ICollection<string> serviceRepoNames)
+        {
+            var repoNamesToQuery = new Dictionary<string, string>();
+            foreach (var local in repoNamesAndPaths)
+            {
+                if (serviceRepoNames.Contains(local.Item1))
+                {
+                    repoNamesToQuery.Add(local.Item1, local.Item2);
+                }
+                else
+                {
+                    LOGGER.InfoFormat("Discarding local repo {0} at {1}, not found in service query for region.",
+                        local.Item1, local.Item2);
+                }
+            }
+
+            return repoNamesToQuery;
         }
     }
 }
