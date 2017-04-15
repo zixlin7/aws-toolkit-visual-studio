@@ -139,6 +139,8 @@
     <Compile Include="CommonUI\Components\RegisteredProfilesPicker.xaml.cs">
       <DependentUpon>RegisteredProfilesPicker.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CommonUI\Converters\HasItemsVisibilityConverter.cs" />
+    <Compile Include="CommonUI\Converters\ValueConverterMarkupExtension.cs" />
     <Compile Include="CommonUI\SelectableItem.cs" />
     <Compile Include="CommonUI\Components\IAMRolePicker.xaml.cs">
       <DependentUpon>IAMRolePicker.xaml</DependentUpon>

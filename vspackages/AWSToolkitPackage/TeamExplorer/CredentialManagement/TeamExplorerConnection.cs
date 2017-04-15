@@ -1,13 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CodeCommit.Interface;
+using Amazon.AWSToolkit.CodeCommit.Interface.Model;
+using Amazon.AWSToolkit.CodeCommit.Model;
 using Amazon.AWSToolkit.Persistence;
 using Amazon.AWSToolkit.Util;
 using log4net;
+using Microsoft.Win32;
 using ThirdParty.Json.LitJson;
 
 namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
@@ -17,7 +23,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
     /// registered with the OS, within Team Explorer. Details of the signed-in
     /// account are persisted across IDE invocations.
     /// </summary>
-    public class TeamExplorerConnection
+    public class TeamExplorerConnection : INotifyPropertyChanged
     {
         #region Private data
 
@@ -38,6 +44,8 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
 
         public delegate void TeamExplorerBindingChanged(TeamExplorerConnection connection);
         public static event TeamExplorerBindingChanged OnTeamExplorerBindingChanged;
+
+        public static IAWSCodeCommit CodeCommitPlugin { get; }
 
         /// <summary>
         /// Gets and sets the single active connection, if any, within Team Explorer.
@@ -65,6 +73,80 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
         /// The AWS account used to 'sign in' in Team Explorer.
         /// </summary>
         public AccountViewModel Account { get; }
+
+        public ObservableCollection<ICodeCommitRepository> Repositories { get; } = new ObservableCollection<ICodeCommitRepository>();
+
+        public void RefreshRepositories()
+        {
+            var reposToAdd = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var reposToRemove = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            using (var regkey = OpenTEGitSourceControlRegistryKey("Repositories"))
+            {
+                var subkeyNames = regkey.GetSubKeyNames();
+                foreach (var subkeyName in subkeyNames)
+                {
+                    using (var subkey = regkey.OpenSubKey(subkeyName))
+                    {
+                        try
+                        {
+                            var path = subkey?.GetValue("Path") as string;
+                            if (CodeCommitPlugin != null && CodeCommitPlugin.IsCodeCommitRepository(path))
+                            {
+                                if (path != null && Directory.Exists(path))
+                                {
+                                    reposToAdd.Add(path);
+                                }
+                                else
+                                {
+                                    reposToRemove.Add(path);
+                                }
+                            }
+                        }
+                        catch
+                        {
+                        }
+                    }
+                }
+            }
+
+            foreach (var currentRepo in Repositories)
+            {
+                if (reposToAdd.Contains(currentRepo.LocalFolder))
+                {
+                    reposToAdd.Remove(currentRepo.LocalFolder);
+                }
+                else if (reposToRemove.Contains(currentRepo.LocalFolder))
+                {
+                    Repositories.Remove(currentRepo);
+                }
+            }
+
+            if (reposToAdd.Any())
+            {
+                // as this probing could take some time, spin up a thread to add the new
+                // repos into the collection
+                ThreadPool.QueueUserWorkItem(QueryNewlyAddedRepositoriesDataAsync, reposToAdd);
+            }
+        }
+
+        private void QueryNewlyAddedRepositoriesDataAsync(object state)
+        {
+            var repoPaths = state as IEnumerable<string>;
+            if (repoPaths == null)
+                return;
+
+            var validRepos = CodeCommitPlugin.GetRepositories(Account, repoPaths);
+            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke(() =>
+            {
+                foreach (var repo in validRepos)
+                {
+                    Repositories.Add(repo);                   
+                }
+
+                OnPropertyChanged("Repositories");
+            });
+        }
 
         /// <summary>
         /// Returns the credential targets currently registered with the OS for
@@ -120,6 +202,9 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
         {
             ClearAllTargets();
             SaveConnectionData(false);
+
+            Repositories.Clear();
+            OnPropertyChanged("Repositories");
 
             ActiveConnection = null;
         }
@@ -256,6 +341,12 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
 
         static TeamExplorerConnection()
         {
+            CodeCommitPlugin = ToolkitFactory.Instance.QueryPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
+            if (CodeCommitPlugin == null)
+            {
+                LOGGER.Error("TeamExplorerConnection - CodeCommit plugin not available at load time");
+            }
+
             var storeFile = GetSettingsFilePath();
             if (!File.Exists(storeFile))
                 return;
@@ -267,6 +358,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
         private TeamExplorerConnection(AccountViewModel account)
         {
             Account = account;
+            RefreshRepositories();
         }
 
         private TeamExplorerConnection(AccountViewModel account, IEnumerable<string> credentialTargets)
@@ -285,11 +377,33 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
                         gitCredentials.Save();
                     }
                 }
+
+                RefreshRepositories();
             }
             catch (Exception e)
             {
                 LOGGER.Error(string.Format("Failed to load service credentials for profile {0} or to register credentials with the OS", account.DisplayName), e);
             }
+        }
+
+        private static RegistryKey OpenTEGitSourceControlRegistryKey(string path)
+        {
+#if VS2017
+            const string TEGitKey = @"Software\Microsoft\VisualStudio\15.0\TeamFoundation\GitSourceControl";
+#elif VS2015
+            const string TEGitKey = @"Software\Microsoft\VisualStudio\14.0\TeamFoundation\GitSourceControl";
+#else
+#error "No VS20xx conditional defined in package.build.targets - cannot set Team Explorer registry key in TeamExplorerConnection::RefreshRepositories()."
+#endif
+
+            return Microsoft.Win32.Registry.CurrentUser.OpenSubKey(TEGitKey + "\\" + path, false);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

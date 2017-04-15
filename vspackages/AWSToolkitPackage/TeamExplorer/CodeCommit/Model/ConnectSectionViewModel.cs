@@ -1,7 +1,9 @@
-﻿using System.Windows.Input;
+﻿using System.Collections.ObjectModel;
+using System.Windows.Input;
 using Microsoft.TeamFoundation.Controls.WPF.TeamExplorer;
 
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CodeCommit.Interface.Model;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
@@ -19,15 +21,23 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
             _signoutCommand = new CommandHandler(OnSignout, true);
         }
 
-        // used to trigger notification that the Sign-out button label should update
-        // to include the active profile name
+        /// <summary>
+        /// Monitors for changes in the active connection and wires up to receive
+        /// repository list change events when a connection is established.
+        /// </summary>
+        /// <param name="connection"></param>
         private void OnTeamExplorerBindingChanged(TeamExplorerConnection connection)
         {
-            RaisePropertyChanged("SignoutLabel");
-        }
+            if (connection != null)
+            {
+                connection.PropertyChanged += (sender, args) =>
+                {
+                    RaisePropertyChanged(args.PropertyName);
+                };
+            }
 
-        public void RefreshRepositoriesList()
-        {
+            RaisePropertyChanged("Repositories");
+            RaisePropertyChanged("SignoutLabel");
         }
 
         public string SignoutLabel=> TeamExplorerConnection.ActiveConnection == null 
@@ -42,6 +52,13 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
 
         private readonly CommandHandler _createCommand;
         public ICommand CreateCommand => _createCommand;
+
+        public ObservableCollection<ICodeCommitRepository> Repositories 
+            => TeamExplorerConnection.ActiveConnection != null
+                ? TeamExplorerConnection.ActiveConnection.Repositories
+                : null;
+
+        public ICodeCommitRepository SelectedRepository { get; set; }
 
         private void OnClone()
         {

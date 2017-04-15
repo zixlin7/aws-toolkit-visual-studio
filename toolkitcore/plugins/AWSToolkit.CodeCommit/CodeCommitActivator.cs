@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using Amazon.AWSToolkit.Account;
@@ -14,14 +16,17 @@ using Amazon.AWSToolkit.CodeCommit.Model;
 using Amazon.AWSToolkit.CodeCommit.Nodes;
 using Amazon.AWSToolkit.CodeCommit.Services;
 using Amazon.AWSToolkit.Navigator;
+using Amazon.CodeCommit.Model;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
+using LibGit2Sharp;
 
 namespace Amazon.AWSToolkit.CodeCommit
 {
     public class CodeCommitActivator : AbstractPluginActivator, IAWSCodeCommit
     {
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(CodeCommitActivator));
+        private const string CodeCommitUrlPrefix = "git-codecommit.";
 
         public override string PluginName => "CodeCommit";
 
@@ -58,7 +63,7 @@ namespace Amazon.AWSToolkit.CodeCommit
 
         #region IAWSCodeCommit Members
 
-        public string ServiceSpecificCredentialsStorageName => ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName;
+        public IAWSToolkitGitServices ToolkitGitServices => new AWSToolkitGitServices(this);
 
         public void AssociateCredentialsWithProfile(string profileArtifactsId, string userName, string password)
         {
@@ -129,7 +134,78 @@ namespace Amazon.AWSToolkit.CodeCommit
             return controller.Execute().Success ? controller.SelectedFilename : null;
         }
 
-        public IAWSToolkitGitServices ToolkitGitServices => new AWSToolkitGitServices(this);
+        public bool IsCodeCommitRepository(string repoPath)
+        {
+            if (!Directory.Exists(repoPath))
+                throw new ArgumentException("Specified repository path does not exist.");
+
+            try
+            {
+                if (Repository.IsValid(repoPath))
+                {
+                    var repo = new Repository(repoPath);
+                    var codeCommitRemoteUrl = FindCommitRemoteUrl(repo);
+                    return !string.IsNullOrEmpty(codeCommitRemoteUrl);
+                }
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Exception thrown from libgit2sharp while manipulating repository " + repoPath, e);
+            }
+
+            return false;
+        }
+
+        public IEnumerable<ICodeCommitRepository> GetRepositories(AccountViewModel account, IEnumerable<string> pathsToRepositories)
+        {
+            if (account == null)
+                throw new ArgumentNullException(nameof(account));
+            if (pathsToRepositories == null)
+                throw new ArgumentNullException(nameof(pathsToRepositories));
+
+            var foundRepositories = new List<ICodeCommitRepository>();
+
+            foreach (var path in pathsToRepositories)
+            {
+                // find the remote for CodeCommit, and from that we can infer the region and the
+                // actual repo name. Trying to auto-discover this info without needing to perist
+                // data about the repos we've seen
+                if (!Repository.IsValid(path))
+                    continue;
+
+                var repo = new Repository(path);
+                var codeCommitRemoteUrl = FindCommitRemoteUrl(repo);
+                if (codeCommitRemoteUrl == null)
+                    continue;
+
+                string region;
+                string repoName;
+                ExtractRepoNameAndRegion(codeCommitRemoteUrl, out repoName, out region);
+
+                var client = BaseRepositoryModel.GetClientForRegion(account.Credentials, region);
+                try
+                {
+                    var response = client.GetRepository(new GetRepositoryRequest
+                    {
+                        RepositoryName = repoName
+                    });
+
+                    var wrapper = new CodeCommitRepository(response.RepositoryMetadata)
+                    {
+                        LocalFolder = path
+                    };
+
+                    foundRepositories.Add(wrapper);
+                }
+                catch (Exception e)
+                {
+                    LOGGER.Error(string.Format("Failed to query repository metadata for repo name {0}, expected to find in region {1}", repoName, region), e);
+                }
+
+            }
+
+            return foundRepositories;
+        }
 
         #endregion
 
@@ -214,5 +290,37 @@ namespace Amazon.AWSToolkit.CodeCommit
             return null;
         }
 
+        private string FindCommitRemoteUrl(Repository repo)
+        {
+            var remotes = repo.Network?.Remotes;
+            if (remotes != null && remotes.Any())
+            {
+                foreach (var remote in remotes)
+                {
+                    if (remote.Url.IndexOf(CodeCommitUrlPrefix, 0, StringComparison.OrdinalIgnoreCase) != -1)
+                    {
+                        return remote.Url;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private void ExtractRepoNameAndRegion(string codeCommitRemoteUrl, out string repoName, out string region)
+        {
+            // possibly fragile, but expecting host to be 'git-codecommit.REGION.suffix/.../reponame
+            var serviceNameStart = codeCommitRemoteUrl.IndexOf(CodeCommitUrlPrefix, 0, StringComparison.OrdinalIgnoreCase);
+            if (serviceNameStart == -1)
+                throw new ArgumentException("Not a CodeCommit remote url");
+
+            var regionStartPos = codeCommitRemoteUrl.IndexOf(".", serviceNameStart, StringComparison.OrdinalIgnoreCase) + 1;
+            var regionEndPos = codeCommitRemoteUrl.IndexOf(".", regionStartPos, StringComparison.OrdinalIgnoreCase);
+
+            region = codeCommitRemoteUrl.Substring(regionStartPos, regionEndPos - regionStartPos);
+
+            var lastSlashPos = codeCommitRemoteUrl.LastIndexOf("/", StringComparison.OrdinalIgnoreCase);
+            repoName = codeCommitRemoteUrl.Substring(lastSlashPos + 1);
+        }
     }
 }

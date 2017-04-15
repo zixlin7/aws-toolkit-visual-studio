@@ -92,6 +92,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 {
                     gitCredentials.Dispose();
                 }
+
+                TeamExplorerConnection.ActiveConnection.RefreshRepositories();
             }
         }
 
@@ -111,15 +113,16 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                         .QueryAWSToolkitPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
 
                 var codeCommitGitServices = codeCommitPlugin.ToolkitGitServices;
-                var repository = codeCommitGitServices.Create(account, 
-                                                              region, 
-                                                              name, 
-                                                              description,
-                                                              null, 
-                                                              null) as ICodeCommitRepository;
+                var repository = codeCommitGitServices.Create(account,
+                    region,
+                    name,
+                    description,
+                    null,
+                    null) as ICodeCommitRepository;
 
-                var svcCredentials 
-                    = account.GetCredentialsForService(ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName);
+                var svcCredentials
+                    = account.GetCredentialsForService(ServiceSpecificCredentialStoreManager
+                        .CodeCommitServiceCredentialsName);
 
                 Clone(svcCredentials, repository.RepositoryUrl, localFolder);
                 repository.LocalFolder = localFolder;
@@ -130,7 +133,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                     var contentAdded = contentPopulationCallback(repository.LocalFolder);
                     if (contentAdded)
                     {
-                        
+
                     }
                 }
 
@@ -142,6 +145,10 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
                 var msg = string.Format("Failed to create repository {0}. Error message: {1}.", name, e.Message);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Repository Creation Failed", msg);
+            }
+            finally
+            {
+                TeamExplorerConnection.ActiveConnection.RefreshRepositories();
             }
 
             return null;

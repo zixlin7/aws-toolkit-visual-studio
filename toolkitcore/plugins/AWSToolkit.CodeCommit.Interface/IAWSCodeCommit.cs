@@ -1,4 +1,5 @@
-﻿using Amazon.AWSToolkit.Account;
+﻿using System.Collections.Generic;
+using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
@@ -12,10 +13,12 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
     public interface IAWSCodeCommit
     {
         /// <summary>
-        /// Returns the key used to identify a set of service-specific credentials
-        /// as belonging to AWS CodeCommit
+        /// Returns the CodeCommit plugin implementation of git services for the toolkit. This 
+        /// implementation performs operations using LibGit2Sharp and CodeCommit, and bypasses
+        /// the implementation based around Team Explorer that you get if you query for this
+        /// interface on the VS shell provider.
         /// </summary>
-        string ServiceSpecificCredentialsStorageName { get; }
+        IAWSToolkitGitServices ToolkitGitServices { get; }
 
         /// <summary>
         /// Persists a set of service-specific credentials for CodeCommit, associating them
@@ -77,11 +80,23 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         string PromptToSaveGeneratedCredentials(ServiceSpecificCredential generatedCredentials);
 
         /// <summary>
-        /// Returns the CodeCommit plugin implementation of git services for the toolkit. This 
-        /// implementation performs operations using LibGit2Sharp and CodeCommit, and bypasses
-        /// the implementation based around Team Explorer that you get if you query for this
-        /// interface on the VS shell provider.
+        /// Test if a local repository has a remote pointing at a CodeCommit endpoint.
         /// </summary>
-        IAWSToolkitGitServices ToolkitGitServices { get; }
+        /// <param name="repoPath">The local repository path, which should exist.</param>
+        /// <returns>True if a CodeCommit endpoint is found in the repo's remotes collection.</returns>
+        bool IsCodeCommitRepository(string repoPath);
+
+        /// <summary>
+        /// Queries for and wraps an ICodeCommitRepository instance around repositories found on
+        /// disk, if they belong to the supplied account.
+        /// </summary>
+        /// <param name="account">The account we *expect* owns this set of repositories.</param>
+        /// <param name="pathsToRepositories">Collection of one or more local paths to the repositories.</param>
+        /// <returns>
+        /// Collection of wrappers around the found repositories. Repositories we failed to
+        /// process are dropped on the floor.
+        /// </returns>
+        IEnumerable<ICodeCommitRepository> GetRepositories(AccountViewModel account, 
+                                                           IEnumerable<string> pathsToRepositories);
     }
 }

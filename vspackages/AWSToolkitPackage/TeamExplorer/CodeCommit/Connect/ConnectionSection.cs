@@ -61,7 +61,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Connect
         private void OnTeamExplorerBindingChanged(TeamExplorerConnection connection)
         {
             IsVisible = connection != null;
-            _viewModel?.RefreshRepositoriesList();
+            //_viewModel?.RefreshRepositoriesList();
         }
     }
 }
