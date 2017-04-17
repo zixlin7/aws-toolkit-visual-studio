@@ -21,10 +21,10 @@ namespace Amazon.AWSToolkit.CodeCommit.Controller
 
         public string SelectedFilename => Model.Filename;
 
-        public SaveServiceSpecificCredentialsController(ServiceSpecificCredential generatedCredentials)
+        public SaveServiceSpecificCredentialsController(ServiceSpecificCredential generatedCredentials, string msg = null)
         {
             Model = new SaveServiceSpecificCredentialsModel(generatedCredentials);
-            View = new SaveServiceSpecificCredentialsControl(this);
+            View = new SaveServiceSpecificCredentialsControl(this, msg);
         }
 
         public ActionResults Execute()

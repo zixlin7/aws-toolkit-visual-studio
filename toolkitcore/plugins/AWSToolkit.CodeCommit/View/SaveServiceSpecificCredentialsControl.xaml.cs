@@ -27,11 +27,16 @@ namespace Amazon.AWSToolkit.CodeCommit.View
             InitializeComponent();
         }
 
-        public SaveServiceSpecificCredentialsControl(SaveServiceSpecificCredentialsController controller)
+        public SaveServiceSpecificCredentialsControl(SaveServiceSpecificCredentialsController controller, string msg = null)
             : this()
         {
             Controller = controller;
             DataContext = controller.Model;
+
+            if(!string.IsNullOrEmpty(msg))
+            {
+                this._ctlMessage.Text = msg;
+            }
         }
 
         public SaveServiceSpecificCredentialsController Controller { get; }

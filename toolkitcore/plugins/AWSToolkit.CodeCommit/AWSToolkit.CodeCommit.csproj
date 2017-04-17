@@ -52,6 +52,10 @@
       <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.IdentityManagement.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AWSSDK.MobileAnalytics">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.MobileAnalytics.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="LibGit2Sharp, Version=0.23.1.0, Culture=neutral, PublicKeyToken=7cbde695407f0333, processorArchitecture=MSIL">
       <HintPath>..\..\..\solutions\packages\LibGit2Sharp.0.23.1\lib\net40\LibGit2Sharp.dll</HintPath>
       <Private>True</Private>

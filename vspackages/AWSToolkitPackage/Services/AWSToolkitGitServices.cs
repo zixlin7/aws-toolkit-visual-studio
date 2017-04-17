@@ -11,6 +11,8 @@ using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
 using log4net;
 using Microsoft.VisualStudio.Shell.Interop;
 
+using Amazon.AWSToolkit.MobileAnalytics;
+
 #if VS2017_OR_LATER
 using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
 #endif
@@ -76,9 +78,17 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 await gitExt.WhenAnyValue(x => x.CanClone).Where(x => x).Take(1);
                 */
 #endif
+
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.CodeCommitCloneStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }
             catch (Exception e)
             {
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.CodeCommitCloneStatus, ToolkitEvent.COMMON_STATUS_FAILURE);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
                 LOGGER.Error("Clone failed using Team Explorer", e);
 
                 var msg = string.Format("Failed to clone repository {0}. Error message: {1}.",
@@ -137,10 +147,18 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                     }
                 }
 
+                ToolkitEvent successEvent = new ToolkitEvent();
+                successEvent.AddProperty(AttributeKeys.CodeCommitCreateStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(successEvent);
+
                 return repository;
             }
             catch (Exception e)
             {
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.CodeCommitCreateStatus, ToolkitEvent.COMMON_STATUS_FAILURE);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
                 LOGGER.Error("Failed to create repository", e);
 
                 var msg = string.Format("Failed to create repository {0}. Error message: {1}.", name, e.Message);

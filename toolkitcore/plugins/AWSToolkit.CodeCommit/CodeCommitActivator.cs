@@ -21,6 +21,8 @@ using Amazon.CodeCommit.Model;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using LibGit2Sharp;
+using System.Collections.Generic;
+using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.CodeCommit
 {
@@ -110,7 +112,14 @@ namespace Amazon.AWSToolkit.CodeCommit
             // can't autocreate due to use of root account, or no permissions, or they exist so final attempt 
             // is to get the user to perform the steps necessary to get credentials
             var registerCredentialsController = new RegisterServiceCredentialsController(account);
-            return !registerCredentialsController.Execute().Success ? null : registerCredentialsController.Credentials;
+
+            var results = !registerCredentialsController.Execute().Success ? null : registerCredentialsController.Credentials;
+
+            ToolkitEvent evnt = new ToolkitEvent();
+            evnt.AddProperty(AttributeKeys.CodeCommitSetupCredentials, "UserPrompt-" + (results == null ? "Skipped" : "Entered"));
+            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
+            return results;
         }
 
         public ICodeCommitRepository PromptForRepositoryToClone(AccountViewModel account,
@@ -133,9 +142,9 @@ namespace Amazon.AWSToolkit.CodeCommit
                 : controller.Model.GetNewRepositoryInfo();
         }
 
-        public string PromptToSaveGeneratedCredentials(ServiceSpecificCredential generatedCredentials)
+        public string PromptToSaveGeneratedCredentials(ServiceSpecificCredential generatedCredentials, string msg = null)
         {
-            var controller = new SaveServiceSpecificCredentialsController(generatedCredentials);
+            var controller = new SaveServiceSpecificCredentialsController(generatedCredentials, msg);
             return controller.Execute().Success ? controller.SelectedFilename : null;
         }
 
@@ -250,6 +259,9 @@ namespace Amazon.AWSToolkit.CodeCommit
 
         #endregion
 
+
+        const string codeCommitServiceName = "codecommit.amazonaws.com";
+
         /// <summary>
         /// If the user has no credentials for codecommit and their account is compatible, ask them
         /// if they'd like us to do the work on their behalf. If they decline, or the account isn't
@@ -261,7 +273,6 @@ namespace Amazon.AWSToolkit.CodeCommit
                                                                                 RegionEndPointsManager.RegionEndPoints region)
         {
             const string iamEndpointsName = "IAM";
-            const string codeCommitServiceName = "codecommit.amazonaws.com";
             const int maxServiceSpecificCredentials = 2;
 
             try
@@ -276,10 +287,18 @@ namespace Amazon.AWSToolkit.CodeCommit
                 var getUserResponse = iamClient.GetUser();
                 if (string.IsNullOrEmpty(getUserResponse.User.UserName))
                 {
-                    LOGGER.InfoFormat(
-                        "User profile {0} contains root credentials; cannot be used to create service-specific credentials.",
-                        account.DisplayName);
-                    return null;
+                    string confirmMsg = "Your profile is using root AWS credentials. AWS CodeCommit requires specific CodeCommit credentials from an IAM user. "
+                                            + $"The toolkit can create an IAM user with CodeCommit credentials and associate the credentials with the {account.DisplayName} Toolkit profile."
+                                            + "\r\n"
+                                            + "\r\n"
+                                            + $"Proceed to try and create an IAM user with credentials and associate with the {account.DisplayName} Toolkit profile?";
+
+                    if (!ToolkitFactory.Instance.ShellProvider.Confirm("Auto-create Git Credentials", confirmMsg, MessageBoxButton.YesNo))
+                        return null;
+
+
+
+                    return CreateCodeCommitCredentialsForRoot(iamClient);
                 }
 
                 var listCredentialsRequest = new ListServiceSpecificCredentialsRequest
@@ -326,8 +345,13 @@ namespace Amazon.AWSToolkit.CodeCommit
                     ServiceName = codeCommitServiceName,
                     UserName = getUserResponse.User.UserName
                 };
+
                 var createCredentialsResponse = iamClient.CreateServiceSpecificCredential(createCredentialRequest);
                 var filename = PromptToSaveGeneratedCredentials(createCredentialsResponse.ServiceSpecificCredential);
+
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.CodeCommitSetupCredentials, "CreateForIAMUser");
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
                 return ServiceSpecificCredentials.FromCsvFile(filename);
             }
@@ -337,6 +361,58 @@ namespace Amazon.AWSToolkit.CodeCommit
             }
 
             return null;
+        }
+
+        private ServiceSpecificCredentials CreateCodeCommitCredentialsForRoot(IAmazonIdentityManagementService iamClient)
+        {
+            const string iamUserBaseName = "VSToolkit-CodeCommitUser";
+
+            var listOfUsers = new HashSet<string>();
+            ListUsersResponse listResponse = new ListUsersResponse();
+            do
+            {
+                listResponse = iamClient.ListUsers(new ListUsersRequest { Marker = listResponse.Marker});
+                foreach(var user in listResponse.Users)
+                {
+                    listOfUsers.Add(user.UserName);
+                }
+            } while (listResponse.IsTruncated);
+
+            string iamUserName = iamUserBaseName;
+            for(int i = 1; listOfUsers.Contains(iamUserName); i++)
+            {
+                iamUserName = iamUserBaseName + "-" + i;
+            }
+
+            iamClient.CreateUser(new CreateUserRequest
+            {
+                UserName = iamUserName
+            });
+
+            iamClient.AttachUserPolicy(new AttachUserPolicyRequest
+            {
+                UserName = iamUserName,
+                PolicyArn = "arn:aws:iam::aws:policy/AWSCodeCommitPowerUser"
+            });
+
+            // attempt to create a set of credentials and if successful, prompt the user to save them
+            var createCredentialRequest = new CreateServiceSpecificCredentialRequest
+            {
+                ServiceName = codeCommitServiceName,
+                UserName = iamUserName
+            };
+            var createCredentialsResponse = iamClient.CreateServiceSpecificCredential(createCredentialRequest);
+
+            var msg = $"The IAM user {iamUserName} was created and associated with the AWSCodeCommitPowerUser policy. " +
+                "AWS CodeCommit credentials to enable Git access to your repository have also been created for you.";
+
+            var filename = PromptToSaveGeneratedCredentials(createCredentialsResponse.ServiceSpecificCredential, msg);
+
+            ToolkitEvent evnt = new ToolkitEvent();
+            evnt.AddProperty(AttributeKeys.CodeCommitSetupCredentials, "CreateForRoot");
+            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
+            return ServiceSpecificCredentials.FromCsvFile(filename);
         }
 
         private string FindCommitRemoteUrl(string repoPath)

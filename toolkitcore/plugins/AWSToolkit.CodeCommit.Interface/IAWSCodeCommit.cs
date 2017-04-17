@@ -79,7 +79,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// </summary>
         /// <param name="generatedCredentials">The details of the generated credentials returned by IAM.</param>
         /// <returns>The path and name of the file holding the stored credentials.</returns>
-        string PromptToSaveGeneratedCredentials(ServiceSpecificCredential generatedCredentials);
+        string PromptToSaveGeneratedCredentials(ServiceSpecificCredential generatedCredentials, string msg = null);
 
         /// <summary>
         /// Test if a local repository has a remote pointing at a CodeCommit endpoint.

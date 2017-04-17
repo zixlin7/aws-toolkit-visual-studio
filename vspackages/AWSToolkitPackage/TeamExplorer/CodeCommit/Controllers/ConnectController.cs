@@ -4,6 +4,7 @@ using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
+using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers
 {
@@ -22,11 +23,24 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers
             // if the user has only one profile, we can just proceed
             if (accounts.Count == 1)
             {
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.CodeCommitConnectStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
                 SelectedAccount = accounts.First();
                 return new ActionResults().WithSuccess(true);
             }
 
-            return accounts.Any() ? SelectFromExistingProfiles() : CreateNewProfile();
+
+            var results = accounts.Any() ? SelectFromExistingProfiles() : CreateNewProfile();
+
+            {
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.CodeCommitConnectStatus, results.Success ? ToolkitEvent.COMMON_STATUS_SUCCESS : ToolkitEvent.COMMON_STATUS_FAILURE);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+            }
+
+            return results;
         }
 
         public AccountViewModel SelectedAccount { get; private set; }
