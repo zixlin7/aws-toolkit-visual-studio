@@ -173,34 +173,23 @@ namespace Amazon.AWSToolkit.CodeCommit
 
             var repositoryNameAndPathByRegion = GroupLocalRepositoriesByRegion(pathsToRepositories);
 
-            // now that we have the data batched, query the repos by region and then cross-match
-            // with the ones we found locally to return the full active set of repos...all this to
-            // avoid throttling!
             foreach (var region in repositoryNameAndPathByRegion.Keys)
             {
                 var client = BaseRepositoryModel.GetClientForRegion(account.Credentials, region);
 
                 try
                 {
-                    // build the list of all repos for the region
-                    var serviceReposForRegion = QueryAvailableRepositoryNames(client);
-
-                    // now we have the names of all available repos for the user in the region
-                    // use it to determine which of those found locally we should return
-                    var repoNamesToQuery = FilterLocalReposFromKnownRepos(repositoryNameAndPathByRegion[region], serviceReposForRegion);
-
-                    // and now query the repo metadata by batch - note we're not expecting any match fails
-                    // here since we just got these names back from the service, but be prepared for anything!
+                    var reposInRegion = repositoryNameAndPathByRegion[region];
                     var request = new BatchGetRepositoriesRequest
                     {
-                        RepositoryNames = repoNamesToQuery.Keys.ToList()
+                        RepositoryNames = reposInRegion.Keys.ToList()
                     };
                     var batchGetResponse = client.BatchGetRepositories(request);
                     foreach (var repo in batchGetResponse.Repositories)
                     {
                         var wrapper = new CodeCommitRepository(repo)
                         {
-                            LocalFolder = repoNamesToQuery[repo.RepositoryName]
+                            LocalFolder = reposInRegion[repo.RepositoryName]
                         };
 
                         validRepositories.Add(wrapper);
@@ -210,9 +199,7 @@ namespace Amazon.AWSToolkit.CodeCommit
                     {
                         foreach (var r in batchGetResponse.RepositoriesNotFound)
                         {
-                            LOGGER.InfoFormat(
-                                "Repository {0} was not found during metadata query despite being returned by ListRepositories",
-                                r);
+                            LOGGER.InfoFormat("Repository {0} was not found at the service during batch metadata query", r);
                         }
                     }
                 }
@@ -393,10 +380,11 @@ namespace Amazon.AWSToolkit.CodeCommit
             repoName = codeCommitRemoteUrl.Substring(lastSlashPos + 1);
         }
 
-        private Dictionary<string, List<Tuple<string, string>>> GroupLocalRepositoriesByRegion(
-            IEnumerable<string> pathsToRepositories)
+        private Dictionary<string, Dictionary<string, string>> GroupLocalRepositoriesByRegion(IEnumerable<string> pathsToRepositories)
         {
-            var repositoryNameAndPathByRegion = new Dictionary<string, List<Tuple<string, string>>>();
+            // associate the path with a repo name using a dictionary, so we get a fast lookup
+            // when we're post-processing the batch metadata query which yields repo metadata by name
+            var repositoryNameAndPathByRegion = new Dictionary<string, Dictionary<string, string>>();
 
             foreach (var path in pathsToRepositories)
             {
@@ -417,65 +405,16 @@ namespace Amazon.AWSToolkit.CodeCommit
 
                 if (repositoryNameAndPathByRegion.ContainsKey(region))
                 {
-                    repositoryNameAndPathByRegion[region].Add(new Tuple<string, string>(repoName, path));
+                    repositoryNameAndPathByRegion[region].Add(repoName, path);
                 }
                 else
                 {
-                    var names = new List<Tuple<string, string>> {new Tuple<string, string>(repoName, path)};
+                    var names = new Dictionary<string, string> { { repoName, path }};
                     repositoryNameAndPathByRegion.Add(region, names);
                 }
             }
 
             return repositoryNameAndPathByRegion;
-        }
-
-        private HashSet<string> QueryAvailableRepositoryNames(IAmazonCodeCommit client)
-        {
-            var serviceReposForRegion = new HashSet<string>();
-            string nextToken = null;
-            do
-            {
-                try
-                {
-                    var listReposRequest = new ListRepositoriesRequest {NextToken = nextToken};
-                    var listResponse = client.ListRepositories(listReposRequest);
-                    nextToken = listResponse.NextToken;
-                    foreach (var r in listResponse.Repositories)
-                    {
-                        serviceReposForRegion.Add(r.RepositoryName);
-                    }
-                }
-                catch (Exception e)
-                {
-                    LOGGER.Error(
-                        "Error attempting to list repositories for region " + client.Config.RegionEndpoint.SystemName,
-                        e);
-                    nextToken = null;
-                }
-
-            } while (!string.IsNullOrEmpty(nextToken));
-
-            return serviceReposForRegion;
-        }
-
-        private Dictionary<string, string> FilterLocalReposFromKnownRepos(IEnumerable<Tuple<string, string>> repoNamesAndPaths,
-                                                                          ICollection<string> serviceRepoNames)
-        {
-            var repoNamesToQuery = new Dictionary<string, string>();
-            foreach (var local in repoNamesAndPaths)
-            {
-                if (serviceRepoNames.Contains(local.Item1))
-                {
-                    repoNamesToQuery.Add(local.Item1, local.Item2);
-                }
-                else
-                {
-                    LOGGER.InfoFormat("Discarding local repo {0} at {1}, not found in service query for region.",
-                        local.Item1, local.Item2);
-                }
-            }
-
-            return repoNamesToQuery;
         }
     }
 }
