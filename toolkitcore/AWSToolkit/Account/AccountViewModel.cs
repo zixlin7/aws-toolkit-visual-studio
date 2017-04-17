@@ -209,7 +209,7 @@ namespace Amazon.AWSToolkit.Account
         /// <returns></returns>
         public ServiceSpecificCredentials GetCredentialsForService(string serviceName)
         {
-            var serviceCredentials = ServiceSpecificCredentialStoreManager
+            var serviceCredentials = ServiceSpecificCredentialStore
                                         .Instance
                                         .GetCredentialsForService(this.SettingsUniqueKey, serviceName);
             if (serviceCredentials != null)
@@ -220,7 +220,7 @@ namespace Amazon.AWSToolkit.Account
 
         public void SaveCredentialsForService(string serviceName, string userName, string password)
         {
-            var serviceCredentials = ServiceSpecificCredentialStoreManager
+            var serviceCredentials = ServiceSpecificCredentialStore
                                         .Instance
                                         .SaveCredentialsForService(this.SettingsUniqueKey, serviceName, userName, password);
             _cachedServiceCredentials[serviceName] = serviceCredentials;
@@ -228,7 +228,7 @@ namespace Amazon.AWSToolkit.Account
 
         public void ClearCredentialsForService(string serviceName)
         {
-            ServiceSpecificCredentialStoreManager.Instance.ClearCredentialsForService(this.SettingsUniqueKey, serviceName);
+            ServiceSpecificCredentialStore.Instance.ClearCredentialsForService(this.SettingsUniqueKey, serviceName);
             if (_cachedServiceCredentials.ContainsKey(serviceName))
                 _cachedServiceCredentials.Remove(serviceName);
         }

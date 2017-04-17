@@ -161,7 +161,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\repository-alert.png" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EmbeddedImages\repository-node.png" />
     <EmbeddedResource Include="Resources\EmbeddedImages\service-root-node.png" />

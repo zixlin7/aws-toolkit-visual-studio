@@ -367,7 +367,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
 
             try
             {
-                var svcCredentials = account.GetCredentialsForService(ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName);
+                var svcCredentials = account.GetCredentialsForService(ServiceSpecificCredentialStore.CodeCommitServiceName);
 
                 foreach (var target in credentialTargets)
                 {

@@ -121,8 +121,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                     null) as ICodeCommitRepository;
 
                 var svcCredentials
-                    = account.GetCredentialsForService(ServiceSpecificCredentialStoreManager
-                        .CodeCommitServiceCredentialsName);
+                    = account.GetCredentialsForService(ServiceSpecificCredentialStore
+                        .CodeCommitServiceName);
 
                 Clone(svcCredentials, repository.RepositoryUrl, localFolder);
                 repository.LocalFolder = localFolder;

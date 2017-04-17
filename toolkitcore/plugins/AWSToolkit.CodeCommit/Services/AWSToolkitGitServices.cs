@@ -89,7 +89,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
                 try
                 {
                     var svcCredentials 
-                        = account.GetCredentialsForService(ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName);
+                        = account.GetCredentialsForService(ServiceSpecificCredentialStore.CodeCommitServiceName);
                     Clone(svcCredentials, newRepository.RepositoryUrl, localFolder);
 
                     newRepository.LocalFolder = localFolder;

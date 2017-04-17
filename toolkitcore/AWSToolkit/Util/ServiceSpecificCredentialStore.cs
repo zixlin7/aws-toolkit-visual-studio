@@ -10,21 +10,18 @@ using ThirdParty.Json.LitJson;
 
 namespace Amazon.AWSToolkit.Util
 {
-    public class ServiceSpecificCredentialStoreManager
+    public class ServiceSpecificCredentialStore
     {
-        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(ServiceSpecificCredentialStoreManager));
-        private static readonly ServiceSpecificCredentialStoreManager _instance = new ServiceSpecificCredentialStoreManager();
+        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(ServiceSpecificCredentialStore));
+        private static readonly ServiceSpecificCredentialStore _instance = new ServiceSpecificCredentialStore();
 
-        public static readonly string CodeCommitServiceCredentialsName = "codecommit";
+        public static readonly string CodeCommitServiceName = "codecommit";
 
-        private ServiceSpecificCredentialStoreManager()
+        private ServiceSpecificCredentialStore()
         {
         }
 
-        public static ServiceSpecificCredentialStoreManager Instance
-        {
-            get { return _instance; }
-        }
+        public static ServiceSpecificCredentialStore Instance => _instance;
 
         public ServiceSpecificCredentials GetCredentialsForService(string accountArtifactsId, string serviceName)
         {

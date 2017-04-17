@@ -68,10 +68,10 @@ namespace Amazon.AWSToolkit.CodeCommit
 
         public void AssociateCredentialsWithProfile(string profileArtifactsId, string userName, string password)
         {
-            ServiceSpecificCredentialStoreManager
+            ServiceSpecificCredentialStore
                 .Instance
                 .SaveCredentialsForService(profileArtifactsId,
-                    ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName,
+                    ServiceSpecificCredentialStore.CodeCommitServiceName,
                     userName,
                     password);
         }
@@ -79,20 +79,20 @@ namespace Amazon.AWSToolkit.CodeCommit
         public ServiceSpecificCredentials CredentialsForProfile(string profileArtifactsId)
         {
             return
-                ServiceSpecificCredentialStoreManager
+                ServiceSpecificCredentialStore
                     .Instance
                     .GetCredentialsForService(profileArtifactsId,
-                        ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName);
+                        ServiceSpecificCredentialStore.CodeCommitServiceName);
         }
 
-        public ServiceSpecificCredentials ObtainGitCredentials(AccountViewModel account,
-            RegionEndPointsManager.RegionEndPoints region)
+        public ServiceSpecificCredentials ObtainGitCredentials(AccountViewModel account, 
+                                                               RegionEndPointsManager.RegionEndPoints region)
         {
             var svcCredentials
-                = ServiceSpecificCredentialStoreManager
+                = ServiceSpecificCredentialStore
                     .Instance
                     .GetCredentialsForService(account.SettingsUniqueKey,
-                        ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName);
+                        ServiceSpecificCredentialStore.CodeCommitServiceName);
 
             if (svcCredentials != null)
                 return svcCredentials;
@@ -114,8 +114,8 @@ namespace Amazon.AWSToolkit.CodeCommit
         }
 
         public ICodeCommitRepository PromptForRepositoryToClone(AccountViewModel account,
-            RegionEndPointsManager.RegionEndPoints initialRegion,
-            string defaultCloneFolderRoot)
+                                                                RegionEndPointsManager.RegionEndPoints initialRegion,
+                                                                string defaultCloneFolderRoot)
         {
             var controller = new SelectRepositoryController(account, initialRegion, defaultCloneFolderRoot);
             return !controller.Execute().Success
@@ -124,8 +124,8 @@ namespace Amazon.AWSToolkit.CodeCommit
         }
 
         public INewCodeCommitRepositoryInfo PromptForRepositoryToCreate(AccountViewModel account,
-            RegionEndPointsManager.RegionEndPoints initialRegion,
-            string defaultFolderRoot)
+                                                                        RegionEndPointsManager.RegionEndPoints initialRegion,
+                                                                        string defaultFolderRoot)
         {
             var controller = new CreateRepositoryController(account, initialRegion, defaultFolderRoot);
             return !controller.Execute().Success
@@ -161,8 +161,18 @@ namespace Amazon.AWSToolkit.CodeCommit
             return false;
         }
 
-        public IEnumerable<ICodeCommitRepository> GetRepositories(AccountViewModel account,
-            IEnumerable<string> pathsToRepositories)
+        public string GetRepositoryRegion(string repoPath)
+        {
+            if (!Directory.Exists(repoPath))
+                throw new ArgumentException("Specified repository path does not exist.");
+
+            var codeCommitRemoteUrl = FindCommitRemoteUrl(repoPath);
+            string repoName, region;
+            ExtractRepoNameAndRegion(codeCommitRemoteUrl, out repoName, out region);
+            return region;
+        }
+
+        public IEnumerable<ICodeCommitRepository> GetRepositories(AccountViewModel account, IEnumerable<string> pathsToRepositories)
         {
             if (account == null)
                 throw new ArgumentNullException(nameof(account));
@@ -248,7 +258,7 @@ namespace Amazon.AWSToolkit.CodeCommit
         /// </summary>
         /// <returns></returns>
         public ServiceSpecificCredentials ProbeIamForServiceSpecificCredentials(AccountViewModel account,
-            RegionEndPointsManager.RegionEndPoints region)
+                                                                                RegionEndPointsManager.RegionEndPoints region)
         {
             const string iamEndpointsName = "IAM";
             const string codeCommitServiceName = "codecommit.amazonaws.com";
@@ -338,8 +348,9 @@ namespace Amazon.AWSToolkit.CodeCommit
                     return FindCommitRemoteUrl(new Repository(repoPath));
                 }
             }
-            catch
+            catch (Exception e)
             {
+                LOGGER.Error("Exception while attempting to find CodeCommit remote url", e);
             }
 
             return null;

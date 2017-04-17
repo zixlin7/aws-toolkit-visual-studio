@@ -1,6 +1,8 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
 
@@ -24,12 +26,6 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
             ViewModel.OpenRepository();
         }
 
-        private void OnClickBrowseRepositoryMenuItem(object sender, RoutedEventArgs e)
-        {
-            var url = TeamExplorerConnection.CodeCommitPlugin.GetConsoleBrowsingUrl(ViewModel.SelectedRepository.LocalFolder);
-            ToolkitFactory.Instance.ShellProvider.OpenInBrowser(url, false);
-        }
-
         private void OnRepositoryMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             if (ViewModel?.SelectedRepository == null)
@@ -49,9 +45,35 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
             browseInConsole.Click += OnClickBrowseRepositoryMenuItem;
 
             menu.Items.Add(browseInConsole);
+
+            menu.Items.Add(new Separator());
+            var updateCredentials = new MenuItem
+            {
+                Header = "Update Git Credentials"
+            };
+            updateCredentials.Click += OnClickUpdateCredentials;
+            menu.Items.Add(updateCredentials);
+
             menu.PlacementTarget = this;
 
             _ctlRepositoriesList.ContextMenu = menu;
+        }
+
+        private void OnClickBrowseRepositoryMenuItem(object sender, RoutedEventArgs e)
+        {
+            var url = TeamExplorerConnection.CodeCommitPlugin.GetConsoleBrowsingUrl(ViewModel.SelectedRepository.LocalFolder);
+            ToolkitFactory.Instance.ShellProvider.OpenInBrowser(url, false);
+        }
+
+        // we've found a repo on disk that does not have service credentials available, likely
+        // as a result of being cloned outside of VS, or in Team Explorer, before we had our
+        // integration. This option allows the user to set up their git credentials ready for 
+        // any subsequent use.
+        private void OnClickUpdateCredentials(object sender, RoutedEventArgs routedEventArgs)
+        {
+            var regionName = TeamExplorerConnection.CodeCommitPlugin.GetRepositoryRegion(ViewModel.SelectedRepository.LocalFolder);
+            var region = RegionEndPointsManager.Instance.GetRegion(regionName);
+            TeamExplorerConnection.CodeCommitPlugin.ObtainGitCredentials(ViewModel.Account, region);
         }
     }
 }

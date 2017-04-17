@@ -41,11 +41,13 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// Obtains and returns the service-specific credentials to enable git operations
         /// against a CodeCommit repo owned by the specified account.
         /// </summary>
-        /// <param name="account"></param>
-        /// <param name="initialRegion"></param>
+        /// <param name="account">The account we want service specific credentials for.</param>
+        /// <param name="region">
+        /// Used if we attempt to create credentials, to construct the necessary IAM client.
+        /// </param>
         /// <returns></returns>
         ServiceSpecificCredentials ObtainGitCredentials(AccountViewModel account, 
-                                                        RegionEndPointsManager.RegionEndPoints initialRegion);
+                                                        RegionEndPointsManager.RegionEndPoints region);
 
         /// <summary>
         /// Prompts the user to select a repository to clone. The account and initial region
@@ -85,6 +87,13 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// <param name="repoPath">The local repository path, which should exist.</param>
         /// <returns>True if a CodeCommit endpoint is found in the repo's remotes collection.</returns>
         bool IsCodeCommitRepository(string repoPath);
+
+        /// <summary>
+        /// Returns the host region for a repository, parsed from the remote url.
+        /// </summary>
+        /// <param name="repoPath"></param>
+        /// <returns></returns>
+        string GetRepositoryRegion(string repoPath);
 
         /// <summary>
         /// Queries for and wraps an ICodeCommitRepository instance around repositories found on

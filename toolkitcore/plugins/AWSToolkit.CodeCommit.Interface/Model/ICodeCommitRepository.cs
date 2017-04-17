@@ -1,4 +1,6 @@
-﻿namespace Amazon.AWSToolkit.CodeCommit.Interface.Model
+﻿using System.IO;
+
+namespace Amazon.AWSToolkit.CodeCommit.Interface.Model
 {
     /// <summary>
     /// Wrapper around a CodeCommit repository. The repository may exist only

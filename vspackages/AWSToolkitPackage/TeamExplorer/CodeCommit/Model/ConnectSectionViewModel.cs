@@ -69,6 +69,10 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
 
         public ICodeCommitRepository SelectedRepository { get; set; }
 
+        // enable access to the account here, so that if we ever need to support
+        // multiple connections each panel can have its own without a larger refactor
+        public AccountViewModel Account => TeamExplorerConnection.ActiveConnection?.Account;
+
         private void OnClone()
         {
             new CloneRepositoryController().Execute();

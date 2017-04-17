@@ -84,9 +84,9 @@ namespace Amazon.AWSToolkit.Account.Model
 
         public static bool PersistCredentials(ServiceSpecificCredentials credentials, string accountKey)
         {
-            ServiceSpecificCredentialStoreManager
+            ServiceSpecificCredentialStore
                 .Instance
-                .SaveCredentialsForService(accountKey, ServiceSpecificCredentialStoreManager.CodeCommitServiceCredentialsName, credentials);
+                .SaveCredentialsForService(accountKey, ServiceSpecificCredentialStore.CodeCommitServiceName, credentials);
             return true;
         }
 
