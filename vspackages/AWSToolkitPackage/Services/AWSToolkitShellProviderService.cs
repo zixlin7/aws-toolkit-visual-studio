@@ -355,7 +355,12 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             if (typeof(T) == typeof(IAWSToolkitGitServices))
                 return new AWSToolkitGitServices(_hostPackage) as T;
 
-            return _hostPackage as T;
+            var hostSvc = _hostPackage as T;
+            if (hostSvc != null)
+                return hostSvc;
+
+            // last gasp try and get from the VS shell
+            return _hostPackage.GetVSShellService(typeof(T)) as T;
         }
 
         public object QueryAWSToolkitPluginService(Type pluginServiceType)

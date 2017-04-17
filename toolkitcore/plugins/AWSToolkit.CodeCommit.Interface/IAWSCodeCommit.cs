@@ -98,5 +98,12 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// </returns>
         IEnumerable<ICodeCommitRepository> GetRepositories(AccountViewModel account, 
                                                            IEnumerable<string> pathsToRepositories);
+
+        /// <summary>
+        /// Forms the url to enable the user to browse the repo content in the AWS console.
+        /// </summary>
+        /// <param name="repoPath"></param>
+        /// <returns></returns>
+        string GetConsoleBrowsingUrl(string repoPath);
     }
 }

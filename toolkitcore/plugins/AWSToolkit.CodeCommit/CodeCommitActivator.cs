@@ -225,6 +225,32 @@ namespace Amazon.AWSToolkit.CodeCommit
             return validRepositories;
         }
 
+        public string GetConsoleBrowsingUrl(string repoPath)
+        {
+            var remoteUrl = FindCommitRemoteUrl(repoPath);
+            if (string.IsNullOrEmpty(remoteUrl))
+                return null;
+
+            string consoleUrl = null;
+            try
+            {
+                string repoName, region;
+                ExtractRepoNameAndRegion(remoteUrl, out repoName, out region);
+
+                // The hosts for remote (amazonaws.com) and console (aws.amazon.com) differ. 
+                // As CodeCommit is not currently in any partition other than the global one 
+                // this is safe for now.
+                const string consoleUrlFormat = "https://{0}.console.aws.amazon.com/codecommit/home?region={0}#/repository/{1}/browse/HEAD/--/";
+                return string.Format(consoleUrlFormat, region, repoName);
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Error attempting to form console url for repo at " + repoPath, e);
+            }
+
+            return consoleUrl;
+        }
+
         #endregion
 
         /// <summary>
@@ -311,6 +337,22 @@ namespace Amazon.AWSToolkit.CodeCommit
             catch (Exception e)
             {
                 LOGGER.Error("Exception while probing for CodeCommit credentials in IAM, user must supply manually", e);
+            }
+
+            return null;
+        }
+
+        private string FindCommitRemoteUrl(string repoPath)
+        {
+            try
+            {
+                if (Directory.Exists(repoPath) && Repository.IsValid(repoPath))
+                {
+                    return FindCommitRemoteUrl(new Repository(repoPath));
+                }
+            }
+            catch
+            {
             }
 
             return null;

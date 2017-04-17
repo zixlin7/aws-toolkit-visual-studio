@@ -22,10 +22,12 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         public const uint cmdidDeployToLambdaSolutionExplorer = 0x300;
 
+        public const uint cmdidTeamExplorerConnect = 0x400;
 
         // Groups
         public const uint IDG_AWS_CLOUDFORMATION_DEPLOYMENT = 0x1005;
         public const uint IDG_AWS_CLOUDFORMATION_EDIT = 0x1010;
 
+        public const uint IDG_TEAMEXPLORER_MANAGECONNECTIONS = 0x01050;
     };
 }

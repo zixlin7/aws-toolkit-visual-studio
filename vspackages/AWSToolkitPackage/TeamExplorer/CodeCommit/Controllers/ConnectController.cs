@@ -3,6 +3,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls;
+using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
 
 namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers
 {
@@ -29,6 +30,23 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers
         }
 
         public AccountViewModel SelectedAccount { get; private set; }
+
+        /// <summary>
+        /// Called from the main package in response to the user selecting
+        /// CodeCommit under the Manage Connections dropdown
+        /// </summary>
+        public static void OpenConnection()
+        {
+            if (TeamExplorerConnection.ActiveConnection != null)
+                TeamExplorerConnection.ActiveConnection.Signout();
+
+            var controller = new ConnectController();
+            var results = controller.Execute();
+            if (results.Success)
+            {
+                TeamExplorerConnection.Signin(controller.SelectedAccount);
+            }
+        }
 
         private ActionResults SelectFromExistingProfiles()
         {

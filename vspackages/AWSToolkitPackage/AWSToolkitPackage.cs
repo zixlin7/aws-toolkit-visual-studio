@@ -52,6 +52,8 @@ using Amazon.AWSToolkit.Lambda.WizardPages;
 using System.Xml;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
+using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers;
+using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -516,6 +518,8 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployToLambdaSolutionExplorer, UploadToLambda, UploadToLambdaMenuCommand_BeforeQueryStatus);
                 SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAddAWSServerlessTemplate, AddAWSServerlessTemplate, AddAWSServerlessTemplate_BeforeQueryStatus);
+
+                SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidTeamExplorerConnect, AddTeamExplorerConnection, null);
             }
 
             var shellService = GetService(typeof(SVsShell)) as IVsShell;
@@ -2025,6 +2029,15 @@ namespace Amazon.AWSToolkit.VisualStudio
                 }
             }
             catch { }
+        }
+
+        #endregion
+
+        #region Team Explorer Command
+
+        void AddTeamExplorerConnection(object sender, EventArgs e)
+        {
+            ConnectController.OpenConnection();    
         }
 
         #endregion
