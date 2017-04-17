@@ -467,6 +467,6 @@
     <SolidColorBrush x:Key="awsStatusTextErrorForeground" Color="Red" />
     <SolidColorBrush x:Key="awsStatusTextOKForeground" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowTextColorKey}}" />
 
-    <SolidColorBrush x:Key="awsGrayText" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemGrayTextColorKey}}" />
+    <SolidColorBrush x:Key="awsGrayBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemGrayTextColorKey}}" />
 
 </ResourceDictionary>

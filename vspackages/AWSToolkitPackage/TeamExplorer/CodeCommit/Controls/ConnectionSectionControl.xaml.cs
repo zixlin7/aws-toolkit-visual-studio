@@ -1,9 +1,6 @@
-﻿using System.Runtime.InteropServices;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Markup;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
 
@@ -17,6 +14,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
         public ConnectionSectionControl()
         {
             InitializeComponent();
+            ThemeUtil.UpdateDictionariesForTheme(this.Resources);
         }
 
         public ConnectSectionViewModel ViewModel => DataContext as ConnectSectionViewModel;
