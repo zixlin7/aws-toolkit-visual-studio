@@ -82,6 +82,7 @@ namespace Amazon.AWSToolkit.Account.View
             if (csvFilename != null)
             {
                 Controller.Model.ImportCredentialsFromCSV(csvFilename);
+                _ctlPassword.Password = Controller.Model.Password;
             }
         }
 
@@ -100,6 +101,11 @@ namespace Amazon.AWSToolkit.Account.View
                 return dlg.FileName;
 
             return null;
+        }
+
+        private void _ctlPassword_OnPasswordChanged(object sender, RoutedEventArgs e)
+        {
+            Controller.Model.Password = _ctlPassword.Password;
         }
     }
 }

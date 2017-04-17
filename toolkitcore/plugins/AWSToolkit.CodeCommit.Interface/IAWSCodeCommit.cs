@@ -45,9 +45,14 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// <param name="region">
         /// Used if we attempt to create credentials, to construct the necessary IAM client.
         /// </param>
+        /// <param name="ignoreCurrent">
+        /// Forces bypass of any credentials already associated with the account. Used when we
+        /// want to force an update of the credentials by obtaining new ones.
+        /// </param>
         /// <returns></returns>
         ServiceSpecificCredentials ObtainGitCredentials(AccountViewModel account, 
-                                                        RegionEndPointsManager.RegionEndPoints region);
+                                                        RegionEndPointsManager.RegionEndPoints region,
+                                                        bool ignoreCurrent);
 
         /// <summary>
         /// Prompts the user to select a repository to clone. The account and initial region

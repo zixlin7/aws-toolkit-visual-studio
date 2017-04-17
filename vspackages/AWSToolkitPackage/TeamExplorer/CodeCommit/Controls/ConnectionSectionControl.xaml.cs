@@ -73,7 +73,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
         {
             var regionName = TeamExplorerConnection.CodeCommitPlugin.GetRepositoryRegion(ViewModel.SelectedRepository.LocalFolder);
             var region = RegionEndPointsManager.Instance.GetRegion(regionName);
-            TeamExplorerConnection.CodeCommitPlugin.ObtainGitCredentials(ViewModel.Account, region);
+            TeamExplorerConnection.CodeCommitPlugin.ObtainGitCredentials(ViewModel.Account, region, true);
         }
     }
 }

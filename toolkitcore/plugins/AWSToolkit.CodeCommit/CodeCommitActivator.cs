@@ -88,16 +88,21 @@ namespace Amazon.AWSToolkit.CodeCommit
         }
 
         public ServiceSpecificCredentials ObtainGitCredentials(AccountViewModel account, 
-                                                               RegionEndPointsManager.RegionEndPoints region)
+                                                               RegionEndPointsManager.RegionEndPoints region,
+                                                               bool ignoreCurrent)
         {
-            var svcCredentials
-                = ServiceSpecificCredentialStore
-                    .Instance
-                    .GetCredentialsForService(account.SettingsUniqueKey,
-                        ServiceSpecificCredentialStore.CodeCommitServiceName);
+            ServiceSpecificCredentials svcCredentials = null;
 
-            if (svcCredentials != null)
-                return svcCredentials;
+            if (!ignoreCurrent)
+            {
+                svcCredentials = ServiceSpecificCredentialStore
+                                    .Instance
+                                    .GetCredentialsForService(account.SettingsUniqueKey,
+                                        ServiceSpecificCredentialStore.CodeCommitServiceName);
+
+                if (svcCredentials != null)
+                    return svcCredentials;
+            }
 
             // nothing local, so first see if we can create credentials for the user if they
             // haven't already done so

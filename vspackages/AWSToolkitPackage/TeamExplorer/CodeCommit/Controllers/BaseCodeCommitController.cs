@@ -46,7 +46,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers
         /// <returns></returns>
         public ServiceSpecificCredentials ObtainGitCredentials()
         {
-            return CodeCommitPlugin.ObtainGitCredentials(Account, Region);
+            return CodeCommitPlugin.ObtainGitCredentials(Account, Region, false);
         }
 
         /// <summary>
