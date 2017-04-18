@@ -179,8 +179,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
                 if (initialCommitContent.Any())
                 {
-                    codeCommitPlugin.StageAndCommit(initialCommitContent, "Initial commit");
-                    codeCommitPlugin.Push("origin");
+                    codeCommitPlugin.StageAndCommit(repository.LocalFolder, initialCommitContent, "Initial commit", svcCredentials.Username);
+                    codeCommitPlugin.Push(repository.LocalFolder, svcCredentials);
                 }
                 
                 ToolkitEvent successEvent = new ToolkitEvent();

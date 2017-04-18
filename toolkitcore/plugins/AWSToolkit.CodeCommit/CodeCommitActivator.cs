@@ -161,14 +161,11 @@ namespace Amazon.AWSToolkit.CodeCommit
 
         public bool IsCodeCommitRepository(string repoPath)
         {
-            if (!Directory.Exists(repoPath))
-                throw new ArgumentException("Specified repository path does not exist.");
-
+            TestValidRepo(repoPath);
             try
             {
-                if (Repository.IsValid(repoPath))
+                using (var repo = new Repository(repoPath))
                 {
-                    var repo = new Repository(repoPath);
                     var codeCommitRemoteUrl = FindCommitRemoteUrl(repo);
                     return !string.IsNullOrEmpty(codeCommitRemoteUrl);
                 }
@@ -183,8 +180,7 @@ namespace Amazon.AWSToolkit.CodeCommit
 
         public string GetRepositoryRegion(string repoPath)
         {
-            if (!Directory.Exists(repoPath))
-                throw new ArgumentException("Specified repository path does not exist.");
+            TestValidRepo(repoPath);
 
             var codeCommitRemoteUrl = FindCommitRemoteUrl(repoPath);
             string repoName, region;
@@ -262,6 +258,8 @@ namespace Amazon.AWSToolkit.CodeCommit
 
         public string GetConsoleBrowsingUrl(string repoPath)
         {
+            TestValidRepo(repoPath);
+
             var remoteUrl = FindCommitRemoteUrl(repoPath);
             if (string.IsNullOrEmpty(remoteUrl))
                 return null;
@@ -286,13 +284,71 @@ namespace Amazon.AWSToolkit.CodeCommit
             return consoleUrl;
         }
 
-        public bool StageAndCommit(IEnumerable<string> files, string commitMessage)
+        public bool StageAndCommit(string repoPath, IEnumerable<string> files, string commitMessage, string userName)
         {
+            TestValidRepo(repoPath);
+
+            try
+            {
+                using (var repo = new Repository(repoPath))
+                {
+                    var relativeFiles = new List<string>();
+                    var rootedRepoPath = repoPath.EndsWith("\\") ? repoPath : repoPath + "\\";
+                    foreach (var f in files)
+                    {
+                        if (f.StartsWith(rootedRepoPath, StringComparison.OrdinalIgnoreCase))
+                            relativeFiles.Add(f.Substring(rootedRepoPath.Length));
+                        else
+                        {
+                            relativeFiles.Add(f);
+                        }
+                    }
+
+                    repo.Stage(relativeFiles);
+
+                    var author = new Signature(userName, userName, DateTime.Now);
+                    var committer = author;
+
+                    // Commit to the repository
+                    repo.Commit(commitMessage, author, committer);
+                }
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Exception during staging and commit", e);
+            }
+
             return false;
         }
 
-        public bool Push(string remote)
+        public bool Push(string repoPath, ServiceSpecificCredentials credentials)
         {
+            TestValidRepo(repoPath);
+
+            try
+            {
+                using (var repo = new Repository(repoPath))
+                {
+                    var remote = FindCodeCommitRemote(repo);
+                    var options = new PushOptions
+                    {
+                        CredentialsProvider = (_url, _user, _cred) =>
+                            new UsernamePasswordCredentials
+                            {
+                                Username = credentials.Username,
+                                Password = credentials.Password
+                            }
+                    };
+                    repo.Network.Push(remote, @"refs/heads/master", options);
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Exception during push", e);
+            }
+
             return false;
         }
 
@@ -471,7 +527,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             return null;
         }
 
-        private string FindCommitRemoteUrl(Repository repo)
+        private Remote FindCodeCommitRemote(Repository repo)
         {
             var remotes = repo.Network?.Remotes;
             if (remotes != null && remotes.Any())
@@ -480,12 +536,18 @@ namespace Amazon.AWSToolkit.CodeCommit
                 {
                     if (remote.Url.IndexOf(CodeCommitUrlPrefix, 0, StringComparison.OrdinalIgnoreCase) != -1)
                     {
-                        return remote.Url;
+                        return remote;
                     }
                 }
             }
 
             return null;
+        }
+
+        private string FindCommitRemoteUrl(Repository repo)
+        {
+            var remote = FindCodeCommitRemote(repo);
+            return remote?.Url;
         }
 
         private void ExtractRepoNameAndRegion(string codeCommitRemoteUrl, out string repoName, out string region)
@@ -541,6 +603,15 @@ namespace Amazon.AWSToolkit.CodeCommit
             }
 
             return repositoryNameAndPathByRegion;
+        }
+
+        private void TestValidRepo(string repoPath)
+        {
+            if (!Directory.Exists(repoPath))
+                throw new Exception(string.Format("Repository path {0} does not exist.", repoPath));
+
+            if (!Repository.IsValid(repoPath))
+                throw new Exception(string.Format("Repository path {0} does not exist.", repoPath));
         }
     }
 }

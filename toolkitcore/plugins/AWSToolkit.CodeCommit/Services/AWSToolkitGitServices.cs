@@ -102,12 +102,10 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
             // we can perform the clone through Team Explorer
             if (autoCloneNewRepository)
             {
+                var svcCredentials
+                    = newRepositoryInfo.OwnerAccount.GetCredentialsForService(ServiceSpecificCredentialStore.CodeCommitServiceName);
                 try
                 {
-                    var svcCredentials
-                        =
-                        newRepositoryInfo.OwnerAccount.GetCredentialsForService(ServiceSpecificCredentialStore
-                            .CodeCommitServiceName);
                     await CloneAsync(svcCredentials, newRepository.RepositoryUrl, newRepositoryInfo.LocalFolder);
 
                     newRepository.LocalFolder = newRepositoryInfo.LocalFolder;
@@ -162,8 +160,8 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
 
                 if (initialCommitContent.Any())
                 {
-                    HostActivator.StageAndCommit(initialCommitContent, "Initial commit");
-                    HostActivator.Push("origin");
+                    HostActivator.StageAndCommit(newRepositoryInfo.LocalFolder, initialCommitContent, "Initial commit", svcCredentials.Username);
+                    HostActivator.Push(newRepositoryInfo.LocalFolder, svcCredentials);
                 }
             }
 

@@ -135,16 +135,19 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// <summary>
         /// Stages and commits a set of files.
         /// </summary>
+        /// <param name="repoPath"></param>
         /// <param name="files"></param>
         /// <param name="commitMessage"></param>
+        /// <param name="userName"></param>
         /// <returns></returns>
-        bool StageAndCommit(IEnumerable<string> files, string commitMessage);
+        bool StageAndCommit(string repoPath, IEnumerable<string> files, string commitMessage, string userName);
 
         /// <summary>
-        /// Pushes the latest commits to the specified remote.
+        /// Pushes the latest commits to the CodeCommit remote.
         /// </summary>
-        /// <param name="remote"></param>
+        /// <param name="repoPath"></param>
+        /// <param name="credentials"></param>
         /// <returns></returns>
-        bool Push(string remote);
+        bool Push(string repoPath, ServiceSpecificCredentials credentials);
     }
 }
