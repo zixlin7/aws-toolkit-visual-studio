@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
+using System.IO;
 using System.Threading;
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Util;
 using Amazon.CodeCommit;
 using Amazon.CodeCommit.Model;
@@ -21,6 +19,25 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         /// repository clone.
         /// </summary>
         public ServiceSpecificCredentials ServiceCredentials { get; set; }
+
+        /// <summary>
+        /// Contains the initial folder for cloning into, and any selections made
+        /// by the user from the browse dialog. The selected repo name will be 
+        /// appended to this to form the SelectedFolder value as the user chooses
+        /// the repo/
+        /// </summary>
+        public string BaseFolder
+        {
+            get { return _baseFolder; }
+            set
+            {
+                _baseFolder = value;
+                if (SelectedRepository != null)
+                {
+                    SelectedFolder = Path.Combine(_baseFolder, SelectedRepository.Name);
+                }
+            }
+        }
 
         /// <summary>
         /// The folder selected by the user to contain the cloned repository.
@@ -54,6 +71,38 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         public void RefreshRepositoryList()
         {
             RefreshRepositoriesList(GetClientForRegion(SelectedRegion.SystemName));
+            SelectedRepository = null;
+            SelectedFolder = BaseFolder;
+        }
+
+        /// <summary>
+        /// Validates the supplied folder for a clone or create operation and returns a non-empty 
+        /// validation failure message that can be displayed to the user if necessary.
+        /// </summary>
+        /// <returns></returns>
+        public static string IsFolderValidForRepo(string folder)
+        {
+            if (string.IsNullOrEmpty(folder))
+                return "Folder cannot be empty.";
+
+            try
+            {
+                var fullpath = Path.GetFullPath(folder); // this should throw on invalid chars etc
+                if (Directory.Exists(fullpath))
+                {
+                    var subdirs = Directory.GetDirectories(fullpath, "*.*", SearchOption.TopDirectoryOnly);
+                    var files = Directory.GetFiles(fullpath, "*.*", SearchOption.TopDirectoryOnly);
+
+                    if (subdirs.Length > 0 || files.Length > 0)
+                        return "The folder is not empty.";
+                }
+            }
+            catch (Exception e)
+            {
+                return "The folder name is not valid or is not accessible by your account.";
+            }
+
+            return null;
         }
 
         private void RefreshRepositoriesList(IAmazonCodeCommit codecommitClient)
@@ -106,6 +155,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             });
         }
 
+        private string _baseFolder;
         private string _selectedFolder;
         private CodeCommitRepository _selectedRepository;
         private readonly ObservableCollection<CodeCommitRepository> _repositories = new ObservableCollection<CodeCommitRepository>();

@@ -186,7 +186,8 @@
                      ItemsSource="{Binding Repositories}"
                      Template="{StaticResource RepositoryListControlTemplate}" 
                      Margin="4"
-                     SelectedItem="{Binding SelectedRepository}"/>
+                     SelectedItem="{Binding SelectedRepository}"
+                     SelectionChanged="OnRepositorySelectionChanged"/>
         </Border>
         
         <Grid Grid.Row="3"
@@ -205,7 +206,7 @@
             </Label>
             <TextBox Grid.Column="1"
                      Style="{DynamicResource awsTextBoxStyle}"
-                     Text="{Binding SelectedFolder}"
+                     Text="{Binding SelectedFolder, UpdateSourceTrigger=PropertyChanged}"
                      Tag="Required"/>
             <Button Grid.Column="2"
                     VerticalAlignment="Center"

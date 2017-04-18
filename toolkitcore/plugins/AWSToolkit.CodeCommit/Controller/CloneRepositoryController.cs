@@ -27,7 +27,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Controller
             {
                 Account = account,
                 SelectedRegion = initialRegion ?? RegionEndPointsManager.Instance.GetRegion("us-east-1"),
-                SelectedFolder = defaultCloneFolderRoot
+                BaseFolder = defaultCloneFolderRoot
             };
         }
 
