@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Amazon.AWSToolkit.Account;
+﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Model;
-using Amazon.AWSToolkit.CodeCommit.View;
+using Amazon.AWSToolkit.CodeCommit.View.Controls;
 using Amazon.AWSToolkit.Navigator;
 using log4net;
 
@@ -27,7 +22,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Controller
             {
                 Account = account,
                 SelectedRegion = initialRegion ?? RegionEndPointsManager.Instance.GetRegion("us-east-1"),
-                LocalFolder = defaultCloneFolderRoot
+                BaseFolder = defaultCloneFolderRoot
             };
         }
 

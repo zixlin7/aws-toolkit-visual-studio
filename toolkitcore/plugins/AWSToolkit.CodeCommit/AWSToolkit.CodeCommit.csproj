@@ -94,7 +94,7 @@
     <Compile Include="Controller\CloneRepositoryController.cs" />
     <Compile Include="Controller\SaveServiceSpecificCredentialsController.cs" />
     <Compile Include="Controller\ViewRepositoryController.cs" />
-    <Compile Include="Controls\CloneRepositoryControl.xaml.cs">
+    <Compile Include="View\Controls\CloneRepositoryControl.xaml.cs">
       <DependentUpon>CloneRepositoryControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\BaseRepositoryModel.cs" />
@@ -110,7 +110,7 @@
     <Compile Include="Nodes\CodeCommitRootViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AWSToolkitGitServices.cs" />
-    <Compile Include="View\CreateRepositoryControl.xaml.cs">
+    <Compile Include="View\Controls\CreateRepositoryControl.xaml.cs">
       <DependentUpon>CreateRepositoryControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\SaveServiceSpecificCredentialsControl.xaml.cs">
@@ -148,11 +148,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Controls\CloneRepositoryControl.xaml">
+    <Page Include="View\Controls\CloneRepositoryControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\CreateRepositoryControl.xaml">
+    <Page Include="View\Controls\CreateRepositoryControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

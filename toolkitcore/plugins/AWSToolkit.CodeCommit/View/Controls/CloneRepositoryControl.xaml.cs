@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -7,9 +6,8 @@ using System.Windows.Forms;
 
 using Amazon.AWSToolkit.CodeCommit.Controller;
 using Amazon.AWSToolkit.CodeCommit.Model;
-using Amazon.AWSToolkit.CommonUI;
 
-namespace Amazon.AWSToolkit.CodeCommit.Controls
+namespace Amazon.AWSToolkit.CodeCommit.View.Controls
 {
     /// <summary>
     /// Interaction logic for CloneRepositoryControl.xaml

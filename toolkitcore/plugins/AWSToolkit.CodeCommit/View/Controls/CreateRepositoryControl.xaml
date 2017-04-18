@@ -1,4 +1,4 @@
-﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.CodeCommit.View.CreateRepositoryControl"
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.CodeCommit.View.Controls.CreateRepositoryControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -87,7 +87,8 @@
                  Style="{DynamicResource awsTextBoxStyle}"
                  Tag="Required"
                  Margin="0,8,2,0"
-                 Text="{Binding Name}"
+                 Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                 MaxLength="100"
                  />
 
         <Label Grid.Row="3"
@@ -102,20 +103,21 @@
                  Style="{DynamicResource awsTextBoxStyle}"
                  Margin="0,4,2,0"
                  Text="{Binding Description}"
+                 MaxLength="1000"
         />
 
         <Label Grid.Row="4" 
                Grid.Column="0"
                Style="{DynamicResource awsLabelBaseStyle}"
                Margin="-4,16,0,0">
-            _Clone to:
+            _Clone into:
         </Label>
         <TextBox Grid.Row="4" 
                  Grid.Column="1"
                  Style="{DynamicResource awsTextBoxStyle}"
                  Tag="Required"
                  Margin="0,16,2,0"
-                 Text="{Binding LocalFolder}"
+                 Text="{Binding SelectedFolder, UpdateSourceTrigger=PropertyChanged}"
                  />
         <Button Grid.Row="4" 
                 Grid.Column="2"

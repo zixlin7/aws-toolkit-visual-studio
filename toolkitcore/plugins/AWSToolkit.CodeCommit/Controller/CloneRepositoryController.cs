@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CodeCommit.Controls;
+﻿using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CodeCommit.View.Controls;
 using Amazon.AWSToolkit.CodeCommit.Model;
 using Amazon.AWSToolkit.Navigator;
 using log4net;

@@ -32,10 +32,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             set
             {
                 _baseFolder = value;
-                if (SelectedRepository != null)
-                {
-                    SelectedFolder = Path.Combine(_baseFolder, SelectedRepository.Name);
-                }
+                SelectedFolder = SelectedRepository != null ? Path.Combine(_baseFolder, SelectedRepository.Name) : BaseFolder;
             }
         }
 

@@ -9,7 +9,13 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         public string Name
         {
             get { return _name; }
-            set { _name = value; NotifyPropertyChanged(nameof(Name)); }
+            set
+            {
+                _name = value;
+                NotifyPropertyChanged(nameof(Name));
+
+                SelectedFolder = Path.Combine(BaseFolder, _name);
+            }
         }
 
         public string Description
@@ -18,10 +24,26 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             set { _description = value; NotifyPropertyChanged(nameof(Description)); }
         }
 
-        public string LocalFolder
+        /// <summary>
+        /// Contains the initial folder for cloning into, and any selections made
+        /// by the user from the browse dialog. The selected repo name will be 
+        /// appended to this to form the SelectedFolder value as the user chooses
+        /// the repo/
+        /// </summary>
+        public string BaseFolder
         {
-            get { return _localFolder; }
-            set { _localFolder = value; NotifyPropertyChanged(nameof(LocalFolder)); }
+            get { return _baseFolder; }
+            set
+            {
+                _baseFolder = value;
+                SelectedFolder = !string.IsNullOrEmpty(Name) ? Path.Combine(_baseFolder, Name) : BaseFolder;
+            }
+        }
+
+        public string SelectedFolder
+        {
+            get { return _selectedFolder; }
+            set { _selectedFolder = value; NotifyPropertyChanged(nameof(SelectedFolder)); }
         }
 
         public INewCodeCommitRepositoryInfo GetNewRepositoryInfo()
@@ -31,20 +53,16 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
                 OwnerAccount = Account,
                 Region = SelectedRegion,
                 Name = Name,
-                Description = Description
+                Description = Description,
+                LocalFolder = SelectedFolder
             };
-
-            var finalPathComponent = Path.GetFileName(LocalFolder);
-            if (!finalPathComponent.Equals(Name, StringComparison.OrdinalIgnoreCase))
-            {
-                info.LocalFolder = Path.Combine(LocalFolder, Name);
-            }
 
             return info;
         }
 
         private string _name;
         private string _description;
-        private string _localFolder;
+        private string _selectedFolder;
+        private string _baseFolder;
     }
 }
