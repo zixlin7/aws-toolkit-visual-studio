@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
+using Amazon.AWSToolkit.CodeCommit.Model;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
@@ -36,7 +39,9 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         private AWSToolkitPackage HostPackage { get; }
 
-        public async void Clone(ServiceSpecificCredentials credentials, string repositoryUrl, string destinationFolder)
+        public async Task CloneAsync(ServiceSpecificCredentials credentials, 
+                                     string repositoryUrl, 
+                                     string destinationFolder)
         {
             var recurseSubmodules = true;
             GitCredentials gitCredentials = null;
@@ -65,7 +70,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                                             destinationFolder, 
                                             recurseSubmodules,
                                             default(CancellationToken), 
-                                            progress);
+                                            progress).ConfigureAwait(false);
                 });
 #elif VS2015
                 var gitExt = HostPackage.GetVSShellService(typeof(IGitRepositoriesExt)) as IGitRepositoriesExt;
@@ -107,12 +112,9 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             }
         }
 
-        public object Create(AccountViewModel account,
-                             RegionEndPointsManager.RegionEndPoints region,
-                             string name,
-                             string description,
-                             string localFolder,
-                             AWSToolkitGitCallbackDefinitions.PostCloneContentPopulationCallback contentPopulationCallback)
+        public async Task CreateAsync(INewCodeCommitRepositoryInfo newRepositoryInfo, 
+                                      bool autoCloneNewRepository, 
+                                      AWSToolkitGitCallbackDefinitions.PostCloneContentPopulationCallback contentPopulationCallback)
         {
             try
             {
@@ -123,35 +125,67 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                         .QueryAWSToolkitPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
 
                 var codeCommitGitServices = codeCommitPlugin.ToolkitGitServices;
-                var repository = codeCommitGitServices.Create(account,
-                    region,
-                    name,
-                    description,
-                    null,
-                    null) as ICodeCommitRepository;
+                await codeCommitGitServices.CreateAsync(newRepositoryInfo, false, null);
+
+                var repository = codeCommitPlugin.GetRepository(newRepositoryInfo.Name, 
+                                                                newRepositoryInfo.OwnerAccount,
+                                                                newRepositoryInfo.Region);
 
                 var svcCredentials
-                    = account.GetCredentialsForService(ServiceSpecificCredentialStore
+                    = newRepositoryInfo.OwnerAccount.GetCredentialsForService(ServiceSpecificCredentialStore
                         .CodeCommitServiceName);
 
-                Clone(svcCredentials, repository.RepositoryUrl, localFolder);
-                repository.LocalFolder = localFolder;
+                await CloneAsync(svcCredentials, repository.RepositoryUrl, newRepositoryInfo.LocalFolder);
+
+                repository.LocalFolder = newRepositoryInfo.LocalFolder;
+
+                var initialCommitContent = new List<string>();
+
+                switch (newRepositoryInfo.GitIgnore.GitIgnoreType)
+                {
+                    case GitIgnoreOption.OptionType.VSToolkitDefault:
+                        {
+                            var content = S3FileFetcher.Instance.GetFileContent("codecommit/vsdefault.gitignore", S3FileFetcher.CacheMode.PerInstance);
+                            var target = Path.Combine(newRepositoryInfo.LocalFolder, ".gitignore");
+                            File.WriteAllText(target, content);
+                            initialCommitContent.Add(target);
+                        }
+                        break;
+
+                    case GitIgnoreOption.OptionType.Custom:
+                        {
+                            var target = Path.Combine(newRepositoryInfo.LocalFolder, ".gitignore");
+                            File.Copy(newRepositoryInfo.GitIgnore.CustomFilename, target);
+                            initialCommitContent.Add(target);
+                        }
+                        break;
+
+                    case GitIgnoreOption.OptionType.None:
+                        break;
+                }
 
                 // if content needs to be populated, make the callback
                 if (contentPopulationCallback != null)
                 {
                     var contentAdded = contentPopulationCallback(repository.LocalFolder);
-                    if (contentAdded)
+                    if (contentAdded != null && contentAdded.Any())
                     {
-
+                        foreach (var c in contentAdded)                                                         
+                        {
+                            initialCommitContent.Add(c);
+                        }
                     }
                 }
 
+                if (initialCommitContent.Any())
+                {
+                    codeCommitPlugin.StageAndCommit(initialCommitContent, "Initial commit");
+                    codeCommitPlugin.Push("origin");
+                }
+                
                 ToolkitEvent successEvent = new ToolkitEvent();
                 successEvent.AddProperty(AttributeKeys.CodeCommitCreateStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
                 SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(successEvent);
-
-                return repository;
             }
             catch (Exception e)
             {
@@ -161,15 +195,16 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
                 LOGGER.Error("Failed to create repository", e);
 
-                var msg = string.Format("Failed to create repository {0}. Error message: {1}.", name, e.Message);
+                var msg = string.Format("Error creating repository {0}: {1}.", newRepositoryInfo.Name, e.Message);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Repository Creation Failed", msg);
             }
             finally
             {
-                TeamExplorerConnection.ActiveConnection.RefreshRepositories();
+                HostPackage.ShellDispatcher.Invoke(() =>
+                {
+                    TeamExplorerConnection.ActiveConnection.RefreshRepositories();
+                });
             }
-
-            return null;
         }
 
     }

@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.CodeCommit.Model;
@@ -23,7 +27,9 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
 
         private CodeCommitActivator HostActivator { get; }
 
-        public void Clone(ServiceSpecificCredentials credentials, string repositoryUrl, string localFolder)
+        public async Task CloneAsync(ServiceSpecificCredentials credentials, 
+                                     string repositoryUrl, 
+                                     string localFolder)
         {
             try
             {
@@ -57,34 +63,30 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
                 LOGGER.Error("Clone failed using libgit2sharp", e);
 
                 var msg = string.Format("Failed to clone repository {0}. Error message: {1}.",
-                                        repositoryUrl,
-                                        e.Message);
+                    repositoryUrl,
+                    e.Message);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Repository Clone Failed", msg);
             }
         }
 
-        public object Create(AccountViewModel account,
-                             RegionEndPointsManager.RegionEndPoints region,
-                             string name,
-                             string description,
-                             string localFolder,
-                             AWSToolkitGitCallbackDefinitions.PostCloneContentPopulationCallback contentPopulationCallback)
+        public async Task CreateAsync(INewCodeCommitRepositoryInfo newRepositoryInfo, 
+                                      bool autoCloneNewRepository, 
+                                      AWSToolkitGitCallbackDefinitions.PostCloneContentPopulationCallback contentPopulationCallback)
         {
             CodeCommitRepository newRepository;
 
             try
             {
-                var client = BaseRepositoryModel.GetClientForRegion(account.Credentials, region.SystemName);
+                var client = BaseRepositoryModel.GetClientForRegion(newRepositoryInfo.OwnerAccount.Credentials, newRepositoryInfo.Region.SystemName);
 
                 var request = new CreateRepositoryRequest
                 {
-                    RepositoryName = name,
-                    RepositoryDescription = description
+                    RepositoryName = newRepositoryInfo.Name,
+                    RepositoryDescription = newRepositoryInfo.Description
                 };
                 var response = client.CreateRepository(request);
 
                 newRepository = new CodeCommitRepository(response.RepositoryMetadata);
-
             }
             catch (Exception e)
             {
@@ -92,23 +94,23 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
                 evnt.AddProperty(AttributeKeys.CodeCommitCreateStatus, ToolkitEvent.COMMON_STATUS_FAILURE);
                 SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
-
                 LOGGER.Error(e);
-                throw new Exception("Service error received creating repository", e);
+                throw;
             }
-
 
             // when called from within the VS package, local folder is not supplied so that
             // we can perform the clone through Team Explorer
-            if (!string.IsNullOrEmpty(localFolder))
+            if (autoCloneNewRepository)
             {
                 try
                 {
-                    var svcCredentials 
-                        = account.GetCredentialsForService(ServiceSpecificCredentialStore.CodeCommitServiceName);
-                    Clone(svcCredentials, newRepository.RepositoryUrl, localFolder);
+                    var svcCredentials
+                        =
+                        newRepositoryInfo.OwnerAccount.GetCredentialsForService(ServiceSpecificCredentialStore
+                            .CodeCommitServiceName);
+                    await CloneAsync(svcCredentials, newRepository.RepositoryUrl, newRepositoryInfo.LocalFolder);
 
-                    newRepository.LocalFolder = localFolder;
+                    newRepository.LocalFolder = newRepositoryInfo.LocalFolder;
                 }
                 catch (Exception e)
                 {
@@ -118,23 +120,56 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
 
                     LOGGER.Error("Exception cloning new repository", e);
                     throw new Exception("Error when attempting to clone the new repository", e);
-                }    
-            }
+                }
 
-            if (contentPopulationCallback != null)
-            {
-                var contentAdded = contentPopulationCallback(newRepository.LocalFolder);
-                if (contentAdded)
+                var initialCommitContent = new List<string>();
+
+                switch (newRepositoryInfo.GitIgnore.GitIgnoreType)
                 {
-                    // todo
+                    case GitIgnoreOption.OptionType.VSToolkitDefault:
+                    {
+                        var content = S3FileFetcher.Instance.GetFileContent("codecommit/vsdefault.gitignore",
+                            S3FileFetcher.CacheMode.PerInstance);
+                        var target = Path.Combine(newRepositoryInfo.LocalFolder, ".gitignore");
+                        File.WriteAllText(target, content);
+                        initialCommitContent.Add(target);
+                    }
+                        break;
+
+                    case GitIgnoreOption.OptionType.Custom:
+                    {
+                        var target = Path.Combine(newRepositoryInfo.LocalFolder, ".gitignore");
+                        File.Copy(newRepositoryInfo.GitIgnore.CustomFilename, target);
+                        initialCommitContent.Add(target);
+                    }
+                        break;
+
+                    case GitIgnoreOption.OptionType.None:
+                        break;
+                }
+
+                if (contentPopulationCallback != null)
+                {
+                    var contentAdded = contentPopulationCallback(newRepository.LocalFolder);
+                    if (contentAdded != null && contentAdded.Any())
+                    {
+                        foreach (var c in contentAdded)
+                        {
+                            initialCommitContent.Add(c);
+                        }
+                    }
+                }
+
+                if (initialCommitContent.Any())
+                {
+                    HostActivator.StageAndCommit(initialCommitContent, "Initial commit");
+                    HostActivator.Push("origin");
                 }
             }
 
             ToolkitEvent successEvent = new ToolkitEvent();
             successEvent.AddProperty(AttributeKeys.CodeCommitCreateStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
             SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(successEvent);
-
-            return newRepository;
         }
     }
 }

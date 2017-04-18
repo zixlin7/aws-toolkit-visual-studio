@@ -41,12 +41,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers
                                   .QueryShellProviderService<IAWSToolkitGitServices>() ?? ToolkitFactory
                                   .Instance
                                   .QueryPluginService(typeof(IAWSToolkitGitServices)) as IAWSToolkitGitServices;
-            gitServices.Create(newRepoInfo.OwnerAccount, 
-                               newRepoInfo.Region, 
-                               newRepoInfo.Name, 
-                               newRepoInfo.Description, 
-                               newRepoInfo.LocalFolder, 
-                               null);
+            gitServices.CreateAsync(newRepoInfo, true, null);
         }
     }
 }

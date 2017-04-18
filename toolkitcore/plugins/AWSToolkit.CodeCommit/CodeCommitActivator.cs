@@ -242,6 +242,24 @@ namespace Amazon.AWSToolkit.CodeCommit
             return validRepositories;
         }
 
+        public ICodeCommitRepository GetRepository(string repositoryName,
+                                                   AccountViewModel account,
+                                                   RegionEndPointsManager.RegionEndPoints region)
+        {
+            try
+            {
+                var client = BaseRepositoryModel.GetClientForRegion(account.Credentials, region.SystemName);
+                var response = client.GetRepository(new GetRepositoryRequest {RepositoryName = repositoryName});
+                return new CodeCommitRepository(response.RepositoryMetadata);
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Error querying for repository " + repositoryName, e);
+            }
+
+            return null;
+        }
+
         public string GetConsoleBrowsingUrl(string repoPath)
         {
             var remoteUrl = FindCommitRemoteUrl(repoPath);
@@ -266,6 +284,16 @@ namespace Amazon.AWSToolkit.CodeCommit
             }
 
             return consoleUrl;
+        }
+
+        public bool StageAndCommit(IEnumerable<string> files, string commitMessage)
+        {
+            return false;
+        }
+
+        public bool Push(string remote)
+        {
+            return false;
         }
 
         #endregion

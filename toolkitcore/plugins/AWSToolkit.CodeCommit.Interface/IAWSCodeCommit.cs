@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO.Packaging;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
 using Amazon.AWSToolkit.Shared;
@@ -114,10 +115,36 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
                                                            IEnumerable<string> pathsToRepositories);
 
         /// <summary>
+        /// Returns the wrapped metadata for a CodeCommit repository.
+        /// </summary>
+        /// <param name="repositoryName">The name of the repository</param>
+        /// <param name="account">The owning account</param>
+        /// <param name="region">The region hosting the repository</param>
+        /// <returns></returns>
+        ICodeCommitRepository GetRepository(string repositoryName,
+                                            AccountViewModel account,
+                                            RegionEndPointsManager.RegionEndPoints region);
+
+        /// <summary>
         /// Forms the url to enable the user to browse the repo content in the AWS console.
         /// </summary>
         /// <param name="repoPath"></param>
         /// <returns></returns>
         string GetConsoleBrowsingUrl(string repoPath);
+
+        /// <summary>
+        /// Stages and commits a set of files.
+        /// </summary>
+        /// <param name="files"></param>
+        /// <param name="commitMessage"></param>
+        /// <returns></returns>
+        bool StageAndCommit(IEnumerable<string> files, string commitMessage);
+
+        /// <summary>
+        /// Pushes the latest commits to the specified remote.
+        /// </summary>
+        /// <param name="remote"></param>
+        /// <returns></returns>
+        bool Push(string remote);
     }
 }

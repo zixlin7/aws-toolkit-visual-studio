@@ -1,5 +1,5 @@
 ﻿using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CodeCommit.Interface.Model;
+using Amazon.AWSToolkit.Shared;
 
 namespace Amazon.AWSToolkit.CodeCommit.Model
 {
@@ -10,5 +10,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         public string Name { get; internal set; }
         public string Description { get; internal set; }
         public string LocalFolder { get; internal set; }
+        public GitIgnoreOption GitIgnore { get; internal set; }
     }
 }

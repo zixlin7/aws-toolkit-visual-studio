@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Windows.Markup;
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Annotations;
 using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.Shared
@@ -35,9 +29,9 @@ namespace Amazon.AWSToolkit.Shared
         /// The destination folder for the cloned repository. This folder should not
         /// exist, or if it does, it must be empty.
         /// </param>
-        void Clone(ServiceSpecificCredentials credentials,
-                   string repositoryUrl, 
-                   string destinationFolder);
+        Task CloneAsync(ServiceSpecificCredentials credentials,
+                        string repositoryUrl, 
+                        string destinationFolder);
 
         /// <summary>
         /// Creates a new repository for the account in the specified region and clones
@@ -47,13 +41,11 @@ namespace Amazon.AWSToolkit.Shared
         /// will be retrieved from service specific credentials that have already been 
         /// attached to the supplied account.
         /// </summary>
-        /// <param name="account"></param>
-        /// <param name="region"></param>
-        /// <param name="name"></param>
-        /// <param name="description"></param>
-        /// <param name="localFolder">
-        /// The folder to hold the repo. If not specified, no post-create clone operation is performed
-        /// and the repo will stay remote.
+        /// <param name="newRepositoryInfo">
+        /// Details of the repository to be created.
+        /// </param>
+        /// <param name="autoCloneNewRepository">
+        /// If true, the new repo is cloned locally after creation.
         /// </param>
         /// <param name="contentPopulationCallback">
         /// Optional callback to populate initial content into the new repo after it has been
@@ -61,12 +53,9 @@ namespace Amazon.AWSToolkit.Shared
         /// then be committed to the repo as 'initial commit' and pushed to the remote.
         /// </param>
         /// <returns>repository object castable to ICodeCommitRepository</returns>
-        object Create(AccountViewModel account, 
-                      RegionEndPointsManager.RegionEndPoints region, 
-                      string name, 
-                      string description, 
-                      string localFolder,
-                      AWSToolkitGitCallbackDefinitions.PostCloneContentPopulationCallback contentPopulationCallback);
+        Task CreateAsync(INewCodeCommitRepositoryInfo newRepositoryInfo, 
+                         bool autoCloneNewRepository, 
+                         AWSToolkitGitCallbackDefinitions.PostCloneContentPopulationCallback contentPopulationCallback);
     }
 
     public abstract class AWSToolkitGitCallbackDefinitions
@@ -79,8 +68,8 @@ namespace Amazon.AWSToolkit.Shared
         /// </summary>
         /// <param name="repositoryFolder"></param>
         /// <returns>
-        /// True if content was populated, otherwise false (which will abort the commit)
+        /// The collection of files that were added to the working folder.
         /// </returns>
-        public delegate bool PostCloneContentPopulationCallback(string repositoryFolder);
+        public delegate IEnumerable<string> PostCloneContentPopulationCallback(string repositoryFolder);
     }
 }

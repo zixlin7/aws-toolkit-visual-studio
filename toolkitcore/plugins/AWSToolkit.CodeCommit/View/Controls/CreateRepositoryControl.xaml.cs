@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using Amazon.AWSToolkit.CodeCommit.Controller;
 using Amazon.AWSToolkit.CodeCommit.Model;
+using Amazon.AWSToolkit.Shared;
 
 namespace Amazon.AWSToolkit.CodeCommit.View.Controls
 {
@@ -78,6 +80,27 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
             NotifyPropertyChanged(propertyChangedEventArgs.PropertyName);
         }
 
+        private void OnGitIgnoreSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Controller.Model.SelectedGitIgnore == null)
+                return;
 
+            var selection = Controller.Model.SelectedGitIgnore;
+            if (selection.GitIgnoreType == GitIgnoreOption.OptionType.Custom)
+            {
+                var dlg = new OpenFileDialog
+                {
+                    CheckPathExists = true,
+                    CheckFileExists = true,
+                    Filter = ".gitignore files (.gitignore)|.gitignore"
+                };
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    selection.CustomFilename = Path.GetFullPath(dlg.FileName);
+                    selection.DisplayText = string.Format("Custom [{0}]", dlg.FileName);
+                }
+            }
+        }
     }
 }

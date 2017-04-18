@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Amazon.AWSToolkit.Account;
+﻿using Amazon.AWSToolkit.Account;
 
-namespace Amazon.AWSToolkit.CodeCommit.Interface.Model
+namespace Amazon.AWSToolkit.Shared
 {
     /// <summary>
     /// Details of a new repository a user wants to have created.
@@ -36,5 +31,10 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface.Model
         /// The local folder that will contain the new repository content.
         /// </summary>
         string LocalFolder { get; }
+
+        /// <summary>
+        /// User election for .gitignore file handling
+        /// </summary>
+        GitIgnoreOption GitIgnore { get; }
     }
 }

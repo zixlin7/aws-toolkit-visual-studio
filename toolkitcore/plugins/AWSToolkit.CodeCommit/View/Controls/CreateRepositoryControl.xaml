@@ -22,6 +22,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -106,20 +107,45 @@
                  MaxLength="1000"
         />
 
-        <Label Grid.Row="4" 
+        <Grid Grid.Row="4"
+              Grid.Column="0"
+              Grid.ColumnSpan="3"
+              Margin="-3,8,2,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width=".5*"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Column="0"
+                   Style="{DynamicResource awsLabelBaseStyle}">
+                Default ._gitignore file:
+            </Label>
+            <ComboBox x:Name="_ctlGitIgnoreSelector" 
+                      Grid.Column="1"
+                      VerticalAlignment="Center"
+                      SelectedItem="{Binding SelectedGitIgnore}"
+                      SelectionChanged="OnGitIgnoreSelectionChanged"
+                      Style="{DynamicResource awsComboBoxStyle}"
+                      ItemsSource="{Binding GitIgnoreOptions}"
+                      DisplayMemberPath="DisplayText"
+                      />
+        </Grid>
+
+
+        <Label Grid.Row="5" 
                Grid.Column="0"
                Style="{DynamicResource awsLabelBaseStyle}"
                Margin="-4,16,0,0">
             _Clone into:
         </Label>
-        <TextBox Grid.Row="4" 
+        <TextBox Grid.Row="5" 
                  Grid.Column="1"
                  Style="{DynamicResource awsTextBoxStyle}"
                  Tag="Required"
                  Margin="0,16,2,0"
                  Text="{Binding SelectedFolder, UpdateSourceTrigger=PropertyChanged}"
                  />
-        <Button Grid.Row="4" 
+        <Button Grid.Row="5" 
                 Grid.Column="2"
                 VerticalAlignment="Center"
                 Margin="2,16,2,0"
