@@ -204,6 +204,14 @@
         <Compile Include="TeamExplorer\CodeCommit\Connect\ConnectionSection.cs" />
         <Compile Include="TeamExplorer\CodeCommit\Connect\InvitationSection.cs" />
         <Compile Include="TeamExplorer\CodeCommit\Controllers\ConnectController.cs" />
+        <Compile Include="TeamExplorer\CodeCommit\Controllers\BaseCodeCommitController.cs" />
+        <Compile Include="TeamExplorer\CodeCommit\Controllers\CloneRepositoryController.cs" />
+        <Compile Include="TeamExplorer\CodeCommit\Controllers\CreateRepositoryController.cs" />
+        <Compile Include="TeamExplorer\CredentialManagement\GitCredentials.cs" />
+        <Compile Include="TeamExplorer\CredentialManagement\NativeMethods.cs" />
+        <Compile Include="TeamExplorer\CredentialManagement\TeamExplorerConnection.cs" />
+        <Compile Include="Services\AWSToolkitGitServices.cs" />
+        <Compile Include="NativeMethods.cs" />
         <Compile Include="TeamExplorer\CodeCommit\Controls\ConnectControl.xaml.cs">
           <DependentUpon>ConnectControl.xaml</DependentUpon>
         </Compile>
@@ -326,17 +334,9 @@
     <Compile Include="DeploymentProcessors\*.cs" />
     <Compile Include="Loggers\*.cs" />
     <Compile Include="Services\AWSLegacyDeploymentPersistenceService.cs" />
-    <Compile Include="Services\AWSToolkitGitServices.cs" />
     <Compile Include="Services\AWSToolkitShellProviderService.cs" />
-    <Compile Include="TeamExplorer\CodeCommit\Controllers\BaseCodeCommitController.cs" />
-    <Compile Include="TeamExplorer\CodeCommit\Controllers\CloneRepositoryController.cs" />
-    <Compile Include="TeamExplorer\CodeCommit\Controllers\CreateRepositoryController.cs" />
-    <Compile Include="TeamExplorer\CredentialManagement\GitCredentials.cs" />
-    <Compile Include="TeamExplorer\CredentialManagement\NativeMethods.cs" />
-    <Compile Include="TeamExplorer\CredentialManagement\TeamExplorerConnection.cs" />
     <Compile Include="Themes\ThemeFontResources.cs" />
     <Compile Include="IEditor.cs" />
-    <Compile Include="NativeMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HostedEditor\HostedEditorFactory.cs" />
