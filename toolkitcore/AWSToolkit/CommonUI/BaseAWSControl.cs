@@ -131,6 +131,11 @@ namespace Amazon.AWSToolkit.CommonUI
             }
         }
 
+        public virtual bool SupportsDynamicOKEnablement
+        {
+            get { return false; }
+        }
+
         private void executeBackGroundLoadDataLoad(object state)
         {
             try
