@@ -19,7 +19,10 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
             ThemeUtil.UpdateDictionariesForTheme(this.Resources);
         }
 
-        public ConnectSectionViewModel ViewModel => DataContext as ConnectSectionViewModel;
+        public ConnectSectionViewModel ViewModel
+        {
+            get { return DataContext as ConnectSectionViewModel; }
+        }
 
         private void OnRepositoryMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

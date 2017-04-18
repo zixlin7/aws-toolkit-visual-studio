@@ -91,16 +91,16 @@
   <ItemGroup>
     <Compile Include="CodeCommitActivator.cs" />
     <Compile Include="Controller\CreateRepositoryController.cs" />
-    <Compile Include="Controller\SelectRepositoryController.cs" />
+    <Compile Include="Controller\CloneRepositoryController.cs" />
     <Compile Include="Controller\SaveServiceSpecificCredentialsController.cs" />
     <Compile Include="Controller\ViewRepositoryController.cs" />
-    <Compile Include="Controls\SelectRepositoryControl.xaml.cs">
-      <DependentUpon>SelectRepositoryControl.xaml</DependentUpon>
+    <Compile Include="Controls\CloneRepositoryControl.xaml.cs">
+      <DependentUpon>CloneRepositoryControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\BaseRepositoryModel.cs" />
     <Compile Include="Model\CreateRepositoryModel.cs" />
     <Compile Include="Model\NewRepositoryInfo.cs" />
-    <Compile Include="Model\SelectRepositoryModel.cs" />
+    <Compile Include="Model\CloneRepositoryModel.cs" />
     <Compile Include="Model\CodeCommitRepository.cs" />
     <Compile Include="Model\SaveServiceSpecificCredentialsModel.cs" />
     <Compile Include="Model\ViewRepositoryModel.cs" />
@@ -148,7 +148,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Controls\SelectRepositoryControl.xaml">
+    <Page Include="Controls\CloneRepositoryControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

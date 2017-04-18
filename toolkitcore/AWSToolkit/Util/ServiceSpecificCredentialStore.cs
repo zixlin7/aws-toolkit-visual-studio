@@ -21,7 +21,10 @@ namespace Amazon.AWSToolkit.Util
         {
         }
 
-        public static ServiceSpecificCredentialStore Instance => _instance;
+        public static ServiceSpecificCredentialStore Instance
+        {
+            get { return _instance; }
+        }
 
         public ServiceSpecificCredentials GetCredentialsForService(string accountArtifactsId, string serviceName)
         {

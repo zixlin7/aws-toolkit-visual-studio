@@ -112,7 +112,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
         
         public string Password
         {
-            get => CreateString(SecurePassword);
+            get { return CreateString(SecurePassword); }
             set
             {
                 CheckNotDisposed();
@@ -169,7 +169,10 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
             }
         }
 
-        public DateTime LastWriteTime => LastWriteTimeUtc.ToLocalTime();
+        public DateTime LastWriteTime
+        {
+            get { return LastWriteTimeUtc.ToLocalTime(); }
+        }
 
         public DateTime LastWriteTimeUtc
         {
@@ -178,7 +181,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
                 CheckNotDisposed();
                 return _lastWriteTime;
             }
-            private set => _lastWriteTime = value;
+            private set { _lastWriteTime = value; }
         }
 
         /*
@@ -301,7 +304,8 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
             CheckNotDisposed();
             _unmanagedCodePermission.Demand();
 
-            bool result = NativeMethods.CredRead(Target, _credentialType, 0, out IntPtr credPointer);
+            IntPtr credPointer;
+            bool result = NativeMethods.CredRead(Target, _credentialType, 0, out credPointer);
             if (!result)
             {
                 return false;

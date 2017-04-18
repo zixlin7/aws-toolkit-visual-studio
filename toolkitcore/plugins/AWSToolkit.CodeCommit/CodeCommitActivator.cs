@@ -31,7 +31,10 @@ namespace Amazon.AWSToolkit.CodeCommit
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(CodeCommitActivator));
         private const string CodeCommitUrlPrefix = "git-codecommit.";
 
-        public override string PluginName => "CodeCommit";
+        public override string PluginName
+        {
+            get { return "CodeCommit"; }
+        }
 
         public override void RegisterMetaNodes()
         {
@@ -66,7 +69,10 @@ namespace Amazon.AWSToolkit.CodeCommit
 
         #region IAWSCodeCommit Members
 
-        public IAWSToolkitGitServices ToolkitGitServices => new AWSToolkitGitServices(this);
+        public IAWSToolkitGitServices ToolkitGitServices
+        {
+            get { return new AWSToolkitGitServices(this); }
+        }
 
         public void AssociateCredentialsWithProfile(string profileArtifactsId, string userName, string password)
         {
@@ -131,10 +137,10 @@ namespace Amazon.AWSToolkit.CodeCommit
                                                                 RegionEndPointsManager.RegionEndPoints initialRegion,
                                                                 string defaultCloneFolderRoot)
         {
-            var controller = new SelectRepositoryController(account, initialRegion, defaultCloneFolderRoot);
+            var controller = new CloneRepositoryController(account, initialRegion, defaultCloneFolderRoot);
             return !controller.Execute().Success
                 ? null
-                : new CodeCommitRepository(controller.Model.SelectedRepository, controller.Model.LocalFolder);
+                : new CodeCommitRepository(controller.Model.SelectedRepository, controller.Model.SelectedFolder);
         }
 
         public INewCodeCommitRepositoryInfo PromptForRepositoryToCreate(AccountViewModel account,

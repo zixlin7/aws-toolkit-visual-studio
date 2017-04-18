@@ -35,7 +35,10 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             }
         }
 
-        public IEnumerable<RegionEndPointsManager.RegionEndPoints> AvailableRegions => _availableRegions;
+        public IEnumerable<RegionEndPointsManager.RegionEndPoints> AvailableRegions
+        {
+            get { return _availableRegions; }
+        }
 
         public RegionEndPointsManager.RegionEndPoints SelectedRegion { get; set; }
 

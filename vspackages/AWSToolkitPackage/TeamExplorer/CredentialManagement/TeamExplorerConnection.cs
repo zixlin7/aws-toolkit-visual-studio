@@ -152,7 +152,10 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
         /// Returns the credential targets currently registered with the OS for
         /// this connection.
         /// </summary>
-        public IEnumerable<string> OsCredentialTargets => _persistedTargets.ToArray();
+        public IEnumerable<string> OsCredentialTargets
+        {
+            get { return _persistedTargets.ToArray(); }
+        }
 
         /// <summary>
         /// Registers a set of git credentials with the OS, and updates

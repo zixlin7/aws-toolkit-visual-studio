@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,6 +33,7 @@ namespace Amazon.AWSToolkit.CodeCommit.View
         {
             Controller = controller;
             DataContext = controller.Model;
+            Controller.Model.PropertyChanged += ModelOnPropertyChanged;
 
             if(!string.IsNullOrEmpty(msg))
             {
@@ -41,7 +43,10 @@ namespace Amazon.AWSToolkit.CodeCommit.View
 
         public SaveServiceSpecificCredentialsController Controller { get; }
 
-        public override string Title => Controller?.Model == null ? null : "Save Generated Credentials";
+        public override string Title
+        {
+            get { return Controller?.Model == null ? null : "Save Generated Credentials"; }
+        }
 
         public override bool Validated()
         {
@@ -51,6 +56,11 @@ namespace Amazon.AWSToolkit.CodeCommit.View
         public override bool OnCommit()
         {
             return Controller.Model.SaveToFile();
+        }
+
+        public override bool SupportsDynamicOKEnablement
+        {
+            get { return true; }
         }
 
         private void OnClickBrowseForFile(object sender, RoutedEventArgs e)
@@ -65,6 +75,11 @@ namespace Amazon.AWSToolkit.CodeCommit.View
             {
                 Controller.Model.Filename = dlg.FileName;
             }
+        }
+
+        private void ModelOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            NotifyPropertyChanged(propertyChangedEventArgs.PropertyName);
         }
     }
 }

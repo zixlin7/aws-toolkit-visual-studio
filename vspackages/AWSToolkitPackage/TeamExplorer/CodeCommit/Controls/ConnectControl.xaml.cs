@@ -25,7 +25,10 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
             InitializeAccounts();
         }
 
-        public override string Title => "Connect to AWS CodeCommit";
+        public override string Title
+        {
+            get { return "Connect to AWS CodeCommit"; }
+        }
 
         public override bool Validated()
         {

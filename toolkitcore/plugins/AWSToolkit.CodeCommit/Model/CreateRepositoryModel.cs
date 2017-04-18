@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
-using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.CodeCommit.Model
 {
@@ -10,19 +8,19 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
     {
         public string Name
         {
-            get => _name;
+            get { return _name; }
             set { _name = value; NotifyPropertyChanged(nameof(Name)); }
         }
 
         public string Description
         {
-            get => _description;
+            get { return _description; }
             set { _description = value; NotifyPropertyChanged(nameof(Description)); }
         }
 
         public string LocalFolder
         {
-            get => _localFolder;
+            get { return _localFolder; }
             set { _localFolder = value; NotifyPropertyChanged(nameof(LocalFolder)); }
         }
 

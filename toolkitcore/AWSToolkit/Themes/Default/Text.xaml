@@ -290,19 +290,20 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="PasswordBox">
-                    <Border
-                        Name="border"
-                        Padding="{TemplateBinding Padding}"
-                        Background="{TemplateBinding Panel.Background}"
-                        BorderBrush="{TemplateBinding Border.BorderBrush}"
-                        BorderThickness="{TemplateBinding Border.BorderThickness}"
-                        SnapsToDevicePixels="True">
+                    <Grid>
+                        <Border
+                            Name="border"
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Panel.Background}"
+                            BorderBrush="{TemplateBinding Border.BorderBrush}"
+                            BorderThickness="{TemplateBinding Border.BorderThickness}"
+                            SnapsToDevicePixels="True"/>
                         <ScrollViewer
                             Name="PART_ContentHost"
                             Focusable="False"
                             HorizontalScrollBarVisibility="Hidden"
                             VerticalScrollBarVisibility="Hidden" />
-                    </Border>
+                    </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="UIElement.IsEnabled">
                             <Setter TargetName="border" Property="UIElement.Opacity">

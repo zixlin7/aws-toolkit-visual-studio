@@ -101,7 +101,10 @@ namespace Amazon.AWSToolkit.Util
             return _rowData[rowIndex];
         }
 
-        public int RowCount => _rowData.Count;
+        public int RowCount
+        {
+            get { return _rowData.Count; }
+        }
 
         private readonly List<string[]> _rowData = new List<string[]>();
     }

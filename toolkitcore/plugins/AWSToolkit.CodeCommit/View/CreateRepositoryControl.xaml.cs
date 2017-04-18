@@ -1,8 +1,8 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using Amazon.AWSToolkit.CodeCommit.Controller;
-using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.CodeCommit.View
 {
@@ -21,15 +21,15 @@ namespace Amazon.AWSToolkit.CodeCommit.View
         {
             Controller = controller;
             DataContext = Controller.Model;
-            Controller.Model.PropertyChanged += (sender, args) =>
-            {
-                SetOkButtonEnablement(Validated());
-            };
+            Controller.Model.PropertyChanged += ModelOnPropertyChanged;
         }
 
         public CreateRepositoryController Controller { get; }
 
-        public override string Title => "Create a New AWS CodeCommit Repository";
+        public override string Title
+        {
+            get { return "Create a New AWS CodeCommit Repository"; }
+        }
 
         public override bool Validated()
         {
@@ -41,29 +41,14 @@ namespace Amazon.AWSToolkit.CodeCommit.View
             return true;
         }
 
-        private OkCancelDialogHost _host;
-        private OkCancelDialogHost Host
+        public override bool SupportsDynamicOKEnablement
         {
-            get
-            {
-                if (_host == null)
-                {
-                    _host = FindHost<OkCancelDialogHost>();
-                }
-
-                return _host;
-            }
-        }
-
-        public void SetOkButtonEnablement(bool okEnabled)
-        {
-            var host = Host;
-            if (host != null)
-                host.IsOkEnabled = okEnabled;
+            get { return true; }
         }
 
         private void OnRegionSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            // todo: find repo names in region and validate
         }
 
         private void OnClickBrowseFolder(object sender, RoutedEventArgs e)
@@ -76,22 +61,13 @@ namespace Amazon.AWSToolkit.CodeCommit.View
 
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                var repositoryFolder = dlg.SelectedPath;
-                //if (Directory.Exists(repositoryFolder))
-                //{
-                //    // if files only exist in subfolders, then by definition at least one top level folder
-                //    // must exist - saves us having to scan all subfolders for files.
-                //    var files = Directory.GetFiles(repositoryFolder, "*.*", SearchOption.TopDirectoryOnly);
-                //    var subFolders = Directory.GetDirectories(repositoryFolder, "*.*", SearchOption.TopDirectoryOnly);
-                //    if (files.Any() || subFolders.Any())
-                //    {
-                //        ToolkitFactory.Instance.ShellProvider.ShowError("Non-empty Folder", "The selected folder is not empty. Please choose another location.");
-                //        return;
-                //    }
-                //}
-
-                Controller.Model.LocalFolder = repositoryFolder;
+                Controller.Model.LocalFolder = dlg.SelectedPath;
             }
+        }
+
+        private void ModelOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            NotifyPropertyChanged(propertyChangedEventArgs.PropertyName);
         }
 
 

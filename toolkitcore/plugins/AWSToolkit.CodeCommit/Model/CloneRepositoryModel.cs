@@ -12,9 +12,9 @@ using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommit.Model
 {
-    public class SelectRepositoryModel : BaseRepositoryModel
+    public class CloneRepositoryModel : BaseRepositoryModel
     {
-        private readonly ILog LOGGER = LogManager.GetLogger(typeof(SelectRepositoryModel));
+        private readonly ILog LOGGER = LogManager.GetLogger(typeof(CloneRepositoryModel));
 
         /// <summary>
         /// The service-specific credentials for CodeCommit to be used on the
@@ -25,10 +25,10 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         /// <summary>
         /// The folder selected by the user to contain the cloned repository.
         /// </summary>
-        public string LocalFolder
+        public string SelectedFolder
         {
-            get { return _localFolder; }
-            set { _localFolder = value; NotifyPropertyChanged("LocalFolder"); }
+            get { return _selectedFolder; }
+            set { _selectedFolder = value; NotifyPropertyChanged("SelectedFolder"); }
         }
 
         /// <summary>
@@ -46,7 +46,10 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             set { _selectedRepository = value; NotifyPropertyChanged("SelectedRepository"); }
         }
 
-        public ObservableCollection<CodeCommitRepository> Repositories => _repositories;
+        public ObservableCollection<CodeCommitRepository> Repositories
+        {
+            get { return _repositories; }
+        }
 
         public void RefreshRepositoryList()
         {
@@ -103,33 +106,8 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             });
         }
 
-        private void LoadValidServiceRegionsForAccount()
-        {
-            _availableRegions.Clear();
-
-            foreach (RegionEndPointsManager.RegionEndPoints rep in RegionEndPointsManager.Instance.Regions)
-            {
-                if (this.Account.HasRestrictions || rep.HasRestrictions)
-                {
-                    if (!rep.ContainAnyRestrictions(this.Account.Restrictions))
-                    {
-                        continue;
-                    }
-                }
-
-                if (rep.GetEndpoint(RegionEndPointsManager.CODECOMMIT_SERVICE_NAME) != null)
-                {
-                    _availableRegions.Add(rep);
-                }
-            }
-
-            SelectedRegion = _availableRegions.FirstOrDefault();
-        }
-
-        private AccountViewModel _account;
-        private string _localFolder;
+        private string _selectedFolder;
         private CodeCommitRepository _selectedRepository;
         private readonly ObservableCollection<CodeCommitRepository> _repositories = new ObservableCollection<CodeCommitRepository>();
-        private readonly List<RegionEndPointsManager.RegionEndPoints> _availableRegions = new List<RegionEndPointsManager.RegionEndPoints>();
     }
 }

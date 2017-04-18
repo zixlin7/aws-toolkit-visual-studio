@@ -11,9 +11,9 @@ namespace Amazon.AWSToolkit.CodeCommit.Controller
     /// <summary>
     /// Controller for prompting the user to select a repository for cloning.
     /// </summary>
-    public class SelectRepositoryController
+    public class CloneRepositoryController
     {
-        private readonly ILog LOGGER = LogManager.GetLogger(typeof(SelectRepositoryController));
+        private readonly ILog LOGGER = LogManager.GetLogger(typeof(CloneRepositoryController));
 
         /// <summary>
         /// Constructs a controller that will display a dialog for repository selection.
@@ -21,31 +21,31 @@ namespace Amazon.AWSToolkit.CodeCommit.Controller
         /// <param name="account"></param>
         /// <param name="initialRegion">The initial region binding for the dialog</param>
         /// <param name="defaultCloneFolderRoot">The system default folder for cloned repos, discovered from the registry or a fallback default</param>
-        public SelectRepositoryController(AccountViewModel account, RegionEndPointsManager.RegionEndPoints initialRegion, string defaultCloneFolderRoot)
+        public CloneRepositoryController(AccountViewModel account, RegionEndPointsManager.RegionEndPoints initialRegion, string defaultCloneFolderRoot)
         {
-            Model = new SelectRepositoryModel
+            Model = new CloneRepositoryModel
             {
                 Account = account,
                 SelectedRegion = initialRegion ?? RegionEndPointsManager.Instance.GetRegion("us-east-1"),
-                LocalFolder = defaultCloneFolderRoot
+                SelectedFolder = defaultCloneFolderRoot
             };
         }
 
-        public SelectRepositoryModel Model { get; }
+        public CloneRepositoryModel Model { get; }
 
-        public SelectRepositoryControl View { get; private set; }
+        public CloneRepositoryControl View { get; private set; }
 
         public ActionResults Execute()
         {
-            View = new SelectRepositoryControl(this);
+            View = new CloneRepositoryControl(this);
             if (ToolkitFactory.Instance.ShellProvider.ShowModal(View))
             {
                 // for now, append the repo name onto the selected path - we'll want to show
                 // this in the dialog eventually
-                var finalPathComponent = Path.GetFileName(Model.LocalFolder);
+                var finalPathComponent = Path.GetFileName(Model.SelectedFolder);
                 if (!finalPathComponent.Equals(Model.SelectedRepository.Name, StringComparison.OrdinalIgnoreCase))
                 {
-                    Model.LocalFolder = Path.Combine(Model.LocalFolder, Model.SelectedRepository.Name);
+                    Model.SelectedFolder = Path.Combine(Model.SelectedFolder, Model.SelectedRepository.Name);
                 }
 
                 Model.RepositoryUrl = Model.SelectedRepository.RepositoryMetadata.CloneUrlHttp;

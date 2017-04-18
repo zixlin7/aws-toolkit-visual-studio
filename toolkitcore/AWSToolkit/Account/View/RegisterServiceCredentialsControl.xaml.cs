@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,10 +32,11 @@ namespace Amazon.AWSToolkit.Account.View
         }
 
         public RegisterServiceCredentialsControl(RegisterServiceCredentialsController controller)
+            : this()
         {
             Controller = controller;
             DataContext = Controller.Model;
-            InitializeComponent();
+            Controller.Model.PropertyChanged += ModelOnPropertyChanged;
         }
 
         public RegisterServiceCredentialsController Controller { get; }
@@ -42,6 +44,17 @@ namespace Amazon.AWSToolkit.Account.View
         public override string Title
         {
             get { return "HTTPS Credentials for AWS CodeCommit"; }
+        }
+
+        public override bool SupportsDynamicOKEnablement
+        {
+            get { return true; }
+        }
+
+        public override bool Validated()
+        {
+            return !string.IsNullOrEmpty(Controller.Model.UserName) 
+                        && !string.IsNullOrEmpty(Controller.Model.Password);
         }
 
         public override bool OnCommit()
@@ -107,5 +120,13 @@ namespace Amazon.AWSToolkit.Account.View
         {
             Controller.Model.Password = _ctlPassword.Password;
         }
+
+        private void ModelOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            // throw this to our outer host, so the OK button enablement gets checked
+            NotifyPropertyChanged(propertyChangedEventArgs.PropertyName);
+        }
+
+
     }
 }

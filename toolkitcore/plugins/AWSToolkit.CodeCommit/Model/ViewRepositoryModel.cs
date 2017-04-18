@@ -23,11 +23,20 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
         public CodeCommitRepository RepositoryWrapper { get; internal set; }
 
-        public string Name => RepositoryWrapper?.Name;
+        public string Name
+        {
+            get { return RepositoryWrapper?.Name; }
+        }
 
-        public string Description => RepositoryWrapper.Description;
+        public string Description
+        {
+            get { return RepositoryWrapper.Description; }
+        }
 
-        public string CloneUrlHttp => RepositoryWrapper.RepositoryUrl;
+        public string CloneUrlHttp
+        {
+            get { return RepositoryWrapper.RepositoryUrl; }
+        }
 
         public string LocalWorkspaceFolder
         {
@@ -46,11 +55,20 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             }
         }
 
-        public string CreationDate => RepositoryWrapper.RepositoryMetadata.CreationDate.ToShortDateString();
+        public string CreationDate
+        {
+            get { return RepositoryWrapper.RepositoryMetadata.CreationDate.ToShortDateString(); }
+        }
 
-        public string LastModifiedDate => RepositoryWrapper.RepositoryMetadata.LastModifiedDate.ToShortDateString();
+        public string LastModifiedDate
+        {
+            get { return RepositoryWrapper.RepositoryMetadata.LastModifiedDate.ToShortDateString(); }
+        }
 
-        public string DefaultBranch => RepositoryWrapper.RepositoryMetadata.DefaultBranch;
+        public string DefaultBranch
+        {
+            get { return RepositoryWrapper.RepositoryMetadata.DefaultBranch; }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

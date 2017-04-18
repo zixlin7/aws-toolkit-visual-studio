@@ -40,13 +40,19 @@ namespace Amazon.AWSToolkit.CodeCommit.Controller
             return new ActionResults().WithSuccess(false);
         }
 
-        public string RepositoryName => Model?.Name;
+        public string RepositoryName
+        {
+            get { return Model?.Name; }
+        }
 
         public ViewRepositoryModel Model { get; private set; }
 
         public ViewRepositoryControl Control { get; private set; }
 
-        public AccountViewModel Account => _repositoryViewModel?.AccountViewModel;
+        public AccountViewModel Account
+        {
+            get { return _repositoryViewModel?.AccountViewModel; }
+        }
 
         public void LoadModel()
         {

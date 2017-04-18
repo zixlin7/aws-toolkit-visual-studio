@@ -23,16 +23,28 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             LocalFolder = localFolder;
         }
 
-        public string Name => RepositoryMetadata?.RepositoryName;
+        public string Name
+        {
+            get { return RepositoryMetadata?.RepositoryName; }
+        }
 
-        public string Description => RepositoryMetadata?.RepositoryDescription;
+        public string Description
+        {
+            get { return RepositoryMetadata?.RepositoryDescription; }
+        }
 
         public RepositoryMetadata RepositoryMetadata { get; }
 
-        public string UniqueId => RepositoryMetadata.RepositoryId;
+        public string UniqueId
+        {
+            get { return RepositoryMetadata.RepositoryId; }
+        }
 
         public string LocalFolder { get; set; }
 
-        public string RepositoryUrl => RepositoryMetadata.CloneUrlHttp;
+        public string RepositoryUrl
+        {
+            get { return RepositoryMetadata.CloneUrlHttp; }
+        }
     }
 }
