@@ -39,7 +39,12 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         CodeCommitCloneStatus,
         CodeCommitCreateStatus,
         CodeCommitConnectStatus,
-        CodeCommitSetupCredentials
+        CodeCommitSetupCredentials,
+
+        FirstExperienceDisplayStatus,
+        FirstExperienceSaveCredentialsStatus,
+        FirstExperienceImport,
+        FirstExperienceLinkClick
     };
 
     public enum MetricKeys
