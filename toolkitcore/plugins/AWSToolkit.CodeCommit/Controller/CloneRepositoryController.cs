@@ -40,14 +40,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Controller
             View = new CloneRepositoryControl(this);
             if (ToolkitFactory.Instance.ShellProvider.ShowModal(View))
             {
-                // for now, append the repo name onto the selected path - we'll want to show
-                // this in the dialog eventually
-                var finalPathComponent = Path.GetFileName(Model.SelectedFolder);
-                if (!finalPathComponent.Equals(Model.SelectedRepository.Name, StringComparison.OrdinalIgnoreCase))
-                {
-                    Model.SelectedFolder = Path.Combine(Model.SelectedFolder, Model.SelectedRepository.Name);
-                }
-
                 Model.RepositoryUrl = Model.SelectedRepository.RepositoryMetadata.CloneUrlHttp;
                 return new ActionResults().WithSuccess(true);
             }

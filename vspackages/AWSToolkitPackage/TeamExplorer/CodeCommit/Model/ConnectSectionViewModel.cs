@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
@@ -24,6 +25,10 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
         public ConnectSectionViewModel()
         {
             TeamExplorerConnection.OnTeamExplorerBindingChanged += OnTeamExplorerBindingChanged;
+            if (TeamExplorerConnection.ActiveConnection != null)
+            {
+                TeamExplorerConnection.ActiveConnection.PropertyChanged += ActiveConnectionOnPropertyChanged;
+            }
 
             _cloneCommand = new CommandHandler(OnClone, true);
             _createCommand = new CommandHandler(OnCreate, true);
@@ -39,14 +44,16 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
         {
             if (connection != null)
             {
-                connection.PropertyChanged += (sender, args) =>
-                {
-                    RaisePropertyChanged(args.PropertyName);
-                };
+                connection.PropertyChanged += ActiveConnectionOnPropertyChanged;
             }
 
             RaisePropertyChanged("Repositories");
             RaisePropertyChanged("SignoutLabel");
+        }
+
+        private void ActiveConnectionOnPropertyChanged(object o, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            RaisePropertyChanged(propertyChangedEventArgs.PropertyName);
         }
 
         public string SignoutLabel

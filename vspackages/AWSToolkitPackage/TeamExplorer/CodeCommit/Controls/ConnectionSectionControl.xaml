@@ -128,7 +128,7 @@
 
         <ListBox x:Name="_ctlRepositoriesList" 
                   Style="{DynamicResource awsListBoxStyle}"
-                  ItemsSource="{Binding Repositories}"
+                  ItemsSource="{Binding Repositories, UpdateSourceTrigger=PropertyChanged}"
                   SelectedItem="{Binding Path=SelectedRepository}"
                   ItemContainerStyle="{StaticResource RepositoriesListItemContainerStyle}"
                   ItemTemplate="{StaticResource RepositoriesListItemDataTemplate}"
