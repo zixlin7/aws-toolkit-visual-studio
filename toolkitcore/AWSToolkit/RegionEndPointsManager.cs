@@ -32,6 +32,7 @@ namespace Amazon.AWSToolkit
         public const string DYNAMODB_STREAM_SERVICE_NAME = "DynamoDBStream";
         public const string CLOUDWATCH_LOGS_NAME = "Logs";
         public const string KMS_SERVICE_NAME = "KMS";
+        public const string CODECOMMIT_SERVICE_NAME = "CodeCommit";
 
         public const string US_EAST_1 = "us-east-1";
         const string DEFAULT_REGION = "us-west-2";

@@ -24,5 +24,7 @@ namespace Amazon.AWSToolkit.Shared
 
         void RefreshInitialData(object initialData);
         object GetInitialData();
+
+        bool SupportsDynamicOKEnablement { get; }
     }
 }

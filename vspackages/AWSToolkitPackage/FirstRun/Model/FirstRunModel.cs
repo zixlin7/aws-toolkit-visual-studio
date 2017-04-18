@@ -9,6 +9,7 @@ using System.Windows.Media;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Persistence;
+using Amazon.AWSToolkit.Util;
 using log4net;
 using ThirdParty.Json.LitJson;
 
@@ -16,12 +17,35 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
 {
     public class FirstRunModel : INotifyPropertyChanged
     {
-        public string IamConsoleEndpoint => "https://console.aws.amazon.com/iam/home?region=us-east-1#/users";
-        public string PrivacyPolicyEndpoint => "https://aws.amazon.com/privacy/";
-        public string UsingToolkitEndpoint => "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html";
-        public string DeveloperBlogEndpoint => "https://aws.amazon.com/blogs/developer/category/net/";
-        public string DeployingLambdaEndpoint => "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/lambda.html";
-        public string DeployingBeanstalkEndpoint => "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_NET.html";
+        public string IamConsoleEndpoint
+        {
+            get { return "https://console.aws.amazon.com/iam/home?region=us-east-1#/users"; }
+        }
+
+        public string PrivacyPolicyEndpoint
+        {
+            get { return "https://aws.amazon.com/privacy/"; }
+        }
+
+        public string UsingToolkitEndpoint
+        {
+            get { return "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html"; }
+        }
+
+        public string DeveloperBlogEndpoint
+        {
+            get { return "https://aws.amazon.com/blogs/developer/category/net/"; }
+        }
+
+        public string DeployingLambdaEndpoint
+        {
+            get { return "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/lambda.html"; }
+        }
+
+        public string DeployingBeanstalkEndpoint
+        {
+            get { return "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_NET.html"; }
+        }
 
         public FirstRunModel()
         {
@@ -99,7 +123,10 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
             WriteAnalyticsCollectionPermission();
         }
 
-        public IList<AccountTypes.AccountType> AllAccountTypes => AccountTypes.AllAccountTypes;
+        public IList<AccountTypes.AccountType> AllAccountTypes
+        {
+            get { return AccountTypes.AllAccountTypes; }
+        }
 
         public List<ShowMeHowToListItem> ShowMeHowToListItems
         {
@@ -130,7 +157,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
 
         internal void AWSCredentialsFromCSV(string csvCredentialsFile)
         {
-            var csvData = new HeaderedCsvFileContent(csvCredentialsFile);
+            var csvData = new HeaderedCsvFile(csvCredentialsFile);
             // we expect to see User name,Password,Access key ID,Secret access key
 
             var akeyIndex = csvData.ColumnIndexOfHeader("Access key ID");
@@ -273,73 +300,26 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
         internal static ILog LOGGER = LogManager.GetLogger(typeof(FirstRunModel));
     }
 
-    internal class HeaderedCsvFileContent
-    {
-        public HeaderedCsvFileContent(string csvFilename)
-        {
-            using (var sr = new StreamReader(csvFilename))
-            {
-                var line = sr.ReadLine();
-                while (line != null)
-                {
-                    if (ColumnHeaders == null)
-                    {
-                        var headerValues = line.Split(new[] { ',' }, StringSplitOptions.None);
-                        ColumnHeaders = new List<string>(headerValues);
-                    }
-                    else
-                    {
-                        var values = line.Split(new[] { ',' }, StringSplitOptions.None);
-                        RowData.Add(values);
-                    }
-
-                    line = sr.ReadLine();
-                }
-            }
-        }
-
-        public IEnumerable<string> ColumnHeaders { get; }
-
-        public int ColumnIndexOfHeader(string header)
-        {
-            var index = 0;
-            foreach (var h in ColumnHeaders)
-            {
-                if (h.Equals(header, StringComparison.OrdinalIgnoreCase))
-                    return index;
-
-                index++;
-            }
-
-            return -1;
-        }
-
-        public IEnumerable<string> ColumnValuesForRow(int rowIndex)
-        {
-            if (rowIndex < 0 || rowIndex >= RowData.Count)
-                throw new ArgumentOutOfRangeException();
-
-            return RowData[rowIndex];
-        }
-
-        public int RowCount
-        {
-            get { return RowData.Count; }
-        }
-
-        private readonly List<string[]> RowData = new List<string[]>();
-    }
-
     public class ShowMeHowToListItem
     {
         public string Title { get; internal set; }
 
         public string HintGraphicResourceName { get; internal set; }
 
-        public ImageSource HintGraphic => IconHelper.GetIcon(this.GetType().Assembly, HintGraphicResourceName).Source;
+        public ImageSource HintGraphic
+        {
+            get { return IconHelper.GetIcon(this.GetType().Assembly, HintGraphicResourceName).Source; }
+        }
 
-        public ImageSource Arrow => IconHelper.GetIcon(this.GetType().Assembly,
-            "Amazon.AWSToolkit.VisualStudio.Resources.FirstRun.rightbluearrow.png").Source;
+        public ImageSource Arrow
+        {
+            get
+            {
+                return IconHelper.GetIcon(this.GetType().Assembly,
+                        "Amazon.AWSToolkit.VisualStudio.Resources.FirstRun.rightbluearrow.png")
+                    .Source;
+            }
+        }
     }
 
 }

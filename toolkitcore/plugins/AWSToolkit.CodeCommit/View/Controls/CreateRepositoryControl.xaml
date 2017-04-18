@@ -1,0 +1,157 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.CodeCommit.View.Controls.CreateRepositoryControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             mc:Ignorable="d" 
+             Height="250" Width="450">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <Image Grid.Row="0" 
+               Grid.Column="0"
+               Source="/AWSToolkit.CodeCommit;component/Resources/CodeCommit32x32.png"
+               VerticalAlignment="Top"
+               HorizontalAlignment="Left"
+               Margin="0,4,4,0"
+        />
+
+        <TextBlock Grid.Row="0"
+                   Grid.Column="1"
+                   Grid.ColumnSpan="2"
+                   TextWrapping="Wrap"
+                   Style="{DynamicResource awsTextBlockBaseStyle}"
+                   Margin="-24,0,0,16">
+            To create a new repository, select the region in which it will be
+            hosted and then give the new repository a name and optional description.
+            After the repository has been created it will be cloned into the selected
+            folder.
+        </TextBlock>
+
+        <Label Grid.Row="1" 
+               Grid.Column="0" 
+               Style="{DynamicResource awsLabelBaseStyle}"
+               Margin="-4,0,0,0">
+            _Region:
+        </Label>
+
+        <ComboBox Grid.Row="1"
+                  Grid.Column="1"
+                  Grid.ColumnSpan="2"
+                  Margin="2"
+                  VerticalAlignment="Center"
+                  Style="{DynamicResource awsComboBoxStyle}"
+                  SelectionChanged="OnRegionSelectionChanged"
+                  ItemsSource="{Binding AvailableRegions}"
+                  SelectedItem="{Binding SelectedRegion}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Margin="4,0,0,0" Width="13" Height="12" Source="{Binding FlagIcon}"/>
+                        <TextBlock Margin="4,0,0,0" Text="{Binding DisplayName}" Style="{DynamicResource awsTextBlockBaseStyle}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <Label Grid.Row="2"
+               Grid.Column="0"
+               Style="{DynamicResource awsLabelBaseStyle}"
+               Margin="-4,8,0,0">
+            _Name:
+        </Label>
+        <TextBox Grid.Row="2"
+                 Grid.Column="1"
+                 Grid.ColumnSpan="2"
+                 Style="{DynamicResource awsTextBoxStyle}"
+                 Tag="Required"
+                 Margin="0,8,2,0"
+                 Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                 MaxLength="100"
+                 />
+
+        <Label Grid.Row="3"
+               Grid.Column="0"
+               Style="{DynamicResource awsLabelBaseStyle}"
+               Margin="-4,4,0,0">
+            _Description:
+        </Label>
+        <TextBox Grid.Row="3"
+                 Grid.Column="1"
+                 Grid.ColumnSpan="2"
+                 Style="{DynamicResource awsTextBoxStyle}"
+                 Margin="0,4,2,0"
+                 Text="{Binding Description}"
+                 MaxLength="1000"
+        />
+
+        <Grid Grid.Row="4"
+              Grid.Column="0"
+              Grid.ColumnSpan="3"
+              Margin="-3,8,2,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width=".5*"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Column="0"
+                   Style="{DynamicResource awsLabelBaseStyle}">
+                Default ._gitignore file:
+            </Label>
+            <ComboBox x:Name="_ctlGitIgnoreSelector" 
+                      Grid.Column="1"
+                      VerticalAlignment="Center"
+                      SelectedItem="{Binding SelectedGitIgnore}"
+                      SelectionChanged="OnGitIgnoreSelectionChanged"
+                      Style="{DynamicResource awsComboBoxStyle}"
+                      ItemsSource="{Binding GitIgnoreOptions}"
+                      DisplayMemberPath="DisplayText"
+                      />
+        </Grid>
+
+
+        <Label Grid.Row="5" 
+               Grid.Column="0"
+               Style="{DynamicResource awsLabelBaseStyle}"
+               Margin="-4,16,0,0">
+            _Clone into:
+        </Label>
+        <TextBox Grid.Row="5" 
+                 Grid.Column="1"
+                 Style="{DynamicResource awsTextBoxStyle}"
+                 Tag="Required"
+                 Margin="0,16,2,0"
+                 Text="{Binding SelectedFolder, UpdateSourceTrigger=PropertyChanged}"
+                 />
+        <Button Grid.Row="5" 
+                Grid.Column="2"
+                VerticalAlignment="Center"
+                Margin="2,16,2,0"
+                Padding="4,0"
+                Click="OnClickBrowseFolder"
+                Content="..."/>
+
+    </Grid>
+</commonui:BaseAWSControl>

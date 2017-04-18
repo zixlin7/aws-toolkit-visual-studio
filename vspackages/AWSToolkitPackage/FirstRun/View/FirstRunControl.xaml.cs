@@ -9,6 +9,7 @@ using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Model;
 using log4net;
 using Microsoft.VisualStudio.Shell;
+using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
 {
@@ -60,9 +61,17 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
             try
             {
                 Model.Save();
+
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.FirstExperienceSaveCredentialsStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }
             catch (Exception ex)
             {
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.FirstExperienceSaveCredentialsStatus, ToolkitEvent.COMMON_STATUS_FAILURE);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
                 autoExit = false;
                 LOGGER.Error("Error during save of credentials", ex);
             }
@@ -93,6 +102,10 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
             if (csvFilename != null)
             {
                 Model.AWSCredentialsFromCSV(csvFilename);
+
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.FirstExperienceImport, ToolkitEvent.COMMON_STATUS_SUCCESS);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }
         }
 
@@ -106,6 +119,11 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
         {
             try
             {
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.FirstExperienceLinkClick, uri.ToString());
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
+
                 _controller.OpenInBrowser(uri.ToString());
             }
             catch (Exception ex)

@@ -83,7 +83,13 @@
       <Group guid="guid_VSPackageCmdSet" id="IDG_ADD_AWS_SERVERLESS_TEMPLATE" priority="0x0603">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CSCD_PROJECT_ADD"/>
       </Group>
+
+      <Group guid="guid_VSPackageCmdSet" id="IDG_TEAMEXPLORER_MANAGECONNECTIONS" priority="0x0800">
+        <Parent guid="guidManageConnections" id="idManageConnections" />
+      </Group>
+
     </Groups>
+
 
     <!--This section defines the elements the user can interact with, like a menu command or a button
         or combo box in a toolbar. -->
@@ -248,6 +254,13 @@
         </Strings>
       </Button>
 
+      <Button guid="guid_VSPackageCmdSet" id="cmdidTeamExplorerConnect" type="Button">
+        <Icon guid="guidImages" id="bmpCodeCommit" />
+        <Strings>
+          <ButtonText>Connect to &amp;AWS CodeCommit</ButtonText>
+        </Strings>
+      </Button>
+
     </Buttons>
     
     <Bitmaps>
@@ -258,7 +271,7 @@
       inside a button definition. An important aspect of this declaration is that the element id
       must be the actual index (1-based) of the bitmap inside the bitmap strip. 
       -->
-      <Bitmap guid="guidImages" href="Resources\VsctImages_32bit.png" usedList="bmpAWSExplorer,bmpPublishToAWSEB,bmpRepublishToAWS,bmpDeployTemplate,bmpEstimateTemplateCost,bmpFormatTemplate,bmpTemplate,bmpPublishToAWSLambda" />
+      <Bitmap guid="guidImages" href="Resources\VsctImages_32bit.png" usedList="bmpAWSExplorer,bmpPublishToAWSEB,bmpRepublishToAWS,bmpDeployTemplate,bmpEstimateTemplateCost,bmpFormatTemplate,bmpTemplate,bmpPublishToAWSLambda,bmpCodeCommit" />
 
     </Bitmaps>
 
@@ -373,8 +386,6 @@
       <Parent guid="guid_VSPackageCmdSet" id="IDG_ADD_AWS_SERVERLESS_TEMPLATE"/>
     </CommandPlacement>
 
-    
-
     <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidDeployToLambdaSolutionExplorer" priority="0x0602">
       <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
     </CommandPlacement>
@@ -411,7 +422,12 @@
     <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidDeployToLambdaSolutionExplorer" priority="0x0602">
       <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
     </CommandPlacement>
-    
+
+    <!-- Add Connection (Team Explorer) command -->
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidTeamExplorerConnect" priority="0x0100">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_TEAMEXPLORER_MANAGECONNECTIONS"/>
+    </CommandPlacement>
+
   </CommandPlacements>
 
 
@@ -453,6 +469,8 @@
 
       <IDSymbol name="cmdidDeployToLambdaSolutionExplorer" value="0x0300"/>
 
+      <IDSymbol name="cmdidTeamExplorerConnect" value="0x0400"/>
+
       <IDSymbol name="IDM_AWS_MM_CLOUDFORMATION_TEMPLATE" value="0x1000" />
 
       <IDSymbol name="IDG_AWS_CLOUDFORMATION" value="0x1001"/>
@@ -463,6 +481,8 @@
 
       <IDSymbol name="IDG_AWS_CLOUDFORMATION_ADD_TEMPLATE" value="0x1030"/>
       <IDSymbol name="IDG_ADD_AWS_SERVERLESS_TEMPLATE" value="0x01035"/>
+
+      <IDSymbol name="IDG_TEAMEXPLORER_MANAGECONNECTIONS" value="0x01050" />      
 
     </GuidSymbol>
 
@@ -477,14 +497,21 @@
       <IDSymbol name="bmpFormatTemplate" value="6" />
       <IDSymbol name="bmpTemplate" value="7" />
       <IDSymbol name="bmpPublishToAWSLambda" value="8"/>
+      <IDSymbol name="bmpCodeCommit" value="9"/>
     </GuidSymbol>
-
+    
     <!-- see comment at top of file regarding venusids.h; these are the two ids we need
          to place our Publish command in the correct spot for VS2010/2012/2013.
     -->
     <GuidSymbol name="guidVenusCmdId" value="{C7547851-4E3A-4e5b-9173-FA6E9C8BD82C}">
       <IDSymbol name="IDG_CTX_BUILD" value="0x0104" />
     </GuidSymbol>
+
+    <!-- Team Explorer's Manage Connections drop-down -->
+    <GuidSymbol name="guidManageConnections" value="{0A014553-A0AA-46DD-8D6B-B8E3178CA435}">
+      <IDSymbol name="idManageConnections" value="0x1009"/>
+    </GuidSymbol>
+
   </Symbols>
 
 </CommandTable>

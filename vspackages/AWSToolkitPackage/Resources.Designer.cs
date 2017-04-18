@@ -79,6 +79,44 @@ namespace Amazon.AWSToolkit.VisualStudio {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CodeCommit16x16 {
+            get {
+                object obj = ResourceManager.GetObject("CodeCommit16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CodeCommit32x32 {
+            get {
+                object obj = ResourceManager.GetObject("CodeCommit32x32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to AWS CodeCommit is a fully-managed source control service that makes it easy for companies to host secure and highly scalable private Git repositories..
+        /// </summary>
+        internal static string CodeCommitInvitationBlurbText {
+            get {
+                return ResourceManager.GetString("CodeCommitInvitationBlurbText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connect….
+        /// </summary>
+        internal static string InvitationSectionConnectLabel {
+            get {
+                return ResourceManager.GetString("InvitationSectionConnectLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to find an installation of the web deployment tool &apos;msdeploy.exe&apos; on this machine; this is required to support deployment to AWS.
         ///
         ///Please download and install the tool from
@@ -99,6 +137,24 @@ namespace Amazon.AWSToolkit.VisualStudio {
         internal static string msgtitleMSDeployNotFound {
             get {
                 return ResourceManager.GetString("msgtitleMSDeployNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sign out.
+        /// </summary>
+        internal static string SignOutLink {
+            get {
+                return ResourceManager.GetString("SignOutLink", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sign up.
+        /// </summary>
+        internal static string SignUpLink {
+            get {
+                return ResourceManager.GetString("SignUpLink", resourceCulture);
             }
         }
     }

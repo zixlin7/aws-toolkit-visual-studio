@@ -134,6 +134,19 @@ namespace Amazon.AWSToolkit.Navigator.Node
             return null;
         }
 
+        public AccountViewModel AccountFromProfileName(string profileName)
+        {
+            if (string.IsNullOrEmpty(profileName))
+                return null;
+
+            foreach (var account in RegisteredAccounts)
+            {
+                if (account.DisplayName.Equals(profileName, StringComparison.Ordinal))
+                    return account;
+            }
+
+            return null;
+        }
 
         private void LoadRegisteredProfiles()
         {

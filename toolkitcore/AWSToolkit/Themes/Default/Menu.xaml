@@ -121,6 +121,8 @@
         </Setter>
     </Style>
 
+    <Style x:Key="awsContextMenuStyle" TargetType="{x:Type ContextMenu}" BasedOn="{StaticResource {x:Type ContextMenu}}"></Style>
+    
     <ControlTemplate x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type MenuItem}, ResourceId=TopLevelItemTemplateKey}"
                      TargetType="{x:Type MenuItem}">
         <Grid SnapsToDevicePixels="true">

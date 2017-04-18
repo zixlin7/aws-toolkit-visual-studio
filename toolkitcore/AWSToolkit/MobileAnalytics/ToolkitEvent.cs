@@ -34,7 +34,17 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         LambdaEventSourceSetupSuccess,
         LambdaEventSourceSetupError,
 
-        VisualStudioIdentifier
+        VisualStudioIdentifier,
+
+        CodeCommitCloneStatus,
+        CodeCommitCreateStatus,
+        CodeCommitConnectStatus,
+        CodeCommitSetupCredentials,
+
+        FirstExperienceDisplayStatus,
+        FirstExperienceSaveCredentialsStatus,
+        FirstExperienceImport,
+        FirstExperienceLinkClick
     };
 
     public enum MetricKeys
@@ -50,6 +60,9 @@ namespace Amazon.AWSToolkit.MobileAnalytics
 
     public class ToolkitEvent
     {
+        public const string COMMON_STATUS_SUCCESS = "Success";
+        public const string COMMON_STATUS_FAILURE = "Failure";
+
         private const string SERVICE_NAME_IDENTIFIER = "Amazon.AWSToolkit.";
         private const string VIEW_NAME_IDENTIFIER = ".View.";
 

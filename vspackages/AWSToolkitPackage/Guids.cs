@@ -44,5 +44,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         public static readonly Guid SHLMainMenuGuid = new Guid(0xd309f791, 0x903f, 0x11d0, 0x9e, 0xfc, 0x00, 0xa0, 0xc9, 0x11, 0x00, 0x4f);
 
+        // Team Explorer integration
+        public const string guidCodeCommitConnectSectionString = "d4632b03-6cf0-4f5e-9124-175280c955df";
     };
 }

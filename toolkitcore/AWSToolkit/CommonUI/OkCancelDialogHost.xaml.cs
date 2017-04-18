@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -32,7 +33,7 @@ namespace Amazon.AWSToolkit.CommonUI
         public OkCancelDialogHost(IAWSToolkitControl hostedControl, MessageBoxButton buttons)
         {
             if (buttons != MessageBoxButton.OKCancel && buttons != MessageBoxButton.YesNo)
-                    throw new NotImplementedException("OkCancelDialogHost for " + buttons.ToString() + " is not implemented. Only OKCancel or YesNo modes are supported.");
+                throw new NotImplementedException("OkCancelDialogHost for " + buttons.ToString() + " is not implemented. Only OKCancel or YesNo modes are supported.");
 
             this._hostedControl = hostedControl;
             InitializeComponent();
@@ -42,14 +43,29 @@ namespace Amazon.AWSToolkit.CommonUI
             addHostedControl();
             this.Title = this._hostedControl.Title;
 
-            this._ctlAcceptButton.IsEnabled = this._hostedControl.UserControl.IsEnabled;
-            hostedControl.UserControl.IsEnabledChanged += new DependencyPropertyChangedEventHandler(hostedControlIsEnabledChanged);
+            _ctlAcceptButton.IsEnabled = _hostedControl.SupportsDynamicOKEnablement 
+                ? _hostedControl.Validated() 
+                : _hostedControl.UserControl.IsEnabled;
+
+            hostedControl.UserControl.IsEnabledChanged += hostedControlIsEnabledChanged;
 
             if (buttons == MessageBoxButton.YesNo)
             {
                 _ctlAcceptButton.Content = "Yes";
                 _ctlRejectButton.Content = "No";
             }
+        }
+
+        /// <summary>
+        /// Responds to the property change notification fired from the hosted control,
+        /// if it declared support for dynamic accept button enablement, to toggle the
+        /// enablement of the accept button based on the control's current validity.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="propertyChangedEventArgs"></param>
+        private void HostedControlOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            _ctlAcceptButton.IsEnabled = _hostedControl.Validated();
         }
 
         void hostedControlIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -71,6 +87,9 @@ namespace Amazon.AWSToolkit.CommonUI
             Grid.SetRow(this._hostedControl.UserControl, 0);
             Grid.SetRowSpan(this._hostedControl.UserControl, 3);
             this._ctlMainGrid.Children.Add(this._hostedControl.UserControl);
+
+            if (_hostedControl.SupportsDynamicOKEnablement)
+                _hostedControl.PropertyChanged += HostedControlOnPropertyChanged;
         }
 
         void acceptButton_Click(object sender, RoutedEventArgs e)

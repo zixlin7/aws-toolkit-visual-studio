@@ -7,6 +7,7 @@ using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Model;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.View;
 using log4net;
+using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
 {
@@ -55,9 +56,18 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
             {
                 this._control = new FirstRunControl(this);
                 ToolkitFactory.Instance.ShellProvider.OpenInEditor(this._control);
+
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.FirstExperienceDisplayStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
             }
             catch (Exception e)
             {
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.FirstExperienceDisplayStatus, ToolkitEvent.COMMON_STATUS_FAILURE);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
                 LOGGER.Error("First run controller caught exception loading control", e);
             }
 

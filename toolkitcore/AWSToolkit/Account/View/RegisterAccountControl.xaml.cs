@@ -115,5 +115,22 @@ namespace Amazon.AWSToolkit.Account.View
                                         && this._ctlSecretKey.Text.Length > 0);
             }
         }
+
+        private void OnClickImportFromCSV(object sender, RoutedEventArgs e)
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog
+            {
+                DefaultExt = ".csv",
+                Filter = "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*",
+                CheckPathExists = true,
+                Title = "Import AWS Credentals from CSV File"
+            };
+
+            var result = dlg.ShowDialog();
+            if (result.GetValueOrDefault())
+            {
+                _controller.Model.LoadAWSCredentialsFromCSV(dlg.FileName);
+            }
+        }
     }
 }

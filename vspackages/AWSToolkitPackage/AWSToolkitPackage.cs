@@ -50,7 +50,10 @@ using Amazon.AWSToolkit.Lambda;
 using ThirdParty.Json.LitJson;
 using Amazon.AWSToolkit.Lambda.WizardPages;
 using System.Xml;
+using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
+using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers;
+using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -121,6 +124,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         private IAWSCloudFormation _cloudformationPlugin;
         private IAWSElasticBeanstalk _beanstalkPlugin;
         private IAWSLambda _lambdaPlugin;
+        private IAWSCodeCommit _codeCommitPlugin;
 
         internal readonly NavigatorVsUIHierarchy _navigatorVsUIHierarchy;
 
@@ -353,6 +357,37 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
+        IAWSCodeCommit CodeCommitPlugin
+        {
+            get
+            {
+                try
+                {
+                    if (_codeCommitPlugin == null)
+                    {
+                        var shell = GetService(typeof(SAWSToolkitShellProvider)) as IAWSToolkitShellProvider;
+                        if (shell != null)
+                        {
+                            _codeCommitPlugin = shell.QueryAWSToolkitPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    LOGGER.ErrorFormat("Exception attempting to obtain IAWSCodeCommit, {0}", e);
+                }
+
+                return _codeCommitPlugin;
+            }
+        }
+
+        bool CodeCommitPluginAvailable
+        {
+            get
+            {
+                return CodeCommitPlugin != null;
+            }
+        }
 
         private object CreateService(IServiceContainer container, Type serviceType)
         {
@@ -483,6 +518,8 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployToLambdaSolutionExplorer, UploadToLambda, UploadToLambdaMenuCommand_BeforeQueryStatus);
                 SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAddAWSServerlessTemplate, AddAWSServerlessTemplate, AddAWSServerlessTemplate_BeforeQueryStatus);
+
+                SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidTeamExplorerConnect, AddTeamExplorerConnection, null);
             }
 
             var shellService = GetService(typeof(SVsShell)) as IVsShell;
@@ -1992,6 +2029,15 @@ namespace Amazon.AWSToolkit.VisualStudio
                 }
             }
             catch { }
+        }
+
+        #endregion
+
+        #region Team Explorer Command
+
+        void AddTeamExplorerConnection(object sender, EventArgs e)
+        {
+            ConnectController.OpenConnection();    
         }
 
         #endregion

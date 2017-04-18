@@ -25,6 +25,7 @@
             in the preceeding dictionary (and overridden as necessary in the host shell)
         -->
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Converters.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Dividers.xaml" />
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Brushes.xaml" />
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Buttons.xaml" />
         <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Default/Scrollbar.xaml" />

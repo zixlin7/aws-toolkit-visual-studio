@@ -212,6 +212,9 @@
     <SolidColorBrush x:Key="awsCommandBarTextKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarTextActiveColorKey}}" />
     <SolidColorBrush x:Key="awsCommandBarTextDisabledKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarTextInactiveColorKey}}" />
 
+    <SolidColorBrush x:Key="awsCommandBarHover" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarHoverColorKey}}" />
+    <SolidColorBrush x:Key="awsCommandBarSelectedBorder" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarSelectedBorderColorKey}}" />
+
     <SolidColorBrush x:Key="awsToolBarButtonHoverBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.CommandBarHoverColorKey}}" />
     <LinearGradientBrush x:Key="awsToolBarSubMenuBackgroundBrushKey">
         <LinearGradientBrush.GradientStops>
@@ -452,6 +455,7 @@
     <SolidColorBrush x:Key="awsSelectableTextBoxBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowTextColorKey}}" />
 
     <SolidColorBrush x:Key="awsUrlTextFieldForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ControlLinkTextColorKey}}" />
+    <SolidColorBrush x:Key="awsActionLinkForegroundBrushKey" Color="#FF0E70C0"/>
 
     <SolidColorBrush x:Key="awsHeaderedDropPanelPopupBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.DropDownPopupBorderColorKey}}" />
     <SolidColorBrush x:Key="awsHeaderedDropPanelHeaderBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.PanelTitleBarColorKey}}" />
@@ -462,5 +466,7 @@
     <SolidColorBrush x:Key="awsStatusTextWarnForeground" Color="Orange" />
     <SolidColorBrush x:Key="awsStatusTextErrorForeground" Color="Red" />
     <SolidColorBrush x:Key="awsStatusTextOKForeground" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemWindowTextColorKey}}" />
+
+    <SolidColorBrush x:Key="awsGrayBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.SystemGrayTextColorKey}}" />
 
 </ResourceDictionary>
