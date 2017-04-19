@@ -68,16 +68,28 @@ namespace Amazon.AWSToolkit.S3.Controller
         public void LoadFunctions()
         {
             var client = CreateLambdaClient();
-            var response = client.ListFunctions();
+            var functionNames = new List<string>();
+            var response = new ListFunctionsResponse();
+
+            do
+            {
+                response = client.ListFunctions(new ListFunctionsRequest { Marker = response.NextMarker });
+                foreach(var function in response.Functions)
+                {
+                    functionNames.Add(function.FunctionName);
+                }
+
+
+            } while (!string.IsNullOrEmpty(response.NextMarker));
 
             ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke(((Action)(() =>
             {
                 this._model.Functions.Clear();
                 this._model.SelectedFunction = null;
 
-                foreach (var function in response.Functions.OrderBy(x => x.FunctionName))
+                foreach (var functionName in functionNames.OrderBy(x => x))
                 {
-                    this._model.Functions.Add(function.FunctionName);
+                    this._model.Functions.Add(functionName);
                 }
 
                 if (this._model.Functions.Count > 0)
