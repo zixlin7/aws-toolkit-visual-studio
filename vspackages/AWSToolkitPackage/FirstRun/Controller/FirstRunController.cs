@@ -41,12 +41,8 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
         {
             get
             {
-#if DEBUG
                 var accounts = ToolkitFactory.Instance.RootViewModel.RegisteredAccounts;
                 return !accounts.Any();
-#else
-                return false;
-#endif
             }
         }
 
