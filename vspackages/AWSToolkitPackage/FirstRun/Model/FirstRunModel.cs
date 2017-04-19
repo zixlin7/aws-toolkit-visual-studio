@@ -109,9 +109,9 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
                 throw new InvalidOperationException("Model save requested but state not valid");
 
             var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
-            var uniqueKey = Guid.NewGuid().ToString();
+            var uniqueKey = Guid.NewGuid();
 
-            var os = settings.NewObjectSettings(uniqueKey);
+            var os = settings.NewObjectSettings(uniqueKey.ToString());
             os[ToolkitSettingsConstants.DisplayNameField] = ProfileName;
             os[ToolkitSettingsConstants.AccessKeyField] = AccessKey.Trim();
             os[ToolkitSettingsConstants.SecretKeyField] = SecretKey.Trim();
@@ -120,9 +120,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
 
             PersistenceManager.Instance.SaveSettings(ToolkitSettingsConstants.RegisteredProfiles, settings);
 
-            // various attempts to try and get the navigator to bind to the new account
-            //PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.LastAcountSelectedKey, uniqueKey);
-            //ToolkitFactory.Instance.Navigator.RefreshAccounts();
+            ToolkitFactory.Instance.Navigator.UpdateAccountSelection(uniqueKey, true);
 
             WriteAnalyticsCollectionPermission();
         }
