@@ -120,6 +120,10 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
 
             PersistenceManager.Instance.SaveSettings(ToolkitSettingsConstants.RegisteredProfiles, settings);
 
+            // various attempts to try and get the navigator to bind to the new account
+            //PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.LastAcountSelectedKey, uniqueKey);
+            //ToolkitFactory.Instance.Navigator.RefreshAccounts();
+
             WriteAnalyticsCollectionPermission();
         }
 

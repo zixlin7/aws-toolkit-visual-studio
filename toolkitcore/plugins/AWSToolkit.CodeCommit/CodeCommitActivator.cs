@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Account.Controller;
@@ -441,8 +442,8 @@ namespace Amazon.AWSToolkit.CodeCommit
                 var createCredentialsResponse = iamClient.CreateServiceSpecificCredential(createCredentialRequest);
                 
                 // seen cases where we've had a 403 error from inside git, as if the creds have
-                // not propagated if the user is too quick with the dialog, so force a delay
-                Thread.Sleep(3000);
+                // not propagated if the user is too quick with the dialog, so force a small delay
+                Thread.Sleep(2000);
             
                 var filename = PromptToSaveGeneratedCredentials(createCredentialsResponse.ServiceSpecificCredential);
 
@@ -501,9 +502,9 @@ namespace Amazon.AWSToolkit.CodeCommit
             var createCredentialsResponse = iamClient.CreateServiceSpecificCredential(createCredentialRequest);
 
             // seen cases where we've had a 403 error from inside git, as if the creds have
-            // not propagated if the user is too quick with the dialog, so force a delay
-            Thread.Sleep(3000);
-            
+            // not propagated if the user is too quick with the dialog, so force a small delay
+            Thread.Sleep(2000);
+
             var msg = $"The IAM user {iamUserName} was created and associated with the AWSCodeCommitPowerUser policy. " +
                 "AWS CodeCommit credentials to enable Git access to your repository have also been created for you.";
 
