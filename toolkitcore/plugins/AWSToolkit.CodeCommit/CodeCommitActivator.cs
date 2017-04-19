@@ -390,8 +390,6 @@ namespace Amazon.AWSToolkit.CodeCommit
                     if (!ToolkitFactory.Instance.ShellProvider.Confirm("Auto-create Git Credentials", confirmMsg, MessageBoxButton.YesNo))
                         return null;
 
-
-
                     return CreateCodeCommitCredentialsForRoot(iamClient);
                 }
 
@@ -441,6 +439,11 @@ namespace Amazon.AWSToolkit.CodeCommit
                 };
 
                 var createCredentialsResponse = iamClient.CreateServiceSpecificCredential(createCredentialRequest);
+                
+                // seen cases where we've had a 403 error from inside git, as if the creds have
+                // not propagated if the user is too quick with the dialog, so force a delay
+                Thread.Sleep(3000);
+            
                 var filename = PromptToSaveGeneratedCredentials(createCredentialsResponse.ServiceSpecificCredential);
 
                 ToolkitEvent evnt = new ToolkitEvent();
@@ -497,6 +500,10 @@ namespace Amazon.AWSToolkit.CodeCommit
             };
             var createCredentialsResponse = iamClient.CreateServiceSpecificCredential(createCredentialRequest);
 
+            // seen cases where we've had a 403 error from inside git, as if the creds have
+            // not propagated if the user is too quick with the dialog, so force a delay
+            Thread.Sleep(3000);
+            
             var msg = $"The IAM user {iamUserName} was created and associated with the AWSCodeCommitPowerUser policy. " +
                 "AWS CodeCommit credentials to enable Git access to your repository have also been created for you.";
 
