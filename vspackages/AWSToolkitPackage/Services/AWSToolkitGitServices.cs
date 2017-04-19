@@ -63,7 +63,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 TeamExplorerConnection.ActiveConnection.RegisterCredentials(gitCredentials);
 
 #if VS2017_OR_LATER
-                var gitExt = HostPackage.GetVSShellService(typeof(IGitActionsExt)) as IGitActionsExt;
+                // note that in 2017, this service is also directly obtainable from HostPackage.GetVSShellService
+                var gitExt = ServiceProvider.GetService(typeof(IGitActionsExt)) as IGitActionsExt;
                 var progress = new Progress<Microsoft.VisualStudio.Shell.ServiceProgressData>();
 
                 await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
