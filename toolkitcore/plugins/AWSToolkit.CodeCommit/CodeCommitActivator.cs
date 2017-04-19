@@ -5,7 +5,6 @@ using System.Linq;
 using System.Windows;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Account.Controller;
-using Amazon.AWSToolkit.Account.Model;
 using Amazon.AWSToolkit.CodeCommit.Controller;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.Shared;
@@ -16,12 +15,10 @@ using Amazon.AWSToolkit.CodeCommit.Model;
 using Amazon.AWSToolkit.CodeCommit.Nodes;
 using Amazon.AWSToolkit.CodeCommit.Services;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.CodeCommit;
 using Amazon.CodeCommit.Model;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using LibGit2Sharp;
-using System.Collections.Generic;
 using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.CodeCommit
@@ -235,7 +232,9 @@ namespace Amazon.AWSToolkit.CodeCommit
                 }
             }
 
-            return validRepositories;
+            // this reorders across all regions; we may eventually decide to group by region
+            // eventually in the UI
+            return validRepositories.OrderBy(x => x.Name).ToList();
         }
 
         public ICodeCommitRepository GetRepository(string repositoryName,

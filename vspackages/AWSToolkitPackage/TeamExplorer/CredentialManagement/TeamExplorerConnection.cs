@@ -110,17 +110,17 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
                 }
             }
 
-            foreach (var currentRepo in Repositories)
-            {
-                if (reposToAdd.Contains(currentRepo.LocalFolder))
-                {
-                    reposToAdd.Remove(currentRepo.LocalFolder);
-                }
-                else if (reposToRemove.Contains(currentRepo.LocalFolder))
-                {
-                    Repositories.Remove(currentRepo);
-                }
-            }
+            //foreach (var currentRepo in Repositories)
+            //{
+            //    if (reposToAdd.Contains(currentRepo.LocalFolder))
+            //    {
+            //        reposToAdd.Remove(currentRepo.LocalFolder);
+            //    }
+            //    else if (reposToRemove.Contains(currentRepo.LocalFolder))
+            //    {
+            //        Repositories.Remove(currentRepo);
+            //    }
+            //}
 
             if (reposToAdd.Any())
             {
@@ -139,6 +139,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
             var validRepos = CodeCommitPlugin.GetRepositories(Account, repoPaths);
             ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke(() =>
             {
+                Repositories.Clear();
                 foreach (var repo in validRepos)
                 {
                     Repositories.Add(repo);                   

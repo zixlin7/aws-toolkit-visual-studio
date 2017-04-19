@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.CodeCommit.Model;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
@@ -26,6 +24,8 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
         }
 
         private CodeCommitActivator HostActivator { get; }
+
+        public IServiceProvider ServiceProvider { get; set; }
 
         public async Task CloneAsync(ServiceSpecificCredentials credentials, 
                                      string repositoryUrl, 

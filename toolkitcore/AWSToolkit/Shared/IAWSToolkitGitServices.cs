@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amazon.AWSToolkit.Util;
 
@@ -13,6 +14,11 @@ namespace Amazon.AWSToolkit.Shared
     /// </summary>
     public interface IAWSToolkitGitServices
     {
+        /// <summary>
+        /// Service provider in the host VS shell, for accessing Team Explorer services.
+        /// </summary>
+        IServiceProvider ServiceProvider { get; set; }
+
         /// <summary>
         /// Clones the specified repository.
         /// </summary>

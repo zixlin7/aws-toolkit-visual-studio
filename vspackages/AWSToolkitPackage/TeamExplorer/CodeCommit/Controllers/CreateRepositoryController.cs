@@ -1,6 +1,6 @@
-﻿using Amazon.AWSToolkit.CodeCommit.Interface;
+﻿using System;
+using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.Shared;
-using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model;
 using log4net;
 
 namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers
@@ -10,10 +10,13 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers
     /// </summary>
     internal class CreateRepositoryController : BaseCodeCommitController
     {
-        public CreateRepositoryController()
+        public CreateRepositoryController(IServiceProvider serviceProvider)
         {
             Logger = LogManager.GetLogger(typeof(CreateRepositoryController));
+            ServiceProvider = serviceProvider;
         }
+
+        public IServiceProvider ServiceProvider { get; }
 
         public override void Execute()
         {
@@ -41,6 +44,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers
                                   .QueryShellProviderService<IAWSToolkitGitServices>() ?? ToolkitFactory
                                   .Instance
                                   .QueryPluginService(typeof(IAWSToolkitGitServices)) as IAWSToolkitGitServices;
+            gitServices.ServiceProvider = ServiceProvider;
             gitServices.CreateAsync(newRepoInfo, true, null);
         }
     }

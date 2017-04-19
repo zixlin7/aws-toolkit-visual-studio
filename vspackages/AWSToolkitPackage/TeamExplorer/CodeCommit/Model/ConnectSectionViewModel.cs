@@ -109,12 +109,12 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
 
         private void OnClone()
         {
-            new CloneRepositoryController().Execute();
+            new CloneRepositoryController(ServiceProvider).Execute();
         }
 
         private void OnCreate()
         {
-            new CreateRepositoryController().Execute();
+            new CreateRepositoryController(ServiceProvider).Execute();
         }
 
         private void OnSignout()

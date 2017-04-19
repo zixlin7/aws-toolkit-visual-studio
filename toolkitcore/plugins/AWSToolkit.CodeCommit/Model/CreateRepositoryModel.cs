@@ -86,7 +86,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
         private readonly List<GitIgnoreOption> _gitIgnoreOptions = new List<GitIgnoreOption>
         {
-            new GitIgnoreOption {DisplayText = "Default for Visual Studio", GitIgnoreType = GitIgnoreOption.OptionType.VSToolkitDefault },
+            new GitIgnoreOption {DisplayText = "Visual Studio file types", GitIgnoreType = GitIgnoreOption.OptionType.VSToolkitDefault },
             new GitIgnoreOption {DisplayText = "Use custom...", GitIgnoreType = GitIgnoreOption.OptionType.Custom },
             new GitIgnoreOption {DisplayText = "No .gitignore file", GitIgnoreType = GitIgnoreOption.OptionType.None }
         };

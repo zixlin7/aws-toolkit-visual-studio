@@ -15,6 +15,7 @@ using log4net;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using Amazon.AWSToolkit.MobileAnalytics;
+using System.ComponentModel;
 
 #if VS2017_OR_LATER
 using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
@@ -38,6 +39,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
         }
 
         private AWSToolkitPackage HostPackage { get; }
+
+        public IServiceProvider ServiceProvider { get; set; }
 
         public async Task CloneAsync(ServiceSpecificCredentials credentials, 
                                      string repositoryUrl, 
@@ -73,15 +76,35 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                                             progress).ConfigureAwait(false);
                 });
 #elif VS2015
-                var gitExt = HostPackage.GetVSShellService(typeof(IGitRepositoriesExt)) as IGitRepositoriesExt;
+                var gitExt = ServiceProvider.GetService(typeof(IGitRepositoriesExt)) as IGitRepositoriesExt;
+                if (gitExt == null)
+                    throw new Exception("Unable to obtain IGitRepositoriesExt interface from Team Explorer; unable to clone.");
+
+                // The operation will have completed when CanClone goes false and then true again.
+                var gotFalseSignal = false;
+                var gotTrueSignal = false;
+                PropertyChangedEventHandler tracker = (o, e) =>
+                {
+                    if (!string.Equals(e.PropertyName, "CanClone"))
+                        return;
+
+                    if (!gotFalseSignal && !gitExt.CanClone)
+                        gotFalseSignal = true;
+
+                    if (gotFalseSignal && !gotTrueSignal && gitExt.CanClone)
+                        gotTrueSignal = true;
+                };
+
+                gitExt.PropertyChanged += tracker;
                 gitExt.Clone(repositoryUrl, destinationFolder, recurseSubmodules ? CloneOptions.RecurseSubmodule : CloneOptions.None);
 
-                // todo: disabled, as WhenAnyValue is a reactive lib extension -- need to figure alternative or use the lib
-                /*
-                // The operation will have completed when CanClone goes false and then true again.
-                await gitExt.WhenAnyValue(x => x.CanClone).Where(x => !x).Take(1);
-                await gitExt.WhenAnyValue(x => x.CanClone).Where(x => x).Take(1);
-                */
+                await Task.Run(() =>
+                {
+                    while (!gotFalseSignal || !gotTrueSignal)
+                    {
+                        Thread.Sleep(100);
+                    }
+                });
 #endif
 
                 ToolkitEvent evnt = new ToolkitEvent();
@@ -94,7 +117,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 evnt.AddProperty(AttributeKeys.CodeCommitCloneStatus, ToolkitEvent.COMMON_STATUS_FAILURE);
                 SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
-                LOGGER.Error("Clone failed using Team Explorer", e);
+                LOGGER.Error("Clone using Team Explorer failed with exception", e);
 
                 var msg = string.Format("Failed to clone repository {0}. Error message: {1}.",
                                         repositoryUrl,
@@ -108,7 +131,10 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                     gitCredentials.Dispose();
                 }
 
-                TeamExplorerConnection.ActiveConnection.RefreshRepositories();
+                HostPackage.ShellDispatcher.Invoke(() =>
+                {
+                    TeamExplorerConnection.ActiveConnection.RefreshRepositories();
+                });
             }
         }
 
@@ -125,6 +151,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                         .QueryAWSToolkitPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
 
                 var codeCommitGitServices = codeCommitPlugin.ToolkitGitServices;
+                codeCommitGitServices.ServiceProvider = ServiceProvider; // just in case we choose to use it one day
                 await codeCommitGitServices.CreateAsync(newRepositoryInfo, false, null);
 
                 var repository = codeCommitPlugin.GetRepository(newRepositoryInfo.Name, 

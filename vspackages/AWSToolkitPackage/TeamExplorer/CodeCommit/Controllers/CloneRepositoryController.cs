@@ -1,4 +1,5 @@
-﻿using Amazon.AWSToolkit.CodeCommit.Interface;
+﻿using System;
+using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.Shared;
 using log4net;
 
@@ -10,10 +11,13 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers
     /// </summary>
     internal class CloneRepositoryController  : BaseCodeCommitController
     {
-        public CloneRepositoryController()
+        public CloneRepositoryController(IServiceProvider serviceProvider)
         {
             Logger = LogManager.GetLogger(typeof(CloneRepositoryController));
+            TeamExplorerServiceProvider = serviceProvider;
         }
+
+        public IServiceProvider TeamExplorerServiceProvider { get; }
 
         /// <summary>
         /// Interactively clones a repository. The user is first asked to select the repo
@@ -52,6 +56,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers
                                   .QueryShellProviderService<IAWSToolkitGitServices>() ?? ToolkitFactory
                                   .Instance
                                   .QueryPluginService(typeof(IAWSToolkitGitServices)) as IAWSToolkitGitServices;
+            gitServices.ServiceProvider = TeamExplorerServiceProvider;
             gitServices?.CloneAsync(gitCredentials, selectedRepository.RepositoryUrl, selectedRepository.LocalFolder);
         }
     }
