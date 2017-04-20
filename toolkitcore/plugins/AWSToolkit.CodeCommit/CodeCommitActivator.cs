@@ -211,12 +211,16 @@ namespace Amazon.AWSToolkit.CodeCommit
                     var batchGetResponse = client.BatchGetRepositories(request);
                     foreach (var repo in batchGetResponse.Repositories)
                     {
-                        var wrapper = new CodeCommitRepository(repo)
+                        var repoCopies = reposInRegion[repo.RepositoryName];
+                        foreach (var repoCopy in repoCopies)
                         {
-                            LocalFolder = reposInRegion[repo.RepositoryName]
-                        };
+                            var wrapper = new CodeCommitRepository(repo)
+                            {
+                                LocalFolder = repoCopy
+                            };
 
-                        validRepositories.Add(wrapper);
+                            validRepositories.Add(wrapper);
+                        }
                     }
 
                     if (batchGetResponse.RepositoriesNotFound != null)
@@ -575,11 +579,13 @@ namespace Amazon.AWSToolkit.CodeCommit
             repoName = codeCommitRemoteUrl.Substring(lastSlashPos + 1);
         }
 
-        private Dictionary<string, Dictionary<string, string>> GroupLocalRepositoriesByRegion(IEnumerable<string> pathsToRepositories)
+        private Dictionary<string, Dictionary<string, List<string>>> GroupLocalRepositoriesByRegion(IEnumerable<string> pathsToRepositories)
         {
-            // associate the path with a repo name using a dictionary, so we get a fast lookup
-            // when we're post-processing the batch metadata query which yields repo metadata by name
-            var repositoryNameAndPathByRegion = new Dictionary<string, Dictionary<string, string>>();
+            // Associate the path with a repo name using a dictionary, so we get a fast lookup
+            // when we're post-processing the batch metadata query which yields repo metadata by name.
+            // Why List<string>? Because the user may have cloned the same repo into different paths, but
+            // we only need the repo name once we region.
+            var repositoryNameAndPathByRegion = new Dictionary<string, Dictionary<string, List<string>>>();
 
             foreach (var path in pathsToRepositories)
             {
@@ -600,11 +606,20 @@ namespace Amazon.AWSToolkit.CodeCommit
 
                 if (repositoryNameAndPathByRegion.ContainsKey(region))
                 {
-                    repositoryNameAndPathByRegion[region].Add(repoName, path);
+                    var processedRepos = repositoryNameAndPathByRegion[region];
+                    if (!processedRepos.ContainsKey(repoName))
+                    {
+                        repositoryNameAndPathByRegion[region].Add(repoName, new List<string> { path });
+                    }
+                    else
+                    {
+                        var l = processedRepos[repoName];
+                        l.Add(path);
+                    }
                 }
                 else
                 {
-                    var names = new Dictionary<string, string> { { repoName, path }};
+                    var names = new Dictionary<string, List<string>> { { repoName, new List<string> {path} } };
                     repositoryNameAndPathByRegion.Add(region, names);
                 }
             }
