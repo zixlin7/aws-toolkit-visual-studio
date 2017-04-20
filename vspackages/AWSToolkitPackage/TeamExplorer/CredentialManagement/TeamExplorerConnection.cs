@@ -78,55 +78,61 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
 
         public void RefreshRepositories()
         {
-            var reposToAdd = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var reposToRemove = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var reposToValidate = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            using (var regkey = OpenTEGitSourceControlRegistryKey("Repositories"))
+            RegistryKey regkey = null;
+            try
             {
-                var subkeyNames = regkey.GetSubKeyNames();
-                foreach (var subkeyName in subkeyNames)
+                regkey = OpenTEGitSourceControlRegistryKey("Repositories");
+                if (regkey != null)
                 {
-                    using (var subkey = regkey.OpenSubKey(subkeyName))
+                    var subkeyNames = regkey.GetSubKeyNames();
+                    foreach (var subkeyName in subkeyNames)
                     {
+                        RegistryKey subkey = null;
                         try
                         {
-                            var path = subkey?.GetValue("Path") as string;
-                            if (CodeCommitPlugin != null && CodeCommitPlugin.IsCodeCommitRepository(path))
+
+                            subkey = regkey.OpenSubKey(subkeyName);
+                            if (subkey != null)
                             {
-                                if (path != null && Directory.Exists(path))
+                                try
                                 {
-                                    reposToAdd.Add(path);
+                                    var path = subkey?.GetValue("Path") as string;
+                                    if (CodeCommitPlugin != null && CodeCommitPlugin.IsCodeCommitRepository(path))
+                                    {
+                                        if (path != null && Directory.Exists(path))
+                                        {
+                                            reposToValidate.Add(path);
+                                        }
+                                    }
                                 }
-                                else
+                                catch (Exception e)
                                 {
-                                    reposToRemove.Add(path);
+                                    LOGGER.Error("Error processing repo at registry " + subkey.Name, e);
                                 }
                             }
                         }
                         catch
                         {
                         }
+                        finally
+                        {
+                            subkey?.Dispose();
+                        }
                     }
                 }
             }
+            finally
+            {
+                regkey?.Dispose();
+            }
 
-            //foreach (var currentRepo in Repositories)
-            //{
-            //    if (reposToAdd.Contains(currentRepo.LocalFolder))
-            //    {
-            //        reposToAdd.Remove(currentRepo.LocalFolder);
-            //    }
-            //    else if (reposToRemove.Contains(currentRepo.LocalFolder))
-            //    {
-            //        Repositories.Remove(currentRepo);
-            //    }
-            //}
-
-            if (reposToAdd.Any())
+            if (reposToValidate.Any())
             {
                 // as this probing could take some time, spin up a thread to add the new
                 // repos into the collection
-                ThreadPool.QueueUserWorkItem(QueryNewlyAddedRepositoriesDataAsync, reposToAdd);
+                ThreadPool.QueueUserWorkItem(QueryNewlyAddedRepositoriesDataAsync, reposToValidate);
             }
         }
 
@@ -400,7 +406,16 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
 #error "No VS20xx conditional defined in package.build.targets - cannot set Team Explorer registry key in TeamExplorerConnection::RefreshRepositories()."
 #endif
 
-            return Microsoft.Win32.Registry.CurrentUser.OpenSubKey(TEGitKey + "\\" + path, false);
+            try
+            {
+                return Registry.CurrentUser.OpenSubKey(TEGitKey + "\\" + path, false);
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Failed to open Team Explorer registry key " + TEGitKey, e);
+            }
+
+            return null;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
