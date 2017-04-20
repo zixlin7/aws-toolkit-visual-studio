@@ -112,7 +112,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
             var uniqueKey = Guid.NewGuid();
 
             var os = settings.NewObjectSettings(uniqueKey.ToString());
-            os[ToolkitSettingsConstants.DisplayNameField] = ProfileName;
+            os[ToolkitSettingsConstants.DisplayNameField] = ProfileName.Trim();
             os[ToolkitSettingsConstants.AccessKeyField] = AccessKey.Trim();
             os[ToolkitSettingsConstants.SecretKeyField] = SecretKey.Trim();
             os[ToolkitSettingsConstants.AccountNumberField] = AccountNumber?.Trim();

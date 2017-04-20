@@ -92,13 +92,12 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
                         RegistryKey subkey = null;
                         try
                         {
-
                             subkey = regkey.OpenSubKey(subkeyName);
                             if (subkey != null)
                             {
                                 try
                                 {
-                                    var path = subkey?.GetValue("Path") as string;
+                                    var path = subkey.GetValue("Path") as string;
                                     if (CodeCommitPlugin != null && CodeCommitPlugin.IsCodeCommitRepository(path))
                                     {
                                         if (path != null && Directory.Exists(path))
