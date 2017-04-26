@@ -428,43 +428,41 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 if (this._ctlAccountAndRegion.SelectedAccount == null || this._ctlAccountAndRegion.SelectedRegion == null)
                     return;
 
-                var lambdaClient = this._ctlAccountAndRegion.SelectedAccount.CreateServiceClient<AmazonLambdaClient>(this._ctlAccountAndRegion.SelectedRegion.GetEndpoint(RegionEndPointsManager.LAMBDA_SERVICE_NAME));
-
-                lambdaClient.ListFunctionsAsync(new ListFunctionsRequest()).ContinueWith(task =>
+                using (var lambdaClient = this._ctlAccountAndRegion.SelectedAccount.CreateServiceClient<AmazonLambdaClient>(this._ctlAccountAndRegion.SelectedRegion.GetEndpoint(RegionEndPointsManager.LAMBDA_SERVICE_NAME)))
                 {
-                    if (task.Exception == null)
+
+                    var response = new ListFunctionsResponse();
+
+                    do
                     {
-                        ListFunctionsResponse response = task.Result;
+                        response = lambdaClient.ListFunctions(new ListFunctionsRequest { Marker = response.NextMarker });
                         foreach (var function in response.Functions)
                         {
                             this._existingFunctions[function.FunctionName] = function;
                         }
 
-                        ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke(() =>
-                        {
-                            this._ctlFunctionNamePicker.Items.Clear();
-                            if(!string.IsNullOrEmpty(this.SeedFunctionName))
-                            {
-                                this._ctlFunctionNamePicker.Items.Add(this.SeedFunctionName);
-                            }
 
-                            foreach (var functionName in this._existingFunctions.Keys.OrderBy(x => x.ToLowerInvariant()))
-                            {
-                                if(!string.Equals(functionName, this.SeedFunctionName, StringComparison.Ordinal))
-                                {
-                                    this._ctlFunctionNamePicker.Items.Add(functionName);
-                                }
-                            }
+                    } while (!string.IsNullOrEmpty(response.NextMarker));
+                }
 
-                            this.ResetToDefaults();
-                            this._loadingExistingFunctions = false;
-                            lambdaClient.Dispose();
-                        });
-                    }
-                    else
+                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke(() =>
+                {
+                    this._ctlFunctionNamePicker.Items.Clear();
+                    if (!string.IsNullOrEmpty(this.SeedFunctionName))
                     {
-                        LOGGER.Error("Error refreshing existing lambda functions with ListFunctionsAsync.", task.Exception);
+                        this._ctlFunctionNamePicker.Items.Add(this.SeedFunctionName);
                     }
+
+                    foreach (var functionName in this._existingFunctions.Keys.OrderBy(x => x.ToLowerInvariant()))
+                    {
+                        if (!string.Equals(functionName, this.SeedFunctionName, StringComparison.Ordinal))
+                        {
+                            this._ctlFunctionNamePicker.Items.Add(functionName);
+                        }
+                    }
+
+                    this.ResetToDefaults();
+                    this._loadingExistingFunctions = false;
                 });
             }
             catch (Exception e)

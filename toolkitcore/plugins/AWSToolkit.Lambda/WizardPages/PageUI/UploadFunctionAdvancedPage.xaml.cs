@@ -256,7 +256,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
             using (var iamClient = account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(region))
             {
-                var taskRole = RoleHelper.FindExistingLambdaRolesAsync(iamClient, RoleHelper.DEFAULT_ITEM_MAX);
+                var taskRole = RoleHelper.FindExistingLambdaRolesAsync(iamClient, int.MaxValue);
                 var taskPolicies = RoleHelper.FindLambdaManagedPoliciesAsync(iamClient, RoleHelper.DEFAULT_ITEM_MAX);
                 IList<Amazon.IdentityManagement.Model.Role> roles = null;
                 IList<Amazon.IdentityManagement.Model.ManagedPolicy> policies = null;
