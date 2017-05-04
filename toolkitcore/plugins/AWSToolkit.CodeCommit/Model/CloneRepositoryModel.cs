@@ -117,7 +117,8 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
                         var response = codecommitClient.ListRepositories(new ListRepositoriesRequest
                         {
                             NextToken = nextToken,
-                            SortBy = SortByEnum.LastModifiedDate
+                            SortBy = SortByEnum.RepositoryName,
+                            Order = OrderEnum.Ascending
                         });
 
                         nextToken = response.NextToken;
