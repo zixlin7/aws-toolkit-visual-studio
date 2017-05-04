@@ -14,6 +14,9 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
     {
         private readonly ILog LOGGER = LogManager.GetLogger(typeof(CloneRepositoryModel));
 
+        public const string RepoListRefreshStartingPropertyName = "RepoListRefreshStarting";
+        public const string RepoListRefreshCompletedPropertyName = "RepoListRefreshCompleted";
+
         /// <summary>
         /// The service-specific credentials for CodeCommit to be used on the
         /// repository clone.
@@ -94,7 +97,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
                         return "The folder is not empty.";
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return "The folder name is not valid or is not accessible by your account.";
             }
@@ -105,6 +108,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         private void RefreshRepositoriesList(IAmazonCodeCommit codecommitClient)
         {
             Interlocked.Increment(ref _backgroundWorkersActive);
+            NotifyPropertyChanged(RepoListRefreshStartingPropertyName);
 
             ThreadPool.QueueUserWorkItem(x =>
             {
@@ -147,6 +151,8 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
                     {
                         _repositories.Add(new CodeCommitRepository(r));
                     }
+
+                    NotifyPropertyChanged(RepoListRefreshCompletedPropertyName);
 
                     Interlocked.Decrement(ref _backgroundWorkersActive);
                 }));

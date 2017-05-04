@@ -93,6 +93,18 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
 
         private void ModelOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
+            // if this is the pseudo-property indicating the model is refreshing the repo
+            // list, toggle the 'querying' spinner
+            if (propertyChangedEventArgs.PropertyName.Equals(CloneRepositoryModel.RepoListRefreshStartingPropertyName))
+            {
+                ShowQueryingStatus(true);
+            }
+
+            if (propertyChangedEventArgs.PropertyName.Equals(CloneRepositoryModel.RepoListRefreshCompletedPropertyName))
+            {
+                ShowQueryingStatus(false);
+            }
+
             // simply trigger our own notification so the dialog host will detect and call 
             // us back to validate and enable/disable the OK button
             NotifyPropertyChanged(propertyChangedEventArgs.PropertyName);
