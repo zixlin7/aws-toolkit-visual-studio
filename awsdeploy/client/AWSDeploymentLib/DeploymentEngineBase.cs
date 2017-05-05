@@ -14,6 +14,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Amazon.Runtime;
+using Amazon.Runtime.CredentialManagement;
 
 namespace AWSDeployment
 {
@@ -380,8 +381,9 @@ namespace AWSDeployment
         public void SetCredentialsFromProfileName(string profileName)
         {
             this.AWSProfileName = profileName;
-            Amazon.Runtime.AWSCredentials credentials;
-            if (Amazon.Util.ProfileManager.TryGetAWSCredentials(this.AWSProfileName, out credentials))
+            AWSCredentials credentials;
+            var chain = new CredentialProfileStoreChain();
+            if (chain.TryGetAWSCredentials(this.AWSProfileName, out credentials))
             {
                 this.Credentials = credentials;
             }

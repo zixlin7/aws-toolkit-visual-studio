@@ -359,6 +359,7 @@
     <Compile Include="ToolkitFactory.cs" />
     <Compile Include="Util\HeaderedCsvFile.cs" />
     <Compile Include="Util\KeyPairLocalStoreManager.cs" />
+    <Compile Include="Util\RangeObservableCollection.cs" />
     <Compile Include="Util\RolePolicyFilter.cs" />
     <Compile Include="Util\ServiceSpecificCredentialStore.cs" />
     <Compile Include="VersionInfo\NewVersionAlertControl.xaml.cs">

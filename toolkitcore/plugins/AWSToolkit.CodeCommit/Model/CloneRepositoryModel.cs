@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.IO;
 using System.Threading;
 using Amazon.AWSToolkit.Util;
@@ -70,7 +71,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             set { _selectedRepository = value; NotifyPropertyChanged("SelectedRepository"); }
         }
 
-        public ObservableCollection<CodeCommitRepository> Repositories
+        public RangeObservableCollection<CodeCommitRepository> Repositories
         {
             get { return _repositories; }
         }
@@ -139,7 +140,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
             ThreadPool.QueueUserWorkItem(x =>
             {
-                var repositoryList = new List<RepositoryMetadata>();
+                var repositoryList = new List<CodeCommitRepository>();
                 string nextToken = null;
                 do
                 {
@@ -167,7 +168,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
                         foreach (var r in response2.Repositories)
                         {
-                            repositoryList.Add(r);
+                            repositoryList.Add(new CodeCommitRepository(r));
                         }
                     }
                     catch (Exception e)
@@ -180,10 +181,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
                 ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
                 {
                     _repositories.Clear();
-                    foreach (var r in repositoryList)
-                    {
-                        _repositories.Add(new CodeCommitRepository(r));
-                    }
+                    _repositories.AddRange(repositoryList);
 
                     NotifyPropertyChanged(RepoListRefreshCompletedPropertyName);
 
@@ -195,18 +193,18 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         private string _baseFolder;
         private string _selectedFolder;
         private CodeCommitRepository _selectedRepository;
-        private readonly ObservableCollection<CodeCommitRepository> _repositories = new ObservableCollection<CodeCommitRepository>();
+        private readonly RangeObservableCollection<CodeCommitRepository> _repositories = new RangeObservableCollection<CodeCommitRepository>();
 
-        private SortOption _sortByRepositoryName =
+        private readonly SortOption _sortByRepositoryName =
             new SortOption {SortBy = SortByEnum.RepositoryName, DisplayText = "Repository Name"};
 
-        private SortOption _sortByLastModifiedDate =
+        private readonly SortOption _sortByLastModifiedDate =
             new SortOption {SortBy = SortByEnum.LastModifiedDate, DisplayText = "Last Modified Date"};
 
-        private OrderOption _orderAscending =
+        private readonly OrderOption _orderAscending =
             new OrderOption {Order = OrderEnum.Ascending, DisplayText = "Ascending"};
 
-        private OrderOption _orderDescending =
+        private readonly OrderOption _orderDescending =
             new OrderOption {Order = OrderEnum.Descending, DisplayText = "Descending"};
     }
 

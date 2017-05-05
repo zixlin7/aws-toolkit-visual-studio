@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using Amazon.Runtime.CredentialManagement;
 
 namespace AWSDeployment
 {
@@ -77,7 +78,8 @@ namespace AWSDeployment
             if (generalSection.ContainsKey(DeploymentEngineBase.ACCOUNT_PROFILE_NAME))
             {
                 Amazon.Runtime.AWSCredentials credentials;
-                if (!Amazon.Util.ProfileManager.TryGetAWSCredentials(generalSection[DeploymentEngineBase.ACCOUNT_PROFILE_NAME].Value, out credentials))
+                var chain = new CredentialProfileStoreChain();
+                if (!chain.TryGetAWSCredentials(generalSection[DeploymentEngineBase.ACCOUNT_PROFILE_NAME].Value, out credentials))
                 {
                     throw new ConfigurationReaderException(string.Format("Account Profile {0} could not be found.", generalSection[DeploymentEngineBase.ACCOUNT_PROFILE_NAME].Value));
                 }
