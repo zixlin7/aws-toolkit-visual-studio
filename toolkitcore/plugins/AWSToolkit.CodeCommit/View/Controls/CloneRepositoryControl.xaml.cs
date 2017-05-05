@@ -62,6 +62,7 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
 
         public void ShowQueryingStatus(bool queryActive)
         {
+            _ctlRepositoryList.Opacity = queryActive ? .3 : 1;
             _ctlQueryingResourcesOverlay.Visibility = queryActive ? Visibility.Visible : Visibility.Hidden;
         }
 
@@ -111,5 +112,14 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
         }
 
 
+        private void OnSelectionChangedSortBy(object sender, SelectionChangedEventArgs e)
+        {
+            Controller.Model.RefreshRepositoryList();
+        }
+
+        private void OnSelectionChangedOrder(object sender, SelectionChangedEventArgs e)
+        {
+            Controller.Model.RefreshRepositoryList();
+        }
     }
 }

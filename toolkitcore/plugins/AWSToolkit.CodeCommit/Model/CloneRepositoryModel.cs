@@ -6,6 +6,7 @@ using System.Threading;
 using Amazon.AWSToolkit.Util;
 using Amazon.CodeCommit;
 using Amazon.CodeCommit.Model;
+using Amazon.Runtime.Internal;
 using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommit.Model
@@ -16,6 +17,12 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
         public const string RepoListRefreshStartingPropertyName = "RepoListRefreshStarting";
         public const string RepoListRefreshCompletedPropertyName = "RepoListRefreshCompleted";
+
+        public CloneRepositoryModel()
+        {
+            SortBy = _sortByRepositoryName;
+            Order = _orderAscending;
+        }
 
         /// <summary>
         /// The service-specific credentials for CodeCommit to be used on the
@@ -67,6 +74,26 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         {
             get { return _repositories; }
         }
+
+        public List<SortOption> SortByOptions
+        {
+            get
+            {
+                return new List<SortOption> {_sortByRepositoryName, _sortByLastModifiedDate};
+            }
+        }
+
+        public SortOption SortBy { get; set; }
+
+        public List<OrderOption> OrderOptions
+        {
+            get
+            {
+                return new List<OrderOption> {_orderAscending, _orderDescending};
+            }
+        }
+
+        public OrderOption Order { get; set; }
 
         public void RefreshRepositoryList()
         {
@@ -121,20 +148,26 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
                         var response = codecommitClient.ListRepositories(new ListRepositoriesRequest
                         {
                             NextToken = nextToken,
-                            SortBy = SortByEnum.RepositoryName,
-                            Order = OrderEnum.Ascending
+                            SortBy = SortBy.SortBy,
+                            Order = Order.Order
                         });
 
                         nextToken = response.NextToken;
 
+                        var names = new List<string>();
                         foreach (var r in response.Repositories)
                         {
-                            var getRepositoryResponse = codecommitClient.GetRepository(new GetRepositoryRequest
-                            {
-                                RepositoryName = r.RepositoryName
-                            });
+                            names.Add(r.RepositoryName);
+                        }
 
-                            repositoryList.Add(getRepositoryResponse.RepositoryMetadata);
+                        var response2 = codecommitClient.BatchGetRepositories(new BatchGetRepositoriesRequest
+                        {
+                            RepositoryNames = names
+                        });
+
+                        foreach (var r in response2.Repositories)
+                        {
+                            repositoryList.Add(r);
                         }
                     }
                     catch (Exception e)
@@ -163,5 +196,29 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         private string _selectedFolder;
         private CodeCommitRepository _selectedRepository;
         private readonly ObservableCollection<CodeCommitRepository> _repositories = new ObservableCollection<CodeCommitRepository>();
+
+        private SortOption _sortByRepositoryName =
+            new SortOption {SortBy = SortByEnum.RepositoryName, DisplayText = "Repository Name"};
+
+        private SortOption _sortByLastModifiedDate =
+            new SortOption {SortBy = SortByEnum.LastModifiedDate, DisplayText = "Last Modified Date"};
+
+        private OrderOption _orderAscending =
+            new OrderOption {Order = OrderEnum.Ascending, DisplayText = "Ascending"};
+
+        private OrderOption _orderDescending =
+            new OrderOption {Order = OrderEnum.Descending, DisplayText = "Descending"};
+    }
+
+    public class SortOption
+    {
+        public SortByEnum SortBy { get; set; }
+        public string DisplayText { get; set; }
+    }
+
+    public class OrderOption
+    {
+        public OrderEnum Order { get; set; }
+        public string DisplayText { get; set; }
     }
 }

@@ -7,7 +7,7 @@
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
     xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
     mc:Ignorable="d" 
-    Height="340" Width="450"
+    Height="360" Width="450"
     FontFamily="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontFamilyKey}}"
     FontSize="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontSizeKey}}"
     >
@@ -124,7 +124,7 @@
                    TextWrapping="Wrap"
                    Margin="0,0,0,16">
             AWS CodeCommit repositories are organized by region. Select a 
-            region to see your available repositories.
+            region to list your available repositories.
         </TextBlock>
         
         <Label Grid.Row="1" 
@@ -152,43 +152,95 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
 
-        <Grid
-            x:Name="_ctlQueryingResourcesOverlay"
-            Grid.Row="2"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Visibility="Hidden">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Control Style="{DynamicResource awsBusyAnimationStyle}" />
-            <TextBlock
-                Grid.Column="1"
-                Margin="12,0,0,0"
-                Style="{DynamicResource awsTextBlock133PercentStyle}">
-                Querying repositories...
-            </TextBlock>
-        </Grid>
+        <Grid Grid.Row="2"
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
+              Margin="0,8,0,0">
 
-        <Border
-            Grid.Row="2"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            BorderBrush="{DynamicResource awsDefaultControlBorderBrushKey}"
-            BorderThickness="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Style="{DynamicResource awsLabelBaseStyle}"
+                   Grid.Row="0" 
+                   Grid.Column="0"
+                   Margin="44,0,0,0">
+                Sort by:
+            </Label>
+            <ComboBox Grid.Row="0"
+                      Grid.Column="1"
+                      Style="{DynamicResource awsComboBoxStyle}"
+                      SelectionChanged="OnSelectionChangedSortBy"
+                      Margin="4,0"
+                      VerticalAlignment="Center"
+                      SelectedItem="{Binding SortBy}"
+                      ItemsSource="{Binding SortByOptions}"
+                      DisplayMemberPath="DisplayText"/>
+
+            <Label Style="{DynamicResource awsLabelBaseStyle}"
+                   Grid.Row="0" 
+                   Grid.Column="2"
+                   Margin="8,0,0,0">
+                Order:
+            </Label>
+            <ComboBox Grid.Row="0"
+                      Grid.Column="3"
+                      Style="{DynamicResource awsComboBoxStyle}"
+                      SelectionChanged="OnSelectionChangedOrder"
+                      Margin="4,0,2,0"
+                      VerticalAlignment="Center"
+                      SelectedItem="{Binding Order}"
+                      ItemsSource="{Binding OrderOptions}"
+                      DisplayMemberPath="DisplayText"/>
+
+            <Grid x:Name="_ctlQueryingResourcesOverlay"
+                  Grid.Row="1"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="4"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  Visibility="Hidden">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Control Style="{DynamicResource awsBusyAnimationStyle}" />
+                <TextBlock
+                    Grid.Column="1"
+                    Margin="12,0,0,0"
+                    Style="{DynamicResource awsTextBlock133PercentStyle}">
+                    Querying for repositories...
+                </TextBlock>
+            </Grid>
             
-            <ListBox HorizontalContentAlignment="Stretch"
-                     ItemContainerStyle="{StaticResource RepositoryListBoxItemStyle}"
-                     ItemTemplate="{StaticResource RepositoryListItemTemplate}"
-                     ItemsSource="{Binding Repositories}"
-                     Template="{StaticResource RepositoryListControlTemplate}" 
-                     Margin="4"
-                     SelectedItem="{Binding SelectedRepository}"
-                     SelectionChanged="OnRepositorySelectionChanged"/>
-        </Border>
+            <Border
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="4"
+                Margin="0,8,0,0"
+                BorderBrush="{DynamicResource awsDefaultControlBorderBrushKey}"
+                BorderThickness="1">
+
+                <ListBox x:Name="_ctlRepositoryList" 
+                         HorizontalContentAlignment="Stretch"
+                         ItemContainerStyle="{StaticResource RepositoryListBoxItemStyle}"
+                         ItemTemplate="{StaticResource RepositoryListItemTemplate}"
+                         ItemsSource="{Binding Repositories}"
+                         Template="{StaticResource RepositoryListControlTemplate}" 
+                         Margin="4"
+                         SelectedItem="{Binding SelectedRepository}"
+                         SelectionChanged="OnRepositorySelectionChanged"
+                         VirtualizingPanel.IsVirtualizing="true"
+                         />
+            </Border>
+        </Grid>
         
         <Grid Grid.Row="3"
               Grid.Column="0"
@@ -217,3 +269,4 @@
         </Grid>
     </Grid>
 </commonui:BaseAWSControl>
+
