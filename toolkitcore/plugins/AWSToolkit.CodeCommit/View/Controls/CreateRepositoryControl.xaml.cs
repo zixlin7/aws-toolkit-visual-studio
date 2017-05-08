@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -6,6 +7,7 @@ using System.Windows.Forms;
 using Amazon.AWSToolkit.CodeCommit.Controller;
 using Amazon.AWSToolkit.CodeCommit.Model;
 using Amazon.AWSToolkit.Shared;
+using Amazon.CodeCommit.Model;
 
 namespace Amazon.AWSToolkit.CodeCommit.View.Controls
 {
@@ -49,16 +51,39 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
         public override bool OnCommit()
         {
             var validationFailMsg = CloneRepositoryModel.IsFolderValidForRepo(Controller.Model.SelectedFolder);
-            if (string.IsNullOrEmpty(validationFailMsg))
-                return true;
+            if (!string.IsNullOrEmpty(validationFailMsg))
+            {
+                ToolkitFactory.Instance.ShellProvider.ShowError("Folder Error", "The selected folder cannot be used to contain the new repository. " + validationFailMsg);
+                return false;
+            }
 
-            ToolkitFactory.Instance.ShellProvider.ShowError("Folder Error", "The selected folder cannot be used to contain the new repository. " + validationFailMsg);
-            return false;
+            try
+            {
+                var client = Controller.Model.GetClientForRegion(Controller.Model.SelectedRegion.SystemName);
+                var response = client.GetRepository(new GetRepositoryRequest {RepositoryName = Controller.Model.Name});
+                if (response.RepositoryMetadata != null)
+                {
+                    ToolkitFactory.Instance.ShellProvider.ShowError("Repository Exists Error",
+                        "A repository with name " + Controller.Model.Name + " exists in the selected region.");
+                    return false;
+                }
+            }
+            catch (RepositoryDoesNotExistException)
+            {
+                
+            }
+            catch (Exception e)
+            {
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error", "Unable to create a repository with the selected name due to error: " + e.Message);
+                return false;
+            }
+
+            return true;
         }
 
         private void OnRegionSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // todo: find repo names in region and validate
+            // we'll validate uniqueness of the repo name in region when the user hits OK
         }
 
         private void OnClickBrowseFolder(object sender, RoutedEventArgs e)

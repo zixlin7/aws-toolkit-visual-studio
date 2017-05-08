@@ -65,7 +65,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             SelectedRegion = _availableRegions.FirstOrDefault();
         }
 
-        protected IAmazonCodeCommit GetClientForRegion(string region)
+        public IAmazonCodeCommit GetClientForRegion(string region)
         {
             if (!_codeCommitClients.ContainsKey(region))
             {
