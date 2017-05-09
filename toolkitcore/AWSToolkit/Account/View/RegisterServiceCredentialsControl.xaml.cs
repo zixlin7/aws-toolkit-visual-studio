@@ -43,7 +43,7 @@ namespace Amazon.AWSToolkit.Account.View
 
         public override string Title
         {
-            get { return "HTTPS Credentials for AWS CodeCommit"; }
+            get { return "Git Credentials for AWS CodeCommit"; }
         }
 
         public override bool SupportsDynamicOKEnablement
