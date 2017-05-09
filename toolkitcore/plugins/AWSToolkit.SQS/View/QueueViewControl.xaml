@@ -178,7 +178,7 @@
                          Grid.Column="1"
                          Margin="4,0,4,0"
                          Style="{DynamicResource awsSelectableTextBoxStyle}"
-                         Text="{Binding Path=MaximumReceives}"
+                         Text="{Binding Path=MaximumReceives, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                          />
                 
                 <Label Grid.Row="2" 
@@ -189,7 +189,7 @@
                          Grid.Column="1"
                          Style="{DynamicResource awsSelectableTextBoxStyle}"
                          Margin="4,0,4,0"
-                         Text="{Binding Path=DeadLetterQueue}"
+                         Text="{Binding Path=DeadLetterQueue, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                          />
             </Grid>
             

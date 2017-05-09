@@ -189,7 +189,7 @@ namespace Amazon.AWSToolkit.SQS.Model
             private set
             {
                 _maximumReceives = value;
-                base.NotifyPropertyChanged("MaximumReceive");
+                base.NotifyPropertyChanged("MaximumReceives");
             }
         }
 
