@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Media;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Persistence;
-using Amazon.AWSToolkit.Util;
 using log4net;
 using ThirdParty.Json.LitJson;
+using Amazon.AWSToolkit.Account.Model;
 
 namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
 {
@@ -157,19 +156,17 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
             }
         }
 
-        internal void AWSCredentialsFromCSV(string csvCredentialsFile)
+        internal bool AwsCredentialsFromCsv(string csvCredentialsFile)
         {
-            var csvData = new HeaderedCsvFile(csvCredentialsFile);
-            // we expect to see User name,Password,Access key ID,Secret access key
+            string accessKey, secretKey;
+            if (RegisterAccountModel.ReadAwsCredentialsFromCsv(csvCredentialsFile, out accessKey, out secretKey))
+            {
+                AccessKey = accessKey;
+                SecretKey = secretKey;
+                return true;
+            }
 
-            var akeyIndex = csvData.ColumnIndexOfHeader("Access key ID");
-            var skeyIndex = csvData.ColumnIndexOfHeader("Secret access key");
-            if (akeyIndex == -1 || skeyIndex == -1)
-                throw new InvalidOperationException("Csv file does not conform to expected layout");
-
-            var rowData = csvData.ColumnValuesForRow(0);
-            AccessKey = rowData.ElementAt(akeyIndex);
-            SecretKey = rowData.ElementAt(skeyIndex);
+            return false;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

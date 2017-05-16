@@ -98,14 +98,15 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
 
         private void ImportAWSCredentials_OnClick(object sender, RoutedEventArgs e)
         {
-            var csvFilename = ShowFileOpenDialog("Import AWS Credentals from CSV File");
+            var csvFilename = ShowFileOpenDialog("Import AWS Credentals from Csv File");
             if (csvFilename != null)
             {
-                Model.AWSCredentialsFromCSV(csvFilename);
-
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.FirstExperienceImport, ToolkitEvent.COMMON_STATUS_SUCCESS);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                if (Model.AwsCredentialsFromCsv(csvFilename))
+                {
+                    var evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.FirstExperienceImport, ToolkitEvent.COMMON_STATUS_SUCCESS);
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                }
             }
         }
 

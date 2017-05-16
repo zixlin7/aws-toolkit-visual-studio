@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Amazon.AWSToolkit.Util;
+using log4net;
 
 namespace Amazon.AWSToolkit.Account.Model
 {
     public class RegisterServiceCredentialsModel : INotifyPropertyChanged
     {
-        private const string UserNameHeader = "User Name";
-        private const string PasswordHeader = "Password";
+        private static ILog LOGGER = LogManager.GetLogger(typeof(RegisterServiceCredentialsModel));
 
         public RegisterServiceCredentialsModel(AccountViewModel account)
         {
@@ -44,37 +41,48 @@ namespace Amazon.AWSToolkit.Account.Model
             set { _isValid = value; OnPropertyChanged(); }
         }
 
-        public void ImportCredentialsFromCSV(string csvCredentialsFile)
+        public bool ImportCredentialsFromCsv(string csvCredentialsFile)
         {
-            var csvData = new HeaderedCsvFile(csvCredentialsFile);
+            string username, password;
+            if (ImportCredentialsFromCsv(csvCredentialsFile, out username, out password))
+            {
+                UserName = username;
+                OnPropertyChanged(UserName);
 
-            // we expect to see User Name,Password
-            var unameIndex = csvData.ColumnIndexOfHeader(UserNameHeader);
-            var psswdIndex = csvData.ColumnIndexOfHeader(PasswordHeader);
-            if (unameIndex == -1 || psswdIndex == -1)
-                throw new InvalidOperationException("Csv file does not conform to expected layout");
+                Password = password;
+                OnPropertyChanged(Password);
 
-            var rowData = csvData.ColumnValuesForRow(0);
-            UserName = rowData.ElementAt(unameIndex);
-            OnPropertyChanged(UserName);
+                return true;
+            }
 
-            Password = rowData.ElementAt(psswdIndex);
-            OnPropertyChanged(Password);
+            return false;
         }
 
-        public static void ImportCredentialsFromCSV(string csvCredentialsFile, out string username, out string password)
+        public static bool ImportCredentialsFromCsv(string csvCredentialsFile, out string username, out string password)
         {
-            var csvData = new HeaderedCsvFile(csvCredentialsFile);
+            const string userNameColumnHeader = "User Name";
+            const string passwordColumnHeader = "Password";
 
-            // we expect to see User Name,Password
-            var unameIndex = csvData.ColumnIndexOfHeader(UserNameHeader);
-            var psswdIndex = csvData.ColumnIndexOfHeader(PasswordHeader);
-            if (unameIndex == -1 || psswdIndex == -1)
-                throw new InvalidOperationException("Csv file does not conform to expected layout");
+            username = null;
+            password = null;
 
-            var rowData = csvData.ColumnValuesForRow(0);
-            username = rowData.ElementAt(unameIndex);
-            password = rowData.ElementAt(psswdIndex);
+            try
+            {
+                var csvData = new HeaderedCsvFile(csvCredentialsFile);
+                var rowData = csvData.ReadHeaderedData(new[] { userNameColumnHeader, passwordColumnHeader }, 0);
+
+                username = rowData[userNameColumnHeader];
+                password = rowData[passwordColumnHeader];
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Invalid Git credentials file", e);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Invalid File", e.Message);
+            }
+
+            return false;
         }
 
         public bool PersistCredentials(ServiceSpecificCredentials credentials)

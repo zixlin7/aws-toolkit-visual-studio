@@ -5,11 +5,14 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Amazon.AWSToolkit.Util;
+using log4net;
 
 namespace Amazon.AWSToolkit.Account.Model
 {
     public class RegisterAccountModel : INotifyPropertyChanged
     {
+        private static ILog LOGGER = LogManager.GetLogger(typeof(RegisterAccountModel));
+
         public RegisterAccountModel()
         {            
         }
@@ -87,28 +90,39 @@ namespace Amazon.AWSToolkit.Account.Model
 
         public void LoadAWSCredentialsFromCSV(string csvFilename)
         {
+            string accessKey, secretKey;
+            if (ReadAwsCredentialsFromCsv(csvFilename, out accessKey, out secretKey))
+            {
+                AccessKey = accessKey;
+                SecretKey = secretKey;
+            }
+        }
+
+        public static bool ReadAwsCredentialsFromCsv(string csvFilename, out string accessKey, out string secretKey)
+        {
+            const string accessKeyIdColumnHeader = "Access key ID";
+            const string secretAccessKeyColumnHeader = "Secret access key";
+
+            accessKey = null;
+            secretKey = null;
+
             try
             {
                 var csvData = new HeaderedCsvFile(csvFilename);
-                // we expect to see User name,Password,Access key ID,Secret access key
+                var rowData = csvData.ReadHeaderedData(new[] { accessKeyIdColumnHeader , secretAccessKeyColumnHeader }, 0);
 
-                var akeyIndex = csvData.ColumnIndexOfHeader("Access key ID");
-                var skeyIndex = csvData.ColumnIndexOfHeader("Secret access key");
-                if (akeyIndex == -1 || skeyIndex == -1)
-                {
-                    ToolkitFactory.Instance.ShellProvider.ShowError("Invalid File", "Csv file does not conform to expected layout. Expected columns 'Access key ID' and 'Secret access key'.");
-                    return;
-                }
+                accessKey = rowData[accessKeyIdColumnHeader];
+                secretKey = rowData[secretAccessKeyColumnHeader];
 
-                var rowData = csvData.ColumnValuesForRow(0);
-                AccessKey = rowData.ElementAt(akeyIndex);
-                SecretKey = rowData.ElementAt(skeyIndex);
+                return true;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                LOGGER.Error("Invalid csv credential file", e);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Invalid File", e.Message);
             }
+
+            return false;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

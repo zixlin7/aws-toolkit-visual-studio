@@ -106,6 +106,67 @@ namespace Amazon.AWSToolkit.Util
             get { return _rowData.Count; }
         }
 
+        /// <summary>
+        /// Reads the data at the specified row to return key:value map of the available data.
+        /// If the file does not conform to the expected layout, an exception is thrown.
+        /// </summary>
+        /// <param name="columnsToRead">The headers for the columns we want to read</param>
+        /// <param name="row">The data row we want to read from</param>
+        /// <returns>Dictionary of read data, with the column names as keys</returns>
+        public IDictionary<string, string> ReadHeaderedData(IEnumerable<string> columnsToRead, int row)
+        {
+            var d = new Dictionary<string, string>();
+
+            var expectedColumnCount = columnsToRead.Count();
+            var colIndices = new List<int>(expectedColumnCount);
+
+            foreach (var c in columnsToRead)
+            {
+                var index = ColumnIndexOfHeader(c);
+                if (index >= 0)
+                {
+                    colIndices.Add(index);    
+                }
+            }
+
+            if (colIndices.Count != expectedColumnCount)
+            {
+                var err = new StringBuilder("The csv file does not conform to expected layout.\r\n\r\nExpected to find column(s) named: ");
+                var i = 0;
+                foreach (var c in columnsToRead)
+                {
+                    if (i > 0)
+                    {
+                        err.Append(i == expectedColumnCount - 1 ? " and " : ", ");
+                    }
+
+                    err.AppendFormat("'{0}'", c);
+                    i++;
+                }
+
+                throw new Exception(err.ToString());
+            }
+
+            var rowData = ColumnValuesForRow(row);
+            if (rowData == null)
+            {
+                var err = row == 0
+                    ? "The csv file contains no data beyond column headers"
+                    : "The csv file contains no data at row " + row;
+                throw new Exception(err);
+            }
+
+            foreach (var i in colIndices)
+            {
+                var data = rowData.ElementAt(i);
+                var key = columnsToRead.ElementAt(i);
+
+                d.Add(key, data);
+            }
+
+            return d;
+        }
+
         private readonly List<string[]> _rowData = new List<string[]>();
     }
 

@@ -4,7 +4,7 @@ using System.IO;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Account.Model;
 using Amazon.Runtime.Internal.Settings;
-
+using Amazon.Runtime.Internal.Util;
 using log4net;
 using ThirdParty.Json.LitJson;
 
@@ -150,10 +150,12 @@ namespace Amazon.AWSToolkit.Util
             };
         }
 
+        // Called to process a csv file created by us as we drive the user credential process, therefore
+        // we don't expect the csv file to fail to load
         public static ServiceSpecificCredentials FromCsvFile(string csvFile)
         {
             string username, password;
-            RegisterServiceCredentialsModel.ImportCredentialsFromCSV(csvFile, out username, out password);
+            RegisterServiceCredentialsModel.ImportCredentialsFromCsv(csvFile, out username, out password);
             return new ServiceSpecificCredentials
             {
                 Username = username,
