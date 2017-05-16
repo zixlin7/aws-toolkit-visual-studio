@@ -162,6 +162,15 @@ namespace Amazon.AWSToolkit.Util
                 Password = password
             };
         }
+
+        public static ServiceSpecificCredentials FromCredentials(string username, string password)
+        {
+            return new ServiceSpecificCredentials
+            {
+                Username = username,
+                Password = password
+            };
+        }
     }
 
 }

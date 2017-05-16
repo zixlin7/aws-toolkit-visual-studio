@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 
 using Amazon.AWSToolkit.Shared;
@@ -24,6 +26,21 @@ namespace Amazon.AWSToolkit.CommonUI
             this.Height = (int)(hostedControl.UserControl.Height + 100);
             AddHostedControl();
             this.Title = this._hostedControl.Title;
+
+            if (_hostedControl.SupportsDynamicOKEnablement)
+            {
+                _hostedControl.PropertyChanged += HostedControlOnPropertyChanged;
+                okButton.IsEnabled = _hostedControl.Validated();
+            }
+            else
+            {
+                okButton.IsEnabled = true;
+            }
+        }
+
+        private void HostedControlOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            okButton.IsEnabled = this._hostedControl.Validated();
         }
 
         public IAWSToolkitControl HostedControl

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Amazon.AWSToolkit.CodeCommit.Model;
 using Amazon.AWSToolkit.CodeCommit.View;
 using Amazon.AWSToolkit.Navigator;
@@ -32,7 +33,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Controller
 
         public ActionResults Execute()
         {
-            if (ToolkitFactory.Instance.ShellProvider.ShowModal(View))
+            if (ToolkitFactory.Instance.ShellProvider.ShowModal(View, MessageBoxButton.OK))
             {
 
                 return new ActionResults().WithSuccess(true);

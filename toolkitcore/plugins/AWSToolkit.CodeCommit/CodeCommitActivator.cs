@@ -449,13 +449,15 @@ namespace Amazon.AWSToolkit.CodeCommit
                 // not propagated if the user is too quick with the dialog, so force a small delay
                 Thread.Sleep(3000);
             
-                var filename = PromptToSaveGeneratedCredentials(createCredentialsResponse.ServiceSpecificCredential);
+                PromptToSaveGeneratedCredentials(createCredentialsResponse.ServiceSpecificCredential);
 
                 ToolkitEvent evnt = new ToolkitEvent();
                 evnt.AddProperty(AttributeKeys.CodeCommitSetupCredentials, "CreateForIAMUser");
                 SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
-                return ServiceSpecificCredentials.FromCsvFile(filename);
+                return ServiceSpecificCredentials
+                    .FromCredentials(createCredentialsResponse.ServiceSpecificCredential.ServiceUserName,
+                                        createCredentialsResponse.ServiceSpecificCredential.ServicePassword);
             }
             catch (Exception e)
             {
@@ -512,13 +514,15 @@ namespace Amazon.AWSToolkit.CodeCommit
             var msg = $"The IAM user {iamUserName} was created and associated with the AWSCodeCommitPowerUser policy. " +
                 "AWS CodeCommit credentials to enable Git access to your repository have also been created for you.";
 
-            var filename = PromptToSaveGeneratedCredentials(createCredentialsResponse.ServiceSpecificCredential, msg);
+            PromptToSaveGeneratedCredentials(createCredentialsResponse.ServiceSpecificCredential, msg);
 
             ToolkitEvent evnt = new ToolkitEvent();
             evnt.AddProperty(AttributeKeys.CodeCommitSetupCredentials, "CreateForRoot");
             SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
-            return ServiceSpecificCredentials.FromCsvFile(filename);
+            return ServiceSpecificCredentials
+                .FromCredentials(createCredentialsResponse.ServiceSpecificCredential.ServiceUserName,
+                                    createCredentialsResponse.ServiceSpecificCredential.ServicePassword);
         }
 
         private string FindCommitRemoteUrl(string repoPath)
