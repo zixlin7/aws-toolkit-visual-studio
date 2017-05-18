@@ -405,7 +405,16 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         void ILambdaFunctionUploadHelpers.AppendUploadStatus(string message, params object[] tokens)
         {
-            string formattedMessage = string.Format(message, tokens);
+            string formattedMessage;
+            try
+            {
+                formattedMessage = tokens.Length == 0 ? message : string.Format(message, tokens);
+            }
+            catch
+            {
+                formattedMessage = message;
+            }
+            
             ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
             {
                 (this as UploadFunctionProgressPageController)._pageUI.OutputProgressMessage(formattedMessage);
