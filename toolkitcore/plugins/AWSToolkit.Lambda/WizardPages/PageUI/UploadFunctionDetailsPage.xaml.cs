@@ -475,7 +475,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         {
             get
             {
-                if (!File.Exists(this._ctlSource.Text) && !Directory.Exists(this._ctlSource.Text))
+                if (!File.Exists(this.SourcePath) && !Directory.Exists(this.SourcePath))
                 {
                     return false;
                 }
