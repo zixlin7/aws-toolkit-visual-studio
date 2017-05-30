@@ -546,6 +546,11 @@
       <Link>Microsoft.WindowsAPICodePack.Shell.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="$(BuildRoot)\thirdparty\Newtonsoft.Json.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>Newtonsoft.Json.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="$(BuildRoot)\thirdparty\PemToPPKConverter.exe">
       <Link>Plugins\PemToPPKConverter.exe</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
