@@ -237,6 +237,15 @@ namespace Amazon.Lambda.Tools.Options
                 ValueType = CommandOption.CommandOptionValueType.KeyValuePairs,
                 Description = "CloudFormation template parameters. Format is <key1>=<value1>;<key2>=<value2>"
             };
+        public static readonly CommandOption ARGUMENT_CLOUDFORMATION_TEMPLATE_SUBSTITUTIONS =
+            new CommandOption
+            {
+                Name = "CloudFormation Template Substitutions",
+                ShortSwitch = "-ts",
+                Switch = "--template-substitutions",
+                ValueType = CommandOption.CommandOptionValueType.KeyValuePairs,
+                Description = "CloudFormation template substitutions. Format is <JSONPath>=<Substitution>;<JSONPath>=..."
+            };
         public static readonly CommandOption ARGUMENT_CLOUDFORMATION_DISABLE_CAPABILITIES =
             new CommandOption
             {
@@ -305,5 +314,15 @@ namespace Amazon.Lambda.Tools.Options
                 ValueType = CommandOption.CommandOptionValueType.BoolValue,
                 Description = $"If true the arguments used for a successful deployment are persisted to a config file. Default config file is {LambdaToolsDefaultsReader.DEFAULT_FILE_NAME}"
             };
+        public static readonly CommandOption ARGUMENT_OUTPUT_CLOUDFORMATION_TEMPLATE =
+            new CommandOption
+            {
+                Name = "CloudFormation Ouptut Template",
+                ShortSwitch = "-ot",
+                Switch = "--output-template",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "Path to write updated serverless template with CodeURI fields updated to the location of the packaged build artifacts in S3."
+            };
+
     }
 }
