@@ -165,7 +165,10 @@ This software includes third party software subject to the following copyrights:
 - MPFProj for Visual Studio Project Framework
   [http://mpfproj10.codeplex.com/license]
 - JSON Checker for JSON validation
-  [http://www.raboof.com/projects/jsonchecker/]</value>
+  [http://www.raboof.com/projects/jsonchecker/]
+- Newtonsoft Json.NET
+  [http://www.newtonsoft.com/json] 
+    </value>
     <comment>{0} is AssemblyTitle, {1} is IDE shell version, {2} is AssemblyCopyright</comment>
   </data>
   <data name="113" xml:space="preserve">
