@@ -11,6 +11,7 @@
     <Icon>Resources\Package.ico</Icon>
     <PreviewImage>Resources\aws_preview.gif</PreviewImage>
     <Tags>AWS;Cloud;Web Services;Amazon</Tags>
+    <ReleaseNotes>https://aws-vs-toolkit.s3.amazonaws.com/versioninfo.html</ReleaseNotes>
   </Metadata>
   <Installation InstalledByMsi="|%CurrentProject%;GetVsixInstalledByMsiFlag|" AllUsers="true">
     <InstallationTarget Version="|%CurrentProject%;GetVsixVSTarget|" Id="Microsoft.VisualStudio.Community" />
