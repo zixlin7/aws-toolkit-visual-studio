@@ -868,6 +868,11 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
                 {
                     var schemaLookupName = this._jsonDocument.PeekChildAttribueValue(objectSchema.SchemaLookupProperty);
                     keySchema = objectSchema.GetChildSchema(schemaLookupName);
+
+                    if(keySchema == null && schemaLookupName != null && (schemaLookupName.StartsWith("AWS::CloudFormation::CustomResource") || schemaLookupName.StartsWith("Custom::")))
+                    {
+                        keySchema = SchemaDocument.DefaultJSONSchema;
+                    }
                 }
                 else
                 {
@@ -1137,11 +1142,11 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
                 }
                 else if (this._jsonDocument.CurrentToken.Type == JsonDocument.JsonTokenType.StartElement)
                 {
-                    trueTemplateToken = ParseObject(keyTemplateToken.Schema ?? this._schema.DefaultJSONSchema);
+                    trueTemplateToken = ParseObject(keyTemplateToken.Schema ?? SchemaDocument.DefaultJSONSchema);
                 }
                 else if (this._jsonDocument.CurrentToken.Type == JsonDocument.JsonTokenType.StartArray)
                 {
-                    trueTemplateToken = ParseArray(keyTemplateToken.Schema ?? this._schema.DefaultJSONSchema);
+                    trueTemplateToken = ParseArray(keyTemplateToken.Schema ?? SchemaDocument.DefaultJSONSchema);
                 }
 
                 if (trueTemplateToken != null)
@@ -1168,11 +1173,11 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
                 }
                 else if (this._jsonDocument.CurrentToken.Type == JsonDocument.JsonTokenType.StartElement)
                 {
-                    falseTemplateToken = ParseObject(keyTemplateToken.Schema ?? this._schema.DefaultJSONSchema);
+                    falseTemplateToken = ParseObject(keyTemplateToken.Schema ?? SchemaDocument.DefaultJSONSchema);
                 }
                 else if (this._jsonDocument.CurrentToken.Type == JsonDocument.JsonTokenType.StartArray)
                 {
-                    falseTemplateToken = ParseArray(keyTemplateToken.Schema ?? this._schema.DefaultJSONSchema);
+                    falseTemplateToken = ParseArray(keyTemplateToken.Schema ?? SchemaDocument.DefaultJSONSchema);
                 }
 
                 if (falseTemplateToken != null)

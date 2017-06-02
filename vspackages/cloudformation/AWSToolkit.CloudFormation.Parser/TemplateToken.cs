@@ -39,10 +39,19 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
             set;
         }
 
+        SchemaObject _schema;
         public SchemaObject Schema
         {
-            get;
-            private set;
+            get
+            {
+                if(this._schema == null && this.IntrinsicFunction != null)
+                {
+                    return SchemaDocument.DefaultJSONSchema;
+                }
+
+                return this._schema;
+            }
+            private set { this._schema = value; }
         }
 
         public IntrinsicFunction IntrinsicFunction

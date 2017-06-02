@@ -15,7 +15,6 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
             this._intrinsicFunctions = intrinsicFunctions;
             this._pseudoParameters = pseudoParameters;
 
-            this.DefaultJSONSchema = new SchemaObject(SchemaType.Json, null, null, null, false, null, false, false);
         }
 
         public SchemaObject RootSchemaObject
@@ -24,11 +23,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
             private set;
         }
 
-        public SchemaObject DefaultJSONSchema
-        {
-            get;
-            private set;
-        }
+        public static SchemaObject DefaultJSONSchema { get; } = DefaultJSONSchema = new SchemaObject(SchemaType.Json, null, null, null, false, null, false, false);
 
         public IntrinsicFunction GetIntrinsicFunction(string name)
         {
