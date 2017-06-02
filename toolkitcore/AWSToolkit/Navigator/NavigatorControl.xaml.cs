@@ -164,8 +164,12 @@ namespace Amazon.AWSToolkit.Navigator
 
         void onNavigatorLoad(object sender, RoutedEventArgs e)
         {
-            VersionManager vm = new VersionManager();
-            ThreadPool.QueueUserWorkItem(new WaitCallback(vm.CheckVersion));
+            var shellVersion = ToolkitFactory.Instance.ShellProvider.ShellVersion;
+            if (shellVersion == "2013" || shellVersion == "2015")
+            {
+                VersionManager vm = new VersionManager();
+                ThreadPool.QueueUserWorkItem(new WaitCallback(vm.CheckVersion));
+            }
         }
 
         void addAccount(object sender, RoutedEventArgs e)
