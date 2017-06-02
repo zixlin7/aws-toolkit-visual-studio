@@ -147,6 +147,8 @@
     <value>{0} {1}.
 {2}
 
+Release notes: https://aws-vs-toolkit.s3.amazonaws.com/versioninfo.html
+
 This software includes third party software subject to the following copyrights:
 - Logging from log4net, Apache License 
   [http://logging.apache.org/log4net/license.html]
