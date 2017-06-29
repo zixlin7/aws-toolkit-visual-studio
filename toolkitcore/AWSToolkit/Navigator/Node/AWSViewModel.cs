@@ -150,20 +150,29 @@ namespace Amazon.AWSToolkit.Navigator.Node
 
         private void LoadRegisteredProfiles()
         {
-            List<AccountViewModel> updatedAccounts = new List<AccountViewModel>();
+            try
+            {
+                List<AccountViewModel> updatedAccounts = new List<AccountViewModel>();
 
-            HashSet<string> netSDKStoreAccessKeys = ProcessStore(updatedAccounts, new HashSet<string>(), new NetSDKCredentialsFile());
-            ProcessStore(updatedAccounts, netSDKStoreAccessKeys, new SharedCredentialsFile());
+                HashSet<string> netSDKStoreAccessKeys = ProcessStore(updatedAccounts, new HashSet<string>(), new NetSDKCredentialsFile());
+                ProcessStore(updatedAccounts, netSDKStoreAccessKeys, new SharedCredentialsFile());
 
-            var deleted = _accounts.Except(updatedAccounts, AccountViewModelEqualityComparer.Instance).ToList();
-            foreach (var del in deleted)
-                _accounts.Remove(del);
 
-            var added = updatedAccounts.Except(_accounts, AccountViewModelEqualityComparer.Instance).ToList();
-            foreach (var add in added)
-                _accounts.Add(add);
+                var deleted = _accounts.Except(updatedAccounts, AccountViewModelEqualityComparer.Instance).ToList();
+                foreach (var del in deleted)
+                    _accounts.Remove(del);
 
-            base.NotifyPropertyChanged("RegisteredAccounts");
+                var added = updatedAccounts.Except(_accounts, AccountViewModelEqualityComparer.Instance).ToList();
+                foreach (var add in added)
+                    _accounts.Add(add);
+
+                base.NotifyPropertyChanged("RegisteredAccounts");
+            }
+            catch(Exception e)
+            {
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error loading AWS profiles: " + e.Message);
+                _logger.Error("Error loading AWS profiles", e);
+            }
         }
 
         private HashSet<string> ProcessStore(List<AccountViewModel> accounts, HashSet<string> alreadyAddedAccessKeys, ICredentialProfileStore store)
