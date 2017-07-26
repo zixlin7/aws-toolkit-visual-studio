@@ -155,21 +155,25 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
                         nextToken = response.NextToken;
 
+                        // service docs claim BatchGetRepositories will accept up to 100 names. In truth,
+                        // the limit is 25 (tt 0119682172).
                         var names = new List<string>();
-                        foreach (var r in response.Repositories)
+                        foreach (var repository in response.Repositories)
                         {
-                            names.Add(r.RepositoryName);
+                            names.Add(repository.RepositoryName);
+
+                            if (names.Count == 25)
+                            {
+                                QueryRepositoryMetadataBatch(codecommitClient, names, repositoryList);
+                                names.Clear();
+                            }
                         }
 
-                        var response2 = codecommitClient.BatchGetRepositories(new BatchGetRepositoriesRequest
+                        if (names.Count > 0)    // mop up the remainder
                         {
-                            RepositoryNames = names
-                        });
-
-                        foreach (var r in response2.Repositories)
-                        {
-                            repositoryList.Add(new CodeCommitRepository(r));
+                            QueryRepositoryMetadataBatch(codecommitClient, names, repositoryList);
                         }
+
                     }
                     catch (Exception e)
                     {
@@ -188,6 +192,22 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
                     Interlocked.Decrement(ref _backgroundWorkersActive);
                 }));
             });
+        }
+
+        private static void QueryRepositoryMetadataBatch(IAmazonCodeCommit client, 
+                                                         IEnumerable<string> repositoryNames,
+                                                         ICollection<CodeCommitRepository> repositoryMetadataList)
+        {
+            var batchGetResponse = client.BatchGetRepositories(new BatchGetRepositoriesRequest
+            {
+                RepositoryNames = new List<string>(repositoryNames)
+            });
+
+            foreach (var repositoryMetadata in batchGetResponse.Repositories)
+            {
+                repositoryMetadataList.Add(new CodeCommitRepository(repositoryMetadata));
+            }
+
         }
 
         private string _baseFolder;
