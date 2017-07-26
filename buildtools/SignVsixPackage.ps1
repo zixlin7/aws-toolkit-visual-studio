@@ -35,8 +35,8 @@ Begin
 Process
 {
     Write-Verbose "Signing $VsixPackage"
-    & $PSScriptRoot\vsixsigntool.exe sign /f $env:DOTNET_BUILD_CERTFILE /p $certPassword /t "http://timestamp.digicert.com" $VsixPackage 
+    & $PSScriptRoot\vsixsigntool.exe sign /f $env:DOTNET_BUILD_CERTFILE /p $certPassword /sha1 "d2038c3d2e59604d9ad05674b21b53ea40ace63f" /t "http://timestamp.digicert.com" $VsixPackage 
 
     Write-Verbose "...verifying signature"
-    & $PSScriptRoot\vsixsigntool.exe verify /f $env:DOTNET_BUILD_CERTFILE /p $certPassword $VsixPackage
+    & $PSScriptRoot\vsixsigntool.exe verify /f $env:DOTNET_BUILD_CERTFILE /p $certPassword /sha1 "d2038c3d2e59604d9ad05674b21b53ea40ace63f" $VsixPackage
 }
