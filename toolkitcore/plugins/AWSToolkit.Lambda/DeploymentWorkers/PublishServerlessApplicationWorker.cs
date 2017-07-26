@@ -45,7 +45,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             try
             {
                 var command = new DeployServerlessCommand(logger, Settings.SourcePath, new string[0]);
-                command.EnableInteractive = false;
+                command.DisableInteractive = true;
                 command.S3Client = this.S3Client;
                 command.CloudFormationClient = this.CloudFormationClient;
                 command.WaitForStackToComplete = false;

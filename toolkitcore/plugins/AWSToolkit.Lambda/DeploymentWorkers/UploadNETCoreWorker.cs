@@ -31,7 +31,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             {
 
                 var command = new DeployFunctionCommand(logger, uploadState.SourcePath, new string[0]);
-                command.EnableInteractive = false;
+                command.DisableInteractive = true;
                 command.SkipHandlerValidation = true;
                 command.LambdaClient = this.LambdaClient;
                 command.PersistConfigFile = uploadState.SaveSettings;
