@@ -40,7 +40,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
         {
             _account = deploymentProperties[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
             if (_account == null)
-                throw new InvalidOperationException("Missing account data in deployment properties; cannot proceed");
+                throw new System.InvalidOperationException("Missing account data in deployment properties; cannot proceed");
 
             DeploymentProperties = deploymentProperties;
 
