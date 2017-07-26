@@ -155,8 +155,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
                         nextToken = response.NextToken;
 
-                        // service docs claim BatchGetRepositories will accept up to 100 names. In truth,
-                        // the limit is 25 (tt 0119682172).
+                        // BatchGetRepositories only accepts up to 25 names at a time
                         var names = new List<string>();
                         foreach (var repository in response.Repositories)
                         {
