@@ -304,6 +304,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Resources\vsctimages_32bit.png" />
     <EmbeddedResource Include="Resources\CloudFormationTemplateProjectNode.png" />
     <EmbeddedResource Include="Resources\CloudFormationTemplateNode.png" />

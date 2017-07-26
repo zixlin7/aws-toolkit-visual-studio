@@ -21,6 +21,12 @@
 Deployment/**
 Include/**
 
+
+####################
+# Nuget
+####################
+Solutions/Packages
+
 ####################
 # Solution upgrades
 ####################
