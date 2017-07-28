@@ -49,7 +49,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\ElasticTranscoder\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\ElasticTranscoder\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\ElasticTranscoder\ElasticTranscoderSample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\ElasticTranscoder\Program.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\ElasticTranscoder\__TemplateIcon.ico" />
@@ -59,7 +58,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SES\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SES\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SES\SESSample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SES\Program.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SES\__TemplateIcon.ico" />
@@ -69,7 +67,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SESSMTP\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SESSMTP\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SESSMTP\SESSMTPSample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SESSMTP\Program.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SESSMTP\__TemplateIcon.ico" />
@@ -79,7 +76,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SNS\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SNS\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SNS\SNSSample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SNS\Program.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SNS\__TemplateIcon.ico" />
@@ -89,7 +85,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SQS\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SQS\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SQS\SQSSample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SQS\Program.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SQS\__TemplateIcon.ico" />
@@ -98,11 +93,10 @@
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\Properties\Resources.Designer.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\Properties\Resources.resx" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\Properties\Settings.Designer.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\Properties\Settings.resx" />
+    <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\Properties\Settings.settings" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\SWF\Constants.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\SWF\HistoryIterator.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(AppServicesSubRoot)\SWFImageProcessor\SWF\ImageActivityWorker.cs" />
@@ -125,7 +119,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2\EC2Sample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2\Program.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2\__TemplateIcon.ico" />
@@ -135,7 +128,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2SpotInstance\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2SpotInstance\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2SpotInstance\EC2SpotInstanceSample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2SpotInstance\Program.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(ComputeNetworkingSubRoot)\EC2SpotInstance\__TemplateIcon.ico" />
@@ -145,7 +137,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDataModel\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDataModel\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDataModel\DynamoDBDataModelSample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDataModel\Program.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDataModel\DataModelSample.cs" />
@@ -158,7 +149,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDocument\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDocument\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDocument\DynamoDBDocumentModelSample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDocument\Program.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBDocument\DocumentModelSample.cs" />
@@ -170,7 +160,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBS3Link\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBS3Link\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBS3Link\DynamoDBS3LinkSample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBS3Link\Program.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBS3Link\bezos.jpg" />
@@ -184,14 +173,12 @@
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\styles\styles.css" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\DynamoDBSessionProviderSample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\aws-sessionprovider-sample.config" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\Default.aspx" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\Default.aspx.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\Default.aspx.designer.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\packages.config" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\web.config" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\__TemplateIcon.ico" />
     <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\DynamoDBSessionProvider\DynamoDBSessionProvider.vstemplate">
@@ -200,7 +187,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\RDS\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\RDS\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\RDS\RDSSample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\RDS\Program.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\RDS\__TemplateIcon.ico" />
@@ -209,28 +195,7 @@
     </VSTemplate>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDBAsync\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDBAsync\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDBAsync\SimpleDBAsyncSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDBAsync\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDBAsync\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDBAsync\SimpleDBAsync.vstemplate">
-      <OutputSubPath>$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)</OutputSubPath>
-    </VSTemplate>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDB\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDB\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDB\SimpleDBSample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDB\Program.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDB\__TemplateIcon.ico" />
-    <VSTemplate Include="$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)\SimpleDB\SimpleDB.vstemplate">
-      <OutputSubPath>$(AWSSampleProjectsRoot)\$(DatabaseSubRoot)</OutputSubPath>
-    </VSTemplate>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\CloudWatch\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\CloudWatch\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\CloudWatch\CloudWatchSample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\CloudWatch\Program.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\CloudWatch\__TemplateIcon.ico" />
@@ -240,7 +205,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMInstanceProfile\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMInstanceProfile\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMInstanceProfile\IAMInstanceProfileSample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMInstanceProfile\Program.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMInstanceProfile\__TemplateIcon.ico" />
@@ -250,7 +214,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMUser\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMUser\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMUser\IAMUserSample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMUser\Program.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(DeploymentManagementSubRoot)\IAMUser\__TemplateIcon.ico" />
@@ -260,7 +223,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\Glacier\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\Glacier\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\Glacier\GlacierSample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\Glacier\Program.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\Glacier\__TemplateIcon.ico" />
@@ -270,7 +232,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3FileSystem\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3FileSystem\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3FileSystem\S3FileSystemSample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3FileSystem\Program.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3FileSystem\__TemplateIcon.ico" />
@@ -280,7 +241,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3\App.config" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3\Properties\AssemblyInfo.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3\S3Sample.csproj" />
     <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3\Program.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3\__TemplateIcon.ico" />
@@ -292,18 +252,19 @@
     <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\App.config" />
     <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\App.xaml" />
     <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\App.xaml.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\Properties\AssemblyInfo.cs" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\S3TransferUtilitySample.csproj" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\S3TransferWindow.xaml" />
-    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\S3TransferWindow.xaml.cs" />
+    <None Include="AWS Samples\Storage\S3TransferUtility\S3TransferUtilitySample.csproj">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="AWS Samples\Storage\S3TransferUtility\MainWindow.xaml" />
+    <None Include="AWS Samples\Storage\S3TransferUtility\MainWindow.xaml.cs" />
     <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\__TemplateIcon.ico" />
     <VSTemplate Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\S3TransferUtility.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)</OutputSubPath>
     </VSTemplate>
+    <None Include="$(AWSSampleProjectsRoot)\$(StorageContentDeliverySubRoot)\S3TransferUtility\packages.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="AWS_Console\App.config" />
-    <None Include="AWS_Console\Properties\AssemblyInfo.cs" />
     <None Include="AWS_Console\AwsConsoleApp.csproj" />
     <None Include="AWS_Console\Program.cs" />
     <None Include="AWS_Console\__TemplateIcon.ico" />
@@ -313,7 +274,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="AWS_Empty\App.config" />
-    <None Include="AWS_Empty\Properties\AssemblyInfo.cs" />
     <None Include="AWS_Empty\AwsEmptyApp.csproj" />
     <None Include="AWS_Empty\Program.cs" />
     <None Include="AWS_Empty\__TemplateIcon.ico" />
@@ -331,11 +291,14 @@
     <None Include="AWS_Web\Default.aspx" />
     <None Include="AWS_Web\Default.aspx.cs" />
     <None Include="AWS_Web\Default.aspx.designer.cs" />
-    <None Include="AWS_Web\Properties\AssemblyInfo.cs" />
-    <None Include="AWS_Web\AwsWebApp.csproj" />
+    <None Include="AWS_Web\AwsWebApp.csproj">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="AWS_Web\__TemplateIcon.ico" />
+    <None Include="AWS_Web\packages.config" />
     <VSTemplate Include="AWS_Web\AwsWebApp.vstemplate">
       <OutputSubPath>$(AWSSampleProjectsRoot)</OutputSubPath>
+      <SubType>Designer</SubType>
     </VSTemplate>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -20,6 +20,8 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -28,22 +30,21 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using System.Threading;
-using Microsoft.Win32;
-
 using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
+using Microsoft.Win32;
 
-namespace AwsS3TransferUtilitySample1
+namespace $safeprojectname$
 {
     /// <summary>
-    /// Interaction logic for S3TransferWindow.xaml
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class S3TransferWindow : Window, INotifyPropertyChanged
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         public const int FIVE_MINUTES = 5 * 60 * 1000;
 
@@ -54,7 +55,7 @@ namespace AwsS3TransferUtilitySample1
         string _uploadDirectory;
 
         #region Initialization
-        public S3TransferWindow()
+        public MainWindow()
         {
             InitializeComponent();
             this.DataContext = this;

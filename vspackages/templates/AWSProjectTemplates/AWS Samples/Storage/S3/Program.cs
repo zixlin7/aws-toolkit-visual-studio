@@ -24,7 +24,7 @@ using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
 
-namespace GettingStartedGuide
+namespace $safeprojectname$
 {
     class S3Sample
     {

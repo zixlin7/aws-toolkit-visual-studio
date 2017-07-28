@@ -3,7 +3,7 @@
     <Name>AWS Empty Project</Name>
     <Description>Bootstraps your development of AWS C# Applications. Please ensure that the AWSSDK.dll is installed on your machine as it is referenced by the project created from this template.</Description>
     <ProjectType>CSharp</ProjectType>
-	<ProjectSubType></ProjectSubType>
+	  <ProjectSubType></ProjectSubType>
     <SortOrder>1000</SortOrder>
     <CreateNewFolder>true</CreateNewFolder>
     <DefaultName>AwsEmptyApp</DefaultName>
@@ -11,14 +11,12 @@
     <LocationField>Enabled</LocationField>
     <EnableLocationBrowseButton>true</EnableLocationBrowseButton>
     <Icon>__TemplateIcon.ico</Icon>
+    <CreateInPlace>true</CreateInPlace>
   </TemplateData>
   <TemplateContent>
     <Project File="AwsEmptyApp.csproj" ReplaceParameters="true">
-		<ProjectItem ReplaceParameters="true" TargetFileName="App.config" OpenInEditor="true" OpenOrder="0">App.config</ProjectItem>
-		<ProjectItem ReplaceParameters="true" TargetFileName="Program.cs" OpenInEditor="true" OpenOrder="10">Program.cs</ProjectItem>
-        <Folder Name="Properties" TargetFolderName="Properties">
-          <ProjectItem ReplaceParameters="true" TargetFileName="AssemblyInfo.cs">AssemblyInfo.cs</ProjectItem>
-        </Folder>
+      <ProjectItem ReplaceParameters="true" TargetFileName="App.config" OpenInEditor="true" OpenOrder="0">App.config</ProjectItem>
+      <ProjectItem ReplaceParameters="true" TargetFileName="Program.cs" OpenInEditor="true" OpenOrder="10">Program.cs</ProjectItem>
     </Project>
   </TemplateContent>
   <WizardExtension>

@@ -25,7 +25,7 @@ using Amazon;
 using Amazon.S3;
 using Amazon.S3.IO;
 
-namespace AwsS3FileSystemSample1
+namespace $safeprojectname$
 {
     class Program
     {
