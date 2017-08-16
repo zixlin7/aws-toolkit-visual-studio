@@ -358,7 +358,8 @@
                         </FlowDocumentScrollViewer>
 
                         <CheckBox Grid.Row="2" Margin="12,4,4,0"
-                              IsChecked="{Binding CollectAnalytics}">
+                              IsChecked="{Binding CollectAnalytics}"
+                                  Style="{DynamicResource awsCheckboxButtonBaseStyle}">
                             <TextBlock TextWrapping="Wrap">
                                 I acknowledge the legal notice above and agree to let AWS collect anonymous 
                                 analytics about my AWS Toolkit usage.
