@@ -18,9 +18,11 @@ using System.Text;
 using System.Runtime.Loader;
 #endif
 
+using YamlDotNet.Serialization;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ThirdParty.Json.LitJson;
 
 namespace Amazon.Lambda.Tools
 {
@@ -78,7 +80,7 @@ namespace Amazon.Lambda.Tools
             if (method == null)
                 throw new ValidateHandlerException(publishLocation, handler, $"Failed to find method {methodName}");
 
-            if(method.GetParameters().Length > 2)
+            if (method.GetParameters().Length > 2)
                 throw new ValidateHandlerException(publishLocation, handler, $"Method {methodName} contains too parameters. Lambda functions can take 0 or 1 parameters plus an optional ILambdaContext object.");
         }
 
@@ -150,7 +152,7 @@ namespace Amazon.Lambda.Tools
         public static async Task<string> UploadToS3Async(IToolLogger logger, IAmazonS3 s3Client, string bucket, string prefix, string rootName, Stream stream)
         {
             var extension = ".zip";
-            if(!string.IsNullOrEmpty(Path.GetExtension(rootName)))
+            if (!string.IsNullOrEmpty(Path.GetExtension(rootName)))
             {
                 extension = Path.GetExtension(rootName);
                 rootName = Path.GetFileNameWithoutExtension(rootName);
@@ -171,7 +173,7 @@ namespace Amazon.Lambda.Tools
             {
                 await s3Client.PutObjectAsync(request);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new LambdaToolsException($"Error uploading to {key} in bucket {bucket}: {e.Message}", LambdaToolsException.ErrorCode.S3UploadError, e);
             }
@@ -186,13 +188,13 @@ namespace Amazon.Lambda.Tools
             {
                 bucketRegion = await Utilities.GetBucketRegionAsync(s3Client, s3Bucket);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new LambdaToolsException($"Error determining region for bucket {s3Bucket}: {e.Message}", LambdaToolsException.ErrorCode.S3GetBucketLocation, e);
             }
 
             var configuredRegion = s3Client.Config.RegionEndpoint?.SystemName;
-            if(configuredRegion == null && !string.IsNullOrEmpty(s3Client.Config.ServiceURL))
+            if (configuredRegion == null && !string.IsNullOrEmpty(s3Client.Config.ServiceURL))
             {
                 configuredRegion = AWSSDKUtils.DetermineRegion(s3Client.Config.ServiceURL);
             }
@@ -201,7 +203,7 @@ namespace Amazon.Lambda.Tools
             // knows what they are doing.
             if (configuredRegion == null)
                 return;
-            
+
             if (!string.Equals(bucketRegion, configuredRegion))
             {
                 throw new LambdaToolsException($"Error: S3 bucket must be in the same region as the configured region {configuredRegion}. {s3Bucket} is in the region {bucketRegion}.", LambdaToolsException.ErrorCode.BucketInDifferentRegionThenStack);
@@ -224,7 +226,7 @@ namespace Amazon.Lambda.Tools
 
                 return response.Location.Value;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new LambdaToolsException($"Error determining region for bucket {bucket}: {e.Message}", LambdaToolsException.ErrorCode.S3GetBucketLocation, e);
             }
@@ -330,9 +332,9 @@ namespace Amazon.Lambda.Tools
         /// </summary>
         /// <param name="option"></param>
         /// <returns></returns>
-        public static Dictionary<string,string> ParseKeyValueOption(string option)
+        public static Dictionary<string, string> ParseKeyValueOption(string option)
         {
-            var parameters = new Dictionary<string,string>();
+            var parameters = new Dictionary<string, string>();
             if (string.IsNullOrWhiteSpace(option))
                 return parameters;
 
@@ -347,17 +349,17 @@ namespace Amazon.Lambda.Tools
                     string value;
                     GetNextToken(option, ';', ref currentPos, out value);
 
-                    if(string.IsNullOrEmpty(name))
+                    if (string.IsNullOrEmpty(name))
                         throw new LambdaToolsException($"Error parsing option ({option}), format should be <key1>=<value1>;<key2>=<value2>", LambdaToolsException.ErrorCode.CommandLineParseError);
 
                     parameters[name] = value ?? string.Empty;
                 }
             }
-            catch(LambdaToolsException)
+            catch (LambdaToolsException)
             {
                 throw;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new LambdaToolsException($"Error parsing option ({option}), format should be <key1>=<value1>;<key2>=<value2>: {e.Message}", LambdaToolsException.ErrorCode.CommandLineParseError);
             }
@@ -377,7 +379,7 @@ namespace Amazon.Lambda.Tools
             int tokenStart = currentPos;
             int tokenEnd = -1;
             bool inQuote = false;
-            if(option[currentPos] == '"')
+            if (option[currentPos] == '"')
             {
                 inQuote = true;
                 tokenStart++;
@@ -386,7 +388,7 @@ namespace Amazon.Lambda.Tools
                 while (currentPos < option.Length && option[currentPos] != '"')
                 {
                     currentPos++;
-                } 
+                }
 
                 if (option[currentPos] == '"')
                     tokenEnd = currentPos;
@@ -396,9 +398,9 @@ namespace Amazon.Lambda.Tools
             {
                 currentPos++;
             }
-                
 
-            if(!inQuote)
+
+            if (!inQuote)
             {
                 if (currentPos < option.Length && option[currentPos] == endToken)
                     tokenEnd = currentPos;
@@ -414,13 +416,13 @@ namespace Amazon.Lambda.Tools
 
         public static string ProcessTemplateSubstitions(IToolLogger logger, string templateBody, IDictionary<string, string> substitutions, string workingDirectory)
         {
-            if (substitutions == null || !substitutions.Any())
+            if (DetermineTemplateFormat(templateBody) != TemplateFormat.Json || substitutions == null || !substitutions.Any())
                 return templateBody;
 
             logger?.WriteLine($"Processing {substitutions.Count} substitutions.");
             var root = JsonConvert.DeserializeObject(templateBody) as JObject;
 
-            foreach(var kvp in substitutions)
+            foreach (var kvp in substitutions)
             {
                 logger?.WriteLine($"Processing substitution: {kvp.Key}");
                 var token = root.SelectToken(kvp.Key);
@@ -443,14 +445,14 @@ namespace Amazon.Lambda.Tools
 
                 try
                 {
-                    switch(token.Type)
+                    switch (token.Type)
                     {
                         case JTokenType.String:
                             ((JValue)token).Value = replacementValue;
                             break;
                         case JTokenType.Boolean:
                             bool b;
-                            if(bool.TryParse(replacementValue, out b))
+                            if (bool.TryParse(replacementValue, out b))
                             {
                                 ((JValue)token).Value = b;
                             }
@@ -458,7 +460,7 @@ namespace Amazon.Lambda.Tools
                             {
                                 throw new LambdaToolsException($"Failed to convert {replacementValue} to a bool", LambdaToolsException.ErrorCode.ServerlessTemplateSubstitutionError);
                             }
-                            
+
                             break;
                         case JTokenType.Integer:
                             int i;
@@ -491,7 +493,7 @@ namespace Amazon.Lambda.Tools
                             {
                                 subData = JsonConvert.DeserializeObject(replacementValue) as JToken;
                             }
-                            catch(Exception e)
+                            catch (Exception e)
                             {
                                 throw new LambdaToolsException($"Failed to parse substitue JSON data: {e.Message}", LambdaToolsException.ErrorCode.ServerlessTemplateSubstitutionError);
                             }
@@ -500,11 +502,11 @@ namespace Amazon.Lambda.Tools
                         default:
                             throw new LambdaToolsException($"Unable to determine how to convert substitute value into the template. " +
                                                             "Make sure to have a default value in the template which is used to determine the type. " +
-                                                            "For example \"\" for string fields or {} for JSON objects.", 
+                                                            "For example \"\" for string fields or {} for JSON objects.",
                                                             LambdaToolsException.ErrorCode.ServerlessTemplateSubstitutionError);
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     throw new LambdaToolsException($"Error setting property {kvp.Key} with value {kvp.Value}: {e.Message}", LambdaToolsException.ErrorCode.ServerlessTemplateSubstitutionError);
                 }
@@ -514,5 +516,129 @@ namespace Amazon.Lambda.Tools
             return json;
         }
 
+
+        /// <summary>
+        /// Search for the CloudFormation resources that references the app bundle sent to S3 and update them.
+        /// </summary>
+        /// <param name="templateBody"></param>
+        /// <param name="s3Bucket"></param>
+        /// <param name="s3Key"></param>
+        /// <returns></returns>
+        public static string UpdateCodeLocationInTemplate(string templateBody, string s3Bucket, string s3Key)
+        {
+            switch (Utilities.DetermineTemplateFormat(templateBody))
+            {
+                case TemplateFormat.Json:
+                    return UpdateCodeLocationInJsonTemplate(templateBody, s3Bucket, s3Key);
+                case TemplateFormat.Yaml:
+                    return UpdateCodeLocationInYamlTemplate(templateBody, s3Bucket, s3Key);
+                default:
+                    throw new LambdaToolsException("Unable to determine template file format", LambdaToolsException.ErrorCode.ServerlessTemplateParseError);
+            }
+        }
+
+        public static string UpdateCodeLocationInJsonTemplate(string templateBody, string s3Bucket, string s3Key)
+        {
+            var s3Url = $"s3://{s3Bucket}/{s3Key}";
+            JsonData root;
+            try
+            {
+                root = JsonMapper.ToObject(templateBody) as JsonData;
+            }
+            catch (Exception e)
+            {
+                throw new LambdaToolsException($"Error parsing CloudFormation template: {e.Message}", LambdaToolsException.ErrorCode.ServerlessTemplateParseError, e);
+            }
+
+            var resources = root["Resources"] as JsonData;
+
+            foreach (var field in resources.PropertyNames)
+            {
+                var resource = resources[field] as JsonData;
+                if (resource == null)
+                    continue;
+
+                var properties = resource["Properties"] as JsonData;
+                if (properties == null)
+                    continue;
+
+                var type = resource["Type"]?.ToString();
+                if (string.Equals(type, "AWS::Serverless::Function", StringComparison.Ordinal))
+                {
+                    properties["CodeUri"] = s3Url;
+                }
+
+                if (string.Equals(type, "AWS::Lambda::Function", StringComparison.Ordinal))
+                {
+                    var code = new JsonData();
+                    code["S3Bucket"] = s3Bucket;
+                    code["S3Key"] = s3Key;
+                    properties["Code"] = code;
+                }
+            }
+
+            var json = JsonMapper.ToJson(root);
+            return json;
+        }
+
+        public static string UpdateCodeLocationInYamlTemplate(string templateBody, string s3Bucket, string s3Key)
+        {
+            var s3Url = $"s3://{s3Bucket}/{s3Key}";
+            var deserialize = new YamlDotNet.Serialization.Deserializer();
+
+            var root = deserialize.Deserialize(new StringReader(templateBody)) as Dictionary<object, object>;
+            if (root == null)
+                return templateBody;
+
+            if (!root.ContainsKey("Resources"))
+                return templateBody;
+
+            var resources = root["Resources"] as IDictionary<object, object>;
+
+
+            foreach (var kvp in resources)
+            {
+                var resource = kvp.Value as IDictionary<object, object>;
+                if (resource == null)
+                    continue;
+
+                if (!resource.ContainsKey("Properties"))
+                    continue;
+                var properties = resource["Properties"] as IDictionary<object, object>;
+
+
+                if (!resource.ContainsKey("Type"))
+                    continue;
+
+                var type = resource["Type"]?.ToString();
+                if (string.Equals(type, "AWS::Serverless::Function", StringComparison.Ordinal))
+                {
+                    properties["CodeUri"] = s3Url;
+                }
+
+                if (string.Equals(type, "AWS::Lambda::Function", StringComparison.Ordinal))
+                {
+                    var code = new Dictionary<object, object>();
+                    code["S3Bucket"] = s3Bucket;
+                    code["S3Key"] = s3Key;
+                    properties["Code"] = code;
+                }
+            }
+
+            var serializer = new Serializer();
+            var updatedTemplateBody = serializer.Serialize(root);
+
+            return updatedTemplateBody;
+        }
+
+
+        internal static TemplateFormat DetermineTemplateFormat(string templateBody)
+        {
+            templateBody = templateBody.Trim();
+            if (templateBody.Length > 0 && templateBody[0] == '{')
+                return TemplateFormat.Json;
+
+            return TemplateFormat.Yaml;
+        }
     }
 }

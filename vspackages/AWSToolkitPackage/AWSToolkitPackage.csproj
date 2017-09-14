@@ -91,6 +91,9 @@
       <HintPath>$(BuildRoot)\thirdparty\log4net.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="YamlDotNet">
+      <HintPath>$(BuildRoot)\thirdparty\YamlDotNet.dll</HintPath>
+    </Reference>	
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build.Framework" />

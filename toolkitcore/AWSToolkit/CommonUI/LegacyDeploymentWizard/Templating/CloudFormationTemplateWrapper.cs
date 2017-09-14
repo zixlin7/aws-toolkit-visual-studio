@@ -63,6 +63,16 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating
             return !string.IsNullOrEmpty(this.TemplateTransformation);
         }
 
+        enum TemplateFormat { Json, Yaml }
+        private static TemplateFormat DetermineTemplateFormat(string templateBody)
+        {
+            templateBody = templateBody.Trim();
+            if (templateBody.Length > 0 && templateBody[0] == '{')
+                return TemplateFormat.Json;
+
+            return TemplateFormat.Yaml;
+        }
+
         /// <summary>
         /// Downloads and parses the referenced template file, invoking the callback on
         /// completion.
@@ -100,107 +110,205 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating
 
             try
             {
-                var data = JsonMapper.ToObject(this.TemplateContent);
-
-                var templateDescription = data["Description"];
-                if (templateDescription != null && templateDescription.IsString)
-                    this.TemplateDescription = templateDescription.ToString();
-
-                var templateTransform = data["Transform"];
-                if (templateTransform != null && templateTransform.IsString)
-                    this.TemplateTransformation = templateTransform.ToString();
-
-                var parameters = data["Parameters"];
-                this.Parameters = new Dictionary<string, TemplateParameter>();
-                if (parameters != null)
-                {
-                    foreach (KeyValuePair<string, JsonData> kvp in parameters)
-                    {
-                        var parameter = kvp.Value;
-                        string description = null;
-                        string type = null;
-                        string defaultValue = null;
-                        bool noEcho = false;
-                        string[] allowedValues = null;
-
-                        int? minLength = null;
-                        int? maxLength = null;
-                        double? minValue = null;
-                        double? maxValue = null;
-                        string allowedPattern = null;
-                        string constraintDescription = null;
-
-                        if (parameter["Description"] != null)
-                            description = parameter["Description"].ToString();
-                        if (parameter["Type"] != null)
-                            type = parameter["Type"].ToString();
-                        if (parameter["Default"] != null)
-                            defaultValue = parameter["Default"].ToString();
-                        if (parameter["NoEcho"] != null)
-                            noEcho = string.Equals(parameter["NoEcho"].ToString(), "true", StringComparison.InvariantCultureIgnoreCase);
-                        if (parameter["AllowedValues"] != null && parameter["AllowedValues"].IsArray)
-                        {
-                            allowedValues = new string[parameter["AllowedValues"].Count];
-                            for (int i = 0; i < allowedValues.Length; i++)
-                            {
-                                allowedValues[i] = parameter["AllowedValues"][i].ToString();
-                            }
-                        }
-
-                        if (parameter["MinLength"] != null)
-                        {
-                            int value;
-                            if (int.TryParse(parameter["MinLength"].ToString(), out value))
-                                minLength = value;
-                        }
-                        if (parameter["MaxLength"] != null)
-                        {
-                            int value;
-                            if (int.TryParse(parameter["MaxLength"].ToString(), out value))
-                                maxLength = value;
-                        }
-                        if (parameter["MinValue"] != null)
-                        {
-                            double value;
-                            if (double.TryParse(parameter["MinValue"].ToString(), out value))
-                                minValue = value;
-                        }
-                        if (parameter["MaxValue"] != null)
-                        {
-                            double value;
-                            if (double.TryParse(parameter["MaxValue"].ToString(), out value))
-                                maxValue = value;
-                        }
-                        if (parameter["AllowedPattern"] != null)
-                            allowedPattern = parameter["AllowedPattern"].ToString();
-                        if (parameter["ConstraintDescription"] != null)
-                            constraintDescription = parameter["ConstraintDescription"].ToString();
-
-                        this.Parameters.Add(kvp.Key, new TemplateParameter(kvp.Key, description, type, defaultValue, noEcho, allowedValues, minLength, maxLength, minValue, maxValue, allowedPattern, constraintDescription));
-                    }
-                }
-
-                this.OutputParameterNames = new HashSet<string>();
-                var outputs = data["Outputs"];
-                if (outputs != null)
-                {
-                    foreach (KeyValuePair<string, JsonData> kvp in outputs)
-                    {
-                        if (!this.OutputParameterNames.Contains(kvp.Key))
-                            this.OutputParameterNames.Add(kvp.Key);
-                    }
-                }
-
-                checkIfVSDeployed(data);
+                if (DetermineTemplateFormat(this.TemplateContent) == TemplateFormat.Yaml)
+                    ParseYamlFormat();
+                else
+                    ParseJsonFormat();
 
                 if (completionCallback != null)
                     completionCallback(this);
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error parsing json document: " + this.TemplateFilename, e);
+                LOGGER.Error("Error parsing template file: " + this.TemplateFilename, e);
                 throw new ApplicationException("Error parsing template file: " + e.Message);
             }
+        }
+
+        private void ParseYamlFormat()
+        {
+            var data = new YamlDotNet.Serialization.Deserializer().Deserialize(new StringReader(this.TemplateContent)) as IDictionary<object, object>;
+
+            if (data.ContainsKey("Description"))
+                this.TemplateDescription = data["Description"].ToString();
+
+            if (data.ContainsKey("Transform"))
+                this.TemplateTransformation = data["Transform"].ToString();
+
+            if (data.ContainsKey("Description"))
+                this.TemplateDescription = data["Description"].ToString();
+
+
+            this.Parameters = new Dictionary<string, TemplateParameter>();
+
+            if (data.ContainsKey("Parameters"))
+            {
+                var parameters = data["Parameters"] as IDictionary<object, object>;
+
+                foreach (var kvp in parameters)
+                {
+                    var parameter = kvp.Value as IDictionary<object, object>;
+                    string description = null;
+                    string type = null;
+                    string defaultValue = null;
+                    bool noEcho = false;
+                    string[] allowedValues = null;
+
+                    int? minLength = null;
+                    int? maxLength = null;
+                    double? minValue = null;
+                    double? maxValue = null;
+                    string allowedPattern = null;
+                    string constraintDescription = null;
+
+                    if (parameter.ContainsKey("Description"))
+                        description = parameter["Description"].ToString();
+                    if (parameter.ContainsKey("Type"))
+                        type = parameter["Type"].ToString();
+                    if (parameter.ContainsKey("Default"))
+                        defaultValue = parameter["Default"].ToString();
+                    if (parameter.ContainsKey("NoEcho"))
+                        noEcho = string.Equals(parameter["NoEcho"].ToString(), "true", StringComparison.InvariantCultureIgnoreCase);
+                    if (parameter.ContainsKey("AllowedValues") && parameter["AllowedValues"] is IEnumerable<object>)
+                    {
+                        var values = parameter["AllowedValues"] as IEnumerable<object>;
+                        allowedValues = new string[values.Count()];
+                        int i = 0;
+                        foreach(var value in values)
+                        {
+                            allowedValues[i] = value.ToString();
+                            i++;
+                        }
+                    }
+
+                    if (parameter.ContainsKey("MinLength"))
+                    {
+                        int value;
+                        if (int.TryParse(parameter["MinLength"].ToString(), out value))
+                            minLength = value;
+                    }
+                    if (parameter.ContainsKey("MaxLength"))
+                    {
+                        int value;
+                        if (int.TryParse(parameter["MaxLength"].ToString(), out value))
+                            maxLength = value;
+                    }
+                    if (parameter.ContainsKey("MinValue"))
+                    {
+                        double value;
+                        if (double.TryParse(parameter["MinValue"].ToString(), out value))
+                            minValue = value;
+                    }
+                    if (parameter.ContainsKey("MaxValue"))
+                    {
+                        double value;
+                        if (double.TryParse(parameter["MaxValue"].ToString(), out value))
+                            maxValue = value;
+                    }
+                    if (parameter.ContainsKey("AllowedPattern"))
+                        allowedPattern = parameter["AllowedPattern"].ToString();
+                    if (parameter.ContainsKey("ConstraintDescription"))
+                        constraintDescription = parameter["ConstraintDescription"].ToString();
+
+                    this.Parameters.Add(kvp.Key.ToString(), new TemplateParameter(kvp.Key.ToString(), description, type, defaultValue, noEcho, allowedValues, minLength, maxLength, minValue, maxValue, allowedPattern, constraintDescription));
+                }
+            }
+        }
+
+        private void ParseJsonFormat()
+        {
+            var data = JsonMapper.ToObject(this.TemplateContent);
+
+            var templateDescription = data["Description"];
+            if (templateDescription != null && templateDescription.IsString)
+                this.TemplateDescription = templateDescription.ToString();
+
+            var templateTransform = data["Transform"];
+            if (templateTransform != null && templateTransform.IsString)
+                this.TemplateTransformation = templateTransform.ToString();
+
+            var parameters = data["Parameters"];
+            this.Parameters = new Dictionary<string, TemplateParameter>();
+            if (parameters != null)
+            {
+                foreach (KeyValuePair<string, JsonData> kvp in parameters)
+                {
+                    var parameter = kvp.Value;
+                    string description = null;
+                    string type = null;
+                    string defaultValue = null;
+                    bool noEcho = false;
+                    string[] allowedValues = null;
+
+                    int? minLength = null;
+                    int? maxLength = null;
+                    double? minValue = null;
+                    double? maxValue = null;
+                    string allowedPattern = null;
+                    string constraintDescription = null;
+
+                    if (parameter["Description"] != null)
+                        description = parameter["Description"].ToString();
+                    if (parameter["Type"] != null)
+                        type = parameter["Type"].ToString();
+                    if (parameter["Default"] != null)
+                        defaultValue = parameter["Default"].ToString();
+                    if (parameter["NoEcho"] != null)
+                        noEcho = string.Equals(parameter["NoEcho"].ToString(), "true", StringComparison.InvariantCultureIgnoreCase);
+                    if (parameter["AllowedValues"] != null && parameter["AllowedValues"].IsArray)
+                    {
+                        allowedValues = new string[parameter["AllowedValues"].Count];
+                        for (int i = 0; i < allowedValues.Length; i++)
+                        {
+                            allowedValues[i] = parameter["AllowedValues"][i].ToString();
+                        }
+                    }
+
+                    if (parameter["MinLength"] != null)
+                    {
+                        int value;
+                        if (int.TryParse(parameter["MinLength"].ToString(), out value))
+                            minLength = value;
+                    }
+                    if (parameter["MaxLength"] != null)
+                    {
+                        int value;
+                        if (int.TryParse(parameter["MaxLength"].ToString(), out value))
+                            maxLength = value;
+                    }
+                    if (parameter["MinValue"] != null)
+                    {
+                        double value;
+                        if (double.TryParse(parameter["MinValue"].ToString(), out value))
+                            minValue = value;
+                    }
+                    if (parameter["MaxValue"] != null)
+                    {
+                        double value;
+                        if (double.TryParse(parameter["MaxValue"].ToString(), out value))
+                            maxValue = value;
+                    }
+                    if (parameter["AllowedPattern"] != null)
+                        allowedPattern = parameter["AllowedPattern"].ToString();
+                    if (parameter["ConstraintDescription"] != null)
+                        constraintDescription = parameter["ConstraintDescription"].ToString();
+
+                    this.Parameters.Add(kvp.Key, new TemplateParameter(kvp.Key, description, type, defaultValue, noEcho, allowedValues, minLength, maxLength, minValue, maxValue, allowedPattern, constraintDescription));
+                }
+            }
+
+            this.OutputParameterNames = new HashSet<string>();
+            var outputs = data["Outputs"];
+            if (outputs != null)
+            {
+                foreach (KeyValuePair<string, JsonData> kvp in outputs)
+                {
+                    if (!this.OutputParameterNames.Contains(kvp.Key))
+                        this.OutputParameterNames.Add(kvp.Key);
+                }
+            }
+
+            checkIfVSDeployed(data);
         }
 
         private void checkIfVSDeployed(JsonData data)

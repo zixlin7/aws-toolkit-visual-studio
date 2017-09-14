@@ -170,6 +170,8 @@ This software includes third party software subject to the following copyrights:
   [http://www.raboof.com/projects/jsonchecker/]
 - Newtonsoft Json.NET
   [http://www.newtonsoft.com/json] 
+- YamlDotNet
+  [http://aaubry.net/pages/yamldotnet.html] 
     </value>
     <comment>{0} is AssemblyTitle, {1} is IDE shell version, {2} is AssemblyCopyright</comment>
   </data>
