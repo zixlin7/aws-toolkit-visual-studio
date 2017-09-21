@@ -255,7 +255,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
             var ip = new IpPermission()
             {
-                IpRanges = new List<string>() { cidrIP },
+                Ipv4Ranges = new List<IpRange>() { new IpRange {CidrIp = cidrIP } },
                 IpProtocol = protocol.ToLower(),
                 FromPort = port,
                 ToPort = port
