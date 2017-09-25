@@ -36,7 +36,7 @@ namespace AWSDeployment
     public class BeanstalkDeploymentEngine : DeploymentEngineBase
     {
         // stack name selected if we can't use toolkit's ami manifest to determine default
-        private const string FALLBACK_DEFAULT_STACK = "64bit Windows Server 2012 running IIS 8";
+        private const string FALLBACK_DEFAULT_STACK = "64bit Windows Server 2016 v1.2.0 running IIS 10.0";
 
         #region Beanstalk-specific Deployment Properties
 
