@@ -1016,6 +1016,11 @@
       <Name>AWSToolkit.CloudFormation</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj">
+      <Project>{e3d3dffd-6668-44be-9d8e-823f53b58f29}</Project>
+      <Name>AWSToolkit.ECS.Interface</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ECS\AWSToolkit.ECS.csproj">
       <Project>{a09c427c-dbf7-49c8-9590-e99ad60dece2}</Project>
       <Name>AWSToolkit.ECS</Name>

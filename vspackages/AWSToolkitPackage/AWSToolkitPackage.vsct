@@ -113,7 +113,19 @@
           <ToolTipText>Show the AWS Explorer tool window</ToolTipText>
         </Strings>
       </Button>
-
+      
+      <Button guid="guid_VSPackageCmdSet" id="cmdidPublishContainerToAWS" priority="0x0000" type="Button">
+        <Icon guid="guidImages" id="bmpPublishToAWSEB" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <CommandName>AWS.PublishContainerToAWS</CommandName>
+          <ButtonText>Publish Container to AWS...</ButtonText>
+          <ToolTipText>Build and push the docker image AWS</ToolTipText>
+        </Strings>
+      </Button>
+      
       <Button guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" priority="0x0000" type="Button">
         <Icon guid="guidImages" id="bmpPublishToAWSEB" />
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -328,6 +340,10 @@
     -->
 
     <!-- Place mmediately after VS Publish on Web Application Project context menu -->
+    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishContainerToAWS" priority="0x0602">
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
+    </CommandPlacement>
+
     <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" priority="0x0602">
       <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
     </CommandPlacement>
@@ -457,6 +473,7 @@
       <IDSymbol name="cmdidAWSNavigator" value="0x0101" />
       <IDSymbol name="cmdidPublishToAWS" value="0x0102" />
       <IDSymbol name="cmdidRepublishToAWS" value="0x0103" />
+      <IDSymbol name="cmdidPublishContainerToAWS" value="0x0104" />
 
       <IDSymbol name="cmdidDeployTemplateSolutionExplorer" value="0x0200" />
       <IDSymbol name="cmdidEstimateTemplateCostSolutionExplorer" value="0x0201" />

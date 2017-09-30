@@ -83,8 +83,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controller\PublishContainerToAWSController.cs" />
     <Compile Include="ECSActivator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WizardPages\PageControllers\PublishProgressPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\PushImageToECRPageController.cs" />
+    <Compile Include="WizardPages\PageUI\PublishProgressPage.xaml.cs">
+      <DependentUpon>PublishProgressPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\PushImageToECRPage.xaml.cs">
+      <DependentUpon>PushImageToECRPage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\AWSToolkit.Util\AWSToolkit.Util.csproj">
@@ -102,6 +111,17 @@
       <Name>AWSToolkit.ECS.Interface</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Page Include="WizardPages\PageUI\PublishProgressPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\PageUI\PushImageToECRPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

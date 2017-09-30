@@ -7,7 +7,7 @@
     <ProjectGuid>{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AWSToolkit.ECS.Interface</RootNamespace>
+    <RootNamespace>Amazon.AWSToolkit.ECS</RootNamespace>
     <AssemblyName>AWSToolkit.ECS.Interface</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -74,7 +74,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IAWSECS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PublishContainerToAWSWizardProperties.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

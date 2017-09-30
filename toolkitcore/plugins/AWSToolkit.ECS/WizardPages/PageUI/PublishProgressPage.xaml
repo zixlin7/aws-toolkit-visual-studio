@@ -1,0 +1,77 @@
+﻿<commonUi:BaseAWSUserControl x:Class="Amazon.AWSToolkit.ECS.WizardPages.PageUI.PublishProgressPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.ECS.WizardPages.PageUI"
+    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    d:DesignHeight="400"
+    d:DesignWidth="600"
+    mc:Ignorable="d">
+
+    <commonUi:BaseAWSUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonUi:BaseAWSUserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <TextBlock
+            Grid.Row="0"
+            Margin="8"
+            Style="{DynamicResource awsTextBlock122PercentStyle}">
+            Publishing...
+        </TextBlock>
+
+        <ProgressBar
+            x:Name="_ctlProgressBar"
+            Grid.Row="1"
+            Height="10"
+            Margin="8"
+            Maximum="100"
+            Minimum="0" />
+
+        <TextBlock
+            x:Name="_ctlUploadFailedMessage"
+            Grid.Row="1"
+            Margin="8"
+            Foreground="Red"
+            Visibility="Hidden">
+            Upload Failed. Check progress window for errors.&quot;
+        </TextBlock>
+
+        <TextBox
+            x:Name="_ctlProgressMessages"
+            Grid.Row="2"
+            Margin="8"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            HorizontalScrollBarVisibility="Auto"
+            IsReadOnly="True"
+            Style="{DynamicResource awsTextBoxStyle}"
+            VerticalScrollBarVisibility="Auto" />
+
+        <Grid Grid.Row="3">
+            <StackPanel>
+                <CheckBox
+                    Name="_ctlAutoCloseWizard"
+                    Margin="4,8,4,4"
+                    IsChecked="True"
+                    Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+                    Automatically _close wizard on successful completion.
+                </CheckBox>
+            </StackPanel>
+        </Grid>
+
+
+    </Grid>    
+</commonUi:BaseAWSUserControl>
