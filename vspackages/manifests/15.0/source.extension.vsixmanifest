@@ -53,6 +53,8 @@
     <CustomExtension Type="Plugins">AWSToolkit.CodeCommit.Interface.dll</CustomExtension>
     <CustomExtension Type="Plugins">AWSToolkit.EC2.dll</CustomExtension>
     <CustomExtension Type="Plugins">AWSToolkit.EC2.Interface.dll</CustomExtension>
+    <CustomExtension Type="Plugins">AWSToolkit.ECS.dll</CustomExtension>
+    <CustomExtension Type="Plugins">AWSToolkit.ECS.Interface.dll</CustomExtension>
     <CustomExtension Type="Plugins">AWSToolkit.DynamoDB.dll</CustomExtension>
     <CustomExtension Type="Plugins">AWSToolkit.DynamoDB.Interface.dll</CustomExtension>
     <CustomExtension Type="Plugins">AWSToolkit.ElasticBeanstalk.dll</CustomExtension>

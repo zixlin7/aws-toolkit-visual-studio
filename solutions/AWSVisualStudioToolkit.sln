@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "buildtools", "buildtools", "{77A27C21-7B4C-4137-8959-88861F5EAE73}"
 	ProjectSection(SolutionItems) = preProject
@@ -139,6 +139,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeCommit.Interface", "..\toolkitcore\plugins\AWSToolkit.CodeCommit.Interface\AWSToolkit.CodeCommit.Interface.csproj", "{B8CFCE12-D441-46A5-A415-C763E1E2BEB0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeCommit", "..\toolkitcore\plugins\AWSToolkit.CodeCommit\AWSToolkit.CodeCommit.csproj", "{9AA7DD53-7BC4-4971-BC0C-0540A391DC22}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.ECS", "..\toolkitcore\plugins\AWSToolkit.ECS\AWSToolkit.ECS.csproj", "{A09C427C-DBF7-49C8-9590-E99AD60DECE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.ECS.Interface", "..\toolkitcore\plugins\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj", "{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -358,6 +362,14 @@ Global
 		{9AA7DD53-7BC4-4971-BC0C-0540A391DC22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AA7DD53-7BC4-4971-BC0C-0540A391DC22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9AA7DD53-7BC4-4971-BC0C-0540A391DC22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A09C427C-DBF7-49C8-9590-E99AD60DECE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A09C427C-DBF7-49C8-9590-E99AD60DECE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A09C427C-DBF7-49C8-9590-E99AD60DECE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A09C427C-DBF7-49C8-9590-E99AD60DECE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -424,5 +436,10 @@ Global
 		{BD8B477F-4A67-4CB4-A9A9-019D3A60A671} = {6B2DE77C-378F-4371-B315-046839223DE8}
 		{B8CFCE12-D441-46A5-A415-C763E1E2BEB0} = {62237430-5212-4823-924E-344007109D14}
 		{9AA7DD53-7BC4-4971-BC0C-0540A391DC22} = {C261BDE7-0557-4579-A31E-EB2D5C5503B4}
+		{A09C427C-DBF7-49C8-9590-E99AD60DECE2} = {C261BDE7-0557-4579-A31E-EB2D5C5503B4}
+		{E3D3DFFD-6668-44BE-9D8E-823F53B58F29} = {62237430-5212-4823-924E-344007109D14}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {50B40085-A3FF-4E79-90F0-ECAA786ECF93}
 	EndGlobalSection
 EndGlobal
