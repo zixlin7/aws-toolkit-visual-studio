@@ -38,6 +38,11 @@
       <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AWSSDK.ECR">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ECR.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="AWSSDK.ECS">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ECS.dll</HintPath>
@@ -84,7 +89,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controller\PublishContainerToAWSController.cs" />
+    <Compile Include="DeploymentWorkers\BaseWorker.cs" />
+    <Compile Include="DeploymentWorkers\ECSToolLogger.cs" />
+    <Compile Include="DeploymentWorkers\IDockerDeploymentHelper.cs" />
+    <Compile Include="DeploymentWorkers\PushImageToECRWorker.cs" />
     <Compile Include="ECSActivator.cs" />
+    <Compile Include="ECSTools\AbstractCLIWrapper.cs" />
+    <Compile Include="ECSTools\Commands\BaseCommand.cs" />
+    <Compile Include="ECSTools\Commands\DeployCommand.cs" />
+    <Compile Include="ECSTools\Commands\ICommand.cs" />
+    <Compile Include="ECSTools\Commands\PushDockerImageCommand.cs" />
+    <Compile Include="ECSTools\DockerCLIWrapper.cs" />
+    <Compile Include="ECSTools\DockerToolsDefaults.cs" />
+    <Compile Include="ECSTools\DotNetCLIWrapper.cs" />
+    <Compile Include="ECSTools\Exceptions.cs" />
+    <Compile Include="ECSTools\IToolLogger.cs" />
+    <Compile Include="ECSTools\Options\CommandLineParser.cs" />
+    <Compile Include="ECSTools\Options\CommandOption.cs" />
+    <Compile Include="ECSTools\Options\CommandOptions.cs" />
+    <Compile Include="ECSTools\Options\CommandOptionValue.cs" />
+    <Compile Include="ECSTools\Options\DefinedCommandOptions.cs" />
+    <Compile Include="ECSTools\Utilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WizardPages\PageControllers\PublishProgressPageController.cs" />
     <Compile Include="WizardPages\PageControllers\PushImageToECRPageController.cs" />

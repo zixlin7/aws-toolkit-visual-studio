@@ -833,7 +833,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 var rootDirectory = Path.GetDirectoryName(item.FullName);
 
                 var seedProperties = new Dictionary<string, object>();
-                seedProperties[UploadFunctionWizardProperties.SourcePath] = rootDirectory;
+                seedProperties[PublishContainerToAWSWizardProperties.SourcePath] = rootDirectory;
 
                 this.AWSECSPlugin.PublishContainerToAWS(seedProperties);
             }

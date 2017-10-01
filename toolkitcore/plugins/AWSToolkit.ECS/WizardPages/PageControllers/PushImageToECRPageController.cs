@@ -54,31 +54,34 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             return true;
         }
 
+        public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
+        {
+            TestForwardTransitionEnablement();
+        }
+
         public UserControl PageActivating(AWSWizardConstants.NavigationReason navigationReason)
         {
             if (_pageUI == null)
             {
                 _pageUI = new PushImageToECRPage(this);
+                _pageUI.PropertyChanged += _pageUI_PropertyChanged;
             }
 
             return _pageUI;
         }
 
-        public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
-        {
-
-            
-        }
-
         public bool PageDeactivating(AWSWizardConstants.NavigationReason navigationReason)
         {
+            if (navigationReason != AWSWizardConstants.NavigationReason.movingBack)
+                return StorePageData();
+
             return true;
         }
 
         public bool QueryFinishButtonEnablement()
         {
             // don't stand in the way of our previous sibling pages!
-            return true;
+            return IsForwardsNavigationAllowed;
         }
 
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
@@ -88,6 +91,38 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public void TestForwardTransitionEnablement()
         {
+            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Forward, IsForwardsNavigationAllowed);
+            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Finish, QueryFinishButtonEnablement());
+        }
+
+        public bool IsForwardsNavigationAllowed
+        {
+            get
+            {
+                if (_pageUI == null)
+                    return false;
+
+                return _pageUI.AllRequiredFieldsAreSet;
+            }
+        }
+
+        bool StorePageData()
+        {
+            if (_pageUI == null)
+                return false;
+
+            HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] = _pageUI.SelectedAccount;
+            HostingWizard[PublishContainerToAWSWizardProperties.Region] = _pageUI.SelectedRegion;
+
+            HostingWizard[PublishContainerToAWSWizardProperties.Configuration] = _pageUI.Configuration;
+            HostingWizard[PublishContainerToAWSWizardProperties.DockerImageTag] = _pageUI.DockerImageTag;
+
+            return true;
+        }
+
+        private void _pageUI_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            TestForwardTransitionEnablement();
         }
     }
 }

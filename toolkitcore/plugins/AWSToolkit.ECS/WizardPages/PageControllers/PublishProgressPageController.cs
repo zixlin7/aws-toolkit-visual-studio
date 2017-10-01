@@ -16,10 +16,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using Amazon.AWSToolkit.ECS.DeploymentWorkers;
+using Amazon.ECR;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 {
-    public class PublishProgressPageController : IAWSWizardPageController
+    public class PublishProgressPageController : IAWSWizardPageController, IDockerDeploymentHelper
     {
         private PublishProgressPage _pageUI;
 
@@ -111,8 +113,88 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         private  void PublishToAWS()
         {
+            var account = HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
+            var region = HostingWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+            var dockerImageTag = HostingWizard[PublishContainerToAWSWizardProperties.DockerImageTag] as string;
+            var configuration = HostingWizard[PublishContainerToAWSWizardProperties.Configuration] as string;
+            var workingDirectory = HostingWizard[PublishContainerToAWSWizardProperties.SourcePath] as string;
 
+            var state = new PushImageToECRWorker.State
+            {
+                Account = account,
+                Region = region,
+                DockerImageTag = dockerImageTag,
+                Configuration = configuration,
+                WorkingDirectory = workingDirectory
+            };
+
+            var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(Constants.ECR_ENDPOINT_LOOKUP));
+
+            var worker = new PushImageToECRWorker(this, ecrClient);
+
+
+            ThreadPool.QueueUserWorkItem(x =>
+            {
+                worker.Execute(state);
+                //this._results = worker.Results;
+            }, state);
         }
 
+        public void AppendUploadStatus(string message, params object[] tokens)
+        {
+            string formattedMessage;
+            try
+            {
+                formattedMessage = tokens.Length == 0 ? message : string.Format(message, tokens);
+            }
+            catch
+            {
+                formattedMessage = message;
+            }
+
+            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            {
+                (this as PublishProgressPageController)._pageUI.OutputProgressMessage(formattedMessage);
+                ToolkitFactory.Instance.ShellProvider.UpdateStatus(formattedMessage);
+                ToolkitFactory.Instance.ShellProvider.OutputToHostConsole(formattedMessage, true);
+            }));
+        }
+
+        public void SendCompleteSuccessAsync(PushImageToECRWorker.State state)
+        {
+            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            {
+                (this as PublishProgressPageController)._pageUI.StopProgressBar();
+
+                var navigator = ToolkitFactory.Instance.Navigator;
+                if (navigator.SelectedAccount != state.Account)
+                    navigator.UpdateAccountSelection(new Guid(state.Account.SettingsUniqueKey), false);
+                if (navigator.SelectedRegionEndPoints != state.Region)
+                    navigator.UpdateRegionSelection(state.Region);
+
+
+                HostingWizard[PublishContainerToAWSWizardProperties.WizardResult] = true;
+                if (_pageUI.AutoCloseWizard)
+                    HostingWizard.CancelRun();
+            }));
+        }
+
+        public void SendCompleteErrorAsync(string message)
+        {
+            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            {
+                (this as PublishProgressPageController)._pageUI.StopProgressBar();
+                (this as PublishProgressPageController)._pageUI.SetUploadFailedState(true);
+
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error Uploading", message);
+
+                // wizard framework doesn't allow this one to be changed currently
+                // HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Cancel, true);
+
+                HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Back, true);
+                HostingWizard[PublishContainerToAWSWizardProperties.WizardResult] = false;
+
+            }));
+        }
     }
 }

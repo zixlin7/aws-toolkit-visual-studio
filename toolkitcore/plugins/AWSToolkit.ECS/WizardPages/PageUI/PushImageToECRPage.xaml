@@ -64,7 +64,7 @@
                 Grid.ColumnSpan="2"
                 Visibility="Visible">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="110" />
+                    <ColumnDefinition Width="130" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="auto" />
                     <ColumnDefinition Width="*" />
@@ -80,7 +80,7 @@
                     Margin="10,2,4,2"
                     VerticalAlignment="Center"
                     Style="{DynamicResource awsLabelBaseStyle}">
-                    Image _Tag:
+                    Docker Image _Tag:
                 </Label>
 
                 <TextBox
@@ -89,7 +89,7 @@
                     Grid.Column="1"
                     Margin="16,2,4,2"
                     Style="{DynamicResource awsTextBoxStyle}"
-                    Text="{Binding Assembly, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    Text="{Binding DockerImageTag, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                 <Label
                     Grid.Row="0"
@@ -113,7 +113,6 @@
 
 
         </Grid>
-
 
     </Grid>
 </commonUi:BaseAWSUserControl>

@@ -40,5 +40,30 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 this._ctlUploadFailedMessage.Visibility = Visibility.Hidden;
             }
         }
+
+        public bool AutoCloseWizard
+        {
+            get
+            {
+                return this._ctlAutoCloseWizard.IsChecked.GetValueOrDefault();
+            }
+        }
+
+        public void OutputProgressMessage(string message)
+        {
+            this._ctlProgressMessages.Text += string.Concat(message, Environment.NewLine);
+            this._ctlProgressMessages.ScrollToEnd();
+        }
+
+        public void StartProgressBar()
+        {
+            _ctlProgressBar.IsIndeterminate = true;
+        }
+
+        public void StopProgressBar()
+        {
+            _ctlProgressBar.IsIndeterminate = false;
+            _ctlProgressBar.Value = _ctlProgressBar.Maximum;
+        }
     }
 }

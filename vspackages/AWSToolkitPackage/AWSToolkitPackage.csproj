@@ -779,6 +779,11 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ECR.dll">
+      <Link>SDK\AWSSDK.ECR.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ECS.dll">
       <Link>SDK\AWSSDK.ECS.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>

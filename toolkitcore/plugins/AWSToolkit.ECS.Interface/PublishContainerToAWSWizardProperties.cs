@@ -33,5 +33,19 @@ namespace Amazon.AWSToolkit.ECS
         /// </summary>
         public static readonly string Region = "region";
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly string Configuration = "configuration";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly string DockerImageTag = "dockerImageTag";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly string SourcePath = "sourcePath";
     }
 }

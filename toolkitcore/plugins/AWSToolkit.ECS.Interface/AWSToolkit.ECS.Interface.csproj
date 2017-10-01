@@ -74,6 +74,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
     <Compile Include="IAWSECS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublishContainerToAWSWizardProperties.cs" />
