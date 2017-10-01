@@ -13,9 +13,9 @@ using System.Windows.Controls;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 {
-    public class ECSConfigurationPageController : IAWSWizardPageController
+    public class ECSTaskDefinitionPageController : IAWSWizardPageController
     {
-        private ECSConfigurationPage _pageUI;
+        private ECSTaskDefinitionPage _pageUI;
 
         public IAWSWizard HostingWizard { get; set; }
 
@@ -23,7 +23,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "Configure how to deploy the the application to ECS";
+                return "Configure the ECS Task Definition";
             }
         }
 
@@ -41,7 +41,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "Amazon ECS Cluster";
+                return "ECS Task Definition";
             }
         }
 
@@ -64,7 +64,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             if (_pageUI == null)
             {
-                _pageUI = new ECSConfigurationPage(this);
+                _pageUI = new ECSTaskDefinitionPage(this);
                 _pageUI.PropertyChanged += _pageUI_PropertyChanged;
             }
 
@@ -127,7 +127,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (_pageUI == null)
                 return false;
 
-
+            HostingWizard[PublishContainerToAWSWizardProperties.TaskDefinition] = _pageUI.TaskDefinition;
+            HostingWizard[PublishContainerToAWSWizardProperties.Container] = _pageUI.Container;
+            HostingWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit] = _pageUI.MemoryHardLimit;
+            HostingWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit] = _pageUI.MemorySoftLimit;
+            HostingWizard[PublishContainerToAWSWizardProperties.PortMappings] = _pageUI.PortMappings.ToList();
 
             return true;
         }

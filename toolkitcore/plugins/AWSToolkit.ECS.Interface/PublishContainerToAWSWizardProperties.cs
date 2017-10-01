@@ -33,29 +33,21 @@ namespace Amazon.AWSToolkit.ECS
         /// </summary>
         public static readonly string Region = "region";
 
-        /// <summary>
-        /// 
-        /// </summary>
+        public static readonly string SourcePath = "sourcePath";
+
         public static readonly string DeploymentMode = "deploymentMode";
-
-        /// <summary>
-        /// 
-        /// </summary>
         public static readonly string Configuration = "configuration";
-
-        /// <summary>
-        /// 
-        /// </summary>
         public static readonly string DockerRepository = "dockerRepository";
-
-        /// <summary>
-        /// 
-        /// </summary>
         public static readonly string DockerTag = "dockerTag";
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public static readonly string SourcePath = "sourcePath";
+        public static readonly string TaskDefinition = "taskDefinition";
+        public static readonly string Container = "container";
+        public static readonly string MemoryHardLimit = "memoryHardLimit";
+        public static readonly string MemorySoftLimit = "memorySoftLimit";
+        public static readonly string PortMappings = "portMappings";
+
+        public static readonly string Cluster = "cluster";
+        public static readonly string Service = "service";
+        public static readonly string DesiredCount = "desiredCount";
     }
 }

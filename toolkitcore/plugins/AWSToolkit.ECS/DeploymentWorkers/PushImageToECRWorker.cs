@@ -43,8 +43,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error uploading Lambda function.", e);
-                this.Helper.SendCompleteErrorAsync("Error uploading function: " + e.Message);
+                LOGGER.Error("Error pushing to ECR repository.", e);
+                this.Helper.SendCompleteErrorAsync("Error pushing to ECR repository: " + e.Message);
             }
         }
 

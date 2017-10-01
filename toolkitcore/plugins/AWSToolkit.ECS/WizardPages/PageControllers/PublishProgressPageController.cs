@@ -113,37 +113,78 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         private  void PublishToAWS()
         {
+            var mode = (Constants.DeployMode) HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
+
             var account = HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
             var region = HostingWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+            var workingDirectory = HostingWizard[PublishContainerToAWSWizardProperties.SourcePath] as string;
+            var configuration = HostingWizard[PublishContainerToAWSWizardProperties.Configuration] as string;
+
             var dockerRepository = HostingWizard[PublishContainerToAWSWizardProperties.DockerRepository] as string;
             var dockerTag = HostingWizard[PublishContainerToAWSWizardProperties.DockerTag] as string;
-            var configuration = HostingWizard[PublishContainerToAWSWizardProperties.Configuration] as string;
-            var workingDirectory = HostingWizard[PublishContainerToAWSWizardProperties.SourcePath] as string;
 
             var dockerImageTag = dockerRepository;
             if (!string.IsNullOrWhiteSpace(dockerTag))
                 dockerImageTag += ":" + dockerTag;
 
-            var state = new PushImageToECRWorker.State
+
+            if (mode == Constants.DeployMode.PushOnly)
             {
-                Account = account,
-                Region = region,
-                DockerImageTag = dockerImageTag,
-                Configuration = configuration,
-                WorkingDirectory = workingDirectory
-            };
+                var state = new PushImageToECRWorker.State
+                {
+                    Account = account,
+                    Region = region,
+                    DockerImageTag = dockerImageTag,
+                    Configuration = configuration,
+                    WorkingDirectory = workingDirectory
+                };
 
-            var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(Constants.ECR_ENDPOINT_LOOKUP));
+                var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(Constants.ECR_ENDPOINT_LOOKUP));
 
-            var worker = new PushImageToECRWorker(this, ecrClient);
+                var worker = new PushImageToECRWorker(this, ecrClient);
+
+                ThreadPool.QueueUserWorkItem(x =>
+                {
+                    worker.Execute(state);
+                    //this._results = worker.Results;
+                }, state);
+            }
+            else if(mode == Constants.DeployMode.DeployToECSCluster)
+            {
+                var state = new DeployToClusterWorker.State
+                {
+                    Account = account,
+                    Region = region,
+                    DockerImageTag = dockerImageTag,
+                    Configuration = configuration,
+                    WorkingDirectory = workingDirectory,
+
+                    TaskDefinition = HostingWizard[PublishContainerToAWSWizardProperties.TaskDefinition] as string,
+                    Container = HostingWizard[PublishContainerToAWSWizardProperties.Container] as string,
+                    MemoryHardLimit = HostingWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit] as int?,
+                    MemorySoftLimit = HostingWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit] as int?,
+                    PortMapping = HostingWizard[PublishContainerToAWSWizardProperties.PortMappings] as IList<PortMappingItem>,
+
+                    Cluster = HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string,
+                    Service = HostingWizard[PublishContainerToAWSWizardProperties.Service] as string,
+                    DesiredCount = ((int?)HostingWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit]).GetValueOrDefault()
+                };
+
+                var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(Constants.ECR_ENDPOINT_LOOKUP));
+                var ecsClient = state.Account.CreateServiceClient<AmazonECSClient>(state.Region.GetEndpoint(Constants.ECS_ENDPOINT_LOOKUP));
+
+                var worker = new DeployToClusterWorker(this, ecrClient, ecsClient);
+
+                ThreadPool.QueueUserWorkItem(x =>
+                {
+                    worker.Execute(state);
+                    //this._results = worker.Results;
+                }, state);
+
+            }
 
             this._pageUI.StartProgressBar();
 
-            ThreadPool.QueueUserWorkItem(x =>
-            {
-                worker.Execute(state);
-                //this._results = worker.Results;
-            }, state);
         }
 
         public void AppendUploadStatus(string message, params object[] tokens)
@@ -166,17 +207,27 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             }));
         }
 
+        public void SendCompleteSuccessAsync(DeployToClusterWorker.State state)
+        {
+            DefaultSuccessFinish();
+        }
+
         public void SendCompleteSuccessAsync(PushImageToECRWorker.State state)
+        {
+            DefaultSuccessFinish();
+        }
+
+        private void DefaultSuccessFinish()
         {
             ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
             {
                 (this as PublishProgressPageController)._pageUI.StopProgressBar();
 
-                var navigator = ToolkitFactory.Instance.Navigator;
-                if (navigator.SelectedAccount != state.Account)
-                    navigator.UpdateAccountSelection(new Guid(state.Account.SettingsUniqueKey), false);
-                if (navigator.SelectedRegionEndPoints != state.Region)
-                    navigator.UpdateRegionSelection(state.Region);
+                //var navigator = ToolkitFactory.Instance.Navigator;
+                //if (navigator.SelectedAccount != state.Account)
+                //    navigator.UpdateAccountSelection(new Guid(state.Account.SettingsUniqueKey), false);
+                //if (navigator.SelectedRegionEndPoints != state.Region)
+                //    navigator.UpdateRegionSelection(state.Region);
 
 
                 HostingWizard[PublishContainerToAWSWizardProperties.WizardResult] = true;
