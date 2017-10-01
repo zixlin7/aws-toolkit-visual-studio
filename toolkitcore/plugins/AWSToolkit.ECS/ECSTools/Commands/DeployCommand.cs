@@ -31,6 +31,8 @@ namespace Amazon.ECS.Tools.Commands
             DefinedCommandOptions.ARGUMENT_ECS_CONTAINER,
             DefinedCommandOptions.ARGUMENT_ECS_CLUSTER,
             DefinedCommandOptions.ARGUMENT_ECS_SERVICE,
+            DefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT,
+            DefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT,
             DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT,
             DefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING,
         });

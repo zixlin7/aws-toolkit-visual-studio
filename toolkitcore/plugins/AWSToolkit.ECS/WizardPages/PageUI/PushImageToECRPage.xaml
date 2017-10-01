@@ -136,9 +136,42 @@
 
             </Grid>
 
+            <Grid Grid.Row="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Label
+                Grid.Row="0"
+                Margin="0"
+                Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
+                    Deployment
+                </Label>
+
+                <ComboBox
+                    Name="_ctlDeploymentOptionPicker"
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Margin="16,2,4,2"
+                    SelectedIndex="0"
+                    DisplayMemberPath="Title"
+                    SelectionChanged="_ctlDeploymentOptionPicker_SelectionChanged"
+                    Style="{DynamicResource awsComboBoxStyle}"/>
 
 
+                <TextBlock
+                    Name="_ctlDeploymentOptionInfoText"
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Margin="16,2,4,0"
+                    FontStyle="Italic"
+                    Style="{DynamicResource awsFieldHintTextStyle}"
+                    TextWrapping="Wrap">
+                </TextBlock>
+
+            </Grid>
         </Grid>
-
     </Grid>
 </commonUi:BaseAWSUserControl>

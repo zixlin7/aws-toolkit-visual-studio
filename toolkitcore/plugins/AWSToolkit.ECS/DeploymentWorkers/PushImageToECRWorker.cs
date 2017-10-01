@@ -29,6 +29,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             {
                 var command = new PushDockerImageCommand(new ECSToolLogger(this.Helper), state.WorkingDirectory, new string[0])
                 {
+                    DisableInteractive = true,
                     ECRClient = this._ecrClient,
 
                     Configuration = state.Configuration,

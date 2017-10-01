@@ -36,6 +36,11 @@ namespace Amazon.AWSToolkit.ECS
         /// <summary>
         /// 
         /// </summary>
+        public static readonly string DeploymentMode = "deploymentMode";
+
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly string Configuration = "configuration";
 
         /// <summary>

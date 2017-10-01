@@ -57,9 +57,20 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 this.Configuration = buildConfiguration;
             }
 
+            this._ctlDeploymentOptionPicker.Items.Add
+            (
+                new DeploymentOptionItem(Constants.DeployMode.DeployToECSCluster, "Deploy to an existing Amazon EC2 Container Service Cluster", "Info Text for cluster")
+            );
+
+            this._ctlDeploymentOptionPicker.Items.Add
+            (
+                new DeploymentOptionItem(Constants.DeployMode.PushOnly, "Push Docker image to Amazon EC2 Container Registry only", "Info Text for ECR")
+            );
+
+            this._ctlDeploymentOptionPicker.SelectedIndex = 0;
+
             UpdateExistingResources();
         }
-
 
         void UpdateExistingResources()
         {
@@ -158,6 +169,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     return false;
                 if (string.IsNullOrWhiteSpace(this.Configuration))
                     return false;
+                if (this.DeploymentOption == null)
+                    return false;
 
                 return true;
             }
@@ -234,5 +247,34 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             NotifyPropertyChanged("DockerTag");
         }
 
+        public DeploymentOptionItem DeploymentOption
+        {
+            get { return this._ctlDeploymentOptionPicker.SelectedItem as DeploymentOptionItem; }
+            set { this._ctlDeploymentOptionPicker.SelectedItem = value; }
+        }
+
+        private void _ctlDeploymentOptionPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var option = this._ctlDeploymentOptionPicker.SelectedItem as DeploymentOptionItem;
+            this._ctlDeploymentOptionInfoText.Text = option != null ? option.InfoText : string.Empty;
+            NotifyPropertyChanged("DeploymentOption");
+        }
+
+
+        public class DeploymentOptionItem
+        {
+            public DeploymentOptionItem(Constants.DeployMode mode, string title, string infoText)
+            {
+                this.Mode = mode;
+                this.Title = title;
+                this.InfoText = infoText;
+            }
+
+            public Constants.DeployMode Mode { get; }
+
+            public string Title { get;}
+
+            public string InfoText { get; }
+        }
     }
 }

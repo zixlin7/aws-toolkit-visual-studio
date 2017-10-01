@@ -10,11 +10,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
+
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 {
-    public class PushImageToECRPageController : IAWSWizardPageController
+    public class ECSConfigurationPageController : IAWSWizardPageController
     {
-        private PushImageToECRPage _pageUI;
+        private ECSConfigurationPage _pageUI;
 
         public IAWSWizard HostingWizard { get; set; }
 
@@ -22,7 +23,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "Select the Amazon ECR Repository to push the Docker image to.";
+                return "Configure how to deploy the the application to ECS";
             }
         }
 
@@ -40,7 +41,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "Publish Container to AWS";
+                return "Amazon ECS Cluster";
             }
         }
 
@@ -63,7 +64,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             if (_pageUI == null)
             {
-                _pageUI = new PushImageToECRPage(this);
+                _pageUI = new ECSConfigurationPage(this);
                 _pageUI.PropertyChanged += _pageUI_PropertyChanged;
             }
 
@@ -80,7 +81,14 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public bool QueryFinishButtonEnablement()
         {
-            HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode] = _pageUI.DeploymentOption.Mode;
+            if (HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DeploymentMode))
+            {
+                var mode = (Constants.DeployMode)HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
+                if(mode != Constants.DeployMode.DeployToECSCluster)
+                {
+                    return true;
+                }
+            }
 
             // don't stand in the way of our previous sibling pages!
             return IsForwardsNavigationAllowed;
@@ -88,16 +96,18 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
-            return true;
+            if (HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DeploymentMode))
+            {
+                var mode = (Constants.DeployMode)HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
+                return mode == Constants.DeployMode.DeployToECSCluster;
+            }
+
+            return false;
         }
 
         public void TestForwardTransitionEnablement()
         {
-            if(this._pageUI.DeploymentOption?.Mode == Constants.DeployMode.PushOnly)
-                HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Forward, false);
-            else
-                HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Forward, IsForwardsNavigationAllowed);
-
+            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Forward, IsForwardsNavigationAllowed);
             HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Finish, QueryFinishButtonEnablement());
         }
 
@@ -117,14 +127,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (_pageUI == null)
                 return false;
 
-            HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] = _pageUI.SelectedAccount;
-            HostingWizard[PublishContainerToAWSWizardProperties.Region] = _pageUI.SelectedRegion;
 
-            HostingWizard[PublishContainerToAWSWizardProperties.Configuration] = _pageUI.Configuration;
-            HostingWizard[PublishContainerToAWSWizardProperties.DockerRepository] = _pageUI.DockerRepository;
-            HostingWizard[PublishContainerToAWSWizardProperties.DockerTag] = _pageUI.DockerTag;
-
-            HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode] = _pageUI.DeploymentOption.Mode;
 
             return true;
         }
