@@ -41,7 +41,12 @@ namespace Amazon.AWSToolkit.ECS
         /// <summary>
         /// 
         /// </summary>
-        public static readonly string DockerImageTag = "dockerImageTag";
+        public static readonly string DockerRepository = "dockerRepository";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly string DockerTag = "dockerTag";
 
         /// <summary>
         /// 

@@ -72,6 +72,7 @@
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
                 <Label
@@ -80,34 +81,59 @@
                     Margin="10,2,4,2"
                     VerticalAlignment="Center"
                     Style="{DynamicResource awsLabelBaseStyle}">
-                    Docker Image _Tag:
-                </Label>
-
-                <TextBox
-                    Name="_ctlDockerImageTag"
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Margin="16,2,4,2"
-                    Style="{DynamicResource awsTextBoxStyle}"
-                    Text="{Binding DockerImageTag, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-
-                <Label
-                    Grid.Row="0"
-                    Grid.Column="2"
-                    Margin="10,2,4,2"
-                    VerticalAlignment="Center"
-                    Style="{DynamicResource awsLabelBaseStyle}">
                     _Configuration:
                 </Label>
+
 
                 <ComboBox
                     Name="_ctlConfigurationPicker"
                     Grid.Row="0"
-                    Grid.Column="3"
+                    Grid.Column="1"
                     Margin="16,2,4,2"
                     SelectedIndex="0"
                     SelectedItem="{Binding Configuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     Style="{DynamicResource awsComboBoxStyle}" />
+
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Margin="10,2,4,2"
+                    VerticalAlignment="Center"
+                    Style="{DynamicResource awsLabelBaseStyle}">
+                    Docker Repository:
+                </Label>
+
+                <ComboBox
+                    Name="_ctlDockerRepositoryPicker"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="16,2,4,2"
+                    IsEditable="True"
+                    SelectedIndex="0"
+                    SelectionChanged="_ctlDockerRepositoryPicker_SelectionChanged"
+                    Style="{DynamicResource awsComboBoxStyle}"
+                    TextBoxBase.TextChanged="_ctlDockerRepositoryPicker_TextChanged" />
+
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    Margin="10,2,4,2"
+                    VerticalAlignment="Center"
+                    Style="{DynamicResource awsLabelBaseStyle}">
+                    _Tag:
+                </Label>
+
+                <ComboBox
+                    Name="_ctlDockerTagPicker"
+                    Grid.Row="1"
+                    Grid.Column="3"
+                    Margin="16,2,4,2"
+                    IsEditable="True"
+                    SelectedIndex="0"
+                    SelectionChanged="_ctlDockerTagPicker_SelectionChanged"
+                    Style="{DynamicResource awsComboBoxStyle}"
+                    TextBoxBase.TextChanged="_ctlDockerTagPicker_TextChanged" />
+
             </Grid>
 
 

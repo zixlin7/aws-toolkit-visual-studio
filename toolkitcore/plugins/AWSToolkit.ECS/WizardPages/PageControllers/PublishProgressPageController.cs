@@ -115,9 +115,14 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             var account = HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
             var region = HostingWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
-            var dockerImageTag = HostingWizard[PublishContainerToAWSWizardProperties.DockerImageTag] as string;
+            var dockerRepository = HostingWizard[PublishContainerToAWSWizardProperties.DockerRepository] as string;
+            var dockerTag = HostingWizard[PublishContainerToAWSWizardProperties.DockerTag] as string;
             var configuration = HostingWizard[PublishContainerToAWSWizardProperties.Configuration] as string;
             var workingDirectory = HostingWizard[PublishContainerToAWSWizardProperties.SourcePath] as string;
+
+            var dockerImageTag = dockerRepository;
+            if (!string.IsNullOrWhiteSpace(dockerTag))
+                dockerImageTag += ":" + dockerTag;
 
             var state = new PushImageToECRWorker.State
             {

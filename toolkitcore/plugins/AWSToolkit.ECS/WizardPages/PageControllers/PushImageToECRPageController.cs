@@ -115,7 +115,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             HostingWizard[PublishContainerToAWSWizardProperties.Region] = _pageUI.SelectedRegion;
 
             HostingWizard[PublishContainerToAWSWizardProperties.Configuration] = _pageUI.Configuration;
-            HostingWizard[PublishContainerToAWSWizardProperties.DockerImageTag] = _pageUI.DockerImageTag;
+            HostingWizard[PublishContainerToAWSWizardProperties.DockerRepository] = _pageUI.DockerRepository;
+            HostingWizard[PublishContainerToAWSWizardProperties.DockerTag] = _pageUI.DockerTag;
 
             return true;
         }
