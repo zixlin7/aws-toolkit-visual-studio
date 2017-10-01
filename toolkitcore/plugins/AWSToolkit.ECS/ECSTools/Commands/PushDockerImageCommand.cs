@@ -12,14 +12,15 @@ namespace Amazon.ECS.Tools.Commands
     public class PushDockerImageCommand : BaseCommand
     {
         public const string COMMAND_NAME = "push";
+        public const string COMMAND_DESCRIPTION = "Execute \"dotnet publish\", \"docker build\" and then push the image to Amazon ECR.";
 
-        public static readonly IList<CommandOption> CommandOptions = new List<CommandOption>
+        public static readonly IList<CommandOption> CommandOptions = BuildLineOptions(new List<CommandOption>
         {
             DefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
             DefinedCommandOptions.ARGUMENT_CONFIGURATION,
             DefinedCommandOptions.ARGUMENT_FRAMEWORK,
             DefinedCommandOptions.ARGUMENT_DOCKER_TAG
-        };
+        });
 
 
         public string Configuration { get; set; }
@@ -86,11 +87,13 @@ namespace Amazon.ECS.Tools.Commands
                 Repository repository = await SetupECRRepository(dockerImageTag.Substring(0, dockerImageTag.IndexOf(':')));
 
                 var targetTag = repository.RepositoryUri + dockerImageTag.Substring(dockerImageTag.IndexOf(':'));
-                if (dockerCli.Tag(dockerImageTag, targetTag) != 0)
+                this.Logger?.WriteLine($"Taging image {dockerImageTag} with {targetTag}");
+                if(dockerCli.Tag(dockerImageTag, targetTag) != 0)
                 {
                     throw new DockerToolsException("Error executing \"docker tag\"", DockerToolsException.ErrorCode.DockerTagFail);
                 }
 
+                this.Logger?.WriteLine("Pushing image to ECR repository");
                 if (dockerCli.Push(targetTag) != 0)
                 {
                     throw new DockerToolsException("Error executing \"docker push\"", DockerToolsException.ErrorCode.DockerPushFail);
@@ -126,7 +129,7 @@ namespace Amazon.ECS.Tools.Commands
                         RepositoryNames = new List<string> { ecrRepositoryName }
                     });
                 }
-                catch (Exception e)
+                catch(Exception e)
                 {
                     if (!(e is RepositoryNotFoundException))
                     {
@@ -137,10 +140,12 @@ namespace Amazon.ECS.Tools.Commands
                 Repository repository;
                 if (describeResponse != null && describeResponse.Repositories.Count == 1)
                 {
+                    this.Logger?.WriteLine($"Found existing ECR Repository {ecrRepositoryName}");
                     repository = describeResponse.Repositories[0];
                 }
                 else
                 {
+                    this.Logger?.WriteLine($"Creating ECR Repository {ecrRepositoryName}");
                     repository = (await this.ECRClient.CreateRepositoryAsync(new CreateRepositoryRequest
                     {
                         RepositoryName = ecrRepositoryName
@@ -149,7 +154,7 @@ namespace Amazon.ECS.Tools.Commands
 
                 return repository;
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 throw new DockerToolsException($"Error determining Amazon ECR repository: {e.Message}", DockerToolsException.ErrorCode.FailedToSetupECRRepository);
             }
@@ -159,22 +164,24 @@ namespace Amazon.ECS.Tools.Commands
         {
             try
             {
+                this.Logger?.WriteLine("Fetching ECR authorization token to use to login with the docker CLI");
                 var response = await this.ECRClient.GetAuthorizationTokenAsync(new GetAuthorizationTokenRequest());
 
                 var authTokenBytes = Convert.FromBase64String(response.AuthorizationData[0].AuthorizationToken);
                 var authToken = Encoding.UTF8.GetString(authTokenBytes);
                 var decodedTokens = authToken.Split(':');
 
+                this.Logger?.WriteLine("Executing docker CLI login command");
                 if (dockerCLI.Login(decodedTokens[0], decodedTokens[1], response.AuthorizationData[0].ProxyEndpoint) != 0)
                 {
                     throw new DockerToolsException($"Error executing the docker login command", DockerToolsException.ErrorCode.DockerCLILoginFail);
                 }
             }
-            catch (DockerToolsException)
+            catch(DockerToolsException)
             {
                 throw;
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 throw new DockerToolsException($"Error logging on with the docker CLI: {e.Message}", DockerToolsException.ErrorCode.GetECRAuthTokens);
             }

@@ -18,8 +18,9 @@ namespace Amazon.ECS.Tools.Commands
     public class DeployCommand : BaseCommand
     {
         public const string COMMAND_NAME = "deploy";
+        public const string COMMAND_DESCRIPTION = "Deploy the application to an Amazon ECS Cluster.";
 
-        public static readonly IList<CommandOption> CommandOptions = new List<CommandOption>
+        public static readonly IList<CommandOption> CommandOptions = BuildLineOptions(new List<CommandOption>
         {
             DefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
             DefinedCommandOptions.ARGUMENT_CONFIGURATION,
@@ -32,7 +33,7 @@ namespace Amazon.ECS.Tools.Commands
             DefinedCommandOptions.ARGUMENT_ECS_SERVICE,
             DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT,
             DefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING,
-        };
+        });
 
         public string Configuration { get; set; }
         public string TargetFramework { get; set; }
@@ -186,7 +187,7 @@ namespace Amazon.ECS.Tools.Commands
                 }
 
                 var fullPath = describeResponse.Repositories[0].RepositoryUri + dockerImageTag.Substring(dockerImageTag.IndexOf(':'));
-                this.Logger?.WriteLine($"Determine full image name to be {fullPath}");
+                this.Logger?.WriteLine($"Determined full image name to be {fullPath}");
                 return fullPath;
             }
             catch (DockerToolsException)
