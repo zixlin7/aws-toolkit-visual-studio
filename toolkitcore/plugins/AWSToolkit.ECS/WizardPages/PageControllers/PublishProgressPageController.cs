@@ -137,6 +137,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
             var worker = new PushImageToECRWorker(this, ecrClient);
 
+            this._pageUI.StartProgressBar();
 
             ThreadPool.QueueUserWorkItem(x =>
             {
