@@ -9,7 +9,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Amazon.AWSToolkit.ECS</RootNamespace>
     <AssemblyName>AWSToolkit.ECS</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(BuildRoot)\buildtools\awstoolkit.snk</AssemblyOriginatorKeyFile>
