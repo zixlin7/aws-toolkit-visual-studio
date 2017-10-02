@@ -60,12 +60,14 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             this._ctlDeploymentOptionPicker.Items.Add
             (
-                new DeploymentOptionItem(Constants.DeployMode.DeployToECSCluster, "Deploy to an existing Amazon EC2 Container Service Cluster", "Info Text for cluster")
+                new DeploymentOptionItem(Constants.DeployMode.DeployToECSCluster, "Deploy to an existing Amazon EC2 Container Service Cluster",
+                    "After building a Docker image with the dotnet and docker CLI tools the image will be deployed to an Amazon EC2 Container Service cluster.")
             );
 
             this._ctlDeploymentOptionPicker.Items.Add
             (
-                new DeploymentOptionItem(Constants.DeployMode.PushOnly, "Push Docker image to Amazon EC2 Container Registry only", "Info Text for ECR")
+                new DeploymentOptionItem(Constants.DeployMode.PushOnly, "Push Docker image to Amazon EC2 Container Registry only",
+                    "This option will use the dotnet and docker CLI tools to publish the project and build a Docker image. The image will be pushed to Amazon EC2 Container Registry where it can later be deployed to other AWS services.")
             );
 
             this._ctlDeploymentOptionPicker.SelectedIndex = 0;
