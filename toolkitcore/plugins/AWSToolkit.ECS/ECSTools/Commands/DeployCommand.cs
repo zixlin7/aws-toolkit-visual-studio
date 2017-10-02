@@ -412,6 +412,8 @@ namespace Amazon.ECS.Tools.Commands
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_CONFIGURATION.ConfigFileKey, this.GetStringValueOrDefault(this.Configuration, DefinedCommandOptions.ARGUMENT_CONFIGURATION, false));
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_FRAMEWORK.ConfigFileKey, this.GetStringValueOrDefault(this.TargetFramework, DefinedCommandOptions.ARGUMENT_FRAMEWORK, false));
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH.ConfigFileKey, this.GetBoolValueOrDefault(this.SkipImagePush, DefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_DOCKER_TAG.ConfigFileKey, this.GetStringValueOrDefault(this.DockerImageTag, DefinedCommandOptions.ARGUMENT_DOCKER_TAG, false));
+
 
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION.ConfigFileKey, this.GetStringValueOrDefault(this.ECSTaskDefinition, DefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, false));
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_CONTAINER.ConfigFileKey, this.GetStringValueOrDefault(this.ECSContainer, DefinedCommandOptions.ARGUMENT_ECS_CONTAINER, false));

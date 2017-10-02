@@ -15,6 +15,7 @@ using Amazon.ECS.Model;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections.ObjectModel;
+using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 {
@@ -43,6 +44,25 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             PageController = pageController;
 
             UpdateExistingTaskDefinition();
+            LoadPreviousValues(PageController.HostingWizard);
+        }
+
+        private void LoadPreviousValues(IAWSWizard hostWizard)
+        {
+            if (hostWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit] is int?)
+                this.MemoryHardLimit = (int)hostWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit];
+            if (hostWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit] is int?)
+                this.MemorySoftLimit = (int)hostWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit];
+
+            var previousMappings = hostWizard[PublishContainerToAWSWizardProperties.PortMappings] as IList<PortMappingItem>;
+            if (previousMappings != null)
+            {
+                this.PortMappings.Clear();
+                foreach(var mapping in previousMappings)
+                {
+                    this.PortMappings.Add(mapping);
+                }
+            }
         }
 
         void UpdateExistingTaskDefinition()
@@ -81,7 +101,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                             this._ctlTaskDefinitionPicker.Items.Add(family);
                         }
 
-                        this._ctlTaskDefinitionPicker.Text = "";
+                        var previousValue = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.TaskDefinition] as string;
+                        if (!string.IsNullOrWhiteSpace(previousValue) && items.Contains(previousValue))
+                            this._ctlTaskDefinitionPicker.SelectedItem = previousValue;
+                        else
+                            this._ctlTaskDefinitionPicker.Text = "";
                     }));
                 });
             }
@@ -127,7 +151,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                             this._ctlContainerPicker.Items.Add(container);
                         }
 
-                        this._ctlContainerPicker.Text = "";
+                        var previousValue = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.Container] as string;
+                        if (!string.IsNullOrWhiteSpace(previousValue) && items.Contains(previousValue))
+                            this._ctlContainerPicker.SelectedItem = previousValue;
+                        else
+                            this._ctlContainerPicker.Text = "";
                     }));
                 });
             }

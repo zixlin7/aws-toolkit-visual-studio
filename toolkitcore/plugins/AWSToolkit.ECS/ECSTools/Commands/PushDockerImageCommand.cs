@@ -221,6 +221,8 @@ namespace Amazon.ECS.Tools.Commands
 
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_CONFIGURATION.ConfigFileKey, this.GetStringValueOrDefault(this.Configuration, DefinedCommandOptions.ARGUMENT_CONFIGURATION, false));
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_FRAMEWORK.ConfigFileKey, this.GetStringValueOrDefault(this.TargetFramework, DefinedCommandOptions.ARGUMENT_FRAMEWORK, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_DOCKER_TAG.ConfigFileKey, this.GetStringValueOrDefault(this.DockerImageTag, DefinedCommandOptions.ARGUMENT_DOCKER_TAG, false));
+
 
                 StringBuilder sb = new StringBuilder();
                 JsonWriter writer = new JsonWriter(sb);

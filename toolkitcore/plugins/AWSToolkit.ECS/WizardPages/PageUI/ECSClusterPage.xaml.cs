@@ -14,6 +14,7 @@ using Amazon.ECS;
 using Amazon.ECS.Model;
 using System.Collections.Generic;
 using System.Linq;
+using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 {
@@ -38,6 +39,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             PageController = pageController;
 
             UpdateExistingClusters();
+            LoadPreviousValues(PageController.HostingWizard);
+        }
+
+        private void LoadPreviousValues(IAWSWizard hostWizard)
+        {
+            if (hostWizard[PublishContainerToAWSWizardProperties.DesiredCount] is int)
+                this.DesiredCount = (int)hostWizard[PublishContainerToAWSWizardProperties.DesiredCount];
         }
 
         public bool AllRequiredFieldsAreSet
@@ -92,7 +100,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                             this._ctlClusterPicker.Items.Add(cluster);
                         }
 
-                        this._ctlClusterPicker.Text = "";
+
+                        var previousValue = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string;
+                        if (!string.IsNullOrWhiteSpace(previousValue) && items.Contains(previousValue))
+                            this._ctlClusterPicker.SelectedItem = previousValue;
+                        else
+                            this._ctlClusterPicker.Text = "";
                     }));
                 });
             }
@@ -154,7 +167,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
                         this._ctlServicePicker.Text = "";
 
-                        if(instanceCount.HasValue && unsetDesiredCount)
+                        var previousValue = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.Service] as string;
+                        if (!string.IsNullOrWhiteSpace(previousValue) && items.Contains(previousValue))
+                            this._ctlServicePicker.SelectedItem = previousValue;
+                        else
+                            this._ctlServicePicker.Text = "";
+
+                        if (instanceCount.HasValue && unsetDesiredCount)
                         {
                             this._ctlDesiredCount.Text = instanceCount.Value.ToString();
                         }

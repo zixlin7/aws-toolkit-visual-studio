@@ -14,6 +14,7 @@ using Amazon.ECR;
 using Amazon.ECR.Model;
 using System.Collections.Generic;
 using System.Linq;
+using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 {
@@ -70,6 +71,14 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             this._ctlDeploymentOptionPicker.SelectedIndex = 0;
 
             UpdateExistingResources();
+
+            LoadPreviousValues(hostWizard);
+        }
+
+        private void LoadPreviousValues(IAWSWizard hostWizard)
+        {
+            if(hostWizard[PublishContainerToAWSWizardProperties.Configuration] is string)
+                this.Configuration = hostWizard[PublishContainerToAWSWizardProperties.Configuration] as string;
         }
 
         void UpdateExistingResources()
@@ -108,7 +117,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                             this._ctlDockerRepositoryPicker.Items.Add(repository);
                         }
 
-                        this._ctlDockerRepositoryPicker.Text = "";
+                        var previousRepository = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.DockerRepository] as string;
+                        if (!string.IsNullOrWhiteSpace(previousRepository) && items.Contains(previousRepository))
+                            this._ctlDockerRepositoryPicker.SelectedItem = previousRepository;
+                        else
+                            this._ctlDockerRepositoryPicker.Text = "";
                     }));
                 });
 
@@ -152,7 +165,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         this._ctlDockerTagPicker.Items.Add(tag);
                     }
 
-                    this._ctlDockerTagPicker.Text = "";
+                    var previousValue = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.DockerTag] as string;
+                    if (!string.IsNullOrWhiteSpace(previousValue) && items.Contains(previousValue))
+                        this._ctlDockerTagPicker.SelectedItem = previousValue;
+                    else
+                        this._ctlDockerTagPicker.Text = "";
                 }));
             });
         }
