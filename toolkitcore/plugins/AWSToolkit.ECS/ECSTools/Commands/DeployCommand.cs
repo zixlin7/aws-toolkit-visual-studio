@@ -133,7 +133,11 @@ namespace Amazon.ECS.Tools.Commands
                         TargetFramework = this.TargetFramework,
                         WorkingDirectory = this.WorkingDirectory
                     };
-                    await pushCommand.ExecuteAsync();
+                    var success = await pushCommand.ExecuteAsync();
+
+                    if (!success)
+                        return false;
+
                     dockerImageTag = pushCommand.PushedImageUri;
                 }
 

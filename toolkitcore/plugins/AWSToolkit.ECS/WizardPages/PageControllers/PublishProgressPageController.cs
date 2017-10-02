@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using Amazon.AWSToolkit.ECS.DeploymentWorkers;
 using Amazon.ECR;
+using System.IO;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 {
@@ -217,11 +218,38 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public void SendCompleteSuccessAsync(DeployToClusterWorker.State state)
         {
+            AddECSTools(state.PersistConfigFile.GetValueOrDefault());
             DefaultSuccessFinish();
+        }
+
+        private void AddECSTools(bool persist)
+        {
+            if (!persist)
+                return;
+
+            if (HostingWizard[PublishContainerToAWSWizardProperties.SelectedProjectFile] is string)
+            {
+                var projectFile = HostingWizard[PublishContainerToAWSWizardProperties.SelectedProjectFile] as string;
+                var content = File.ReadAllText(projectFile);
+                if (!content.Contains("Amazon.ECS.Tools") && content.StartsWith("<Project Sdk="))
+                {
+                    content = content.Replace("</Project>",
+@"
+  <ItemGroup>
+    <DotNetCliToolReference Include=""Amazon.ECS.Tools"" Version=""0.8.0"" />
+  </ItemGroup>
+</Project>
+"
+                        );
+                    File.WriteAllText(projectFile, content);
+                }
+            }
+
         }
 
         public void SendCompleteSuccessAsync(PushImageToECRWorker.State state)
         {
+            AddECSTools(state.PersistConfigFile.GetValueOrDefault());
             DefaultSuccessFinish();
         }
 

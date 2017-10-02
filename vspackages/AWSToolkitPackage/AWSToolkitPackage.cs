@@ -834,6 +834,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 var seedProperties = new Dictionary<string, object>();
                 seedProperties[PublishContainerToAWSWizardProperties.SourcePath] = rootDirectory;
+                seedProperties[PublishContainerToAWSWizardProperties.SelectedProjectFile] = item.FullName;
 
                 this.AWSECSPlugin.PublishContainerToAWS(seedProperties);
             }
