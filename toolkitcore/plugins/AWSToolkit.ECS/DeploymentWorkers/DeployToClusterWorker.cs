@@ -66,6 +66,13 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 {
                     this.Helper.SendCompleteSuccessAsync(state);
                 }
+                else
+                {
+                    if (command.LastToolsException != null)
+                        this.Helper.SendCompleteErrorAsync("Error publishing container to AWS: " + command.LastToolsException.Message);
+                    else
+                        this.Helper.SendCompleteErrorAsync("Unknown error publishing container to AWS");
+                }
             }
             catch (Exception e)
             {
