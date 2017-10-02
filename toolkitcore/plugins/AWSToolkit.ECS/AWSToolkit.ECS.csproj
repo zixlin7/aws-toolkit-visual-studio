@@ -104,6 +104,7 @@
     <Compile Include="ECSTools\DockerToolsDefaults.cs" />
     <Compile Include="ECSTools\DotNetCLIWrapper.cs" />
     <Compile Include="ECSTools\Exceptions.cs" />
+    <Compile Include="ECSTools\ExtensionMethods.cs" />
     <Compile Include="ECSTools\IToolLogger.cs" />
     <Compile Include="ECSTools\Options\CommandLineParser.cs" />
     <Compile Include="ECSTools\Options\CommandOption.cs" />

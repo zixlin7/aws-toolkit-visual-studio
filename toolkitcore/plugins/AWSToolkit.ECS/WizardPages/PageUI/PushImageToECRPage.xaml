@@ -173,5 +173,13 @@
 
             </Grid>
         </Grid>
+
+        <CheckBox
+                Grid.Row="2"
+                Name="_ctlPersistSettings"
+                Margin="18,10,4,4"
+                Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+            Save settings to aws-docker-tools-defaults.json for future deployments.
+        </CheckBox>
     </Grid>
 </commonUi:BaseAWSUserControl>

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using Amazon.ECR.Model;
 using Amazon.ECR;
+using ThirdParty.Json.LitJson;
+using System.IO;
 
 namespace Amazon.ECS.Tools.Commands
 {
@@ -19,13 +21,17 @@ namespace Amazon.ECS.Tools.Commands
             DefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
             DefinedCommandOptions.ARGUMENT_CONFIGURATION,
             DefinedCommandOptions.ARGUMENT_FRAMEWORK,
-            DefinedCommandOptions.ARGUMENT_DOCKER_TAG
+            DefinedCommandOptions.ARGUMENT_DOCKER_TAG,
+
+            DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE,
         });
 
 
         public string Configuration { get; set; }
         public string TargetFramework { get; set; }
         public string DockerImageTag { get; set; }
+
+        public bool? PersistConfigFile { get; set; }
 
 
         public string PushedImageUri { get; private set; }
@@ -51,6 +57,8 @@ namespace Amazon.ECS.Tools.Commands
                 this.TargetFramework = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_DOCKER_TAG.Switch)) != null)
                 this.DockerImageTag = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE.Switch)) != null)
+                this.PersistConfigFile = tuple.Item2.BoolValue;
         }
 
 
@@ -101,6 +109,12 @@ namespace Amazon.ECS.Tools.Commands
 
                 this.PushedImageUri = targetTag;
                 this.Logger.WriteLine($"Image {this.PushedImageUri} Push Complete. ");
+
+                if (this.GetBoolValueOrDefault(this.PersistConfigFile, DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE, false).GetValueOrDefault())
+                {
+                    this.SaveConfigFile();
+                }
+
             }
             catch (DockerToolsException e)
             {
@@ -184,6 +198,42 @@ namespace Amazon.ECS.Tools.Commands
             catch(Exception e)
             {
                 throw new DockerToolsException($"Error logging on with the docker CLI: {e.Message}", DockerToolsException.ErrorCode.GetECRAuthTokens);
+            }
+        }
+
+        private void SaveConfigFile()
+        {
+            try
+            {
+                JsonData data;
+                if (File.Exists(this.DefaultConfig.SourceFile))
+                {
+                    data = JsonMapper.ToObject(File.ReadAllText(this.DefaultConfig.SourceFile));
+                }
+                else
+                {
+                    data = new JsonData();
+                }
+
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_AWS_REGION.ConfigFileKey, this.GetStringValueOrDefault(this.Region, DefinedCommandOptions.ARGUMENT_AWS_REGION, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_AWS_PROFILE.ConfigFileKey, this.GetStringValueOrDefault(this.Profile, DefinedCommandOptions.ARGUMENT_AWS_PROFILE, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_AWS_PROFILE_LOCATION.ConfigFileKey, this.GetStringValueOrDefault(this.ProfileLocation, DefinedCommandOptions.ARGUMENT_AWS_PROFILE_LOCATION, false));
+
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_CONFIGURATION.ConfigFileKey, this.GetStringValueOrDefault(this.Configuration, DefinedCommandOptions.ARGUMENT_CONFIGURATION, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_FRAMEWORK.ConfigFileKey, this.GetStringValueOrDefault(this.TargetFramework, DefinedCommandOptions.ARGUMENT_FRAMEWORK, false));
+
+                StringBuilder sb = new StringBuilder();
+                JsonWriter writer = new JsonWriter(sb);
+                writer.PrettyPrint = true;
+                JsonMapper.ToJson(data, writer);
+
+                var json = sb.ToString();
+                File.WriteAllText(this.DefaultConfig.SourceFile, json);
+                this.Logger.WriteLine($"Config settings saved to {this.DefaultConfig.SourceFile}");
+            }
+            catch (Exception e)
+            {
+                throw new DockerToolsException("Error persisting configuration file: " + e.Message, DockerToolsException.ErrorCode.PersistConfigError);
             }
         }
     }

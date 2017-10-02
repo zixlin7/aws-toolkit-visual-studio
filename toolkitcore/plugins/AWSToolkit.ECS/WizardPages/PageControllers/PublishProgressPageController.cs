@@ -123,6 +123,10 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             var dockerRepository = HostingWizard[PublishContainerToAWSWizardProperties.DockerRepository] as string;
             var dockerTag = HostingWizard[PublishContainerToAWSWizardProperties.DockerTag] as string;
 
+            bool persistSettings = false;
+            if (HostingWizard[PublishContainerToAWSWizardProperties.PersistSettingsToConfigFile] is bool)
+                persistSettings = (bool)HostingWizard[PublishContainerToAWSWizardProperties.PersistSettingsToConfigFile];
+
             var dockerImageTag = dockerRepository;
             if (!string.IsNullOrWhiteSpace(dockerTag))
                 dockerImageTag += ":" + dockerTag;
@@ -136,7 +140,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                     Region = region,
                     DockerImageTag = dockerImageTag,
                     Configuration = configuration,
-                    WorkingDirectory = workingDirectory
+                    WorkingDirectory = workingDirectory,
+
+                    PersistConfigFile = persistSettings
                 };
 
                 var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(Constants.ECR_ENDPOINT_LOOKUP));
@@ -167,7 +173,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
                     Cluster = HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string,
                     Service = HostingWizard[PublishContainerToAWSWizardProperties.Service] as string,
-                    DesiredCount = ((int?)HostingWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit]).GetValueOrDefault()
+                    DesiredCount = ((int)HostingWizard[PublishContainerToAWSWizardProperties.DesiredCount]),
+
+                    PersistConfigFile = persistSettings
                 };
 
                 var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(Constants.ECR_ENDPOINT_LOOKUP));

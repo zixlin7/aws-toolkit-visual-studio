@@ -33,7 +33,9 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     ECRClient = this._ecrClient,
 
                     Configuration = state.Configuration,
-                    DockerImageTag = state.DockerImageTag
+                    DockerImageTag = state.DockerImageTag,
+
+                    PersistConfigFile = state.PersistConfigFile
                 };
 
                 if (command.ExecuteAsync().Result)
@@ -57,6 +59,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             public string Configuration { get; set; }
             public string WorkingDirectory { get; set; }
             public string DockerImageTag { get; set; }
+
+            public bool? PersistConfigFile { get; set; }
         }
     }
 }

@@ -176,6 +176,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
+        public bool PersistSettingsToConfigFile
+        {
+            get { return this._ctlPersistSettings.IsChecked.GetValueOrDefault(); }
+        }
+
         public AccountViewModel SelectedAccount
         {
             get

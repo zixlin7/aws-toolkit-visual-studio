@@ -115,8 +115,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 var account = PageController.HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
                 var region = PageController.HostingWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
 
+                var unsetDesiredCount = string.IsNullOrWhiteSpace(this._ctlDesiredCount.Text);
+
                 Task task1 = Task.Run(() =>
                 {
+                    int? instanceCount = null;
                     var items = new List<string>();
                     using (var ecsClient = account.CreateServiceClient<AmazonECSClient>(region.GetEndpoint(Constants.ECS_ENDPOINT_LOOKUP)))
                     {
@@ -133,6 +136,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                                 items.Add(name);
                             }
                         } while (!string.IsNullOrEmpty(response.NextToken));
+
+                        if(unsetDesiredCount)
+                        {
+                            var describeClusterResponse = ecsClient.DescribeClusters(new DescribeClustersRequest { Clusters = new List<string> { cluster } });
+                            if (describeClusterResponse.Clusters.Count == 1)
+                                instanceCount = describeClusterResponse.Clusters[0].RegisteredContainerInstancesCount;
+                        }
                     }
 
                     ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
@@ -143,6 +153,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         }
 
                         this._ctlServicePicker.Text = "";
+
+                        if(instanceCount.HasValue && unsetDesiredCount)
+                        {
+                            this._ctlDesiredCount.Text = instanceCount.Value.ToString();
+                        }
                     }));
                 });
             }

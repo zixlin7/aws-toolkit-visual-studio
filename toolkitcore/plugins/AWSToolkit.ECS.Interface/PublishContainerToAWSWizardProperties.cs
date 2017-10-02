@@ -49,5 +49,7 @@ namespace Amazon.AWSToolkit.ECS
         public static readonly string Cluster = "cluster";
         public static readonly string Service = "service";
         public static readonly string DesiredCount = "desiredCount";
+
+        public static readonly string PersistSettingsToConfigFile = "persistSettingsToConfigFile";
     }
 }

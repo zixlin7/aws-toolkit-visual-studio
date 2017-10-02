@@ -20,6 +20,7 @@ namespace Amazon.ECS.Tools
             ProfileNotFound,
             RegionNotConfigured,
             MissingRequiredParameter,
+            PersistConfigError,
 
             DotnetPublishFailed,
             DockerBuildFailed,

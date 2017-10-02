@@ -126,6 +126,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
             HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode] = _pageUI.DeploymentOption.Mode;
 
+            HostingWizard[PublishContainerToAWSWizardProperties.PersistSettingsToConfigFile] = _pageUI.PersistSettingsToConfigFile;
+
             return true;
         }
 

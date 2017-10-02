@@ -47,7 +47,9 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
                     ECSCluster = state.Cluster,
                     ECSService = state.Service,
-                    DesiredCount = state.DesiredCount
+                    DesiredCount = state.DesiredCount,
+
+                    PersistConfigFile = state.PersistConfigFile
                 };
 
                 if(state.PortMapping != null && state.PortMapping.Count > 0)
@@ -91,6 +93,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             public string Cluster { get; set; }
             public string Service { get; set; }
             public int DesiredCount { get; set; }
+
+            public bool? PersistConfigFile { get; set; }
         }
     }
 }

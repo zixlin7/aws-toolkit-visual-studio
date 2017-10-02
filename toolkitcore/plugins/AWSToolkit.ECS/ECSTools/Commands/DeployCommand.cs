@@ -9,9 +9,8 @@ using Task = System.Threading.Tasks.Task;
 
 using Amazon.ECR.Model;
 using Amazon.ECS.Model;
-
-
-
+using ThirdParty.Json.LitJson;
+using System.IO;
 
 namespace Amazon.ECS.Tools.Commands
 {
@@ -27,14 +26,18 @@ namespace Amazon.ECS.Tools.Commands
             DefinedCommandOptions.ARGUMENT_FRAMEWORK,
             DefinedCommandOptions.ARGUMENT_DOCKER_TAG,
             DefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH,
+
             DefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION,
             DefinedCommandOptions.ARGUMENT_ECS_CONTAINER,
-            DefinedCommandOptions.ARGUMENT_ECS_CLUSTER,
-            DefinedCommandOptions.ARGUMENT_ECS_SERVICE,
             DefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT,
             DefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT,
-            DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT,
             DefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING,
+
+            DefinedCommandOptions.ARGUMENT_ECS_CLUSTER,
+            DefinedCommandOptions.ARGUMENT_ECS_SERVICE,
+            DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT,
+
+            DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE,
         });
 
         public string Configuration { get; set; }
@@ -53,7 +56,7 @@ namespace Amazon.ECS.Tools.Commands
         public int? ContainerMemorySoftLimit { get; set; }
         public int? DesiredCount { get; set; }
 
-
+        public bool? PersistConfigFile { get; set; }
 
         public DeployCommand(IToolLogger logger, string workingDirectory, string[] args)
             : base(logger, workingDirectory, CommandOptions, args)
@@ -91,6 +94,8 @@ namespace Amazon.ECS.Tools.Commands
                 this.DesiredCount = tuple.Item2.IntValue;
             if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING.Switch)) != null)
                 this.PortMappings = tuple.Item2.StringValues;
+            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE.Switch)) != null)
+                this.PersistConfigFile = tuple.Item2.BoolValue;
         }
 
         public override async Task<bool> ExecuteAsync()
@@ -139,6 +144,11 @@ namespace Amazon.ECS.Tools.Commands
 
                 await CreateOrUpdateService(ecsCluster, ecsService, ecsTaskDefinition, revision);
                 this.Logger?.WriteLine($"Service {ecsService} on ECS cluster {ecsCluster} has been updated. The Cluster will now deploy the new service version.");
+
+                if (this.GetBoolValueOrDefault(this.PersistConfigFile, DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE, false).GetValueOrDefault())
+                {
+                    this.SaveConfigFile();
+                }
             }
             catch (DockerToolsException e)
             {
@@ -381,5 +391,52 @@ namespace Amazon.ECS.Tools.Commands
             }
         }
 
+        private void SaveConfigFile()
+        {
+            try
+            {
+                JsonData data;
+                if (File.Exists(this.DefaultConfig.SourceFile))
+                {
+                    data = JsonMapper.ToObject(File.ReadAllText(this.DefaultConfig.SourceFile));
+                }
+                else
+                {
+                    data = new JsonData();
+                }
+
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_AWS_REGION.ConfigFileKey, this.GetStringValueOrDefault(this.Region, DefinedCommandOptions.ARGUMENT_AWS_REGION, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_AWS_PROFILE.ConfigFileKey, this.GetStringValueOrDefault(this.Profile, DefinedCommandOptions.ARGUMENT_AWS_PROFILE, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_AWS_PROFILE_LOCATION.ConfigFileKey, this.GetStringValueOrDefault(this.ProfileLocation, DefinedCommandOptions.ARGUMENT_AWS_PROFILE_LOCATION, false));
+
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_CONFIGURATION.ConfigFileKey, this.GetStringValueOrDefault(this.Configuration, DefinedCommandOptions.ARGUMENT_CONFIGURATION, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_FRAMEWORK.ConfigFileKey, this.GetStringValueOrDefault(this.TargetFramework, DefinedCommandOptions.ARGUMENT_FRAMEWORK, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH.ConfigFileKey, this.GetBoolValueOrDefault(this.SkipImagePush, DefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH, false));
+
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION.ConfigFileKey, this.GetStringValueOrDefault(this.ECSTaskDefinition, DefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_CONTAINER.ConfigFileKey, this.GetStringValueOrDefault(this.ECSContainer, DefinedCommandOptions.ARGUMENT_ECS_CONTAINER, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT.ConfigFileKey, this.GetIntValueOrDefault(this.ContainerMemoryHardLimit, DefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT.ConfigFileKey, this.GetIntValueOrDefault(this.ContainerMemorySoftLimit, DefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING.ConfigFileKey, DockerToolsDefaults.FormatCommaDelimitedList(this.GetStringValuesOrDefault(this.PortMappings, DefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING, false)));
+
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_CLUSTER.ConfigFileKey, this.GetStringValueOrDefault(this.ECSCluster, DefinedCommandOptions.ARGUMENT_ECS_CLUSTER, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_SERVICE.ConfigFileKey, this.GetStringValueOrDefault(this.ECSService, DefinedCommandOptions.ARGUMENT_ECS_SERVICE, false));
+
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT.ConfigFileKey, this.GetIntValueOrDefault(this.DesiredCount, DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false));
+
+                StringBuilder sb = new StringBuilder();
+                JsonWriter writer = new JsonWriter(sb);
+                writer.PrettyPrint = true;
+                JsonMapper.ToJson(data, writer);
+
+                var json = sb.ToString();
+                File.WriteAllText(this.DefaultConfig.SourceFile, json);
+                this.Logger.WriteLine($"Config settings saved to {this.DefaultConfig.SourceFile}");
+            }
+            catch (Exception e)
+            {
+                throw new DockerToolsException("Error persisting configuration file: " + e.Message, DockerToolsException.ErrorCode.PersistConfigError);
+            }
+        }
     }
 }
