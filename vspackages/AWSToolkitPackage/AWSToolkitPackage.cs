@@ -857,10 +857,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 if (AWSECSPlugin != null)
                 {
-                    var pi = VSUtility.SelectedWebProject;
-                    publishMenuCommand.Visible
-                        = (pi != null
-                            && pi.VsProjectType != VSWebProjectInfo.VsWebProjectType.NotWebProjectType);
+                    publishMenuCommand.Visible = VSUtility.IsNETCoreDockerProject;
                     publishMenuCommand.Enabled = !_performingDeployment;
                 }
             }

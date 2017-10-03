@@ -44,6 +44,42 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
             return projectGuid.ToString("B");
         }
 
+        public static bool IsNETCoreDockerProject
+        {
+            get
+            {
+                try
+                {
+                    IntPtr hierarchyPtr, selectionContainerPtr;
+                    uint projectItemId;
+                    IVsMultiItemSelect mis;
+                    var monitorSelection = (IVsMonitorSelection)Package.GetGlobalService(typeof(SVsShellMonitorSelection));
+                    monitorSelection.GetCurrentSelection(out hierarchyPtr, out projectItemId, out mis, out selectionContainerPtr);
+
+                    if (hierarchyPtr != null && projectItemId == VSConstants.VSITEMID_ROOT)
+                    {
+                        var projHier = Marshal.GetTypedObjectForIUnknown(hierarchyPtr, typeof(IVsHierarchy)) as IVsHierarchy;
+                        if (projHier != null && projHier.IsCapabilityMatch(_dotNetCoreWebCapability))
+                        {
+                            Object prjItemObject = null;
+                            projHier.GetProperty(projectItemId, (int)__VSHPROPID.VSHPROPID_ExtObject, out prjItemObject);
+
+                            var prjItem = prjItemObject as EnvDTE.Project;
+                            if (prjItem == null)
+                                return false;
+
+                            var dockerFilePath = Path.Combine(Path.GetDirectoryName(prjItem.FullName), "Dockerfile");
+                            if (File.Exists(dockerFilePath))
+                                return true;
+                        }
+                    }
+                }
+                catch (Exception) { }
+
+                return false;
+            }
+        }
+
         /// <summary>
         /// Return wrapper around selected web project, provided it is the only selected
         /// item and is a root object....
