@@ -87,13 +87,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controller\FeatureController.cs" />
+    <Compile Include="Controller\LaunchClusterController.cs" />
     <Compile Include="Controller\PublishContainerToAWSController.cs" />
+    <Compile Include="Controller\ViewClustersController.cs" />
     <Compile Include="DeploymentWorkers\BaseWorker.cs" />
     <Compile Include="DeploymentWorkers\DeployToClusterWorker.cs" />
     <Compile Include="DeploymentWorkers\ECSToolLogger.cs" />
     <Compile Include="DeploymentWorkers\IDockerDeploymentHelper.cs" />
     <Compile Include="DeploymentWorkers\PushImageToECRWorker.cs" />
     <Compile Include="ECSActivator.cs" />
+    <Compile Include="Model\ClusterWrapper.cs" />
+    <Compile Include="Model\IWrapper.cs" />
+    <Compile Include="Model\ViewClustersModel.cs" />
+    <Compile Include="Nodes\FeatureViewMetaNode.cs" />
+    <Compile Include="Nodes\FeatureViewModel.cs" />
+    <Compile Include="Nodes\ECSClustersViewMetaNode.cs" />
+    <Compile Include="Nodes\ECSClustersViewModel.cs" />
+    <Compile Include="Nodes\ECSRootViewMetaNode.cs" />
+    <Compile Include="Nodes\ECSRootViewModel.cs" />
     <Compile Include="ECSTools\AbstractCLIWrapper.cs" />
     <Compile Include="ECSTools\Commands\BaseCommand.cs" />
     <Compile Include="ECSTools\Commands\DeployCommand.cs" />
@@ -111,7 +123,12 @@
     <Compile Include="ECSTools\Options\CommandOptionValue.cs" />
     <Compile Include="ECSTools\Options\DefinedCommandOptions.cs" />
     <Compile Include="ECSTools\Utilities.cs" />
+    <Compile Include="Nodes\ECSServiceViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="View\DataGrid\ECSColumnDefinitions.cs" />
+    <Compile Include="View\ViewClustersControl.xaml.cs">
+      <DependentUpon>ViewClustersControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WizardPages\PageControllers\ECSClusterPageController.cs" />
     <Compile Include="WizardPages\PageControllers\ECSTaskDefinitionPageController.cs" />
     <Compile Include="WizardPages\PageControllers\PublishProgressPageController.cs" />
@@ -146,8 +163,14 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\launch-cluster.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="View\ViewClustersControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WizardPages\PageUI\ECSClusterPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -164,6 +187,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\service-root-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\clusters.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\launch-cluster.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

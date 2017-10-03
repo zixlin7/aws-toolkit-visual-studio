@@ -15,6 +15,7 @@ namespace Amazon.AWSToolkit
     public class RegionEndPointsManager
     {
         public const string EC2_SERVICE_NAME = "EC2";
+        public const string ECS_SERVICE_NAME = "ECS";
         public const string ELB_SERVICE_NAME = "ELB";
         public const string AUTOSCALING_SERVICE_NAME = "AutoScaling";
         public const string CLOUDWATCH_SERVICE_NAME = "CloudWatch";

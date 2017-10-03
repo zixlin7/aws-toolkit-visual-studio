@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.ECS.Controller;
+using Amazon.AWSToolkit.ECS.Nodes;
+using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.ECS
 {
@@ -12,11 +11,16 @@ namespace Amazon.AWSToolkit.ECS
     {
         public override string PluginName => "ECS";
 
-
-
         public override void RegisterMetaNodes()
         {
+            var rootMetaNode = new ECSRootViewMetaNode();
 
+            rootMetaNode.Children.Add(new ECSClustersViewMetaNode());
+
+            SetupECSContextMenuHooks(rootMetaNode);
+
+            var accountMetaNode = ToolkitFactory.Instance.RootViewMetaNode.FindChild<AccountViewMetaNode>();
+            accountMetaNode.Children.Add(rootMetaNode);
         }
 
         public override object QueryPluginService(Type serviceType)
@@ -25,6 +29,15 @@ namespace Amazon.AWSToolkit.ECS
                 return this;
 
             return null;
+        }
+
+        void SetupECSContextMenuHooks(ECSRootViewMetaNode rootNode)
+        {
+            rootNode.OnLaunch = new CommandInstantiator<LaunchClusterController>().Execute;
+
+            ECSClustersViewMetaNode clustersNode = rootNode.FindChild<ECSClustersViewMetaNode>();
+            clustersNode.OnLaunchCluster = new CommandInstantiator<LaunchClusterController>().Execute;
+            clustersNode.OnView = new CommandInstantiator<ViewClustersController>().Execute;
         }
 
         public void PublishContainerToAWS(Dictionary<string, object> seedProperties)

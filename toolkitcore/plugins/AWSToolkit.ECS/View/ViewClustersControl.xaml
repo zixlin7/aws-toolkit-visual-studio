@@ -1,0 +1,63 @@
+﻿<commonui:BaseAWSView x:Class="Amazon.AWSToolkit.ECS.View.ViewClustersControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
+    xmlns:uicomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"                        
+    Height="600" Width="800"
+    >
+
+    <commonui:BaseAWSView.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSView.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*"></RowDefinition>
+            <RowDefinition Height="5"></RowDefinition>
+            <RowDefinition Height="1*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Grid.Column="0" LastChildFill="True" Margin="0,0,0,0">
+            <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
+                <Button Click="onLaunchClick">
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" Source="..\Resources\Images\launch-cluster.png"/>
+                            <TextBlock>Launch Cluster</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+                <Button Click="onRefreshClick">
+                    <Button.Content>
+                        <WrapPanel>
+                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                            <TextBlock>Refresh</TextBlock>
+                        </WrapPanel>
+                    </Button.Content>
+                </Button>
+            </ToolBar>
+
+            <Label Style="{DynamicResource awsLabel200PercentStyle}"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center">
+                Clusters listed here
+            </Label>
+        </DockPanel>
+
+        <GridSplitter Grid.Row="1" Grid.Column="0" Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray"/>
+
+        <Label Grid.Row="2" Grid.Column="0" Style="{DynamicResource awsLabel200PercentStyle}" 
+               VerticalAlignment="Center"
+               HorizontalAlignment="Center">
+            Selected cluster details here
+        </Label>
+
+    </Grid>
+</commonui:BaseAWSView>

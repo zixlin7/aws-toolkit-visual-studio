@@ -75,7 +75,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Model\AssociatedIconAttribute.cs" />
     <Compile Include="EBSVolumeType.cs" />
     <Compile Include="EC2Constants.cs" />
     <Compile Include="EC2ServiceMeta.cs" />
