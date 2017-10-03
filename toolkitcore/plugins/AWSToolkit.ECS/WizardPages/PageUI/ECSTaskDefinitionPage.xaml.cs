@@ -26,6 +26,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ECSTaskDefinitionPage));
 
+        bool _initialTaskDefinitionLoad = true;
+
         public ECSTaskDefinitionPageController PageController { get; private set; }
 
         public ECSTaskDefinitionPage()
@@ -45,6 +47,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             UpdateExistingTaskDefinition();
             LoadPreviousValues(PageController.HostingWizard);
+
+            if (string.IsNullOrWhiteSpace(this._ctlContainerPicker.Text))
+                this._ctlContainerPicker.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
         }
 
         private void LoadPreviousValues(IAWSWizard hostWizard)
@@ -67,8 +72,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         void UpdateExistingTaskDefinition()
         {
+            var currentTaskDefinitionText = !string.IsNullOrWhiteSpace(this._ctlTaskDefinitionPicker.Text) && this._ctlTaskDefinitionPicker.SelectedValue == null ? this._ctlTaskDefinitionPicker.Text : null;
             this._ctlTaskDefinitionPicker.Items.Clear();
-            this._ctlContainerPicker.Items.Clear();
 
             try
             {
@@ -105,7 +110,20 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         if (!string.IsNullOrWhiteSpace(previousValue) && items.Contains(previousValue))
                             this._ctlTaskDefinitionPicker.SelectedItem = previousValue;
                         else
-                            this._ctlTaskDefinitionPicker.Text = "";
+                        {
+                            if (_initialTaskDefinitionLoad && PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] is string)
+                            {
+                                _initialTaskDefinitionLoad = false;
+                                this._ctlTaskDefinitionPicker.Text = ((string)PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName]);
+                            }
+                            else
+                            {
+                                if (currentTaskDefinitionText != null)
+                                    this._ctlTaskDefinitionPicker.Text = currentTaskDefinitionText;
+                                else
+                                    this._ctlTaskDefinitionPicker.Text = "";
+                            }
+                        }
                     }));
                 });
             }
@@ -117,6 +135,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         private void UpdateExistingContainers()
         {
+            var currentTextValue = !string.IsNullOrWhiteSpace(this._ctlContainerPicker.Text) &&
+                this._ctlContainerPicker.SelectedValue == null ? this._ctlContainerPicker.Text : null;
             this._ctlContainerPicker.Items.Clear();
             try
             {
@@ -155,7 +175,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         if (!string.IsNullOrWhiteSpace(previousValue) && items.Contains(previousValue))
                             this._ctlContainerPicker.SelectedItem = previousValue;
                         else
-                            this._ctlContainerPicker.Text = "";
+                        {
+                            if (currentTextValue != null)
+                                this._ctlContainerPicker.Text = currentTextValue;
+                            else
+                                this._ctlContainerPicker.Text = "";
+                        }
                     }));
                 });
             }

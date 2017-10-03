@@ -35,6 +35,7 @@ namespace Amazon.AWSToolkit.ECS
 
         public static readonly string SelectedProjectFile = "selectedProjectFile";
         public static readonly string SourcePath = "sourcePath";
+        public static readonly string SafeProjectName = "safeProjectName";
 
         public static readonly string DeploymentMode = "deploymentMode";
         public static readonly string Configuration = "configuration";

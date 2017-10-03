@@ -25,6 +25,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(PushImageToECRPage));
 
+        bool _initialLoad = true;
         public PushImageToECRPageController PageController { get; private set; }
 
         IAmazonECR _ecrClient;
@@ -85,6 +86,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         void UpdateExistingResources()
         {
+            var currentRepositoryText = !string.IsNullOrWhiteSpace(this._ctlDockerRepositoryPicker.Text) && this._ctlDockerRepositoryPicker.SelectedValue == null ? this._ctlDockerRepositoryPicker.Text : null;
             this._ctlDockerRepositoryPicker.Items.Clear();
             this._ctlDockerTagPicker.Items.Clear();
             try
@@ -123,7 +125,21 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         if (!string.IsNullOrWhiteSpace(previousRepository) && items.Contains(previousRepository))
                             this._ctlDockerRepositoryPicker.SelectedItem = previousRepository;
                         else
-                            this._ctlDockerRepositoryPicker.Text = "";
+                        {
+                            if (_initialLoad && PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] is string)
+                            {
+                                _initialLoad = false;
+                                this._ctlDockerRepositoryPicker.Text = ((string)PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName]).ToLower();
+                            }
+                            else
+                            {
+                                if (currentRepositoryText != null)
+                                    this._ctlDockerRepositoryPicker.Text = currentRepositoryText;
+                                else
+                                    this._ctlDockerRepositoryPicker.Text = "";
+                            }
+                        }
+                        
                     }));
                 });
 

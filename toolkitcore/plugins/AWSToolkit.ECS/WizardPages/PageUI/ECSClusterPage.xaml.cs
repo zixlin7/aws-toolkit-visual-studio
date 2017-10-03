@@ -40,6 +40,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             UpdateExistingClusters();
             LoadPreviousValues(PageController.HostingWizard);
+
+            if (string.IsNullOrWhiteSpace(this._ctlServicePicker.Text))
+                this._ctlServicePicker.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
         }
 
         private void LoadPreviousValues(IAWSWizard hostWizard)
@@ -65,8 +68,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         private void UpdateExistingClusters()
         {
+            var currentTextValue = !string.IsNullOrWhiteSpace(this._ctlClusterPicker.Text) && 
+                this._ctlClusterPicker.SelectedValue == null ? this._ctlClusterPicker.Text : null;
             this._ctlClusterPicker.Items.Clear();
-            this._ctlServicePicker.Items.Clear();
 
             try
             {
@@ -105,7 +109,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         if (!string.IsNullOrWhiteSpace(previousValue) && items.Contains(previousValue))
                             this._ctlClusterPicker.SelectedItem = previousValue;
                         else
-                            this._ctlClusterPicker.Text = "";
+                        {
+                            if (currentTextValue != null)
+                                this._ctlClusterPicker.Text = currentTextValue;
+                            else
+                                this._ctlClusterPicker.Text = "";
+                        }
                     }));
                 });
             }
@@ -117,6 +126,10 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         private void UpdateExistingServices()
         {
+            var currentTextValue = !string.IsNullOrWhiteSpace(this._ctlServicePicker.Text) &&
+                this._ctlServicePicker.SelectedValue == null ? this._ctlServicePicker.Text : null;
+            this._ctlServicePicker.Items.Clear();
+
             this._ctlServicePicker.Items.Clear();
             try
             {
@@ -171,7 +184,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         if (!string.IsNullOrWhiteSpace(previousValue) && items.Contains(previousValue))
                             this._ctlServicePicker.SelectedItem = previousValue;
                         else
-                            this._ctlServicePicker.Text = "";
+                        {
+                            if (currentTextValue != null)
+                                this._ctlServicePicker.Text = currentTextValue;
+                            else
+                                this._ctlServicePicker.Text = "";
+                        }
 
                         if (instanceCount.HasValue && unsetDesiredCount)
                         {

@@ -836,6 +836,14 @@ namespace Amazon.AWSToolkit.VisualStudio
                 seedProperties[PublishContainerToAWSWizardProperties.SourcePath] = rootDirectory;
                 seedProperties[PublishContainerToAWSWizardProperties.SelectedProjectFile] = item.FullName;
 
+                StringBuilder safeProjectName = new StringBuilder();
+                foreach(var c in Path.GetFileNameWithoutExtension(item.FullName).ToCharArray())
+                {
+                    if (char.IsLetterOrDigit(c))
+                        safeProjectName.Append(c);
+                }
+                seedProperties[PublishContainerToAWSWizardProperties.SafeProjectName] = safeProjectName.ToString();
+
                 this.AWSECSPlugin.PublishContainerToAWS(seedProperties);
             }
         }
