@@ -1,20 +1,32 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 using Amazon.AWSToolkit.ECS.Controller;
 using log4net;
 
 namespace Amazon.AWSToolkit.ECS.View
 {
     /// <summary>
-    /// Interaction logic for ViewClustersControl.xaml
+    /// Interaction logic for ViewClusterControl.xaml
     /// </summary>
-    public partial class ViewClustersControl 
+    public partial class ViewClusterControl
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(ViewClustersControl));
+        static readonly ILog LOGGER = LogManager.GetLogger(typeof(ViewClusterControl));
 
-        readonly ViewClustersController _controller;
+        readonly ViewClusterController _controller;
 
-        public ViewClustersControl(ViewClustersController controller)
+        public ViewClusterControl(ViewClusterController controller)
         {
             InitializeComponent();
             this._controller = controller;
@@ -24,7 +36,7 @@ namespace Amazon.AWSToolkit.ECS.View
         {
             get
             {
-                return string.Format("{0} ECS Clusters", this._controller.RegionDisplayName);
+                return string.Format("{0} ECS Cluster", this._controller.RegionDisplayName);
             }
         }
 
@@ -32,7 +44,7 @@ namespace Amazon.AWSToolkit.ECS.View
         {
             get
             {
-                return "Clusters: " + this._controller.EndPoint + "_" + this._controller.Account.SettingsUniqueKey;
+                return "Cluster: " + this._controller.EndPoint + "_" + this._controller.Account.SettingsUniqueKey;
             }
         }
 
@@ -60,24 +72,6 @@ namespace Amazon.AWSToolkit.ECS.View
             {
                 LOGGER.Error("Error refreshing", e);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error refreshing cluster: " + e.Message);
-            }
-        }
-
-        void onLaunchClick(object sender, RoutedEventArgs evnt)
-        {
-            try
-            {
-                /* todo
-                IList<RunningInstanceWrapper> newInstances = this._controller.LaunchInstance();
-                if (newInstances != null && newInstances.Count > 0)
-                {
-                    this._ctlDataGrid.SelectAndScrollIntoView(newInstances[0]);
-                }*/
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error launching cluster", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error launching ECS cluster: " + e.Message);
             }
         }
 

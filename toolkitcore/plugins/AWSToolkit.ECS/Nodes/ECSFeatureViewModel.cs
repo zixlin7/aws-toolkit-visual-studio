@@ -4,11 +4,11 @@ using Amazon.ECS;
 
 namespace Amazon.AWSToolkit.ECS.Model
 {
-    public abstract class FeatureViewModel : AbstractViewModel
+    public abstract class ECSFeatureViewModel : AbstractViewModel
     {
         readonly IAmazonECS _ecsClient;
 
-        public FeatureViewModel(IMetaNode metaNode, ECSServiceViewModel viewModel, string name)
+        protected ECSFeatureViewModel(IMetaNode metaNode, ECSRootViewModel viewModel, string name)
             : base(metaNode, viewModel, name)
         {
             this._ecsClient = viewModel.ECSClient;

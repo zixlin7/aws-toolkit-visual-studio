@@ -13,11 +13,14 @@ namespace Amazon.AWSToolkit.ECS
 
         public override void RegisterMetaNodes()
         {
+            var clustersRootMetaNode = new ECSClustersRootViewMetaNode();
+            var clusterMetaNode = new ECSClusterViewMetaNode();
+            clustersRootMetaNode.Children.Add(clusterMetaNode);
+
             var rootMetaNode = new ECSRootViewMetaNode();
+            rootMetaNode.Children.Add(clustersRootMetaNode);
 
-            rootMetaNode.Children.Add(new ECSClustersViewMetaNode());
-
-            SetupECSContextMenuHooks(rootMetaNode);
+            setupECSContextMenuHooks(rootMetaNode);
 
             var accountMetaNode = ToolkitFactory.Instance.RootViewMetaNode.FindChild<AccountViewMetaNode>();
             accountMetaNode.Children.Add(rootMetaNode);
@@ -31,13 +34,15 @@ namespace Amazon.AWSToolkit.ECS
             return null;
         }
 
-        void SetupECSContextMenuHooks(ECSRootViewMetaNode rootNode)
+        void setupECSContextMenuHooks(ECSRootViewMetaNode rootNode)
         {
             rootNode.OnLaunch = new CommandInstantiator<LaunchClusterController>().Execute;
 
-            ECSClustersViewMetaNode clustersNode = rootNode.FindChild<ECSClustersViewMetaNode>();
-            clustersNode.OnLaunchCluster = new CommandInstantiator<LaunchClusterController>().Execute;
-            clustersNode.OnView = new CommandInstantiator<ViewClustersController>().Execute;
+            var clusterRootNode = rootNode.FindChild<ECSClustersRootViewMetaNode>();
+            clusterRootNode.OnLaunchCluster = new CommandInstantiator<LaunchClusterController>().Execute;
+
+            var clusterNode = clusterRootNode.FindChild<ECSClusterViewMetaNode>();
+            clusterNode.OnView = new CommandInstantiator<ViewClusterController>().Execute;
         }
 
         public void PublishContainerToAWS(Dictionary<string, object> seedProperties)

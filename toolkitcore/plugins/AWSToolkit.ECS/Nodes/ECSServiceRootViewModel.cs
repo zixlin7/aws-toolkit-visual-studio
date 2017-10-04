@@ -6,12 +6,12 @@ using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.ECS.Nodes
 {
-    public abstract class ECSServiceViewModel : ServiceRootViewModel
+    public abstract class ECSServiceRootViewModel : ServiceRootViewModel
     {
         IAmazonECS _ecsClient;
-        static ILog _logger = LogManager.GetLogger(typeof(ECSServiceViewModel));
+        static ILog _logger = LogManager.GetLogger(typeof(ECSServiceRootViewModel));
 
-        public ECSServiceViewModel(IMetaNode metaNode, AccountViewModel accountViewModel, string name)
+        public ECSServiceRootViewModel(IMetaNode metaNode, AccountViewModel accountViewModel, string name)
             : base(metaNode, accountViewModel, name)
         {
         }

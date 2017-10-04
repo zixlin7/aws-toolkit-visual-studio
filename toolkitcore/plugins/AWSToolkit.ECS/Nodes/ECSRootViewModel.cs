@@ -5,7 +5,7 @@ using Amazon.AWSToolkit.Navigator.Node;
 
 namespace Amazon.AWSToolkit.ECS.Nodes
 {
-    public class ECSRootViewModel : ECSServiceViewModel, IECSRootViewModel
+    public class ECSRootViewModel : ECSServiceRootViewModel, IECSRootViewModel
     {
         ECSRootViewMetaNode _metaNode;
         AccountViewModel _accountViewModel;
@@ -40,7 +40,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
             {
                 List<IViewModel> items = new List<IViewModel>
                 {
-                    new ECSClustersViewModel(this.MetaNode.FindChild<ECSClustersViewMetaNode>(), this)
+                    new ECSClustersRootViewModel(this.MetaNode.FindChild<ECSClustersRootViewMetaNode>(), this),
                 };
                 BeginCopingChildren(items);
             }

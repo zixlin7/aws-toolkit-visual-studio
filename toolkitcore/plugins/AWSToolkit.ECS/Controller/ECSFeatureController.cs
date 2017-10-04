@@ -6,16 +6,16 @@ using Amazon.ECS;
 
 namespace Amazon.AWSToolkit.ECS.Controller
 {
-    public abstract class FeatureController<M> : BaseContextCommand where M : new()
+    public abstract class ECSFeatureController<M> : BaseContextCommand where M : new()
     {
         IAmazonECS _ecsClient;
         M _model;
         string _endpoint;
-        FeatureViewModel _featureViewModel;
+        ECSFeatureViewModel _featureViewModel;
 
         public override ActionResults Execute(IViewModel model)
         {
-            this._featureViewModel = model as FeatureViewModel;
+            this._featureViewModel = model as ECSFeatureViewModel;
             if (this._featureViewModel == null)
                 return new ActionResults().WithSuccess(false);
 
@@ -35,7 +35,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
             get { return this._ecsClient; }
         }
 
-        protected FeatureViewModel FeatureViewModel
+        protected ECSFeatureViewModel FeatureViewModel
         {
             get { return this._featureViewModel; }
         }
