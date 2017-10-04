@@ -9,9 +9,10 @@ using Amazon.AWSToolkit.Navigator.Node;
 
 namespace Amazon.AWSToolkit.ECS.Nodes
 {
-    public class ECSRootViewMetaNode : ServiceRootViewMetaNode
+    public class RootViewMetaNode : ServiceRootViewMetaNode
     {
         public const string ECS_ENDPOINT_LOOKUP = RegionEndPointsManager.ECS_SERVICE_NAME;
+        public const string ECR_ENDPOINT_LOOKUP = RegionEndPointsManager.ECR_SERVICE_NAME;
 
         public override string EndPointSystemName
         {
@@ -20,7 +21,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 
         public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
         {
-            return new ECSRootViewModel(account);
+            return new RootViewModel(account);
         }
 
         public ActionHandlerWrapper.ActionHandler OnLaunch
@@ -31,7 +32,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 
         public void OnLaunchResponse(IViewModel focus, ActionResults results)
         {
-            ECSRootViewModel rootModel = focus as ECSRootViewModel;
+            RootViewModel rootModel = focus as RootViewModel;
         }
 
         public override IList<ActionHandlerWrapper> Actions

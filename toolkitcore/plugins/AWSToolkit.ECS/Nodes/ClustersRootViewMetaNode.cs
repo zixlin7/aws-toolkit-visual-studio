@@ -8,12 +8,12 @@ using Amazon.AWSToolkit.Navigator.Node;
 
 namespace Amazon.AWSToolkit.ECS.Nodes
 {
-    public class ECSClustersRootViewMetaNode : ECSFeatureViewMetaNode
+    public class ClustersRootViewMetaNode : AbstractMetaNode
     {
 
-        public ECSClusterViewMetaNode ECSClusterViewMetaNode
+        public ClusterViewMetaNode ClusterViewMetaNode
         {
-            get { return this.FindChild<ECSClusterViewMetaNode>(); }
+            get { return this.FindChild<ClusterViewMetaNode>(); }
         }
 
         public override bool SupportsRefresh
@@ -37,14 +37,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
                                              null, 
                                              false,
                                              this.GetType().Assembly, 
-                                             "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.launch_cluster.png"),
-                    null,
-                    new ActionHandlerWrapper("View", 
-                                             OnView, 
-                                             null, 
-                                             true,
-                                             this.GetType().Assembly, 
-                                             null)
+                                             "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.launch_cluster.png")
                 );
             }
         }

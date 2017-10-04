@@ -4,7 +4,7 @@ using Amazon.AWSToolkit.Navigator;
 
 namespace Amazon.AWSToolkit.ECS.Nodes
 {
-    public class ECSClusterViewMetaNode : ECSFeatureViewMetaNode
+    public class ClusterViewMetaNode : FeatureViewMetaNode
     {
         public override IList<ActionHandlerWrapper> Actions
         {

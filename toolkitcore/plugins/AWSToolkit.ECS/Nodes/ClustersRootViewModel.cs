@@ -8,14 +8,14 @@ using log4net;
 
 namespace Amazon.AWSToolkit.ECS.Nodes
 {
-    public class ECSClustersRootViewModel : InstanceDataRootViewModel
+    public class ClustersRootViewModel : InstanceDataRootViewModel
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(ECSClustersRootViewModel));
+        static readonly ILog LOGGER = LogManager.GetLogger(typeof(ClustersRootViewModel));
 
-        readonly ECSRootViewModel _rootViewModel;
+        readonly RootViewModel _rootViewModel;
         readonly IAmazonECS _ecsClient;
 
-        public ECSClustersRootViewModel(ECSClustersRootViewMetaNode metaNode, ECSRootViewModel viewModel)
+        public ClustersRootViewModel(ClustersRootViewMetaNode metaNode, RootViewModel viewModel)
             : base(metaNode, viewModel, "Clusters")
         {
             this._rootViewModel = viewModel;
@@ -48,7 +48,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
             {
                 var listResponse = this.ECSClient.ListClusters(listRequest);
                 items.AddRange(listResponse.ClusterArns.Select(arn =>
-                    new ECSClusterViewModel(this.MetaNode.FindChild<ECSClusterViewMetaNode>(),
+                    new ClusterViewModel(this.MetaNode.FindChild<ClusterViewMetaNode>(),
                                             this._rootViewModel,
                                             new ClusterWrapper(arn))).Cast<IViewModel>().ToList());
 
@@ -58,14 +58,14 @@ namespace Amazon.AWSToolkit.ECS.Nodes
             BeginCopingChildren(items);
         }
 
-        public void RemoveClusterInstance(string clusterArn)
+        public void RemoveClusterInstance(string clusterName)
         {
-            base.RemoveChild(clusterArn);
+            base.RemoveChild(clusterName);
         }
 
         public void AddCluster(ClusterWrapper instance)
         {
-            var child = new ECSClusterViewModel(this.MetaNode.FindChild<ECSClusterViewMetaNode>(), this._rootViewModel, instance);
+            var child = new ClusterViewModel(this.MetaNode.FindChild<ClusterViewMetaNode>(), this._rootViewModel, instance);
             base.AddChild(child);
         }
     }

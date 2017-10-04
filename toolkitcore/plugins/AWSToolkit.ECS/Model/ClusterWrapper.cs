@@ -104,7 +104,7 @@ namespace Amazon.AWSToolkit.ECS.Model
         }
 
         [Browsable(false)]
-        public System.Windows.Media.ImageSource InstanceIcon
+        public System.Windows.Media.ImageSource ClusterIcon
         {
             get
             {

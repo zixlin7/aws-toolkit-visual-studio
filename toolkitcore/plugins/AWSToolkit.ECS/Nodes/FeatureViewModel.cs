@@ -1,22 +1,30 @@
 ﻿using Amazon.AWSToolkit.ECS.Nodes;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.ECR;
 using Amazon.ECS;
 
 namespace Amazon.AWSToolkit.ECS.Model
 {
-    public abstract class ECSFeatureViewModel : AbstractViewModel
+    public abstract class FeatureViewModel : AbstractViewModel
     {
-        readonly IAmazonECS _ecsClient;
+        private readonly IAmazonECS _ecsClient;
+        private readonly IAmazonECR _ecrClient;
 
-        protected ECSFeatureViewModel(IMetaNode metaNode, ECSRootViewModel viewModel, string name)
+        protected FeatureViewModel(IMetaNode metaNode, RootViewModel viewModel, string name)
             : base(metaNode, viewModel, name)
         {
             this._ecsClient = viewModel.ECSClient;
+            this._ecrClient = viewModel.ECRClient;
         }
 
         public IAmazonECS ECSClient
         {
             get { return this._ecsClient; }
+        }
+
+        public IAmazonECR ECRClient
+        {
+            get { return this._ecrClient; }
         }
 
         public string RegionSystemName

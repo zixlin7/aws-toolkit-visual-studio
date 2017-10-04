@@ -3,7 +3,7 @@ using Amazon.AWSToolkit.Navigator.Node;
 
 namespace Amazon.AWSToolkit.ECS.Nodes
 {
-    public class ECSFeatureViewMetaNode : AbstractMetaNode
+    public class FeatureViewMetaNode : AbstractMetaNode
     {
         public ActionHandlerWrapper.ActionHandler OnView
         {

@@ -5,15 +5,15 @@ using log4net;
 
 namespace Amazon.AWSToolkit.ECS.Nodes
 {
-    public class ECSClusterViewModel : ECSFeatureViewModel
+    public class ClusterViewModel : FeatureViewModel
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(ECSClusterViewModel));
+        static readonly ILog LOGGER = LogManager.GetLogger(typeof(ClusterViewModel));
 
-        readonly ECSRootViewModel _rootViewModel;
+        readonly RootViewModel _rootViewModel;
         readonly IAmazonECS _ecsClient;
         readonly ClusterWrapper _cluster;
 
-        public ECSClusterViewModel(ECSClusterViewMetaNode metaNode, ECSRootViewModel viewModel, ClusterWrapper cluster)
+        public ClusterViewModel(ClusterViewMetaNode metaNode, RootViewModel viewModel, ClusterWrapper cluster)
             : base(metaNode, viewModel, cluster.Name)
         {
             this._rootViewModel = viewModel;
@@ -21,7 +21,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
             this._ecsClient = viewModel.ECSClient;
         }
 
-        public ECSRootViewModel RootViewModel
+        public RootViewModel RootViewModel
         {
             get { return this._rootViewModel; }
         }

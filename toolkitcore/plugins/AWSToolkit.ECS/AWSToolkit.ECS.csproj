@@ -87,10 +87,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controller\ECSFeatureController.cs" />
+    <Compile Include="Controller\CreateRepositoryController.cs" />
+    <Compile Include="Controller\FeatureController.cs" />
     <Compile Include="Controller\LaunchClusterController.cs" />
     <Compile Include="Controller\PublishContainerToAWSController.cs" />
     <Compile Include="Controller\ViewClusterController.cs" />
+    <Compile Include="Controller\ViewRepositoryController.cs" />
     <Compile Include="DeploymentWorkers\BaseWorker.cs" />
     <Compile Include="DeploymentWorkers\DeployToClusterWorker.cs" />
     <Compile Include="DeploymentWorkers\ECSToolLogger.cs" />
@@ -99,15 +101,21 @@
     <Compile Include="ECSActivator.cs" />
     <Compile Include="Model\ClusterWrapper.cs" />
     <Compile Include="Model\IWrapper.cs" />
+    <Compile Include="Model\RepositoryWrapper.cs" />
     <Compile Include="Model\ViewClusterModel.cs" />
-    <Compile Include="Nodes\ECSClustersRootViewMetaNode.cs" />
-    <Compile Include="Nodes\ECSClustersRootViewModel.cs" />
-    <Compile Include="Nodes\ECSFeatureViewMetaNode.cs" />
-    <Compile Include="Nodes\ECSFeatureViewModel.cs" />
-    <Compile Include="Nodes\ECSClusterViewMetaNode.cs" />
-    <Compile Include="Nodes\ECSClusterViewModel.cs" />
-    <Compile Include="Nodes\ECSRootViewMetaNode.cs" />
-    <Compile Include="Nodes\ECSRootViewModel.cs" />
+    <Compile Include="Model\ViewRepositoryModel.cs" />
+    <Compile Include="Nodes\ClustersRootViewMetaNode.cs" />
+    <Compile Include="Nodes\ClustersRootViewModel.cs" />
+    <Compile Include="Nodes\FeatureViewMetaNode.cs" />
+    <Compile Include="Nodes\FeatureViewModel.cs" />
+    <Compile Include="Nodes\ClusterViewMetaNode.cs" />
+    <Compile Include="Nodes\ClusterViewModel.cs" />
+    <Compile Include="Nodes\RepositoriesRootViewMetaNode.cs" />
+    <Compile Include="Nodes\RepositoriesRootViewModel.cs" />
+    <Compile Include="Nodes\RepositoryViewMetaNode.cs" />
+    <Compile Include="Nodes\RepositoryViewModel.cs" />
+    <Compile Include="Nodes\RootViewMetaNode.cs" />
+    <Compile Include="Nodes\RootViewModel.cs" />
     <Compile Include="ECSTools\AbstractCLIWrapper.cs" />
     <Compile Include="ECSTools\Commands\BaseCommand.cs" />
     <Compile Include="ECSTools\Commands\DeployCommand.cs" />
@@ -125,11 +133,12 @@
     <Compile Include="ECSTools\Options\CommandOptionValue.cs" />
     <Compile Include="ECSTools\Options\DefinedCommandOptions.cs" />
     <Compile Include="ECSTools\Utilities.cs" />
-    <Compile Include="Nodes\ECSServiceRootViewModel.cs" />
-    <Compile Include="Nodes\IECSClusterViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="View\ViewClusterControl.xaml.cs">
       <DependentUpon>ViewClusterControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ViewRepositoryControl.xaml.cs">
+      <DependentUpon>ViewRepositoryControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="WizardPages\PageControllers\ECSClusterPageController.cs" />
     <Compile Include="WizardPages\PageControllers\ECSTaskDefinitionPageController.cs" />
@@ -173,6 +182,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\ViewRepositoryControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WizardPages\PageUI\ECSClusterPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -198,6 +211,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\launch-cluster.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\repository.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\create-repository.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\create-repository.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -13,12 +13,17 @@ namespace Amazon.AWSToolkit.ECS
 
         public override void RegisterMetaNodes()
         {
-            var clustersRootMetaNode = new ECSClustersRootViewMetaNode();
-            var clusterMetaNode = new ECSClusterViewMetaNode();
+            var clustersRootMetaNode = new ClustersRootViewMetaNode();
+            var clusterMetaNode = new ClusterViewMetaNode();
             clustersRootMetaNode.Children.Add(clusterMetaNode);
 
-            var rootMetaNode = new ECSRootViewMetaNode();
+            var repositoriesRootMetaNode = new RepositoriesRootViewMetaNode();
+            var repositoryMetaNode = new RepositoryViewMetaNode();
+            repositoriesRootMetaNode.Children.Add(repositoryMetaNode);
+
+            var rootMetaNode = new RootViewMetaNode();
             rootMetaNode.Children.Add(clustersRootMetaNode);
+            rootMetaNode.Children.Add(repositoriesRootMetaNode);
 
             setupECSContextMenuHooks(rootMetaNode);
 
@@ -34,15 +39,21 @@ namespace Amazon.AWSToolkit.ECS
             return null;
         }
 
-        void setupECSContextMenuHooks(ECSRootViewMetaNode rootNode)
+        void setupECSContextMenuHooks(RootViewMetaNode rootNode)
         {
             rootNode.OnLaunch = new CommandInstantiator<LaunchClusterController>().Execute;
 
-            var clusterRootNode = rootNode.FindChild<ECSClustersRootViewMetaNode>();
+            // cluster hierarchy
+            var clusterRootNode = rootNode.FindChild<ClustersRootViewMetaNode>();
             clusterRootNode.OnLaunchCluster = new CommandInstantiator<LaunchClusterController>().Execute;
-
-            var clusterNode = clusterRootNode.FindChild<ECSClusterViewMetaNode>();
+            var clusterNode = clusterRootNode.FindChild<ClusterViewMetaNode>();
             clusterNode.OnView = new CommandInstantiator<ViewClusterController>().Execute;
+
+            // repository hierarchy
+            var repositoriesRootNode = rootNode.FindChild<RepositoriesRootViewMetaNode>();
+            repositoriesRootNode.OnCreateRepository = new CommandInstantiator<CreateRepositoryController>().Execute;
+            var repositoryNode = repositoriesRootNode.FindChild<RepositoryViewMetaNode>();
+            repositoryNode.OnView = new CommandInstantiator<ViewRepositoryController>().Execute;
         }
 
         public void PublishContainerToAWS(Dictionary<string, object> seedProperties)
