@@ -190,5 +190,24 @@ namespace Amazon.ECS.Tools.Options
                 ValueType = CommandOption.CommandOptionValueType.CommaDelimitedList,
                 Description = "The mapping of container ports to host ports. Format is <host-port>:<container-port>,<host-port>:<container-port>,...",
             };
+        public static readonly CommandOption ARGUMENT_ENVIRONMENT_VARIABLES =
+            new CommandOption
+            {
+                Name = "Environment Variables",
+                ShortSwitch = "-ev",
+                Switch = "--environment-variables",
+                ValueType = CommandOption.CommandOptionValueType.KeyValuePairs,
+                Description = "Environment variables for a container definition. Format is <key1>=<value1>;<key2>=<value2>"
+            };
+        public static readonly CommandOption ARGUMENT_TASK_DEFINITION_ROLE =
+            new CommandOption
+            {
+                Name = "Task Definition Role",
+                ShortSwitch = "-trole",
+                Switch = "--task-role",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "The IAM role that will provide AWS credentials for the containers in the Task Definition"
+            };
+
     }
 }

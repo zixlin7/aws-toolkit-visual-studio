@@ -836,6 +836,8 @@ namespace Amazon.AWSToolkit.VisualStudio
                 seedProperties[PublishContainerToAWSWizardProperties.SourcePath] = rootDirectory;
                 seedProperties[PublishContainerToAWSWizardProperties.SelectedProjectFile] = item.FullName;
 
+                seedProperties[PublishContainerToAWSWizardProperties.IsWebProject] = VSUtility.SelectedWebProject != null;
+
                 StringBuilder safeProjectName = new StringBuilder();
                 foreach(var c in Path.GetFileNameWithoutExtension(item.FullName).ToCharArray())
                 {

@@ -59,7 +59,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
                     if (hierarchyPtr != null && projectItemId == VSConstants.VSITEMID_ROOT)
                     {
                         var projHier = Marshal.GetTypedObjectForIUnknown(hierarchyPtr, typeof(IVsHierarchy)) as IVsHierarchy;
-                        if (projHier != null && projHier.IsCapabilityMatch(_dotNetCoreWebCapability))
+                        if (projHier != null && projHier.IsCapabilityMatch("CrossPlatformExecutable"))
                         {
                             Object prjItemObject = null;
                             projHier.GetProperty(projectItemId, (int)__VSHPROPID.VSHPROPID_ExtObject, out prjItemObject);

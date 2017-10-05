@@ -33,6 +33,8 @@ namespace Amazon.AWSToolkit.ECS
         /// </summary>
         public static readonly string Region = "region";
 
+        public static readonly string IsWebProject = "isWebProject";
+
         public static readonly string SelectedProjectFile = "selectedProjectFile";
         public static readonly string SourcePath = "sourcePath";
         public static readonly string SafeProjectName = "safeProjectName";

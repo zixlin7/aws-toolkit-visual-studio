@@ -32,6 +32,8 @@ namespace Amazon.ECS.Tools.Commands
             DefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT,
             DefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT,
             DefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING,
+            DefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE,
+            DefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES,
 
             DefinedCommandOptions.ARGUMENT_ECS_CLUSTER,
             DefinedCommandOptions.ARGUMENT_ECS_SERVICE,
@@ -55,6 +57,9 @@ namespace Amazon.ECS.Tools.Commands
         public int? ContainerMemoryHardLimit { get; set; }
         public int? ContainerMemorySoftLimit { get; set; }
         public int? DesiredCount { get; set; }
+        public string TaskDefinitionRole { get; set; }
+
+        public Dictionary<string, string> EnvironmentVariables { get; set; }
 
         public bool? PersistConfigFile { get; set; }
 
@@ -96,6 +101,10 @@ namespace Amazon.ECS.Tools.Commands
                 this.PortMappings = tuple.Item2.StringValues;
             if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE.Switch)) != null)
                 this.PersistConfigFile = tuple.Item2.BoolValue;
+            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE.Switch)) != null)
+                this.TaskDefinitionRole = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES.Switch)) != null)
+                this.EnvironmentVariables = tuple.Item2.KeyValuePairs;
         }
 
         public override async Task<bool> ExecuteAsync()
@@ -256,6 +265,12 @@ namespace Amazon.ECS.Tools.Commands
                     registerRequest.Volumes = response.TaskDefinition.Volumes;
                 }
 
+                var taskIAMRole = this.GetStringValueOrDefault(this.TaskDefinitionRole, DefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE, false);
+                if(!string.IsNullOrWhiteSpace(taskIAMRole))
+                {
+                    registerRequest.TaskRoleArn = taskIAMRole;
+                }
+
                 var containerDefinition = registerRequest.ContainerDefinitions.FirstOrDefault(x => string.Equals(x.Name, ecsContainer, StringComparison.Ordinal));
 
                 if (containerDefinition == null)
@@ -271,6 +286,18 @@ namespace Amazon.ECS.Tools.Commands
 
                 containerDefinition.Image = dockerImageTag;
 
+                {
+                    var environmentVariables = this.GetKeyValuePairOrDefault(this.EnvironmentVariables, DefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES, false);
+                    if (environmentVariables != null && environmentVariables.Count > 0)
+                    {
+                        var listEnv = new List<KeyValuePair>();
+                        foreach(var e in environmentVariables)
+                        {
+                            listEnv.Add(new KeyValuePair {Name = e.Key, Value = e.Value });
+                        }
+                        containerDefinition.Environment = listEnv;
+                    }
+                }
                 {
                     var hardLimit = this.GetIntValueOrDefault(this.ContainerMemoryHardLimit, DefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT, false);
                     if (hardLimit.HasValue)

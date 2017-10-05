@@ -35,7 +35,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             InitializeComponent();
 
             PortMappings = new ObservableCollection<PortMappingItem>();
-            PortMappings.Add(new PortMappingItem { HostPort = 80, ContainerPort = 80 });
 
             DataContext = this;
         }
@@ -44,6 +43,14 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             : this()
         {
             PageController = pageController;
+
+            if(PageController.HostingWizard[PublishContainerToAWSWizardProperties.IsWebProject] is bool)
+            {
+                if((bool)PageController.HostingWizard[PublishContainerToAWSWizardProperties.IsWebProject])
+                {
+                    PortMappings.Add(new PortMappingItem { HostPort = 80, ContainerPort = 80 });
+                }
+            }
 
             UpdateExistingTaskDefinition();
             LoadPreviousValues(PageController.HostingWizard);
