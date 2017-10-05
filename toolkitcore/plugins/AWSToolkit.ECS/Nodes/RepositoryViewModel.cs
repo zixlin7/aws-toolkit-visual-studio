@@ -42,5 +42,10 @@ namespace Amazon.AWSToolkit.ECS.Nodes
                 return "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.repository.png";
             }
         }
+
+        public string RepositoryName
+        {
+            get { return _repository.Name; }
+        }
     }
 }

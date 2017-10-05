@@ -9,5 +9,6 @@ namespace Amazon.AWSToolkit.ECS.Model
 {
     public class ViewClusterModel : BaseModel
     {
+        public ClusterWrapper Cluster { get; internal set; }
     }
 }

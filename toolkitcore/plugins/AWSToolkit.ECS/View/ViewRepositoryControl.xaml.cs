@@ -1,18 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Amazon.AWSToolkit.ECS.Controller;
+using Amazon.AWSToolkit.ECS.Nodes;
 using log4net;
 
 namespace Amazon.AWSToolkit.ECS.View
@@ -28,15 +18,20 @@ namespace Amazon.AWSToolkit.ECS.View
 
         public ViewRepositoryControl(ViewRepositoryController controller)
         {
-            InitializeComponent();
             this._controller = controller;
+            DataContext = _controller.Model;
+
+            InitializeComponent();
         }
 
         public override string Title
         {
             get
             {
-                return string.Format("{0} ECR Repository", this._controller.RegionDisplayName);
+                if (this._controller.Model.Repository == null)
+                    return "Repository";
+
+                return string.Format("Repository {0}", this._controller.Model.Repository.Name);
             }
         }
 
@@ -44,7 +39,10 @@ namespace Amazon.AWSToolkit.ECS.View
         {
             get
             {
-                return "Repository: " + this._controller.EndPoint + "_" + this._controller.Account.SettingsUniqueKey;
+                return string.Format("Repository: {0} {1}_{2}",
+                                    (this._controller.FeatureViewModel as RepositoryViewModel).Repository.RepositoryArn,
+                                     this._controller.EndPoint,
+                                     this._controller.Account.SettingsUniqueKey);
             }
         }
 
@@ -62,11 +60,16 @@ namespace Amazon.AWSToolkit.ECS.View
             return this._controller.Model;
         }
 
+        void onLoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+        }
+
         void onRefreshClick(object sender, RoutedEventArgs evnt)
         {
             try
             {
-                // todo this._controller.RefreshInstances();
+                this._controller.LoadModel();
             }
             catch (Exception e)
             {
@@ -75,5 +78,9 @@ namespace Amazon.AWSToolkit.ECS.View
             }
         }
 
+        void SortHandler(object sender, DataGridSortingEventArgs e)
+        {
+            
+        }
     }
 }

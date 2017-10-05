@@ -3,15 +3,17 @@ using Amazon.AWSToolkit.ECS.Model;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.ECS;
+using Amazon.ECR;
 
 namespace Amazon.AWSToolkit.ECS.Controller
 {
     public abstract class FeatureController<M> : BaseContextCommand where M : new()
     {
-        IAmazonECS _ecsClient;
-        M _model;
-        string _endpoint;
-        FeatureViewModel _featureViewModel;
+        private IAmazonECS _ecsClient;
+        private IAmazonECR _ecrClient;
+        private M _model;
+        private string _endpoint;
+        private FeatureViewModel _featureViewModel;
 
         public override ActionResults Execute(IViewModel model)
         {
@@ -35,7 +37,12 @@ namespace Amazon.AWSToolkit.ECS.Controller
             get { return this._ecsClient; }
         }
 
-        protected FeatureViewModel FeatureViewModel
+        public IAmazonECR ECRClient
+        {
+            get { return this._ecrClient; }
+        }
+
+        public FeatureViewModel FeatureViewModel
         {
             get { return this._featureViewModel; }
         }

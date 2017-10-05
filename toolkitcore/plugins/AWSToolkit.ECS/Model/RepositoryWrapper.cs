@@ -58,6 +58,18 @@ namespace Amazon.AWSToolkit.ECS.Model
             get { return _repositoryArn; }
         }
 
+        [DisplayName("URI")]
+        public string RepositoryUri
+        {
+            get { return _repository.RepositoryUri; }
+        }
+
+        [DisplayName("Creation Date")]
+        public string CreationDate
+        {
+            get { return _repository.CreatedAt.ToShortDateString(); }
+        }
+
         [Browsable(false)]
         public string TypeName
         {

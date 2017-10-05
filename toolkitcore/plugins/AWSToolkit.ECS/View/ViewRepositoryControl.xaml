@@ -11,6 +11,13 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="HorizontalSeparatorBar" TargetType="{x:Type Rectangle}">
+                <Setter Property="Height" Value="2" />
+                <Setter Property="Fill" Value="{DynamicResource awsPanelBorderBrushKey}" />
+                <Setter Property="Margin" Value="0" />
+            </Style>
+
         </ResourceDictionary>
     </commonui:BaseAWSView.Resources>
 
@@ -27,11 +34,128 @@
                 </Button>
             </ToolBar>
 
-            <Label Style="{DynamicResource awsLabel200PercentStyle}"
-                   VerticalAlignment="Center"
-                   HorizontalAlignment="Center">
-                Repository data here
-            </Label>
+            <Grid Margin="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="2"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="2"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0"
+                           Style="{DynamicResource awsTextBlock155PercentStyle}"
+                           Margin="5,10">
+                    <Run Text="Repository" />                    
+                    <Run Text="{Binding Repository.Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
+                </TextBlock>
+                
+                <Rectangle Grid.Row="1" 
+                           HorizontalAlignment="Stretch" 
+                           Margin="5,0" 
+                           Style="{StaticResource HorizontalSeparatorBar}"
+                           />
+
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>   
+                    
+                    <Label Grid.Row="0" Grid.Column="0" 
+                           Style="{DynamicResource awsLabel133PercentStyle}">
+                        ARN:
+                    </Label>
+                    <TextBlock Grid.Row="0" Grid.Column="1"
+                               Style="{DynamicResource awsTextBlock133PercentStyle}"
+                               Text="{Binding Repository.RepositoryArn, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <Label Grid.Row="0" Grid.Column="2" 
+                           Style="{DynamicResource awsLabel133PercentStyle}">
+                        Created on:
+                    </Label>
+                    <TextBlock Grid.Row="0" Grid.Column="3"
+                               Style="{DynamicResource awsTextBlock133PercentStyle}"
+                               Text="{Binding Repository.CreationDate, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <Label Grid.Row="1" Grid.Column="0" 
+                           Style="{DynamicResource awsLabel133PercentStyle}">
+                        URI:
+                    </Label>
+                    <TextBlock Grid.Row="1" Grid.Column="1"
+                               Style="{DynamicResource awsTextBlock133PercentStyle}"
+                               Text="{Binding Repository.RepositoryUri, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    
+                </Grid>
+                
+                <Rectangle Grid.Row="3" 
+                           HorizontalAlignment="Stretch" 
+                           Margin="5,0" 
+                           Style="{StaticResource HorizontalSeparatorBar}"
+                />
+
+                <Grid Grid.Row="4" Margin="0,10,0,5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Label Grid.Row="0" Grid.Column="0" Style="{DynamicResource awsLabel133PercentStyle}">
+                        Images
+                    </Label>
+
+                    <Button Grid.Row="0" Grid.Column="1" Style="{DynamicResource awsButtonBaseStyle}"
+                            Padding="4,0">
+                        View Push Commands
+                    </Button>
+
+                    <commonui:ToolkitDataGridWrapper
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Margin="0,5"
+                        x:Name="_ctlImagesGrid"
+                        HorizontalAlignment="Stretch"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserReorderColumns="True"
+                        CanUserSortColumns="True"
+                        CellStyle="{DynamicResource awsDataGridCellCentering}"
+                        EnableRowVirtualization="True"
+                        HeadersVisibility="All"
+                        IsEnabled="False"
+                        LoadingRow="onLoadingRow"
+                        ScrollViewer.IsDeferredScrollingEnabled="True"
+                        Sorting="SortHandler"
+                        VirtualizingStackPanel.VirtualizationMode="Standard">
+
+                        <commonui:ToolkitDataGridWrapper.RowHeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGridRow}}, Path=Header}" />
+                            </DataTemplate>
+                        </commonui:ToolkitDataGridWrapper.RowHeaderTemplate>
+                        
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="*" Header="Image tags"/>
+                            <DataGridTextColumn Width="Auto" Header="Digest"/>
+                            <DataGridTextColumn Width="Auto" Header="Size (MiB)"/>
+                            <DataGridTextColumn Width="Auto" Header="Pushed at"/>
+                        </DataGrid.Columns>
+
+                    </commonui:ToolkitDataGridWrapper>
+                </Grid>
+            </Grid>
         </DockPanel>
 
     </Grid>
