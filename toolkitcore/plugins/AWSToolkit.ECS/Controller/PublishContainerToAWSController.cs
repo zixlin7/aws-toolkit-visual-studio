@@ -139,8 +139,10 @@ namespace Amazon.AWSToolkit.ECS.Controller
             IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
             {
                 new PushImageToECRPageController(),
-                new ECSTaskDefinitionPageController(),
                 new ECSClusterPageController(),
+                new ECSServicePageController(),
+                new ConfigureLoadBalancerPageController(),
+                new ECSTaskDefinitionPageController(),
                 new PublishProgressPageController()
             };
 

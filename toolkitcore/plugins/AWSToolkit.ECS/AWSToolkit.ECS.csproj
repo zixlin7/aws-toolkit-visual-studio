@@ -140,12 +140,20 @@
     <Compile Include="View\ViewRepositoryControl.xaml.cs">
       <DependentUpon>ViewRepositoryControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WizardPages\PageControllers\ConfigureLoadBalancerPageController.cs" />
     <Compile Include="WizardPages\PageControllers\ECSClusterPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\ECSServicePageController.cs" />
     <Compile Include="WizardPages\PageControllers\ECSTaskDefinitionPageController.cs" />
     <Compile Include="WizardPages\PageControllers\PublishProgressPageController.cs" />
     <Compile Include="WizardPages\PageControllers\PushImageToECRPageController.cs" />
+    <Compile Include="WizardPages\PageUI\ConfigureLoadBalancerPage.xaml.cs">
+      <DependentUpon>ConfigureLoadBalancerPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WizardPages\PageUI\ECSClusterPage.xaml.cs">
       <DependentUpon>ECSClusterPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\ECSServicePage.xaml.cs">
+      <DependentUpon>ECSServicePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="WizardPages\PageUI\ECSTaskDefinitionPage.xaml.cs">
       <DependentUpon>ECSTaskDefinitionPage.xaml</DependentUpon>
@@ -186,7 +194,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="WizardPages\PageUI\ConfigureLoadBalancerPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WizardPages\PageUI\ECSClusterPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\PageUI\ECSServicePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

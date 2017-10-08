@@ -40,15 +40,10 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             UpdateExistingClusters();
             LoadPreviousValues(PageController.HostingWizard);
-
-            if (string.IsNullOrWhiteSpace(this._ctlServicePicker.Text))
-                this._ctlServicePicker.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
         }
 
         private void LoadPreviousValues(IAWSWizard hostWizard)
         {
-            if (hostWizard[PublishContainerToAWSWizardProperties.DesiredCount] is int)
-                this.DesiredCount = (int)hostWizard[PublishContainerToAWSWizardProperties.DesiredCount];
         }
 
         public bool AllRequiredFieldsAreSet
@@ -56,10 +51,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             get
             {
                 if (string.IsNullOrWhiteSpace(this.Cluster))
-                    return false;
-                if (string.IsNullOrWhiteSpace(this.Service))
-                    return false;
-                if (!this.DesiredCount.HasValue || this.DesiredCount < 0)
                     return false;
 
                 return true;
@@ -124,86 +115,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
-        private void UpdateExistingServices()
-        {
-            var currentTextValue = !string.IsNullOrWhiteSpace(this._ctlServicePicker.Text) &&
-                this._ctlServicePicker.SelectedValue == null ? this._ctlServicePicker.Text : null;
-            this._ctlServicePicker.Items.Clear();
-
-            this._ctlServicePicker.Items.Clear();
-            try
-            {
-                if (this._ctlClusterPicker.SelectedItem == null)
-                    return;
-
-                var cluster = this._ctlClusterPicker.SelectedItem as string;
-
-                var account = PageController.HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
-                var region = PageController.HostingWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
-
-                var unsetDesiredCount = string.IsNullOrWhiteSpace(this._ctlDesiredCount.Text);
-
-                Task task1 = Task.Run(() =>
-                {
-                    int? instanceCount = null;
-                    var items = new List<string>();
-                    using (var ecsClient = account.CreateServiceClient<AmazonECSClient>(region.GetEndpoint(Constants.ECS_ENDPOINT_LOOKUP)))
-                    {
-                        var response = new ListServicesResponse();
-                        do
-                        {
-                            var request = new ListServicesRequest() { Cluster = cluster, NextToken = response.NextToken };
-
-                            response = ecsClient.ListServices(request);
-
-                            foreach (var arn in response.ServiceArns)
-                            {
-                                var name = arn.Substring(arn.IndexOf('/') + 1);
-                                items.Add(name);
-                            }
-                        } while (!string.IsNullOrEmpty(response.NextToken));
-
-                        if(unsetDesiredCount)
-                        {
-                            var describeClusterResponse = ecsClient.DescribeClusters(new DescribeClustersRequest { Clusters = new List<string> { cluster } });
-                            if (describeClusterResponse.Clusters.Count == 1)
-                                instanceCount = describeClusterResponse.Clusters[0].RegisteredContainerInstancesCount;
-                        }
-                    }
-
-                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
-                    {
-                        foreach (var service in items.OrderBy(x => x))
-                        {
-                            this._ctlServicePicker.Items.Add(service);
-                        }
-
-                        this._ctlServicePicker.Text = "";
-
-                        var previousValue = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.Service] as string;
-                        if (!string.IsNullOrWhiteSpace(previousValue) && items.Contains(previousValue))
-                            this._ctlServicePicker.SelectedItem = previousValue;
-                        else
-                        {
-                            if (currentTextValue != null)
-                                this._ctlServicePicker.Text = currentTextValue;
-                            else
-                                this._ctlServicePicker.Text = "";
-                        }
-
-                        if (instanceCount.HasValue && unsetDesiredCount)
-                        {
-                            this._ctlDesiredCount.Text = instanceCount.Value.ToString();
-                        }
-                    }));
-                });
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error refreshing existing ECS Task Definition Container.", e);
-            }
-        }
-
 
         public string Cluster
         {
@@ -219,34 +130,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         private void _ctlClusterPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             NotifyPropertyChanged("Cluster");
-            UpdateExistingServices();
-        }
-
-        public string Service
-        {
-            get { return this._ctlServicePicker.Text; }
-            set { this._ctlServicePicker.Text = value; }
-        }
-
-        private void _ctlServicePicker_TextChanged(object sender, RoutedEventArgs e)
-        {
-            NotifyPropertyChanged("Service");
-        }
-
-        private void _ctlServicePicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            NotifyPropertyChanged("Service");
-        }
-
-        int? _desiredCount;
-        public int? DesiredCount
-        {
-            get { return _desiredCount; }
-            set
-            {
-                _desiredCount = value;
-                NotifyPropertyChanged("DesiredCount");
-            }
         }
     }
 }

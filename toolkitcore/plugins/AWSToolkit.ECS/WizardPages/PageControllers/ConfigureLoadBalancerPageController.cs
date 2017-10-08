@@ -12,9 +12,9 @@ using System.Windows.Controls;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 {
-    public class ECSClusterPageController : IAWSWizardPageController
+    public class ConfigureLoadBalancerPageController : IAWSWizardPageController
     {
-        private ECSClusterPage _pageUI;
+        private ConfigureLoadBalancerPage _pageUI;
 
         public IAWSWizard HostingWizard { get; set; }
 
@@ -63,7 +63,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             if (_pageUI == null)
             {
-                _pageUI = new ECSClusterPage(this);
+                _pageUI = new ConfigureLoadBalancerPage(this);
                 _pageUI.PropertyChanged += _pageUI_PropertyChanged;
             }
 
@@ -125,8 +125,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             if (_pageUI == null)
                 return false;
-
-            HostingWizard[PublishContainerToAWSWizardProperties.Cluster] = _pageUI.Cluster;
 
             return true;
         }
