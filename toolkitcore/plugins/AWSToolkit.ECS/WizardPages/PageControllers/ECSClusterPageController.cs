@@ -22,7 +22,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "Select existing the ECS Cluster that will run the Task Definition";
+                return "A Cluster is the logical grouping for the compute resources that will run your Docker images.";
             }
         }
 
@@ -40,7 +40,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "ECS Cluster";
+                return "ECS Cluster Setup";
             }
         }
 
