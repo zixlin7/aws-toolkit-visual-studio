@@ -43,6 +43,10 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             get
             {
+                if (!this._ctlConfigureLoadBalancer.IsChecked.GetValueOrDefault())
+                    return true;
+
+
                 return true;
             }
         }

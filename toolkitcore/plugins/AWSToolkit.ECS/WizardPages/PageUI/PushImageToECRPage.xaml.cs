@@ -61,7 +61,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             this._ctlDeploymentOptionPicker.Items.Add
             (
-                new DeploymentOptionItem(Constants.DeployMode.DeployToECSCluster, "Deploy to an existing Amazon EC2 Container Service Cluster",
+                new DeploymentOptionItem(Constants.DeployMode.DeployToECSCluster, "Deploy to an Amazon EC2 Container Service Cluster",
                     "After building a Docker image with the dotnet and docker CLI tools the image will be deployed to an Amazon EC2 Container Service cluster.")
             );
 

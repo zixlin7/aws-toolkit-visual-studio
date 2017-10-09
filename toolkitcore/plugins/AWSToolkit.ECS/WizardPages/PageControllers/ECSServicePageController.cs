@@ -18,6 +18,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public IAWSWizard HostingWizard { get; set; }
 
+        public string Cluster { get; private set; }
+
         public string PageDescription
         {
             get
@@ -56,6 +58,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
         {
+            var cluster = HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string;
+            if(!string.Equals(cluster, this.Cluster))
+            {
+                this.Cluster = cluster;
+                this._pageUI.InitializeWithNewCluster();
+            }
+
             TestForwardTransitionEnablement();
         }
 
@@ -106,7 +115,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public void TestForwardTransitionEnablement()
         {
-            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Forward, false);
+            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Forward, IsForwardsNavigationAllowed);
             HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Finish, QueryFinishButtonEnablement());
         }
 
@@ -125,6 +134,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             if (_pageUI == null)
                 return false;
+
+            HostingWizard[PublishContainerToAWSWizardProperties.IsExistingService] = this._pageUI.CreateNewService;
+            HostingWizard[PublishContainerToAWSWizardProperties.Service] = this._pageUI.CreateNewService ? _pageUI.NewServiceName : _pageUI.Service;
+            HostingWizard[PublishContainerToAWSWizardProperties.DesiredCount] = this._pageUI.DesiredCount;
+            HostingWizard[PublishContainerToAWSWizardProperties.MinimumHealthy] = this._pageUI.MinimumHealthy;
+            HostingWizard[PublishContainerToAWSWizardProperties.MaximumPercent] = this._pageUI.MaximumPercent;
 
             return true;
         }

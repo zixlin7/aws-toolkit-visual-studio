@@ -51,7 +51,6 @@
                 Margin="16,10,4,2"
                 SelectedItem="{Binding Service, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 SelectionChanged="_ctlServicePicker_SelectionChanged"
-                TextBoxBase.TextChanged="_ctlServicePicker_TextChanged"
                 Style="{DynamicResource awsComboBoxStyle}" />
 
 
@@ -81,8 +80,6 @@
                 SelectedIndex="0"
                 Margin="16,2,4,2"
                 SelectedItem="{Binding Service, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                SelectionChanged="_ctlServicePicker_SelectionChanged"
-                TextBoxBase.TextChanged="_ctlServicePicker_TextChanged"
                 Style="{DynamicResource awsComboBoxStyle}">
                 <ComboBoxItem>Availability Zone Balanced Spread</ComboBoxItem>
             </ComboBox>
@@ -141,7 +138,7 @@
                 Width="100"
                 HorizontalAlignment="Left"
                 Style="{DynamicResource awsTextBoxStyle}"
-                Text="{Binding DesiredCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Text="{Binding MinimumHealthy, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 />
 
             <Label
@@ -161,7 +158,7 @@
                 Width="100"
                 HorizontalAlignment="Left"
                 Style="{DynamicResource awsTextBoxStyle}"
-                Text="{Binding DesiredCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Text="{Binding MaximumPercent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 />
     </Grid>
 </commonUi:BaseAWSUserControl>

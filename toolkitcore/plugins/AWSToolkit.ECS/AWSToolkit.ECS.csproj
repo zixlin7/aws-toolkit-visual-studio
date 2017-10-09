@@ -140,6 +140,7 @@
     <Compile Include="View\ViewRepositoryControl.xaml.cs">
       <DependentUpon>ViewRepositoryControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WizardPages\ECSWizardUitls.cs" />
     <Compile Include="WizardPages\PageControllers\ConfigureLoadBalancerPageController.cs" />
     <Compile Include="WizardPages\PageControllers\ECSClusterPageController.cs" />
     <Compile Include="WizardPages\PageControllers\ECSServicePageController.cs" />

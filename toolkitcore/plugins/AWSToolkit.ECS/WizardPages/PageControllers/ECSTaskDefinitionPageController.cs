@@ -107,7 +107,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public void TestForwardTransitionEnablement()
         {
-            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Forward, IsForwardsNavigationAllowed);
+            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Forward, false);
             HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Finish, QueryFinishButtonEnablement());
         }
 

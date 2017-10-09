@@ -106,7 +106,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public void TestForwardTransitionEnablement()
         {
-            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Forward, false);
+            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Forward, IsForwardsNavigationAllowed);
             HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Finish, QueryFinishButtonEnablement());
         }
 
@@ -127,6 +127,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 return false;
 
             HostingWizard[PublishContainerToAWSWizardProperties.Cluster] = _pageUI.Cluster;
+            HostingWizard[PublishContainerToAWSWizardProperties.IsExistingCluster] = true;
 
             return true;
         }
