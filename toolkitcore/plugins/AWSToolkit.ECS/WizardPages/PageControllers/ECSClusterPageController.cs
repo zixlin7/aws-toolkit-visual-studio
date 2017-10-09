@@ -10,6 +10,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
+using Amazon.ECS.Model;
+
+using static Amazon.AWSToolkit.ECS.WizardPages.ECSWizardUitls;
+
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 {
     public class ECSClusterPageController : IAWSWizardPageController
@@ -126,6 +130,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (_pageUI == null)
                 return false;
 
+            if(!string.Equals(HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string, this._pageUI.Cluster))
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.ExistingCluster] = FetchExistingCluster(this._pageUI.Cluster);
+            }
+
             HostingWizard[PublishContainerToAWSWizardProperties.Cluster] = _pageUI.Cluster;
             HostingWizard[PublishContainerToAWSWizardProperties.IsExistingCluster] = true;
 
@@ -135,6 +144,19 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         private void _pageUI_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             TestForwardTransitionEnablement();
+        }
+
+        private Cluster FetchExistingCluster(string cluster)
+        {
+            using (var client = CreateECSClient(this.HostingWizard))
+            {
+                var response = client.DescribeClusters(new DescribeClustersRequest
+                {
+                    Clusters = new List<string> { cluster }
+                });
+
+                return response.Clusters[0];
+            }
         }
     }
 }

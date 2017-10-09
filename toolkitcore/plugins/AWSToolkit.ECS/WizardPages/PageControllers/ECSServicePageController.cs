@@ -96,6 +96,10 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 {
                     return true;
                 }
+
+                var isExistingService = (bool)HostingWizard[PublishContainerToAWSWizardProperties.IsExistingCluster];
+                if (isExistingService)
+                    return false;
             }
 
             // don't stand in the way of our previous sibling pages!

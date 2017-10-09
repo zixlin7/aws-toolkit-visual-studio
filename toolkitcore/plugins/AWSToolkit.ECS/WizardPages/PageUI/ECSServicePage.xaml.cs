@@ -90,7 +90,16 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 this._ctlNewServiceName.IsEnabled = true;
                 this._ctlNewServiceName.Focus();
 
-                this._ctlDesiredCount.Text = "1";
+                if(this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.ExistingCluster] != null)
+                {
+                    var cluster = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.ExistingCluster] as Cluster;
+                    this._ctlDesiredCount.Text = (cluster.RegisteredContainerInstancesCount == 0 ? 1 : cluster.RegisteredContainerInstancesCount).ToString();
+                }
+                else
+                {
+                    this._ctlDesiredCount.Text = "1";
+                }
+
                 this._ctlMinimumHealthy.Text = "50";
                 this._ctlMaximumPercent.Text = "100";
             }

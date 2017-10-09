@@ -57,6 +57,7 @@ namespace Amazon.AWSToolkit.ECS
         public static readonly string MaximumPercent = "maximumPercent";
 
 
+        public static readonly string ExistingCluster = "existingCluster";
         public static readonly string IsExistingCluster = "isExistingCluster";
         public static readonly string Cluster = "cluster";
 
