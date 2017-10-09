@@ -22,7 +22,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "Select existing the ECS Cluster that will run the Task Definition";
+                return "Using an Application Load Balancer allows multiple instances of the application be accessible through a single URL endpoint.";
             }
         }
 
@@ -40,7 +40,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "ECS Cluster";
+                return "Application Load Balancer";
             }
         }
 

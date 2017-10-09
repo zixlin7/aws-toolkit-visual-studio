@@ -23,7 +23,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "Configure the ECS Task Definition";
+                return "Task Definition defines the parameters for how the application will run within its Docker container.";
             }
         }
 

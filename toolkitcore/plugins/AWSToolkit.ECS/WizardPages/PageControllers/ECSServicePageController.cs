@@ -22,7 +22,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "Select existing the ECS Cluster that will run the Task Definition";
+                return "A Service allows you to define how many instances of the application to run and how the application should be deployed in the Cluster.";
             }
         }
 
@@ -40,7 +40,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "ECS Cluster";
+                return "ECS Service";
             }
         }
 
