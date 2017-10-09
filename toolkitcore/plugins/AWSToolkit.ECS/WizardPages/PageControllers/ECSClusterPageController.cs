@@ -12,7 +12,7 @@ using System.Windows.Controls;
 
 using Amazon.ECS.Model;
 
-using static Amazon.AWSToolkit.ECS.WizardPages.ECSWizardUitls;
+using static Amazon.AWSToolkit.ECS.WizardPages.ECSWizardUtils;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 {

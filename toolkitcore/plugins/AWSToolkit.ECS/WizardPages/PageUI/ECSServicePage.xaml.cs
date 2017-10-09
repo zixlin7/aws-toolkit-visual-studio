@@ -16,12 +16,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
-using static Amazon.AWSToolkit.ECS.WizardPages.ECSWizardUitls;
+using static Amazon.AWSToolkit.ECS.WizardPages.ECSWizardUtils;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 {
     /// <summary>
-    /// Interaction logic for ECSServicePahge.xaml
+    /// Interaction logic for ECSServicePage.xaml
     /// </summary>
     public partial class ECSServicePage : BaseAWSUserControl, INotifyPropertyChanged
     {

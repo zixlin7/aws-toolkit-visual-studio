@@ -10,7 +10,7 @@ using Amazon.AWSToolkit.Account;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages
 {
-    public static class ECSWizardUitls
+    public static class ECSWizardUtils
     {
         public static IAmazonECS CreateECSClient(IAWSWizard hostWizard)
         {
