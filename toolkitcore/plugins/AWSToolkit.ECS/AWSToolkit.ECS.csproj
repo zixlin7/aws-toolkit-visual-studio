@@ -88,11 +88,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controller\CreateRepositoryController.cs" />
+    <Compile Include="Controller\CreateTaskDefinitionController.cs" />
     <Compile Include="Controller\FeatureController.cs" />
     <Compile Include="Controller\LaunchClusterController.cs" />
     <Compile Include="Controller\PublishContainerToAWSController.cs" />
     <Compile Include="Controller\ViewClusterController.cs" />
     <Compile Include="Controller\ViewRepositoryController.cs" />
+    <Compile Include="Controller\ViewTaskDefinitionController.cs" />
     <Compile Include="DeploymentWorkers\BaseWorker.cs" />
     <Compile Include="DeploymentWorkers\DeployToClusterWorker.cs" />
     <Compile Include="DeploymentWorkers\ECSToolLogger.cs" />
@@ -102,8 +104,10 @@
     <Compile Include="Model\ClusterWrapper.cs" />
     <Compile Include="Model\IWrapper.cs" />
     <Compile Include="Model\RepositoryWrapper.cs" />
+    <Compile Include="Model\TaskDefinitionWrapper.cs" />
     <Compile Include="Model\ViewClusterModel.cs" />
     <Compile Include="Model\ViewRepositoryModel.cs" />
+    <Compile Include="Model\ViewTaskDefinitionModel.cs" />
     <Compile Include="Nodes\ClustersRootViewMetaNode.cs" />
     <Compile Include="Nodes\ClustersRootViewModel.cs" />
     <Compile Include="Nodes\FeatureViewMetaNode.cs" />
@@ -133,6 +137,10 @@
     <Compile Include="ECSTools\Options\CommandOptionValue.cs" />
     <Compile Include="ECSTools\Options\DefinedCommandOptions.cs" />
     <Compile Include="ECSTools\Utilities.cs" />
+    <Compile Include="Nodes\TaskDefinitionsRootViewMetaNode.cs" />
+    <Compile Include="Nodes\TaskDefinitionsRootViewModel.cs" />
+    <Compile Include="Nodes\TaskDefinitionViewMetaNode.cs" />
+    <Compile Include="Nodes\TaskDefinitionViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="View\ViewClusterControl.xaml.cs">
       <DependentUpon>ViewClusterControl.xaml</DependentUpon>
@@ -140,8 +148,11 @@
     <Compile Include="View\ViewRepositoryControl.xaml.cs">
       <DependentUpon>ViewRepositoryControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WizardPages\ECSWizardUitls.cs" />
+    <Compile Include="WizardPages\ECSWizardUtils.cs" />
     <Compile Include="WizardPages\PageControllers\ConfigureLoadBalancerPageController.cs" />
+    <Compile Include="View\ViewTaskDefinitionControl.xaml.cs">
+      <DependentUpon>ViewTaskDefinitionControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WizardPages\PageControllers\ECSClusterPageController.cs" />
     <Compile Include="WizardPages\PageControllers\ECSServicePageController.cs" />
     <Compile Include="WizardPages\PageControllers\ECSTaskDefinitionPageController.cs" />
@@ -199,6 +210,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\ViewTaskDefinitionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WizardPages\PageUI\ECSClusterPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -237,6 +252,13 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\create-repository.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\new-taskdef.png" />
+    <EmbeddedResource Include="Resources\EmbeddedImages\taskdef.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\new-taskdef.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

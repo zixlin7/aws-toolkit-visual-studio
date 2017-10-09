@@ -17,12 +17,17 @@ namespace Amazon.AWSToolkit.ECS
             var clusterMetaNode = new ClusterViewMetaNode();
             clustersRootMetaNode.Children.Add(clusterMetaNode);
 
+            var taskdefsRootMetaNode = new TaskDefinitionsRootViewMetaNode();
+            var taskdefMetaNode = new TaskDefinitionViewMetaNode();
+            taskdefsRootMetaNode.Children.Add(taskdefMetaNode);
+
             var repositoriesRootMetaNode = new RepositoriesRootViewMetaNode();
             var repositoryMetaNode = new RepositoryViewMetaNode();
             repositoriesRootMetaNode.Children.Add(repositoryMetaNode);
 
             var rootMetaNode = new RootViewMetaNode();
             rootMetaNode.Children.Add(clustersRootMetaNode);
+            rootMetaNode.Children.Add(taskdefsRootMetaNode);
             rootMetaNode.Children.Add(repositoriesRootMetaNode);
 
             setupECSContextMenuHooks(rootMetaNode);
@@ -44,10 +49,16 @@ namespace Amazon.AWSToolkit.ECS
             rootNode.OnLaunch = new CommandInstantiator<LaunchClusterController>().Execute;
 
             // cluster hierarchy
-            var clusterRootNode = rootNode.FindChild<ClustersRootViewMetaNode>();
-            clusterRootNode.OnLaunchCluster = new CommandInstantiator<LaunchClusterController>().Execute;
-            var clusterNode = clusterRootNode.FindChild<ClusterViewMetaNode>();
+            var clustersRootNode = rootNode.FindChild<ClustersRootViewMetaNode>();
+            clustersRootNode.OnLaunchCluster = new CommandInstantiator<LaunchClusterController>().Execute;
+            var clusterNode = clustersRootNode.FindChild<ClusterViewMetaNode>();
             clusterNode.OnView = new CommandInstantiator<ViewClusterController>().Execute;
+
+            // taskdef hierarchy
+            var taskdefsRootNode = rootNode.FindChild<TaskDefinitionsRootViewMetaNode>();
+            taskdefsRootNode.OnCreateTaskDefinition = new CommandInstantiator<CreateTaskDefinitionController>().Execute;
+            var taskdefNode = taskdefsRootNode.FindChild<TaskDefinitionViewMetaNode>();
+            taskdefNode.OnView = new CommandInstantiator<ViewTaskDefinitionController>().Execute;
 
             // repository hierarchy
             var repositoriesRootNode = rootNode.FindChild<RepositoriesRootViewMetaNode>();
