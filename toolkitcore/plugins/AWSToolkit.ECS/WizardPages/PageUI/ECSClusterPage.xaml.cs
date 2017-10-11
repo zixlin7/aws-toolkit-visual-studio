@@ -71,7 +71,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 Task task1 = Task.Run(() =>
                 {
                     var items = new List<string>();
-                    using (var ecsClient = account.CreateServiceClient<AmazonECSClient>(region.GetEndpoint(Constants.ECS_ENDPOINT_LOOKUP)))
+                    using (var ecsClient = account.CreateServiceClient<AmazonECSClient>(region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP)))
                     {
                         var response = new ListClustersResponse();
                         do

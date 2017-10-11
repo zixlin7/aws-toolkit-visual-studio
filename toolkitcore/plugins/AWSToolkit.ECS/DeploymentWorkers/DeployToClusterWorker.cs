@@ -8,6 +8,12 @@ using System.Threading.Tasks;
 using Amazon.ECR;
 using Amazon.ECS;
 
+using Amazon.ElasticLoadBalancingV2;
+using Amazon.ElasticLoadBalancingV2.Model;
+
+using Amazon.IdentityManagement;
+using Amazon.IdentityManagement.Model;
+
 using Amazon.ECS.Tools;
 using Amazon.ECS.Tools.Commands;
 using Amazon.AWSToolkit.Account;
@@ -19,18 +25,29 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
     {
         IAmazonECR _ecrClient;
         IAmazonECS _ecsClient;
+        IAmazonElasticLoadBalancingV2 _elbClient;
+        IAmazonIdentityManagementService _iamClient;
 
-        public DeployToClusterWorker(IDockerDeploymentHelper helper, IAmazonECR ecrClient, IAmazonECS ecsClient)
+        public DeployToClusterWorker(IDockerDeploymentHelper helper,
+            IAmazonECR ecrClient, 
+            IAmazonECS ecsClient, 
+            IAmazonElasticLoadBalancingV2 elbClient,
+            IAmazonIdentityManagementService iamClient)
             : base(helper)
         {
             this._ecrClient = ecrClient;
             this._ecsClient = ecsClient;
+            this._elbClient = elbClient;
+            this._iamClient = iamClient;
         }
 
         public void Execute(State state)
         {
             try
             {
+                string elbTargetGroup, elbServiceRole;
+                ConfigureLoadBalancer(state, out elbTargetGroup, out elbServiceRole);
+
                 var command = new DeployCommand(new ECSToolLogger(this.Helper), state.WorkingDirectory, new string[0])
                 {
                     Profile = state.Account.Name,
@@ -55,10 +72,10 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     PersistConfigFile = state.PersistConfigFile
                 };
 
-                if(!string.IsNullOrWhiteSpace(state.TargetGroup))
+                if(!string.IsNullOrWhiteSpace(elbTargetGroup))
                 {
-                    command.ELBServiceRole = state.ServiceIAMRole;
-                    command.ELBTargetGroup = state.TargetGroup;
+                    command.ELBServiceRole = elbServiceRole;
+                    command.ELBTargetGroup = elbTargetGroup;
 
                     // TODO Figure out container port
                     command.ELBContainerPort = 80; 
@@ -90,6 +107,28 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             {
                 LOGGER.Error("Error deploying to ECS Cluster.", e);
                 this.Helper.SendCompleteErrorAsync("Error deploying to ECS Cluster: " + e.Message);
+            }
+        }
+
+        private void ConfigureLoadBalancer(State state, out string elbTargetGroup, out string elbServiceRole)
+        {
+            elbTargetGroup = null;
+            elbServiceRole = null;
+
+            if (!state.ShouldConfigureELB)
+                return;
+
+            string loadBalancer = state.LoadBalancer;
+            if(state.CreateNewLoadBalancer)
+            {
+                this._elbClient.CreateLoadBalancer(new CreateLoadBalancerRequest
+                {
+                    Name = state.LoadBalancer,
+                    IpAddressType = IpAddressType.Ipv4,
+                    Scheme = LoadBalancerSchemeEnum.InternetFacing,
+                    Type = LoadBalancerTypeEnum.Application,
+                    
+                });
             }
         }
 

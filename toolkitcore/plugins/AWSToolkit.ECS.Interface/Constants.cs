@@ -10,8 +10,5 @@ namespace Amazon.AWSToolkit.ECS
     public static class Constants
     {
         public enum DeployMode { PushOnly, DeployToECSCluster }
-
-        public const string ECR_ENDPOINT_LOOKUP = "ECR";
-        public const string ECS_ENDPOINT_LOOKUP = "ECS";
     }
 }

@@ -46,7 +46,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             var userAccount = hostWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
             var regionEndpoints = hostWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
 
-            this._ctlAccountAndRegion.Initialize(userAccount, regionEndpoints, new string[] { Constants.ECR_ENDPOINT_LOOKUP });
+            this._ctlAccountAndRegion.Initialize(userAccount, regionEndpoints, new string[] { RegionEndPointsManager.ECR_ENDPOINT_LOOKUP });
             this._ctlAccountAndRegion.PropertyChanged += _ctlAccountAndRegion_PropertyChanged;
 
             this._ctlConfigurationPicker.Items.Add("Release");
@@ -97,7 +97,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 if (this._ecrClient != null)
                     this._ecrClient.Dispose();
 
-                this._ecrClient = this._ctlAccountAndRegion.SelectedAccount.CreateServiceClient<AmazonECRClient>(this._ctlAccountAndRegion.SelectedRegion.GetEndpoint(Constants.ECR_ENDPOINT_LOOKUP));
+                this._ecrClient = this._ctlAccountAndRegion.SelectedAccount.CreateServiceClient<AmazonECRClient>(this._ctlAccountAndRegion.SelectedRegion.GetEndpoint(RegionEndPointsManager.ECR_ENDPOINT_LOOKUP));
                 Task task1 = Task.Run(() =>
                 {
                     var items = new List<string>();

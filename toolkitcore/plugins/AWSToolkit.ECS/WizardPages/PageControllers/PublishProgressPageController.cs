@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using Amazon.AWSToolkit.ECS.DeploymentWorkers;
 using Amazon.ECR;
+using Amazon.ElasticLoadBalancingV2;
 using System.IO;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
@@ -146,7 +147,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                     PersistConfigFile = persistSettings
                 };
 
-                var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(Constants.ECR_ENDPOINT_LOOKUP));
+                var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECR_ENDPOINT_LOOKUP));
 
                 var worker = new PushImageToECRWorker(this, ecrClient);
 
@@ -212,10 +213,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 }
 
 
-                var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(Constants.ECR_ENDPOINT_LOOKUP));
-                var ecsClient = state.Account.CreateServiceClient<AmazonECSClient>(state.Region.GetEndpoint(Constants.ECS_ENDPOINT_LOOKUP));
+                var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECR_ENDPOINT_LOOKUP));
+                var ecsClient = state.Account.CreateServiceClient<AmazonECSClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP));
+                var elbClient = state.Account.CreateServiceClient<AmazonElasticLoadBalancingV2Client>(state.Region.GetEndpoint(RegionEndPointsManager.ELB_SERVICE_NAME));
+                var iamClient = state.Account.CreateServiceClient<AmazonIdentityManagementServiceClient>(state.Region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME));
 
-                var worker = new DeployToClusterWorker(this, ecrClient, ecsClient);
+                var worker = new DeployToClusterWorker(this, ecrClient, ecsClient, elbClient, iamClient);
 
                 ThreadPool.QueueUserWorkItem(x =>
                 {

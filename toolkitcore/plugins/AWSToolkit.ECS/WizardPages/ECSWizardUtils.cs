@@ -20,7 +20,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages
             var account = hostWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
             var region = hostWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
 
-            var client = account.CreateServiceClient<AmazonECSClient>(region.GetEndpoint(Constants.ECS_ENDPOINT_LOOKUP));
+            var client = account.CreateServiceClient<AmazonECSClient>(region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP));
             return client;
         }
 
