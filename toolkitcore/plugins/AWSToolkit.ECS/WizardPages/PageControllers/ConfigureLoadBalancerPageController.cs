@@ -54,8 +54,21 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             return true;
         }
 
+        public string Service
+        {
+            get;
+            private set;
+        }
+
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
         {
+            var service = HostingWizard[PublishContainerToAWSWizardProperties.Service] as string;
+            if (!string.Equals(service, this.Service))
+            {
+                this.Service = service;
+                this._pageUI.InitializeForNewService();
+            }
+
             TestForwardTransitionEnablement();
         }
 
@@ -125,6 +138,63 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             if (_pageUI == null)
                 return false;
+
+            HostingWizard[PublishContainerToAWSWizardProperties.ShouldConfigureELB] = this._pageUI.ShouldConfigureELB;
+
+            if (this._pageUI.CreateNewIAMRole)
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole] = true;
+                HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] = null;
+            }
+            else
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole] = false;
+                HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] = _pageUI.ServiceIAMRole;
+            }
+
+            if (this._pageUI.CreateNewLoadBalancer)
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.CreateNewLoadBalancer] = true;
+                HostingWizard[PublishContainerToAWSWizardProperties.LoadBalancer] = _pageUI.NewLoadBalancerName;
+            }
+            else
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.CreateNewLoadBalancer] = false;
+                HostingWizard[PublishContainerToAWSWizardProperties.LoadBalancer] = _pageUI.LoadBalancerArn;
+            }
+
+            if (this._pageUI.CreateNewListenerPort)
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.CreateNewListenerPort] = true;
+                HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort] = this._pageUI.NewListenerPort.GetValueOrDefault();
+            }
+            else
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.CreateNewListenerPort] = false;
+                HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort] = null;
+            }
+
+            if (this._pageUI.CreateNewTargetGroup)
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup] = true;
+                HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] = this._pageUI.NewTargetGroupName;
+                HostingWizard[PublishContainerToAWSWizardProperties.NewPathPattern] = this._pageUI.PathPattern;
+            }
+            else
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup] = false;
+                HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] = _pageUI.TargetGroupArn;
+                HostingWizard[PublishContainerToAWSWizardProperties.NewPathPattern] = null;
+            }
+
+            if (_pageUI.IsHealthCheckPathChanged)
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.HealthCheckPath] = _pageUI.HealthCheckPath;
+            }
+            else
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.HealthCheckPath] = null;
+            }
 
             return true;
         }

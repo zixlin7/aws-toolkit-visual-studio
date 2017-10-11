@@ -56,6 +56,17 @@ namespace Amazon.AWSToolkit.ECS
         public static readonly string MinimumHealthy = "minimumHealthy";
         public static readonly string MaximumPercent = "maximumPercent";
 
+        public static readonly string ShouldConfigureELB = "ShouldConfigureELB";
+        public static readonly string CreateNewIAMRole = "CreateNewIAMRole";
+        public static readonly string ServiceIAMRole = "ServiceIAMRole";
+        public static readonly string CreateNewLoadBalancer = "CreateNewLoadBalancer";
+        public static readonly string LoadBalancer = "LoadBalancer";
+        public static readonly string CreateNewListenerPort = "CreateNewListenerPort";
+        public static readonly string NewListenerPort = "NewListenerPort";
+        public static readonly string CreateNewTargetGroup = "CreateNewTargetGroup";
+        public static readonly string TargetGroup = "TargetGroup";
+        public static readonly string NewPathPattern = "NewPathPattern";
+        public static readonly string HealthCheckPath = "HealthCheckPath";
 
         public static readonly string ExistingCluster = "existingCluster";
         public static readonly string IsExistingCluster = "isExistingCluster";

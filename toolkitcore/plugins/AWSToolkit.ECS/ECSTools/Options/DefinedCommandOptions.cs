@@ -208,6 +208,33 @@ namespace Amazon.ECS.Tools.Options
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
                 Description = "The IAM role that will provide AWS credentials for the containers in the Task Definition"
             };
+        public static readonly CommandOption ARGUMENT_ELB_TARGET_ARN =
+            new CommandOption
+            {
+                Name = "ELB Target ARN",
+                ShortSwitch = "-etg",
+                Switch = "--elb-target-group",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "The full Amazon Resource Name (ARN) of the Elastic Load Balancing target group associated with a service. "
+            };
+        public static readonly CommandOption ARGUMENT_ELB_CONTAINER_PORT =
+            new CommandOption
+            {
+                Name = "ELB Container Port",
+                ShortSwitch = "-ecp",
+                Switch = "--elb-container-port",
+                ValueType = CommandOption.CommandOptionValueType.IntValue,
+                Description = "The port on the container to associate with the load balancer."
+            };
+        public static readonly CommandOption ARGUMENT_ELB_SERVICE_ROLE =
+            new CommandOption
+            {
+                Name = "ELB Service Role",
+                ShortSwitch = "-esr",
+                Switch = "--elb-service-role",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "The name or full Amazon Resource Name (ARN) of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf."
+            };
 
     }
 }

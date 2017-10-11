@@ -39,6 +39,10 @@ namespace Amazon.ECS.Tools.Commands
             DefinedCommandOptions.ARGUMENT_ECS_SERVICE,
             DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT,
 
+            DefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE,
+            DefinedCommandOptions.ARGUMENT_ELB_TARGET_ARN,
+            DefinedCommandOptions.ARGUMENT_ELB_CONTAINER_PORT,
+
             DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE,
         });
 
@@ -60,6 +64,11 @@ namespace Amazon.ECS.Tools.Commands
         public string TaskDefinitionRole { get; set; }
 
         public Dictionary<string, string> EnvironmentVariables { get; set; }
+
+        public string ELBServiceRole { get; set; }
+        public string ELBTargetGroup { get; set; }
+        public int? ELBContainerPort { get; set; }
+
 
         public bool? PersistConfigFile { get; set; }
 
@@ -105,6 +114,12 @@ namespace Amazon.ECS.Tools.Commands
                 this.TaskDefinitionRole = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES.Switch)) != null)
                 this.EnvironmentVariables = tuple.Item2.KeyValuePairs;
+            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE.Switch)) != null)
+                this.ELBServiceRole = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_ELB_TARGET_ARN.Switch)) != null)
+                this.ELBTargetGroup = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_ELB_CONTAINER_PORT.Switch)) != null)
+                this.ELBContainerPort = tuple.Item2.IntValue;
         }
 
         public override async Task<bool> ExecuteAsync()
@@ -155,7 +170,7 @@ namespace Amazon.ECS.Tools.Commands
                 var ecsCluster = this.GetStringValueOrDefault(this.ECSCluster, DefinedCommandOptions.ARGUMENT_ECS_CLUSTER, true);
                 var ecsService = this.GetStringValueOrDefault(this.ECSService, DefinedCommandOptions.ARGUMENT_ECS_SERVICE, true);
 
-                await CreateOrUpdateService(ecsCluster, ecsService, ecsTaskDefinition, revision);
+                await CreateOrUpdateService(ecsCluster, ecsService, ecsTaskDefinition, revision, ecsContainer);
                 this.Logger?.WriteLine($"Service {ecsService} on ECS cluster {ecsCluster} has been updated. The Cluster will now deploy the new service version.");
 
                 if (this.GetBoolValueOrDefault(this.PersistConfigFile, DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE, false).GetValueOrDefault())
@@ -352,7 +367,7 @@ namespace Amazon.ECS.Tools.Commands
             }
         }
 
-        private async Task CreateOrUpdateService(string ecsCluster, string ecsService, string taskDefinition, int taskDefinitionRevision)
+        private async Task CreateOrUpdateService(string ecsCluster, string ecsService, string taskDefinition, int taskDefinitionRevision, string ecsContainer)
         {
             try
             { 
@@ -377,14 +392,33 @@ namespace Amazon.ECS.Tools.Commands
                 if (describeServiceResponse.Services.Count == 0 || describeServiceResponse.Services[0].Status == "INACTIVE")
                 {
                     this.Logger?.WriteLine($"Creating new service: {ecsService}");
-                    await this.ECSClient.CreateServiceAsync(new CreateServiceRequest
+                    var request = new CreateServiceRequest
                     {
                         ClientToken = Guid.NewGuid().ToString(),
                         Cluster = ecsCluster,
                         ServiceName = ecsService,
                         TaskDefinition = $"{taskDefinition}:{taskDefinitionRevision}",
                         DesiredCount = desiredCount.HasValue ? desiredCount.Value : 1
-                    });
+                    };
+
+                    var elbTargetGroup = this.GetStringValueOrDefault(this.ELBTargetGroup, DefinedCommandOptions.ARGUMENT_ELB_TARGET_ARN, false);
+                    if(!string.IsNullOrWhiteSpace(elbTargetGroup))
+                    {
+                        var serviceRole = this.GetStringValueOrDefault(this.ELBServiceRole, DefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE, false);
+                        var port = this.GetIntValueOrDefault(this.ELBContainerPort, DefinedCommandOptions.ARGUMENT_ELB_CONTAINER_PORT, false);
+                        if (!port.HasValue)
+                            port = 80;
+                        request.LoadBalancers.Add(new LoadBalancer
+                        {
+                            TargetGroupArn = elbTargetGroup,
+                            ContainerName = ecsContainer,
+                            ContainerPort = port.Value
+                        });
+
+                        request.Role = serviceRole;
+                    }
+
+                    await this.ECSClient.CreateServiceAsync(request);
                 }
                 else
                 {

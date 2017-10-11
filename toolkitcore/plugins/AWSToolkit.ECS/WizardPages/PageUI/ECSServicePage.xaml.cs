@@ -177,12 +177,14 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     service = response.Services[0];
                 }
 
-                this._ctlDesiredCount.Text = service.DesiredCount.ToString();
-                if(service.DeploymentConfiguration != null)
-                {
-                    this._ctlMinimumHealthy.Text = service.DeploymentConfiguration.MinimumHealthyPercent.ToString();
-                    this._ctlMaximumPercent.Text = service.DeploymentConfiguration.MaximumPercent.ToString();
-                }
+                _previousFetchServices[service.ServiceName] = service;
+            }
+
+            this._ctlDesiredCount.Text = service.DesiredCount == 0 ? "1" : service.DesiredCount.ToString();
+            if (service.DeploymentConfiguration != null)
+            {
+                this._ctlMinimumHealthy.Text = service.DeploymentConfiguration.MinimumHealthyPercent.ToString();
+                this._ctlMaximumPercent.Text = service.DeploymentConfiguration.MaximumPercent.ToString();
             }
         }
 

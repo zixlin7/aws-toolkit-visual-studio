@@ -47,6 +47,11 @@
       <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ECS.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AWSSDK.ElasticLoadBalancingV2">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ElasticLoadBalancingV2.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="AWSSDK.IdentityManagement">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.IdentityManagement.dll</HintPath>

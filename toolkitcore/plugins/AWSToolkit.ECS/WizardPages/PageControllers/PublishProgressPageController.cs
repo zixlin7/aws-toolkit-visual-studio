@@ -179,6 +179,39 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                     PersistConfigFile = persistSettings
                 };
 
+                if (HostingWizard[PublishContainerToAWSWizardProperties.ShouldConfigureELB] is bool)
+                    state.ShouldConfigureELB = (bool)HostingWizard[PublishContainerToAWSWizardProperties.ShouldConfigureELB];
+
+                if(state.ShouldConfigureELB)
+                {
+                    if (HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole] is bool)
+                        state.CreateNewIAMRole = (bool)HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole];
+
+                    state.ServiceIAMRole = HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] as string;
+
+                    if (HostingWizard[PublishContainerToAWSWizardProperties.CreateNewLoadBalancer] is bool)
+                        state.CreateNewLoadBalancer = (bool)HostingWizard[PublishContainerToAWSWizardProperties.CreateNewLoadBalancer];
+
+                    state.LoadBalancer = HostingWizard[PublishContainerToAWSWizardProperties.LoadBalancer] as string;
+
+                    if (HostingWizard[PublishContainerToAWSWizardProperties.CreateNewListenerPort] is bool)
+                        state.CreateNewListenerPort = (bool)HostingWizard[PublishContainerToAWSWizardProperties.CreateNewListenerPort];
+
+                    if (HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort] is int)
+                        state.NewListenerPort = (int)HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort];
+
+                    if (HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup] is bool)
+                        state.CreateNewTargetGroup = (bool)HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup];
+
+
+                    state.TargetGroup = HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] as string;
+                    state.NewPathPattern = HostingWizard[PublishContainerToAWSWizardProperties.NewPathPattern] as string;
+                    state.HealthCheckPath = HostingWizard[PublishContainerToAWSWizardProperties.HealthCheckPath] as string;
+
+
+                }
+
+
                 var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(Constants.ECR_ENDPOINT_LOOKUP));
                 var ecsClient = state.Account.CreateServiceClient<AmazonECSClient>(state.Region.GetEndpoint(Constants.ECS_ENDPOINT_LOOKUP));
 

@@ -55,6 +55,15 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     PersistConfigFile = state.PersistConfigFile
                 };
 
+                if(!string.IsNullOrWhiteSpace(state.TargetGroup))
+                {
+                    command.ELBServiceRole = state.ServiceIAMRole;
+                    command.ELBTargetGroup = state.TargetGroup;
+
+                    // TODO Figure out container port
+                    command.ELBContainerPort = 80; 
+                }
+
                 if(state.PortMapping != null && state.PortMapping.Count > 0)
                 {
                     string[] mappings = new string[state.PortMapping.Count];
@@ -105,6 +114,18 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             public int DesiredCount { get; set; }
 
             public bool? PersistConfigFile { get; set; }
+
+            public bool ShouldConfigureELB { get; set; }
+            public bool CreateNewIAMRole { get; set; }
+            public string ServiceIAMRole { get; set; }
+            public bool CreateNewLoadBalancer { get; set; }
+            public string LoadBalancer { get; set; }
+            public bool CreateNewListenerPort { get; set; }
+            public int NewListenerPort { get; set; }
+            public bool CreateNewTargetGroup { get; set; }
+            public string TargetGroup { get; set; }
+            public string NewPathPattern { get; set; }
+            public string HealthCheckPath { get; set; }
         }
     }
 }

@@ -9,6 +9,13 @@
     d:DesignHeight="400"
     d:DesignWidth="600">
 
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -101,7 +108,7 @@
                 Margin="-7,2,4,2"
                 VerticalAlignment="Center"
                 Style="{DynamicResource awsLabelBaseStyle}">
-                Soft Lmit
+                Soft Limit
             </Label>
 
             <TextBox
@@ -119,7 +126,7 @@
                 Margin="-7,2,4,2"
                 VerticalAlignment="Center"
                 Style="{DynamicResource awsLabelBaseStyle}">
-                Hard Lmit
+                Hard Limit
             </Label>
 
             <TextBlock
