@@ -7,6 +7,7 @@ using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using Amazon.ECS;
+using Amazon.EC2;
 using Amazon.ECS.Model;
 using log4net;
 using System;
@@ -205,6 +206,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                         state.CreateNewTargetGroup = (bool)HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup];
 
 
+                    state.ListenerArn = HostingWizard[PublishContainerToAWSWizardProperties.ListenerArn] as string;
+                    state.VpcId = HostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string;
                     state.TargetGroup = HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] as string;
                     state.NewPathPattern = HostingWizard[PublishContainerToAWSWizardProperties.NewPathPattern] as string;
                     state.HealthCheckPath = HostingWizard[PublishContainerToAWSWizardProperties.HealthCheckPath] as string;
@@ -217,8 +220,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 var ecsClient = state.Account.CreateServiceClient<AmazonECSClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP));
                 var elbClient = state.Account.CreateServiceClient<AmazonElasticLoadBalancingV2Client>(state.Region.GetEndpoint(RegionEndPointsManager.ELB_SERVICE_NAME));
                 var iamClient = state.Account.CreateServiceClient<AmazonIdentityManagementServiceClient>(state.Region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME));
+                var ec2Client = state.Account.CreateServiceClient<AmazonEC2Client>(state.Region.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME));
 
-                var worker = new DeployToClusterWorker(this, ecrClient, ecsClient, elbClient, iamClient);
+                var worker = new DeployToClusterWorker(this, ecrClient, ecsClient, ec2Client, elbClient, iamClient);
 
                 ThreadPool.QueueUserWorkItem(x =>
                 {

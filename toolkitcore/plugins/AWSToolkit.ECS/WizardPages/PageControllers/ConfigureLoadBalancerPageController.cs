@@ -1,6 +1,8 @@
 ﻿using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
+using Amazon.EC2.Model;
+using Amazon.ECS.Model;
 using log4net;
 using System;
 using System.Collections.Generic;
@@ -167,11 +169,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             {
                 HostingWizard[PublishContainerToAWSWizardProperties.CreateNewListenerPort] = true;
                 HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort] = this._pageUI.NewListenerPort.GetValueOrDefault();
+                HostingWizard[PublishContainerToAWSWizardProperties.ListenerArn] = null;
             }
             else
             {
                 HostingWizard[PublishContainerToAWSWizardProperties.CreateNewListenerPort] = false;
                 HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort] = null;
+                HostingWizard[PublishContainerToAWSWizardProperties.ListenerArn] = this._pageUI.ListenerArn;
             }
 
             if (this._pageUI.CreateNewTargetGroup)
@@ -179,6 +183,16 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup] = true;
                 HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] = this._pageUI.NewTargetGroupName;
                 HostingWizard[PublishContainerToAWSWizardProperties.NewPathPattern] = this._pageUI.PathPattern;
+
+                try
+                {
+                    HostingWizard[PublishContainerToAWSWizardProperties.VpcId] = DetermineClusterVPC();
+                }
+                catch (Exception e)
+                {
+                    ToolkitFactory.Instance.ShellProvider.ShowError("Failed to determine VPC for cluster: " + e.Message);
+                    return false;
+                }
             }
             else
             {
@@ -197,6 +211,48 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             }
 
             return true;
+        }
+
+        private string DetermineClusterVPC()
+        {
+            using (var ec2Client = ECSWizardUtils.CreateEC2Client(this.HostingWizard))
+            using (var ecsClient = ECSWizardUtils.CreateECSClient(this.HostingWizard))
+            {
+                var containerInstanceArns = ecsClient.ListContainerInstances(new ListContainerInstancesRequest
+                {
+                    Cluster = HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string
+                }).ContainerInstanceArns;
+
+                var containerInstances = ecsClient.DescribeContainerInstances(new DescribeContainerInstancesRequest
+                {
+                    Cluster = HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string,
+                    ContainerInstances = containerInstanceArns
+                }).ContainerInstances;
+
+                var describeIntanceRequest = new DescribeInstancesRequest();
+                containerInstances.ForEach(x => describeIntanceRequest.InstanceIds.Add(x.Ec2InstanceId));
+
+                string vpcId = null;
+                var reservations = ec2Client.DescribeInstances(describeIntanceRequest).Reservations;
+                foreach(var reservation in reservations)
+                {
+                    foreach(var instance in reservation.Instances)
+                    {
+                        if(!string.IsNullOrWhiteSpace(instance.VpcId))
+                        {
+                            vpcId = instance.VpcId;
+                            break;
+                        }
+                    }
+                }
+
+                if(vpcId == null)
+                {
+                    throw new Exception("There are no EC2 instances in the cluster currently running with a VPC");
+                }
+
+                return vpcId;
+            }
         }
 
         private void _pageUI_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

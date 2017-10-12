@@ -156,10 +156,22 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
-        public string ListenerPorts
+        public string ListenerPort
         {
             get { return this._ctlListenerPorts.Text; }
             set { this._ctlListenerPorts.Text = value; }
+        }
+
+        public string ListenerArn
+        {
+            get
+            {
+                Amazon.ElasticLoadBalancingV2.Model.Listener listener;
+                if (this._existingListeners.TryGetValue(this.ListenerPort, out listener))
+                    return listener.ListenerArn;
+
+                return null;
+            }
         }
 
         private void _ctlListenerPorts_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -319,9 +331,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             this._ctlServiceIAMRole.Items.Clear();
             this._ctlServiceIAMRole.Items.Add(CREATE_NEW_TEXT);
+            this._ctlServiceIAMRole.SelectedIndex = 0;
 
             this._ctlLoadBalancer.Items.Clear();
             this._ctlLoadBalancer.Items.Add(CREATE_NEW_TEXT);
+            this._ctlLoadBalancer.SelectedIndex = 0;
             this._existingLoadBalancers.Clear();
 
             Task.Run<List<string>>(() =>
@@ -403,6 +417,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             this._ctlListenerPorts.Items.Clear();
             this._ctlListenerPorts.Items.Add(CREATE_NEW_TEXT);
+            this._ctlListenerPorts.SelectedIndex = 0;
             this._existingListeners.Clear();
 
             if (string.IsNullOrWhiteSpace(loadBalancer) || string.Equals(loadBalancer, CREATE_NEW_TEXT) || !this._existingLoadBalancers.ContainsKey(loadBalancer))
@@ -449,6 +464,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             this._ctlTargetGroup.Items.Clear();
             this._ctlTargetGroup.Items.Add(CREATE_NEW_TEXT);
+            this._ctlTargetGroup.SelectedIndex = 0;
             this._existingTargetGroups.Clear();
             this._existingRules.Clear();
 

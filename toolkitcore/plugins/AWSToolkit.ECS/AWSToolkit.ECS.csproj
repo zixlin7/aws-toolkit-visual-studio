@@ -37,6 +37,11 @@
       <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AWSSDK.EC2">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.EC2.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="AWSSDK.ECR">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ECR.dll</HintPath>
