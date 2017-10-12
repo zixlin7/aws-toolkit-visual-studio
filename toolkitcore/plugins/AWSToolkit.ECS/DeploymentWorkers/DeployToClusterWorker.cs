@@ -305,10 +305,6 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 var pathPattern = state.NewPathPattern;
                 if(!pathPattern.EndsWith("*"))
                 {
-                    if (!pathPattern.EndsWith("/"))
-                    {
-                        pathPattern += "/";
-                    }
                     pathPattern += "*";
                 }
 
@@ -407,7 +403,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
             foreach(var groupId in groupIds)
             {
-                this.Helper.AppendUploadStatus("Authorizing the ELB security group {0} to the EC2 instance security group {1}", groupId, elbSecurityGroupId);
+                this.Helper.AppendUploadStatus("Authorizing the ELB security group {0} to the EC2 instance security group {1}", elbSecurityGroupId, groupId);
                 this._ec2Client.AuthorizeSecurityGroupIngress(new AuthorizeSecurityGroupIngressRequest
                 {
                     GroupId = groupId,

@@ -387,7 +387,7 @@ namespace Amazon.ECS.Tools.Commands
                     Services = new List<string> { ecsService }
                 });
 
-                var desiredCount = this.GetIntValueOrDefault(this.ContainerMemoryHardLimit, DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false);
+                var desiredCount = this.GetIntValueOrDefault(this.DesiredCount, DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false);
 
                 if (describeServiceResponse.Services.Count == 0 || describeServiceResponse.Services[0].Status == "INACTIVE")
                 {
@@ -427,21 +427,22 @@ namespace Amazon.ECS.Tools.Commands
                     {
                         Cluster = ecsCluster,
                         Service = ecsService,
-                        TaskDefinition = $"{taskDefinition}:{taskDefinitionRevision}",
-                        DeploymentConfiguration = new DeploymentConfiguration
-                        {
-                            MinimumHealthyPercent = 0
-                        }
+                        TaskDefinition = $"{taskDefinition}:{taskDefinitionRevision}"
                     };
 
-                    if (describeClusterResponse.Clusters[0].RegisteredContainerInstancesCount == 1)
+                    if(desiredCount.HasValue)
                     {
-                        this.Logger?.WriteLine("Allowing minimum health to go down to zero during deployment since there is only one EC2 instance in the ECS cluster.");
-                        updateRequest.DeploymentConfiguration = new DeploymentConfiguration
-                        {
-                            MinimumHealthyPercent = 0
-                        };
+                        updateRequest.DesiredCount = desiredCount.Value;
                     }
+
+                    //if (describeClusterResponse.Clusters[0].RegisteredContainerInstancesCount == 1)
+                    //{
+                    //    this.Logger?.WriteLine("Allowing minimum health to go down to zero during deployment since there is only one EC2 instance in the ECS cluster.");
+                    //    updateRequest.DeploymentConfiguration = new DeploymentConfiguration
+                    //    {
+                    //        MinimumHealthyPercent = 0
+                    //    };
+                    //}
 
                     await this.ECSClient.UpdateServiceAsync(updateRequest);
                 }

@@ -50,7 +50,7 @@ namespace Amazon.AWSToolkit.ECS
         public static readonly string MemorySoftLimit = "memorySoftLimit";
         public static readonly string PortMappings = "portMappings";
 
-        public static readonly string IsExistingService = "isExistingService";
+        public static readonly string CreateNewService = "isExistingService";
         public static readonly string Service = "service";
         public static readonly string DesiredCount = "desiredCount";
         public static readonly string MinimumHealthy = "minimumHealthy";

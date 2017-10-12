@@ -322,6 +322,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 if (this.CreateNewTargetGroup)
                     return true;
 
+                if (!this._existingTargetGroups.ContainsKey(this.TargetGroup))
+                    return true;
+
                 return !string.Equals(this.HealthCheckPath, this._existingTargetGroups[this.TargetGroup].HealthCheckPath);
             }
         }

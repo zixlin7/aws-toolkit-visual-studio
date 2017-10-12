@@ -142,7 +142,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (_pageUI == null)
                 return false;
 
-            HostingWizard[PublishContainerToAWSWizardProperties.IsExistingService] = this._pageUI.CreateNewService;
+            HostingWizard[PublishContainerToAWSWizardProperties.CreateNewService] = this._pageUI.CreateNewService;
             HostingWizard[PublishContainerToAWSWizardProperties.Service] = this._pageUI.CreateNewService ? _pageUI.NewServiceName : _pageUI.Service;
             HostingWizard[PublishContainerToAWSWizardProperties.DesiredCount] = this._pageUI.DesiredCount;
             HostingWizard[PublishContainerToAWSWizardProperties.MinimumHealthy] = this._pageUI.MinimumHealthy;

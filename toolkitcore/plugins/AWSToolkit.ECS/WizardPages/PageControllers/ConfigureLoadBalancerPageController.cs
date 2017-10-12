@@ -113,7 +113,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DeploymentMode))
             {
                 var mode = (Constants.DeployMode)HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
-                return mode == Constants.DeployMode.DeployToECSCluster;
+                if (mode == Constants.DeployMode.DeployToECSCluster &&
+                    (HostingWizard[PublishContainerToAWSWizardProperties.CreateNewService] is bool) &&
+                    ((bool)HostingWizard[PublishContainerToAWSWizardProperties.CreateNewService]))
+                {
+                    return true;
+                }
             }
 
             return false;
