@@ -132,11 +132,24 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             {
                 this._ctlNewLoadBalancerName.Visibility = Visibility.Collapsed;
                 this._ctlNewLoadBalancerName.IsEnabled = false;
+                this._ctlNewLoadBalancerName.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
+
+                this._ctlNewLoadBalancerName.IsEnabled = true;
+                this._ctlListenerPorts.IsEnabled = true;
             }
             else
             {
                 this._ctlNewLoadBalancerName.Visibility = Visibility.Visible;
                 this._ctlNewLoadBalancerName.IsEnabled = true;
+                this._ctlNewLoadBalancerName.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
+
+                this._ctlListenerPorts.SelectedIndex = 0;
+                this._ctlListenerPorts.IsEnabled = false;
+                this._ctlNewListenerPort.Text = "80";
+
+                this._ctlTargetGroup.SelectedIndex = 0;
+                this._ctlTargetGroup.IsEnabled = false;
+                this._ctlNewTargetGroupName.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
             }
         }
 
@@ -193,6 +206,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             {
                 this._ctlNewListenerPort.Visibility = Visibility.Visible;
                 this._ctlNewListenerPort.IsEnabled = true;
+                this._ctlTargetGroup.SelectedIndex = 0;
             }
         }
 
@@ -263,6 +277,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
                 this._ctlPathPattern.IsEnabled = true;
                 this._ctlPathPattern.Text = this._existingRules.ContainsKey("/") ? "" : "/";
+                this.HealthCheckPath = this._ctlPathPattern.Text;
             }
         }
 
@@ -338,7 +353,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             this._ctlLoadBalancer.Items.Clear();
             this._ctlLoadBalancer.Items.Add(CREATE_NEW_TEXT);
-            this._ctlLoadBalancer.SelectedIndex = 0;
+//            this._ctlLoadBalancer.SelectedIndex = 0;
             this._existingLoadBalancers.Clear();
 
             Task.Run<List<string>>(() =>
@@ -410,7 +425,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         this._ctlLoadBalancer.Items.Add(item);
                     }
 
-                    this._ctlLoadBalancer.SelectedIndex = this._ctlLoadBalancer.Items.Count > 1 ? 1 : 0;
+//                    this._ctlLoadBalancer.SelectedIndex = this._ctlLoadBalancer.Items.Count > 1 ? 1 : 0;
                 }));
             });
         }
@@ -420,8 +435,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             this._ctlListenerPorts.Items.Clear();
             this._ctlListenerPorts.Items.Add(CREATE_NEW_TEXT);
-            this._ctlListenerPorts.SelectedIndex = 0;
+//            this._ctlListenerPorts.SelectedIndex = 0;
             this._existingListeners.Clear();
+
 
             if (string.IsNullOrWhiteSpace(loadBalancer) || string.Equals(loadBalancer, CREATE_NEW_TEXT) || !this._existingLoadBalancers.ContainsKey(loadBalancer))
                 return;
@@ -456,7 +472,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         this._ctlListenerPorts.Items.Add(item);
                     }
 
-                    this._ctlListenerPorts.SelectedIndex = this._ctlListenerPorts.Items.Count > 1 ? 1 : 0;
+//                    this._ctlListenerPorts.SelectedIndex = this._ctlListenerPorts.Items.Count > 1 ? 1 : 0;
                 }));
             });
         }
@@ -467,7 +483,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             this._ctlTargetGroup.Items.Clear();
             this._ctlTargetGroup.Items.Add(CREATE_NEW_TEXT);
-            this._ctlTargetGroup.SelectedIndex = 0;
+//            this._ctlTargetGroup.SelectedIndex = 0;
             this._existingTargetGroups.Clear();
             this._existingRules.Clear();
 
@@ -536,7 +552,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         this._ctlTargetGroup.Items.Add(item);
                     }
 
-                    this._ctlTargetGroup.SelectedIndex = this._ctlTargetGroup.Items.Count > 1 ? 1 : 0;
+//                    this._ctlTargetGroup.SelectedIndex = this._ctlTargetGroup.Items.Count > 1 ? 1 : 0;
                 }));
             });
         }

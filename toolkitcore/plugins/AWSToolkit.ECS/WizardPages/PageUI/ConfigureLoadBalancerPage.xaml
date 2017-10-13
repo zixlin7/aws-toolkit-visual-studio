@@ -123,6 +123,7 @@
                 Grid.Row="3"
                 Grid.Column="1"
                 Margin="16,2,4,2"
+                IsEnabled="False"
                 SelectionChanged="_ctlListenerPorts_SelectionChanged"
                 Style="{DynamicResource awsComboBoxStyle}"/>
 
@@ -172,6 +173,7 @@
                 Grid.Row="6"
                 Grid.Column="1"
                 Margin="16,4,4,2"
+                IsEnabled="False"
                 SelectionChanged="_ctlTargetGroup_SelectionChanged"
                 Style="{DynamicResource awsComboBoxStyle}"/>
 
@@ -201,6 +203,7 @@
                 Grid.Row="7"
                 Grid.Column="1"
                 Margin="16,2,4,2"
+                IsEnabled="False"
                 Style="{DynamicResource awsTextBoxStyle}"
                 Text="{Binding PathPattern, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 />

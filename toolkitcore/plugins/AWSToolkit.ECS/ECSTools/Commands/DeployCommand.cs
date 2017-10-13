@@ -38,6 +38,8 @@ namespace Amazon.ECS.Tools.Commands
             DefinedCommandOptions.ARGUMENT_ECS_CLUSTER,
             DefinedCommandOptions.ARGUMENT_ECS_SERVICE,
             DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT,
+            DefinedCommandOptions.ARGUMENT_DEPLOYMENT_MAXIMUM_PERCENT,
+            DefinedCommandOptions.ARGUMENT_DEPLOYMENT_MINIMUM_HEALTHY_PERCENT,
 
             DefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE,
             DefinedCommandOptions.ARGUMENT_ELB_TARGET_ARN,
@@ -62,6 +64,9 @@ namespace Amazon.ECS.Tools.Commands
         public int? ContainerMemorySoftLimit { get; set; }
         public int? DesiredCount { get; set; }
         public string TaskDefinitionRole { get; set; }
+        public int? DeploymentMinimumHealthyPercent { get; set; }
+        public int? DeploymentMaximumPercent { get; set; }
+
 
         public Dictionary<string, string> EnvironmentVariables { get; set; }
 
@@ -388,6 +393,18 @@ namespace Amazon.ECS.Tools.Commands
                 });
 
                 var desiredCount = this.GetIntValueOrDefault(this.DesiredCount, DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false);
+                var deploymentMaximumPercent = this.GetIntValueOrDefault(this.DeploymentMaximumPercent, DefinedCommandOptions.ARGUMENT_DEPLOYMENT_MAXIMUM_PERCENT, false);
+                var deploymentMinimumHealthyPercent = this.GetIntValueOrDefault(this.DeploymentMinimumHealthyPercent, DefinedCommandOptions.ARGUMENT_DEPLOYMENT_MINIMUM_HEALTHY_PERCENT, false);
+
+                DeploymentConfiguration deploymentConfiguration = null;
+                if (deploymentMaximumPercent.HasValue || deploymentMinimumHealthyPercent.HasValue)
+                {
+                    deploymentConfiguration = new DeploymentConfiguration();
+                    if (deploymentMaximumPercent.HasValue)
+                        deploymentConfiguration.MaximumPercent = deploymentMaximumPercent.Value;
+                    if (deploymentMinimumHealthyPercent.HasValue)
+                        deploymentConfiguration.MinimumHealthyPercent = deploymentMinimumHealthyPercent.Value;
+                }
 
                 if (describeServiceResponse.Services.Count == 0 || describeServiceResponse.Services[0].Status == "INACTIVE")
                 {
@@ -398,7 +415,8 @@ namespace Amazon.ECS.Tools.Commands
                         Cluster = ecsCluster,
                         ServiceName = ecsService,
                         TaskDefinition = $"{taskDefinition}:{taskDefinitionRevision}",
-                        DesiredCount = desiredCount.HasValue ? desiredCount.Value : 1
+                        DesiredCount = desiredCount.HasValue ? desiredCount.Value : 1,
+                        DeploymentConfiguration = deploymentConfiguration
                     };
 
                     var elbTargetGroup = this.GetStringValueOrDefault(this.ELBTargetGroup, DefinedCommandOptions.ARGUMENT_ELB_TARGET_ARN, false);
@@ -427,7 +445,8 @@ namespace Amazon.ECS.Tools.Commands
                     {
                         Cluster = ecsCluster,
                         Service = ecsService,
-                        TaskDefinition = $"{taskDefinition}:{taskDefinitionRevision}"
+                        TaskDefinition = $"{taskDefinition}:{taskDefinitionRevision}",
+                        DeploymentConfiguration = deploymentConfiguration
                     };
 
                     if(desiredCount.HasValue)

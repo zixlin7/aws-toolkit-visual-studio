@@ -74,6 +74,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     ECSCluster = state.Cluster,
                     ECSService = state.Service,
                     DesiredCount = state.DesiredCount,
+                    DeploymentMaximumPercent = state.DeploymentMaximumPercent,
+                    DeploymentMinimumHealthyPercent = state.DeploymentMinimumHealthyPercent,
 
                     PersistConfigFile = state.PersistConfigFile
                 };
@@ -587,6 +589,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             public string Cluster { get; set; }
             public string Service { get; set; }
             public int DesiredCount { get; set; }
+            public int DeploymentMinimumHealthyPercent { get; set; }
+            public int DeploymentMaximumPercent { get; set; }
 
             public bool? PersistConfigFile { get; set; }
 

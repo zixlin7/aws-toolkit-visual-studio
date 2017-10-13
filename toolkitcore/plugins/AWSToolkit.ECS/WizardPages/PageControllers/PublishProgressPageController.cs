@@ -177,6 +177,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                     Cluster = HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string,
                     Service = HostingWizard[PublishContainerToAWSWizardProperties.Service] as string,
                     DesiredCount = ((int)HostingWizard[PublishContainerToAWSWizardProperties.DesiredCount]),
+                    DeploymentMaximumPercent = ((int)HostingWizard[PublishContainerToAWSWizardProperties.MaximumPercent]),
+                    DeploymentMinimumHealthyPercent = ((int)HostingWizard[PublishContainerToAWSWizardProperties.MinimumHealthy]),
 
                     PersistConfigFile = persistSettings
                 };

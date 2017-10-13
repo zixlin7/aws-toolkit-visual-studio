@@ -226,6 +226,24 @@ namespace Amazon.ECS.Tools.Options
                 ValueType = CommandOption.CommandOptionValueType.IntValue,
                 Description = "The port on the container to associate with the load balancer."
             };
+        public static readonly CommandOption ARGUMENT_DEPLOYMENT_MAXIMUM_PERCENT =
+            new CommandOption
+            {
+                Name = "Deployment Maximum Percent",
+                ShortSwitch = "-ecp",
+                Switch = "--deployment-maximum-percent",
+                ValueType = CommandOption.CommandOptionValueType.IntValue,
+                Description = "The upper limit of the number of tasks that are allowed in the RUNNING or PENDING state in a service during a deployment."
+            };
+        public static readonly CommandOption ARGUMENT_DEPLOYMENT_MINIMUM_HEALTHY_PERCENT =
+            new CommandOption
+            {
+                Name = "Deployment Minimum Healhy Percent",
+                ShortSwitch = "-dmhp",
+                Switch = "--deployment-minimum-healthy-percent",
+                ValueType = CommandOption.CommandOptionValueType.IntValue,
+                Description = "The lower limit of the number of running tasks that must remain in the RUNNING state in a service during a deployment."
+            };
         public static readonly CommandOption ARGUMENT_ELB_SERVICE_ROLE =
             new CommandOption
             {
