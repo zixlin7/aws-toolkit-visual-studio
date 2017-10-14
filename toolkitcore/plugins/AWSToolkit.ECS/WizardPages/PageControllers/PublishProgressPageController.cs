@@ -191,7 +191,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                     if (HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole] is bool)
                         state.CreateNewIAMRole = (bool)HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole];
 
-                    state.ServiceIAMRole = HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] as string;
 
                     if (HostingWizard[PublishContainerToAWSWizardProperties.CreateNewLoadBalancer] is bool)
                         state.CreateNewLoadBalancer = (bool)HostingWizard[PublishContainerToAWSWizardProperties.CreateNewLoadBalancer];
@@ -210,13 +209,14 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
                     state.ListenerArn = HostingWizard[PublishContainerToAWSWizardProperties.ListenerArn] as string;
                     state.VpcId = HostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string;
-                    state.TargetGroup = HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] as string;
                     state.NewPathPattern = HostingWizard[PublishContainerToAWSWizardProperties.NewPathPattern] as string;
                     state.HealthCheckPath = HostingWizard[PublishContainerToAWSWizardProperties.HealthCheckPath] as string;
 
 
                 }
 
+                state.ServiceIAMRole = HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] as string;
+                state.TargetGroup = HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] as string;
 
                 var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECR_ENDPOINT_LOOKUP));
                 var ecsClient = state.Account.CreateServiceClient<AmazonECSClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP));

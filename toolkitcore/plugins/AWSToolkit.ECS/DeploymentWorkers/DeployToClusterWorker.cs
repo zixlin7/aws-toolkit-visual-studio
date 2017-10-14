@@ -1,27 +1,17 @@
-﻿using log4net;
+﻿using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
+using Amazon.EC2;
+using Amazon.EC2.Model;
+using Amazon.ECR;
+using Amazon.ECS;
+using Amazon.ECS.Model;
+using Amazon.ECS.Tools.Commands;
+using Amazon.ElasticLoadBalancingV2;
+using Amazon.ElasticLoadBalancingV2.Model;
+using Amazon.IdentityManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Amazon.EC2;
-using Amazon.EC2.Model;
-
-using Amazon.ECR;
-using Amazon.ECS;
-
-using Amazon.ElasticLoadBalancingV2;
-using Amazon.ElasticLoadBalancingV2.Model;
-
-using Amazon.IdentityManagement;
-using Amazon.IdentityManagement.Model;
-
-using Amazon.ECS.Tools;
-using Amazon.ECS.Tools.Commands;
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
-using Amazon.ECS.Model;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
@@ -52,7 +42,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         {
             try
             {
-                var elbState = ConfigureLoadBalancer(state);
+                var elbChanges = ConfigureLoadBalancer(state);
 
                 var command = new DeployCommand(new ECSToolLogger(this.Helper), state.WorkingDirectory, new string[0])
                 {
@@ -80,10 +70,25 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     PersistConfigFile = state.PersistConfigFile
                 };
 
-                if (!string.IsNullOrWhiteSpace(elbState.TargetGroup))
+                if(elbChanges.CreatedServiceIAMRole)
                 {
-                    command.ELBServiceRole = elbState.ServiceRole;
-                    command.ELBTargetGroup = elbState.TargetGroup;
+                    command.ELBServiceRole = elbChanges.ServiceIAMRole;
+                }
+                else
+                {
+                    command.ELBServiceRole = state.ServiceIAMRole;
+                }
+
+                if (state.CreateNewTargetGroup)
+                {
+                    command.ELBTargetGroup = elbChanges.TargetGroup;
+
+                    // TODO Figure out container port
+                    command.ELBContainerPort = 80;
+                }
+                else if(!string.IsNullOrEmpty(state.TargetGroup))
+                {
+                    command.ELBTargetGroup = state.TargetGroup;
 
                     // TODO Figure out container port
                     command.ELBContainerPort = 80;
@@ -109,7 +114,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                         this.Helper.SendCompleteErrorAsync("Error publishing container to AWS: " + command.LastToolsException.Message);
                     else
                     {
-                        CleanupELBResources(elbState);
+                        CleanupELBResources(elbChanges);
                         this.Helper.SendCompleteErrorAsync("Unknown error publishing container to AWS");
                     }
                 }
@@ -121,10 +126,10 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             }
         }
 
-        public class ConfigureLoadBalancerState
+        public class ConfigureLoadBalancerChangeTracker
         {
-            public bool CreatedServiceRole { get; set; }
-            public string ServiceRole { get; set; }
+            public bool CreatedServiceIAMRole { get; set; }
+            public string ServiceIAMRole { get; set; }
 
             public bool CreatedSecurityGroup { get; set; }
             public string SecurityGroup { get; set; }
@@ -135,6 +140,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
             public bool CreatedListener { get; set; }
             public string Listener { get; set; }
+            public int AuthorizedListenerPort { get; set; }
+
 
             public bool CreatedRule { get; set; }
             public string Rule { get; set; }
@@ -147,12 +154,12 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
         }
 
-        private ConfigureLoadBalancerState ConfigureLoadBalancer(State state)
+        private ConfigureLoadBalancerChangeTracker ConfigureLoadBalancer(State state)
         {
-            var elbState = new ConfigureLoadBalancerState();
+            var changeTracker = new ConfigureLoadBalancerChangeTracker();
 
             if (!state.ShouldConfigureELB)
-                return elbState;
+                return changeTracker;
 
             if (state.CreateNewIAMRole)
             {
@@ -160,16 +167,16 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             }
             else
             {
-                elbState.ServiceRole = state.ServiceIAMRole;
+                changeTracker.ServiceIAMRole = state.ServiceIAMRole;
             }
 
             var loadBalancerArn = state.LoadBalancer;
             if (state.CreateNewLoadBalancer)
             {
-                elbState.CreatedSecurityGroup = true;
-                elbState.SecurityGroup = CreateSecurityGroup(state);
+                changeTracker.CreatedSecurityGroup = true;
+                changeTracker.SecurityGroup = CreateSecurityGroup(state);
 
-                elbState.AssignedSecurityGroups = AssignELBSecurityGroupToEC2SecurityGroup(state, elbState.SecurityGroup);
+                changeTracker.AssignedSecurityGroups = AssignELBSecurityGroupToEC2SecurityGroup(state, changeTracker.SecurityGroup);
 
                 this.Helper.AppendUploadStatus("Creating Application Load Balancer");
                 loadBalancerArn = this._elbClient.CreateLoadBalancer(new CreateLoadBalancerRequest
@@ -178,15 +185,15 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     IpAddressType = IpAddressType.Ipv4,
                     Scheme = LoadBalancerSchemeEnum.InternetFacing,
                     Type = LoadBalancerTypeEnum.Application,
-                    SecurityGroups = new List<string> { elbState.SecurityGroup },
+                    SecurityGroups = new List<string> { changeTracker.SecurityGroup },
                     Subnets = DetermineSubnets(state),
                     Tags = new List<ElasticLoadBalancingV2.Model.Tag> { new ElasticLoadBalancingV2.Model.Tag {Key = "CreateSource", Value = "VSToolkitECSWizard" } }
 
                 }).LoadBalancers[0].LoadBalancerArn;
                 this.Helper.AppendUploadStatus("New Application Load Balancer ARN: " + loadBalancerArn);
 
-                elbState.CreatedLoadBalancer = true;
-                elbState.LoadBalancer = loadBalancerArn;
+                changeTracker.CreatedLoadBalancer = true;
+                changeTracker.LoadBalancer = loadBalancerArn;
             }
 
             HashSet<string> existingTargetGroupNames = null;
@@ -232,9 +239,9 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                         VpcId = state.VpcId
                     }).TargetGroups[0].TargetGroupArn;
 
-                    elbState.CreateTargetGroup = true;
-                    elbState.TargetGroup = targetArn;
-                    this.Helper.AppendUploadStatus("New Target Group ARN:" + elbState.TargetGroup);
+                    changeTracker.CreateTargetGroup = true;
+                    changeTracker.TargetGroup = targetArn;
+                    this.Helper.AppendUploadStatus("New Target Group ARN:" + changeTracker.TargetGroup);
                 }
                 else
                 {
@@ -249,8 +256,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                         VpcId = state.VpcId
                     }).TargetGroups[0].TargetGroupArn;
 
-                    elbState.CreateDefaulTargetGroup = true;
-                    elbState.DefaulTargetGroup = targetArn;
+                    changeTracker.CreateDefaulTargetGroup = true;
+                    changeTracker.DefaulTargetGroup = targetArn;
                     this.Helper.AppendUploadStatus("Default Target Group ARN:" + targetArn);
                 }
 
@@ -270,16 +277,18 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     }
                 }).Listeners[0].ListenerArn;
 
-                elbState.CreatedListener = true;
-                elbState.Listener = listenerArn;
+                changeTracker.CreatedListener = true;
+                changeTracker.Listener = listenerArn;
                 this.Helper.AppendUploadStatus("New Listener ARN: " + listenerArn);
+
+                OpenListenerPort(state, changeTracker);
             }
 
             // elbTargetGroup could be already set as the default target for the listener
-            if (state.CreateNewTargetGroup && elbState.TargetGroup == null)
+            if (state.CreateNewTargetGroup && changeTracker.TargetGroup == null)
             {
                 this.Helper.AppendUploadStatus("Creating TargetGroup for ELB Listener");
-                elbState.TargetGroup = this._elbClient.CreateTargetGroup(new CreateTargetGroupRequest
+                changeTracker.TargetGroup = this._elbClient.CreateTargetGroup(new CreateTargetGroupRequest
                 {
                     Name = makeTargetGroupNameUnique(state.TargetGroup),
                     Port = 80,
@@ -288,8 +297,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     HealthCheckPath = state.HealthCheckPath,
                     VpcId = state.VpcId
                 }).TargetGroups[0].TargetGroupArn;
-                this.Helper.AppendUploadStatus("New Target Group ARN:" + elbState.TargetGroup);
-                elbState.CreateTargetGroup = true;
+                this.Helper.AppendUploadStatus("New Target Group ARN:" + changeTracker.TargetGroup);
+                changeTracker.CreateTargetGroup = true;
 
                 this.Helper.AppendUploadStatus("Getting existing rules to determine new listener rule's priority");
                 var existingRules =  this._elbClient.DescribeRules(new DescribeRulesRequest { ListenerArn = listenerArn }).Rules;
@@ -319,7 +328,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     {
                         new ElasticLoadBalancingV2.Model.Action
                         {
-                            TargetGroupArn = elbState.TargetGroup,
+                            TargetGroupArn = changeTracker.TargetGroup,
                             Type = ActionTypeEnum.Forward
                         }
                     },
@@ -334,12 +343,12 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     Priority = newPriority
                 }).Rules[0].RuleArn;
 
-                elbState.CreatedRule = true;
-                elbState.Rule = ruleArn;
+                changeTracker.CreatedRule = true;
+                changeTracker.Rule = ruleArn;
                 this.Helper.AppendUploadStatus("New Rule Arn: " + ruleArn);
             }
 
-            return elbState;
+            return changeTracker;
         }
 
         private List<string> DetermineSubnets(State state)
@@ -448,7 +457,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 Description = "Load Balancer create for the ECS Cluster " + state.Cluster
             }).GroupId;
 
-            this.Helper.AppendUploadStatus("Authorizing access to port 80 for CidrIp 0.0.0.0/0");
+            this.Helper.AppendUploadStatus("Authorizing access to port " + state.NewListenerPort + " for CidrIp 0.0.0.0/0");
             this._ec2Client.AuthorizeSecurityGroupIngress(new AuthorizeSecurityGroupIngressRequest
             {
                 GroupId = groupId,
@@ -456,8 +465,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 {
                     new IpPermission
                     {
-                        FromPort = 80,
-                        ToPort = 80,
+                        FromPort = state.NewListenerPort,
+                        ToPort = state.NewListenerPort,
                         IpProtocol = "tcp",
                         Ipv4Ranges = new List<IpRange>{ new IpRange {CidrIp = "0.0.0.0/0" } }
                     }
@@ -467,105 +476,166 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             return groupId;
         }
 
-        private void CleanupELBResources(ConfigureLoadBalancerState elbState)
+        private void OpenListenerPort(State state, ConfigureLoadBalancerChangeTracker changes)
+        {
+            var loadBalancers = this._elbClient.DescribeLoadBalancers(new DescribeLoadBalancersRequest { LoadBalancerArns = new List<string> { state.LoadBalancer } }).LoadBalancers;
+            if (loadBalancers.Count != 1)
+                return;
+
+            var loadBalancer = loadBalancers[0];
+            changes.SecurityGroup = loadBalancer.SecurityGroups[0];
+            try
+            {
+                this.Helper.AppendUploadStatus("Authorizing access to port " + state.NewListenerPort + " for CidrIp 0.0.0.0/0");
+                this._ec2Client.AuthorizeSecurityGroupIngress(new AuthorizeSecurityGroupIngressRequest
+                {
+                    GroupId = loadBalancer.SecurityGroups[0],
+                    IpPermissions = new List<IpPermission>
+                    {
+                        new IpPermission
+                        {
+                            FromPort = state.NewListenerPort,
+                            ToPort = state.NewListenerPort,
+                            IpProtocol = "tcp",
+                            Ipv4Ranges = new List<IpRange>{ new IpRange {CidrIp = "0.0.0.0/0" } }
+                        }
+                    }
+                });
+
+                changes.AuthorizedListenerPort = state.NewListenerPort;
+            }
+            catch(Exception e)
+            {
+                this.Helper.AppendUploadStatus("Warning, authorizing port: " + e.Message);
+            }
+
+            return;
+        }
+
+        private void CleanupELBResources(ConfigureLoadBalancerChangeTracker elbChanges)
         {
             this.Helper.AppendUploadStatus("Attempting to clean up any ELB resources created for the failed deployment");
-            if(elbState.CreatedLoadBalancer)
+            if(elbChanges.CreatedLoadBalancer)
             {
                 try
                 {
-                    this._elbClient.DeleteLoadBalancer(new DeleteLoadBalancerRequest { LoadBalancerArn = elbState.LoadBalancer });
+                    this._elbClient.DeleteLoadBalancer(new DeleteLoadBalancerRequest { LoadBalancerArn = elbChanges.LoadBalancer });
                     this.Helper.AppendUploadStatus("Deleted load balancer");
                 }
                 catch(Exception e)
                 {
-                    this.Helper.AppendUploadStatus("Failed to delete load balancer {0}: {1}", elbState.LoadBalancer, e.Message);
+                    this.Helper.AppendUploadStatus("Failed to delete load balancer {0}: {1}", elbChanges.LoadBalancer, e.Message);
                 }
             }
-            else if(elbState.CreatedListener)
+            else if(elbChanges.CreatedListener)
             {
                 try
                 {
-                    this._elbClient.DeleteListener(new DeleteListenerRequest { ListenerArn = elbState.Listener });
+                    this._elbClient.DeleteListener(new DeleteListenerRequest { ListenerArn = elbChanges.Listener });
                     this.Helper.AppendUploadStatus("Deleted listener");
                 }
                 catch (Exception e)
                 {
-                    this.Helper.AppendUploadStatus("Failed to delete listener {0}: {1}", elbState.Listener, e.Message);
+                    this.Helper.AppendUploadStatus("Failed to delete listener {0}: {1}", elbChanges.Listener, e.Message);
                 }
             }
 
-            if(elbState.CreatedSecurityGroup)
+            if(elbChanges.CreatedSecurityGroup)
             {
                 var ipPermissions = new List<IpPermission>
                 {
                     new IpPermission
                     {
                             IpProtocol = "-1",
-                            UserIdGroupPairs = new List<UserIdGroupPair>{ new UserIdGroupPair { GroupId = elbState.SecurityGroup } }
+                            UserIdGroupPairs = new List<UserIdGroupPair>{ new UserIdGroupPair { GroupId = elbChanges.SecurityGroup } }
                     }
                 };
 
-                foreach(var instanceSecurityGroup in elbState.AssignedSecurityGroups)
+                foreach(var instanceSecurityGroup in elbChanges.AssignedSecurityGroups)
                 {
                     try
                     {
                         this._ec2Client.RevokeSecurityGroupIngress(new RevokeSecurityGroupIngressRequest { GroupId = instanceSecurityGroup, IpPermissions = ipPermissions });
-                        this.Helper.AppendUploadStatus("Revoke EC2 security group {0} access from {1}", elbState.SecurityGroup, instanceSecurityGroup);
+                        this.Helper.AppendUploadStatus("Revoke EC2 security group {0} access from {1}", elbChanges.SecurityGroup, instanceSecurityGroup);
                     }
                     catch (Exception e)
                     {
-                        this.Helper.AppendUploadStatus("Failed to revoke EC2 security group {0} access from {1}: {2}", elbState.SecurityGroup, instanceSecurityGroup, e.Message);
+                        this.Helper.AppendUploadStatus("Failed to revoke EC2 security group {0} access from {1}: {2}", elbChanges.SecurityGroup, instanceSecurityGroup, e.Message);
                     }
                 }
 
                 try
                 {
-                    this._ec2Client.DeleteSecurityGroup(new DeleteSecurityGroupRequest { GroupId = elbState.SecurityGroup });
+                    this._ec2Client.DeleteSecurityGroup(new DeleteSecurityGroupRequest { GroupId = elbChanges.SecurityGroup });
                     this.Helper.AppendUploadStatus("Deleted EC2 security group");
                 }
                 catch (Exception e)
                 {
-                    this.Helper.AppendUploadStatus("Failed to delete EC2 security group {0}: {1}", elbState.SecurityGroup, e.Message);
+                    this.Helper.AppendUploadStatus("Failed to delete EC2 security group {0}: {1}", elbChanges.SecurityGroup, e.Message);
                 }
             }
-
-            if(elbState.CreatedRule && !elbState.CreatedListener)
+            else if(elbChanges.AuthorizedListenerPort > 0)
             {
                 try
                 {
-                    this._elbClient.DeleteRule(new DeleteRuleRequest { RuleArn = elbState.Rule });
+                    this._ec2Client.RevokeSecurityGroupIngress(new RevokeSecurityGroupIngressRequest
+                    {
+                        GroupId = elbChanges.SecurityGroup,
+                        IpPermissions = new List<IpPermission>
+                        {
+                            new IpPermission
+                            {
+                                FromPort = elbChanges.AuthorizedListenerPort,
+                                ToPort = elbChanges.AuthorizedListenerPort,
+                                IpProtocol = "tcp",
+                                Ipv4Ranges = new List<IpRange>{ new IpRange {CidrIp = "0.0.0.0/0" } }
+                            }
+                        }
+                    });
+                    this.Helper.AppendUploadStatus("Revoked access to port " + elbChanges.AuthorizedListenerPort + " for CidrIp 0.0.0.0/0");
+                }
+                catch (Exception e)
+                {
+                    this.Helper.AppendUploadStatus("Failed to revoke EC2 port {0} access from {1}: {2}", elbChanges.AuthorizedListenerPort, elbChanges.SecurityGroup, e.Message);
+                }
+            }
+
+            if(elbChanges.CreatedRule && !elbChanges.CreatedListener)
+            {
+                try
+                {
+                    this._elbClient.DeleteRule(new DeleteRuleRequest { RuleArn = elbChanges.Rule });
                     this.Helper.AppendUploadStatus("Deleted listener rule");
                 }
                 catch (Exception e)
                 {
-                    this.Helper.AppendUploadStatus("Failed to delete listener rule {0}: {1}", elbState.Rule, e.Message);
+                    this.Helper.AppendUploadStatus("Failed to delete listener rule {0}: {1}", elbChanges.Rule, e.Message);
                 }
             }
 
-            if(elbState.CreateTargetGroup)
+            if(elbChanges.CreateTargetGroup)
             {
                 try
                 {
-                    this._elbClient.DeleteTargetGroup(new DeleteTargetGroupRequest { TargetGroupArn = elbState.TargetGroup });
+                    this._elbClient.DeleteTargetGroup(new DeleteTargetGroupRequest { TargetGroupArn = elbChanges.TargetGroup });
                     this.Helper.AppendUploadStatus("Deleted target group");
                 }
                 catch (Exception e)
                 {
-                    this.Helper.AppendUploadStatus("Failed to delete target group {0}: {1}", elbState.TargetGroup, e.Message);
+                    this.Helper.AppendUploadStatus("Failed to delete target group {0}: {1}", elbChanges.TargetGroup, e.Message);
                 }
             }
 
-            if (elbState.CreateDefaulTargetGroup)
+            if (elbChanges.CreateDefaulTargetGroup)
             {
                 try
                 {
-                    this._elbClient.DeleteTargetGroup(new DeleteTargetGroupRequest { TargetGroupArn = elbState.DefaulTargetGroup });
+                    this._elbClient.DeleteTargetGroup(new DeleteTargetGroupRequest { TargetGroupArn = elbChanges.DefaulTargetGroup });
                     this.Helper.AppendUploadStatus("Deleted default target group");
                 }
                 catch (Exception e)
                 {
-                    this.Helper.AppendUploadStatus("Failed to delete default target group {0}: {1}", elbState.DefaulTargetGroup, e.Message);
+                    this.Helper.AppendUploadStatus("Failed to delete default target group {0}: {1}", elbChanges.DefaulTargetGroup, e.Message);
                 }
             }
         }

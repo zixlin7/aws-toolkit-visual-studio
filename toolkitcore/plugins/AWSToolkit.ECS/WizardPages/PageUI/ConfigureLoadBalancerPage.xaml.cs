@@ -201,12 +201,14 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             {
                 this._ctlNewListenerPort.Visibility = Visibility.Collapsed;
                 this._ctlNewListenerPort.IsEnabled = false;
+                this._ctlTargetGroup.IsEnabled = true;
             }
             else
             {
                 this._ctlNewListenerPort.Visibility = Visibility.Visible;
                 this._ctlNewListenerPort.IsEnabled = true;
                 this._ctlTargetGroup.SelectedIndex = 0;
+                this._ctlTargetGroup.IsEnabled = false;
             }
         }
 
