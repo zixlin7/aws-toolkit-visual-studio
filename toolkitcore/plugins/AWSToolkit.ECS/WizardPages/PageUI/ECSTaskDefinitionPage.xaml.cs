@@ -16,6 +16,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Collections.ObjectModel;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.CommonUI.Components;
+using Amazon.ECS.Tools;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 {
@@ -35,6 +37,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             InitializeComponent();
 
             PortMappings = new ObservableCollection<PortMappingItem>();
+            EnvironmentVariables = new ObservableCollection<EnvironmentVariableItem>();
 
             DataContext = this;
         }
@@ -57,6 +60,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             if (string.IsNullOrWhiteSpace(this._ctlContainerPicker.Text))
                 this._ctlContainerPicker.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
+
+            string role = null;
+            if (PageController.HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.TaskRole))
+                role = PageController.HostingWizard[PublishContainerToAWSWizardProperties.TaskRole] as string;
+
+            IntializeIAMPickerForAccountAsync(role);
         }
 
         private void LoadPreviousValues(IAWSWizard hostWizard)
@@ -74,6 +83,98 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 {
                     this.PortMappings.Add(mapping);
                 }
+            }
+        }
+
+        private void IntializeIAMPickerForAccountAsync(string selectedRole)
+        {
+            // could check here if we're already bound to this a/c and region
+            var account = PageController.HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
+            var region = PageController.HostingWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+
+            if (account == null || region == null)
+                return;
+
+            using (var iamClient = account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(region))
+            {
+                var taskRole = RoleHelper.FindExistingECSRolesAsync(iamClient, int.MaxValue);
+                var taskPolicies = RoleHelper.FindECSManagedPoliciesAsync(iamClient, RoleHelper.DEFAULT_ITEM_MAX);
+                IList<Amazon.IdentityManagement.Model.Role> roles = null;
+                IList<Amazon.IdentityManagement.Model.ManagedPolicy> policies = null;
+
+                var errorMessages = new List<string>();
+                try
+                {
+                    Task.WaitAll(taskRole, taskPolicies);
+                    roles = taskRole.Result;
+                }
+                catch (AggregateException e)
+                {
+                    foreach (var inner in e.InnerExceptions)
+                    {
+                        if (!(inner is AggregateException))
+                        {
+                            errorMessages.Add(inner.Message);
+                        }
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    errorMessages.Add(e.Message);
+                }
+
+                if (taskRole.IsCompleted && taskRole.Exception == null)
+                {
+                    roles = taskRole.Result;
+                }
+                if (taskPolicies.IsCompleted && taskPolicies.Exception == null)
+                {
+                    policies = taskPolicies.Result;
+                }
+
+                if (roles != null)
+                {
+                    this._ctlIAMRolePicker.Initialize(roles, policies, selectedRole);
+                }
+                else
+                {
+                    var finalErrorMessage = "Failed to retrieve list of IAM roles and policies. Your profile must have the permissions iam:ListRoles and iam:ListPolicies.";
+
+                    foreach (var message in errorMessages)
+                    {
+                        finalErrorMessage += $"\n\n  {message}";
+                    }
+
+                    ToolkitFactory.Instance.ShellProvider.ShowError("Loading Roles Error", finalErrorMessage);
+                }
+            }
+        }
+
+        private IAMRolePicker IAMPicker
+        {
+            get { return this._ctlIAMRolePicker; }
+        }
+
+        public Amazon.IdentityManagement.Model.Role SelectedRole
+        {
+            get
+            {
+                if (IAMPicker == null)
+                    return null;
+
+                return IAMPicker.SelectedRole;
+            }
+        }
+
+        public Amazon.IdentityManagement.Model.ManagedPolicy SelectedManagedPolicy
+        {
+            get
+            {
+                if (IAMPicker == null || IAMPicker.SelectedManagedPolicy == null)
+                    return null;
+
+                return IAMPicker.SelectedManagedPolicy;
             }
         }
 
@@ -333,11 +434,72 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             NotifyPropertyChanged("PortMappings");
         }
+
+        public ObservableCollection<EnvironmentVariableItem> EnvironmentVariables { get; private set; }
+
+        private void AddEnvironmentVariable_Click(object sender, RoutedEventArgs e)
+        {
+            EnvironmentVariables.Add(new EnvironmentVariableItem());
+            // todo: usability tweak here - put focus into the new key cell...
+        }
+
+        private void RemoveEnvironmentVariable_Click(object sender, RoutedEventArgs e)
+        {
+            EnvironmentVariableItem cellData = _ctlEnvironmentVariables.CurrentCell.Item as EnvironmentVariableItem;
+            for (int i = PortMappings.Count - 1; i >= 0; i--)
+            {
+                if (EnvironmentVariables[i].Variable == cellData.Variable)
+                {
+                    PortMappings.RemoveAt(i);
+                    NotifyPropertyChanged("PortMappings");
+                    return;
+                }
+            }
+        }
+
+        // used to trap attempts to create a duplicate variable
+        private void _ctlEnvironmentVariables_CellEditEnding(object sender, DataGridCellEditEndingEventArgs e)
+        {
+            if (e.EditAction == DataGridEditAction.Cancel)
+                return;
+
+            TextBox editBox = e.EditingElement as TextBox;
+            if (editBox == null)
+            {
+                LOGGER.ErrorFormat("Expected but did not receive TextBox EditingElement type for CellEditEnding event at row {0} column {1}; cannot validate for dupes.",
+                                    e.Row.GetIndex(), e.Column.DisplayIndex);
+                return;
+            }
+
+            string pendingEntry = editBox.Text;
+
+            EnvironmentVariableItem cellData = _ctlEnvironmentVariables.CurrentCell.Item as EnvironmentVariableItem;
+            if (cellData != null)
+            {
+                foreach (EnvironmentVariableItem ev in EnvironmentVariables)
+                {
+                    if (ev != cellData && ev.Variable == pendingEntry)
+                    {
+                        e.Cancel = true;
+                        MessageBox.Show(string.Format("A value already exists for variable '{0}'.", pendingEntry),
+                                        "Duplicate Variable", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+
+            NotifyPropertyChanged("EnvironmentVariable3s");
+        }
     }
 
     public class PortMappingItem
     {
         public int? HostPort { get; set; }
         public int? ContainerPort { get; set; }
+    }
+
+    public class EnvironmentVariableItem
+    {
+        public string Variable { get; set; }
+        public string Value { get; set; }
     }
 }

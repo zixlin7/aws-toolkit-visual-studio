@@ -83,54 +83,6 @@ namespace Amazon.AWSToolkit.Lambda
             return values.ToArray();
         }
 
-        public static Role CreateRole(IAmazonIdentityManagementService iamClient, string baseFunctionName, string assumeRolePolicy)        
-        {
-            var newRoleName = baseFunctionName;
-            var existingRoleNames = ExistingRoleNames(iamClient);
-
-            if (existingRoleNames.Contains(newRoleName))
-            {
-                var baseRoleName = newRoleName;
-                for (int i = 0; true; i++)
-                {
-                    var tempName = baseRoleName + "-" + i;
-                    if (!existingRoleNames.Contains(tempName))
-                    {
-                        newRoleName = tempName;
-                        break;
-                    }
-                }
-            }
-
-            var createRequest = new CreateRoleRequest
-            {
-                RoleName = newRoleName,
-                AssumeRolePolicyDocument = assumeRolePolicy
-            };
-            var createResponse = iamClient.CreateRole(createRequest);
-            return createResponse.Role;
-        }
-
-        public static HashSet<string> ExistingRoleNames(IAmazonIdentityManagementService iamClient)
-        {
-            HashSet<string> roles = new HashSet<string>();
-
-            ListRolesResponse response = null;
-            do
-            {
-                ListRolesRequest request = new ListRolesRequest();
-                if (response != null)
-                    request.Marker = response.Marker;
-                response = iamClient.ListRoles(request);
-                foreach (var role in response.Roles)
-                {
-                    roles.Add(role.RoleName);
-                }
-            } while (response.IsTruncated);
-
-            return roles;
-        }
-
 
         public enum RoleType {Kinesis, DynamoDBStream};
 

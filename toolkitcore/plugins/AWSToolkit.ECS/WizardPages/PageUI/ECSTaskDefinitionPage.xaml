@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:local="clr-namespace:Amazon.AWSToolkit.ECS.WizardPages.PageUI"
     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:commoncomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
     mc:Ignorable="d" 
     d:DesignHeight="400"
     d:DesignWidth="600">
@@ -19,6 +20,7 @@
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
@@ -90,44 +92,56 @@
                 Margin="10,2,4,2"
                 VerticalAlignment="Center"
                 Style="{DynamicResource awsLabelBaseStyle}">
-                _Memory Limits (MiB):
+                _Memory (MiB):
             </Label>
 
-            <TextBox
+            <StackPanel
+                Grid.Row="1"
+                Grid.Column="1"
+                Grid.ColumnSpan="3"
+                Orientation="Horizontal"
+                >
+
+                <TextBox
                 Name="_ctlMemorySoftLimit"
                 Grid.Row="1"
                 Grid.Column="1"
+                Width="50"
                 Margin="16,2,4,2"
                 Style="{DynamicResource awsTextBoxStyle}"
                 Text="{Binding MemorySoftLimit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 />
 
-            <Label
+                <Label
                 Grid.Row="1"
                 Grid.Column="2"
                 Margin="-7,2,4,2"
                 VerticalAlignment="Center"
                 Style="{DynamicResource awsLabelBaseStyle}">
-                Soft Limit
-            </Label>
+                    Soft Limit
+                </Label>
 
-            <TextBox
+                <TextBox
                 Name="_ctlMemoryHardLimit"
                 Grid.Row="2"
                 Grid.Column="1"
+                Width="50"
                 Margin="16,2,4,2"
                 Style="{DynamicResource awsTextBoxStyle}"
                 Text="{Binding MemoryHardLimit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 />
 
-            <Label
+                <Label
                 Grid.Row="2"
                 Grid.Column="2"
                 Margin="-7,2,4,2"
                 VerticalAlignment="Center"
                 Style="{DynamicResource awsLabelBaseStyle}">
-                Hard Limit
-            </Label>
+                    Hard Limit
+                </Label>
+
+            </StackPanel>
+
 
             <TextBlock
                 Grid.Row="3"
@@ -137,7 +151,7 @@
                 FontStyle="Italic"
                 Style="{DynamicResource awsInfoTextStyle}"
                 TextWrapping="Wrap">
-                You must specify a non-zero integer for one or both of hard limit or soft limit. The hard limit is the most
+                One or both of the limit fields must be set. The hard limit is the most
                 memory the app will be able to exceed. The soft limit is the minimum memory the app needs to run but can 
                 consume more, up to the hard limit, if memory is available.
                     
@@ -147,6 +161,59 @@
         </Grid>
 
         <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="4,2,4,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Label
+                Grid.Row="0"
+                Grid.ColumnSpan="2"
+                Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
+                    Permissions
+                </Label>
+
+                <TextBlock
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Margin="12,4,4,2"
+                FontStyle="Italic"
+                Style="{DynamicResource awsInfoTextStyle}"
+                TextWrapping="Wrap">
+                You can provide an IAM role for your application with appropriate permissions. For example, if your code needs to write to S3, the role you provide must have write permissions to S3.
+                </TextBlock>
+
+                <Label
+                Grid.Row="2"
+                Margin="8,4,4,4"
+                VerticalAlignment="Center"
+                Style="{DynamicResource awsLabelBaseStyle}"
+                ToolTip="Provide an IAM role for your code with appropriate permissions. For example, if your code needs to write to S3, the role you provide must have write permissions to S3. If you want Lambda to automatically write your logs to CloudWatch logs and generate CloudWatch metrics for you, make sure the role has permissions to write to CloudWatch logs and CloudWatch metrics.">
+                    _Task Role:
+                </Label>
+                <commoncomponents:IAMRolePicker
+                Name="_ctlIAMRolePicker"
+                Grid.Row="2"
+                Grid.Column="1"
+                Margin="0,4,2,0"
+                ToolTip="Provide an IAM role for your code with appropriate permissions to the AWS services your Lambda function will access."
+                Visibility="Visible" />
+            </Grid>
+        </Grid>
+
+        <Grid Grid.Row="2">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
@@ -163,14 +230,14 @@
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="40" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <Label
                 Grid.Row="0"
-                Margin="0,12,0,-12"
+                Margin="0,4,0,-12"
                 Style="{DynamicResource awsWizardGroupSubHeaderStyle}" >
                     Port Mapping
                 </Label>
@@ -250,6 +317,103 @@
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
                     Click="AddPortMapping_Click">
+                    _Add...
+                </Button>
+            </Grid>
+
+            <Grid
+                Grid.Column="1"
+                >
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="40" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Label
+                Grid.Row="0"
+                Margin="0,4,0,-12"
+                Style="{DynamicResource awsWizardGroupSubHeaderStyle}" >
+                    Environment Variables
+                </Label>
+
+                <TextBlock
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Margin="8,10,4,2"
+                FontStyle="Italic"
+                Style="{DynamicResource awsInfoTextStyle}"
+                TextWrapping="Wrap">
+                The environment variables to pass to a container.
+                </TextBlock>
+
+                <commonUi:ToolkitDataGridWrapper
+                    x:Name="_ctlEnvironmentVariables"
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Margin="6,10,4,0"
+                    HorizontalAlignment="Stretch"
+                    VerticalContentAlignment="Center"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    CanUserSortColumns="False"
+                    CellEditEnding="_ctlEnvironmentVariables_CellEditEnding"
+                    FrozenColumnCount="1"
+                    HeadersVisibility="All"
+                    HorizontalScrollBarVisibility="Hidden"
+                    ItemsSource="{Binding EnvironmentVariables}">
+
+                    <commonUi:ToolkitDataGridWrapper.Columns>
+                        <DataGridTextColumn
+                            Width="180"
+                            Binding="{Binding Variable, Mode=TwoWay}"
+                            Header="Variable">
+                            <DataGridTextColumn.EditingElementStyle>
+                                <Style TargetType="TextBox" />
+                            </DataGridTextColumn.EditingElementStyle>
+                        </DataGridTextColumn>
+
+                        <DataGridTextColumn
+                            Width="*"
+                            Binding="{Binding Value, Mode=TwoWay}"
+                            Header="Value">
+                            <DataGridTextColumn.EditingElementStyle>
+                                <Style TargetType="TextBox" />
+                            </DataGridTextColumn.EditingElementStyle>
+                        </DataGridTextColumn>
+
+                        <DataGridTemplateColumn Width="20" Header="">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Button x:Name="_removeEnvironmentVariable" Click="RemoveEnvironmentVariable_Click">
+                                            <Image
+                                                Width="16"
+                                                Height="16"
+                                                DataContext="{DynamicResource CommonIcons}"
+                                                Source="{Binding RemoveIcon}" />
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                    </commonUi:ToolkitDataGridWrapper.Columns>
+
+                </commonUi:ToolkitDataGridWrapper>
+
+                <Button
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Margin="4"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Click="AddEnvironmentVariable_Click">
                     _Add...
                 </Button>
             </Grid>

@@ -10,7 +10,7 @@ namespace Amazon.AWSToolkit.ECS
     public static class Constants
     {
         public enum DeployMode { PushOnly, DeployToECSCluster }
-
+        
         public static readonly string ECS_ASSUME_ROLE_POLICY =
 @"
 {
@@ -21,6 +21,23 @@ namespace Amazon.AWSToolkit.ECS
       ""Effect"": ""Allow"",
       ""Principal"": {
         ""Service"": ""ecs.amazonaws.com""
+      },
+      ""Action"": ""sts:AssumeRole""
+    }
+  ]
+}
+".Trim();
+
+        public static readonly string ECS_TASKS_ASSUME_ROLE_POLICY =
+@"
+{
+  ""Version"": ""2008-10-17"",
+  ""Statement"": [
+    {
+      ""Sid"": """",
+      ""Effect"": ""Allow"",
+      ""Principal"": {
+        ""Service"": ""ecs-tasks.amazonaws.com""
       },
       ""Action"": ""sts:AssumeRole""
     }

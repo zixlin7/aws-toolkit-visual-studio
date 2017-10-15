@@ -132,6 +132,10 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             HostingWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit] = _pageUI.MemoryHardLimit;
             HostingWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit] = _pageUI.MemorySoftLimit;
             HostingWizard[PublishContainerToAWSWizardProperties.PortMappings] = _pageUI.PortMappings.ToList();
+            HostingWizard[PublishContainerToAWSWizardProperties.EnvironmentVariables] = _pageUI.EnvironmentVariables.ToList();
+
+            HostingWizard[PublishContainerToAWSWizardProperties.TaskRole] = _pageUI.SelectedRole;
+            HostingWizard[PublishContainerToAWSWizardProperties.TaskRoleManagedPolicy] = _pageUI.SelectedManagedPolicy;
 
             return true;
         }

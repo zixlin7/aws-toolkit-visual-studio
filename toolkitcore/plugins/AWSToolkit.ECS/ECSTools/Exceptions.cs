@@ -36,6 +36,11 @@ namespace Amazon.ECS.Tools
             FailedToUpdateService,
             ClusterNotFound,
 
+            IAMAttachRole,
+            IAMCreateRole,
+            IAMGetRole,
+            RoleNotFound,
+
         }
 
         public DockerToolsException(string message, ErrorCode code) : base(message)

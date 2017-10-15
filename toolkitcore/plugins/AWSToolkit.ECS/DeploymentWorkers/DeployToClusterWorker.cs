@@ -13,6 +13,7 @@ using Amazon.IdentityManagement.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
@@ -39,6 +40,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             this._iamClient = iamClient;
         }
 
+        static readonly TimeSpan SLEEP_TIME_FOR_ROLE_PROPOGATION = TimeSpan.FromSeconds(15);
         public void Execute(State state)
         {
             ConfigureLoadBalancerChangeTracker elbChanges = null;
@@ -49,6 +51,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 {
                     throw new Exception(elbChanges.ErrorMessage);
                 }
+
+
 
                 var command = new DeployCommand(new ECSToolLogger(this.Helper), state.WorkingDirectory, new string[0])
                 {
@@ -76,7 +80,19 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     PersistConfigFile = state.PersistConfigFile
                 };
 
-                if(elbChanges.CreatedServiceIAMRole)
+                if (state.SelectedRole != null)
+                {
+                    command.TaskDefinitionRole = state.SelectedRole.Arn;
+                }
+                else
+                {
+                    command.TaskDefinitionRole = this.CreateRole(state);
+                    this.Helper.AppendUploadStatus(string.Format("Created IAM role {0} with managed policy {1}", command.TaskDefinitionRole, state.SelectedManagedPolicy.PolicyName));
+                    this.Helper.AppendUploadStatus("Waiting for new IAM Role to propagate to AWS regions");
+                    Thread.Sleep(SLEEP_TIME_FOR_ROLE_PROPOGATION);
+                }
+
+                if (elbChanges.CreatedServiceIAMRole)
                 {
                     command.ELBServiceRole = elbChanges.ServiceIAMRole;
                 }
@@ -110,6 +126,16 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     command.PortMappings = mappings;
                 }
 
+                if (state.EnvironmentVariables != null && state.EnvironmentVariables.Count > 0)
+                {
+                    var variables = new Dictionary<string, string>();
+                    for (int i = 0; i < state.EnvironmentVariables.Count; i++)
+                    {
+                        variables[state.EnvironmentVariables[i].Variable] = state.EnvironmentVariables[i].Value;
+                    }
+                    command.EnvironmentVariables = variables;
+                }
+
                 if (command.ExecuteAsync().Result)
                 {
                     this.Helper.SendCompleteSuccessAsync(state);
@@ -133,6 +159,25 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 LOGGER.Error("Error deploying to ECS Cluster.", e);
                 this.Helper.SendCompleteErrorAsync("Error deploying to ECS Cluster: " + e.Message);
             }
+        }
+
+        private string CreateRole(State state)
+        {
+            var newRole = IAMUtilities.CreateRole(this._iamClient, "ecs_execution_" + state.TaskDefinition, Constants.ECS_TASKS_ASSUME_ROLE_POLICY);
+
+            this.Helper.AppendUploadStatus("Created IAM Role {0}", newRole.RoleName);
+
+            if (state.SelectedManagedPolicy != null)
+            {
+                this._iamClient.AttachRolePolicy(new AttachRolePolicyRequest
+                {
+                    RoleName = newRole.RoleName,
+                    PolicyArn = state.SelectedManagedPolicy.Arn
+                });
+                this.Helper.AppendUploadStatus("Attach policy {0} to role {1}", state.SelectedManagedPolicy.PolicyName, newRole.RoleName);
+            }
+
+            return newRole.Arn;
         }
 
         public class ConfigureLoadBalancerChangeTracker
@@ -196,7 +241,10 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             try
             {
                 if (!state.ShouldConfigureELB)
+                {
+                    changeTracker.Success = true;
                     return changeTracker;
+                }
 
                 if (state.CreateNewIAMRole)
                 {
@@ -749,6 +797,9 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             public int? MemoryHardLimit { get; set; }
             public int? MemorySoftLimit { get; set; }
             public IList<PortMappingItem> PortMapping { get; set; }
+            public IList<EnvironmentVariableItem> EnvironmentVariables { get; set; }
+            public Amazon.IdentityManagement.Model.Role SelectedRole { get; set; }
+            public Amazon.IdentityManagement.Model.ManagedPolicy SelectedManagedPolicy { get; set; }
 
             public string Cluster { get; set; }
             public string Service { get; set; }

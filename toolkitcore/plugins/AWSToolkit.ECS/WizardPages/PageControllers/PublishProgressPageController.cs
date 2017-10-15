@@ -173,6 +173,10 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                     MemoryHardLimit = HostingWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit] as int?,
                     MemorySoftLimit = HostingWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit] as int?,
                     PortMapping = HostingWizard[PublishContainerToAWSWizardProperties.PortMappings] as IList<PortMappingItem>,
+                    EnvironmentVariables = HostingWizard[PublishContainerToAWSWizardProperties.EnvironmentVariables] as IList<EnvironmentVariableItem>,
+
+                    SelectedRole = HostingWizard[PublishContainerToAWSWizardProperties.TaskRole] as Role,
+                    SelectedManagedPolicy = HostingWizard[PublishContainerToAWSWizardProperties.TaskRoleManagedPolicy] as ManagedPolicy,
 
                     Cluster = HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string,
                     Service = HostingWizard[PublishContainerToAWSWizardProperties.Service] as string,

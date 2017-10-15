@@ -111,6 +111,8 @@
     <Compile Include="DeploymentWorkers\IDockerDeploymentHelper.cs" />
     <Compile Include="DeploymentWorkers\PushImageToECRWorker.cs" />
     <Compile Include="ECSActivator.cs" />
+    <Compile Include="ECSTools\Constants.cs" />
+    <Compile Include="ECSTools\RoleHelper.cs" />
     <Compile Include="Model\ClusterWrapper.cs" />
     <Compile Include="Model\IWrapper.cs" />
     <Compile Include="Model\RepositoryWrapper.cs" />

@@ -49,6 +49,9 @@ namespace Amazon.AWSToolkit.ECS
         public static readonly string MemoryHardLimit = "memoryHardLimit";
         public static readonly string MemorySoftLimit = "memorySoftLimit";
         public static readonly string PortMappings = "portMappings";
+        public static readonly string EnvironmentVariables = "EnvironmentVariables";
+        public static readonly string TaskRole = "TaskRole";
+        public static readonly string TaskRoleManagedPolicy = "TaskRoleManagedPolicy";
 
         public static readonly string CreateNewService = "isExistingService";
         public static readonly string Service = "service";
