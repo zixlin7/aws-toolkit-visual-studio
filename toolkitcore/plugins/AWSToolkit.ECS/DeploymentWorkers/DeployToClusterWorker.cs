@@ -9,6 +9,7 @@ using Amazon.ECS.Tools.Commands;
 using Amazon.ElasticLoadBalancingV2;
 using Amazon.ElasticLoadBalancingV2.Model;
 using Amazon.IdentityManagement;
+using Amazon.IdentityManagement.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -115,11 +116,13 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 }
                 else
                 {
+                    CleanupELBResources(elbChanges);
                     if (command.LastToolsException != null)
+                    {
                         this.Helper.SendCompleteErrorAsync("Error publishing container to AWS: " + command.LastToolsException.Message);
+                    }
                     else
                     {
-                        CleanupELBResources(elbChanges);
                         this.Helper.SendCompleteErrorAsync("Unknown error publishing container to AWS");
                     }
                 }
@@ -163,6 +166,30 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
         }
 
+        private string GenerateIAMRoleName(State state)
+        {
+            var baseName = "ecsServiceRole" + "-" + state.Cluster;
+
+            var existingRoleNames = new HashSet<string>();
+            var response = new ListRolesResponse();
+            do
+            {
+                var roles = this._iamClient.ListRoles(new ListRolesRequest { Marker = response.Marker }).Roles;
+                roles.ForEach(x => existingRoleNames.Add(x.RoleName));
+
+            } while (response.IsTruncated);
+
+            if (!existingRoleNames.Contains(baseName))
+                return baseName;
+
+            for(int i = 1; true; i++)
+            {
+                var name = baseName + "-" + i;
+                if (!existingRoleNames.Contains(name))
+                    return name;
+            }
+        }
+
         private ConfigureLoadBalancerChangeTracker ConfigureLoadBalancer(State state)
         {
             var changeTracker = new ConfigureLoadBalancerChangeTracker();
@@ -173,7 +200,24 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
                 if (state.CreateNewIAMRole)
                 {
-                    // TODO Create role
+                    var newRoleName = GenerateIAMRoleName(state);
+                    CreateRoleRequest request = new CreateRoleRequest
+                    {
+                        RoleName = newRoleName,
+                        AssumeRolePolicyDocument = Constants.ECS_ASSUME_ROLE_POLICY
+                    };
+
+                    changeTracker.ServiceIAMRole = this._iamClient.CreateRole(request).Role.Arn;
+                    this.Helper.AppendUploadStatus("Created IAM service role for ECS to manage the load balancer: " + newRoleName);
+
+                    this._iamClient.PutRolePolicy(new PutRolePolicyRequest
+                    {
+                        RoleName = request.RoleName,
+                        PolicyName = "Default",
+                        PolicyDocument = Constants.ECS_DEFAULT_SERVICE_POLICY
+                    });
+                    changeTracker.CreatedServiceIAMRole = true;
+                    this.Helper.AppendUploadStatus("Added policy to IAM role {0} to give ECS permission to manage the load balancer", newRoleName);
                 }
                 else
                 {
@@ -661,6 +705,31 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 catch (Exception e)
                 {
                     this.Helper.AppendUploadStatus("Failed to delete default target group {0}: {1}", elbChanges.DefaulTargetGroup, e.Message);
+                }
+            }
+
+            if(elbChanges.CreatedServiceIAMRole)
+            {
+                try
+                {
+                    var roleName = elbChanges.ServiceIAMRole;
+                    if (roleName.Contains("/"))
+                        roleName = roleName.Substring(roleName.IndexOf('/') + 1);
+
+
+                    var policies = this._iamClient.ListRolePolicies(new ListRolePoliciesRequest { RoleName = roleName }).PolicyNames;
+                    foreach(var policy in policies)
+                    {
+                        this._iamClient.DeleteRolePolicy(new DeleteRolePolicyRequest { RoleName = roleName, PolicyName = policy });
+                        this.Helper.AppendUploadStatus("Deleted policy {0} from IAM service role {1}", policy, roleName);
+                    }
+
+                    this._iamClient.DeleteRole(new DeleteRoleRequest {RoleName = roleName });
+                    this.Helper.AppendUploadStatus("Deleted IAM service role {0}", roleName);
+                }
+                catch (Exception e)
+                {
+                    this.Helper.AppendUploadStatus("Failed to delete IAM service role {0}: {1}", elbChanges.ServiceIAMRole, e.Message);
                 }
             }
         }
