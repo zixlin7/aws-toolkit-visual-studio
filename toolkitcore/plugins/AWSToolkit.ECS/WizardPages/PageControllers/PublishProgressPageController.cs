@@ -321,6 +321,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 (this as PublishProgressPageController)._pageUI.StopProgressBar();
                 (this as PublishProgressPageController)._pageUI.SetUploadFailedState(true);
 
+                AppendUploadStatus(message);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error Uploading", message);
 
                 // wizard framework doesn't allow this one to be changed currently

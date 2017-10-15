@@ -40,9 +40,14 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
         public void Execute(State state)
         {
+            ConfigureLoadBalancerChangeTracker elbChanges = null;
             try
             {
-                var elbChanges = ConfigureLoadBalancer(state);
+                elbChanges = ConfigureLoadBalancer(state);
+                if(!elbChanges.Success)
+                {
+                    throw new Exception(elbChanges.ErrorMessage);
+                }
 
                 var command = new DeployCommand(new ECSToolLogger(this.Helper), state.WorkingDirectory, new string[0])
                 {
@@ -121,6 +126,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             }
             catch (Exception e)
             {
+                CleanupELBResources(elbChanges);
                 LOGGER.Error("Error deploying to ECS Cluster.", e);
                 this.Helper.SendCompleteErrorAsync("Error deploying to ECS Cluster: " + e.Message);
             }
@@ -128,6 +134,9 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
         public class ConfigureLoadBalancerChangeTracker
         {
+            public bool Success { get; set; }
+            public string ErrorMessage { get; set; }
+
             public bool CreatedServiceIAMRole { get; set; }
             public string ServiceIAMRole { get; set; }
 
@@ -157,79 +166,139 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         private ConfigureLoadBalancerChangeTracker ConfigureLoadBalancer(State state)
         {
             var changeTracker = new ConfigureLoadBalancerChangeTracker();
-
-            if (!state.ShouldConfigureELB)
-                return changeTracker;
-
-            if (state.CreateNewIAMRole)
+            try
             {
-                // TODO Create role
-            }
-            else
-            {
-                changeTracker.ServiceIAMRole = state.ServiceIAMRole;
-            }
+                if (!state.ShouldConfigureELB)
+                    return changeTracker;
 
-            var loadBalancerArn = state.LoadBalancer;
-            if (state.CreateNewLoadBalancer)
-            {
-                changeTracker.CreatedSecurityGroup = true;
-                changeTracker.SecurityGroup = CreateSecurityGroup(state);
-
-                changeTracker.AssignedSecurityGroups = AssignELBSecurityGroupToEC2SecurityGroup(state, changeTracker.SecurityGroup);
-
-                this.Helper.AppendUploadStatus("Creating Application Load Balancer");
-                loadBalancerArn = this._elbClient.CreateLoadBalancer(new CreateLoadBalancerRequest
+                if (state.CreateNewIAMRole)
                 {
-                    Name = state.LoadBalancer,
-                    IpAddressType = IpAddressType.Ipv4,
-                    Scheme = LoadBalancerSchemeEnum.InternetFacing,
-                    Type = LoadBalancerTypeEnum.Application,
-                    SecurityGroups = new List<string> { changeTracker.SecurityGroup },
-                    Subnets = DetermineSubnets(state),
-                    Tags = new List<ElasticLoadBalancingV2.Model.Tag> { new ElasticLoadBalancingV2.Model.Tag {Key = "CreateSource", Value = "VSToolkitECSWizard" } }
-
-                }).LoadBalancers[0].LoadBalancerArn;
-                this.Helper.AppendUploadStatus("New Application Load Balancer ARN: " + loadBalancerArn);
-
-                changeTracker.CreatedLoadBalancer = true;
-                changeTracker.LoadBalancer = loadBalancerArn;
-            }
-
-            HashSet<string> existingTargetGroupNames = null;
-            Func<string, string> makeTargetGroupNameUnique = baseName =>
-            {
-                if(existingTargetGroupNames == null)
+                    // TODO Create role
+                }
+                else
                 {
-                    var targetGroups = this._elbClient.DescribeTargetGroups(new DescribeTargetGroupsRequest()).TargetGroups;
-                    existingTargetGroupNames = new HashSet<string>();
-                    foreach (var targetGroup in targetGroups)
+                    changeTracker.ServiceIAMRole = state.ServiceIAMRole;
+                }
+
+                var loadBalancerArn = state.LoadBalancer;
+                if (state.CreateNewLoadBalancer)
+                {
+                    changeTracker.CreatedSecurityGroup = true;
+                    changeTracker.SecurityGroup = CreateSecurityGroup(state);
+
+                    changeTracker.AssignedSecurityGroups = AssignELBSecurityGroupToEC2SecurityGroup(state, changeTracker.SecurityGroup);
+
+                    this.Helper.AppendUploadStatus("Creating Application Load Balancer");
+                    loadBalancerArn = this._elbClient.CreateLoadBalancer(new CreateLoadBalancerRequest
                     {
-                        existingTargetGroupNames.Add(targetGroup.TargetGroupName);
-                    }
-                    
+                        Name = state.LoadBalancer,
+                        IpAddressType = IpAddressType.Ipv4,
+                        Scheme = LoadBalancerSchemeEnum.InternetFacing,
+                        Type = LoadBalancerTypeEnum.Application,
+                        SecurityGroups = new List<string> { changeTracker.SecurityGroup },
+                        Subnets = DetermineSubnets(state),
+                        Tags = new List<ElasticLoadBalancingV2.Model.Tag> { new ElasticLoadBalancingV2.Model.Tag { Key = "CreateSource", Value = "VSToolkitECSWizard" } }
+
+                    }).LoadBalancers[0].LoadBalancerArn;
+                    this.Helper.AppendUploadStatus("New Application Load Balancer ARN: " + loadBalancerArn);
+
+                    changeTracker.CreatedLoadBalancer = true;
+                    changeTracker.LoadBalancer = loadBalancerArn;
                 }
 
-                if (!existingTargetGroupNames.Contains(baseName))
-                    return baseName;
-
-                for (int i = 1; true; i++)
+                HashSet<string> existingTargetGroupNames = null;
+                Func<string, string> makeTargetGroupNameUnique = baseName =>
                 {
-                    var newName = baseName + "-" + i;
-                    if (!existingTargetGroupNames.Contains(newName))
-                        return newName;
+                    if (existingTargetGroupNames == null)
+                    {
+                        var targetGroups = this._elbClient.DescribeTargetGroups(new DescribeTargetGroupsRequest()).TargetGroups;
+                        existingTargetGroupNames = new HashSet<string>();
+                        foreach (var targetGroup in targetGroups)
+                        {
+                            existingTargetGroupNames.Add(targetGroup.TargetGroupName);
+                        }
+
+                    }
+
+                    if (!existingTargetGroupNames.Contains(baseName))
+                        return baseName;
+
+                    for (int i = 1; true; i++)
+                    {
+                        var newName = baseName + "-" + i;
+                        if (!existingTargetGroupNames.Contains(newName))
+                            return newName;
+                    }
+                };
+
+
+                string listenerArn = state.ListenerArn;
+                if (state.CreateNewListenerPort)
+                {
+                    string targetArn;
+                    if (string.Equals(state.NewPathPattern, "/"))
+                    {
+                        this.Helper.AppendUploadStatus("Creating TargetGroup for ELB Listener");
+                        targetArn = this._elbClient.CreateTargetGroup(new CreateTargetGroupRequest
+                        {
+                            Name = makeTargetGroupNameUnique(state.TargetGroup),
+                            Port = 80,
+                            Protocol = ProtocolEnum.HTTP,
+                            TargetType = TargetTypeEnum.Instance,
+                            HealthCheckPath = state.HealthCheckPath,
+                            VpcId = state.VpcId
+                        }).TargetGroups[0].TargetGroupArn;
+
+                        changeTracker.CreateTargetGroup = true;
+                        changeTracker.TargetGroup = targetArn;
+                        this.Helper.AppendUploadStatus("New Target Group ARN:" + changeTracker.TargetGroup);
+                    }
+                    else
+                    {
+                        this.Helper.AppendUploadStatus("Creating default TargetGroup for ELB Listener");
+                        targetArn = this._elbClient.CreateTargetGroup(new CreateTargetGroupRequest
+                        {
+                            Name = makeTargetGroupNameUnique("Default-ECS-" + state.Cluster),
+                            Port = 80,
+                            Protocol = ProtocolEnum.HTTP,
+                            TargetType = TargetTypeEnum.Instance,
+                            HealthCheckPath = "/",
+                            VpcId = state.VpcId
+                        }).TargetGroups[0].TargetGroupArn;
+
+                        changeTracker.CreateDefaulTargetGroup = true;
+                        changeTracker.DefaulTargetGroup = targetArn;
+                        this.Helper.AppendUploadStatus("Default Target Group ARN:" + targetArn);
+                    }
+
+                    this.Helper.AppendUploadStatus("Creating ELB Listener for port " + state.NewListenerPort);
+                    listenerArn = this._elbClient.CreateListener(new CreateListenerRequest
+                    {
+                        LoadBalancerArn = loadBalancerArn,
+                        Port = state.NewListenerPort,
+                        Protocol = ProtocolEnum.HTTP,
+                        DefaultActions = new List<ElasticLoadBalancingV2.Model.Action>
+                    {
+                        new ElasticLoadBalancingV2.Model.Action
+                        {
+                            TargetGroupArn = targetArn,
+                            Type = ActionTypeEnum.Forward
+                        }
+                    }
+                    }).Listeners[0].ListenerArn;
+
+                    changeTracker.CreatedListener = true;
+                    changeTracker.Listener = listenerArn;
+                    this.Helper.AppendUploadStatus("New Listener ARN: " + listenerArn);
+
+                    OpenListenerPort(state, changeTracker);
                 }
-            };
 
-
-            string listenerArn = state.ListenerArn;
-            if(state.CreateNewListenerPort)
-            {
-                string targetArn;
-                if(string.Equals(state.NewPathPattern, "/"))
+                // elbTargetGroup could be already set as the default target for the listener
+                if (state.CreateNewTargetGroup && changeTracker.TargetGroup == null)
                 {
                     this.Helper.AppendUploadStatus("Creating TargetGroup for ELB Listener");
-                    targetArn = this._elbClient.CreateTargetGroup(new CreateTargetGroupRequest
+                    changeTracker.TargetGroup = this._elbClient.CreateTargetGroup(new CreateTargetGroupRequest
                     {
                         Name = makeTargetGroupNameUnique(state.TargetGroup),
                         Port = 80,
@@ -238,93 +307,34 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                         HealthCheckPath = state.HealthCheckPath,
                         VpcId = state.VpcId
                     }).TargetGroups[0].TargetGroupArn;
-
-                    changeTracker.CreateTargetGroup = true;
-                    changeTracker.TargetGroup = targetArn;
                     this.Helper.AppendUploadStatus("New Target Group ARN:" + changeTracker.TargetGroup);
-                }
-                else
-                {
-                    this.Helper.AppendUploadStatus("Creating default TargetGroup for ELB Listener");
-                    targetArn = this._elbClient.CreateTargetGroup(new CreateTargetGroupRequest
-                    {
-                        Name = makeTargetGroupNameUnique("Default-ECS-" + state.Cluster),
-                        Port = 80,
-                        Protocol = ProtocolEnum.HTTP,
-                        TargetType = TargetTypeEnum.Instance,
-                        HealthCheckPath = "/",
-                        VpcId = state.VpcId
-                    }).TargetGroups[0].TargetGroupArn;
+                    changeTracker.CreateTargetGroup = true;
 
-                    changeTracker.CreateDefaulTargetGroup = true;
-                    changeTracker.DefaulTargetGroup = targetArn;
-                    this.Helper.AppendUploadStatus("Default Target Group ARN:" + targetArn);
-                }
-
-                this.Helper.AppendUploadStatus("Creating ELB Listener for port " + state.NewListenerPort);
-                listenerArn = this._elbClient.CreateListener(new CreateListenerRequest
-                {
-                    LoadBalancerArn = loadBalancerArn,
-                    Port = state.NewListenerPort,
-                    Protocol = ProtocolEnum.HTTP,
-                    DefaultActions = new List<ElasticLoadBalancingV2.Model.Action>
+                    this.Helper.AppendUploadStatus("Getting existing rules to determine new listener rule's priority");
+                    var existingRules = this._elbClient.DescribeRules(new DescribeRulesRequest { ListenerArn = listenerArn }).Rules;
+                    int currentMaxPriority = 1;
+                    foreach (var rule in existingRules)
                     {
-                        new ElasticLoadBalancingV2.Model.Action
+                        int rulePri;
+                        if (int.TryParse(rule.Priority, out rulePri))
                         {
-                            TargetGroupArn = targetArn,
-                            Type = ActionTypeEnum.Forward
+                            if (rulePri > currentMaxPriority)
+                                currentMaxPriority = rulePri;
                         }
                     }
-                }).Listeners[0].ListenerArn;
 
-                changeTracker.CreatedListener = true;
-                changeTracker.Listener = listenerArn;
-                this.Helper.AppendUploadStatus("New Listener ARN: " + listenerArn);
-
-                OpenListenerPort(state, changeTracker);
-            }
-
-            // elbTargetGroup could be already set as the default target for the listener
-            if (state.CreateNewTargetGroup && changeTracker.TargetGroup == null)
-            {
-                this.Helper.AppendUploadStatus("Creating TargetGroup for ELB Listener");
-                changeTracker.TargetGroup = this._elbClient.CreateTargetGroup(new CreateTargetGroupRequest
-                {
-                    Name = makeTargetGroupNameUnique(state.TargetGroup),
-                    Port = 80,
-                    Protocol = ProtocolEnum.HTTP,
-                    TargetType = TargetTypeEnum.Instance,
-                    HealthCheckPath = state.HealthCheckPath,
-                    VpcId = state.VpcId
-                }).TargetGroups[0].TargetGroupArn;
-                this.Helper.AppendUploadStatus("New Target Group ARN:" + changeTracker.TargetGroup);
-                changeTracker.CreateTargetGroup = true;
-
-                this.Helper.AppendUploadStatus("Getting existing rules to determine new listener rule's priority");
-                var existingRules =  this._elbClient.DescribeRules(new DescribeRulesRequest { ListenerArn = listenerArn }).Rules;
-                int currentMaxPriority = 1;
-                foreach(var rule in existingRules)
-                {
-                    int rulePri;
-                    if(int.TryParse(rule.Priority, out rulePri))
+                    var pathPattern = state.NewPathPattern;
+                    if (!pathPattern.EndsWith("*"))
                     {
-                        if (rulePri > currentMaxPriority)
-                            currentMaxPriority = rulePri;
+                        pathPattern += "*";
                     }
-                }
 
-                var pathPattern = state.NewPathPattern;
-                if(!pathPattern.EndsWith("*"))
-                {
-                    pathPattern += "*";
-                }
-
-                var newPriority = currentMaxPriority + 50;
-                this.Helper.AppendUploadStatus("Creating new listener rule for URL path " + pathPattern + " with priority " + newPriority);
-                var ruleArn = this._elbClient.CreateRule(new CreateRuleRequest
-                {
-                    ListenerArn = listenerArn,
-                    Actions = new List<ElasticLoadBalancingV2.Model.Action>
+                    var newPriority = currentMaxPriority + 50;
+                    this.Helper.AppendUploadStatus("Creating new listener rule for URL path " + pathPattern + " with priority " + newPriority);
+                    var ruleArn = this._elbClient.CreateRule(new CreateRuleRequest
+                    {
+                        ListenerArn = listenerArn,
+                        Actions = new List<ElasticLoadBalancingV2.Model.Action>
                     {
                         new ElasticLoadBalancingV2.Model.Action
                         {
@@ -332,7 +342,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                             Type = ActionTypeEnum.Forward
                         }
                     },
-                    Conditions = new List<RuleCondition>
+                        Conditions = new List<RuleCondition>
                     {
                         new RuleCondition
                         {
@@ -340,12 +350,20 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                             Values = new List<string>{ pathPattern }
                         }
                     },
-                    Priority = newPriority
-                }).Rules[0].RuleArn;
+                        Priority = newPriority
+                    }).Rules[0].RuleArn;
 
-                changeTracker.CreatedRule = true;
-                changeTracker.Rule = ruleArn;
-                this.Helper.AppendUploadStatus("New Rule Arn: " + ruleArn);
+                    changeTracker.CreatedRule = true;
+                    changeTracker.Rule = ruleArn;
+                    this.Helper.AppendUploadStatus("New Rule Arn: " + ruleArn);
+                }
+
+                changeTracker.Success = true;
+            }
+            catch(Exception e)
+            {
+                changeTracker.Success = false;
+                changeTracker.ErrorMessage = e.Message;
             }
 
             return changeTracker;
@@ -478,7 +496,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
         private void OpenListenerPort(State state, ConfigureLoadBalancerChangeTracker changes)
         {
-            var loadBalancers = this._elbClient.DescribeLoadBalancers(new DescribeLoadBalancersRequest { LoadBalancerArns = new List<string> { state.LoadBalancer } }).LoadBalancers;
+            var loadBalancerArn = changes.CreatedLoadBalancer ? changes.LoadBalancer : state.LoadBalancer;
+            var loadBalancers = this._elbClient.DescribeLoadBalancers(new DescribeLoadBalancersRequest { LoadBalancerArns = new List<string> { loadBalancerArn } }).LoadBalancers;
             if (loadBalancers.Count != 1)
                 return;
 
@@ -521,6 +540,9 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 {
                     this._elbClient.DeleteLoadBalancer(new DeleteLoadBalancerRequest { LoadBalancerArn = elbChanges.LoadBalancer });
                     this.Helper.AppendUploadStatus("Deleted load balancer");
+
+                    this.Helper.AppendUploadStatus("Wait for the eventual consistence of the delete so the connected resources can be deleted");
+                    System.Threading.Thread.Sleep(3000);
                 }
                 catch(Exception e)
                 {
@@ -533,6 +555,9 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 {
                     this._elbClient.DeleteListener(new DeleteListenerRequest { ListenerArn = elbChanges.Listener });
                     this.Helper.AppendUploadStatus("Deleted listener");
+
+                    this.Helper.AppendUploadStatus("Wait for the eventual consistence of the delete so the connected resources can be deleted");
+                    System.Threading.Thread.Sleep(3000);
                 }
                 catch (Exception e)
                 {
