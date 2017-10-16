@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.ECS.Model;
+using System.Windows.Media;
 
 namespace Amazon.AWSToolkit.ECS.Model
 {
@@ -29,6 +30,15 @@ namespace Amazon.AWSToolkit.ECS.Model
         public void LoadFrom(Cluster cluster)
         {
             _cluster = cluster;
+            NotifyPropertyChanged("Name");
+            NotifyPropertyChanged("Services");
+            NotifyPropertyChanged("RunningTasks");
+            NotifyPropertyChanged("PendingTasks");
+            NotifyPropertyChanged("ContainerInstances");
+            NotifyPropertyChanged("Status");
+            NotifyPropertyChanged("StatusHealthColor");
+            NotifyPropertyChanged("ClusterArn");
+            NotifyPropertyChanged("DisplayName");
         }
 
         public bool IsLoaded
@@ -80,6 +90,32 @@ namespace Amazon.AWSToolkit.ECS.Model
         public string Status
         {
             get { return _cluster?.Status ?? string.Empty; }
+        }
+
+        public SolidColorBrush StatusHealthColor
+        {
+            get
+            {
+                Color clr;
+                switch (this.Status)
+                {
+                    case "ACTIVE":
+                        clr = Colors.Green;
+                        break;
+
+                    case "INACTIVE":
+                        clr = Colors.Blue;
+                        break;
+
+                    default:
+                        clr = ThemeUtil.GetCurrentTheme() == VsTheme.Dark
+                            ? Colors.White
+                            : new Color() { A = 255 };
+                        break;
+                }
+
+                return new SolidColorBrush(clr);
+            }
         }
 
         [DisplayName("ARN")]

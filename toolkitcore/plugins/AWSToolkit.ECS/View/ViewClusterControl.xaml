@@ -1,7 +1,8 @@
 ﻿<commonui:BaseAWSView x:Class="Amazon.AWSToolkit.ECS.View.ViewClusterControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.ECS.View.Components"
     xmlns:uicomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"                        
     Height="600" Width="800"
     >
@@ -15,24 +16,57 @@
     </commonui:BaseAWSView.Resources>
 
     <Grid>
-        <DockPanel LastChildFill="True" Margin="0,0,0,0">
-            <ToolBar DockPanel.Dock="Top" ToolBarTray.IsLocked="True" >
-                <Button Click="onRefreshClick">
-                    <Button.Content>
-                        <WrapPanel>
-                            <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
-                            <TextBlock>Refresh</TextBlock>
-                        </WrapPanel>
-                    </Button.Content>
-                </Button>
-            </ToolBar>
 
-            <Label Style="{DynamicResource awsLabel200PercentStyle}"
-                   VerticalAlignment="Center"
-                   HorizontalAlignment="Center">
-                Cluster data here
-            </Label>
-        </DockPanel>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        
+        <ToolBar Grid.Row="0" Grid.ColumnSpan="4" ToolBarTray.IsLocked="True" >
+            <Button Click="onRefreshClick">
+                <Button.Content>
+                    <WrapPanel>
+                        <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding RefreshIcon}"/>
+                        <TextBlock>Refresh</TextBlock>
+                    </WrapPanel>
+                </Button.Content>
+            </Button>
+        </ToolBar>
+
+        <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,5,5,5" Text="Status:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="1" Grid.Row="1" Margin="0,5,0,5" Text="{Binding Cluster.Status, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
+                 Foreground="{Binding Cluster.StatusHealthColor, Mode=OneWay, NotifyOnTargetUpdated=True}"
+                 TextWrapping="NoWrap"/>
+
+        <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,5,5,5" Text="Registered container instances:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="1" Grid.Row="2" Margin="0,5,0,5" Text="{Binding Cluster.ContainerInstances, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
+                 TextWrapping="NoWrap"/>
+
+        <TextBlock Grid.Column="0" Grid.Row="3" Margin="5,5,5,5" Text="Pending tasks count:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="1" Grid.Row="3" Margin="0,5,0,5" Text="{Binding Cluster.RunningTasks, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
+                 TextWrapping="NoWrap"/>
+
+        <TextBlock Grid.Column="0" Grid.Row="4" Margin="5,5,5,5" Text="Running tasks count:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="1" Grid.Row="4" Margin="0,5,0,5" Text="{Binding Cluster.PendingTasks, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
+                 TextWrapping="NoWrap"/>
+
+        <TabControl Margin="5,5,5,5" Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="4" Style="{DynamicResource awsPropertyPageVerticalTabStyle}" SelectionChanged="onTabSelectionChange" >
+            <TabItem Header="Services">
+                <components:ServicesTab x:Name="_ctlServices"/>
+            </TabItem>
+            <TabItem Header="ECS Instances">
+            </TabItem>
+        </TabControl>
     </Grid>
 </commonui:BaseAWSView>

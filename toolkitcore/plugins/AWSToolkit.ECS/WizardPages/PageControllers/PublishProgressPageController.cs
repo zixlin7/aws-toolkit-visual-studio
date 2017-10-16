@@ -21,6 +21,7 @@ using Amazon.AWSToolkit.ECS.DeploymentWorkers;
 using Amazon.ECR;
 using Amazon.ElasticLoadBalancingV2;
 using System.IO;
+using Amazon.AWSToolkit.ECS.Nodes;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 {
@@ -266,6 +267,32 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             AddECSTools(state.PersistConfigFile.GetValueOrDefault());
             DefaultSuccessFinish();
+
+            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            {
+                var navigator = ToolkitFactory.Instance.Navigator;
+                if (navigator.SelectedAccount != state.Account)
+                    navigator.UpdateAccountSelection(new Guid(state.Account.SettingsUniqueKey), false);
+                if (navigator.SelectedRegionEndPoints != state.Region)
+                    navigator.UpdateRegionSelection(state.Region);
+
+                var ecsRootNode = state.Account.Children.FirstOrDefault(x => x is RootViewModel);
+                if (ecsRootNode != null)
+                {
+                    var clusterRootNode = ecsRootNode.Children.FirstOrDefault(x => x is ClustersRootViewModel);
+                    if (clusterRootNode != null)
+                    {
+                        clusterRootNode.Refresh(false);
+
+                        var clusterNode = clusterRootNode.Children.FirstOrDefault(x => x.Name == state.Cluster) as ClusterViewModel;
+                        if (clusterNode != null)
+                        {
+                            var metaNode = clusterNode.MetaNode as ClusterViewMetaNode;
+                            metaNode.OnView(clusterNode);
+                        }
+                    }
+                }
+            }));
         }
 
         private void AddECSTools(bool persist)
@@ -297,6 +324,36 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             AddECSTools(state.PersistConfigFile.GetValueOrDefault());
             DefaultSuccessFinish();
+
+            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            {
+                var navigator = ToolkitFactory.Instance.Navigator;
+                if (navigator.SelectedAccount != state.Account)
+                    navigator.UpdateAccountSelection(new Guid(state.Account.SettingsUniqueKey), false);
+                if (navigator.SelectedRegionEndPoints != state.Region)
+                    navigator.UpdateRegionSelection(state.Region);
+
+                var ecsRootNode = state.Account.Children.FirstOrDefault(x => x is RootViewModel);
+                if (ecsRootNode != null)
+                {
+                    var repositoryRootNode = ecsRootNode.Children.FirstOrDefault(x => x is RepositoriesRootViewModel);
+                    if (repositoryRootNode != null)
+                    {
+                        repositoryRootNode.Refresh(false);
+
+                        var repositoryName = state.DockerImageTag;
+                        if (repositoryName.Contains(':'))
+                            repositoryName = repositoryName.Substring(0, repositoryName.IndexOf(':'));
+
+                        var repositoryNode = repositoryRootNode.Children.FirstOrDefault(x => x.Name == repositoryName) as RepositoryViewModel;
+                        if (repositoryNode != null)
+                        {
+                            var metaNode = repositoryNode.MetaNode as RepositoryViewMetaNode;
+                            metaNode.OnView(repositoryNode);
+                        }
+                    }
+                }
+            }));
         }
 
         private void DefaultSuccessFinish()

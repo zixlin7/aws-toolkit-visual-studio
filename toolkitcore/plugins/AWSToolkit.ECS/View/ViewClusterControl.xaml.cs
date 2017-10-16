@@ -30,6 +30,9 @@ namespace Amazon.AWSToolkit.ECS.View
         {
             InitializeComponent();
             this._controller = controller;
+
+            this._ctlServices.Initialize(this._controller);
+
         }
 
         public override string Title
@@ -59,6 +62,7 @@ namespace Amazon.AWSToolkit.ECS.View
         protected override object LoadAndReturnModel()
         {
             this._controller.LoadModel();
+            this._ctlServices.RefreshServices();
             return this._controller.Model;
         }
 
@@ -75,5 +79,9 @@ namespace Amazon.AWSToolkit.ECS.View
             }
         }
 
+        private void onTabSelectionChange(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

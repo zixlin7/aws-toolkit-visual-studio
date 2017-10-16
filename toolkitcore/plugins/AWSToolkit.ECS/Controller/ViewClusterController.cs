@@ -55,5 +55,21 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 ToolkitFactory.Instance.ShellProvider.ShowError(msg, "Resource Query Failure");
             }
         }
+
+        public void RefreshServices()
+        {
+            var serviceArns = this.ECSClient.ListServices(new ListServicesRequest { Cluster = this.Model.Cluster.ClusterArn }).ServiceArns;
+            var services = this.ECSClient.DescribeServices(new DescribeServicesRequest
+            {
+                Cluster = this.Model.Cluster.ClusterArn,
+                Services = serviceArns
+            }).Services;
+
+            this.Model.Services.Clear();
+            foreach(var service in services)
+            {
+                this.Model.Services.Add(new ServiceWrapper(service));
+            }
+        }
     }
 }

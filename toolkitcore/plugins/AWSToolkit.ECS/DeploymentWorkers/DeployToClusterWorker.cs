@@ -84,7 +84,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 {
                     command.TaskDefinitionRole = state.SelectedRole.Arn;
                 }
-                else
+                else if(state.SelectedManagedPolicy != null)
                 {
                     command.TaskDefinitionRole = this.CreateRole(state);
                     this.Helper.AppendUploadStatus(string.Format("Created IAM role {0} with managed policy {1}", command.TaskDefinitionRole, state.SelectedManagedPolicy.PolicyName));
