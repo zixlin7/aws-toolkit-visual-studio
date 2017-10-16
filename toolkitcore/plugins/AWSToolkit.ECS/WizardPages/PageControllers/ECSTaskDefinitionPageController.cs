@@ -127,8 +127,16 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (_pageUI == null)
                 return false;
 
-            HostingWizard[PublishContainerToAWSWizardProperties.TaskDefinition] = _pageUI.TaskDefinition;
-            HostingWizard[PublishContainerToAWSWizardProperties.Container] = _pageUI.Container;
+            if(_pageUI.CreateTaskDefinition)
+                HostingWizard[PublishContainerToAWSWizardProperties.TaskDefinition] = _pageUI.NewTaskDefinitionName;
+            else
+                HostingWizard[PublishContainerToAWSWizardProperties.TaskDefinition] = _pageUI.TaskDefinition;
+
+            if(this._pageUI.CreateContainer)
+                HostingWizard[PublishContainerToAWSWizardProperties.Container] = _pageUI.NewContainerName;
+            else
+                HostingWizard[PublishContainerToAWSWizardProperties.Container] = _pageUI.Container;
+
             HostingWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit] = _pageUI.MemoryHardLimit;
             HostingWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit] = _pageUI.MemorySoftLimit;
             HostingWizard[PublishContainerToAWSWizardProperties.PortMappings] = _pageUI.PortMappings.ToList();

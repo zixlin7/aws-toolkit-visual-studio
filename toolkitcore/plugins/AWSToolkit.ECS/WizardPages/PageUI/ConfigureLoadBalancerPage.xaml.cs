@@ -32,8 +32,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
     /// </summary>
     public partial class ConfigureLoadBalancerPage : BaseAWSUserControl, INotifyPropertyChanged
     {
-        const string CREATE_NEW_TEXT = "Create New";
-
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ECSServicePage));
 
         public ConfigureLoadBalancerPageController PageController { get; private set; }

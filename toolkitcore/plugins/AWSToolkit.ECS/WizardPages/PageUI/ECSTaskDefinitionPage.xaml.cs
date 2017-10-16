@@ -58,9 +58,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             UpdateExistingTaskDefinition();
             LoadPreviousValues(PageController.HostingWizard);
 
-            if (string.IsNullOrWhiteSpace(this._ctlContainerPicker.Text))
-                this._ctlContainerPicker.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
-
             string role = null;
             if (PageController.HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.TaskRole))
                 role = PageController.HostingWizard[PublishContainerToAWSWizardProperties.TaskRole] as string;
@@ -178,10 +175,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
+        Dictionary<string, TaskDefinition> _existingTaskDefinitions = new Dictionary<string, TaskDefinition>();
         void UpdateExistingTaskDefinition()
         {
             var currentTaskDefinitionText = !string.IsNullOrWhiteSpace(this._ctlTaskDefinitionPicker.Text) && this._ctlTaskDefinitionPicker.SelectedValue == null ? this._ctlTaskDefinitionPicker.Text : null;
             this._ctlTaskDefinitionPicker.Items.Clear();
+            this._ctlTaskDefinitionPicker.Items.Add(ECSWizardUtils.CREATE_NEW_TEXT);
+            this._existingTaskDefinitions.Clear();
 
             try
             {
@@ -196,7 +196,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         var response = new ListTaskDefinitionFamiliesResponse();
                         do
                         {
-                            var request = new ListTaskDefinitionFamiliesRequest() { NextToken = response.NextToken };
+                            var request = new ListTaskDefinitionFamiliesRequest() { NextToken = response.NextToken, Status = TaskDefinitionFamilyStatus.ACTIVE };
 
                             response = ecsClient.ListTaskDefinitionFamilies(request);
 
@@ -226,10 +226,10 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                             }
                             else
                             {
-                                if (currentTaskDefinitionText != null)
-                                    this._ctlTaskDefinitionPicker.Text = currentTaskDefinitionText;
+                                if (currentTaskDefinitionText != null && items.Contains(currentTaskDefinitionText))
+                                    this._ctlTaskDefinitionPicker.SelectedValue = currentTaskDefinitionText;
                                 else
-                                    this._ctlTaskDefinitionPicker.Text = "";
+                                    this._ctlTaskDefinitionPicker.SelectedIndex = 0;
                             }
                         }
                     }));
@@ -241,14 +241,19 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
+        Dictionary<string, ContainerDefinition> _existingContainerDefinitions = new Dictionary<string, ContainerDefinition>();
         private void UpdateExistingContainers()
         {
             var currentTextValue = !string.IsNullOrWhiteSpace(this._ctlContainerPicker.Text) &&
                 this._ctlContainerPicker.SelectedValue == null ? this._ctlContainerPicker.Text : null;
+
             this._ctlContainerPicker.Items.Clear();
+            this._ctlContainerPicker.Items.Add(ECSWizardUtils.CREATE_NEW_TEXT);
+            this._existingContainerDefinitions.Clear();
+
             try
             {
-                if (this._ctlTaskDefinitionPicker.SelectedItem == null)
+                if (this.CreateTaskDefinition)
                     return;
 
                 var taskDefinitionFamily = this._ctlTaskDefinitionPicker.SelectedItem as string;
@@ -259,16 +264,19 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 Task task1 = Task.Run(() =>
                 {
                     var items = new List<string>();
+                    TaskDefinition taskDefinition;
                     using (var ecsClient = account.CreateServiceClient<AmazonECSClient>(region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP)))
                     {
-                        var response = ecsClient.DescribeTaskDefinition(new DescribeTaskDefinitionRequest
+                        taskDefinition = ecsClient.DescribeTaskDefinition(new DescribeTaskDefinitionRequest
                         {
                             TaskDefinition = taskDefinitionFamily
-                        });
+                        }).TaskDefinition;
 
-                        foreach(var container in response.TaskDefinition.ContainerDefinitions)
+
+                        foreach(var container in taskDefinition.ContainerDefinitions)
                         {
                             items.Add(container.Name);
+                            this._existingContainerDefinitions[container.Name] = container;
                         }
                     }
 
@@ -284,11 +292,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                             this._ctlContainerPicker.SelectedItem = previousValue;
                         else
                         {
-                            if (currentTextValue != null)
-                                this._ctlContainerPicker.Text = currentTextValue;
+                            if (currentTextValue != null && items.Contains(currentTextValue))
+                                this._ctlContainerPicker.SelectedValue = currentTextValue;
                             else
-                                this._ctlContainerPicker.Text = "";
+                                this._ctlContainerPicker.SelectedIndex = 0;
                         }
+
+                        this._ctlIAMRolePicker.SelectExistingRole(taskDefinition.TaskRoleArn);
                     }));
                 });
             }
@@ -320,15 +330,47 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             set { this._ctlTaskDefinitionPicker.Text = value; }
         }
 
-        private void _ctlTaskDefinitionPicker_TextChanged(object sender, RoutedEventArgs e)
+        public bool CreateTaskDefinition
         {
-            NotifyPropertyChanged("TaskDefinition");
+            get { return this._ctlTaskDefinitionPicker.SelectedIndex == 0; }
         }
+
+        string _newTaskDefinitionName;
+        public string NewTaskDefinitionName
+        {
+            get { return this._newTaskDefinitionName; }
+            set
+            {
+                this._newTaskDefinitionName = value;
+                NotifyPropertyChanged("NewTaskDefinitionName");
+            }
+        }
+
 
         private void _ctlTaskDefinitionPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             NotifyPropertyChanged("TaskDefinition");
             UpdateExistingContainers();
+
+            if (this._ctlTaskDefinitionPicker.SelectedIndex > 0)
+            {
+                this._ctlNewTaskDefinition.Visibility = Visibility.Collapsed;
+                this._ctlNewTaskDefinition.IsEnabled = false;
+            }
+            else
+            {
+                this._ctlNewTaskDefinition.Visibility = Visibility.Visible;
+                this._ctlNewTaskDefinition.IsEnabled = true;
+
+                if(!this._ctlTaskDefinitionPicker.Items.Contains(PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string))
+                    this._ctlNewTaskDefinition.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
+
+                this._ctlContainerPicker.SelectedIndex = 0;
+                this._ctlContainerPicker.IsEnabled = false;
+
+                if (!this._ctlContainerPicker.Items.Contains(PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string))
+                    this._ctlNewContainer.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
+            }
         }
 
         public string Container
@@ -337,14 +379,68 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             set { this._ctlContainerPicker.Text = value; }
         }
 
-        private void _ctlContainerPicker_TextChanged(object sender, RoutedEventArgs e)
+        public bool CreateContainer
         {
-            NotifyPropertyChanged("Container");
+            get { return this._ctlContainerPicker.SelectedIndex == 0; }
+        }
+
+        string _newContainerName;
+        public string NewContainerName
+        {
+            get { return this._newContainerName; }
+            set
+            {
+                this._newContainerName = value;
+                NotifyPropertyChanged("NewContainerName");
+            }
         }
 
         private void _ctlContainerPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            string containerName = null;
+            if (e.AddedItems.Count == 1)
+                containerName = e.AddedItems[0] as string;
+
             NotifyPropertyChanged("Container");
+
+            if (this._ctlContainerPicker.SelectedIndex > 0)
+            {
+                this._ctlNewContainer.Visibility = Visibility.Collapsed;
+                this._ctlNewContainer.IsEnabled = false;
+
+                ContainerDefinition container;
+                if(this._existingContainerDefinitions.TryGetValue(containerName, out container))
+                {
+                    if (container.Memory > 0)
+                        this._ctlMemoryHardLimit.Text = container.Memory.ToString();
+                    else
+                        this._ctlMemoryHardLimit.Text = null;
+
+                    if (container.MemoryReservation > 0)
+                        this._ctlMemorySoftLimit.Text = container.MemoryReservation.ToString();
+                    else
+                        this._ctlMemorySoftLimit.Text = null;
+
+                    this.PortMappings.Clear();
+                    foreach(var mapping in container.PortMappings)
+                    {
+                        this.PortMappings.Add(new PortMappingItem {HostPort = mapping.HostPort, ContainerPort = mapping.ContainerPort });
+                    }
+
+                    this.EnvironmentVariables.Clear();
+                    foreach (var variable in container.Environment)
+                    {
+                        this.EnvironmentVariables.Add(new EnvironmentVariableItem { Variable = variable.Name, Value = variable.Value });
+                    }
+                }
+            }
+            else
+            {
+                this._ctlNewContainer.Visibility = Visibility.Visible;
+                this._ctlNewContainer.IsEnabled = true;
+                if (!this._ctlContainerPicker.Items.Contains(PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string))
+                    this._ctlNewContainer.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
+            }
         }
 
         int? _memorySoftLimit;

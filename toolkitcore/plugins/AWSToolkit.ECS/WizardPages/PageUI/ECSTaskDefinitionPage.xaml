@@ -41,6 +41,7 @@
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
 
             <Label
@@ -58,15 +59,25 @@
                 Grid.Row="0"
                 Grid.Column="1"
                 Margin="16,2,4,2"
-                IsEditable="True"
                 SelectedItem="{Binding TaskDefinition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 SelectionChanged="_ctlTaskDefinitionPicker_SelectionChanged"
-                TextBoxBase.TextChanged="_ctlTaskDefinitionPicker_TextChanged"
                 Style="{DynamicResource awsComboBoxStyle}" />
 
-            <Label
+            <TextBox
+                Name="_ctlNewTaskDefinition"
                 Grid.Row="0"
                 Grid.Column="2"
+                Grid.ColumnSpan="2"
+                Margin="4,2,4,2"
+                IsEnabled="False"
+                Visibility="Collapsed"
+                Style="{DynamicResource awsTextBoxStyle}"
+                Text="{Binding NewTaskDefinitionName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                />
+
+            <Label
+                Grid.Row="1"
+                Grid.Column="0"
                 Margin="10,2,4,2"
                 VerticalAlignment="Center"
                 Style="{DynamicResource awsLabelBaseStyle}">
@@ -76,18 +87,27 @@
 
             <ComboBox
                 Name="_ctlContainerPicker"
-                Grid.Row="0"
-                Grid.Column="3"
+                Grid.Row="1"
+                Grid.Column="1"
                 Margin="16,2,4,2"
-                IsEditable="True"                   
                 SelectedItem="{Binding Container, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 SelectionChanged="_ctlContainerPicker_SelectionChanged"
-                TextBoxBase.TextChanged="_ctlContainerPicker_TextChanged"
                 Style="{DynamicResource awsComboBoxStyle}" />
 
+            <TextBox
+                Name="_ctlNewContainer"
+                Grid.Row="1"
+                Grid.Column="2"
+                Grid.ColumnSpan="2"
+                Margin="4,2,4,2"
+                IsEnabled="False"
+                Visibility="Collapsed"
+                Style="{DynamicResource awsTextBoxStyle}"
+                Text="{Binding NewContainerName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                />
 
             <Label
-                Grid.Row="1"
+                Grid.Row="2"
                 Grid.Column="0"
                 Margin="10,2,4,2"
                 VerticalAlignment="Center"
@@ -96,7 +116,7 @@
             </Label>
 
             <StackPanel
-                Grid.Row="1"
+                Grid.Row="2"
                 Grid.Column="1"
                 Grid.ColumnSpan="3"
                 Orientation="Horizontal"
@@ -140,22 +160,29 @@
                     Hard Limit
                 </Label>
 
+                <TextBlock
+                Margin="6,4,4,2"
+                FontStyle="Italic"
+                Style="{DynamicResource awsInfoTextStyle}"
+                TextWrapping="Wrap">
+                One or both of these fields must be set
+                </TextBlock>
+
             </StackPanel>
 
 
             <TextBlock
                 Grid.Row="3"
-                Grid.Column="1"
-                Grid.ColumnSpan="3"
+                Grid.Column="0"
+                Grid.ColumnSpan="4"
                 Margin="16,2,4,0"
                 FontStyle="Italic"
                 Style="{DynamicResource awsInfoTextStyle}"
                 TextWrapping="Wrap">
-                One or both of the limit fields must be set. The hard limit is the most
-                memory the app will be able to exceed. The soft limit is the minimum memory the app needs to run but can 
-                consume more, up to the hard limit, if memory is available.
+                The hard limit is the most
+                memory the app will be able to exceed. The soft limit is the minimum memory the app needs.
                     
-                ECS recommends 300-500 MiB as a starting point for web applications.
+                ECS recommends 300-500 as a starting point for web applications.
             </TextBlock>
 
         </Grid>
@@ -345,6 +372,7 @@
                 Grid.ColumnSpan="2"
                 Margin="8,10,4,2"
                 FontStyle="Italic"
+                VerticalAlignment="Top"
                 Style="{DynamicResource awsInfoTextStyle}"
                 TextWrapping="Wrap">
                 The environment variables to pass to a container.

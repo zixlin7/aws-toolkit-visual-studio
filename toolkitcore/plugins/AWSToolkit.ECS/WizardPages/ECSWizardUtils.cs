@@ -16,6 +16,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages
 {
     public static class ECSWizardUtils
     {
+        internal const string CREATE_NEW_TEXT = "Create New";
+
+
         public static IAmazonECS CreateECSClient(IAWSWizard hostWizard)
         {
             var account = hostWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
