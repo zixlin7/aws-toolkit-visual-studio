@@ -162,7 +162,8 @@
 
                 <TextBlock
                 Margin="6,4,4,2"
-                FontStyle="Italic"
+                FontStyle="Normal"
+                FontWeight="DemiBold"
                 Style="{DynamicResource awsInfoTextStyle}"
                 TextWrapping="Wrap">
                 One or both of these fields must be set
@@ -257,7 +258,6 @@
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="40" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -269,20 +269,9 @@
                     Port Mapping
                 </Label>
 
-                <TextBlock
-                Grid.Row="1"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                Margin="8,10,4,2"
-                FontStyle="Italic"
-                Style="{DynamicResource awsInfoTextStyle}"
-                TextWrapping="Wrap">
-                Port mappings allow the container to access ports on the host instance to send or receive traffic.
-                </TextBlock>
-
                 <commonUi:ToolkitDataGridWrapper
                     x:Name="_ctlPortMappings"
-                    Grid.Row="2"
+                    Grid.Row="1"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
                     Margin="6,10,4,0"
@@ -338,7 +327,7 @@
                 </commonUi:ToolkitDataGridWrapper>
 
                 <Button
-                    Grid.Row="3"
+                    Grid.Row="2"
                     Grid.Column="1"
                     Margin="4"
                     HorizontalAlignment="Right"
@@ -354,7 +343,6 @@
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="40" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -366,21 +354,9 @@
                     Environment Variables
                 </Label>
 
-                <TextBlock
-                Grid.Row="1"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                Margin="8,10,4,2"
-                FontStyle="Italic"
-                VerticalAlignment="Top"
-                Style="{DynamicResource awsInfoTextStyle}"
-                TextWrapping="Wrap">
-                The environment variables to pass to a container.
-                </TextBlock>
-
                 <commonUi:ToolkitDataGridWrapper
                     x:Name="_ctlEnvironmentVariables"
-                    Grid.Row="2"
+                    Grid.Row="1"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
                     Margin="6,10,4,0"
@@ -436,7 +412,7 @@
                 </commonUi:ToolkitDataGridWrapper>
 
                 <Button
-                    Grid.Row="3"
+                    Grid.Row="2"
                     Grid.Column="1"
                     Margin="4"
                     HorizontalAlignment="Right"

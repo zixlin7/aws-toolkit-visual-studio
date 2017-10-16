@@ -47,12 +47,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             PageController = pageController;
 
-            if(PageController.HostingWizard[PublishContainerToAWSWizardProperties.IsWebProject] is bool)
+            if(PageController.HostingWizard[PublishContainerToAWSWizardProperties.IsWebProject] is bool &&
+                (bool)PageController.HostingWizard[PublishContainerToAWSWizardProperties.IsWebProject])
             {
-                if((bool)PageController.HostingWizard[PublishContainerToAWSWizardProperties.IsWebProject])
-                {
+                EnvironmentVariables.Add(new EnvironmentVariableItem { Variable = "ASPNETCORE_ENVIRONMENT", Value = "Production" });
+
+                if (PageController.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] != null)
+                    PortMappings.Add(new PortMappingItem { HostPort = 0, ContainerPort = 80 });
+                else
                     PortMappings.Add(new PortMappingItem { HostPort = 80, ContainerPort = 80 });
-                }
             }
 
             UpdateExistingTaskDefinition();
