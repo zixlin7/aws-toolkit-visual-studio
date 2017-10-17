@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.ECS.Model;
 using System.Windows.Media;
+using System.Windows;
 
 namespace Amazon.AWSToolkit.ECS.Model
 {
@@ -38,6 +39,30 @@ namespace Amazon.AWSToolkit.ECS.Model
             get
             {
                 return _service.ServiceName;
+            }
+        }
+
+        [DisplayName("DeploymentMinimumHealthyPercent")]
+        public int? DeploymentMinimumHealthyPercent
+        {
+            get
+            {
+                if (this._service.DeploymentConfiguration == null)
+                    return null;
+
+                return this._service.DeploymentConfiguration.MinimumHealthyPercent;
+            }
+        }
+
+        [DisplayName("DeploymentMaximumPercent")]
+        public int? DeploymentMaximumPercent
+        {
+            get
+            {
+                if (this._service.DeploymentConfiguration == null)
+                    return null;
+
+                return this._service.DeploymentConfiguration.MaximumPercent;
             }
         }
 
@@ -141,14 +166,86 @@ namespace Amazon.AWSToolkit.ECS.Model
         }
 
         [DisplayName("TaskDefinition")]
-        public string TaskDefinition
+        public string TaskDefinitionName
         {
             get
             {
-                return _service.TaskDefinition;
+                return _service.TaskDefinition.Substring(this._service.TaskDefinition.LastIndexOf('/') + 1);
             }
         }
 
+        public Visibility ShowNoLoadBalancerText
+        {
+            get { return ShowLoadBalancerPanel == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible; }
+        }
+
+        public Visibility ShowLoadBalancerPanel
+        {
+            get
+            {
+                if (this._service.LoadBalancers.Count == 0)
+                    return Visibility.Collapsed;
+
+                return Visibility.Visible;
+            }
+        }
+
+        public Visibility ShowLoadBalancerName => LoadBalancerName != null ? Visibility.Visible : Visibility.Collapsed;
+
+        public string LoadBalancerName
+        {
+            get
+            {
+                if (ShowLoadBalancerPanel == Visibility.Collapsed)
+                    return null;
+
+                return this._service.LoadBalancers[0].LoadBalancerName;
+            }
+        }
+
+        public Visibility ShowTargetGroupName => TargetGroupName != null ? Visibility.Visible : Visibility.Collapsed;
+        public string TargetGroupName
+        {
+            get
+            {
+                if (ShowLoadBalancerPanel == Visibility.Collapsed)
+                    return null;
+
+                var targetArn = this._service.LoadBalancers[0].TargetGroupArn;
+                if (string.IsNullOrEmpty(targetArn))
+                    return null;
+
+                // Target Group ARNs format: arn:aws:elasticloadbalancing:us-east-2:626492997873:targetgroup/TeamDemo/95f4adac60376451
+                int endPos = targetArn.LastIndexOf('/');
+                int startPos = targetArn.LastIndexOf('/', endPos - 1) + 1;
+
+                return targetArn.Substring(startPos, endPos - startPos);
+            }
+        }
+
+        public Visibility ShowLoadBalancedContainerName => LoadBalancedContainerName != null ? Visibility.Visible : Visibility.Collapsed;
+        public string LoadBalancedContainerName
+        {
+            get
+            {
+                if (ShowLoadBalancerPanel == Visibility.Collapsed)
+                    return null;
+
+                return this._service.LoadBalancers[0].ContainerName;
+            }
+        }
+
+        public Visibility ShowLoadBalancedContainerPort => LoadBalancedContainerPort != null ? Visibility.Visible : Visibility.Collapsed;
+        public int? LoadBalancedContainerPort
+        {
+            get
+            {
+                if (ShowLoadBalancerPanel == Visibility.Collapsed)
+                    return null;
+
+                return this._service.LoadBalancers[0].ContainerPort;
+            }
+        }
 
 
         [Browsable(false)]

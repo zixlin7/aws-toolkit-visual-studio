@@ -53,11 +53,11 @@
         <TextBox Grid.Column="1" Grid.Row="2" Margin="0,5,0,5" Text="{Binding Cluster.ContainerInstances, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
                  TextWrapping="NoWrap"/>
 
-        <TextBlock Grid.Column="0" Grid.Row="3" Margin="5,5,5,5" Text="Pending tasks count:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBlock Grid.Column="0" Grid.Row="3" Margin="5,5,5,5" Text="Running tasks count:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
         <TextBox Grid.Column="1" Grid.Row="3" Margin="0,5,0,5" Text="{Binding Cluster.RunningTasks, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
                  TextWrapping="NoWrap"/>
 
-        <TextBlock Grid.Column="0" Grid.Row="4" Margin="5,5,5,5" Text="Running tasks count:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBlock Grid.Column="0" Grid.Row="4" Margin="5,5,5,5" Text="Pending tasks count:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
         <TextBox Grid.Column="1" Grid.Row="4" Margin="0,5,0,5" Text="{Binding Cluster.PendingTasks, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
                  TextWrapping="NoWrap"/>
 
