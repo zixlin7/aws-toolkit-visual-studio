@@ -70,11 +70,23 @@ namespace Amazon.AWSToolkit.ECS.View
         {
             try
             {
-                // todo this._controller.RefreshInstances();
+                this._controller.Refresh();
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error refreshing", e);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error refreshing cluster: " + e.Message);
+            }
+        }
+
+        public override void RefreshInitialData(object initialData)
+        {
+            try
+            {
+                this._controller.Refresh();
+            }
+            catch (Exception e)
+            {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error refreshing cluster: " + e.Message);
             }
         }

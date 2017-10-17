@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.ECS.Model;
+using Amazon.ElasticLoadBalancingV2;
+using Amazon.ElasticLoadBalancingV2.Model;
 using System.Windows.Media;
 using System.Windows;
 
@@ -223,6 +225,17 @@ namespace Amazon.AWSToolkit.ECS.Model
             }
         }
 
+        public string TargetGroupArn
+        {
+            get
+            {
+                if (ShowLoadBalancerPanel == Visibility.Collapsed)
+                    return null;
+
+                return this._service.LoadBalancers[0].TargetGroupArn;
+            }
+        }
+
         public Visibility ShowLoadBalancedContainerName => LoadBalancedContainerName != null ? Visibility.Visible : Visibility.Collapsed;
         public string LoadBalancedContainerName
         {
@@ -244,6 +257,91 @@ namespace Amazon.AWSToolkit.ECS.Model
                     return null;
 
                 return this._service.LoadBalancers[0].ContainerPort;
+            }
+        }
+
+        Amazon.ElasticLoadBalancingV2.Model.LoadBalancer _loadBalancer;
+        Amazon.ElasticLoadBalancingV2.Model.Listener _listener;
+        Amazon.ElasticLoadBalancingV2.Model.TargetGroup _targetGroup;
+
+        public void UploadLoadBalancerInfo(string loadBalancerUrl, Amazon.ElasticLoadBalancingV2.Model.LoadBalancer loadBalancer, Listener listener, TargetGroup targetGroup)
+        {
+            this._loadBalancerUrl = loadBalancerUrl;
+            this._loadBalancer = loadBalancer;
+            this._listener = listener;
+            this._targetGroup = targetGroup;
+
+            StringBuilder healthBuilder = new StringBuilder();
+            healthBuilder.AppendFormat("{0}://{1}", listener.Protocol.ToString().ToLower(), loadBalancer.DNSName.ToLower());
+            if (listener.Port != 80)
+                healthBuilder.AppendFormat(":{0}", listener.Port);
+
+            healthBuilder.Append(targetGroup.HealthCheckPath);
+            _healthCheckUrl = healthBuilder.ToString();
+
+            NotifyPropertyChanged("LoadBalancerUrl");
+            NotifyPropertyChanged("LoadBalancerHealthCheck");
+            NotifyPropertyChanged("LoadBalancerStatus");
+            NotifyPropertyChanged("LoadBalancerStatusHealthColor");
+        }
+
+        [DisplayName("LoadBalancerStatus")]
+        public string LoadBalancerStatus
+        {
+            get
+            {
+                if (this._loadBalancer == null)
+                    return null;
+
+                return this._loadBalancer.State.Code.ToString();
+            }
+        }
+
+        public SolidColorBrush LoadBalancerStatusHealthColor
+        {
+            get
+            {
+                if (this._loadBalancer == null)
+                    return null;
+
+                Color clr;
+                if (this._loadBalancer.State.Code == LoadBalancerStateEnum.Active)
+                    clr = Colors.Green;
+                else if (this._loadBalancer.State.Code == LoadBalancerStateEnum.Active_impaired)
+                    clr = Colors.Green;
+                else if (this._loadBalancer.State.Code == LoadBalancerStateEnum.Provisioning)
+                    clr = Colors.Blue;
+                else if (this._loadBalancer.State.Code == LoadBalancerStateEnum.Failed)
+                    clr = Colors.Red;
+                else
+                {
+                    if(ThemeUtil.GetCurrentTheme() == VsTheme.Dark)
+                        clr = Colors.WhiteSmoke;
+                    else
+                        clr = Colors.Black;
+                }
+
+                return new SolidColorBrush(clr);
+            }
+        }
+
+        private string _loadBalancerUrl;
+        [DisplayName("LoadBalancerUrl")]
+        public string LoadBalancerUrl
+        {
+            get
+            {
+                return _loadBalancerUrl;
+            }
+        }
+
+        private string _healthCheckUrl;
+        [DisplayName("LoadBalancerHealthCheck")]
+        public string LoadBalancerHealthCheck
+        {
+            get
+            {
+                return _healthCheckUrl;
             }
         }
 

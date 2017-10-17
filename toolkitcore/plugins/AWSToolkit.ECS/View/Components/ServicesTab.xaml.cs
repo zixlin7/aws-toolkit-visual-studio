@@ -17,6 +17,7 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.ECS.Controller;
 
 using log4net;
+using System.Diagnostics;
 
 namespace Amazon.AWSToolkit.ECS.View.Components
 {
@@ -50,6 +51,35 @@ namespace Amazon.AWSToolkit.ECS.View.Components
                 var msg = "Error fetching services for cluster";
                 LOGGER.Error(msg, e);
                 ToolkitFactory.Instance.ShellProvider.ShowError(msg, "Serivces Load Error");
+            }
+        }
+
+        private void onServiceURLClick(object sender, RequestNavigateEventArgs e)
+        {
+            try
+            {
+                var uri = e.Uri.ToString();
+                if (uri.EndsWith("*"))
+                    uri = uri.Substring(0, uri.Length - 1);
+                Process.Start(new ProcessStartInfo(uri));
+                e.Handled = true;
+            }
+            catch (Exception ex)
+            {
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error navigating to load balancer: " + ex.Message);
+            }
+        }
+
+        private void onHealthCheckURLClick(object sender, RequestNavigateEventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo(e.Uri.ToString()));
+                e.Handled = true;
+            }
+            catch (Exception ex)
+            {
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error navigating to health check: " + ex.Message);
             }
         }
     }
