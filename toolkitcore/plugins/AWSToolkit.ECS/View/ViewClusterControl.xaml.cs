@@ -62,7 +62,6 @@ namespace Amazon.AWSToolkit.ECS.View
         protected override object LoadAndReturnModel()
         {
             this._controller.LoadModel();
-            this._ctlServices.RefreshServices();
             return this._controller.Model;
         }
 

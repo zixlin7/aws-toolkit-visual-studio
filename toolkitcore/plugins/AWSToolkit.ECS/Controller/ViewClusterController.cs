@@ -76,17 +76,9 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
         }
 
-        class LoadBalancerState
+        private ViewClusterModel.LoadBalancerState FetchLoadBalancerState(List<string> targetGroupArns)
         {
-            public Dictionary<string, TargetGroup> TargetGroups = new Dictionary<string, TargetGroup>();
-            public Dictionary<string, Amazon.ElasticLoadBalancingV2.Model.LoadBalancer> LoadBalancers = new Dictionary<string, Amazon.ElasticLoadBalancingV2.Model.LoadBalancer>();
-            public Dictionary<string, Listener> Listeners = new Dictionary<string, Listener>();
-            public Dictionary<string, List<Rule>> RulesByListenerArn = new Dictionary<string, List<Rule>>();
-        }
-
-        private LoadBalancerState FetchLoadBalancerState(List<string> targetGroupArns)
-        {
-            var state = new LoadBalancerState();
+            var state = new ViewClusterModel.LoadBalancerState();
 
             var targetGroupList = this._elbClient.DescribeTargetGroups(new DescribeTargetGroupsRequest { TargetGroupArns = targetGroupArns }).TargetGroups;
 
@@ -121,7 +113,6 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 state.RulesByListenerArn[listener.ListenerArn] = this._elbClient.DescribeRules(new DescribeRulesRequest { ListenerArn = listener.ListenerArn }).Rules;
             }
 
-
             return state;
         }
 
@@ -149,16 +140,17 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 }
             }
 
-            System.Threading.Tasks.Task.Run<LoadBalancerState>(() => this.FetchLoadBalancerState(targetGroupArns)).ContinueWith(x =>
+            System.Threading.Tasks.Task.Run<ViewClusterModel.LoadBalancerState>(() => this.FetchLoadBalancerState(targetGroupArns)).ContinueWith(x =>
             {
                 if(x.Exception == null)
                 {
-                    UpdateServicesWithLoadBalancerInfo(x.Result);
+                    this.Model.LBState = x.Result;
+                    UpdateServicesWithLoadBalancerInfo();
                 }
             });
         }
 
-        private void UpdateServicesWithLoadBalancerInfo(LoadBalancerState state)
+        private void UpdateServicesWithLoadBalancerInfo()
         {
             ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((System.Action)(() =>
             {
@@ -169,14 +161,14 @@ namespace Amazon.AWSToolkit.ECS.Controller
                         continue;
 
                     TargetGroup targetGroup;
-                    if (!state.TargetGroups.TryGetValue(service.TargetGroupArn, out targetGroup))
+                    if (!this.Model.LBState.TargetGroups.TryGetValue(service.TargetGroupArn, out targetGroup))
                         continue;
 
                     Amazon.ElasticLoadBalancingV2.Model.LoadBalancer loadBalancer;
-                    if (targetGroup.LoadBalancerArns.Count == 0 || !state.LoadBalancers.TryGetValue(targetGroup.LoadBalancerArns[0], out loadBalancer))
+                    if (targetGroup.LoadBalancerArns.Count == 0 || !this.Model.LBState.LoadBalancers.TryGetValue(targetGroup.LoadBalancerArns[0], out loadBalancer))
                         continue;
 
-                    var loadBalancerListeners = state.Listeners.Values.Where(x => string.Equals(x.LoadBalancerArn, loadBalancer.LoadBalancerArn)).ToList();
+                    var loadBalancerListeners = this.Model.LBState.Listeners.Values.Where(x => string.Equals(x.LoadBalancerArn, loadBalancer.LoadBalancerArn)).ToList();
                     if (loadBalancerListeners.Count == 0)
                         continue;
 
@@ -192,7 +184,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                         else
                         {
                             List<Rule> listenerRules;
-                            if (!state.RulesByListenerArn.TryGetValue(listener.ListenerArn, out listenerRules))
+                            if (!this.Model.LBState.RulesByListenerArn.TryGetValue(listener.ListenerArn, out listenerRules))
                                 continue;
 
                             foreach (var rule in listenerRules)
