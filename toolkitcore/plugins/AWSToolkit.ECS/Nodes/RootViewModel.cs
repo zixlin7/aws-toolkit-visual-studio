@@ -83,7 +83,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
                 List<IViewModel> items = new List<IViewModel>
                 {
                     new ClustersRootViewModel(this.MetaNode.FindChild<ClustersRootViewMetaNode>(), this),
-                    new TaskDefinitionsRootViewModel(this.MetaNode.FindChild<TaskDefinitionsRootViewMetaNode>(), this),
+                    //new TaskDefinitionsRootViewModel(this.MetaNode.FindChild<TaskDefinitionsRootViewMetaNode>(), this),
                     new RepositoriesRootViewModel(this.MetaNode.FindChild<RepositoriesRootViewMetaNode>(), this),
                 };
                 BeginCopingChildren(items);

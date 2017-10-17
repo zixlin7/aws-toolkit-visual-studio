@@ -27,7 +27,7 @@ namespace Amazon.AWSToolkit.ECS
 
             var rootMetaNode = new RootViewMetaNode();
             rootMetaNode.Children.Add(clustersRootMetaNode);
-            rootMetaNode.Children.Add(taskdefsRootMetaNode);
+            //rootMetaNode.Children.Add(taskdefsRootMetaNode);
             rootMetaNode.Children.Add(repositoriesRootMetaNode);
 
             setupECSContextMenuHooks(rootMetaNode);
@@ -56,9 +56,12 @@ namespace Amazon.AWSToolkit.ECS
 
             // taskdef hierarchy
             var taskdefsRootNode = rootNode.FindChild<TaskDefinitionsRootViewMetaNode>();
-            taskdefsRootNode.OnCreateTaskDefinition = new CommandInstantiator<CreateTaskDefinitionController>().Execute;
-            var taskdefNode = taskdefsRootNode.FindChild<TaskDefinitionViewMetaNode>();
-            taskdefNode.OnView = new CommandInstantiator<ViewTaskDefinitionController>().Execute;
+            if (taskdefsRootNode != null)
+            {
+                taskdefsRootNode.OnCreateTaskDefinition = new CommandInstantiator<CreateTaskDefinitionController>().Execute;
+                var taskdefNode = taskdefsRootNode.FindChild<TaskDefinitionViewMetaNode>();
+                taskdefNode.OnView = new CommandInstantiator<ViewTaskDefinitionController>().Execute;
+            }
 
             // repository hierarchy
             var repositoriesRootNode = rootNode.FindChild<RepositoriesRootViewMetaNode>();
