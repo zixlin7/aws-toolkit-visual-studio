@@ -293,7 +293,7 @@ namespace Amazon.AWSToolkit.ECS.Model
                 if (this._loadBalancer == null)
                     return null;
 
-                return this._loadBalancer.State.Code.ToString();
+                return this._loadBalancer.State.Code.ToString().ToUpper();
             }
         }
 

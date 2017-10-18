@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Amazon.AWSToolkit.ECS.Controller;
+using Amazon.AWSToolkit.ECS.Model;
 using log4net;
 
 namespace Amazon.AWSToolkit.ECS.View
@@ -87,6 +88,18 @@ namespace Amazon.AWSToolkit.ECS.View
             catch (Exception e)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error refreshing cluster: " + e.Message);
+            }
+        }
+
+        public void DeleteService(ServiceWrapper service)
+        {
+            try
+            {
+                this._controller.DeleteService(service);
+            }
+            catch (Exception e)
+            {
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error deleting service: " + e.Message);
             }
         }
 

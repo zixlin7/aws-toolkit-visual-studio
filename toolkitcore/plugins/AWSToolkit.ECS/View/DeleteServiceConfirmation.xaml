@@ -1,0 +1,58 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.ECS.View.DeleteServiceConfirmation"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Amazon.AWSToolkit.ECS.View"
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             mc:Ignorable="d" 
+            Height="200" Width="300">
+
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            
+        </Grid.ColumnDefinitions>
+
+        <TextBlock 
+            Grid.Row="0"
+            Margin="5"
+            Style="{DynamicResource awsTextBlockBaseStyle}">
+            Are you sure you want to delete the ECS Service?
+        </TextBlock>
+
+        <Grid Margin="5" Grid.Row="1" Name="_ctlELBConfirmPanel">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock 
+                Grid.Row="0"
+                Margin="5"
+                TextWrapping="Wrap"
+                Style="{DynamicResource awsTextBlockBaseStyle}">
+                The following Elastic Load Balancing resources will no longer be used
+                after the ECS Service is deleted. Would you like to delete these resources 
+                as well to avoid charges for unused resources.
+            </TextBlock>
+            <CheckBox Name="_ctlDeleteLoadBalancer" Grid.Row="1" Margin="8,2,4,0" Style="{DynamicResource awsCheckboxButtonBaseStyle}">Load Balancer</CheckBox>
+            <CheckBox Name="_ctlDeleteListener" Grid.Row="2" Margin="8,2,4,0" Style="{DynamicResource awsCheckboxButtonBaseStyle}">Listener</CheckBox>
+            <CheckBox Name="_ctlDeleteTargetGroup" Grid.Row="3" Margin="8,2,4,0" Style="{DynamicResource awsCheckboxButtonBaseStyle}">Target Group</CheckBox>
+
+        </Grid>
+    </Grid>
+</commonui:BaseAWSControl>

@@ -51,6 +51,104 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 ToolkitFactory.Instance.ShellProvider.ShowError(msg, "Resource Query Failure");
             }
         }
+        
+        public void DeleteService(ServiceWrapper service)
+        {
+            TargetGroup targetGroup = null;
+            
+
+            if(!string.IsNullOrEmpty(service.TargetGroupArn))
+            {
+                this.Model.LBState.TargetGroups.TryGetValue(service.TargetGroupArn, out targetGroup);
+            }
+
+            Amazon.ElasticLoadBalancingV2.Model.LoadBalancer loadBalancer = null;
+            if (targetGroup != null && targetGroup.LoadBalancerArns.Count == 1)
+            {
+                this.Model.LBState.LoadBalancers.TryGetValue(targetGroup.LoadBalancerArns[0], out loadBalancer);
+            }
+
+            List<Listener> listeners = null;
+            if (loadBalancer != null)
+            {
+                this.Model.LBState.ListenersByLoadBalancerArn.TryGetValue(loadBalancer.LoadBalancerArn, out listeners);
+            }
+
+            Listener targetListener = null;
+
+            bool canDeleteLoadBalancer = false;
+            bool canDeleteListener = false;
+            if (listeners.Count == 1 && SafeToDeleteListener(listeners[0], targetGroup))
+            {
+                canDeleteLoadBalancer = true;
+            }
+            else
+            {
+                foreach(var listener in listeners)
+                {
+                    if(SafeToDeleteListener(listener, targetGroup))
+                    {
+                        canDeleteListener = true;
+                        targetListener = listener;
+                        break;
+                    }
+                }
+            }
+
+            Rule targetRule = null;
+            if(!canDeleteListener && !canDeleteLoadBalancer)
+            {
+                foreach(var listener in listeners)
+                {
+                    List<Rule> rules = null;
+                    if(this.Model.LBState.RulesByListenerArn.TryGetValue(listener.ListenerArn, out rules))
+                    {
+                        foreach (var rule in rules)
+                        {
+                            if(string.Equals(rule.Actions[0].TargetGroupArn, targetGroup.TargetGroupArn))
+                            {
+                                targetRule = rule;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (targetRule != null)
+                        break;
+                }
+            }
+
+            var control = new DeleteServiceConfirmation(canDeleteLoadBalancer, loadBalancer, canDeleteListener, targetListener, targetGroup != null, targetGroup);
+            if(ToolkitFactory.Instance.ShellProvider.ShowModal(control, System.Windows.MessageBoxButton.OKCancel))
+            {
+
+            }
+        }
+
+        private bool SafeToDeleteListener(Listener listener, TargetGroup targetGroup)
+        {
+            List<Rule> rules = null;
+            this.Model.LBState.RulesByListenerArn.TryGetValue(listener.ListenerArn, out rules);
+
+            // There is always the default rule
+            if (rules == null || rules.Count == 1)
+            {
+                return string.Equals(listener.DefaultActions[0].TargetGroupArn, targetGroup.TargetGroupArn);
+            }
+            else if (rules.Count == 2)
+            {
+                var rule = rules.FirstOrDefault(x => !string.Equals(x.Priority, "default"));
+                if (rule.Actions.Count == 1 && string.Equals(rule.Actions[0].TargetGroupArn, targetGroup.TargetGroupArn))
+                {
+                    var health = this._elbClient.DescribeTargetHealth(new DescribeTargetHealthRequest { TargetGroupArn = listener.DefaultActions[0].TargetGroupArn }).TargetHealthDescriptions;
+                    if (health.Count == 0)
+                        return true;
+                }
+            }
+
+
+            return false;
+        }
 
         public void Refresh()
         {
@@ -102,16 +200,15 @@ namespace Amazon.AWSToolkit.ECS.Controller
             {
                 state.LoadBalancers[loadBalancer.LoadBalancerArn] = loadBalancer;
                 var listenerList = this._elbClient.DescribeListeners(new DescribeListenersRequest { LoadBalancerArn = loadBalancer.LoadBalancerArn }).Listeners;
+                state.ListenersByLoadBalancerArn[loadBalancer.LoadBalancerArn] = listenerList;
+
                 foreach (var listener in listenerList)
                 {
-                    state.Listeners[listener.ListenerArn] = listener;
+                    state.RulesByListenerArn[listener.ListenerArn] = this._elbClient.DescribeRules(new DescribeRulesRequest { ListenerArn = listener.ListenerArn }).Rules;
                 }
             }
 
-            foreach (var listener in state.Listeners.Values)
-            {
-                state.RulesByListenerArn[listener.ListenerArn] = this._elbClient.DescribeRules(new DescribeRulesRequest { ListenerArn = listener.ListenerArn }).Rules;
-            }
+
 
             return state;
         }
@@ -168,7 +265,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                     if (targetGroup.LoadBalancerArns.Count == 0 || !this.Model.LBState.LoadBalancers.TryGetValue(targetGroup.LoadBalancerArns[0], out loadBalancer))
                         continue;
 
-                    var loadBalancerListeners = this.Model.LBState.Listeners.Values.Where(x => string.Equals(x.LoadBalancerArn, loadBalancer.LoadBalancerArn)).ToList();
+                    var loadBalancerListeners = this.Model.LBState.ListenersByLoadBalancerArn[loadBalancer.LoadBalancerArn];
                     if (loadBalancerListeners.Count == 0)
                         continue;
 
