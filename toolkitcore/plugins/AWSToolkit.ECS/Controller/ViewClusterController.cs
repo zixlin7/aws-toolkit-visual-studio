@@ -9,8 +9,10 @@ using Amazon.AWSToolkit.ECS.View;
 using Amazon.ECS.Model;
 using log4net;
 
+using Amazon.EC2;
 using Amazon.ElasticLoadBalancingV2;
 using Amazon.ElasticLoadBalancingV2.Model;
+using System.Threading;
 
 namespace Amazon.AWSToolkit.ECS.Controller
 {
@@ -21,6 +23,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
         ViewClusterControl _control;
 
         IAmazonElasticLoadBalancingV2 _elbClient;
+        IAmazonEC2 _ec2Client;
         string _clusterArn;
 
         protected override void DisplayView()
@@ -37,8 +40,11 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
             try
             {
-                var endpoint = RegionEndPointsManager.Instance.GetRegion(this.RegionSystemName).GetEndpoint(RegionEndPointsManager.ELB_SERVICE_NAME);
-                this._elbClient = this.Account.CreateServiceClient<AmazonElasticLoadBalancingV2Client>(endpoint);
+                this._elbClient = this.Account.CreateServiceClient<AmazonElasticLoadBalancingV2Client>
+                    (RegionEndPointsManager.Instance.GetRegion(this.RegionSystemName).GetEndpoint(RegionEndPointsManager.ELB_SERVICE_NAME));
+                this._ec2Client = this.Account.CreateServiceClient<AmazonEC2Client>
+                    (RegionEndPointsManager.Instance.GetRegion(this.RegionSystemName).GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME));
+
 
                 this._clusterArn = clusterViewModel.Cluster.ClusterArn;
 
@@ -54,101 +60,14 @@ namespace Amazon.AWSToolkit.ECS.Controller
         
         public void DeleteService(ServiceWrapper service)
         {
-            TargetGroup targetGroup = null;
-            
-
-            if(!string.IsNullOrEmpty(service.TargetGroupArn))
+             var controller = new DeleteServiceConfirmationController(this.ECSClient, this._elbClient, this._ec2Client, this.Model, service);
+            if(controller.Execute())
             {
-                this.Model.LBState.TargetGroups.TryGetValue(service.TargetGroupArn, out targetGroup);
-            }
-
-            Amazon.ElasticLoadBalancingV2.Model.LoadBalancer loadBalancer = null;
-            if (targetGroup != null && targetGroup.LoadBalancerArns.Count == 1)
-            {
-                this.Model.LBState.LoadBalancers.TryGetValue(targetGroup.LoadBalancerArns[0], out loadBalancer);
-            }
-
-            List<Listener> listeners = null;
-            if (loadBalancer != null)
-            {
-                this.Model.LBState.ListenersByLoadBalancerArn.TryGetValue(loadBalancer.LoadBalancerArn, out listeners);
-            }
-
-            Listener targetListener = null;
-
-            bool canDeleteLoadBalancer = false;
-            bool canDeleteListener = false;
-            if (listeners.Count == 1 && SafeToDeleteListener(listeners[0], targetGroup))
-            {
-                canDeleteLoadBalancer = true;
-            }
-            else
-            {
-                foreach(var listener in listeners)
-                {
-                    if(SafeToDeleteListener(listener, targetGroup))
-                    {
-                        canDeleteListener = true;
-                        targetListener = listener;
-                        break;
-                    }
-                }
-            }
-
-            Rule targetRule = null;
-            if(!canDeleteListener && !canDeleteLoadBalancer)
-            {
-                foreach(var listener in listeners)
-                {
-                    List<Rule> rules = null;
-                    if(this.Model.LBState.RulesByListenerArn.TryGetValue(listener.ListenerArn, out rules))
-                    {
-                        foreach (var rule in rules)
-                        {
-                            if(string.Equals(rule.Actions[0].TargetGroupArn, targetGroup.TargetGroupArn))
-                            {
-                                targetRule = rule;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (targetRule != null)
-                        break;
-                }
-            }
-
-            var control = new DeleteServiceConfirmation(canDeleteLoadBalancer, loadBalancer, canDeleteListener, targetListener, targetGroup != null, targetGroup);
-            if(ToolkitFactory.Instance.ShellProvider.ShowModal(control, System.Windows.MessageBoxButton.OKCancel))
-            {
-
+                this.Refresh();
             }
         }
 
-        private bool SafeToDeleteListener(Listener listener, TargetGroup targetGroup)
-        {
-            List<Rule> rules = null;
-            this.Model.LBState.RulesByListenerArn.TryGetValue(listener.ListenerArn, out rules);
 
-            // There is always the default rule
-            if (rules == null || rules.Count == 1)
-            {
-                return string.Equals(listener.DefaultActions[0].TargetGroupArn, targetGroup.TargetGroupArn);
-            }
-            else if (rules.Count == 2)
-            {
-                var rule = rules.FirstOrDefault(x => !string.Equals(x.Priority, "default"));
-                if (rule.Actions.Count == 1 && string.Equals(rule.Actions[0].TargetGroupArn, targetGroup.TargetGroupArn))
-                {
-                    var health = this._elbClient.DescribeTargetHealth(new DescribeTargetHealthRequest { TargetGroupArn = listener.DefaultActions[0].TargetGroupArn }).TargetHealthDescriptions;
-                    if (health.Count == 0)
-                        return true;
-                }
-            }
-
-
-            return false;
-        }
 
         public void Refresh()
         {
@@ -178,7 +97,22 @@ namespace Amazon.AWSToolkit.ECS.Controller
         {
             var state = new ViewClusterModel.LoadBalancerState();
 
-            var targetGroupList = this._elbClient.DescribeTargetGroups(new DescribeTargetGroupsRequest { TargetGroupArns = targetGroupArns }).TargetGroups;
+            // We need to loop through the target group arns individual because there is a chance a service is pointing to a non existing ELB target group.
+            // In that case the entire batch describe fails
+            List<TargetGroup> targetGroupList = new List<TargetGroup>();
+            foreach(var targetGroupArn in targetGroupArns)
+            {
+                var request = new DescribeTargetGroupsRequest();
+                request.TargetGroupArns.Add(targetGroupArn);
+                try
+                {
+                    targetGroupList.AddRange(this._elbClient.DescribeTargetGroups(request).TargetGroups);
+                }
+                catch(Exception e)
+                {
+                    LOGGER.Error("Error getting target group " + targetGroupArn, e);
+                }
+            }
 
             var loadBalancerArns = new List<string>();
             foreach (var targetGroup in targetGroupList)
@@ -216,24 +150,28 @@ namespace Amazon.AWSToolkit.ECS.Controller
         public void RefreshServices()
         {
             var serviceArns = this.ECSClient.ListServices(new ListServicesRequest { Cluster = this.Model.Cluster.ClusterArn }).ServiceArns;
-            var services = this.ECSClient.DescribeServices(new DescribeServicesRequest
-            {
-                Cluster = this.Model.Cluster.ClusterArn,
-                Services = serviceArns
-            }).Services;
-
             var targetGroupArns = new List<string>();
             this.Model.Services.Clear();
-            foreach (var service in services)
+
+            if (serviceArns.Count > 0)
             {
-                this.Model.Services.Add(new ServiceWrapper(service));
-
-                foreach (var loadbalancer in service.LoadBalancers)
+                var services = this.ECSClient.DescribeServices(new DescribeServicesRequest
                 {
-                    if (string.IsNullOrEmpty(loadbalancer.TargetGroupArn) || targetGroupArns.Contains(loadbalancer.TargetGroupArn))
-                        continue;
+                    Cluster = this.Model.Cluster.ClusterArn,
+                    Services = serviceArns
+                }).Services;
 
-                    targetGroupArns.Add(loadbalancer.TargetGroupArn);
+                foreach (var service in services)
+                {
+                    this.Model.Services.Add(new ServiceWrapper(service));
+
+                    foreach (var loadbalancer in service.LoadBalancers)
+                    {
+                        if (string.IsNullOrEmpty(loadbalancer.TargetGroupArn) || targetGroupArns.Contains(loadbalancer.TargetGroupArn))
+                            continue;
+
+                        targetGroupArns.Add(loadbalancer.TargetGroupArn);
+                    }
                 }
             }
 

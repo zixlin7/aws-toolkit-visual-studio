@@ -14,6 +14,10 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using Amazon.ElasticLoadBalancingV2.Model;
+using Amazon.AWSToolkit.CommonUI;
+using log4net;
+using Amazon.AWSToolkit.ECS.Controller;
+using Amazon.AWSToolkit.ECS.Model;
 
 namespace Amazon.AWSToolkit.ECS.View
 {
@@ -22,71 +26,148 @@ namespace Amazon.AWSToolkit.ECS.View
     /// </summary>
     public partial class DeleteServiceConfirmation
     {
-        public bool CanDeleteLoadBalancer { get; set; }
-        public LoadBalancer _loadBalancer;
-        public bool CanDeleteListener { get; set; }
-        public Listener _listener;
-        public bool CanDeleteTargetGroup { get; set; }
-        public TargetGroup _targetGroup;
+        static ILog LOGGER = LogManager.GetLogger(typeof(DeleteServiceConfirmation));
+
+        public bool CanDeleteLoadBalancer => _controller.LoadBalancer != null;
+        public bool CanDeleteListener => _controller.Listener != null;
+        public bool CanDeleteTargetGroup => _controller.TargetGroup != null;
+        private DeleteServiceConfirmationController _controller;
 
         public DeleteServiceConfirmation()
         {
             InitializeComponent();
+            this.DataContext = this;
         }
 
-        public DeleteServiceConfirmation(bool canDeleteLoadBalancer, LoadBalancer loadBalancer, bool canDeleteListener, Listener listener, bool canDeleteTargetGroup, TargetGroup targetGroup)
+        
+        public DeleteServiceConfirmation(DeleteServiceConfirmationController controller)
             : this()
         {
-            this.CanDeleteLoadBalancer = canDeleteLoadBalancer;
-            this._loadBalancer = loadBalancer;
-            this.CanDeleteListener = canDeleteListener;
-            this._listener = listener;
-            this.CanDeleteTargetGroup = canDeleteTargetGroup;
-            this._targetGroup = targetGroup;
+            this._controller = controller;
 
             if (!this.CanDeleteLoadBalancer && !this.CanDeleteListener && !this.CanDeleteTargetGroup)
+            {
                 this._ctlELBConfirmPanel.Visibility = Visibility.Collapsed;
+                this.Height -= 100;
+            }
             else
             {
                 if (!this.CanDeleteLoadBalancer)
                     this._ctlDeleteLoadBalancer.Visibility = Visibility.Collapsed;
                 else
                 {
-                    this._ctlDeleteLoadBalancer.IsChecked = true;
-                    this._ctlDeleteLoadBalancer.Content = "Load Balancer: " + this._loadBalancer.LoadBalancerName;
+                    this.DeleteLoadbalancer = true;
+                    this._ctlDeleteLoadBalancer.Content = "Load Balancer: " + this._controller.LoadBalancer.LoadBalancerName;
                 }
 
                 if (!this.CanDeleteListener)
                     this._ctlDeleteListener.Visibility = Visibility.Collapsed;
                 else
                 {
-                    this._ctlDeleteListener.IsChecked = true;
-                    this._ctlDeleteListener.Content = "Listener: " + this._listener.Port + "(" + this._listener.Protocol + ")";
+                    this.DeleteListener = true;
+                    this._ctlDeleteListener.Content = "Listener: " + this._controller.Listener.Port + " (" + this._controller.Listener.Protocol + ")";
                 }
 
                 if (!this.CanDeleteTargetGroup)
                     this._ctlDeleteTargetGroup.Visibility = Visibility.Collapsed;
                 else
                 {
-                    this._ctlDeleteTargetGroup.IsChecked = true;
-                    this._ctlDeleteTargetGroup.Content = "Target Group: " + this._targetGroup.TargetGroupName;
+                    this.DeleteTargetGroup = true;
+                    this._ctlDeleteTargetGroup.Content = "Target Group: " + this._controller.TargetGroup.TargetGroupName;
                 }
             }
         }
 
+        private void onLoaded(object sender, RoutedEventArgs e)
+        {
+        }
+
+        public override string Title => "Confirm deleting " + this._controller.Service.ServiceName;
+
+        public override bool OnCommit()
+        {
+            try
+            {
+                var host = FindHost<OkCancelDialogHost>();
+                if (host != null)
+                    host.IsOkEnabled = false;
+                this._controller.DeleteService();
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Error deleting service", e);
+                AppendOutputMessage("Error deleting service", e.Message);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error deleting vpc: " + e.Message);
+            }
+
+            return false;
+        }
+
+        bool _deleteLoadbalancer;
         public bool DeleteLoadbalancer
         {
-            get;set;
+            get { return this._deleteLoadbalancer; }
+            set
+            {
+                this._deleteLoadbalancer = value;
+                NotifyPropertyChanged("DeleteLoadbalancer");
+            }
         }
 
+        bool _deleteListener;
         public bool DeleteListener
         {
-            get; set;
+            get { return this._deleteListener; }
+            set
+            {
+                this._deleteListener = value;
+                NotifyPropertyChanged("DeleteListener");
+            }
         }
 
+        bool _deleteTargetGroup;
         public bool DeleteTargetGroup
         {
-            get; set;
+            get { return this._deleteTargetGroup; }
+            set
+            {
+                this._deleteTargetGroup = value;
+                NotifyPropertyChanged("DeleteTargetGroup");
+            }
+        }
+
+        public void DeleteAsyncComplete(bool success)
+        {
+            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((System.Action)(() =>
+            {
+                var host = FindHost<OkCancelDialogHost>();
+                if (host == null)
+                    return;
+
+                if (!success)
+                    host.IsOkEnabled = true;
+                else
+                    host.Close(true);
+            }));
+        }
+
+        public void AppendOutputMessage(string message, params object[] args)
+        {
+            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((System.Action)(() =>
+            {
+                string line = string.Format(message, args);
+
+                ToolkitFactory.Instance.ShellProvider.UpdateStatus(line);
+                ToolkitFactory.Instance.ShellProvider.OutputToHostConsole(line, true);
+
+                var body = this._ctlOutputLog.Text;
+                if (!string.IsNullOrEmpty(body))
+                    body += "\r\n";
+
+                body += line;
+                this._ctlOutputLog.Text = body;
+                this._ctlOutputLog.ScrollToEnd();
+            }));
         }
     }
 }

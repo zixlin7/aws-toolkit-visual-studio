@@ -30,7 +30,7 @@ namespace Amazon.AWSToolkit.EC2.View
     /// </summary>
     public partial class DeleteVPCControl : BaseAWSControl
     {
-        static ILog LOGGER = LogManager.GetLogger(typeof(CreateVPCControl));
+        static ILog LOGGER = LogManager.GetLogger(typeof(DeleteVPCControl));
 
         DeleteVPCController _controller;
 

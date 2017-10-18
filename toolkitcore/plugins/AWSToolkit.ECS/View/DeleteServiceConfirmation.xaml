@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:Amazon.AWSToolkit.ECS.View"
              xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
              mc:Ignorable="d" 
-            Height="200" Width="300">
+            Loaded="onLoaded"
+            Height="300" Width="350">
 
     <commonui:BaseAWSControl.Resources>
         <ResourceDictionary>
@@ -18,6 +19,8 @@
     
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
@@ -49,10 +52,18 @@
                 after the ECS Service is deleted. Would you like to delete these resources 
                 as well to avoid charges for unused resources.
             </TextBlock>
-            <CheckBox Name="_ctlDeleteLoadBalancer" Grid.Row="1" Margin="8,2,4,0" Style="{DynamicResource awsCheckboxButtonBaseStyle}">Load Balancer</CheckBox>
-            <CheckBox Name="_ctlDeleteListener" Grid.Row="2" Margin="8,2,4,0" Style="{DynamicResource awsCheckboxButtonBaseStyle}">Listener</CheckBox>
-            <CheckBox Name="_ctlDeleteTargetGroup" Grid.Row="3" Margin="8,2,4,0" Style="{DynamicResource awsCheckboxButtonBaseStyle}">Target Group</CheckBox>
+
+            <CheckBox Name="_ctlDeleteLoadBalancer" Grid.Row="1" Margin="8,2,4,0" IsChecked="{Binding DeleteLoadbalancer}" Style="{DynamicResource awsCheckboxButtonBaseStyle}">Load Balancer</CheckBox>
+            <CheckBox Name="_ctlDeleteListener" Grid.Row="2" Margin="8,2,4,0" IsChecked="{Binding DeleteListener}" Style="{DynamicResource awsCheckboxButtonBaseStyle}">Listener</CheckBox>
+            <CheckBox Name="_ctlDeleteTargetGroup" Grid.Row="3" Margin="8,2,4,0" IsChecked="{Binding DeleteTargetGroup}" Style="{DynamicResource awsCheckboxButtonBaseStyle}">Target Group</CheckBox>
 
         </Grid>
+
+        <TextBlock Grid.Row="2" Margin="5,5,5,2" Style="{DynamicResource awsTextBlockBaseStyle}">Delete Log:</TextBlock>
+        <TextBox Grid.Row="3" Grid.Column="0" IsReadOnly="True" TextWrapping="NoWrap" 
+                 Margin="5,0,5,15" Name="_ctlOutputLog" VerticalScrollBarVisibility="Auto" 
+                 HorizontalScrollBarVisibility="Auto"
+                 Style="{DynamicResource awsTextBoxStyle}"
+                 VerticalAlignment="Stretch"/>
     </Grid>
 </commonui:BaseAWSControl>

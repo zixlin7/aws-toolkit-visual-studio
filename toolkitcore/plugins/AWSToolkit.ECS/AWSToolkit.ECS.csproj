@@ -99,6 +99,7 @@
   <ItemGroup>
     <Compile Include="Controller\CreateRepositoryController.cs" />
     <Compile Include="Controller\CreateTaskDefinitionController.cs" />
+    <Compile Include="Controller\DeleteServiceConfirmationController.cs" />
     <Compile Include="Controller\FeatureController.cs" />
     <Compile Include="Controller\LaunchClusterController.cs" />
     <Compile Include="Controller\PublishContainerToAWSController.cs" />
