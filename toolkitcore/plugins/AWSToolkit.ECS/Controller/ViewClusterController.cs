@@ -67,7 +67,30 @@ namespace Amazon.AWSToolkit.ECS.Controller
             }
         }
 
+        public bool SaveService(ServiceWrapper service)
+        {
+            var request = new UpdateServiceRequest
+            {
+                Cluster = this._clusterArn,
+                Service = service.ServiceArn,
+                DesiredCount = service.DesiredCount
+            };
 
+            if(service.DeploymentMaximumPercent.HasValue || service.DeploymentMinimumHealthyPercent.HasValue)
+            {
+                request.DeploymentConfiguration = new DeploymentConfiguration
+                {
+                    MaximumPercent = service.DeploymentMaximumPercent.GetValueOrDefault(),
+                    MinimumHealthyPercent = service.DeploymentMinimumHealthyPercent.GetValueOrDefault()
+                };
+            }
+
+            var response = this.ECSClient.UpdateService(request);
+
+            service.LoadFrom(response.Service);
+
+            return true;
+        }
 
         public void Refresh()
         {

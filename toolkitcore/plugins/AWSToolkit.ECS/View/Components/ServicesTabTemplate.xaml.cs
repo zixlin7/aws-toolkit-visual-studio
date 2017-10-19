@@ -77,7 +77,8 @@ namespace Amazon.AWSToolkit.ECS.View.Components
             var service = this.DataContext as ServiceWrapper;
             if(service.EditMode)
             {
-                // Todo Save serviec
+                var control = FindMainControl();
+                control.SaveService(this.DataContext as ServiceWrapper);
 
                 service.EditMode = false;
                 SwapButtonText();

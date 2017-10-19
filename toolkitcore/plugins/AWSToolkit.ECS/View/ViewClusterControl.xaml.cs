@@ -91,6 +91,19 @@ namespace Amazon.AWSToolkit.ECS.View
             }
         }
 
+        public bool SaveService(ServiceWrapper service)
+        {
+            try
+            {
+                return this._controller.SaveService(service);
+            }
+            catch (Exception e)
+            {
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error saving service: " + e.Message);
+                return false;
+            }
+        }
+
         public void DeleteService(ServiceWrapper service)
         {
             try
