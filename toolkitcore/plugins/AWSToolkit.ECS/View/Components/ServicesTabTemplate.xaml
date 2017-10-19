@@ -139,32 +139,45 @@
 
                             <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,5,5,5"  Text="URL:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
                             <TextBlock
-                                                Grid.Column="1" 
-                                                Grid.Row="1"
-                                                Margin="3,10,0,5"
-                                                Style="{DynamicResource awsTextBlockBaseStyle}"
-                                                >
-                                                <Hyperlink NavigateUri="{Binding LoadBalancerUrl, Mode=OneWay}" RequestNavigate="onServiceURLClick">
-                                                    <TextBlock
-                                                        Name="_ctlLoadBalancerUrlLinkInner"
-                                                        Style="{DynamicResource awsTextBlockBoldStyle}"
-                                                        Text="{Binding LoadBalancerUrl}" />
-                                                </Hyperlink>
-                                            </TextBlock>
+                                Grid.Column="1" 
+                                Grid.Row="1"
+                                Margin="3,10,0,5"
+                                Style="{DynamicResource awsTextBlockBaseStyle}"
+                                >
+                                <Hyperlink NavigateUri="{Binding LoadBalancerUrl, Mode=OneWay}" RequestNavigate="onServiceURLClick">
+                                    <TextBlock
+                                        Name="_ctlLoadBalancerUrlLinkInner"
+                                        Style="{DynamicResource awsTextBlockBoldStyle}"
+                                        Text="{Binding LoadBalancerUrl}" />
+                                </Hyperlink>
+                            </TextBlock>
 
                             <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,5,5,5"  Text="Health Check:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
                             <TextBlock
-                                                Grid.Column="1" 
-                                                Grid.Row="2"
-                                                Margin="3,10,0,5"
-                                                Style="{DynamicResource awsTextBlockBaseStyle}"
-                                                >
-                                                <Hyperlink NavigateUri="{Binding LoadBalancerHealthCheck, Mode=OneWay}" RequestNavigate="onHealthCheckURLClick">
-                                                    <TextBlock
-                                                        Style="{DynamicResource awsTextBlockBoldStyle}"
-                                                        Text="{Binding LoadBalancerHealthCheck}" />
-                                                </Hyperlink>
-                                            </TextBlock>
+                                Grid.Column="1" 
+                                Grid.Row="2"
+                                Margin="3,10,0,5"
+                                Style="{DynamicResource awsTextBlockBaseStyle}"
+                                >
+                                <Hyperlink NavigateUri="{Binding LoadBalancerHealthCheck, Mode=OneWay}" RequestNavigate="onHealthCheckURLClick">
+                                    <TextBlock
+                                        Style="{DynamicResource awsTextBlockBoldStyle}"
+                                        Text="{Binding LoadBalancerHealthCheck}" />
+                                </Hyperlink>
+                            </TextBlock>
+
+                            <ProgressBar
+                                x:Name="_ctlProgressBar"
+                                Visibility="{Binding ShowELBLoadingProgress, Mode=OneWay}"
+                                IsIndeterminate="{Binding LoadingELB, Mode=OneWay}"
+                                Width="100"
+                                Grid.Column="1" 
+                                Grid.Row="1"
+                                Height="10"
+                                Margin="8"
+                                Maximum="100"
+                                Minimum="0" />
+
                         </Grid>
 
                         <Grid Grid.Column="1">

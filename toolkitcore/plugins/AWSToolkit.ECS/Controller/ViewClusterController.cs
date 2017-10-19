@@ -198,9 +198,19 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 }
             }
 
+            foreach(var service in this.Model.Services)
+            {
+                service.LoadingELB = true;
+            }
+
             System.Threading.Tasks.Task.Run<ViewClusterModel.LoadBalancerState>(() => this.FetchLoadBalancerState(targetGroupArns)).ContinueWith(x =>
             {
-                if(x.Exception == null)
+                foreach (var service in this.Model.Services)
+                {
+                    service.LoadingELB = false;
+                }
+
+                if (x.Exception == null)
                 {
                     this.Model.LBState = x.Result;
                     UpdateServicesWithLoadBalancerInfo();

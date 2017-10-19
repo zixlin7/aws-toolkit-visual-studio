@@ -376,6 +376,29 @@ namespace Amazon.AWSToolkit.ECS.Model
             }
         }
 
+        bool _loadingELB;
+        public bool LoadingELB
+        {
+            get { return this._loadingELB; }
+            set
+            {
+                this._loadingELB = value;
+                NotifyPropertyChanged("LoadingELB");
+                NotifyPropertyChanged("ShowELBLoadingProgress");
+            }
+        }
+
+        public Visibility ShowELBLoadingProgress
+        {
+            get
+            {
+                if (this.LoadingELB)
+                    return Visibility.Visible;
+
+                return Visibility.Collapsed;
+            }
+        }
+
         Amazon.ElasticLoadBalancingV2.Model.LoadBalancer _loadBalancer;
         Amazon.ElasticLoadBalancingV2.Model.Listener _listener;
         Amazon.ElasticLoadBalancingV2.Model.TargetGroup _targetGroup;
