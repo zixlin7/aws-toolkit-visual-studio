@@ -49,11 +49,14 @@
 
             <StackPanel Grid.Row="0" Grid.Column="6" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
                 <Button
+                    Name="_ctlEditBtn"
                     Margin="3"
                     Width="59"
                     Style="{DynamicResource awsButtonBaseStyle}"
+                    Click="Edit_Click"
                     >Edit</Button>
                 <Button
+                    Name="_ctlDeleteBtn"
                     Margin="3"
                     Width="59"
                     Style="{DynamicResource awsButtonBaseStyle}"
@@ -186,8 +189,21 @@
                                             TextWrapping="NoWrap"/>
 
                             <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,5,5,5" Text="Desired tasks count:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
-                            <TextBox Grid.Column="1" Grid.Row="2" Margin="0,5,0,5" Text="{Binding DesiredCount, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
-                                            TextWrapping="NoWrap"/>
+                            <TextBox Grid.Column="1" Grid.Row="2" Margin="0,5,0,5" 
+                                     Visibility="{Binding ReadModeVisiblity}"
+                                     Text="{Binding DesiredCount, Mode=OneWay}" 
+                                     Style="{DynamicResource awsSelectableTextBoxStyle}" 
+                                     TextWrapping="NoWrap"/>
+
+                            <TextBox
+                                Grid.Row="2"
+                                Grid.Column="1"
+                                Width="50"
+                                Margin="16,2,4,2"
+                                Style="{DynamicResource awsTextBoxStyle}"
+                                Visibility="{Binding EditModeVisiblity}"
+                                Text="{Binding DesiredCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                />
 
                             <TextBlock Grid.Column="0" Grid.Row="3" Margin="5,5,5,5" Text="Pending tasks count:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
                             <TextBox Grid.Column="1" Grid.Row="3" Margin="0,5,0,5" Text="{Binding PendingCount, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
@@ -214,12 +230,38 @@
                             </Label>
 
                             <TextBlock Grid.Column="0" Grid.Row="1" Margin="5,5,5,5" Text="Minimum healthy percent:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
-                            <TextBox Grid.Column="1" Grid.Row="1" Margin="0,5,0,5" Text="{Binding DeploymentMinimumHealthyPercent, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
-                                            TextWrapping="NoWrap"/>
+                            <TextBox Grid.Column="1" Grid.Row="1" Margin="0,5,0,5" 
+                                     Text="{Binding DeploymentMinimumHealthyPercent, Mode=OneWay}" 
+                                     Visibility="{Binding ReadModeVisiblity}"
+                                     Style="{DynamicResource awsSelectableTextBoxStyle}" 
+                                     TextWrapping="NoWrap"/>
 
+                            <TextBox
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Width="50"
+                                Margin="16,2,4,2"
+                                Style="{DynamicResource awsTextBoxStyle}"
+                                Visibility="{Binding EditModeVisiblity}"
+                                Text="{Binding DeploymentMinimumHealthyPercent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                />
+                            
                             <TextBlock Grid.Column="0" Grid.Row="2" Margin="5,5,5,5" Text="Maximum percent:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
-                            <TextBox Grid.Column="1" Grid.Row="2" Margin="0,5,0,5" Text="{Binding DeploymentMaximumPercent, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
-                                            TextWrapping="NoWrap"/>
+                            <TextBox Grid.Column="1" Grid.Row="2" Margin="0,5,0,5" 
+                                     Text="{Binding DeploymentMaximumPercent, Mode=OneWay}" 
+                                     Visibility="{Binding ReadModeVisiblity}"
+                                     Style="{DynamicResource awsSelectableTextBoxStyle}" 
+                                     TextWrapping="NoWrap"/>
+
+                            <TextBox
+                                Grid.Row="2"
+                                Grid.Column="2"
+                                Width="50"
+                                Margin="16,2,4,2"
+                                Style="{DynamicResource awsTextBoxStyle}"
+                                Visibility="{Binding EditModeVisiblity}"
+                                Text="{Binding DeploymentMaximumPercent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                />
 
                         </Grid>
 

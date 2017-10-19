@@ -20,13 +20,95 @@ namespace Amazon.AWSToolkit.ECS.Model
 
         public ServiceWrapper(Service service)
         {
-            _service = service;
+            LoadFrom(service);
         }
 
         public void LoadFrom(Service service)
         {
             _service = service;
-            NotifyPropertyChanged("");
+
+            ResetEditMode();
+
+            NotifyPropertyChanged("ServiceName");
+            NotifyPropertyChanged("DeploymentMinimumHealthyPercent");
+            NotifyPropertyChanged("DeploymentMaximumPercent");
+            NotifyPropertyChanged("ServiceArn");
+            NotifyPropertyChanged("RoleArn");
+            NotifyPropertyChanged("RoleName");
+            NotifyPropertyChanged("Status");
+            NotifyPropertyChanged("StatusHealthColor");
+            NotifyPropertyChanged("RunningCount");
+            NotifyPropertyChanged("PendingCount");
+            NotifyPropertyChanged("DesiredCount");
+            NotifyPropertyChanged("CreatedAt");
+            NotifyPropertyChanged("TaskDefinition");
+            NotifyPropertyChanged("ShowNoLoadBalancerText");
+            NotifyPropertyChanged("ShowLoadBalancerPanel");
+            NotifyPropertyChanged("ShowLoadBalancerName");
+            NotifyPropertyChanged("LoadBalancerName");
+            NotifyPropertyChanged("ShowTargetGroupName");
+            NotifyPropertyChanged("TargetGroupName");
+            NotifyPropertyChanged("TargetGroupArn");
+            NotifyPropertyChanged("ShowLoadBalancedContainerName");
+            NotifyPropertyChanged("LoadBalancedContainerName");
+            NotifyPropertyChanged("ShowLoadBalancedContainerPort");
+            NotifyPropertyChanged("LoadBalancedContainerPort");
+            NotifyPropertyChanged("LoadBalancerStatus");
+            NotifyPropertyChanged("LoadBalancerStatusHealthColor");
+            NotifyPropertyChanged("LoadBalancerUrl");
+            NotifyPropertyChanged("LoadBalancerHealthCheck");
+        }
+
+        public void ResetEditMode()
+        {
+            this.EditMode = false;
+            if (this._service.DeploymentConfiguration == null)
+            {
+                this._deploymentMinimumHealthyPercent = null;
+                this._deploymentMaximumPercent = null;
+            }
+            else
+            {
+                this._deploymentMinimumHealthyPercent = this._service.DeploymentConfiguration.MinimumHealthyPercent;
+                this._deploymentMaximumPercent = this._service.DeploymentConfiguration.MaximumPercent;
+            }
+
+            this._desiredCount = this._service.DesiredCount;
+        }
+
+        bool _editMode = false;
+        public bool EditMode
+        {
+            get { return this._editMode; }
+            set
+            {
+                this._editMode = value;
+                NotifyPropertyChanged("EditMode");
+                NotifyPropertyChanged("EditModeVisiblity");
+                NotifyPropertyChanged("ReadModeVisiblity");
+            }
+        }
+
+        public Visibility EditModeVisiblity
+        {
+            get
+            {
+                if (this.EditMode)
+                    return Visibility.Visible;
+
+                return Visibility.Collapsed;
+            }
+        }
+
+        public Visibility ReadModeVisiblity
+        {
+            get
+            {
+                if (!this.EditMode)
+                    return Visibility.Visible;
+
+                return Visibility.Collapsed;
+            }
         }
 
         public override void GetPropertyNames(out string className, out string componentName)
@@ -44,27 +126,33 @@ namespace Amazon.AWSToolkit.ECS.Model
             }
         }
 
+        int? _deploymentMinimumHealthyPercent;
         [DisplayName("DeploymentMinimumHealthyPercent")]
         public int? DeploymentMinimumHealthyPercent
         {
             get
             {
-                if (this._service.DeploymentConfiguration == null)
-                    return null;
-
-                return this._service.DeploymentConfiguration.MinimumHealthyPercent;
+                return this._deploymentMinimumHealthyPercent;
+            }
+            set
+            {
+                this._deploymentMinimumHealthyPercent = value;
+                NotifyPropertyChanged("DeploymentMinimumHealthyPercent");
             }
         }
 
+        int? _deploymentMaximumPercent;
         [DisplayName("DeploymentMaximumPercent")]
         public int? DeploymentMaximumPercent
         {
             get
             {
-                if (this._service.DeploymentConfiguration == null)
-                    return null;
-
-                return this._service.DeploymentConfiguration.MaximumPercent;
+                return this._deploymentMaximumPercent;
+            }
+            set
+            {
+                this._deploymentMaximumPercent = value;
+                NotifyPropertyChanged("DeploymentMaximumPercent");
             }
         }
 
@@ -149,12 +237,18 @@ namespace Amazon.AWSToolkit.ECS.Model
             }
         }
 
+        int _desiredCount;
         [DisplayName("DesiredCount")]
         public int DesiredCount
         {
             get
             {
-                return _service.DesiredCount;
+                return this._desiredCount;
+            }
+            set
+            {
+                this._desiredCount = value;
+                NotifyPropertyChanged("DesiredCount");
             }
         }
 

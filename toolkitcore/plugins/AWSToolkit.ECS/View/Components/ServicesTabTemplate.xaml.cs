@@ -59,10 +59,52 @@ namespace Amazon.AWSToolkit.ECS.View.Components
 
         private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            var control = FindMainControl();
-            control.DeleteService(this.DataContext as ServiceWrapper);
+            var service = this.DataContext as ServiceWrapper;
+            if (!service.EditMode)
+            {
+                var control = FindMainControl();
+                control.DeleteService(this.DataContext as ServiceWrapper);
+            }
+            else
+            {
+                service.ResetEditMode();
+                SwapButtonText();
+            }
         }
-        
+
+        private void Edit_Click(object sender, RoutedEventArgs e)
+        {
+            var service = this.DataContext as ServiceWrapper;
+            if(service.EditMode)
+            {
+                // Todo Save serviec
+
+                service.EditMode = false;
+                SwapButtonText();
+            }
+            else
+            {
+                service.EditMode = true;
+                SwapButtonText();
+            }
+
+        }
+
+        private void SwapButtonText()
+        {
+            var service = this.DataContext as ServiceWrapper;
+            if (!service.EditMode)
+            {
+                this._ctlEditBtn.Content = "Edit";
+                this._ctlDeleteBtn.Content = "Delete";
+            }
+            else
+            {
+                this._ctlEditBtn.Content = "Save";
+                this._ctlDeleteBtn.Content = "Cancel";
+            }
+        }
+
         private ViewClusterControl FindMainControl()
         {
             var current = VisualTreeHelper.GetParent(this);
