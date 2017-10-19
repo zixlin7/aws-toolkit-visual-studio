@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Amazon.AWSToolkit.CommonUI;
-
+using Amazon.AWSToolkit.Util;
+using Amazon.ECR;
 using Amazon.ECR.Model;
 
 namespace Amazon.AWSToolkit.ECS.Model
@@ -93,6 +95,19 @@ namespace Amazon.AWSToolkit.ECS.Model
                 var icon = IconHelper.GetIcon("repository.png");
                 return icon.Source;
             }
+        }
+
+        private readonly RangeObservableCollection<ImageDetailWrapper> _images = new RangeObservableCollection<ImageDetailWrapper>();
+
+        public ObservableCollection<ImageDetailWrapper> Images
+        {
+            get { return _images; }
+        }
+
+        public void SetImages(ICollection<ImageDetailWrapper> images)
+        {
+            _images.Clear();
+            _images.AddRange(images);
         }
     }
 }

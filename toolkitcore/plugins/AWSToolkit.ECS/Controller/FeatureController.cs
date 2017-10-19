@@ -35,11 +35,13 @@ namespace Amazon.AWSToolkit.ECS.Controller
         public IAmazonECS ECSClient
         {
             get { return this._ecsClient; }
+            protected set { this._ecsClient = value; }
         }
 
         public IAmazonECR ECRClient
         {
             get { return this._ecrClient; }
+            protected set { this._ecrClient = value; }
         }
 
         public FeatureViewModel FeatureViewModel

@@ -114,6 +114,7 @@
     <Compile Include="ECSTools\Constants.cs" />
     <Compile Include="ECSTools\RoleHelper.cs" />
     <Compile Include="Model\ClusterWrapper.cs" />
+    <Compile Include="Model\ImageDetailWrapper.cs" />
     <Compile Include="Model\IWrapper.cs" />
     <Compile Include="Model\RepositoryWrapper.cs" />
     <Compile Include="Model\ServiceWrapper.cs" />

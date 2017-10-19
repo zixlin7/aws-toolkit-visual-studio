@@ -2,7 +2,7 @@
                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"  
-                      xmlns:uicomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"                        
+                      xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes;assembly=AWSToolkit"
                       Height="600" Width="800"
 >
 
@@ -16,6 +16,11 @@
                 <Setter Property="Height" Value="2" />
                 <Setter Property="Fill" Value="{DynamicResource awsPanelBorderBrushKey}" />
                 <Setter Property="Margin" Value="0" />
+            </Style>
+
+            <Style x:Key="flowDocumentStyle" TargetType="{x:Type FlowDocument}">
+                <Setter Property="FontFamily" Value="{DynamicResource {x:Static themes:ShellProviderThemeResources.EnvironmentFontFamilyKey}}" />
+                <Setter Property="FontSize" Value="{DynamicResource {x:Static themes:ShellProviderThemeResources.EnvironmentFontSizeKey}}" />
             </Style>
 
         </ResourceDictionary>
@@ -42,21 +47,28 @@
                     <RowDefinition Height="2"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
+                <!-- repository metadata -->
                 <TextBlock Grid.Row="0"
-                           Style="{DynamicResource awsTextBlock155PercentStyle}"
+                           Grid.Column="0"
+                           Style="{DynamicResource awsTextBlock133PercentStyle}"
                            Margin="5,10">
-                    <Run Text="Repository" />                    
+                    <Run Text="Repository:" />                    
                     <Run Text="{Binding Repository.Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
                 </TextBlock>
-                
+
                 <Rectangle Grid.Row="1" 
+                           Grid.Column="0"
                            HorizontalAlignment="Stretch" 
                            Margin="5,0" 
                            Style="{StaticResource HorizontalSeparatorBar}"
-                           />
-
-                <Grid Grid.Row="2">
+                />
+                
+                <Grid Grid.Row="2" Grid.Column="0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -69,60 +81,64 @@
                     </Grid.ColumnDefinitions>   
                     
                     <Label Grid.Row="0" Grid.Column="0" 
-                           Style="{DynamicResource awsLabel133PercentStyle}">
+                           Style="{DynamicResource awsLabel122PercentStyle}">
                         ARN:
                     </Label>
                     <TextBlock Grid.Row="0" Grid.Column="1"
-                               Style="{DynamicResource awsTextBlock133PercentStyle}"
+                               Style="{DynamicResource awsTextBlock122PercentStyle}"
                                Text="{Binding Repository.RepositoryArn, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                     <Label Grid.Row="0" Grid.Column="2" 
-                           Style="{DynamicResource awsLabel133PercentStyle}">
+                           Style="{DynamicResource awsLabel122PercentStyle}">
                         Created on:
                     </Label>
                     <TextBlock Grid.Row="0" Grid.Column="3"
-                               Style="{DynamicResource awsTextBlock133PercentStyle}"
+                               Style="{DynamicResource awsTextBlock122PercentStyle}"
                                Text="{Binding Repository.CreationDate, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                     <Label Grid.Row="1" Grid.Column="0" 
-                           Style="{DynamicResource awsLabel133PercentStyle}">
+                           Style="{DynamicResource awsLabel122PercentStyle}">
                         URI:
                     </Label>
                     <TextBlock Grid.Row="1" Grid.Column="1"
-                               Style="{DynamicResource awsTextBlock133PercentStyle}"
+                               Style="{DynamicResource awsTextBlock122PercentStyle}"
                                Text="{Binding Repository.RepositoryUri, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
                     
                 </Grid>
                 
                 <Rectangle Grid.Row="3" 
+                           Grid.Column="0"
                            HorizontalAlignment="Stretch" 
                            Margin="5,0" 
                            Style="{StaticResource HorizontalSeparatorBar}"
                 />
 
-                <Grid Grid.Row="4" Margin="0,10,0,5">
+                <!-- show/hide push commands -->
+                <Button Grid.Row="0"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Style="{DynamicResource awsButtonBaseStyle}"
+                        Padding="4,2"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Click="ViewPushCommands_OnClick"
+                        >
+                    View Push Commands
+                </Button>
+
+                <!-- images -->
+                <Grid Grid.Row="4" Grid.Column="0" Margin="0,10,0,5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
                     
-                    <Label Grid.Row="0" Grid.Column="0" Style="{DynamicResource awsLabel133PercentStyle}">
+                    <Label Grid.Row="0" Style="{DynamicResource awsLabel133PercentStyle}">
                         Images
                     </Label>
 
-                    <Button Grid.Row="0" Grid.Column="1" Style="{DynamicResource awsButtonBaseStyle}"
-                            Padding="4,0">
-                        View Push Commands
-                    </Button>
-
                     <commonui:ToolkitDataGridWrapper
                         Grid.Row="1"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="2"
                         Margin="0,5"
                         x:Name="_ctlImagesGrid"
                         HorizontalAlignment="Stretch"
@@ -138,7 +154,8 @@
                         LoadingRow="onLoadingRow"
                         ScrollViewer.IsDeferredScrollingEnabled="True"
                         Sorting="SortHandler"
-                        VirtualizingStackPanel.VirtualizationMode="Standard">
+                        VirtualizingStackPanel.VirtualizationMode="Standard"
+                        ItemsSource="{Binding Repository.Images, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
 
                         <commonui:ToolkitDataGridWrapper.RowHeaderTemplate>
                             <DataTemplate>
@@ -147,14 +164,83 @@
                         </commonui:ToolkitDataGridWrapper.RowHeaderTemplate>
                         
                         <DataGrid.Columns>
-                            <DataGridTextColumn Width="*" Header="Image tags"/>
-                            <DataGridTextColumn Width="Auto" Header="Digest"/>
-                            <DataGridTextColumn Width="Auto" Header="Size (MiB)"/>
-                            <DataGridTextColumn Width="Auto" Header="Pushed at"/>
+                            <DataGridTextColumn Width=".3*" Header="Tags" Binding="{Binding ImageTagsFlattened}"/>
+                            <DataGridTextColumn Width=".2*" Header="Digest" Binding="{Binding Digest}"/>
+                            <DataGridTextColumn Width=".2*" Header="Size (MiB)" Binding="{Binding Size}"/>
+                            <DataGridTextColumn Width=".3*" Header="Pushed at" Binding="{Binding PushedAt}"/>
                         </DataGrid.Columns>
 
                     </commonui:ToolkitDataGridWrapper>
                 </Grid>
+                
+                <!-- push instructions, visible on demand -->
+                <FlowDocumentScrollViewer Grid.Row="1" Grid.Column="1" Grid.RowSpan="4"
+                                            VerticalScrollBarVisibility="Auto"
+                                            x:Name="_ctlPushCommands"
+                                            Visibility="Collapsed"
+                                            Width="350">
+                    <FlowDocument Style="{StaticResource flowDocumentStyle}">
+                        <Paragraph>
+                            To install Docker and either the AWS Tools for PowerShell or the AWS CLI, 
+                                and for more information on the steps below, visit the ECR documentation 
+                                page at http://docs.aws.amazon.com/AmazonECR/latest/userguide/ECR_GetStarted.html.
+                        </Paragraph>
+                        <List>
+                            <ListItem>
+                                <Paragraph>
+                                    Retrieve the docker login command that you can use to authenticate your Docker 
+                                    client to your registry:
+                                </Paragraph>
+                                <Paragraph>
+                                    <Run FontWeight="DemiBold">
+                                        # AWS Tools for PowerShell:
+                                    </Run>
+                                    <LineBreak/>
+                                    <Run>
+                                        $command = Get-ECRLoginCommand
+                                    </Run>
+                                </Paragraph>
+                                <Paragraph>
+                                    <Run FontWeight="DemiBold">
+                                        # AWS CLI:
+                                    </Run>
+                                    <LineBreak/>
+                                    <Run>
+                                        aws ecr get-login --no-include-email --region us-west-2
+                                    </Run>
+                                </Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>
+                                    <Run>
+                                        Run the docker login command that was returned in the previous step.
+                                    </Run>
+                                    <LineBreak/>
+                                    <LineBreak/>
+                                </Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>
+                                    Build your Docker image using the following command. You can skip this step 
+                                        if your image is already built:
+                                </Paragraph>
+                                <Paragraph>
+                                        
+                                </Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>
+                                    After the build completes, tag your image so you can push the image to this repository:
+                                </Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>
+                                    Run the following command to push this image to your newly created AWS repository:
+                                </Paragraph>
+                            </ListItem>
+                        </List>
+                    </FlowDocument>
+                </FlowDocumentScrollViewer>
             </Grid>
         </DockPanel>
 

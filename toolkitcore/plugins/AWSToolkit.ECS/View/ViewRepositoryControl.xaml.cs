@@ -19,8 +19,6 @@ namespace Amazon.AWSToolkit.ECS.View
         public ViewRepositoryControl(ViewRepositoryController controller)
         {
             this._controller = controller;
-            DataContext = _controller.Model;
-
             InitializeComponent();
         }
 
@@ -28,10 +26,7 @@ namespace Amazon.AWSToolkit.ECS.View
         {
             get
             {
-                if (this._controller.Model.Repository == null)
-                    return "Repository";
-
-                return string.Format("Repository {0}", this._controller.Model.Repository.Name);
+                return string.Format("Repository {0}", this._controller.RepositoryName);
             }
         }
 
@@ -40,7 +35,7 @@ namespace Amazon.AWSToolkit.ECS.View
             get
             {
                 return string.Format("Repository: {0} {1}_{2}",
-                                    (this._controller.FeatureViewModel as RepositoryViewModel).Repository.RepositoryArn,
+                                     this._controller.RepositoryArn,
                                      this._controller.EndPoint,
                                      this._controller.Account.SettingsUniqueKey);
             }
@@ -69,18 +64,55 @@ namespace Amazon.AWSToolkit.ECS.View
         {
             try
             {
-                this._controller.LoadModel();
+                this._controller.Refresh();
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error refreshing", e);
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error refreshing repository: " + e.Message);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error refreshing repository data: " + e.Message);
+            }
+        }
+
+        public override void RefreshInitialData(object initialData)
+        {
+            try
+            {
+                this._controller.Refresh();
+            }
+            catch (Exception e)
+            {
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error refreshing repository data: " + e.Message);
             }
         }
 
         void SortHandler(object sender, DataGridSortingEventArgs e)
         {
             
+        }
+
+        private void ViewPushCommands_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (_ctlPushCommands.Visibility == Visibility.Collapsed)
+            {
+                _ctlPushCommands.Visibility = Visibility.Visible;
+                _pushCommandsButtonLabel = "Hide Push Commands";
+            }
+            else
+            {
+                _ctlPushCommands.Visibility = Visibility.Collapsed;
+                _pushCommandsButtonLabel = "View Push Commands";
+            }
+
+            NotifyPropertyChanged(PushCommandsButtonLabel);
+        }
+
+        private string _pushCommandsButtonLabel = "View Push Commands";
+        public string PushCommandsButtonLabel
+        {
+            get
+            {
+                return _pushCommandsButtonLabel;
+            }
         }
     }
 }
