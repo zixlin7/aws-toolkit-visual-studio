@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Amazon.AWSToolkit.ECS.View.Components"
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="800">
 
@@ -267,9 +268,35 @@
 
                     </Grid>
                 </TabItem>
-                <TabItem Header="Tasks">
-                </TabItem>
                 <TabItem Header="Events">
+                    <commonui:ToolkitDataGridWrapper Grid.Row="1" ItemsSource="{Binding Events}" AutoGenerateColumns="False" CellStyle="{DynamicResource awsDataGridCellCentering}"
+                         CanUserAddRows="False" CanUserDeleteRows="False" DockPanel.Dock="Top"
+                         HorizontalAlignment="Stretch" HeadersVisibility="Column">
+                        <commonui:ToolkitDataGridWrapper.Columns>
+
+                            <DataGridTextColumn Header="Time" Binding="{Binding CreateTime, Mode=OneWay}" Width="auto"/>
+                            <DataGridTextColumn Header="Message" Binding="{Binding NativeServiceEvent.Message, Mode=OneWay}" Width="auto"/>
+
+                        </commonui:ToolkitDataGridWrapper.Columns>
+                    </commonui:ToolkitDataGridWrapper>
+
+                </TabItem>
+                <TabItem Header="Deployments">
+                    <commonui:ToolkitDataGridWrapper Grid.Row="1" ItemsSource="{Binding Deployments}" AutoGenerateColumns="False" CellStyle="{DynamicResource awsDataGridCellCentering}"
+                         CanUserAddRows="False" CanUserDeleteRows="False" DockPanel.Dock="Top"
+                         HorizontalAlignment="Stretch" HeadersVisibility="Column">
+                        <commonui:ToolkitDataGridWrapper.Columns>
+
+                            <DataGridTextColumn Header="Status" Binding="{Binding NativeDeployment.Status, Mode=OneWay}" Width="auto"/>
+                            <DataGridTextColumn Header="Desired Count" Binding="{Binding NativeDeployment.DesiredCount, Mode=OneWay}" Width="auto"/>
+                            <DataGridTextColumn Header="Pending Count" Binding="{Binding NativeDeployment.PendingCount, Mode=OneWay}" Width="auto"/>
+                            <DataGridTextColumn Header="Running Count" Binding="{Binding NativeDeployment.RunningCount, Mode=OneWay}" Width="auto"/>
+
+                            <DataGridTextColumn Header="Create Time" Binding="{Binding CreateTime, Mode=OneWay}" Width="auto"/>
+                            <DataGridTextColumn Header="Update Time" Binding="{Binding UpdateTime, Mode=OneWay}" Width="auto"/>
+
+                        </commonui:ToolkitDataGridWrapper.Columns>
+                    </commonui:ToolkitDataGridWrapper>
                 </TabItem>
             </TabControl>
 

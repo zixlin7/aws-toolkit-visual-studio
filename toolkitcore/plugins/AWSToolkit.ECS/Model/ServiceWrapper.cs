@@ -29,6 +29,14 @@ namespace Amazon.AWSToolkit.ECS.Model
 
             ResetEditMode();
 
+            this._events.Clear();
+            foreach (var evnt in _service.Events)
+                this._events.Add(new ServiceEventWrapper(evnt));
+
+            this._deployments.Clear();
+            foreach (var deployment in _service.Deployments)
+                this._deployments.Add(new DeploymentWrapper(deployment));
+
             NotifyPropertyChanged("ServiceName");
             NotifyPropertyChanged("DeploymentMinimumHealthyPercent");
             NotifyPropertyChanged("DeploymentMaximumPercent");
@@ -57,6 +65,8 @@ namespace Amazon.AWSToolkit.ECS.Model
             NotifyPropertyChanged("LoadBalancerStatusHealthColor");
             NotifyPropertyChanged("LoadBalancerUrl");
             NotifyPropertyChanged("LoadBalancerHealthCheck");
+            NotifyPropertyChanged("Events");
+            NotifyPropertyChanged("Deployments");
         }
 
         public void ResetEditMode()
@@ -74,6 +84,18 @@ namespace Amazon.AWSToolkit.ECS.Model
             }
 
             this._desiredCount = this._service.DesiredCount;
+        }
+
+        List<ServiceEventWrapper> _events = new List<ServiceEventWrapper>();
+        public List<ServiceEventWrapper> Events
+        {
+            get { return this._events; }
+        }
+
+        List<DeploymentWrapper> _deployments = new List<DeploymentWrapper>();
+        public List<DeploymentWrapper> Deployments
+        {
+            get { return this._deployments; }
         }
 
         bool _editMode = false;
@@ -452,6 +474,51 @@ namespace Amazon.AWSToolkit.ECS.Model
             get
             {
                 return this.ServiceName;
+            }
+        }
+
+        public class ServiceEventWrapper
+        {
+            private ServiceEvent _serviceEvent;
+
+            public ServiceEventWrapper(ServiceEvent serviceEvent)
+            {
+                this._serviceEvent = serviceEvent;
+            }
+
+            public DateTime CreateTime
+            {
+                get { return this._serviceEvent.CreatedAt.ToLocalTime(); }
+            }
+
+            public ServiceEvent NativeServiceEvent
+            {
+                get { return this._serviceEvent; }
+            }
+        }
+
+        public class DeploymentWrapper
+        {
+            Deployment _deployment;
+
+            public DeploymentWrapper(Deployment deployment)
+            {
+                this._deployment = deployment;
+            }
+
+            public Deployment NativeDeployment
+            {
+                get { return this._deployment; }
+            }
+
+            public DateTime CreateTime
+            {
+                get { return this._deployment.CreatedAt.ToLocalTime(); }
+            }
+
+            public DateTime UpdateTime
+            {
+                get { return this._deployment.UpdatedAt.ToLocalTime(); }
             }
         }
     }
