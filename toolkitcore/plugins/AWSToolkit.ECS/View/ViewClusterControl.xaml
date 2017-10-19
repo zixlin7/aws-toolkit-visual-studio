@@ -65,8 +65,6 @@
             <TabItem Header="Services">
                 <components:ServicesTab x:Name="_ctlServices"/>
             </TabItem>
-            <TabItem Header="ECS Instances">
-            </TabItem>
         </TabControl>
     </Grid>
 </commonui:BaseAWSView>

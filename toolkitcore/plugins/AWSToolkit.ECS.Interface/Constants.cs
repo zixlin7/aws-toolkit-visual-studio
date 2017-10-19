@@ -10,7 +10,11 @@ namespace Amazon.AWSToolkit.ECS
     public static class Constants
     {
         public enum DeployMode { PushOnly, DeployToECSCluster }
-        
+
+        public const string WIZARD_CREATE_TAG_KEY = "ToolCreatedFrom";
+        public const string WIZARD_CREATE_TAG_VALUE = "awsVSToolkit";
+
+
         public static readonly string ECS_ASSUME_ROLE_POLICY =
 @"
 {

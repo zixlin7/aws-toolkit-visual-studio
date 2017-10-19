@@ -20,13 +20,117 @@ namespace Amazon.AWSToolkit.ECS.Model
 
         public ServiceWrapper(Service service)
         {
-            _service = service;
+            LoadFrom(service);
         }
 
         public void LoadFrom(Service service)
         {
             _service = service;
-            NotifyPropertyChanged("");
+
+            ResetEditMode();
+
+            this._events.Clear();
+            foreach (var evnt in _service.Events)
+                this._events.Add(new ServiceEventWrapper(evnt));
+
+            this._deployments.Clear();
+            foreach (var deployment in _service.Deployments)
+                this._deployments.Add(new DeploymentWrapper(deployment));
+
+            NotifyPropertyChanged("ServiceName");
+            NotifyPropertyChanged("DeploymentMinimumHealthyPercent");
+            NotifyPropertyChanged("DeploymentMaximumPercent");
+            NotifyPropertyChanged("ServiceArn");
+            NotifyPropertyChanged("RoleArn");
+            NotifyPropertyChanged("RoleName");
+            NotifyPropertyChanged("Status");
+            NotifyPropertyChanged("StatusHealthColor");
+            NotifyPropertyChanged("RunningCount");
+            NotifyPropertyChanged("PendingCount");
+            NotifyPropertyChanged("DesiredCount");
+            NotifyPropertyChanged("CreatedAt");
+            NotifyPropertyChanged("TaskDefinition");
+            NotifyPropertyChanged("ShowNoLoadBalancerText");
+            NotifyPropertyChanged("ShowLoadBalancerPanel");
+            NotifyPropertyChanged("ShowLoadBalancerName");
+            NotifyPropertyChanged("LoadBalancerName");
+            NotifyPropertyChanged("ShowTargetGroupName");
+            NotifyPropertyChanged("TargetGroupName");
+            NotifyPropertyChanged("TargetGroupArn");
+            NotifyPropertyChanged("ShowLoadBalancedContainerName");
+            NotifyPropertyChanged("LoadBalancedContainerName");
+            NotifyPropertyChanged("ShowLoadBalancedContainerPort");
+            NotifyPropertyChanged("LoadBalancedContainerPort");
+            NotifyPropertyChanged("LoadBalancerStatus");
+            NotifyPropertyChanged("LoadBalancerStatusHealthColor");
+            NotifyPropertyChanged("LoadBalancerUrl");
+            NotifyPropertyChanged("LoadBalancerHealthCheck");
+            NotifyPropertyChanged("Events");
+            NotifyPropertyChanged("Deployments");
+        }
+
+        public void ResetEditMode()
+        {
+            this.EditMode = false;
+            if (this._service.DeploymentConfiguration == null)
+            {
+                this._deploymentMinimumHealthyPercent = null;
+                this._deploymentMaximumPercent = null;
+            }
+            else
+            {
+                this._deploymentMinimumHealthyPercent = this._service.DeploymentConfiguration.MinimumHealthyPercent;
+                this._deploymentMaximumPercent = this._service.DeploymentConfiguration.MaximumPercent;
+            }
+
+            this._desiredCount = this._service.DesiredCount;
+        }
+
+        List<ServiceEventWrapper> _events = new List<ServiceEventWrapper>();
+        public List<ServiceEventWrapper> Events
+        {
+            get { return this._events; }
+        }
+
+        List<DeploymentWrapper> _deployments = new List<DeploymentWrapper>();
+        public List<DeploymentWrapper> Deployments
+        {
+            get { return this._deployments; }
+        }
+
+        bool _editMode = false;
+        public bool EditMode
+        {
+            get { return this._editMode; }
+            set
+            {
+                this._editMode = value;
+                NotifyPropertyChanged("EditMode");
+                NotifyPropertyChanged("EditModeVisiblity");
+                NotifyPropertyChanged("ReadModeVisiblity");
+            }
+        }
+
+        public Visibility EditModeVisiblity
+        {
+            get
+            {
+                if (this.EditMode)
+                    return Visibility.Visible;
+
+                return Visibility.Collapsed;
+            }
+        }
+
+        public Visibility ReadModeVisiblity
+        {
+            get
+            {
+                if (!this.EditMode)
+                    return Visibility.Visible;
+
+                return Visibility.Collapsed;
+            }
         }
 
         public override void GetPropertyNames(out string className, out string componentName)
@@ -44,27 +148,33 @@ namespace Amazon.AWSToolkit.ECS.Model
             }
         }
 
+        int? _deploymentMinimumHealthyPercent;
         [DisplayName("DeploymentMinimumHealthyPercent")]
         public int? DeploymentMinimumHealthyPercent
         {
             get
             {
-                if (this._service.DeploymentConfiguration == null)
-                    return null;
-
-                return this._service.DeploymentConfiguration.MinimumHealthyPercent;
+                return this._deploymentMinimumHealthyPercent;
+            }
+            set
+            {
+                this._deploymentMinimumHealthyPercent = value;
+                NotifyPropertyChanged("DeploymentMinimumHealthyPercent");
             }
         }
 
+        int? _deploymentMaximumPercent;
         [DisplayName("DeploymentMaximumPercent")]
         public int? DeploymentMaximumPercent
         {
             get
             {
-                if (this._service.DeploymentConfiguration == null)
-                    return null;
-
-                return this._service.DeploymentConfiguration.MaximumPercent;
+                return this._deploymentMaximumPercent;
+            }
+            set
+            {
+                this._deploymentMaximumPercent = value;
+                NotifyPropertyChanged("DeploymentMaximumPercent");
             }
         }
 
@@ -149,12 +259,18 @@ namespace Amazon.AWSToolkit.ECS.Model
             }
         }
 
+        int _desiredCount;
         [DisplayName("DesiredCount")]
         public int DesiredCount
         {
             get
             {
-                return _service.DesiredCount;
+                return this._desiredCount;
+            }
+            set
+            {
+                this._desiredCount = value;
+                NotifyPropertyChanged("DesiredCount");
             }
         }
 
@@ -260,6 +376,29 @@ namespace Amazon.AWSToolkit.ECS.Model
             }
         }
 
+        bool _loadingELB;
+        public bool LoadingELB
+        {
+            get { return this._loadingELB; }
+            set
+            {
+                this._loadingELB = value;
+                NotifyPropertyChanged("LoadingELB");
+                NotifyPropertyChanged("ShowELBLoadingProgress");
+            }
+        }
+
+        public Visibility ShowELBLoadingProgress
+        {
+            get
+            {
+                if (this.LoadingELB)
+                    return Visibility.Visible;
+
+                return Visibility.Collapsed;
+            }
+        }
+
         Amazon.ElasticLoadBalancingV2.Model.LoadBalancer _loadBalancer;
         Amazon.ElasticLoadBalancingV2.Model.Listener _listener;
         Amazon.ElasticLoadBalancingV2.Model.TargetGroup _targetGroup;
@@ -293,7 +432,7 @@ namespace Amazon.AWSToolkit.ECS.Model
                 if (this._loadBalancer == null)
                     return null;
 
-                return this._loadBalancer.State.Code.ToString();
+                return this._loadBalancer.State.Code.ToString().ToUpper();
             }
         }
 
@@ -358,6 +497,51 @@ namespace Amazon.AWSToolkit.ECS.Model
             get
             {
                 return this.ServiceName;
+            }
+        }
+
+        public class ServiceEventWrapper
+        {
+            private ServiceEvent _serviceEvent;
+
+            public ServiceEventWrapper(ServiceEvent serviceEvent)
+            {
+                this._serviceEvent = serviceEvent;
+            }
+
+            public DateTime CreateTime
+            {
+                get { return this._serviceEvent.CreatedAt.ToLocalTime(); }
+            }
+
+            public ServiceEvent NativeServiceEvent
+            {
+                get { return this._serviceEvent; }
+            }
+        }
+
+        public class DeploymentWrapper
+        {
+            Deployment _deployment;
+
+            public DeploymentWrapper(Deployment deployment)
+            {
+                this._deployment = deployment;
+            }
+
+            public Deployment NativeDeployment
+            {
+                get { return this._deployment; }
+            }
+
+            public DateTime CreateTime
+            {
+                get { return this._deployment.CreatedAt.ToLocalTime(); }
+            }
+
+            public DateTime UpdateTime
+            {
+                get { return this._deployment.UpdatedAt.ToLocalTime(); }
             }
         }
     }

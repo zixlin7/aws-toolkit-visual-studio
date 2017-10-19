@@ -289,7 +289,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                         Type = LoadBalancerTypeEnum.Application,
                         SecurityGroups = new List<string> { changeTracker.SecurityGroup },
                         Subnets = DetermineSubnets(state),
-                        Tags = new List<ElasticLoadBalancingV2.Model.Tag> { new ElasticLoadBalancingV2.Model.Tag { Key = "CreateSource", Value = "VSToolkitECSWizard" } }
+                        Tags = new List<ElasticLoadBalancingV2.Model.Tag> { new ElasticLoadBalancingV2.Model.Tag { Key = Constants.WIZARD_CREATE_TAG_KEY, Value = Constants.WIZARD_CREATE_TAG_VALUE } }
 
                     }).LoadBalancers[0].LoadBalancerArn;
                     this.Helper.AppendUploadStatus("New Application Load Balancer ARN: " + loadBalancerArn);
@@ -566,6 +566,12 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 GroupName = securityGroupName,
                 Description = "Load Balancer create for the ECS Cluster " + state.Cluster
             }).GroupId;
+
+            this._ec2Client.CreateTags(new CreateTagsRequest
+            {
+                Resources = new List<string> { groupId },
+                Tags = new List<EC2.Model.Tag> { new EC2.Model.Tag { Key = Constants.WIZARD_CREATE_TAG_KEY, Value = Constants.WIZARD_CREATE_TAG_VALUE } }
+            });
 
             this.Helper.AppendUploadStatus("Authorizing access to port " + state.NewListenerPort + " for CidrIp 0.0.0.0/0");
             this._ec2Client.AuthorizeSecurityGroupIngress(new AuthorizeSecurityGroupIngressRequest

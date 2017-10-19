@@ -21,7 +21,7 @@ namespace Amazon.AWSToolkit.ECS.Model
         {
             public Dictionary<string, TargetGroup> TargetGroups = new Dictionary<string, TargetGroup>();
             public Dictionary<string, Amazon.ElasticLoadBalancingV2.Model.LoadBalancer> LoadBalancers = new Dictionary<string, Amazon.ElasticLoadBalancingV2.Model.LoadBalancer>();
-            public Dictionary<string, Listener> Listeners = new Dictionary<string, Listener>();
+            public Dictionary<string, List<Listener>> ListenersByLoadBalancerArn = new Dictionary<string, List<Listener>>();
             public Dictionary<string, List<Rule>> RulesByListenerArn = new Dictionary<string, List<Rule>>();
         }
     }

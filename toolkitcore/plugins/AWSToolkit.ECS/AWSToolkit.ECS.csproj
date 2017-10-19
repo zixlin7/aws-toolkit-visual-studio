@@ -99,6 +99,7 @@
   <ItemGroup>
     <Compile Include="Controller\CreateRepositoryController.cs" />
     <Compile Include="Controller\CreateTaskDefinitionController.cs" />
+    <Compile Include="Controller\DeleteServiceConfirmationController.cs" />
     <Compile Include="Controller\FeatureController.cs" />
     <Compile Include="Controller\LaunchClusterController.cs" />
     <Compile Include="Controller\PublishContainerToAWSController.cs" />
@@ -159,6 +160,12 @@
     <Compile Include="View\Components\ServicesTab.xaml.cs">
       <DependentUpon>ServicesTab.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Components\ServicesTabTemplate.xaml.cs">
+      <DependentUpon>ServicesTabTemplate.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\DeleteServiceConfirmation.xaml.cs">
+      <DependentUpon>DeleteServiceConfirmation.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ViewClusterControl.xaml.cs">
       <DependentUpon>ViewClusterControl.xaml</DependentUpon>
     </Compile>
@@ -216,6 +223,14 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="View\Components\ServicesTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\ServicesTabTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\DeleteServiceConfirmation.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
