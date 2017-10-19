@@ -49,11 +49,11 @@
                 TextWrapping="Wrap"
                 Style="{DynamicResource awsTextBlockBaseStyle}">
                 The following Elastic Load Balancing resources will no longer be used
-                after the ECS Service is deleted. Would you like to delete these resources 
-                as well to avoid charges for unused resources.
+                after the ECS Service is deleted. You can select the resources below to also be
+                deleted to avoid charges for unused resources.
             </TextBlock>
 
-            <CheckBox Name="_ctlDeleteLoadBalancer" Grid.Row="1" Margin="8,2,4,0" IsChecked="{Binding DeleteLoadbalancer}" Style="{DynamicResource awsCheckboxButtonBaseStyle}">Load Balancer</CheckBox>
+            <CheckBox Name="_ctlDeleteLoadBalancer" Grid.Row="1" Margin="8,12,4,0" IsChecked="{Binding DeleteLoadbalancer}" Style="{DynamicResource awsCheckboxButtonBaseStyle}">Load Balancer</CheckBox>
             <CheckBox Name="_ctlDeleteListener" Grid.Row="2" Margin="8,2,4,0" IsChecked="{Binding DeleteListener}" Style="{DynamicResource awsCheckboxButtonBaseStyle}">Listener</CheckBox>
             <CheckBox Name="_ctlDeleteTargetGroup" Grid.Row="3" Margin="8,2,4,0" IsChecked="{Binding DeleteTargetGroup}" Style="{DynamicResource awsCheckboxButtonBaseStyle}">Target Group</CheckBox>
 

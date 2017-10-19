@@ -82,7 +82,7 @@ namespace Amazon.AWSToolkit.ECS.View
         {
         }
 
-        public override string Title => "Confirm deleting " + this._controller.Service.ServiceName;
+        public override string Title => "Confirm Deleting " + this._controller.Service.ServiceName;
 
         public override bool OnCommit()
         {
