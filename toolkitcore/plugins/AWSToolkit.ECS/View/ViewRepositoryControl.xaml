@@ -162,10 +162,16 @@
                         </commonui:ToolkitDataGridWrapper.RowHeaderTemplate>
                         
                         <DataGrid.Columns>
-                            <DataGridTextColumn Width=".4*" Header="Tags" Binding="{Binding ImageTagsFlattened}"/>
-                            <DataGridTextColumn Width=".2*" Header="Digest" Binding="{Binding Digest}"/>
-                            <DataGridTextColumn Width=".1*" Header="Size (MiB)" Binding="{Binding Size}"/>
-                            <DataGridTextColumn Width=".2*" Header="Pushed at" Binding="{Binding PushedAt}"/>
+                            <DataGridTextColumn Width="300" Header="Tags" Binding="{Binding ImageTagsFlattened}"/>
+                            <DataGridTextColumn Width="500" Header="Digest" Binding="{Binding Digest}"/>
+                            <DataGridTextColumn Width="100" Header="Size (MiB)" Binding="{Binding Size}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Width="180" Header="Pushed at" Binding="{Binding PushedAt}"/>
                         </DataGrid.Columns>
 
                     </commonui:ToolkitDataGridWrapper>

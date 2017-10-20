@@ -9,6 +9,7 @@ namespace Amazon.AWSToolkit.ECS.Model
 {
     public class ImageDetailWrapper
     {
+        const int ONE_MEGABYTE = 1024 * 1024;
         private readonly ImageDetail _inner;
 
         public ImageDetailWrapper(ImageDetail inner)
@@ -41,7 +42,17 @@ namespace Amazon.AWSToolkit.ECS.Model
 
         public string Size
         {
-            get { return _inner?.ImageSizeInBytes.ToString() ?? ""; }
+            get
+            {
+                if (_inner == null)
+                    return "";
+
+                var size = (double) _inner.ImageSizeInBytes / ONE_MEGABYTE;
+                if (size < 0.01)
+                    return "< 0.01";
+
+                return size.ToString("N2");
+            }
         }
 
         public string PushedAt
