@@ -115,7 +115,7 @@
       </Button>
       
       <Button guid="guid_VSPackageCmdSet" id="cmdidPublishContainerToAWS" priority="0x0000" type="Button">
-        <Icon guid="guidImages" id="bmpPublishToAWSEB" />
+        <Icon guid="guidImages" id="bmpPublishToAWSECS" />
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -283,7 +283,7 @@
       inside a button definition. An important aspect of this declaration is that the element id
       must be the actual index (1-based) of the bitmap inside the bitmap strip. 
       -->
-      <Bitmap guid="guidImages" href="Resources\VsctImages_32bit.png" usedList="bmpAWSExplorer,bmpPublishToAWSEB,bmpRepublishToAWS,bmpDeployTemplate,bmpEstimateTemplateCost,bmpFormatTemplate,bmpTemplate,bmpPublishToAWSLambda,bmpCodeCommit" />
+      <Bitmap guid="guidImages" href="Resources\VsctImages_32bit.png" usedList="bmpAWSExplorer,bmpPublishToAWSEB,bmpRepublishToAWS,bmpDeployTemplate,bmpEstimateTemplateCost,bmpFormatTemplate,bmpTemplate,bmpPublishToAWSLambda,bmpCodeCommit,bmpPublishToAWSECS" />
 
     </Bitmaps>
 
@@ -515,6 +515,7 @@
       <IDSymbol name="bmpTemplate" value="7" />
       <IDSymbol name="bmpPublishToAWSLambda" value="8"/>
       <IDSymbol name="bmpCodeCommit" value="9"/>
+      <IDSymbol name="bmpPublishToAWSECS" value="10"/>
     </GuidSymbol>
     
     <!-- see comment at top of file regarding venusids.h; these are the two ids we need
