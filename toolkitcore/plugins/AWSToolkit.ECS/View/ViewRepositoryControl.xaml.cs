@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Navigation;
 using Amazon.AWSToolkit.ECS.Controller;
 using Amazon.AWSToolkit.ECS.Nodes;
+using Amazon.AWSToolkit.MobileAnalytics;
 using log4net;
 
 namespace Amazon.AWSToolkit.ECS.View
@@ -92,27 +94,35 @@ namespace Amazon.AWSToolkit.ECS.View
 
         private void ViewPushCommands_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_ctlPushCommands.Visibility == Visibility.Collapsed)
+            if (_ctlPushCommandsFlyover.Visibility == Visibility.Collapsed)
             {
-                _ctlPushCommands.Visibility = Visibility.Visible;
-                _pushCommandsButtonLabel = "Hide Push Commands";
+                _ctlPushCommandsFlyover.Visibility = Visibility.Visible;
+                _ctlViewHidePushCommands.Content = "Hide Push Commands";
             }
             else
             {
-                _ctlPushCommands.Visibility = Visibility.Collapsed;
-                _pushCommandsButtonLabel = "View Push Commands";
+                _ctlPushCommandsFlyover.Visibility = Visibility.Collapsed;
+                _ctlViewHidePushCommands.Content = "View Push Commands";
             }
-
-            NotifyPropertyChanged(PushCommandsButtonLabel);
         }
 
-        private string _pushCommandsButtonLabel = "View Push Commands";
-        public string PushCommandsButtonLabel
+        private void ECRDocumentationLink_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            get
+            LaunchBrowserToUrl(e.Uri);
+            e.Handled = true;
+        }
+
+        private void LaunchBrowserToUrl(Uri uri)
+        {
+            try
             {
-                return _pushCommandsButtonLabel;
+                ToolkitFactory.Instance.ShellProvider.OpenInBrowser(uri.ToString(), true);
+            }
+            catch (Exception ex)
+            {
+                LOGGER.Error("Failed to launch process to go to endpoint " + uri, ex);
             }
         }
+
     }
 }
