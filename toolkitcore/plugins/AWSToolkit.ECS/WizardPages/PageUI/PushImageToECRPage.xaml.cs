@@ -61,14 +61,20 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             this._ctlDeploymentOptionPicker.Items.Add
             (
-                new DeploymentOptionItem(Constants.DeployMode.DeployToECSCluster, "Deploy to an Amazon EC2 Container Service Cluster",
-                    "After building a Docker image with the dotnet and docker CLI tools the image will be deployed to an Amazon EC2 Container Service cluster.")
+                new DeploymentOptionItem(Constants.DeployMode.DeployToECSCluster, "Service on an ECS Cluster",
+                    "After building a Docker image with the dotnet and docker CLI tools the image will be deployed to an Amazon EC2 Container Service Cluster.")
             );
 
             this._ctlDeploymentOptionPicker.Items.Add
             (
-                new DeploymentOptionItem(Constants.DeployMode.PushOnly, "Push Docker image to Amazon EC2 Container Registry only",
-                    "This option will use the dotnet and docker CLI tools to publish the project and build a Docker image. The image will be pushed to Amazon EC2 Container Registry where it can later be deployed to other AWS services.")
+                new DeploymentOptionItem(Constants.DeployMode.ScheduleTask, "Scheduled Task on an ECS Cluster",
+                    "Deploy the application as a scheduled task running on an Amazon EC2 Container Service Cluster.")
+            );
+
+            this._ctlDeploymentOptionPicker.Items.Add
+            (
+                new DeploymentOptionItem(Constants.DeployMode.PushOnly, "Push only the Docker image to Amazon EC2 Container Registry",
+                    "The Docker image will be pushed to Amazon EC2 Container Registry. Afterwards you can choose how to run the Docker image.")
             );
 
             this._ctlDeploymentOptionPicker.SelectedIndex = 0;

@@ -1,0 +1,268 @@
+﻿<commonUi:BaseAWSUserControl x:Class="Amazon.AWSToolkit.ECS.WizardPages.PageUI.ScheduleTaskPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Amazon.AWSToolkit.ECS.WizardPages.PageUI"
+             mc:Ignorable="d"
+             xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             d:DesignHeight="400" d:DesignWidth="600">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid Margin="5,12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        
+        <Label
+                Grid.Row="1"
+                Grid.Column="0"
+                Margin="10,2,4,2"
+                VerticalAlignment="Center"
+                Style="{DynamicResource awsLabelBaseStyle}">
+            Schedule Rule:
+        </Label>
+
+        <ComboBox
+                Name="_ctlScheduleRule"
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="4,2,4,2"
+                SelectionChanged="_ctlScheduleRule_SelectionChanged"
+                Style="{DynamicResource awsComboBoxStyle}"/>
+
+        <TextBox
+                Name="_ctlNewScheduleRuleName"
+                Grid.Row="1"
+                Grid.Column="2"
+                Margin="4,2,4,2"
+                IsEnabled="False"
+                Visibility="Collapsed"
+                Style="{DynamicResource awsTextBoxStyle}"
+                Text="{Binding NewScheduleRule, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                />
+
+        <Label
+                Grid.Row="2"
+                Grid.Column="0"
+                Margin="10,2,4,2"
+                VerticalAlignment="Center"
+                Style="{DynamicResource awsLabelBaseStyle}">
+            Rule Target:
+        </Label>
+
+        <ComboBox
+                Name="_ctlTarget"
+                Grid.Row="2"
+                Grid.Column="1"
+                Margin="4,2,4,2"
+                SelectionChanged="_ctlTarget_SelectionChanged"
+                Style="{DynamicResource awsComboBoxStyle}"/>
+
+        <TextBox
+                Name="_ctlNewTarget"
+                Grid.Row="2"
+                Grid.Column="2"
+                Margin="4,20,4,2"
+                IsEnabled="False"
+                Visibility="Collapsed"
+                Style="{DynamicResource awsTextBoxStyle}"
+                Text="{Binding NewTarget, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                />
+
+        <TextBlock
+                Grid.Row="3"
+                Grid.Column="0"
+                Grid.ColumnSpan="3"
+                Margin="12,7,4,2"
+                FontStyle="Italic"
+                Style="{DynamicResource awsInfoTextStyle}"
+                TextWrapping="Wrap">
+                A schedule rule has a collection of targets. Each target points to an 
+                AWS resource to invoke for the rules scheduled interval. The target
+                selected here will point to the new task definition created as part 
+                of this deployment.
+        </TextBlock>
+
+
+        <Label
+                Grid.Row="4"
+                Grid.Column="0"
+                Margin="10,5,4,2"
+                VerticalAlignment="Top"
+                Style="{DynamicResource awsLabelBaseStyle}">
+            Schedule Rule Type:
+        </Label>
+
+        <StackPanel Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal">
+            <RadioButton GroupName="RuleType" Margin="4,5,4,2"
+                Click="RunType_Click"
+                Name="_ctlRunTypeFixedInterval"
+                Style="{DynamicResource awsRadioButtonBaseStyle}"
+                IsChecked="{Binding IsRunTypeFixedInterval}"
+                >
+                Run at Fixed Interval
+            </RadioButton>
+            <RadioButton GroupName="RuleType" Margin="4,2,4,2"
+                Click="RunType_Click"
+                Name="_ctlRunTypeCronExpression"
+                Style="{DynamicResource awsRadioButtonBaseStyle}"
+                IsChecked="{Binding IsRunTypeCronExpression}"
+                >
+                Cron expression
+            </RadioButton>
+        </StackPanel>
+
+        <Label
+                Visibility="{Binding FixedIntervalVisiblity, Mode=OneWay}"
+                Grid.Row="5"
+                Grid.Column="0"
+                Margin="30,2,4,2"
+                VerticalAlignment="Top"
+                Style="{DynamicResource awsLabelBaseStyle}">
+            Run at fixed interval:
+        </Label>
+        <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal"
+            Visibility="{Binding FixedIntervalVisiblity, Mode=OneWay}"
+            >
+            <TextBox
+                Name="_ctlRunIntervalValue"
+                Margin="4,2,4,2"
+                Width="75"
+                Style="{DynamicResource awsTextBoxStyle}"
+                Text="{Binding RunIntervalValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                />
+
+            <ComboBox
+                Name="_ctlRunIntervalUnit"
+                Margin="16,2,4,2"
+                Style="{DynamicResource awsComboBoxStyle}"/>
+        </StackPanel>
+
+        <Label
+                Grid.Row="5"
+                Grid.Column="0"
+                Margin="30,2,4,2"
+                VerticalAlignment="Top"
+                Visibility="{Binding CronExpressionVisiblity, Mode=OneWay}"
+                Style="{DynamicResource awsLabelBaseStyle}">
+            Cron Expression:
+        </Label>
+
+
+        <StackPanel Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal"
+            Visibility="{Binding CronExpressionVisiblity, Mode=OneWay}"
+            >
+
+            <TextBox
+            Name="_ctlCronExpression"
+            Margin="4,2,4,2"
+            Grid.Row="5" 
+            Grid.Column="1"
+            Width="150"
+            Style="{DynamicResource awsTextBoxStyle}"
+            Text="{Binding CronExpression, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            />
+            
+            <TextBlock
+                Margin="6,4,4,2"
+                Style="{DynamicResource awsInfoTextStyle}"
+                TextWrapping="Wrap">
+                Learn more about
+            </TextBlock>
+            <TextBlock
+                Margin="3,10,0,5"
+                Style="{DynamicResource awsTextBlockBaseStyle}"
+                                    >
+                <Hyperlink NavigateUri="http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html" RequestNavigate="onCronLearnMoreClick">
+                    <TextBlock
+                            Style="{DynamicResource awsTextBlockBoldStyle}"
+                            Text="Cron syntax" />
+                </Hyperlink>
+            </TextBlock>
+
+        </StackPanel>
+
+        <Label
+                Grid.Row="6"
+                Grid.Column="0"
+                Margin="10,2,4,2"
+                VerticalAlignment="Center"
+                Style="{DynamicResource awsLabelBaseStyle}">
+            Number of Tasks:
+        </Label>
+
+        <TextBox
+                Name="_ctlDesiredCount"
+                Grid.Row="6"
+                Grid.Column="1"
+                Margin="4,2,4,2"
+                Width="100"
+                HorizontalAlignment="Left"
+                Style="{DynamicResource awsTextBoxStyle}"
+                Text="{Binding DesiredCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                />
+
+
+
+        <Label
+                Grid.Row="7"
+                Grid.ColumnSpan="3"
+                Margin="0,16,0,-12"
+                Style="{DynamicResource awsWizardGroupSubHeaderStyle}" >
+            CloudWatch Events IAM role
+        </Label>
+
+        <TextBlock
+                Grid.Row="8"
+                Grid.Column="0"
+                Grid.ColumnSpan="3"
+                Margin="12,7,4,2"
+                FontStyle="Italic"
+                Style="{DynamicResource awsInfoTextStyle}"
+                TextWrapping="Wrap">
+                CloudWatch Events makes calls to Amazon ECS to run tasks on your behalf, and it uses this IAM role to get the appropriate permissions to do so. If you do not have the ecsEventsRole already, we can create one for you.
+        </TextBlock>
+
+        <Label
+                Grid.Row="9"
+                Grid.Column="0"
+                Margin="10,2,4,2"
+                VerticalAlignment="Center"
+                Style="{DynamicResource awsLabelBaseStyle}">
+            CloudWatch Events Role :
+        </Label>
+
+        <ComboBox
+                Name="_ctlCloudWatchEventIAMRole"
+                Grid.Row="9"
+                Grid.Column="1"
+                Margin="4,2,4,2"
+                SelectionChanged="_ctlCloudWatchEventIAMRole_SelectionChanged"
+                Style="{DynamicResource awsComboBoxStyle}"/>
+
+
+
+    </Grid>
+</commonUi:BaseAWSUserControl>

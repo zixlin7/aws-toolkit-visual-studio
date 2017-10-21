@@ -25,8 +25,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
     /// </summary>
     public partial class ECSServicePage : BaseAWSUserControl, INotifyPropertyChanged
     {
-        const string CREATE_NEW_TEXT = "Create New Service";
-
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ECSServicePage));
 
         public ECSServicePageController PageController { get; private set; }
