@@ -19,6 +19,7 @@ using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using static Amazon.AWSToolkit.ECS.WizardPages.ECSWizardUtils;
 using System.Windows.Navigation;
 using System.Diagnostics;
+using Amazon.IdentityManagement.Model;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 {
@@ -64,6 +65,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
+        public void InitializeWithNewCluster()
+        {
+            UpdateExistingResources();
+        }
+
         public string ScheduleRule
         {
             get { return this._ctlScheduleRule.Text; }
@@ -73,6 +79,29 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         private void _ctlScheduleRule_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             NotifyPropertyChanged("ScheduleRule");
+            string ruleName = null;
+            if (e.AddedItems.Count == 1)
+                ruleName = e.AddedItems[0] as string;
+
+            UpdateResourcesForRuleSelectionChange(ruleName);
+            if (this._ctlScheduleRule.SelectedIndex != 0)
+            {
+                this._ctlNewScheduleRuleName.Visibility = Visibility.Collapsed;
+                this._ctlNewScheduleRuleName.IsEnabled = false;
+
+                this._ctlTarget.IsEnabled = true;
+            }
+            else
+            {
+                this._ctlNewScheduleRuleName.Visibility = Visibility.Visible;
+                this._ctlNewScheduleRuleName.IsEnabled = true;
+                this._ctlNewScheduleRuleName.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
+
+                this._ctlNewTarget.Visibility = Visibility.Visible;
+                this._ctlNewTarget.IsEnabled = true;
+                this._ctlTarget.IsEnabled = false;
+                this._ctlNewTarget.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
+            }
         }
 
         public bool CreateNewScheduleRule
@@ -173,6 +202,17 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         private void _ctlTarget_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             NotifyPropertyChanged("Target");
+            if (this._ctlTarget.SelectedIndex != 0)
+            {
+                this._ctlNewTarget.Visibility = Visibility.Collapsed;
+                this._ctlNewTarget.IsEnabled = false;
+            }
+            else
+            {
+                this._ctlNewTarget.Visibility = Visibility.Visible;
+                this._ctlNewTarget.IsEnabled = true;
+                this._ctlNewTarget.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
+            }
         }
 
         public bool CreateNewTarget
@@ -233,6 +273,118 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             this.FixedIntervalVisiblity = this._ctlRunTypeFixedInterval.IsChecked.GetValueOrDefault() ? Visibility.Visible : Visibility.Collapsed;
             this.CronExpressionVisiblity = this._ctlRunTypeCronExpression.IsChecked.GetValueOrDefault() ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        CloudWatchEventHelper.ScheduleRulesState _scheduleRulesState;
+        private void UpdateExistingResources()
+        {
+            this._ctlCloudWatchEventIAMRole.Items.Clear();
+            this._ctlCloudWatchEventIAMRole.Items.Add(CREATE_NEW_TEXT);
+            this._ctlCloudWatchEventIAMRole.SelectedIndex = 0;
+
+            this._ctlScheduleRule.Items.Clear();
+            this._ctlScheduleRule.Items.Add(CREATE_NEW_TEXT);
+
+            try
+            {
+                Task.Run<List<string>>(() =>
+                {
+                    using (var client = CreateIAMClient(this.PageController.HostingWizard))
+                    {
+                        var roles = new List<string>();
+                        var response = new ListRolesResponse();
+                        do
+                        {
+                            var request = new ListRolesRequest() { Marker = response.Marker };
+                            response = client.ListRoles(request);
+
+                            var validRoles = RolePolicyFilter.FilterByAssumeRoleServicePrincipal(response.Roles, "events.amazonaws.com");
+                            foreach (var role in validRoles)
+                            {
+                                roles.Add(role.RoleName);
+                            }
+                        } while (!string.IsNullOrEmpty(response.Marker));
+                        return roles;
+                    }
+                }).ContinueWith(t =>
+                {
+                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((System.Action)(() =>
+                    {
+                        foreach (var item in t.Result.OrderBy(x => x))
+                        {
+                            this._ctlCloudWatchEventIAMRole.Items.Add(item);
+                        }
+
+                        var previousValue = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.CloudWatchEventIAMRole] as string;
+                        if (!string.IsNullOrWhiteSpace(previousValue) && t.Result.Contains(previousValue))
+                            this._ctlCloudWatchEventIAMRole.SelectedItem = previousValue;
+                        else
+                        {
+                            this._ctlCloudWatchEventIAMRole.SelectedIndex = this._ctlCloudWatchEventIAMRole.Items.Count > 1 ? 1 : 0;
+                        }
+                    }));
+                });
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Error refreshing existing IAM Roles.", e);
+            }
+
+            try
+            {
+                Task task1 = Task.Run(() =>
+                {
+                    var items = new List<string>();
+                    using (var cweClient = CreateCloudWatchEventsClient(PageController.HostingWizard))
+                    {
+                        this._scheduleRulesState = CloudWatchEventHelper.FetchScheduleRuleState(cweClient);
+                    }
+
+                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                    {
+                        foreach (var ruleName in this._scheduleRulesState.RuleNames.OrderBy(x => x))
+                        {
+                            this._ctlScheduleRule.Items.Add(ruleName);
+                        }
+
+
+                        var previousValue = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.ScheduleTaskRuleName] as string;
+                        if (!string.IsNullOrWhiteSpace(previousValue) && items.Contains(previousValue))
+                            this._ctlScheduleRule.SelectedItem = previousValue;
+                        else
+                        {
+                            this._ctlScheduleRule.SelectedIndex = this._ctlScheduleRule.Items.Count > 1 ? 1 : 0;
+                        }
+                    }));
+                });
+
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Error refreshing existing CloudWatch Event rules.", e);
+            }
+        }
+
+        public void UpdateResourcesForRuleSelectionChange(string ruleName)
+        {
+            this._ctlTarget.Items.Clear();
+            this._ctlTarget.Items.Add(CREATE_NEW_TEXT);
+
+            if (string.IsNullOrWhiteSpace(ruleName) || string.Equals(ruleName, CREATE_NEW_TEXT))
+            {
+                this._ctlTarget.SelectedIndex = 0;
+                return;
+            }
+
+            var targets = this._scheduleRulesState.GetRuleTargets(ruleName);
+
+            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((System.Action)(() =>
+            {
+                foreach (var item in targets.OrderBy(x => x.Id))
+                {
+                    this._ctlTarget.Items.Add(item.Id);
+                }
+            }));
         }
     }
 }

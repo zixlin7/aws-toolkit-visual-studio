@@ -84,7 +84,7 @@
                 Name="_ctlNewTarget"
                 Grid.Row="2"
                 Grid.Column="2"
-                Margin="4,20,4,2"
+                Margin="4,2,4,2"
                 IsEnabled="False"
                 Visibility="Collapsed"
                 Style="{DynamicResource awsTextBoxStyle}"

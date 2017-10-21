@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Amazon.CloudWatchEvents;
 using Amazon.EC2;
 using Amazon.ECS;
 using Amazon.ElasticLoadBalancingV2;
@@ -52,6 +53,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages
             var region = hostWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
 
             var client = account.CreateServiceClient<AmazonEC2Client>(region.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME));
+            return client;
+        }
+
+        public static IAmazonCloudWatchEvents CreateCloudWatchEventsClient(IAWSWizard hostWizard)
+        {
+            var account = hostWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
+            var region = hostWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+
+            var client = account.CreateServiceClient<AmazonCloudWatchEventsClient>(region.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_EVENT_SERVICE_NAME));
             return client;
         }
     }

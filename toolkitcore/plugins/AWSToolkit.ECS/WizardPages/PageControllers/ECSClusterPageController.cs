@@ -87,7 +87,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DeploymentMode))
             {
                 var mode = (Constants.DeployMode)HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
-                if (mode != Constants.DeployMode.DeployToECSCluster)
+                if (mode != Constants.DeployMode.DeployToECSCluster && mode != Constants.DeployMode.ScheduleTask)
                 {
                     return true;
                 }
@@ -102,7 +102,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DeploymentMode))
             {
                 var mode = (Constants.DeployMode)HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
-                return mode == Constants.DeployMode.DeployToECSCluster;
+                return mode == Constants.DeployMode.DeployToECSCluster || mode == Constants.DeployMode.ScheduleTask;
             }
 
             return false;

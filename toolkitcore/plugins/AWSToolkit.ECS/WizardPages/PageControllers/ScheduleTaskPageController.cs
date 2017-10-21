@@ -22,6 +22,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public IAWSWizard HostingWizard { get; set; }
 
+        public string Cluster { get; private set; }
+
         public string PageDescription
         {
             get
@@ -60,6 +62,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
         {
+            var cluster = HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string;
+            if (!string.Equals(cluster, this.Cluster))
+            {
+                this.Cluster = cluster;
+                this._pageUI.InitializeWithNewCluster();
+            }
+
             TestForwardTransitionEnablement();
         }
 
