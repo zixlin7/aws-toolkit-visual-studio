@@ -113,11 +113,15 @@
     <Compile Include="Controller\ViewRepositoryController.cs" />
     <Compile Include="Controller\ViewTaskDefinitionController.cs" />
     <Compile Include="DeploymentWorkers\BaseWorker.cs" />
-    <Compile Include="DeploymentWorkers\DeployToClusterWorker.cs" />
+    <Compile Include="DeploymentWorkers\DeployScheduleTaskWorker.cs" />
+    <Compile Include="DeploymentWorkers\DeployServiceWorker.cs" />
     <Compile Include="DeploymentWorkers\ECSToolLogger.cs" />
     <Compile Include="DeploymentWorkers\IDockerDeploymentHelper.cs" />
     <Compile Include="DeploymentWorkers\PushImageToECRWorker.cs" />
     <Compile Include="ECSActivator.cs" />
+    <Compile Include="ECSTools\Commands\DeployScheduledTaskCommand.cs" />
+    <Compile Include="ECSTools\Commands\CommandProperties.cs" />
+    <Compile Include="ECSTools\Commands\ECSTaskDefinitionUtilities.cs" />
     <Compile Include="ECSTools\Constants.cs" />
     <Compile Include="ECSTools\RoleHelper.cs" />
     <Compile Include="Model\ClusterWrapper.cs" />
@@ -143,7 +147,7 @@
     <Compile Include="Nodes\RootViewModel.cs" />
     <Compile Include="ECSTools\AbstractCLIWrapper.cs" />
     <Compile Include="ECSTools\Commands\BaseCommand.cs" />
-    <Compile Include="ECSTools\Commands\DeployCommand.cs" />
+    <Compile Include="ECSTools\Commands\DeployServiceCommand.cs" />
     <Compile Include="ECSTools\Commands\ICommand.cs" />
     <Compile Include="ECSTools\Commands\PushDockerImageCommand.cs" />
     <Compile Include="ECSTools\DockerCLIWrapper.cs" />

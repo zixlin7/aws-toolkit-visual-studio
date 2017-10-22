@@ -1,4 +1,5 @@
 ﻿using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
 using Amazon.EC2;
 using Amazon.EC2.Model;
@@ -17,7 +18,7 @@ using System.Threading;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
-    public class DeployToClusterWorker : BaseWorker
+    public class DeployServiceWorker : BaseWorker
     {
         IAmazonECR _ecrClient;
         IAmazonECS _ecsClient;
@@ -25,7 +26,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         IAmazonElasticLoadBalancingV2 _elbClient;
         IAmazonIdentityManagementService _iamClient;
 
-        public DeployToClusterWorker(IDockerDeploymentHelper helper,
+        public DeployServiceWorker(IDockerDeploymentHelper helper,
             IAmazonECR ecrClient,
             IAmazonECS ecsClient,
             IAmazonEC2 ec2Client,
@@ -54,7 +55,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
 
 
-                var command = new DeployCommand(new ECSToolLogger(this.Helper), state.WorkingDirectory, new string[0])
+                var command = new DeployServiceCommand(new ECSToolLogger(this.Helper), state.WorkingDirectory, new string[0])
                 {
                     Profile = state.Account.Name,
                     Region = state.Region.SystemName,
@@ -63,77 +64,54 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     ECRClient = this._ecrClient,
                     ECSClient = this._ecsClient,
 
-                    Configuration = state.Configuration,
-                    DockerImageTag = state.DockerImageTag,
-
-                    ECSTaskDefinition = state.TaskDefinition,
-                    ECSContainer = state.Container,
-                    ContainerMemoryHardLimit = state.MemoryHardLimit,
-                    ContainerMemorySoftLimit = state.MemorySoftLimit,
-
-                    ECSCluster = state.Cluster,
-                    ECSService = state.Service,
-                    DesiredCount = state.DesiredCount,
-                    DeploymentMaximumPercent = state.DeploymentMaximumPercent,
-                    DeploymentMinimumHealthyPercent = state.DeploymentMinimumHealthyPercent,
+                    PushDockerImageProperties = ConvertToPushDockerImageProperties(state.HostingWizard),
+                    TaskDefinitionProperties = ConvertToTaskDefinitionProperties(state.HostingWizard),
+                    DeployServiceProperties = ConvertToDeployServiceProperties(state.HostingWizard),
+                    ClusterProperties = ConvertToClusterProperties(state.HostingWizard),
 
                     PersistConfigFile = state.PersistConfigFile
                 };
 
-                if (state.SelectedRole != null)
+                if (state.HostingWizard[PublishContainerToAWSWizardProperties.TaskRole] is Role)
                 {
-                    command.TaskDefinitionRole = state.SelectedRole.Arn;
+                    command.TaskDefinitionProperties.TaskDefinitionRole = ((Role)state.HostingWizard[PublishContainerToAWSWizardProperties.TaskRole]).Arn;
                 }
-                else if(state.SelectedManagedPolicy != null)
+                else if(state.HostingWizard[PublishContainerToAWSWizardProperties.TaskRoleManagedPolicy] != null)
                 {
-                    command.TaskDefinitionRole = this.CreateRole(state);
-                    this.Helper.AppendUploadStatus(string.Format("Created IAM role {0} with managed policy {1}", command.TaskDefinitionRole, state.SelectedManagedPolicy.PolicyName));
+                    command.TaskDefinitionProperties.TaskDefinitionRole = this.CreateRole(state);
+                    this.Helper.AppendUploadStatus(string.Format("Created IAM role {0} with managed policy {1}", 
+                        command.TaskDefinitionProperties.TaskDefinitionRole, 
+                        ((ManagedPolicy)state.HostingWizard[PublishContainerToAWSWizardProperties.TaskRoleManagedPolicy]).PolicyName));
+
                     this.Helper.AppendUploadStatus("Waiting for new IAM Role to propagate to AWS regions");
                     Thread.Sleep(SLEEP_TIME_FOR_ROLE_PROPOGATION);
                 }
 
                 if (elbChanges.CreatedServiceIAMRole)
                 {
-                    command.ELBServiceRole = elbChanges.ServiceIAMRole;
+                    command.DeployServiceProperties.ELBServiceRole = elbChanges.ServiceIAMRole;
                 }
                 else
                 {
-                    command.ELBServiceRole = state.ServiceIAMRole;
+                    command.DeployServiceProperties.ELBServiceRole = state.HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] as string;
                 }
 
-                if (state.CreateNewTargetGroup)
+                if (state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup] is bool &&
+                    ((bool)state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup]))
                 {
-                    command.ELBTargetGroup = elbChanges.TargetGroup;
+                    command.DeployServiceProperties.ELBTargetGroup = elbChanges.TargetGroup;
 
                     // TODO Figure out container port
-                    command.ELBContainerPort = 80;
+                    command.DeployServiceProperties.ELBContainerPort = 80;
                 }
-                else if(!string.IsNullOrEmpty(state.TargetGroup))
+                else if(state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] != null && 
+                    !string.IsNullOrEmpty(state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup].ToString()))
                 {
-                    command.ELBTargetGroup = state.TargetGroup;
+                    command.DeployServiceProperties.ELBTargetGroup = 
+                        state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup].ToString();
 
                     // TODO Figure out container port
-                    command.ELBContainerPort = 80;
-                }
-
-                if (state.PortMapping != null && state.PortMapping.Count > 0)
-                {
-                    string[] mappings = new string[state.PortMapping.Count];
-                    for (int i = 0; i < mappings.Length; i++)
-                    {
-                        mappings[i] = $"{state.PortMapping[i].HostPort}:{state.PortMapping[i].ContainerPort}";
-                    }
-                    command.PortMappings = mappings;
-                }
-
-                if (state.EnvironmentVariables != null && state.EnvironmentVariables.Count > 0)
-                {
-                    var variables = new Dictionary<string, string>();
-                    for (int i = 0; i < state.EnvironmentVariables.Count; i++)
-                    {
-                        variables[state.EnvironmentVariables[i].Variable] = state.EnvironmentVariables[i].Value;
-                    }
-                    command.EnvironmentVariables = variables;
+                    command.DeployServiceProperties.ELBContainerPort = 80;
                 }
 
                 if (command.ExecuteAsync().Result)
@@ -163,18 +141,19 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
         private string CreateRole(State state)
         {
-            var newRole = IAMUtilities.CreateRole(this._iamClient, "ecs_execution_" + state.TaskDefinition, Constants.ECS_TASKS_ASSUME_ROLE_POLICY);
+            var newRole = IAMUtilities.CreateRole(this._iamClient, "ecs_execution_" + state.HostingWizard[PublishContainerToAWSWizardProperties.TaskDefinition], Constants.ECS_TASKS_ASSUME_ROLE_POLICY);
 
             this.Helper.AppendUploadStatus("Created IAM Role {0}", newRole.RoleName);
 
-            if (state.SelectedManagedPolicy != null)
+            var policy = state.HostingWizard[PublishContainerToAWSWizardProperties.TaskRoleManagedPolicy] as ManagedPolicy;
+            if (policy != null)
             {
                 this._iamClient.AttachRolePolicy(new AttachRolePolicyRequest
                 {
                     RoleName = newRole.RoleName,
-                    PolicyArn = state.SelectedManagedPolicy.Arn
+                    PolicyArn = policy.Arn
                 });
-                this.Helper.AppendUploadStatus("Attach policy {0} to role {1}", state.SelectedManagedPolicy.PolicyName, newRole.RoleName);
+                this.Helper.AppendUploadStatus("Attach policy {0} to role {1}", policy.PolicyName, newRole.RoleName);
             }
 
             return newRole.Arn;
@@ -213,7 +192,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
         private string GenerateIAMRoleName(State state)
         {
-            var baseName = "ecsServiceRole" + "-" + state.Cluster;
+            var baseName = "ecsServiceRole" + "-" + state.HostingWizard[PublishContainerToAWSWizardProperties.Cluster];
 
             var existingRoleNames = new HashSet<string>();
             var response = new ListRolesResponse();
@@ -240,13 +219,15 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             var changeTracker = new ConfigureLoadBalancerChangeTracker();
             try
             {
-                if (!state.ShouldConfigureELB)
+                if (!(state.HostingWizard[PublishContainerToAWSWizardProperties.ShouldConfigureELB] is bool) &&
+                    !((bool)state.HostingWizard[PublishContainerToAWSWizardProperties.ShouldConfigureELB]))
                 {
                     changeTracker.Success = true;
                     return changeTracker;
                 }
 
-                if (state.CreateNewIAMRole)
+                if (state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole] is bool &&
+                    ((bool)state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole]))
                 {
                     var newRoleName = GenerateIAMRoleName(state);
                     CreateRoleRequest request = new CreateRoleRequest
@@ -269,11 +250,12 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 }
                 else
                 {
-                    changeTracker.ServiceIAMRole = state.ServiceIAMRole;
+                    changeTracker.ServiceIAMRole = state.HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] as string;
                 }
 
-                var loadBalancerArn = state.LoadBalancer;
-                if (state.CreateNewLoadBalancer)
+                var loadBalancerArn = state.HostingWizard[PublishContainerToAWSWizardProperties.LoadBalancer] as string;
+                if (state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewLoadBalancer] is bool &&
+                    ((bool)state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewLoadBalancer]))
                 {
                     changeTracker.CreatedSecurityGroup = true;
                     changeTracker.SecurityGroup = CreateSecurityGroup(state);
@@ -283,7 +265,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     this.Helper.AppendUploadStatus("Creating Application Load Balancer");
                     loadBalancerArn = this._elbClient.CreateLoadBalancer(new CreateLoadBalancerRequest
                     {
-                        Name = state.LoadBalancer,
+                        Name = loadBalancerArn,
                         IpAddressType = IpAddressType.Ipv4,
                         Scheme = LoadBalancerSchemeEnum.InternetFacing,
                         Type = LoadBalancerTypeEnum.Application,
@@ -324,21 +306,23 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 };
 
 
-                string listenerArn = state.ListenerArn;
-                if (state.CreateNewListenerPort)
+                string listenerArn = state.HostingWizard[PublishContainerToAWSWizardProperties.ListenerArn] as string;
+                if (state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewListenerPort] is bool &&
+                    ((bool)state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewListenerPort]))
                 {
                     string targetArn;
-                    if (string.Equals(state.NewPathPattern, "/"))
+                    if (state.HostingWizard[PublishContainerToAWSWizardProperties.NewPathPattern] != null && 
+                        string.Equals(state.HostingWizard[PublishContainerToAWSWizardProperties.NewPathPattern].ToString(), "/"))
                     {
                         this.Helper.AppendUploadStatus("Creating TargetGroup for ELB Listener");
                         targetArn = this._elbClient.CreateTargetGroup(new CreateTargetGroupRequest
                         {
-                            Name = makeTargetGroupNameUnique(state.TargetGroup),
+                            Name = makeTargetGroupNameUnique(state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] as string),
                             Port = 80,
                             Protocol = ProtocolEnum.HTTP,
                             TargetType = TargetTypeEnum.Instance,
-                            HealthCheckPath = state.HealthCheckPath,
-                            VpcId = state.VpcId
+                            HealthCheckPath = state.HostingWizard[PublishContainerToAWSWizardProperties.HealthCheckPath] as string,
+                            VpcId = state.HostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string
                         }).TargetGroups[0].TargetGroupArn;
 
                         changeTracker.CreateTargetGroup = true;
@@ -350,12 +334,12 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                         this.Helper.AppendUploadStatus("Creating default TargetGroup for ELB Listener");
                         targetArn = this._elbClient.CreateTargetGroup(new CreateTargetGroupRequest
                         {
-                            Name = makeTargetGroupNameUnique("Default-ECS-" + state.Cluster),
+                            Name = makeTargetGroupNameUnique("Default-ECS-" + state.HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string),
                             Port = 80,
                             Protocol = ProtocolEnum.HTTP,
                             TargetType = TargetTypeEnum.Instance,
                             HealthCheckPath = "/",
-                            VpcId = state.VpcId
+                            VpcId = state.HostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string
                         }).TargetGroups[0].TargetGroupArn;
 
                         changeTracker.CreateDefaulTargetGroup = true;
@@ -363,11 +347,11 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                         this.Helper.AppendUploadStatus("Default Target Group ARN:" + targetArn);
                     }
 
-                    this.Helper.AppendUploadStatus("Creating ELB Listener for port " + state.NewListenerPort);
+                    this.Helper.AppendUploadStatus("Creating ELB Listener for port " + state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewListenerPort]);
                     listenerArn = this._elbClient.CreateListener(new CreateListenerRequest
                     {
                         LoadBalancerArn = loadBalancerArn,
-                        Port = state.NewListenerPort,
+                        Port = (int)state.HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort],
                         Protocol = ProtocolEnum.HTTP,
                         DefaultActions = new List<ElasticLoadBalancingV2.Model.Action>
                     {
@@ -387,17 +371,19 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 }
 
                 // elbTargetGroup could be already set as the default target for the listener
-                if (state.CreateNewTargetGroup && changeTracker.TargetGroup == null)
+                if (state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup] is bool &&
+                    ((bool)state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup]) &&
+                    changeTracker.TargetGroup == null)
                 {
                     this.Helper.AppendUploadStatus("Creating TargetGroup for ELB Listener");
                     changeTracker.TargetGroup = this._elbClient.CreateTargetGroup(new CreateTargetGroupRequest
                     {
-                        Name = makeTargetGroupNameUnique(state.TargetGroup),
+                        Name = makeTargetGroupNameUnique(state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] as string),
                         Port = 80,
                         Protocol = ProtocolEnum.HTTP,
                         TargetType = TargetTypeEnum.Instance,
-                        HealthCheckPath = state.HealthCheckPath,
-                        VpcId = state.VpcId
+                        HealthCheckPath = state.HostingWizard[PublishContainerToAWSWizardProperties.HealthCheckPath] as string,
+                        VpcId = state.HostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string
                     }).TargetGroups[0].TargetGroupArn;
                     this.Helper.AppendUploadStatus("New Target Group ARN:" + changeTracker.TargetGroup);
                     changeTracker.CreateTargetGroup = true;
@@ -415,7 +401,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                         }
                     }
 
-                    var pathPattern = state.NewPathPattern;
+                    var pathPattern = state.HostingWizard[PublishContainerToAWSWizardProperties.NewPathPattern] as string;
                     if (!pathPattern.EndsWith("*"))
                     {
                         pathPattern += "*";
@@ -466,7 +452,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             this.Helper.AppendUploadStatus("Determing subnets for new Application Load Balancer");
             var allSubnets = this._ec2Client.DescribeSubnets(new DescribeSubnetsRequest
             {
-                Filters = new List<Filter> { new Filter { Name = "vpc-id", Values = new List<string> { state.VpcId } } }
+                Filters = new List<Filter> { new Filter { Name = "vpc-id", Values = new List<string> { state.HostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string } } }
             }).Subnets;
 
             var perZones = new Dictionary<string, Subnet>();
@@ -493,12 +479,12 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             this.Helper.AppendUploadStatus("Determining security groups of EC2 instances in cluster");
             var containerInstanceArns = _ecsClient.ListContainerInstances(new ListContainerInstancesRequest
             {
-                Cluster = state.Cluster
+                Cluster = state.HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string
             }).ContainerInstanceArns;
 
             var containerInstances = _ecsClient.DescribeContainerInstances(new DescribeContainerInstancesRequest
             {
-                Cluster = state.Cluster,
+                Cluster = state.HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string,
                 ContainerInstances = containerInstanceArns
             }).ContainerInstances;
 
@@ -547,10 +533,10 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             this.Helper.AppendUploadStatus("Fetching existing security groups to determine a new unique security group name");
             var existingSecurityGroups = this._ec2Client.DescribeSecurityGroups(new DescribeSecurityGroupsRequest
             {
-                Filters = new List<Filter> { new Filter { Name = "vpc-id", Values = new List<string> { state.VpcId } } }
+                Filters = new List<Filter> { new Filter { Name = "vpc-id", Values = new List<string> { state.HostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string } } }
             }).SecurityGroups;
 
-            var baseSecurityGroupName = "ecs-" + state.Cluster + "-load-balancer";
+            var baseSecurityGroupName = "ecs-" + state.HostingWizard[PublishContainerToAWSWizardProperties.Cluster] + "-load-balancer";
             string securityGroupName = null;
             for (int i = 1; true; i++)
             {
@@ -562,9 +548,9 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             this.Helper.AppendUploadStatus("Creating security group " + securityGroupName);
             var groupId = this._ec2Client.CreateSecurityGroup(new CreateSecurityGroupRequest
             {
-                VpcId = state.VpcId,
+                VpcId = state.HostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string,
                 GroupName = securityGroupName,
-                Description = "Load Balancer create for the ECS Cluster " + state.Cluster
+                Description = "Load Balancer create for the ECS Cluster " + state.HostingWizard[PublishContainerToAWSWizardProperties.Cluster]
             }).GroupId;
 
             this._ec2Client.CreateTags(new CreateTagsRequest
@@ -573,7 +559,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 Tags = new List<EC2.Model.Tag> { new EC2.Model.Tag { Key = Constants.WIZARD_CREATE_TAG_KEY, Value = Constants.WIZARD_CREATE_TAG_VALUE } }
             });
 
-            this.Helper.AppendUploadStatus("Authorizing access to port " + state.NewListenerPort + " for CidrIp 0.0.0.0/0");
+            this.Helper.AppendUploadStatus("Authorizing access to port " + state.HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort] + " for CidrIp 0.0.0.0/0");
             this._ec2Client.AuthorizeSecurityGroupIngress(new AuthorizeSecurityGroupIngressRequest
             {
                 GroupId = groupId,
@@ -581,8 +567,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 {
                     new IpPermission
                     {
-                        FromPort = state.NewListenerPort,
-                        ToPort = state.NewListenerPort,
+                        FromPort = (int)state.HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort],
+                        ToPort = (int)state.HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort],
                         IpProtocol = "tcp",
                         Ipv4Ranges = new List<IpRange>{ new IpRange {CidrIp = "0.0.0.0/0" } }
                     }
@@ -594,7 +580,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
         private void OpenListenerPort(State state, ConfigureLoadBalancerChangeTracker changes)
         {
-            var loadBalancerArn = changes.CreatedLoadBalancer ? changes.LoadBalancer : state.LoadBalancer;
+            var loadBalancerArn = changes.CreatedLoadBalancer ? changes.LoadBalancer : state.HostingWizard[PublishContainerToAWSWizardProperties.LoadBalancer] as string;
             var loadBalancers = this._elbClient.DescribeLoadBalancers(new DescribeLoadBalancersRequest { LoadBalancerArns = new List<string> { loadBalancerArn } }).LoadBalancers;
             if (loadBalancers.Count != 1)
                 return;
@@ -603,7 +589,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             changes.SecurityGroup = loadBalancer.SecurityGroups[0];
             try
             {
-                this.Helper.AppendUploadStatus("Authorizing access to port " + state.NewListenerPort + " for CidrIp 0.0.0.0/0");
+                this.Helper.AppendUploadStatus("Authorizing access to port " + state.HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort] + " for CidrIp 0.0.0.0/0");
                 this._ec2Client.AuthorizeSecurityGroupIngress(new AuthorizeSecurityGroupIngressRequest
                 {
                     GroupId = loadBalancer.SecurityGroups[0],
@@ -611,15 +597,15 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     {
                         new IpPermission
                         {
-                            FromPort = state.NewListenerPort,
-                            ToPort = state.NewListenerPort,
+                            FromPort = (int)state.HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort],
+                            ToPort = (int)state.HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort],
                             IpProtocol = "tcp",
                             Ipv4Ranges = new List<IpRange>{ new IpRange {CidrIp = "0.0.0.0/0" } }
                         }
                     }
                 });
 
-                changes.AuthorizedListenerPort = state.NewListenerPort;
+                changes.AuthorizedListenerPort = (int)state.HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort];
             }
             catch(Exception e)
             {
@@ -793,41 +779,11 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         {
             public AccountViewModel Account { get; set; }
             public RegionEndPointsManager.RegionEndPoints Region { get; set; }
-
-            public string Configuration { get; set; }
             public string WorkingDirectory { get; set; }
-            public string DockerImageTag { get; set; }
-
-            public string TaskDefinition { get; set; }
-            public string Container { get; set; }
-            public int? MemoryHardLimit { get; set; }
-            public int? MemorySoftLimit { get; set; }
-            public IList<PortMappingItem> PortMapping { get; set; }
-            public IList<EnvironmentVariableItem> EnvironmentVariables { get; set; }
-            public Amazon.IdentityManagement.Model.Role SelectedRole { get; set; }
-            public Amazon.IdentityManagement.Model.ManagedPolicy SelectedManagedPolicy { get; set; }
-
-            public string Cluster { get; set; }
-            public string Service { get; set; }
-            public int DesiredCount { get; set; }
-            public int DeploymentMinimumHealthyPercent { get; set; }
-            public int DeploymentMaximumPercent { get; set; }
+            public IAWSWizard HostingWizard { get; set; }
 
             public bool? PersistConfigFile { get; set; }
 
-            public string VpcId { get; set; }
-            public bool ShouldConfigureELB { get; set; }
-            public bool CreateNewIAMRole { get; set; }
-            public string ServiceIAMRole { get; set; }
-            public bool CreateNewLoadBalancer { get; set; }
-            public string LoadBalancer { get; set; }
-            public bool CreateNewListenerPort { get; set; }
-            public int NewListenerPort { get; set; }
-            public string ListenerArn { get; set; }
-            public bool CreateNewTargetGroup { get; set; }
-            public string TargetGroup { get; set; }
-            public string NewPathPattern { get; set; }
-            public string HealthCheckPath { get; set; }
         }
     }
 }

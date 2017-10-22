@@ -208,7 +208,7 @@ namespace Amazon.ECS.Tools.Options
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
                 Description = "The IAM role that will provide AWS credentials for the containers in the Task Definition"
             };
-        public static readonly CommandOption ARGUMENT_ELB_TARGET_ARN =
+        public static readonly CommandOption ARGUMENT_ELB_TARGET_GROUP_ARN =
             new CommandOption
             {
                 Name = "ELB Target ARN",
@@ -254,5 +254,37 @@ namespace Amazon.ECS.Tools.Options
                 Description = "The name or full Amazon Resource Name (ARN) of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf."
             };
 
+        public static readonly CommandOption ARGUMENT_SCHEDULED_RULE_NAME =
+            new CommandOption
+            {
+                Name = "Scheduled Rule",
+                Switch = "--rule",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "The name of the CloudWatch Event Schedule rule."
+            };
+        public static readonly CommandOption ARGUMENT_SCHEDULED_RULE_TARGET =
+            new CommandOption
+            {
+                Name = "Schedule Rule Target",
+                Switch = "--rule-target",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "The name of the target that will be assigned to the rule and point to the ECS task definition"
+            };
+        public static readonly CommandOption ARGUMENT_SCHEDULE_EXPRESSION =
+            new CommandOption
+            {
+                Name = "Schedule Expression",
+                Switch = "--schedule-expression",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "The scheduling expression. For example, \"cron(0 20 * * ? *)\" or \"rate(5 minutes)\""
+            };
+        public static readonly CommandOption ARGUMENT_CLOUDWATCHEVENT_ROLE =
+            new CommandOption
+            {
+                Name = "CloudWatch Event IAM Role",
+                Switch = "--cloudwatch-event-role",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "The role that IAM will assume to invoke the target"
+            };
     }
 }

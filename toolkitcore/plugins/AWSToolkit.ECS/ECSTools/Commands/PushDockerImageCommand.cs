@@ -27,9 +27,20 @@ namespace Amazon.ECS.Tools.Commands
         });
 
 
-        public string Configuration { get; set; }
-        public string TargetFramework { get; set; }
-        public string DockerImageTag { get; set; }
+        PushDockerImageProperties _pushProperties;
+        public PushDockerImageProperties PushDockerImageProperties
+        {
+            get
+            {
+                if(this._pushProperties == null)
+                {
+                    this._pushProperties = new PushDockerImageProperties();
+                }
+
+                return this._pushProperties;
+            }
+            set { this._pushProperties = value; }
+        }
 
         public bool? PersistConfigFile { get; set; }
 
@@ -50,13 +61,9 @@ namespace Amazon.ECS.Tools.Commands
         {
             base.ParseCommandArguments(values);
 
+            this.PushDockerImageProperties.ParseCommandArguments(values);
+
             Tuple<CommandOption, CommandOptionValue> tuple;
-            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_CONFIGURATION.Switch)) != null)
-                this.Configuration = tuple.Item2.StringValue;
-            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_FRAMEWORK.Switch)) != null)
-                this.TargetFramework = tuple.Item2.StringValue;
-            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_DOCKER_TAG.Switch)) != null)
-                this.DockerImageTag = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE.Switch)) != null)
                 this.PersistConfigFile = tuple.Item2.BoolValue;
         }
@@ -66,9 +73,9 @@ namespace Amazon.ECS.Tools.Commands
         {
             try
             {
-                string configuration = this.GetStringValueOrDefault(this.Configuration, DefinedCommandOptions.ARGUMENT_CONFIGURATION, false) ?? "Release";
-                string targetFramework = this.GetStringValueOrDefault(this.TargetFramework, DefinedCommandOptions.ARGUMENT_FRAMEWORK, false);
-                string dockerImageTag = this.GetStringValueOrDefault(this.DockerImageTag, DefinedCommandOptions.ARGUMENT_DOCKER_TAG, true);
+                string configuration = this.GetStringValueOrDefault(this.PushDockerImageProperties.Configuration, DefinedCommandOptions.ARGUMENT_CONFIGURATION, false) ?? "Release";
+                string targetFramework = this.GetStringValueOrDefault(this.PushDockerImageProperties.TargetFramework, DefinedCommandOptions.ARGUMENT_FRAMEWORK, false);
+                string dockerImageTag = this.GetStringValueOrDefault(this.PushDockerImageProperties.DockerImageTag, DefinedCommandOptions.ARGUMENT_DOCKER_TAG, true);
 
                 if (!dockerImageTag.Contains(":"))
                     dockerImageTag += ":latest";
@@ -201,42 +208,9 @@ namespace Amazon.ECS.Tools.Commands
             }
         }
 
-        private void SaveConfigFile()
+        protected override void SaveConfigFile(JsonData data)
         {
-            try
-            {
-                JsonData data;
-                if (File.Exists(this.DefaultConfig.SourceFile))
-                {
-                    data = JsonMapper.ToObject(File.ReadAllText(this.DefaultConfig.SourceFile));
-                }
-                else
-                {
-                    data = new JsonData();
-                }
-
-                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_AWS_REGION.ConfigFileKey, this.GetStringValueOrDefault(this.Region, DefinedCommandOptions.ARGUMENT_AWS_REGION, false));
-                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_AWS_PROFILE.ConfigFileKey, this.GetStringValueOrDefault(this.Profile, DefinedCommandOptions.ARGUMENT_AWS_PROFILE, false));
-                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_AWS_PROFILE_LOCATION.ConfigFileKey, this.GetStringValueOrDefault(this.ProfileLocation, DefinedCommandOptions.ARGUMENT_AWS_PROFILE_LOCATION, false));
-
-                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_CONFIGURATION.ConfigFileKey, this.GetStringValueOrDefault(this.Configuration, DefinedCommandOptions.ARGUMENT_CONFIGURATION, false));
-                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_FRAMEWORK.ConfigFileKey, this.GetStringValueOrDefault(this.TargetFramework, DefinedCommandOptions.ARGUMENT_FRAMEWORK, false));
-                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_DOCKER_TAG.ConfigFileKey, this.GetStringValueOrDefault(this.DockerImageTag, DefinedCommandOptions.ARGUMENT_DOCKER_TAG, false));
-
-
-                StringBuilder sb = new StringBuilder();
-                JsonWriter writer = new JsonWriter(sb);
-                writer.PrettyPrint = true;
-                JsonMapper.ToJson(data, writer);
-
-                var json = sb.ToString();
-                File.WriteAllText(this.DefaultConfig.SourceFile, json);
-                this.Logger.WriteLine($"Config settings saved to {this.DefaultConfig.SourceFile}");
-            }
-            catch (Exception e)
-            {
-                throw new DockerToolsException("Error persisting configuration file: " + e.Message, DockerToolsException.ErrorCode.PersistConfigError);
-            }
+            this.PushDockerImageProperties.PersistSettings(this, data);
         }
     }
 }

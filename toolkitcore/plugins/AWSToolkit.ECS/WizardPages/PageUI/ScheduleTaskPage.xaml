@@ -157,6 +157,7 @@
             <ComboBox
                 Name="_ctlRunIntervalUnit"
                 Margin="16,2,4,2"
+                SelectedItem="{Binding RunIntervalUnit}"
                 Style="{DynamicResource awsComboBoxStyle}"/>
         </StackPanel>
 

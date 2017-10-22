@@ -81,6 +81,9 @@ namespace Amazon.AWSToolkit.ECS
 
         public static readonly string ScheduleTaskRuleName = "ScheduleTaskRuleName";
         public static readonly string CloudWatchEventIAMRole = "CloudWatchEventIAMRole";
+        public static readonly string CreateCloudWatchEventIAMRole = "CloudWatchEventIAMRole";
+        public static readonly string ScheduleTaskRuleTarget = "ScheduleTaskRuleTarget";
+        public static readonly string ScheduleExpression = "ScheduleExpression";
 
         public static readonly string PersistSettingsToConfigFile = "persistSettingsToConfigFile";
     }

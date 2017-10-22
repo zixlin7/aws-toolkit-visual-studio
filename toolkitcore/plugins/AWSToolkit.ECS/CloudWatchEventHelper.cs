@@ -12,7 +12,7 @@ namespace Amazon.AWSToolkit.ECS
     public static class CloudWatchEventHelper
     {
 
-        public static ScheduleRulesState FetchScheduleRuleState(IAmazonCloudWatchEvents cweClient)
+        public static ScheduleRulesState FetchScheduleRuleState(IAmazonCloudWatchEvents cweClient, string clusterArn)
         {
             try
             {

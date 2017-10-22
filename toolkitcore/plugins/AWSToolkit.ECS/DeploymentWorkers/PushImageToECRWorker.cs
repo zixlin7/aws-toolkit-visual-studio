@@ -10,6 +10,7 @@ using Amazon.ECR;
 using Amazon.ECS.Tools;
 using Amazon.ECS.Tools.Commands;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
@@ -35,8 +36,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     DisableInteractive = true,
                     ECRClient = this._ecrClient,
 
-                    Configuration = state.Configuration,
-                    DockerImageTag = state.DockerImageTag,
+                    PushDockerImageProperties = ConvertToPushDockerImageProperties(state.HostingWizard),
 
                     PersistConfigFile = state.PersistConfigFile
                 };
@@ -66,9 +66,9 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             public AccountViewModel Account { get; set; }
             public RegionEndPointsManager.RegionEndPoints Region { get; set; }
 
-            public string Configuration { get; set; }
+            public IAWSWizard HostingWizard { get; set; }
+
             public string WorkingDirectory { get; set; }
-            public string DockerImageTag { get; set; }
 
             public bool? PersistConfigFile { get; set; }
         }

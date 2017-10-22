@@ -139,6 +139,27 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (_pageUI == null)
                 return false;
 
+            HostingWizard[PublishContainerToAWSWizardProperties.ScheduleTaskRuleName] = this._pageUI.CreateNewScheduleRule ? _pageUI.NewScheduleRule : _pageUI.ScheduleRule;
+            HostingWizard[PublishContainerToAWSWizardProperties.ScheduleTaskRuleTarget] = this._pageUI.CreateNewTarget ? _pageUI.NewTarget : _pageUI.Target;
+            HostingWizard[PublishContainerToAWSWizardProperties.DesiredCount] = this._pageUI.DesiredCount;
+
+            HostingWizard[PublishContainerToAWSWizardProperties.CreateCloudWatchEventIAMRole] = _pageUI.CreateCloudWatchEventIAMRole;
+            if (!_pageUI.CreateCloudWatchEventIAMRole)
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.CloudWatchEventIAMRole] = this._pageUI.CloudWatchEventIAMRoleArn;
+            }
+
+            if (this._pageUI.IsRunTypeCronExpression.GetValueOrDefault())
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.ScheduleExpression] = this._pageUI.CronExpression;
+            }
+            else
+            {
+                var expression = $"rate({this._pageUI.RunIntervalValue} {this._pageUI.RunIntervalUnit.SystemName})";
+                HostingWizard[PublishContainerToAWSWizardProperties.ScheduleExpression] = expression;
+            }
+
+
             return true;
         }
 

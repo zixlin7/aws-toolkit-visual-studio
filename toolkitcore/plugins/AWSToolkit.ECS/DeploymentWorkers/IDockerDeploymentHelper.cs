@@ -12,7 +12,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
         void SendCompleteSuccessAsync(PushImageToECRWorker.State state);
 
-        void SendCompleteSuccessAsync(DeployToClusterWorker.State state);
+        void SendCompleteSuccessAsync(DeployServiceWorker.State state);
+        void SendCompleteSuccessAsync(DeployScheduleTaskWorker.State state);
 
         void SendCompleteErrorAsync(string message);
     }

@@ -7,11 +7,15 @@ using Amazon;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 
+using Amazon.CloudWatchEvents;
 using Amazon.ECR;
 using Amazon.ECS;
 
 using Amazon.ECS.Tools.Options;
 using System.Reflection;
+using ThirdParty.Json.LitJson;
+using System.Text;
+using System.IO;
 
 namespace Amazon.ECS.Tools.Commands
 {
@@ -129,6 +133,24 @@ namespace Amazon.ECS.Tools.Commands
                 this.ConfigFile = DockerToolsDefaultsReader.DEFAULT_FILE_NAME;
         }
 
+        IAmazonCloudWatchEvents _cweClient;
+        public IAmazonCloudWatchEvents CWEClient
+        {
+            get
+            {
+                if (this._cweClient == null)
+                {
+                    SetUserAgentString();
+
+                    var config = new AmazonCloudWatchEventsConfig();
+                    config.RegionEndpoint = DetermineAWSRegion();
+
+                    this._cweClient = new AmazonCloudWatchEventsClient(DetermineAWSCredentials(), config);
+                }
+                return this._cweClient;
+            }
+            set { this._cweClient = value; }
+        }
 
         IAmazonECR _ecrClient;
         public IAmazonECR ECRClient
@@ -471,5 +493,43 @@ namespace Amazon.ECS.Tools.Commands
             _cachedRequestedValues[option] = input;
             return input;
         }        
+
+        protected void SaveConfigFile()
+        {
+            try
+            {
+                JsonData data;
+                if (File.Exists(this.DefaultConfig.SourceFile))
+                {
+                    data = JsonMapper.ToObject(File.ReadAllText(this.DefaultConfig.SourceFile));
+                }
+                else
+                {
+                    data = new JsonData();
+                }
+
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_AWS_REGION.ConfigFileKey, this.GetStringValueOrDefault(this.Region, DefinedCommandOptions.ARGUMENT_AWS_REGION, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_AWS_PROFILE.ConfigFileKey, this.GetStringValueOrDefault(this.Profile, DefinedCommandOptions.ARGUMENT_AWS_PROFILE, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_AWS_PROFILE_LOCATION.ConfigFileKey, this.GetStringValueOrDefault(this.ProfileLocation, DefinedCommandOptions.ARGUMENT_AWS_PROFILE_LOCATION, false));
+
+
+                SaveConfigFile(data);
+
+                StringBuilder sb = new StringBuilder();
+                JsonWriter writer = new JsonWriter(sb);
+                writer.PrettyPrint = true;
+                JsonMapper.ToJson(data, writer);
+
+                var json = sb.ToString();
+                File.WriteAllText(this.DefaultConfig.SourceFile, json);
+                this.Logger.WriteLine($"Config settings saved to {this.DefaultConfig.SourceFile}");
+            }
+            catch (Exception e)
+            {
+                throw new DockerToolsException("Error persisting configuration file: " + e.Message, DockerToolsException.ErrorCode.PersistConfigError);
+            }
+        }
+
+        protected abstract void SaveConfigFile(JsonData data);
     }
 }

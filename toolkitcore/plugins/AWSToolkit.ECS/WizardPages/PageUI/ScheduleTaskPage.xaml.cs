@@ -45,17 +45,21 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
 
             this.RunIntervalValue = 10;
-            
-            this._ctlRunIntervalUnit.Items.Add("minute(s)");
-            this._ctlRunIntervalUnit.Items.Add("hour(s)");
-            this._ctlRunIntervalUnit.Items.Add("day(s)");
-            this._ctlRunIntervalUnit.SelectedIndex = 0;
+
+            foreach (var item in RunIntervalUnitItem.ValidValues)
+                this._ctlRunIntervalUnit.Items.Add(item);
+
+            this.RunIntervalUnit = this._ctlRunIntervalUnit.Items[0] as RunIntervalUnitItem;
 
             this.CronExpression = "cron(0 10 * * ? *)";
 
             IsRunTypeFixedInterval = true;
             IsRunTypeCronExpression = false;
+
+            this.DesiredCount = 1;
         }
+
+
 
         public bool AllRequiredFieldsAreSet
         {
@@ -153,8 +157,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
-        string _runIntervalUnit;
-        public string RunIntervalUnit
+        RunIntervalUnitItem _runIntervalUnit;
+        public RunIntervalUnitItem RunIntervalUnit
         {
             get { return this._runIntervalUnit; }
             set
@@ -231,10 +235,33 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
+        int? _desiredCount;
+        public int? DesiredCount
+        {
+            get { return this._desiredCount; }
+            set
+            {
+                this._desiredCount = value;
+                NotifyPropertyChanged("NewTarget");
+            }
+        }
+
         public string CloudWatchEventIAMRole
         {
             get { return this._ctlCloudWatchEventIAMRole.Text; }
             set { this._ctlCloudWatchEventIAMRole.Text = value; }
+        }
+
+        public string CloudWatchEventIAMRoleArn
+        {
+            get
+            {
+                Role role;
+                if (this._existingRoles.TryGetValue(this.CloudWatchEventIAMRole, out role))
+                    return role.Arn;
+
+                return null;
+            }
         }
 
         private void _ctlCloudWatchEventIAMRole_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -242,7 +269,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             NotifyPropertyChanged("CloudWatchEventIAMRole");
         }
 
-        public bool CreateNewIAMRole
+        public bool CreateCloudWatchEventIAMRole
         {
             get { return this._ctlCloudWatchEventIAMRole.SelectedIndex == 0; }
         }
@@ -275,12 +302,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             this.CronExpressionVisiblity = this._ctlRunTypeCronExpression.IsChecked.GetValueOrDefault() ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        Dictionary<string, Role> _existingRoles = new Dictionary<string, Role>();
+
         CloudWatchEventHelper.ScheduleRulesState _scheduleRulesState;
         private void UpdateExistingResources()
         {
             this._ctlCloudWatchEventIAMRole.Items.Clear();
             this._ctlCloudWatchEventIAMRole.Items.Add(CREATE_NEW_TEXT);
             this._ctlCloudWatchEventIAMRole.SelectedIndex = 0;
+            this._existingRoles.Clear();
 
             this._ctlScheduleRule.Items.Clear();
             this._ctlScheduleRule.Items.Add(CREATE_NEW_TEXT);
@@ -302,6 +332,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                             foreach (var role in validRoles)
                             {
                                 roles.Add(role.RoleName);
+                                this._existingRoles[role.RoleName] = role;
                             }
                         } while (!string.IsNullOrEmpty(response.Marker));
                         return roles;
@@ -337,7 +368,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     var items = new List<string>();
                     using (var cweClient = CreateCloudWatchEventsClient(PageController.HostingWizard))
                     {
-                        this._scheduleRulesState = CloudWatchEventHelper.FetchScheduleRuleState(cweClient);
+                        this._scheduleRulesState = CloudWatchEventHelper.FetchScheduleRuleState(cweClient, this.PageController.Cluster);
                     }
 
                     ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
@@ -386,5 +417,26 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 }
             }));
         }
+    }
+
+    public class RunIntervalUnitItem
+    {
+        public static readonly RunIntervalUnitItem[] ValidValues = new RunIntervalUnitItem[]
+        {
+            new RunIntervalUnitItem("minute(s)", "minutes"),
+            new RunIntervalUnitItem("hour(s)", "hours"),
+            new RunIntervalUnitItem("day(s)", "days")
+        };
+
+        public RunIntervalUnitItem(string displayName, string systemName)
+        {
+            this.DisplayName = displayName;
+            this.SystemName = systemName;
+        }
+
+        public string DisplayName { get; set; }
+        public string SystemName { get; set; }
+
+        public override string ToString() => this.DisplayName;
     }
 }

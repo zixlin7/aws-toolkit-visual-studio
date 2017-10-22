@@ -22,6 +22,7 @@ using Amazon.ECR;
 using Amazon.ElasticLoadBalancingV2;
 using System.IO;
 using Amazon.AWSToolkit.ECS.Nodes;
+using Amazon.CloudWatchEvents;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 {
@@ -122,106 +123,42 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             var account = HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
             var region = HostingWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
             var workingDirectory = HostingWizard[PublishContainerToAWSWizardProperties.SourcePath] as string;
-            var configuration = HostingWizard[PublishContainerToAWSWizardProperties.Configuration] as string;
-
-            var dockerRepository = HostingWizard[PublishContainerToAWSWizardProperties.DockerRepository] as string;
-            var dockerTag = HostingWizard[PublishContainerToAWSWizardProperties.DockerTag] as string;
 
             bool persistSettings = false;
             if (HostingWizard[PublishContainerToAWSWizardProperties.PersistSettingsToConfigFile] is bool)
                 persistSettings = (bool)HostingWizard[PublishContainerToAWSWizardProperties.PersistSettingsToConfigFile];
 
-            var dockerImageTag = dockerRepository;
-            if (!string.IsNullOrWhiteSpace(dockerTag))
-                dockerImageTag += ":" + dockerTag;
-
-
+            WaitCallback threadPoolWorker = null;
             if (mode == Constants.DeployMode.PushOnly)
             {
                 var state = new PushImageToECRWorker.State
                 {
                     Account = account,
                     Region = region,
-                    DockerImageTag = dockerImageTag,
-                    Configuration = configuration,
-                    WorkingDirectory = workingDirectory,
+                    HostingWizard = this.HostingWizard,
 
+                    WorkingDirectory = workingDirectory,
                     PersistConfigFile = persistSettings
                 };
 
                 var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECR_ENDPOINT_LOOKUP));
 
                 var worker = new PushImageToECRWorker(this, ecrClient);
-
-                ThreadPool.QueueUserWorkItem(x =>
-                {
-                    worker.Execute(state);
-                    //this._results = worker.Results;
-                }, state);
+                threadPoolWorker = x => worker.Execute(state);
             }
             else if(mode == Constants.DeployMode.DeployToECSCluster)
             {
-                var state = new DeployToClusterWorker.State
+                var state = new DeployServiceWorker.State
                 {
                     Account = account,
                     Region = region,
-                    DockerImageTag = dockerImageTag,
-                    Configuration = configuration,
                     WorkingDirectory = workingDirectory,
+                    HostingWizard = this.HostingWizard,
 
-                    TaskDefinition = HostingWizard[PublishContainerToAWSWizardProperties.TaskDefinition] as string,
-                    Container = HostingWizard[PublishContainerToAWSWizardProperties.Container] as string,
-                    MemoryHardLimit = HostingWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit] as int?,
-                    MemorySoftLimit = HostingWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit] as int?,
-                    PortMapping = HostingWizard[PublishContainerToAWSWizardProperties.PortMappings] as IList<PortMappingItem>,
-                    EnvironmentVariables = HostingWizard[PublishContainerToAWSWizardProperties.EnvironmentVariables] as IList<EnvironmentVariableItem>,
-
-                    SelectedRole = HostingWizard[PublishContainerToAWSWizardProperties.TaskRole] as Role,
-                    SelectedManagedPolicy = HostingWizard[PublishContainerToAWSWizardProperties.TaskRoleManagedPolicy] as ManagedPolicy,
-
-                    Cluster = HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string,
-                    Service = HostingWizard[PublishContainerToAWSWizardProperties.Service] as string,
-                    DesiredCount = ((int)HostingWizard[PublishContainerToAWSWizardProperties.DesiredCount]),
-                    DeploymentMaximumPercent = ((int)HostingWizard[PublishContainerToAWSWizardProperties.MaximumPercent]),
-                    DeploymentMinimumHealthyPercent = ((int)HostingWizard[PublishContainerToAWSWizardProperties.MinimumHealthy]),
 
                     PersistConfigFile = persistSettings
                 };
 
-                if (HostingWizard[PublishContainerToAWSWizardProperties.ShouldConfigureELB] is bool)
-                    state.ShouldConfigureELB = (bool)HostingWizard[PublishContainerToAWSWizardProperties.ShouldConfigureELB];
-
-                if(state.ShouldConfigureELB)
-                {
-                    if (HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole] is bool)
-                        state.CreateNewIAMRole = (bool)HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole];
-
-
-                    if (HostingWizard[PublishContainerToAWSWizardProperties.CreateNewLoadBalancer] is bool)
-                        state.CreateNewLoadBalancer = (bool)HostingWizard[PublishContainerToAWSWizardProperties.CreateNewLoadBalancer];
-
-                    state.LoadBalancer = HostingWizard[PublishContainerToAWSWizardProperties.LoadBalancer] as string;
-
-                    if (HostingWizard[PublishContainerToAWSWizardProperties.CreateNewListenerPort] is bool)
-                        state.CreateNewListenerPort = (bool)HostingWizard[PublishContainerToAWSWizardProperties.CreateNewListenerPort];
-
-                    if (HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort] is int)
-                        state.NewListenerPort = (int)HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort];
-
-                    if (HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup] is bool)
-                        state.CreateNewTargetGroup = (bool)HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup];
-
-
-                    state.ListenerArn = HostingWizard[PublishContainerToAWSWizardProperties.ListenerArn] as string;
-                    state.VpcId = HostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string;
-                    state.NewPathPattern = HostingWizard[PublishContainerToAWSWizardProperties.NewPathPattern] as string;
-                    state.HealthCheckPath = HostingWizard[PublishContainerToAWSWizardProperties.HealthCheckPath] as string;
-
-
-                }
-
-                state.ServiceIAMRole = HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] as string;
-                state.TargetGroup = HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] as string;
 
                 var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECR_ENDPOINT_LOOKUP));
                 var ecsClient = state.Account.CreateServiceClient<AmazonECSClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP));
@@ -229,15 +166,33 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 var iamClient = state.Account.CreateServiceClient<AmazonIdentityManagementServiceClient>(state.Region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME));
                 var ec2Client = state.Account.CreateServiceClient<AmazonEC2Client>(state.Region.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME));
 
-                var worker = new DeployToClusterWorker(this, ecrClient, ecsClient, ec2Client, elbClient, iamClient);
-
-                ThreadPool.QueueUserWorkItem(x =>
-                {
-                    worker.Execute(state);
-                    //this._results = worker.Results;
-                }, state);
-
+                var worker = new DeployServiceWorker(this, ecrClient, ecsClient, ec2Client, elbClient, iamClient);
+                threadPoolWorker = x => worker.Execute(state);
             }
+            else if(mode == Constants.DeployMode.ScheduleTask)
+            {
+                var state = new DeployScheduleTaskWorker.State
+                {
+                    Account = account,
+                    Region = region,
+                    WorkingDirectory = workingDirectory,
+                    HostingWizard = this.HostingWizard,
+
+
+                    PersistConfigFile = persistSettings
+                };
+
+                var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECR_ENDPOINT_LOOKUP));
+                var ecsClient = state.Account.CreateServiceClient<AmazonECSClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP));
+                var iamClient = state.Account.CreateServiceClient<AmazonIdentityManagementServiceClient>(state.Region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME));
+                var cweClient = state.Account.CreateServiceClient<AmazonCloudWatchEventsClient>(state.Region.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_EVENT_SERVICE_NAME));
+
+                var worker = new DeployScheduleTaskWorker(this, cweClient, ecrClient, ecsClient, iamClient);
+                threadPoolWorker = x => worker.Execute(state);
+            }
+
+
+            ThreadPool.QueueUserWorkItem(threadPoolWorker);
 
             this._pageUI.StartProgressBar();
 
@@ -263,20 +218,35 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             }));
         }
 
-        public void SendCompleteSuccessAsync(DeployToClusterWorker.State state)
+        public void SendCompleteSuccessAsync(DeployScheduleTaskWorker.State state)
         {
             AddECSTools(state.PersistConfigFile.GetValueOrDefault());
             DefaultSuccessFinish();
+            LoadClusterView(state.HostingWizard);
+        }
 
+        public void SendCompleteSuccessAsync(DeployServiceWorker.State state)
+        {
+            AddECSTools(state.PersistConfigFile.GetValueOrDefault());
+            DefaultSuccessFinish();
+            LoadClusterView(state.HostingWizard);
+
+        }
+
+        private void LoadClusterView(IAWSWizard hostingWizard)
+        {
             ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
             {
-                var navigator = ToolkitFactory.Instance.Navigator;
-                if (navigator.SelectedAccount != state.Account)
-                    navigator.UpdateAccountSelection(new Guid(state.Account.SettingsUniqueKey), false);
-                if (navigator.SelectedRegionEndPoints != state.Region)
-                    navigator.UpdateRegionSelection(state.Region);
+                var account = HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
+                var region = HostingWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
 
-                var ecsRootNode = state.Account.Children.FirstOrDefault(x => x is RootViewModel);
+                var navigator = ToolkitFactory.Instance.Navigator;
+                if (navigator.SelectedAccount != account)
+                    navigator.UpdateAccountSelection(new Guid(account.SettingsUniqueKey), false);
+                if (navigator.SelectedRegionEndPoints != region)
+                    navigator.UpdateRegionSelection(region);
+
+                var ecsRootNode = account.Children.FirstOrDefault(x => x is RootViewModel);
                 if (ecsRootNode != null)
                 {
                     var clusterRootNode = ecsRootNode.Children.FirstOrDefault(x => x is ClustersRootViewModel);
@@ -284,7 +254,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                     {
                         clusterRootNode.Refresh(false);
 
-                        var clusterNode = clusterRootNode.Children.FirstOrDefault(x => x.Name == state.Cluster) as ClusterViewModel;
+                        var cluster = hostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string;
+                        var clusterNode = clusterRootNode.Children.FirstOrDefault(x => string.Equals(x.Name, cluster)) as ClusterViewModel;
                         if (clusterNode != null)
                         {
                             var metaNode = clusterNode.MetaNode as ClusterViewMetaNode;
@@ -341,11 +312,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                     {
                         repositoryRootNode.Refresh(false);
 
-                        var repositoryName = state.DockerImageTag;
-                        if (repositoryName.Contains(':'))
-                            repositoryName = repositoryName.Substring(0, repositoryName.IndexOf(':'));
+                        var repositoryName = state.HostingWizard[PublishContainerToAWSWizardProperties.DockerRepository];
 
-                        var repositoryNode = repositoryRootNode.Children.FirstOrDefault(x => x.Name == repositoryName) as RepositoryViewModel;
+                        var repositoryNode = repositoryRootNode.Children.FirstOrDefault(x => string.Equals(x.Name, repositoryName)) as RepositoryViewModel;
                         if (repositoryNode != null)
                         {
                             var metaNode = repositoryNode.MetaNode as RepositoryViewMetaNode;
