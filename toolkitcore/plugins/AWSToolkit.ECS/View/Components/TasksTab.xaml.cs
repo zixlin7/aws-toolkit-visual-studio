@@ -125,7 +125,7 @@ namespace Amazon.AWSToolkit.ECS.View.Components
 
         void onTasksSelectionChanged(object sender, RoutedEventArgs evnt)
         {
-            this._ctlStop.IsEnabled = this._ctlTasks.SelectedItems.Count > 0;
+            this._ctlStop.IsEnabled = this._ctlTasks.SelectedItems.Count > 0 && this._controller.Model.TaskTabDesiredStatus == DesiredStatus.RUNNING;
         }
     }
 }
