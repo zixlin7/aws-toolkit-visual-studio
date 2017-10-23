@@ -69,7 +69,7 @@ namespace Amazon.AWSToolkit.ECS.Model
         [DisplayName("Creation Date")]
         public string CreationDate
         {
-            get { return _repository.CreatedAt.ToShortDateString(); }
+            get { return _repository.CreatedAt.ToString(); }
         }
 
         [Browsable(false)]

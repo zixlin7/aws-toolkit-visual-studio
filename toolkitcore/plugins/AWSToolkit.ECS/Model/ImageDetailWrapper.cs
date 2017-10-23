@@ -17,6 +17,7 @@ namespace Amazon.AWSToolkit.ECS.Model
             _inner = inner;
         }
 
+        // temp property until we get a listbox in the grid column
         public string ImageTagsFlattened
         {
             get
@@ -57,7 +58,7 @@ namespace Amazon.AWSToolkit.ECS.Model
 
         public string PushedAt
         {
-            get { return _inner?.ImagePushedAt.ToLocalTime().ToString("yy-MM-dd HH:mm:ss zzz") ?? ""; }
+            get { return _inner?.ImagePushedAt.ToString() ?? ""; }
         }
     }
 }

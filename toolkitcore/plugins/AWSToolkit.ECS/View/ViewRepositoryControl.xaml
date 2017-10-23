@@ -63,7 +63,7 @@
 
                     <!-- show/hide push commands -->
                     <Button Grid.Row="0"
-                            Style="{DynamicResource awsButtonBaseStyle}"
+                            Style="{StaticResource ActionLinkButton}"
                             Padding="4,2"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
@@ -153,7 +153,9 @@
                         Sorting="SortHandler"
                         VirtualizingStackPanel.VirtualizationMode="Standard"
                         IsReadOnly="True"
-                        ItemsSource="{Binding Repository.Images, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                        ItemsSource="{Binding Repository.Images, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                        BorderThickness="2"
+                        BorderBrush="{DynamicResource awsPanelBorderBrushKey}">
 
                         <commonui:ToolkitDataGridWrapper.RowHeaderTemplate>
                             <DataTemplate>
@@ -180,7 +182,7 @@
                 <!-- push instructions flyover, visible on demand -->
                 <Grid Grid.Row="0" Grid.RowSpan="2" 
                       Panel.ZIndex="1" 
-                      Margin="0,32,-2,5"
+                      Margin="0,32,-2,3"
                       Width="350"
                       HorizontalAlignment="Right"
                       Visibility="Collapsed"
