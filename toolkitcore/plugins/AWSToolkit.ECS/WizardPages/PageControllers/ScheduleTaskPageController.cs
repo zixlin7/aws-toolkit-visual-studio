@@ -155,7 +155,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             }
             else
             {
-                var expression = $"rate({this._pageUI.RunIntervalValue} {this._pageUI.RunIntervalUnit.SystemName})";
+                var expression = $"rate({this._pageUI.RunIntervalValue} {this._pageUI.RunIntervalUnit.GetUnitName(this._pageUI.RunIntervalValue.Value)})";
                 HostingWizard[PublishContainerToAWSWizardProperties.ScheduleExpression] = expression;
             }
 

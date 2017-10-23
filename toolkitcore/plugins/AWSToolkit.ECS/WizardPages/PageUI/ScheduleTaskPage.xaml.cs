@@ -423,19 +423,29 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
     {
         public static readonly RunIntervalUnitItem[] ValidValues = new RunIntervalUnitItem[]
         {
-            new RunIntervalUnitItem("minute(s)", "minutes"),
-            new RunIntervalUnitItem("hour(s)", "hours"),
-            new RunIntervalUnitItem("day(s)", "days")
+            new RunIntervalUnitItem("minute(s)", "minutes", "minute"),
+            new RunIntervalUnitItem("hour(s)", "hours", "hour"),
+            new RunIntervalUnitItem("day(s)", "days", "day")
         };
 
-        public RunIntervalUnitItem(string displayName, string systemName)
+        public RunIntervalUnitItem(string displayName, string pluralSystemName, string singluarSystemName)
         {
             this.DisplayName = displayName;
-            this.SystemName = systemName;
+            this.PluralSystemName = pluralSystemName;
+            this.SingluarSystemName = singluarSystemName;
         }
 
         public string DisplayName { get; set; }
-        public string SystemName { get; set; }
+        private string PluralSystemName { get; set; }
+        private string SingluarSystemName { get; set; }
+
+        public string GetUnitName(int value)
+        {
+            if (value == 1)
+                return this.SingluarSystemName;
+            else
+                return this.PluralSystemName;
+        }
 
         public override string ToString() => this.DisplayName;
     }
