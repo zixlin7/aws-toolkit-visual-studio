@@ -190,6 +190,27 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 var worker = new DeployScheduleTaskWorker(this, cweClient, ecrClient, ecsClient, iamClient);
                 threadPoolWorker = x => worker.Execute(state);
             }
+            else if(mode == Constants.DeployMode.RunTask)
+            {
+                var state = new DeployTaskWorker.State
+                {
+                    Account = account,
+                    Region = region,
+                    WorkingDirectory = workingDirectory,
+                    HostingWizard = this.HostingWizard,
+
+
+                    PersistConfigFile = persistSettings
+                };
+
+                var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECR_ENDPOINT_LOOKUP));
+                var ecsClient = state.Account.CreateServiceClient<AmazonECSClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP));
+                var iamClient = state.Account.CreateServiceClient<AmazonIdentityManagementServiceClient>(state.Region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME));
+                var cweClient = state.Account.CreateServiceClient<AmazonCloudWatchEventsClient>(state.Region.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_EVENT_SERVICE_NAME));
+
+                var worker = new DeployTaskWorker(this, ecrClient, ecsClient, iamClient);
+                threadPoolWorker = x => worker.Execute(state);
+            }
 
 
             ThreadPool.QueueUserWorkItem(threadPoolWorker);
@@ -219,6 +240,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         }
 
         public void SendCompleteSuccessAsync(DeployScheduleTaskWorker.State state)
+        {
+            AddECSTools(state.PersistConfigFile.GetValueOrDefault());
+            DefaultSuccessFinish();
+            LoadClusterView(state.HostingWizard);
+        }
+
+        public void SendCompleteSuccessAsync(DeployTaskWorker.State state)
         {
             AddECSTools(state.PersistConfigFile.GetValueOrDefault());
             DefaultSuccessFinish();

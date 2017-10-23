@@ -17,7 +17,7 @@ namespace Amazon.ECS.Tools.Commands
     public class DeployServiceCommand : BaseCommand
     {
         public const string COMMAND_NAME = "deploy-service";
-        public const string COMMAND_DESCRIPTION = "Deploy the application to an Amazon ECS Cluster.";
+        public const string COMMAND_DESCRIPTION = "Push the application to ECR and runs the application as a long lived service on the ECS Cluster.";
 
         public static readonly IList<CommandOption> CommandOptions = BuildLineOptions(new List<CommandOption>
         {

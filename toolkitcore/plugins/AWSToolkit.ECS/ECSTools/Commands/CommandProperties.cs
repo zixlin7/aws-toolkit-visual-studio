@@ -88,7 +88,7 @@ namespace Amazon.ECS.Tools.Commands
             data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_CONTAINER.ConfigFileKey, command.GetStringValueOrDefault(this.ECSContainer, DefinedCommandOptions.ARGUMENT_ECS_CONTAINER, false));
             data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT.ConfigFileKey, command.GetIntValueOrDefault(this.ContainerMemoryHardLimit, DefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT, false));
             data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT.ConfigFileKey, command.GetIntValueOrDefault(this.ContainerMemorySoftLimit, DefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT, false));
-            data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE.ConfigFileKey, command.GetStringValueOrDefault(this.TaskDefinitionRole, DefinedCommandOptions.ARGUMENT_ECS_CONTAINER, false));
+            data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE.ConfigFileKey, command.GetStringValueOrDefault(this.TaskDefinitionRole, DefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE, false));
             data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING.ConfigFileKey, DockerToolsDefaults.FormatCommaDelimitedList(command.GetStringValuesOrDefault(this.PortMappings, DefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING, false)));
             data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES.ConfigFileKey, DockerToolsDefaults.FormatKeyValue(command.GetKeyValuePairOrDefault(this.EnvironmentVariables, DefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES, false)));
         }
@@ -134,12 +134,32 @@ namespace Amazon.ECS.Tools.Commands
             data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_SERVICE.ConfigFileKey, command.GetStringValueOrDefault(this.ECSService, DefinedCommandOptions.ARGUMENT_ECS_SERVICE, false));
             data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT.ConfigFileKey, command.GetIntValueOrDefault(this.DesiredCount, DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false));
 
-            data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE.ConfigFileKey, command.GetStringValueOrDefault(this.ELBServiceRole, DefinedCommandOptions.ARGUMENT_ECS_SERVICE, false));
-            data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN.ConfigFileKey, command.GetStringValueOrDefault(this.ELBTargetGroup, DefinedCommandOptions.ARGUMENT_ECS_SERVICE, false));
-            data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ELB_CONTAINER_PORT.ConfigFileKey, command.GetIntValueOrDefault(this.ELBContainerPort, DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false));
+            data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE.ConfigFileKey, command.GetStringValueOrDefault(this.ELBServiceRole, DefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE, false));
+            data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN.ConfigFileKey, command.GetStringValueOrDefault(this.ELBTargetGroup, DefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN, false));
+            data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ELB_CONTAINER_PORT.ConfigFileKey, command.GetIntValueOrDefault(this.ELBContainerPort, DefinedCommandOptions.ARGUMENT_ELB_CONTAINER_PORT, false));
         }
     }
 
+    public class DeployTaskProperties
+    {
+        public bool SkipImagePush { get; set; }
+
+        public string TaskGroup { get; set; }
+        public int DesiredCount { get; set; }
+
+        internal void ParseCommandArguments(CommandOptions values)
+        {
+            Tuple<CommandOption, CommandOptionValue> tuple;
+            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT.Switch)) != null)
+                this.DesiredCount = tuple.Item2.IntValue;
+        }
+
+        internal void PersistSettings(BaseCommand command, JsonData data)
+        {
+            data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_TASK_GROUP.ConfigFileKey, command.GetStringValueOrDefault(this.TaskGroup, DefinedCommandOptions.ARGUMENT_ECS_TASK_GROUP, false));
+            data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT.ConfigFileKey, command.GetIntValueOrDefault(this.DesiredCount, DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false));
+        }
+    }
 
     public class DeployScheduledTaskProperties
     {

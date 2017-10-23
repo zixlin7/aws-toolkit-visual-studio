@@ -14,6 +14,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
         void SendCompleteSuccessAsync(DeployServiceWorker.State state);
         void SendCompleteSuccessAsync(DeployScheduleTaskWorker.State state);
+        void SendCompleteSuccessAsync(DeployTaskWorker.State state);
 
         void SendCompleteErrorAsync(string message);
     }

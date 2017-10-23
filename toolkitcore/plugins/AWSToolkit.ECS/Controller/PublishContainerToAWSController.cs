@@ -141,6 +141,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 new PushImageToECRPageController(),
                 new ECSClusterPageController(),
                 new ScheduleTaskPageController(),
+                new RunTaskPageController(),
                 new ECSServicePageController(),
                 new ConfigureLoadBalancerPageController(),
                 new ECSTaskDefinitionPageController(),

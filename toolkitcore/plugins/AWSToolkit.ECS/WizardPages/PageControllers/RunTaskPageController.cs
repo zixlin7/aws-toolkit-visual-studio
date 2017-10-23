@@ -10,20 +10,25 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
+using Amazon.ECS.Model;
+
+using static Amazon.AWSToolkit.ECS.WizardPages.ECSWizardUtils;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 {
-    public class ECSTaskDefinitionPageController : IAWSWizardPageController
+    public class RunTaskPageController : IAWSWizardPageController
     {
-        private ECSTaskDefinitionPage _pageUI;
+        private RunTaskPage _pageUI;
 
         public IAWSWizard HostingWizard { get; set; }
+
+        public string Cluster { get; private set; }
 
         public string PageDescription
         {
             get
             {
-                return "Task Definition defines the parameters for how the application will run within its Docker container.";
+                return "Configure how the task should run on ECS Cluster.";
             }
         }
 
@@ -41,7 +46,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "ECS Task Definition";
+                return "Configure Running Task";
             }
         }
 
@@ -64,7 +69,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             if (_pageUI == null)
             {
-                _pageUI = new ECSTaskDefinitionPage(this);
+                _pageUI = new RunTaskPage(this);
                 _pageUI.PropertyChanged += _pageUI_PropertyChanged;
             }
 
@@ -84,7 +89,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DeploymentMode))
             {
                 var mode = (Constants.DeployMode)HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
-                if(mode != Constants.DeployMode.DeployToECSCluster && mode != Constants.DeployMode.ScheduleTask && mode != Constants.DeployMode.RunTask)
+                if (mode != Constants.DeployMode.RunTask)
                 {
                     return true;
                 }
@@ -99,7 +104,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DeploymentMode))
             {
                 var mode = (Constants.DeployMode)HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
-                return mode == Constants.DeployMode.DeployToECSCluster || mode == Constants.DeployMode.ScheduleTask || mode == Constants.DeployMode.RunTask;
+                return mode == Constants.DeployMode.RunTask;
             }
 
             return false;
@@ -107,7 +112,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public void TestForwardTransitionEnablement()
         {
-            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Forward, false);
+            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Forward, IsForwardsNavigationAllowed);
             HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Finish, QueryFinishButtonEnablement());
         }
 
@@ -127,23 +132,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (_pageUI == null)
                 return false;
 
-            if(_pageUI.CreateTaskDefinition)
-                HostingWizard[PublishContainerToAWSWizardProperties.TaskDefinition] = _pageUI.NewTaskDefinitionName;
-            else
-                HostingWizard[PublishContainerToAWSWizardProperties.TaskDefinition] = _pageUI.TaskDefinition;
+            HostingWizard[PublishContainerToAWSWizardProperties.TaskGroup] = this._pageUI.TaskGroup;
+            HostingWizard[PublishContainerToAWSWizardProperties.DesiredCount] = this._pageUI.DesiredCount;
 
-            if(this._pageUI.CreateContainer)
-                HostingWizard[PublishContainerToAWSWizardProperties.Container] = _pageUI.NewContainerName;
-            else
-                HostingWizard[PublishContainerToAWSWizardProperties.Container] = _pageUI.Container;
-
-            HostingWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit] = _pageUI.MemoryHardLimit;
-            HostingWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit] = _pageUI.MemorySoftLimit;
-            HostingWizard[PublishContainerToAWSWizardProperties.PortMappings] = _pageUI.PortMappings.ToList();
-            HostingWizard[PublishContainerToAWSWizardProperties.EnvironmentVariables] = _pageUI.EnvironmentVariables.ToList();
-
-            HostingWizard[PublishContainerToAWSWizardProperties.TaskRole] = _pageUI.SelectedRole;
-            HostingWizard[PublishContainerToAWSWizardProperties.TaskRoleManagedPolicy] = _pageUI.SelectedManagedPolicy;
 
             return true;
         }

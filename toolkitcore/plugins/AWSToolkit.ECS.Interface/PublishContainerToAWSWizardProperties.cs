@@ -78,6 +78,8 @@ namespace Amazon.AWSToolkit.ECS
         public static readonly string IsExistingCluster = "isExistingCluster";
         public static readonly string Cluster = "cluster";
 
+        public static readonly string TaskGroup = "TaskGroup";
+
 
         public static readonly string ScheduleTaskRuleName = "ScheduleTaskRuleName";
         public static readonly string CloudWatchEventIAMRole = "CloudWatchEventIAMRole";

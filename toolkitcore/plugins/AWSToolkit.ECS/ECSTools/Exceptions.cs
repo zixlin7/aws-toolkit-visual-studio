@@ -41,6 +41,11 @@ namespace Amazon.ECS.Tools
             IAMGetRole,
             RoleNotFound,
 
+            PutRuleFail,
+            PutTargetFail,
+
+            RunTaskFail,
+
         }
 
         public DockerToolsException(string message, ErrorCode code) : base(message)

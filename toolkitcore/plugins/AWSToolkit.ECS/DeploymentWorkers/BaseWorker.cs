@@ -100,6 +100,17 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             return properties;
         }
 
+        public DeployTaskProperties ConvertToDeployTaskProperties(IAWSWizard hostWizard)
+        {
+            var properties = new DeployTaskProperties
+            {
+                DesiredCount = ((int)hostWizard[PublishContainerToAWSWizardProperties.DesiredCount]),
+                TaskGroup = hostWizard[PublishContainerToAWSWizardProperties.TaskGroup] as string
+            };
+
+            return properties;
+        }
+
         public ClusterProperties ConvertToClusterProperties(IAWSWizard hostWizard)
         {
             var properties = new ClusterProperties

@@ -1,25 +1,17 @@
 ﻿using Amazon.ECS.Tools.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using Amazon.CloudWatchEvents;
-using Amazon.CloudWatchEvents.Model;
-using Amazon.ECR;
-using Amazon.ECR.Model;
-using Amazon.ECS;
-using Amazon.ECS.Model;
 using ThirdParty.Json.LitJson;
-using System.IO;
-
 
 namespace Amazon.ECS.Tools.Commands
 {
-    public class DeployScheduledTaskCommand : BaseCommand
+    public class DeployTaskCommand : BaseCommand
     {
         public const string COMMAND_NAME = "deploy-scheduled-task";
-        public const string COMMAND_DESCRIPTION = "Push the application to ECR and then sets up CloudWatch Event Schedule rule to run the application.";
+        public const string COMMAND_DESCRIPTION = "Push the application to ECR and then runs it as a task on the ECS Cluster.";
 
         public static readonly IList<CommandOption> CommandOptions = BuildLineOptions(new List<CommandOption>
         {
@@ -38,12 +30,8 @@ namespace Amazon.ECS.Tools.Commands
             DefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE,
             DefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES,
 
-            DefinedCommandOptions.ARGUMENT_SCHEDULED_RULE_NAME,
-            DefinedCommandOptions.ARGUMENT_SCHEDULED_RULE_TARGET,
-            DefinedCommandOptions.ARGUMENT_SCHEDULE_EXPRESSION,
-            DefinedCommandOptions.ARGUMENT_CLOUDWATCHEVENT_ROLE,
-
             DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT,
+            DefinedCommandOptions.ARGUMENT_ECS_TASK_GROUP,
 
             DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE,
         });
@@ -61,21 +49,6 @@ namespace Amazon.ECS.Tools.Commands
                 return this._pushProperties;
             }
             set { this._pushProperties = value; }
-        }
-
-        DeployScheduledTaskProperties _deployScheduledTaskProperties;
-        public DeployScheduledTaskProperties DeployScheduledTaskProperties
-        {
-            get
-            {
-                if (this._deployScheduledTaskProperties == null)
-                {
-                    this._deployScheduledTaskProperties = new DeployScheduledTaskProperties();
-                }
-
-                return this._deployScheduledTaskProperties;
-            }
-            set { this._deployScheduledTaskProperties = value; }
         }
 
         TaskDefinitionProperties _taskDefinitionProperties;
@@ -108,9 +81,24 @@ namespace Amazon.ECS.Tools.Commands
             set { this._clusterProperties = value; }
         }
 
+        DeployTaskProperties _deployTaskProperties;
+        public DeployTaskProperties DeployTaskProperties
+        {
+            get
+            {
+                if (this._deployTaskProperties == null)
+                {
+                    this._deployTaskProperties = new DeployTaskProperties();
+                }
+
+                return this._deployTaskProperties;
+            }
+            set { this._deployTaskProperties = value; }
+        }
+
         public bool? PersistConfigFile { get; set; }
 
-        public DeployScheduledTaskCommand(IToolLogger logger, string workingDirectory, string[] args)
+        public DeployTaskCommand(IToolLogger logger, string workingDirectory, string[] args)
             : base(logger, workingDirectory, CommandOptions, args)
         {
         }
@@ -126,7 +114,7 @@ namespace Amazon.ECS.Tools.Commands
             this.PushDockerImageProperties.ParseCommandArguments(values);
             this.TaskDefinitionProperties.ParseCommandArguments(values);
             this.ClusterProperties.ParseCommandArguments(values);
-            this.DeployScheduledTaskProperties.ParseCommandArguments(values);
+            this.DeployTaskProperties.ParseCommandArguments(values);
 
             Tuple<CommandOption, CommandOptionValue> tuple;
             if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE.Switch)) != null)
@@ -137,7 +125,7 @@ namespace Amazon.ECS.Tools.Commands
         {
             try
             {
-                var skipPush = this.GetBoolValueOrDefault(this.DeployScheduledTaskProperties.SkipImagePush, DefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH, false).GetValueOrDefault();
+                var skipPush = this.GetBoolValueOrDefault(this.DeployTaskProperties.SkipImagePush, DefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH, false).GetValueOrDefault();
                 var ecsContainer = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSContainer, DefinedCommandOptions.ARGUMENT_ECS_CONTAINER, true);
                 var ecsTaskDefinition = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSTaskDefinition, DefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, true);
 
@@ -180,65 +168,35 @@ namespace Amazon.ECS.Tools.Commands
 
                 var ecsCluster = this.GetStringValueOrDefault(this.ClusterProperties.ECSCluster, DefinedCommandOptions.ARGUMENT_ECS_CLUSTER, true);
 
-                if(!ecsCluster.Contains(":"))
-                {
-                    var arnPrefix = taskDefinitionArn.Substring(0, taskDefinitionArn.LastIndexOf(":task"));
-                    ecsCluster = arnPrefix + ":cluster/" + ecsCluster;
-                }
-
-                var ruleName = this.GetStringValueOrDefault(this.DeployScheduledTaskProperties.ScheduleTaskRule, DefinedCommandOptions.ARGUMENT_SCHEDULED_RULE_NAME, true);
-                var targetName = this.GetStringValueOrDefault(this.DeployScheduledTaskProperties.ScheduleTaskRule, DefinedCommandOptions.ARGUMENT_SCHEDULED_RULE_NAME, false);
-                if (string.IsNullOrEmpty(targetName))
-                    targetName = ruleName;
-
-                var scheduleExpression = this.GetStringValueOrDefault(this.DeployScheduledTaskProperties.ScheduleExpression, DefinedCommandOptions.ARGUMENT_SCHEDULE_EXPRESSION, true);
-                var cweRole = this.GetStringValueOrDefault(this.DeployScheduledTaskProperties.CloudWatchEventIAMRole, DefinedCommandOptions.ARGUMENT_CLOUDWATCHEVENT_ROLE, true);
-                var desiredCount = this.GetIntValueOrDefault(this.DeployScheduledTaskProperties.DesiredCount, DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false);
+                var desiredCount = this.GetIntValueOrDefault(this.DeployTaskProperties.DesiredCount, DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false);
                 if (!desiredCount.HasValue)
                     desiredCount = 1;
 
-                string ruleArn = null;
+                var taskGroup = this.GetStringValueOrDefault(this.DeployTaskProperties.TaskGroup, DefinedCommandOptions.ARGUMENT_ECS_TASK_GROUP, false);
+
+                var runTaskRequest = new Amazon.ECS.Model.RunTaskRequest
+                {
+                    Cluster = ecsCluster,
+                    TaskDefinition = taskDefinitionArn,
+                    Count = desiredCount.Value
+                };
+
+                if (!string.IsNullOrEmpty(taskGroup))
+                    runTaskRequest.Group = taskGroup;
+
+
                 try
                 {
-                    ruleArn = (await this.CWEClient.PutRuleAsync(new PutRuleRequest
+                    var response = await this.ECSClient.RunTaskAsync(runTaskRequest);
+                    this.Logger?.WriteLine($"Started {response.Tasks.Count} task:");
+                    foreach(var task in response.Tasks)
                     {
-                        Name = ruleName,
-                        ScheduleExpression = scheduleExpression,
-                        State = RuleState.ENABLED
-                    })).RuleArn;
-
-                    this.Logger?.WriteLine($"Put CloudWatch Event rule {ruleName} with expression {scheduleExpression}");
+                        this.Logger?.WriteLine($"\t{task.TaskArn}");
+                    }
                 }
                 catch(Exception e)
                 {
-                    throw new DockerToolsException("Error creating CloudWatch Event rule: " + e.Message, DockerToolsException.ErrorCode.PutRuleFail);
-                }
-
-                try
-                {
-                    await this.CWEClient.PutTargetsAsync(new PutTargetsRequest
-                    {
-                        Rule = ruleName,
-                        Targets = new List<Target>
-                        {
-                            new Target
-                            {
-                                Arn = ecsCluster,
-                                RoleArn = cweRole,
-                                Id = targetName,
-                                EcsParameters = new EcsParameters
-                                {
-                                    TaskCount = desiredCount.Value,
-                                    TaskDefinitionArn = taskDefinitionArn
-                                }
-                            }
-                        }
-                    });
-                    this.Logger?.WriteLine($"Put CloudWatch Event target {targetName}");
-                }
-                catch (Exception e)
-                {
-                    throw new DockerToolsException("Error creating CloudWatch Event target: " + e.Message, DockerToolsException.ErrorCode.PutTargetFail);
+                    throw new DockerToolsException("Error deploy task: " + e.Message, DockerToolsException.ErrorCode.RunTaskFail);
                 }
 
                 if (this.GetBoolValueOrDefault(this.PersistConfigFile, DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE, false).GetValueOrDefault())
@@ -266,7 +224,7 @@ namespace Amazon.ECS.Tools.Commands
             this.PushDockerImageProperties.PersistSettings(this, data);
             this.TaskDefinitionProperties.PersistSettings(this, data);
             this.ClusterProperties.PersistSettings(this, data);
-            this.DeployScheduledTaskProperties.PersistSettings(this, data);
         }
+
     }
 }

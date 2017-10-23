@@ -73,6 +73,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             this._ctlDeploymentOptionPicker.Items.Add
             (
+                new DeploymentOptionItem(Constants.DeployMode.RunTask, "Run Task on an ECS Cluster",
+                    "Execute the application on an Amazon EC2 Container Service Cluster as Task.")
+            );
+
+            this._ctlDeploymentOptionPicker.Items.Add
+            (
                 new DeploymentOptionItem(Constants.DeployMode.PushOnly, "Push only the Docker image to Amazon EC2 Container Registry",
                     "The Docker image will be pushed to Amazon EC2 Container Registry. Afterwards you can choose how to run the Docker image.")
             );

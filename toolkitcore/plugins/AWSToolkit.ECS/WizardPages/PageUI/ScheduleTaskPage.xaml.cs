@@ -28,7 +28,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
     /// </summary>
     public partial class ScheduleTaskPage : BaseAWSUserControl, INotifyPropertyChanged
     {
-        static readonly ILog LOGGER = LogManager.GetLogger(typeof(ECSServicePage));
+        static readonly ILog LOGGER = LogManager.GetLogger(typeof(ScheduleTaskPage));
 
         public ScheduleTaskPageController PageController { get; private set; }
 
@@ -242,7 +242,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             set
             {
                 this._desiredCount = value;
-                NotifyPropertyChanged("NewTarget");
+                NotifyPropertyChanged("DesiredCount");
             }
         }
 

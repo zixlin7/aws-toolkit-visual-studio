@@ -17,7 +17,7 @@ namespace Amazon.ECS.Tools.Options
                 Name = "Disable Interactive",
                 Switch = "--disable-interactive",
                 ValueType = CommandOption.CommandOptionValueType.BoolValue,
-                Description = "When set to true missing required parameters will not be prompted for"
+                Description = "When set to true missing required parameters will not be prompted for."
             };
 
         public static readonly CommandOption ARGUMENT_AWS_PROFILE =
@@ -26,7 +26,7 @@ namespace Amazon.ECS.Tools.Options
                 Name = "AWS Profile",
                 Switch = "--profile",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "Profile to use to look up AWS credentials, if not set environment credentials will be used"
+                Description = "Profile to use to look up AWS credentials, if not set environment credentials will be used."
             };
 
         public static readonly CommandOption ARGUMENT_AWS_PROFILE_LOCATION =
@@ -35,7 +35,7 @@ namespace Amazon.ECS.Tools.Options
                 Name = "AWS Profile Location",
                 Switch = "--profile-location",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "Optional override to the search location for Profiles, points at a shared credentials file"
+                Description = "Optional override to the search location for Profiles, points at a shared credentials file."
             };
 
         public static readonly CommandOption ARGUMENT_AWS_REGION =
@@ -44,7 +44,7 @@ namespace Amazon.ECS.Tools.Options
                 Name = "AWS Region",
                 Switch = "--region",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "The region to connect to AWS services, if not set region will be detected from the environment"
+                Description = "The region to connect to AWS services, if not set region will be detected from the environment."
             };
 
 
@@ -55,7 +55,7 @@ namespace Amazon.ECS.Tools.Options
                 ShortSwitch = "-pl",
                 Switch = "--project-location",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "The location of the project, if not set the current directory will be assumed"
+                Description = "The location of the project, if not set the current directory will be assumed."
             };
         public static readonly CommandOption ARGUMENT_CONFIGURATION =
             new CommandOption
@@ -64,7 +64,7 @@ namespace Amazon.ECS.Tools.Options
                 ShortSwitch = "-c",
                 Switch = "--configuration",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "Configuration to build with, for example Release or Debug",
+                Description = "Configuration to build with, for example Release or Debug.",
             };
         public static readonly CommandOption ARGUMENT_FRAMEWORK =
             new CommandOption
@@ -73,7 +73,7 @@ namespace Amazon.ECS.Tools.Options
                 ShortSwitch = "-f",
                 Switch = "--framework",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "Target framework to compile, for example netcoreapp1.0",
+                Description = "Target framework to compile, for example netcoreapp1.0.",
             };
         public static readonly CommandOption ARGUMENT_CONFIG_FILE =
             new CommandOption
@@ -82,7 +82,7 @@ namespace Amazon.ECS.Tools.Options
                 ShortSwitch = "-cfg",
                 Switch = "--config-file",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = $"Configuration file storing default values for command line arguments. Default is {DockerToolsDefaultsReader.DEFAULT_FILE_NAME}"
+                Description = $"Configuration file storing default values for command line arguments. Default is {DockerToolsDefaultsReader.DEFAULT_FILE_NAME}."
             };
         public static readonly CommandOption ARGUMENT_PERSIST_CONFIG_FILE =
             new CommandOption
@@ -91,7 +91,7 @@ namespace Amazon.ECS.Tools.Options
                 ShortSwitch = "-pcfg",
                 Switch = "--persist-config-file",
                 ValueType = CommandOption.CommandOptionValueType.BoolValue,
-                Description = $"If true the arguments used for a successful deployment are persisted to a config file. Default config file is {DockerToolsDefaultsReader.DEFAULT_FILE_NAME}"
+                Description = $"If true the arguments used for a successful deployment are persisted to a config file. Default config file is {DockerToolsDefaultsReader.DEFAULT_FILE_NAME}."
             };
 
         public static readonly CommandOption ARGUMENT_DOCKER_TAG =
@@ -101,7 +101,7 @@ namespace Amazon.ECS.Tools.Options
                 ShortSwitch = "-t",
                 Switch = "--tag",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "Name and optionally a tag in the 'name:tag' format",
+                Description = "Name and optionally a tag in the 'name:tag' format.",
             };
         public static readonly CommandOption ARGUMENT_SKIP_IMAGE_PUSH =
             new CommandOption
@@ -110,7 +110,7 @@ namespace Amazon.ECS.Tools.Options
                 ShortSwitch = "-sip",
                 Switch = "--skip-image-push",
                 ValueType = CommandOption.CommandOptionValueType.BoolValue,
-                Description = "Skip building and push an image to Amazon ECR",
+                Description = "Skip building and push an image to Amazon ECR.",
             };
         public static readonly CommandOption ARGUMENT_ECS_TASK_DEFINITION =
             new CommandOption
@@ -128,7 +128,7 @@ namespace Amazon.ECS.Tools.Options
                 ShortSwitch = "-econt",
                 Switch = "--ecs-container",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "Name of the Container in a Task Definition to be created/updated",
+                Description = "Name of the Container in a Task Definition to be created/updated.",
             };
 
         public static readonly CommandOption ARGUMENT_ECS_MEMORY_HARD_LIMIT =
@@ -138,7 +138,7 @@ namespace Amazon.ECS.Tools.Options
                 ShortSwitch = "-emhl",
                 Switch = "--container-memory-hard-limit",
                 ValueType = CommandOption.CommandOptionValueType.IntValue,
-                Description = "The hard limit (in MiB) of memory to present to the container",
+                Description = "The hard limit (in MiB) of memory to present to the container.",
             };
 
         public static readonly CommandOption ARGUMENT_ECS_MEMORY_SOFT_LIMIT =
@@ -158,7 +158,7 @@ namespace Amazon.ECS.Tools.Options
                 ShortSwitch = "-ec",
                 Switch = "--ecs-cluster",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "Name of the ECS Cluster to run the docker image",
+                Description = "Name of the ECS Cluster to run the docker image.",
             };
 
         public static readonly CommandOption ARGUMENT_ECS_SERVICE =
@@ -168,7 +168,7 @@ namespace Amazon.ECS.Tools.Options
                 ShortSwitch = "-ecs",
                 Switch = "--ecs-cluster-service",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "Name of the service to run on the ECS Cluster",
+                Description = "Name of the service to run on the ECS Cluster.",
             };
 
         public static readonly CommandOption ARGUMENT_ECS_DESIRED_COUNT =
@@ -197,7 +197,7 @@ namespace Amazon.ECS.Tools.Options
                 ShortSwitch = "-ev",
                 Switch = "--environment-variables",
                 ValueType = CommandOption.CommandOptionValueType.KeyValuePairs,
-                Description = "Environment variables for a container definition. Format is <key1>=<value1>;<key2>=<value2>"
+                Description = "Environment variables for a container definition. Format is <key1>=<value1>;<key2>=<value2>."
             };
         public static readonly CommandOption ARGUMENT_TASK_DEFINITION_ROLE =
             new CommandOption
@@ -206,7 +206,7 @@ namespace Amazon.ECS.Tools.Options
                 ShortSwitch = "-trole",
                 Switch = "--task-role",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "The IAM role that will provide AWS credentials for the containers in the Task Definition"
+                Description = "The IAM role that will provide AWS credentials for the containers in the Task Definition."
             };
         public static readonly CommandOption ARGUMENT_ELB_TARGET_GROUP_ARN =
             new CommandOption
@@ -268,7 +268,7 @@ namespace Amazon.ECS.Tools.Options
                 Name = "Schedule Rule Target",
                 Switch = "--rule-target",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "The name of the target that will be assigned to the rule and point to the ECS task definition"
+                Description = "The name of the target that will be assigned to the rule and point to the ECS task definition."
             };
         public static readonly CommandOption ARGUMENT_SCHEDULE_EXPRESSION =
             new CommandOption
@@ -276,7 +276,7 @@ namespace Amazon.ECS.Tools.Options
                 Name = "Schedule Expression",
                 Switch = "--schedule-expression",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "The scheduling expression. For example, \"cron(0 20 * * ? *)\" or \"rate(5 minutes)\""
+                Description = "The scheduling expression. For example, \"cron(0 20 * * ? *)\" or \"rate(5 minutes)\"."
             };
         public static readonly CommandOption ARGUMENT_CLOUDWATCHEVENT_ROLE =
             new CommandOption
@@ -284,7 +284,15 @@ namespace Amazon.ECS.Tools.Options
                 Name = "CloudWatch Event IAM Role",
                 Switch = "--cloudwatch-event-role",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "The role that IAM will assume to invoke the target"
+                Description = "The role that IAM will assume to invoke the target."
+            };
+        public static readonly CommandOption ARGUMENT_ECS_TASK_GROUP =
+            new CommandOption
+            {
+                Name = "Task Group",
+                Switch = "--task-group",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "The name of the task group to associate with the task. The default value is the family name of the task definition."
             };
     }
 }
