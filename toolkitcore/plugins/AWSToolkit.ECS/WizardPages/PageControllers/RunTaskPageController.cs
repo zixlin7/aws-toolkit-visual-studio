@@ -28,7 +28,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "Configure how the task should run on ECS Cluster.";
+                return "";
             }
         }
 
@@ -46,7 +46,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "Configure Running Task";
+                return "Amazon ECS Task";
             }
         }
 

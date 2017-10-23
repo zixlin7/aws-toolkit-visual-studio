@@ -17,35 +17,65 @@
     </UserControl.Resources>
 
     <Grid Margin="5,12">
-
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        
-        <Label
+
+        <Grid Margin="0,0,0,20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Label
+                Grid.Row="0"
+                Margin="0"
+                Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
+                Task Parameters
+            </Label>
+
+            <TextBlock
+                Grid.Row="1"
+                Margin="20,4,4,0"
+                FontStyle="Italic"
+                Style="{DynamicResource awsTextBlockBaseStyle}"
+                TextWrapping="Wrap">
+                Deploying an application as a task is good for console applications or 
+                other type of applications that exit after their logic is complete.
+                For daemon based applications like Web Applications they 
+                should be deploy as ECS Service.
+            </TextBlock>
+
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Label
                 Grid.Row="0"
                 Grid.Column="0"
                 Margin="10,2,4,2"
                 VerticalAlignment="Center"
                 Style="{DynamicResource awsLabelBaseStyle}">
-            Number of Tasks:
-        </Label>
+                Number of Tasks:
+            </Label>
 
-        <TextBox
+            <TextBox
                 Name="_ctlDesiredCount"
                 Grid.Row="0"
                 Grid.Column="1"
@@ -56,25 +86,57 @@
                 Text="{Binding DesiredCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 />
 
-        <Label
+            <Label
                 Grid.Row="1"
                 Grid.Column="0"
                 Margin="10,2,4,2"
                 VerticalAlignment="Center"
                 Style="{DynamicResource awsLabelBaseStyle}">
-            Task Group:
-        </Label>
+                Task Group:
+            </Label>
 
-        <TextBox
+            <TextBox
                 Name="_ctlTaskGroup"
                 Grid.Row="1"
                 Grid.Column="1"
                 Margin="4,2,4,2"
-                Width="100"
-                HorizontalAlignment="Left"
                 Style="{DynamicResource awsTextBoxStyle}"
                 Text="{Binding TaskGroup, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 />
-    
+
+            <Label
+                Grid.Row="2"
+                Grid.Column="0"
+                Margin="10,2,4,2"
+                VerticalAlignment="Center"
+                Style="{DynamicResource awsLabelBaseStyle}">
+                Placement Templates:
+            </Label>
+
+            <ComboBox
+                Name="_ctlPlacementTemplate"
+                Grid.Row="2"
+                Grid.Column="1"
+                Grid.ColumnSpan="3"
+                SelectedIndex="0"
+                Margin="4,2,4,2"
+                SelectedItem="{Binding Service, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Style="{DynamicResource awsComboBoxStyle}">
+                <ComboBoxItem>Availability Zone Balanced Spread</ComboBoxItem>
+            </ComboBox>
+
+            <TextBlock
+                Grid.Row="3"
+                Grid.Column="1"
+                Grid.ColumnSpan="3"
+                Margin="4,2,4,0"
+                FontStyle="Italic"
+                Style="{DynamicResource awsInfoTextStyle}"
+                TextWrapping="Wrap">
+                This template will spread tasks across availability zones and within the availability zone spread tasks across instances.
+            </TextBlock>
+        </Grid>
+
+
     </Grid>
 </commonUi:BaseAWSUserControl>

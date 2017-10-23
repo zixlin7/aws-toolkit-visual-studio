@@ -24,7 +24,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "A Service allows you to define how many instances of the application to run and how the application should be deployed in the Cluster.";
+                return "";
             }
         }
 
@@ -42,7 +42,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "ECS Service";
+                return "Amazon ECS Service";
             }
         }
 
