@@ -130,8 +130,10 @@
     <Compile Include="Model\ImageDetailWrapper.cs" />
     <Compile Include="Model\IWrapper.cs" />
     <Compile Include="Model\RepositoryWrapper.cs" />
+    <Compile Include="Model\ScheduledTaskWrapper.cs" />
     <Compile Include="Model\ServiceWrapper.cs" />
     <Compile Include="Model\TaskDefinitionWrapper.cs" />
+    <Compile Include="Model\TaskWrapper.cs" />
     <Compile Include="Model\ViewClusterModel.cs" />
     <Compile Include="Model\ViewRepositoryModel.cs" />
     <Compile Include="Model\ViewTaskDefinitionModel.cs" />
@@ -169,11 +171,17 @@
     <Compile Include="Nodes\TaskDefinitionViewMetaNode.cs" />
     <Compile Include="Nodes\TaskDefinitionViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="View\Components\ScheduledTasksTab.xaml.cs">
+      <DependentUpon>ScheduledTasksTab.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Components\ServicesTab.xaml.cs">
       <DependentUpon>ServicesTab.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Components\ServicesTabTemplate.xaml.cs">
       <DependentUpon>ServicesTabTemplate.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\TasksTab.xaml.cs">
+      <DependentUpon>TasksTab.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\DeleteServiceConfirmation.xaml.cs">
       <DependentUpon>DeleteServiceConfirmation.xaml</DependentUpon>
@@ -242,11 +250,19 @@
     <EmbeddedResource Include="Resources\EmbeddedImages\launch-cluster.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="View\Components\ScheduledTasksTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Components\ServicesTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Components\ServicesTabTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\TasksTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

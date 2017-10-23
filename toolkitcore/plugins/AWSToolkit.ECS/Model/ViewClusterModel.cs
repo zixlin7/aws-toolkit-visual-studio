@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.ElasticLoadBalancingV2.Model;
 
+using Amazon.ECS;
+
 namespace Amazon.AWSToolkit.ECS.Model
 {
     public class ViewClusterModel : BaseModel
@@ -14,6 +16,11 @@ namespace Amazon.AWSToolkit.ECS.Model
         public ClusterWrapper Cluster { get; internal set; }
 
         public ObservableCollection<ServiceWrapper> Services { get; } = new ObservableCollection<ServiceWrapper>();
+
+        public ObservableCollection<TaskWrapper> Tasks { get; } = new ObservableCollection<TaskWrapper>();
+        public ObservableCollection<ScheduledTaskWrapper> ScheduledTasks { get; } = new ObservableCollection<ScheduledTaskWrapper>();
+
+        public DesiredStatus TaskTabDesiredStatus { get; set; } = DesiredStatus.RUNNING;
 
         internal LoadBalancerState LBState { get;set; }
 

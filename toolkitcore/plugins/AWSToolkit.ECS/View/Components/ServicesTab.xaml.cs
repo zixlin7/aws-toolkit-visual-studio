@@ -48,9 +48,9 @@ namespace Amazon.AWSToolkit.ECS.View.Components
             }
             catch (Exception e)
             {
-                var msg = "Error fetching services for cluster";
+                var msg = "Error fetching services for cluster: " + e.Message;
                 LOGGER.Error(msg, e);
-                ToolkitFactory.Instance.ShellProvider.ShowError(msg, "Serivces Load Error");
+                ToolkitFactory.Instance.ShellProvider.ShowError("Serivces Load Error", msg);
             }
         }
     }

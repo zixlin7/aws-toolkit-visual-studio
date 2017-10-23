@@ -9,7 +9,9 @@ using Amazon.AWSToolkit.ECS.View;
 using Amazon.ECS.Model;
 using log4net;
 
+using Amazon.CloudWatchEvents;
 using Amazon.EC2;
+using Amazon.ECS;
 using Amazon.ElasticLoadBalancingV2;
 using Amazon.ElasticLoadBalancingV2.Model;
 using System.Threading;
@@ -22,6 +24,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
         ViewClusterControl _control;
 
+        IAmazonCloudWatchEvents _cweClient;
         IAmazonElasticLoadBalancingV2 _elbClient;
         IAmazonEC2 _ec2Client;
         string _clusterArn;
@@ -40,6 +43,8 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
             try
             {
+                this._cweClient = this.Account.CreateServiceClient<AmazonCloudWatchEventsClient>
+                    (RegionEndPointsManager.Instance.GetRegion(this.RegionSystemName).GetEndpoint(RegionEndPointsManager.CLOUDWATCH_EVENT_SERVICE_NAME));
                 this._elbClient = this.Account.CreateServiceClient<AmazonElasticLoadBalancingV2Client>
                     (RegionEndPointsManager.Instance.GetRegion(this.RegionSystemName).GetEndpoint(RegionEndPointsManager.ELB_SERVICE_NAME));
                 this._ec2Client = this.Account.CreateServiceClient<AmazonEC2Client>
@@ -112,7 +117,38 @@ namespace Amazon.AWSToolkit.ECS.Controller
             else
                 this.Model.Cluster.LoadFrom(response.Clusters[0]);
 
-            this.RefreshServices();
+            try
+            {
+                this.RefreshServices();
+            }
+            catch(Exception e)
+            {
+                var msg = "Error fetching services for cluster: " + e.Message;
+                LOGGER.Error(msg, e);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Serivces Load Error", msg);
+            }
+
+            try
+            {
+                this.RefreshTasks();
+            }
+            catch (Exception e)
+            {
+                var msg = "Error fetching tasks for cluster: " + e.Message;
+                LOGGER.Error(msg, e);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Serivces Load Error", msg);
+            }
+
+            try
+            {
+                this.RefreshScheduledTasks();
+            }
+            catch (Exception e)
+            {
+                var msg = "Error fetching scheduled tasks for cluster: " + e.Message;
+                LOGGER.Error(msg, e);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Serivces Load Error", msg);
+            }
 
         }
 
@@ -292,6 +328,80 @@ namespace Amazon.AWSToolkit.ECS.Controller
                     }
                 }
             }));
+        }
+
+        public void RefreshTasks()
+        {
+            this.Model.Tasks.Clear();
+
+            var tasksArns = this.ECSClient.ListTasks(new ListTasksRequest
+            {
+                Cluster = this._clusterArn,
+                DesiredStatus = this.Model.TaskTabDesiredStatus
+            }).TaskArns;
+
+            if (tasksArns.Count > 0)
+            {
+                var nativeTasks = this.ECSClient.DescribeTasks(new DescribeTasksRequest
+                {
+                    Cluster = this._clusterArn,
+                    Tasks = tasksArns
+                }).Tasks;
+
+                foreach (var nativeTask in nativeTasks)
+                {
+                    this.Model.Tasks.Add(new TaskWrapper(nativeTask));
+                }
+            }
+        }
+
+        public void StopTasks(IEnumerable<TaskWrapper> tasks)
+        {
+            foreach (var task in tasks)
+            {
+                this.ECSClient.StopTask(new StopTaskRequest
+                {
+                    Cluster = this._clusterArn,
+                    Task = task.NativeTask.TaskArn
+                });
+                ToolkitFactory.Instance.ShellProvider.UpdateStatus("Stopped task " + task.NativeTask.TaskArn);
+            }
+        }
+
+        public void RefreshScheduledTasks()
+        {
+            var state = CloudWatchEventHelper.FetchScheduleRuleState(this._cweClient, this._clusterArn);
+            this.Model.ScheduledTasks.Clear();
+            foreach (var ruleName in state.RuleNames)
+            {
+                this.Model.ScheduledTasks.Add(new ScheduledTaskWrapper(state.GetRule(ruleName), state.GetRuleTargets(ruleName)));
+            }
+        }
+
+        public void DeleteScheduleTasks(IEnumerable<ScheduledTaskWrapper> tasks)
+        {
+            foreach(var task in tasks)
+            {
+                var removeTargetsRequest = new Amazon.CloudWatchEvents.Model.RemoveTargetsRequest
+                {
+                    Rule = task.NativeRule.Name
+                };
+
+
+                foreach (var target in task.NativeTargets)
+                {
+                    removeTargetsRequest.Ids.Add(target.Id);
+                }
+
+                this._cweClient.RemoveTargets(removeTargetsRequest);
+                ToolkitFactory.Instance.ShellProvider.UpdateStatus("Removing targets from rule " + task.NativeRule.Name);
+
+                this._cweClient.DeleteRule(new Amazon.CloudWatchEvents.Model.DeleteRuleRequest
+                {
+                    Name = task.NativeRule.Name
+                });
+                ToolkitFactory.Instance.ShellProvider.UpdateStatus("Deleted rule " + task.NativeRule.Name);
+            }
         }
     }
 }

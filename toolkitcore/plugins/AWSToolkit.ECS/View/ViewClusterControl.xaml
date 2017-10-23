@@ -65,6 +65,12 @@
             <TabItem Header="Services">
                 <components:ServicesTab x:Name="_ctlServices"/>
             </TabItem>
+            <TabItem Header="Tasks">
+                <components:TasksTab x:Name="_ctlTasks"/>
+            </TabItem>
+            <TabItem Header="Scheduled Tasks">
+                <components:ScheduledTasksTab x:Name="_ctlScheduledTasks"/>
+            </TabItem>            
         </TabControl>
     </Grid>
 </commonui:BaseAWSView>

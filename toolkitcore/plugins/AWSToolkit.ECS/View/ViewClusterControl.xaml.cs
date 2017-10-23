@@ -33,6 +33,8 @@ namespace Amazon.AWSToolkit.ECS.View
             this._controller = controller;
 
             this._ctlServices.Initialize(this._controller);
+            this._ctlTasks.Initialize(this._controller);
+            this._ctlScheduledTasks.Initialize(this._controller);
 
         }
 
