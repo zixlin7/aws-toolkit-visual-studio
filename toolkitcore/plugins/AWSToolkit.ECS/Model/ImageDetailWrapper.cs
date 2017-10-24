@@ -17,23 +17,9 @@ namespace Amazon.AWSToolkit.ECS.Model
             _inner = inner;
         }
 
-        // temp property until we get a listbox in the grid column
-        public string ImageTagsFlattened
+        public ICollection<string> ImageTags
         {
-            get
-            {
-                var tags = new StringBuilder();
-                if (_inner != null)
-                {
-                    foreach (var t in _inner.ImageTags)
-                    {
-                        if (tags.Length > 0)
-                            tags.Append(";");
-                        tags.Append(t);
-                    }
-                }
-                return tags.ToString();
-            }
+            get { return _inner?.ImageTags; }
         }
 
         public string Digest

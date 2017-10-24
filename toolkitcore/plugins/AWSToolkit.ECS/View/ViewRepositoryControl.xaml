@@ -12,17 +12,19 @@
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <Style x:Key="HorizontalSeparatorBar" TargetType="{x:Type Rectangle}">
-                <Setter Property="Height" Value="2" />
-                <Setter Property="Fill" Value="{DynamicResource awsPanelBorderBrushKey}" />
+            <Style x:Key="tagBorderStyle" TargetType="{x:Type Border}">
+                <Setter Property="BorderThickness" Value="1" />
+                <Setter Property="BorderBrush" Value="CadetBlue"/>
+                <Setter Property="Background" Value="CadetBlue"/>
+                <Setter Property="CornerRadius" Value="4" />
+                <Setter Property="Margin" Value="2,1" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+            
+            <Style x:Key="tagLabelStyle" TargetType="{x:Type Label}" BasedOn="{StaticResource awsLabelBaseStyle}">
                 <Setter Property="Margin" Value="0" />
+                <Setter Property="Padding" Value="2,1" />
             </Style>
-
-            <Style x:Key="flowDocumentStyle" TargetType="{x:Type FlowDocument}">
-                <Setter Property="FontFamily" Value="{DynamicResource {x:Static themes:ShellProviderThemeResources.EnvironmentFontFamilyKey}}" />
-                <Setter Property="FontSize" Value="{DynamicResource {x:Static themes:ShellProviderThemeResources.EnvironmentFontSizeKey}}" />
-            </Style>
-
         </ResourceDictionary>
     </commonui:BaseAWSView.Resources>
 
@@ -51,7 +53,6 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="2"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="2"/>
                     </Grid.RowDefinitions>
                     
                     <TextBlock Grid.Row="0"
@@ -75,7 +76,7 @@
                     <Rectangle Grid.Row="1" 
                            HorizontalAlignment="Stretch" 
                            Margin="5,0" 
-                           Style="{StaticResource HorizontalSeparatorBar}"
+                           Style="{DynamicResource awsHorizontalSeparatorBar}"
                     />
 
                     <Grid Grid.Row="2">
@@ -115,17 +116,10 @@
                                Text="{Binding Repository.RepositoryUri, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                     </Grid>
-
-                    <Rectangle Grid.Row="3" 
-                           Grid.Column="0"
-                           HorizontalAlignment="Stretch" 
-                           Margin="5,0" 
-                           Style="{StaticResource HorizontalSeparatorBar}"
-                    />
                 </Grid>
 
                 <!-- images -->
-                <Grid Grid.Row="1" Margin="0,10,0,5">
+                <Grid Grid.Row="1" Margin="0,15,0,5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
@@ -155,7 +149,8 @@
                         IsReadOnly="True"
                         ItemsSource="{Binding Repository.Images, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                         BorderThickness="2"
-                        BorderBrush="{DynamicResource awsPanelBorderBrushKey}">
+                        BorderBrush="{DynamicResource awsPanelBorderBrushKey}"
+                        VerticalContentAlignment="Center">
 
                         <commonui:ToolkitDataGridWrapper.RowHeaderTemplate>
                             <DataTemplate>
@@ -164,8 +159,29 @@
                         </commonui:ToolkitDataGridWrapper.RowHeaderTemplate>
                         
                         <DataGrid.Columns>
-                            <DataGridTextColumn Width="300" Header="Tags" Binding="{Binding ImageTagsFlattened}"/>
+                            <DataGridTemplateColumn Width="300" Header="Tags">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ItemsControl ItemsSource="{Binding ImageTags, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <StackPanel Orientation="Horizontal" />
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Style="{StaticResource tagBorderStyle}">
+                                                        <Label Style="{StaticResource tagLabelStyle}" Content="{Binding}" />
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            
                             <DataGridTextColumn Width="500" Header="Digest" Binding="{Binding Digest}"/>
+                            
                             <DataGridTextColumn Width="100" Header="Size (MiB)" Binding="{Binding Size}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
@@ -195,7 +211,7 @@
                         
                         <FlowDocumentScrollViewer VerticalScrollBarVisibility="Auto">
                             
-                            <FlowDocument Style="{StaticResource flowDocumentStyle}">
+                            <FlowDocument Style="{DynamicResource awsFlowDocumentBaseStyle}">
                                 <Paragraph>
                                     <Run>
                                         To install Docker and either the AWS Tools for PowerShell or the AWS CLI, 

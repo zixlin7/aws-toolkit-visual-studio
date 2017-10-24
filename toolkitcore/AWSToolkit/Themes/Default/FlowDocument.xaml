@@ -1,0 +1,10 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:toolkitThemes="clr-namespace:Amazon.AWSToolkit.Themes">
+
+    <Style x:Key="awsFlowDocumentBaseStyle" TargetType="{x:Type FlowDocument}">
+        <Setter Property="FontFamily" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontFamilyKey}}" />
+        <Setter Property="FontSize" Value="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentFontSizeKey}}" />
+    </Style>
+    
+</ResourceDictionary>
