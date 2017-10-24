@@ -145,7 +145,7 @@ namespace Amazon.ECS.Tools.Commands
         public bool SkipImagePush { get; set; }
 
         public string TaskGroup { get; set; }
-        public int DesiredCount { get; set; }
+        public int? DesiredCount { get; set; }
 
         internal void ParseCommandArguments(CommandOptions values)
         {
