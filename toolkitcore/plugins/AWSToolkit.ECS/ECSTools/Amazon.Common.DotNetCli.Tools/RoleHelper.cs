@@ -10,7 +10,7 @@ using Amazon.Auth.AccessControlPolicy;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 
-namespace Amazon.ECS.Tools
+namespace Amazon.Common.DotNetCli.Tools
 {
     /// <summary>
     /// Utility class for interacting with console user to select or create an IAM role
@@ -155,7 +155,7 @@ namespace Amazon.ECS.Tools
 
             if(task.Result == null)
             {
-                throw new DockerToolsException($"Role \"{roleName}\" can not be found.", DockerToolsException.ErrorCode.RoleNotFound);
+                throw new ToolsException($"Role \"{roleName}\" can not be found.", ToolsException.CommonErrorCode.RoleNotFound);
             }
 
             return task.Result;
@@ -180,7 +180,7 @@ namespace Amazon.ECS.Tools
             }
             catch (Exception e)
             {
-                throw new DockerToolsException($"Error creating IAM Role: {e.Message}", DockerToolsException.ErrorCode.IAMCreateRole, e);
+                throw new ToolsException($"Error creating IAM Role: {e.Message}", ToolsException.CommonErrorCode.IAMCreateRole, e);
             }
 
             if (!string.IsNullOrEmpty(managedRole))
@@ -196,7 +196,7 @@ namespace Amazon.ECS.Tools
                 }
                 catch (Exception e)
                 {
-                    throw new DockerToolsException($"Error assigning managed IAM Policy: {e.Message}", DockerToolsException.ErrorCode.IAMAttachRole, e);
+                    throw new ToolsException($"Error assigning managed IAM Policy: {e.Message}", ToolsException.CommonErrorCode.IAMAttachRole, e);
                 }
             }
 
@@ -228,7 +228,7 @@ namespace Amazon.ECS.Tools
                 }
                 catch (Exception e)
                 {
-                    throw new DockerToolsException("Error confirming new role was created: " + e.Message, DockerToolsException.ErrorCode.IAMGetRole, e);
+                    throw new ToolsException("Error confirming new role was created: " + e.Message, ToolsException.CommonErrorCode.IAMGetRole, e);
                 }
             } while (!found);
 

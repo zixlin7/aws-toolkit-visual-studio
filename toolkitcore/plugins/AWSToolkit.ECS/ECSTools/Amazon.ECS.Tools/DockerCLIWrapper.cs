@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Amazon.Common.DotNetCli.Tools;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Amazon.Runtime;
+using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.ECS.Tools
 {
@@ -11,16 +12,9 @@ namespace Amazon.ECS.Tools
     /// The deploy tool exception. This is used to throw back an error to the user but is considerd a known error
     /// so the stack trace will not be displayed.
     /// </summary>
-    public class DockerToolsException : Exception
+    public class DockerToolsException : ToolsException
     {
-        public enum ErrorCode {
-
-            DefaultsParseFail,
-            CommandLineParseError,
-            ProfileNotFound,
-            RegionNotConfigured,
-            MissingRequiredParameter,
-            PersistConfigError,
+        public enum ECSErrorCode {
 
             DotnetPublishFailed,
             DockerBuildFailed,
@@ -36,11 +30,6 @@ namespace Amazon.ECS.Tools
             FailedToUpdateService,
             ClusterNotFound,
 
-            IAMAttachRole,
-            IAMCreateRole,
-            IAMGetRole,
-            RoleNotFound,
-
             PutRuleFail,
             PutTargetFail,
 
@@ -48,22 +37,17 @@ namespace Amazon.ECS.Tools
 
         }
 
-        public DockerToolsException(string message, ErrorCode code) : base(message)
+        public DockerToolsException(string message, ECSErrorCode code) : base(message, code.ToString(), null)
         {
-            this.Code = code;
         }
 
-        public DockerToolsException(string message, ErrorCode code, Exception e) : this(message, code)
+        public DockerToolsException(string message, CommonErrorCode code) : base(message, code.ToString(), null)
         {
-            var ae = e as AmazonServiceException;
-            if (ae != null)
-            {
-                this.ServiceCode = $"{ae.ErrorCode}-{ae.StatusCode}";
-            }
         }
 
-        public ErrorCode Code { get; }
+        public DockerToolsException(string message, ECSErrorCode code, Exception e) : base(message, code.ToString(), e)
+        {
+        }
 
-        public string ServiceCode { get; }
     }
 }

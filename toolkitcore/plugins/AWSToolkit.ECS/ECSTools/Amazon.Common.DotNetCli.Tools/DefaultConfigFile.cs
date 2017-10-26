@@ -1,60 +1,27 @@
-﻿using System;
+﻿using Amazon.Common.DotNetCli.Tools.Options;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Linq;
-using System.Threading.Tasks;
-
-using Amazon.ECS.Tools.Commands;
-using Amazon.ECS.Tools.Options;
-
 using ThirdParty.Json.LitJson;
 
-namespace Amazon.ECS.Tools
+namespace Amazon.Common.DotNetCli.Tools
 {
-    /// <summary>
-    /// Reads in the json format 'defaults' file for the project.
-    /// </summary>
-    public static class DockerToolsDefaultsReader
-    {
-        public const string DEFAULT_FILE_NAME = "aws-docker-tools-defaults.json";
-
-        public static DockerToolsDefaults LoadDefaults(string projectLocation, string configFile)
-        {
-            string path = Path.Combine(projectLocation, configFile);
-
-            var defaults = new DockerToolsDefaults(path);
-            if (!File.Exists(path))
-                return defaults;
-
-            using (var reader = new StreamReader(File.OpenRead(path)))
-            {
-                try
-                {
-                    JsonData data = JsonMapper.ToObject(reader) as JsonData;
-                    return new DockerToolsDefaults(data, path);
-                }
-                catch (Exception e)
-                {
-                    throw new DockerToolsException($"Error parsing default config {path}: {e.Message}", DockerToolsException.ErrorCode.DefaultsParseFail, e);
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// This class gives access to the default values for the CommandOptions defined in the project's default json file.
-    /// </summary>
-    public class DockerToolsDefaults
+    public abstract class DefaultConfigFile
     {
         JsonData _rootData;
 
-        public DockerToolsDefaults(string sourceFile)
+        public DefaultConfigFile()
+    :       this(new JsonData(), string.Empty)
+        {
+        }
+
+        public DefaultConfigFile(string sourceFile)
             : this(new JsonData(), sourceFile)
         {
         }
 
-        public DockerToolsDefaults(JsonData data, string sourceFile)
+        public DefaultConfigFile(JsonData data, string sourceFile)
         {
             this._rootData = data ?? new JsonData();
             this.SourceFile = sourceFile;
@@ -66,6 +33,31 @@ namespace Amazon.ECS.Tools
         public string SourceFile
         {
             get;
+            private set;
+        }
+
+        public abstract string DefaultConfigFileName { get; }
+
+
+        public void LoadDefaults(string projectLocation, string configFile)
+        {
+            string path = Path.Combine(projectLocation, configFile);
+
+            if (!File.Exists(path))
+                return;
+
+            using (var reader = new StreamReader(File.OpenRead(path)))
+            {
+                try
+                {
+                    this._rootData = JsonMapper.ToObject(reader) as JsonData;
+                    this.SourceFile = path;
+                }
+                catch (Exception e)
+                {
+                    throw new ToolsException($"Error parsing default config {path}: {e.Message}", ToolsException.CommonErrorCode.DefaultsParseFail, e);
+                }
+            }
         }
 
         /// <summary>
@@ -92,7 +84,7 @@ namespace Amazon.ECS.Tools
                 if (this._rootData[fullSwitchName].IsArray)
                 {
                     var items = new string[this._rootData[fullSwitchName].Count];
-                    for(int i = 0; i < items.Length; i++)
+                    for (int i = 0; i < items.Length; i++)
                     {
                         items[i] = this._rootData[fullSwitchName][i].ToString();
                     }
@@ -156,7 +148,7 @@ namespace Amazon.ECS.Tools
 
             StringBuilder sb = new StringBuilder();
 
-            foreach(var kvp in values)
+            foreach (var kvp in values)
             {
                 if (sb.Length > 0)
                     sb.Append(";");

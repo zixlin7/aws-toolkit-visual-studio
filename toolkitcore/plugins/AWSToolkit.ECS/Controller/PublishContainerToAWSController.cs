@@ -16,7 +16,7 @@ using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.ECS.WizardPages.PageControllers;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
 using Amazon.ECS.Tools;
-using Amazon.ECS.Tools.Options;
+using Amazon.Common.DotNetCli.Tools.Options;
 
 namespace Amazon.AWSToolkit.ECS.Controller
 {
@@ -35,12 +35,13 @@ namespace Amazon.AWSToolkit.ECS.Controller
         private void LoadPreviousSettings(Dictionary<string, object> seedValues)
         {
             var sourcePath = seedValues[PublishContainerToAWSWizardProperties.SourcePath] as string;
-            if (!File.Exists(Path.Combine(sourcePath, DockerToolsDefaultsReader.DEFAULT_FILE_NAME)))
+            if (!File.Exists(Path.Combine(sourcePath, DockerToolsDefaults.DEFAULT_FILE_NAME)))
                 return;
 
             try
             {
-                var defaults = DockerToolsDefaultsReader.LoadDefaults(sourcePath, DockerToolsDefaultsReader.DEFAULT_FILE_NAME);
+                var defaults = new DockerToolsDefaults();
+                defaults.LoadDefaults(sourcePath, DockerToolsDefaults.DEFAULT_FILE_NAME);
 
                 Action<CommandOption, string> copyValues = (commandOption, seedKey) =>
                 {
@@ -58,7 +59,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                             int b;
                             if (int.TryParse(value, out b))
                             {
-                                if (commandOption == DefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT || commandOption == DefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT)
+                                if (commandOption == ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT || commandOption == ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT)
                                 {
                                     seedValues[seedKey] = new int?(b);
                                 }
@@ -75,9 +76,9 @@ namespace Amazon.AWSToolkit.ECS.Controller
                     }
                 };
 
-                if (defaults.GetValueAsString(DefinedCommandOptions.ARGUMENT_DOCKER_TAG) != null)
+                if (defaults.GetValueAsString(ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG) != null)
                 {
-                    var fullName = defaults.GetValueAsString(DefinedCommandOptions.ARGUMENT_DOCKER_TAG);
+                    var fullName = defaults.GetValueAsString(ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG);
 
                     if (fullName.Contains(":"))
                     {
@@ -91,19 +92,19 @@ namespace Amazon.AWSToolkit.ECS.Controller
                     }
                 }
 
-                copyValues(DefinedCommandOptions.ARGUMENT_CONFIGURATION, PublishContainerToAWSWizardProperties.Configuration);
-                copyValues(DefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, PublishContainerToAWSWizardProperties.TaskDefinition);
-                copyValues(DefinedCommandOptions.ARGUMENT_ECS_CONTAINER, PublishContainerToAWSWizardProperties.Container);
-                copyValues(DefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT, PublishContainerToAWSWizardProperties.MemoryHardLimit);
-                copyValues(DefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT, PublishContainerToAWSWizardProperties.MemorySoftLimit);
-                copyValues(DefinedCommandOptions.ARGUMENT_ECS_CLUSTER, PublishContainerToAWSWizardProperties.Cluster);
-                copyValues(DefinedCommandOptions.ARGUMENT_ECS_SERVICE, PublishContainerToAWSWizardProperties.Service);
-                copyValues(DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, PublishContainerToAWSWizardProperties.DesiredCount);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_CONFIGURATION, PublishContainerToAWSWizardProperties.Configuration);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, PublishContainerToAWSWizardProperties.TaskDefinition);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER, PublishContainerToAWSWizardProperties.Container);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT, PublishContainerToAWSWizardProperties.MemoryHardLimit);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT, PublishContainerToAWSWizardProperties.MemorySoftLimit);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER, PublishContainerToAWSWizardProperties.Cluster);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_SERVICE, PublishContainerToAWSWizardProperties.Service);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, PublishContainerToAWSWizardProperties.DesiredCount);
 
-                if (defaults.GetValueAsString(DefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING) != null)
+                if (defaults.GetValueAsString(ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING) != null)
                 {
                     var mappings = new List<WizardPages.PageUI.PortMappingItem>();
-                    var portMappingStr = defaults.GetValueAsString(DefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING);
+                    var portMappingStr = defaults.GetValueAsString(ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING);
                     foreach (var token in portMappingStr.Split(';'))
                     {
                         var ports = token.Split(':');

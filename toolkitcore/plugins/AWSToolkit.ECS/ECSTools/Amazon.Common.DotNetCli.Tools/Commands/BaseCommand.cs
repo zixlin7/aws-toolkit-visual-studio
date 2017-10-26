@@ -1,99 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using Amazon;
+﻿using Amazon.Common.DotNetCli.Tools.Options;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
-
-using Amazon.CloudWatchEvents;
-using Amazon.ECR;
-using Amazon.ECS;
-
-using Amazon.ECS.Tools.Options;
-using System.Reflection;
-using ThirdParty.Json.LitJson;
-using System.Text;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using ThirdParty.Json.LitJson;
 
-namespace Amazon.ECS.Tools.Commands
+using Amazon.IdentityManagement;
+
+namespace Amazon.Common.DotNetCli.Tools.Commands
 {
-
-    public abstract class BaseCommand : ICommand
+    public abstract class BaseCommand<TDefaultConfig> : ICommand
+        where TDefaultConfig : DefaultConfigFile, new()
     {
-        /// <summary>
-        /// The common options used by every command
-        /// </summary>
-        protected static readonly IList<CommandOption> CommonOptions = new List<CommandOption>
-        {
-            DefinedCommandOptions.ARGUMENT_DISABLE_INTERACTIVE,
-            DefinedCommandOptions.ARGUMENT_AWS_REGION,
-            DefinedCommandOptions.ARGUMENT_AWS_PROFILE,
-            DefinedCommandOptions.ARGUMENT_AWS_PROFILE_LOCATION,
-            DefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
-            DefinedCommandOptions.ARGUMENT_CONFIG_FILE
-        };
+        public ToolsException LastToolsException { get; protected set; }
 
-        public abstract Task<bool> ExecuteAsync();
-
-        /// <summary>
-        /// Used to combine the command specific command options with the common options.
-        /// </summary>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        protected static IList<CommandOption> BuildLineOptions(List<CommandOption> options)
-        {
-            var list = new List<CommandOption>();
-            list.AddRange(CommonOptions);
-            list.AddRange(options);
-
-            return list;
-        }
-
-        public string Region { get; set; }
-        public string Profile { get; set; }
-        public string ProfileLocation { get; set; }
-        public AWSCredentials Credentials { get; set; }
-        public string ProjectLocation { get; set; }
-        public string ConfigFile { get; set; }
-
-        /// <summary>
-        /// Disable all Console.Read operations to make sure the command is never blocked waiting for input. This is 
-        /// used by the AWS Visual Studio Toolkit to make sure it never gets blocked.
-        /// </summary>
-        public bool DisableInteractive { get; set; } = false;
-
-
-
-        public IToolLogger Logger { get; protected set; }
-        public string WorkingDirectory { get; set; }
-
-        public DockerToolsException LastToolsException { get; protected set; }
-
-        public string [] OriginalCommandLineArguments { get; private set; }
-
-
-        DockerToolsDefaults _defaultConfig;
-        public DockerToolsDefaults DefaultConfig
-        {
-            get
-            {
-                if (this._defaultConfig == null)
-                {
-                    this._defaultConfig = DockerToolsDefaultsReader.LoadDefaults(Utilities.DetermineProjectLocation(this.WorkingDirectory, this.ProjectLocation), this.ConfigFile);
-                }
-                return this._defaultConfig;
-            }
-        }
-
-        private static void SetUserAgentString()
-        {
-            string version = typeof(BaseCommand).GetTypeInfo().Assembly.GetName().Version.ToString();
-            Util.Internal.InternalSDKUtils.SetUserAgent("AWSDockerToolsDotnet",
-                                          version);
-        }
-
+        public string[] OriginalCommandLineArguments { get; private set; }
 
         public BaseCommand(IToolLogger logger, string workingDirectory)
         {
@@ -109,6 +34,40 @@ namespace Amazon.ECS.Tools.Commands
             ParseCommandArguments(values);
         }
 
+        public abstract Task<bool> ExecuteAsync();
+
+        protected abstract string ToolName
+        {
+            get;
+        }
+
+        /// <summary>
+        /// The common options used by every command
+        /// </summary>
+        protected static readonly IList<CommandOption> CommonOptions = new List<CommandOption>
+        {
+            CommonDefinedCommandOptions.ARGUMENT_DISABLE_INTERACTIVE,
+            CommonDefinedCommandOptions.ARGUMENT_AWS_REGION,
+            CommonDefinedCommandOptions.ARGUMENT_AWS_PROFILE,
+            CommonDefinedCommandOptions.ARGUMENT_AWS_PROFILE_LOCATION,
+            CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
+            CommonDefinedCommandOptions.ARGUMENT_CONFIG_FILE
+        };
+
+        /// <summary>
+        /// Used to combine the command specific command options with the common options.
+        /// </summary>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        protected static IList<CommandOption> BuildLineOptions(List<CommandOption> options)
+        {
+            var list = new List<CommandOption>();
+            list.AddRange(CommonOptions);
+            list.AddRange(options);
+
+            return list;
+        }
+
         /// <summary>
         /// Parse the CommandOptions into the Properties on the command.
         /// </summary>
@@ -116,82 +75,57 @@ namespace Amazon.ECS.Tools.Commands
         protected virtual void ParseCommandArguments(CommandOptions values)
         {
             Tuple<CommandOption, CommandOptionValue> tuple;
-            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_DISABLE_INTERACTIVE.Switch)) != null)
+            if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_DISABLE_INTERACTIVE.Switch)) != null)
                 this.DisableInteractive = tuple.Item2.BoolValue;
-            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_AWS_PROFILE.Switch)) != null)
+            if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_AWS_PROFILE.Switch)) != null)
                 this.Profile = tuple.Item2.StringValue;
-            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_AWS_PROFILE_LOCATION.Switch)) != null)
+            if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_AWS_PROFILE_LOCATION.Switch)) != null)
                 this.ProfileLocation = tuple.Item2.StringValue;
-            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_AWS_REGION.Switch)) != null)
+            if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_AWS_REGION.Switch)) != null)
                 this.Region = tuple.Item2.StringValue;
-            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_PROJECT_LOCATION.Switch)) != null)
+            if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION.Switch)) != null)
                 this.ProjectLocation = tuple.Item2.StringValue;
-            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_CONFIG_FILE.Switch)) != null)
+            if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_CONFIG_FILE.Switch)) != null)
                 this.ConfigFile = tuple.Item2.StringValue;
 
             if (string.IsNullOrEmpty(this.ConfigFile))
-                this.ConfigFile = DockerToolsDefaultsReader.DEFAULT_FILE_NAME;
+                this.ConfigFile = new TDefaultConfig().DefaultConfigFileName;
         }
 
-        IAmazonCloudWatchEvents _cweClient;
-        public IAmazonCloudWatchEvents CWEClient
+
+
+
+        TDefaultConfig _defaultConfig;
+        public TDefaultConfig DefaultConfig
         {
             get
             {
-                if (this._cweClient == null)
+                if (this._defaultConfig == null)
                 {
-                    SetUserAgentString();
-
-                    var config = new AmazonCloudWatchEventsConfig();
-                    config.RegionEndpoint = DetermineAWSRegion();
-
-                    this._cweClient = new AmazonCloudWatchEventsClient(DetermineAWSCredentials(), config);
+                    var config = new TDefaultConfig();
+                    config.LoadDefaults(Utilities.DetermineProjectLocation(this.WorkingDirectory, this.ProjectLocation), this.ConfigFile);
+                    this._defaultConfig = config;
                 }
-                return this._cweClient;
+                return this._defaultConfig;
             }
-            set { this._cweClient = value; }
-        }
-
-        IAmazonECR _ecrClient;
-        public IAmazonECR ECRClient
-        {
-            get
-            {
-                if (this._ecrClient == null)
-                {
-                    SetUserAgentString();
-
-                    var config = new AmazonECRConfig();
-                    config.RegionEndpoint = DetermineAWSRegion();
-
-                    this._ecrClient = new AmazonECRClient(DetermineAWSCredentials(), config);
-                }
-                return this._ecrClient;
-            }
-            set { this._ecrClient = value; }
-        }
-
-        IAmazonECS _ecsClient;
-        public IAmazonECS ECSClient
-        {
-            get
-            {
-                if (this._ecsClient == null)
-                {
-                    SetUserAgentString();
-
-                    var config = new AmazonECSConfig();
-                    config.RegionEndpoint = DetermineAWSRegion();
-
-                    this._ecsClient = new AmazonECSClient(DetermineAWSCredentials(), config);
-                }
-                return this._ecsClient;
-            }
-            set { this._ecsClient = value; }
         }
 
 
-        private AWSCredentials DetermineAWSCredentials()
+
+        public string Region { get; set; }
+        public string Profile { get; set; }
+        public string ProfileLocation { get; set; }
+        public AWSCredentials Credentials { get; set; }
+        public string ProjectLocation { get; set; }
+        public string ConfigFile { get; set; }
+
+        /// <summary>
+        /// Disable all Console.Read operations to make sure the command is never blocked waiting for input. This is 
+        /// used by the AWS Visual Studio Toolkit to make sure it never gets blocked.
+        /// </summary>
+        public bool DisableInteractive { get; set; } = false;
+
+        protected AWSCredentials DetermineAWSCredentials()
         {
             AWSCredentials credentials;
             if (this.Credentials != null)
@@ -203,7 +137,7 @@ namespace Amazon.ECS.Tools.Commands
                 var profile = this.Profile;
                 if (string.IsNullOrEmpty(profile))
                 {
-                    profile = DefaultConfig[DefinedCommandOptions.ARGUMENT_AWS_PROFILE.Switch] as string;
+                    profile = DefaultConfig[CommonDefinedCommandOptions.ARGUMENT_AWS_PROFILE.Switch] as string;
                 }
 
                 if (!string.IsNullOrEmpty(profile))
@@ -211,7 +145,7 @@ namespace Amazon.ECS.Tools.Commands
                     var chain = new CredentialProfileStoreChain(this.ProfileLocation);
                     if (!chain.TryGetAWSCredentials(profile, out credentials))
                     {
-                        throw new DockerToolsException($"Credentials for profile {profile} cannot be found", DockerToolsException.ErrorCode.ProfileNotFound);
+                        throw new ToolsException($"Credentials for profile {profile} cannot be found", ToolsException.CommonErrorCode.ProfileNotFound);
                     }
                 }
                 else
@@ -223,17 +157,17 @@ namespace Amazon.ECS.Tools.Commands
             return credentials;
         }
 
-        private RegionEndpoint DetermineAWSRegion()
+        protected RegionEndpoint DetermineAWSRegion()
         {
             // See if a region has been set but don't prompt if not set.
-            var regionName = this.GetStringValueOrDefault(this.Region, DefinedCommandOptions.ARGUMENT_AWS_REGION, false);
-            if(!string.IsNullOrWhiteSpace(regionName))
+            var regionName = this.GetStringValueOrDefault(this.Region, CommonDefinedCommandOptions.ARGUMENT_AWS_REGION, false);
+            if (!string.IsNullOrWhiteSpace(regionName))
             {
                 return RegionEndpoint.GetBySystemName(regionName);
             }
 
             // See if we can find a region using the region fallback logic.
-            if(string.IsNullOrWhiteSpace(regionName))
+            if (string.IsNullOrWhiteSpace(regionName))
             {
                 var region = FallbackRegionFactory.GetRegionEndpoint(true);
                 if (region != null)
@@ -243,13 +177,13 @@ namespace Amazon.ECS.Tools.Commands
             }
 
             // If we still don't have a region prompt the user for a region.
-            regionName = this.GetStringValueOrDefault(this.Region, DefinedCommandOptions.ARGUMENT_AWS_REGION, true);
+            regionName = this.GetStringValueOrDefault(this.Region, CommonDefinedCommandOptions.ARGUMENT_AWS_REGION, true);
             if (!string.IsNullOrWhiteSpace(regionName))
             {
                 return RegionEndpoint.GetBySystemName(regionName);
             }
 
-            throw new DockerToolsException("Can not determine AWS region. Either configure a default region or use the --region option.", DockerToolsException.ErrorCode.RegionNotConfigured);
+            throw new ToolsException("Can not determine AWS region. Either configure a default region or use the --region option.", ToolsException.CommonErrorCode.RegionNotConfigured);
         }
 
         /// <summary>
@@ -285,9 +219,9 @@ namespace Amazon.ECS.Tools.Commands
                 return cachedValue;
             }
 
-            if(required)
+            if (required)
             {
-                throw new DockerToolsException($"Missing required parameter: {option.Switch}", DockerToolsException.ErrorCode.MissingRequiredParameter);
+                throw new ToolsException($"Missing required parameter: {option.Switch}", ToolsException.CommonErrorCode.MissingRequiredParameter);
             }
 
             return null;
@@ -330,7 +264,7 @@ namespace Amazon.ECS.Tools.Commands
 
             if (required)
             {
-                throw new DockerToolsException($"Missing required parameter: {option.Switch}", DockerToolsException.ErrorCode.MissingRequiredParameter);
+                throw new ToolsException($"Missing required parameter: {option.Switch}", ToolsException.CommonErrorCode.MissingRequiredParameter);
             }
 
             return null;
@@ -366,7 +300,7 @@ namespace Amazon.ECS.Tools.Commands
 
             if (required)
             {
-                throw new DockerToolsException($"Missing required parameter: {option.Switch}", DockerToolsException.ErrorCode.MissingRequiredParameter);
+                throw new ToolsException($"Missing required parameter: {option.Switch}", ToolsException.CommonErrorCode.MissingRequiredParameter);
             }
 
             return null;
@@ -399,7 +333,7 @@ namespace Amazon.ECS.Tools.Commands
                 int i;
                 if (!int.TryParse(userValue, out i))
                 {
-                    throw new DockerToolsException($"{userValue} cannot be parsed into an integer for {option.Name}", DockerToolsException.ErrorCode.CommandLineParseError);
+                    throw new ToolsException($"{userValue} cannot be parsed into an integer for {option.Name}", ToolsException.CommonErrorCode.CommandLineParseError);
                 }
                 return i;
             }
@@ -407,7 +341,7 @@ namespace Amazon.ECS.Tools.Commands
             {
                 var cachedValue = _cachedRequestedValues[option];
                 int i;
-                if(int.TryParse(cachedValue, out i))
+                if (int.TryParse(cachedValue, out i))
                 {
                     return i;
                 }
@@ -415,7 +349,7 @@ namespace Amazon.ECS.Tools.Commands
 
             if (required)
             {
-                throw new DockerToolsException($"Missing required parameter: {option.Switch}", DockerToolsException.ErrorCode.MissingRequiredParameter);
+                throw new ToolsException($"Missing required parameter: {option.Switch}", ToolsException.CommonErrorCode.MissingRequiredParameter);
             }
 
             return null;
@@ -448,7 +382,7 @@ namespace Amazon.ECS.Tools.Commands
                 bool i;
                 if (bool.TryParse(userValue, out i))
                 {
-                    throw new DockerToolsException($"{userValue} cannot be parsed into a boolean for {option.Name}", DockerToolsException.ErrorCode.CommandLineParseError);
+                    throw new ToolsException($"{userValue} cannot be parsed into a boolean for {option.Name}", ToolsException.CommonErrorCode.CommandLineParseError);
                 }
                 return i;
             }
@@ -464,7 +398,7 @@ namespace Amazon.ECS.Tools.Commands
 
             if (required)
             {
-                throw new DockerToolsException($"Missing required parameter: {option.Switch}", DockerToolsException.ErrorCode.MissingRequiredParameter);
+                throw new ToolsException($"Missing required parameter: {option.Switch}", ToolsException.CommonErrorCode.MissingRequiredParameter);
             }
 
             return null;
@@ -492,7 +426,40 @@ namespace Amazon.ECS.Tools.Commands
 
             _cachedRequestedValues[option] = input;
             return input;
-        }        
+        }
+
+
+
+
+
+        public IToolLogger Logger { get; protected set; }
+        public string WorkingDirectory { get; set; }
+
+        protected void SetUserAgentString()
+        {
+            string version = this.GetType().GetTypeInfo().Assembly.GetName().Version.ToString();
+            Util.Internal.InternalSDKUtils.SetUserAgent(this.ToolName,
+                                          version);
+        }
+
+        IAmazonIdentityManagementService _iamClient;
+        public IAmazonIdentityManagementService IAMClient
+        {
+            get
+            {
+                if (this._iamClient == null)
+                {
+                    SetUserAgentString();
+
+                    var config = new AmazonIdentityManagementServiceConfig();
+                    config.RegionEndpoint = DetermineAWSRegion();
+
+                    this._iamClient = new AmazonIdentityManagementServiceClient(DetermineAWSCredentials(), config);
+                }
+                return this._iamClient;
+            }
+            set { this._iamClient = value; }
+        }
 
         protected void SaveConfigFile()
         {
@@ -508,9 +475,9 @@ namespace Amazon.ECS.Tools.Commands
                     data = new JsonData();
                 }
 
-                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_AWS_REGION.ConfigFileKey, this.GetStringValueOrDefault(this.Region, DefinedCommandOptions.ARGUMENT_AWS_REGION, false));
-                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_AWS_PROFILE.ConfigFileKey, this.GetStringValueOrDefault(this.Profile, DefinedCommandOptions.ARGUMENT_AWS_PROFILE, false));
-                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_AWS_PROFILE_LOCATION.ConfigFileKey, this.GetStringValueOrDefault(this.ProfileLocation, DefinedCommandOptions.ARGUMENT_AWS_PROFILE_LOCATION, false));
+                data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_AWS_REGION.ConfigFileKey, this.GetStringValueOrDefault(this.Region, CommonDefinedCommandOptions.ARGUMENT_AWS_REGION, false));
+                data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_AWS_PROFILE.ConfigFileKey, this.GetStringValueOrDefault(this.Profile, CommonDefinedCommandOptions.ARGUMENT_AWS_PROFILE, false));
+                data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_AWS_PROFILE_LOCATION.ConfigFileKey, this.GetStringValueOrDefault(this.ProfileLocation, CommonDefinedCommandOptions.ARGUMENT_AWS_PROFILE_LOCATION, false));
 
 
                 SaveConfigFile(data);
@@ -526,7 +493,7 @@ namespace Amazon.ECS.Tools.Commands
             }
             catch (Exception e)
             {
-                throw new DockerToolsException("Error persisting configuration file: " + e.Message, DockerToolsException.ErrorCode.PersistConfigError);
+                throw new ToolsException("Error persisting configuration file: " + e.Message, ToolsException.CommonErrorCode.PersistConfigError);
             }
         }
 

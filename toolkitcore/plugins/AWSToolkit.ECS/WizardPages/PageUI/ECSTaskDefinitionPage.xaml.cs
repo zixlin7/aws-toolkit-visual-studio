@@ -18,6 +18,7 @@ using System.Collections.ObjectModel;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.ECS.Tools;
+using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 {

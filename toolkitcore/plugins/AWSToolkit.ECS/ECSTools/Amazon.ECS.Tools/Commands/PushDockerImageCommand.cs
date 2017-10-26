@@ -1,5 +1,4 @@
-﻿using Amazon.ECS.Tools.Options;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,22 +7,24 @@ using Amazon.ECR.Model;
 using Amazon.ECR;
 using ThirdParty.Json.LitJson;
 using System.IO;
+using Amazon.Common.DotNetCli.Tools.Options;
+using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.ECS.Tools.Commands
 {
-    public class PushDockerImageCommand : BaseCommand
+    public class PushDockerImageCommand : ECSBaseCommand
     {
-        public const string COMMAND_NAME = "push";
+        public const string COMMAND_NAME = "push-image";
         public const string COMMAND_DESCRIPTION = "Execute \"dotnet publish\", \"docker build\" and then push the image to Amazon ECR.";
 
         public static readonly IList<CommandOption> CommandOptions = BuildLineOptions(new List<CommandOption>
         {
-            DefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
-            DefinedCommandOptions.ARGUMENT_CONFIGURATION,
-            DefinedCommandOptions.ARGUMENT_FRAMEWORK,
-            DefinedCommandOptions.ARGUMENT_DOCKER_TAG,
+            CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
+            ECSDefinedCommandOptions.ARGUMENT_CONFIGURATION,
+            ECSDefinedCommandOptions.ARGUMENT_FRAMEWORK,
+            ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG,
 
-            DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE,
+            CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE,
         });
 
 
@@ -64,7 +65,7 @@ namespace Amazon.ECS.Tools.Commands
             this.PushDockerImageProperties.ParseCommandArguments(values);
 
             Tuple<CommandOption, CommandOptionValue> tuple;
-            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE.Switch)) != null)
+            if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE.Switch)) != null)
                 this.PersistConfigFile = tuple.Item2.BoolValue;
         }
 
@@ -73,9 +74,9 @@ namespace Amazon.ECS.Tools.Commands
         {
             try
             {
-                string configuration = this.GetStringValueOrDefault(this.PushDockerImageProperties.Configuration, DefinedCommandOptions.ARGUMENT_CONFIGURATION, false) ?? "Release";
-                string targetFramework = this.GetStringValueOrDefault(this.PushDockerImageProperties.TargetFramework, DefinedCommandOptions.ARGUMENT_FRAMEWORK, false);
-                string dockerImageTag = this.GetStringValueOrDefault(this.PushDockerImageProperties.DockerImageTag, DefinedCommandOptions.ARGUMENT_DOCKER_TAG, true);
+                string configuration = this.GetStringValueOrDefault(this.PushDockerImageProperties.Configuration, ECSDefinedCommandOptions.ARGUMENT_CONFIGURATION, false) ?? "Release";
+                string targetFramework = this.GetStringValueOrDefault(this.PushDockerImageProperties.TargetFramework, ECSDefinedCommandOptions.ARGUMENT_FRAMEWORK, false);
+                string dockerImageTag = this.GetStringValueOrDefault(this.PushDockerImageProperties.DockerImageTag, ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG, true);
 
                 if (!dockerImageTag.Contains(":"))
                     dockerImageTag += ":latest";
@@ -85,16 +86,16 @@ namespace Amazon.ECS.Tools.Commands
 
                 var dotnetCli = new DotNetCLIWrapper(this.Logger, projectLocation);
                 this.Logger?.WriteLine("Executing publish command");
-                if (dotnetCli.Publish(this.DefaultConfig, projectLocation, "obj/Docker/publish", targetFramework, configuration) != 0)
+                if (dotnetCli.Publish(projectLocation, "obj/Docker/publish", targetFramework, configuration) != 0)
                 {
-                    throw new DockerToolsException("Error executing \"dotnet publish\"", DockerToolsException.ErrorCode.DotnetPublishFailed);
+                    throw new DockerToolsException("Error executing \"dotnet publish\"", DockerToolsException.ECSErrorCode.DotnetPublishFailed);
                 }
 
                 var dockerCli = new DockerCLIWrapper(this.Logger, projectLocation);
                 this.Logger?.WriteLine("Executing docker build");
                 if (dockerCli.Build(this.DefaultConfig, projectLocation, dockerImageTag) != 0)
                 {
-                    throw new DockerToolsException("Error executing \"docker build\"", DockerToolsException.ErrorCode.DockerBuildFailed);
+                    throw new DockerToolsException("Error executing \"docker build\"", DockerToolsException.ECSErrorCode.DockerBuildFailed);
                 }
 
                 await InitiateDockerLogin(dockerCli);
@@ -105,19 +106,19 @@ namespace Amazon.ECS.Tools.Commands
                 this.Logger?.WriteLine($"Taging image {dockerImageTag} with {targetTag}");
                 if(dockerCli.Tag(dockerImageTag, targetTag) != 0)
                 {
-                    throw new DockerToolsException("Error executing \"docker tag\"", DockerToolsException.ErrorCode.DockerTagFail);
+                    throw new DockerToolsException("Error executing \"docker tag\"", DockerToolsException.ECSErrorCode.DockerTagFail);
                 }
 
                 this.Logger?.WriteLine("Pushing image to ECR repository");
                 if (dockerCli.Push(targetTag) != 0)
                 {
-                    throw new DockerToolsException("Error executing \"docker push\"", DockerToolsException.ErrorCode.DockerPushFail);
+                    throw new DockerToolsException("Error executing \"docker push\"", DockerToolsException.ECSErrorCode.DockerPushFail);
                 }
 
                 this.PushedImageUri = targetTag;
                 this.Logger.WriteLine($"Image {this.PushedImageUri} Push Complete. ");
 
-                if (this.GetBoolValueOrDefault(this.PersistConfigFile, DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE, false).GetValueOrDefault())
+                if (this.GetBoolValueOrDefault(this.PersistConfigFile, CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE, false).GetValueOrDefault())
                 {
                     this.SaveConfigFile();
                 }
@@ -177,7 +178,7 @@ namespace Amazon.ECS.Tools.Commands
             }
             catch(Exception e)
             {
-                throw new DockerToolsException($"Error determining Amazon ECR repository: {e.Message}", DockerToolsException.ErrorCode.FailedToSetupECRRepository);
+                throw new DockerToolsException($"Error determining Amazon ECR repository: {e.Message}", DockerToolsException.ECSErrorCode.FailedToSetupECRRepository);
             }
         }
 
@@ -195,7 +196,7 @@ namespace Amazon.ECS.Tools.Commands
                 this.Logger?.WriteLine("Executing docker CLI login command");
                 if (dockerCLI.Login(decodedTokens[0], decodedTokens[1], response.AuthorizationData[0].ProxyEndpoint) != 0)
                 {
-                    throw new DockerToolsException($"Error executing the docker login command", DockerToolsException.ErrorCode.DockerCLILoginFail);
+                    throw new DockerToolsException($"Error executing the docker login command", DockerToolsException.ECSErrorCode.DockerCLILoginFail);
                 }
             }
             catch(DockerToolsException)
@@ -204,7 +205,7 @@ namespace Amazon.ECS.Tools.Commands
             }
             catch(Exception e)
             {
-                throw new DockerToolsException($"Error logging on with the docker CLI: {e.Message}", DockerToolsException.ErrorCode.GetECRAuthTokens);
+                throw new DockerToolsException($"Error logging on with the docker CLI: {e.Message}", DockerToolsException.ECSErrorCode.GetECRAuthTokens);
             }
         }
 

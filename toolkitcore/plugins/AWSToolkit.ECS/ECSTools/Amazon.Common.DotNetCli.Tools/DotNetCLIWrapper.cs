@@ -7,7 +7,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace Amazon.ECS.Tools
+namespace Amazon.Common.DotNetCli.Tools
 {
     /// <summary>
     /// Wrapper around the dotnet cli used to execute the publish command.
@@ -22,12 +22,11 @@ namespace Amazon.ECS.Tools
         /// <summary>
         /// Generates deployment manifest for staged content
         /// </summary>
-        /// <param name="defaults"></param>
         /// <param name="projectLocation"></param>
         /// <param name="outputLocation"></param>
         /// <param name="targetFramework"></param>
         /// <param name="configuration"></param>
-        public int Publish(DockerToolsDefaults defaults, string projectLocation, string outputLocation, string targetFramework, string configuration)
+        public int Publish(string projectLocation, string outputLocation, string targetFramework, string configuration)
         {
             if (Directory.Exists(outputLocation))
             {

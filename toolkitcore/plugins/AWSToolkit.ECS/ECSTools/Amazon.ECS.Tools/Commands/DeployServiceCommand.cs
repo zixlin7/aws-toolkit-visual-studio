@@ -1,5 +1,4 @@
-﻿using Amazon.ECS.Tools.Options;
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
@@ -11,41 +10,43 @@ using Amazon.ECR.Model;
 using Amazon.ECS.Model;
 using ThirdParty.Json.LitJson;
 using System.IO;
+using Amazon.Common.DotNetCli.Tools.Options;
+using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.ECS.Tools.Commands
 {
-    public class DeployServiceCommand : BaseCommand
+    public class DeployServiceCommand : ECSBaseCommand
     {
         public const string COMMAND_NAME = "deploy-service";
         public const string COMMAND_DESCRIPTION = "Push the application to ECR and runs the application as a long lived service on the ECS Cluster.";
 
         public static readonly IList<CommandOption> CommandOptions = BuildLineOptions(new List<CommandOption>
         {
-            DefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
-            DefinedCommandOptions.ARGUMENT_CONFIGURATION,
-            DefinedCommandOptions.ARGUMENT_FRAMEWORK,
-            DefinedCommandOptions.ARGUMENT_DOCKER_TAG,
-            DefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH,
+            CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
+            ECSDefinedCommandOptions.ARGUMENT_CONFIGURATION,
+            ECSDefinedCommandOptions.ARGUMENT_FRAMEWORK,
+            ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG,
+            ECSDefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH,
 
-            DefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION,
-            DefinedCommandOptions.ARGUMENT_ECS_CONTAINER,
-            DefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT,
-            DefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT,
-            DefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING,
-            DefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE,
-            DefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING,
+            ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE,
+            ECSDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES,
 
-            DefinedCommandOptions.ARGUMENT_ECS_CLUSTER,
-            DefinedCommandOptions.ARGUMENT_ECS_SERVICE,
-            DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT,
-            DefinedCommandOptions.ARGUMENT_DEPLOYMENT_MAXIMUM_PERCENT,
-            DefinedCommandOptions.ARGUMENT_DEPLOYMENT_MINIMUM_HEALTHY_PERCENT,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_SERVICE,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT,
+            ECSDefinedCommandOptions.ARGUMENT_DEPLOYMENT_MAXIMUM_PERCENT,
+            ECSDefinedCommandOptions.ARGUMENT_DEPLOYMENT_MINIMUM_HEALTHY_PERCENT,
 
-            DefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE,
-            DefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN,
-            DefinedCommandOptions.ARGUMENT_ELB_CONTAINER_PORT,
+            ECSDefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE,
+            ECSDefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN,
+            ECSDefinedCommandOptions.ARGUMENT_ELB_CONTAINER_PORT,
 
-            DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE,
+            CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE,
         });
 
 
@@ -133,7 +134,7 @@ namespace Amazon.ECS.Tools.Commands
             this.DeployServiceProperties.ParseCommandArguments(values);
 
             Tuple<CommandOption, CommandOptionValue> tuple;
-            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE.Switch)) != null)
+            if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE.Switch)) != null)
                 this.PersistConfigFile = tuple.Item2.BoolValue;
 
         }
@@ -142,19 +143,19 @@ namespace Amazon.ECS.Tools.Commands
         {
             try
             {
-                var skipPush = this.GetBoolValueOrDefault(this.DeployServiceProperties.SkipImagePush, DefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH, false).GetValueOrDefault();
-                var ecsContainer = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSContainer, DefinedCommandOptions.ARGUMENT_ECS_CONTAINER, true);
-                var ecsTaskDefinition = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSTaskDefinition, DefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, true);
+                var skipPush = this.GetBoolValueOrDefault(this.DeployServiceProperties.SkipImagePush, ECSDefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH, false).GetValueOrDefault();
+                var ecsContainer = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSContainer, ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER, true);
+                var ecsTaskDefinition = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSTaskDefinition, ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, true);
 
 
-                string dockerImageTag = this.GetStringValueOrDefault(this.PushDockerImageProperties.DockerImageTag, DefinedCommandOptions.ARGUMENT_DOCKER_TAG, true);
+                string dockerImageTag = this.GetStringValueOrDefault(this.PushDockerImageProperties.DockerImageTag, ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG, true);
 
                 if (!dockerImageTag.Contains(":"))
                     dockerImageTag += ":latest";
 
                 if(skipPush)
                 {
-                    dockerImageTag = await Utilities.ExpandImageTagIfNecessary(this.Logger, this.ECRClient, dockerImageTag);
+                    dockerImageTag = await ECSUtilities.ExpandImageTagIfNecessary(this.Logger, this.ECRClient, dockerImageTag);
                 }
                 else
                 {
@@ -183,13 +184,13 @@ namespace Amazon.ECS.Tools.Commands
                 var taskDefinitionArn = await ECSTaskDefinitionUtilities.CreateOrUpdateTaskDefinition(this.Logger, this.ECSClient, 
                     this, this.TaskDefinitionProperties, dockerImageTag);
 
-                var ecsCluster = this.GetStringValueOrDefault(this.ClusterProperties.ECSCluster, DefinedCommandOptions.ARGUMENT_ECS_CLUSTER, true);
-                var ecsService = this.GetStringValueOrDefault(this.DeployServiceProperties.ECSService, DefinedCommandOptions.ARGUMENT_ECS_SERVICE, true);
+                var ecsCluster = this.GetStringValueOrDefault(this.ClusterProperties.ECSCluster, ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER, true);
+                var ecsService = this.GetStringValueOrDefault(this.DeployServiceProperties.ECSService, ECSDefinedCommandOptions.ARGUMENT_ECS_SERVICE, true);
 
                 await CreateOrUpdateService(ecsCluster, ecsService, taskDefinitionArn, ecsContainer);
                 this.Logger?.WriteLine($"Service {ecsService} on ECS cluster {ecsCluster} has been updated. The Cluster will now deploy the new service version.");
 
-                if (this.GetBoolValueOrDefault(this.PersistConfigFile, DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE, false).GetValueOrDefault())
+                if (this.GetBoolValueOrDefault(this.PersistConfigFile, CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE, false).GetValueOrDefault())
                 {
                     this.SaveConfigFile();
                 }
@@ -222,7 +223,7 @@ namespace Amazon.ECS.Tools.Commands
 
                 if(describeClusterResponse.Clusters.Count == 0)
                 {
-                    throw new DockerToolsException($"Cluster {ecsCluster} can not be found.", DockerToolsException.ErrorCode.ClusterNotFound);
+                    throw new DockerToolsException($"Cluster {ecsCluster} can not be found.", DockerToolsException.ECSErrorCode.ClusterNotFound);
                 }
 
                 var describeServiceResponse = await this.ECSClient.DescribeServicesAsync(new DescribeServicesRequest
@@ -231,9 +232,9 @@ namespace Amazon.ECS.Tools.Commands
                     Services = new List<string> { ecsService }
                 });
 
-                var desiredCount = this.GetIntValueOrDefault(this.DeployServiceProperties.DesiredCount, DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false);
-                var deploymentMaximumPercent = this.GetIntValueOrDefault(this.DeployServiceProperties.DeploymentMaximumPercent, DefinedCommandOptions.ARGUMENT_DEPLOYMENT_MAXIMUM_PERCENT, false);
-                var deploymentMinimumHealthyPercent = this.GetIntValueOrDefault(this.DeployServiceProperties.DeploymentMinimumHealthyPercent, DefinedCommandOptions.ARGUMENT_DEPLOYMENT_MINIMUM_HEALTHY_PERCENT, false);
+                var desiredCount = this.GetIntValueOrDefault(this.DeployServiceProperties.DesiredCount, ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false);
+                var deploymentMaximumPercent = this.GetIntValueOrDefault(this.DeployServiceProperties.DeploymentMaximumPercent, ECSDefinedCommandOptions.ARGUMENT_DEPLOYMENT_MAXIMUM_PERCENT, false);
+                var deploymentMinimumHealthyPercent = this.GetIntValueOrDefault(this.DeployServiceProperties.DeploymentMinimumHealthyPercent, ECSDefinedCommandOptions.ARGUMENT_DEPLOYMENT_MINIMUM_HEALTHY_PERCENT, false);
 
                 DeploymentConfiguration deploymentConfiguration = null;
                 if (deploymentMaximumPercent.HasValue || deploymentMinimumHealthyPercent.HasValue)
@@ -258,11 +259,11 @@ namespace Amazon.ECS.Tools.Commands
                         DeploymentConfiguration = deploymentConfiguration
                     };
 
-                    var elbTargetGroup = this.GetStringValueOrDefault(this.DeployServiceProperties.ELBTargetGroup, DefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN, false);
+                    var elbTargetGroup = this.GetStringValueOrDefault(this.DeployServiceProperties.ELBTargetGroup, ECSDefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN, false);
                     if (!this.OverrideIgnoreTargetGroup && !string.IsNullOrWhiteSpace(elbTargetGroup))
                     {
-                        var serviceRole = this.GetStringValueOrDefault(this.DeployServiceProperties.ELBServiceRole, DefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE, false);
-                        var port = this.GetIntValueOrDefault(this.DeployServiceProperties.ELBContainerPort, DefinedCommandOptions.ARGUMENT_ELB_CONTAINER_PORT, false);
+                        var serviceRole = this.GetStringValueOrDefault(this.DeployServiceProperties.ELBServiceRole, ECSDefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE, false);
+                        var port = this.GetIntValueOrDefault(this.DeployServiceProperties.ELBContainerPort, ECSDefinedCommandOptions.ARGUMENT_ELB_CONTAINER_PORT, false);
                         if (!port.HasValue)
                             port = 80;
                         request.LoadBalancers.Add(new LoadBalancer
@@ -286,7 +287,7 @@ namespace Amazon.ECS.Tools.Commands
                             request.LoadBalancers.Clear();
                             request.Role = null;
 
-                            var defaultFile = string.IsNullOrEmpty(this.ConfigFile) ? DockerToolsDefaultsReader.DEFAULT_FILE_NAME : this.ConfigFile;
+                            var defaultFile = string.IsNullOrEmpty(this.ConfigFile) ? DockerToolsDefaults.DEFAULT_FILE_NAME : this.ConfigFile;
                             this.Logger.WriteLine($"Warning: ELB Target Group ARN specified in config file {defaultFile} does not exist.");
                             await this.ECSClient.CreateServiceAsync(request);
                         }
@@ -330,7 +331,7 @@ namespace Amazon.ECS.Tools.Commands
             }
             catch (Exception e)
             {
-                throw new DockerToolsException($"Error updating ECS service {ecsService} on cluster {ecsCluster}: {e.Message}", DockerToolsException.ErrorCode.FailedToUpdateService);
+                throw new DockerToolsException($"Error updating ECS service {ecsService} on cluster {ecsCluster}: {e.Message}", DockerToolsException.ECSErrorCode.FailedToUpdateService);
             }
         }
 

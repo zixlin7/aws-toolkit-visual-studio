@@ -8,7 +8,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 #endif
 
-namespace Amazon.ECS.Tools
+namespace Amazon.Common.DotNetCli.Tools
 {
     public abstract class AbstractCLIWrapper
     {

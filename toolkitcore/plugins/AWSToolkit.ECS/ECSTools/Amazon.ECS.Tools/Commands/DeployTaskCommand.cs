@@ -1,4 +1,5 @@
-﻿using Amazon.ECS.Tools.Options;
+﻿using Amazon.Common.DotNetCli.Tools;
+using Amazon.Common.DotNetCli.Tools.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,32 +9,32 @@ using ThirdParty.Json.LitJson;
 
 namespace Amazon.ECS.Tools.Commands
 {
-    public class DeployTaskCommand : BaseCommand
+    public class DeployTaskCommand : ECSBaseCommand
     {
-        public const string COMMAND_NAME = "deploy-scheduled-task";
+        public const string COMMAND_NAME = "deploy-task";
         public const string COMMAND_DESCRIPTION = "Push the application to ECR and then runs it as a task on the ECS Cluster.";
 
         public static readonly IList<CommandOption> CommandOptions = BuildLineOptions(new List<CommandOption>
         {
-            DefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
-            DefinedCommandOptions.ARGUMENT_CONFIGURATION,
-            DefinedCommandOptions.ARGUMENT_FRAMEWORK,
-            DefinedCommandOptions.ARGUMENT_DOCKER_TAG,
+            CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
+            ECSDefinedCommandOptions.ARGUMENT_CONFIGURATION,
+            ECSDefinedCommandOptions.ARGUMENT_FRAMEWORK,
+            ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG,
 
-            DefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH,
+            ECSDefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH,
 
-            DefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION,
-            DefinedCommandOptions.ARGUMENT_ECS_CONTAINER,
-            DefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT,
-            DefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT,
-            DefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING,
-            DefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE,
-            DefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING,
+            ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE,
+            ECSDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES,
 
-            DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT,
-            DefinedCommandOptions.ARGUMENT_ECS_TASK_GROUP,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_GROUP,
 
-            DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE,
+            CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE,
         });
 
         PushDockerImageProperties _pushProperties;
@@ -117,7 +118,7 @@ namespace Amazon.ECS.Tools.Commands
             this.DeployTaskProperties.ParseCommandArguments(values);
 
             Tuple<CommandOption, CommandOptionValue> tuple;
-            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE.Switch)) != null)
+            if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE.Switch)) != null)
                 this.PersistConfigFile = tuple.Item2.BoolValue;
         }
 
@@ -125,19 +126,19 @@ namespace Amazon.ECS.Tools.Commands
         {
             try
             {
-                var skipPush = this.GetBoolValueOrDefault(this.DeployTaskProperties.SkipImagePush, DefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH, false).GetValueOrDefault();
-                var ecsContainer = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSContainer, DefinedCommandOptions.ARGUMENT_ECS_CONTAINER, true);
-                var ecsTaskDefinition = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSTaskDefinition, DefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, true);
+                var skipPush = this.GetBoolValueOrDefault(this.DeployTaskProperties.SkipImagePush, ECSDefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH, false).GetValueOrDefault();
+                var ecsContainer = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSContainer, ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER, true);
+                var ecsTaskDefinition = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSTaskDefinition, ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, true);
 
 
-                string dockerImageTag = this.GetStringValueOrDefault(this.PushDockerImageProperties.DockerImageTag, DefinedCommandOptions.ARGUMENT_DOCKER_TAG, true);
+                string dockerImageTag = this.GetStringValueOrDefault(this.PushDockerImageProperties.DockerImageTag, ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG, true);
 
                 if (!dockerImageTag.Contains(":"))
                     dockerImageTag += ":latest";
 
                 if (skipPush)
                 {
-                    dockerImageTag = await Utilities.ExpandImageTagIfNecessary(this.Logger, this.ECRClient, dockerImageTag);
+                    dockerImageTag = await ECSUtilities.ExpandImageTagIfNecessary(this.Logger, this.ECRClient, dockerImageTag);
                 }
                 else
                 {
@@ -166,13 +167,13 @@ namespace Amazon.ECS.Tools.Commands
                 var taskDefinitionArn = await ECSTaskDefinitionUtilities.CreateOrUpdateTaskDefinition(this.Logger, this.ECSClient,
                     this, this.TaskDefinitionProperties, dockerImageTag);
 
-                var ecsCluster = this.GetStringValueOrDefault(this.ClusterProperties.ECSCluster, DefinedCommandOptions.ARGUMENT_ECS_CLUSTER, true);
+                var ecsCluster = this.GetStringValueOrDefault(this.ClusterProperties.ECSCluster, ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER, true);
 
-                var desiredCount = this.GetIntValueOrDefault(this.DeployTaskProperties.DesiredCount, DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false);
+                var desiredCount = this.GetIntValueOrDefault(this.DeployTaskProperties.DesiredCount, ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false);
                 if (!desiredCount.HasValue)
                     desiredCount = 1;
 
-                var taskGroup = this.GetStringValueOrDefault(this.DeployTaskProperties.TaskGroup, DefinedCommandOptions.ARGUMENT_ECS_TASK_GROUP, false);
+                var taskGroup = this.GetStringValueOrDefault(this.DeployTaskProperties.TaskGroup, ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_GROUP, false);
 
                 var runTaskRequest = new Amazon.ECS.Model.RunTaskRequest
                 {
@@ -196,10 +197,10 @@ namespace Amazon.ECS.Tools.Commands
                 }
                 catch(Exception e)
                 {
-                    throw new DockerToolsException("Error deploy task: " + e.Message, DockerToolsException.ErrorCode.RunTaskFail);
+                    throw new DockerToolsException("Error deploy task: " + e.Message, DockerToolsException.ECSErrorCode.RunTaskFail);
                 }
 
-                if (this.GetBoolValueOrDefault(this.PersistConfigFile, DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE, false).GetValueOrDefault())
+                if (this.GetBoolValueOrDefault(this.PersistConfigFile, CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE, false).GetValueOrDefault())
                 {
                     this.SaveConfigFile();
                 }

@@ -1,5 +1,5 @@
-﻿using Amazon.ECS.Model;
-using Amazon.ECS.Tools.Options;
+﻿using Amazon.Common.DotNetCli.Tools;
+using Amazon.ECS.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +10,11 @@ namespace Amazon.ECS.Tools.Commands
 {
     public class ECSTaskDefinitionUtilities
     {
-        public static async Task<string> CreateOrUpdateTaskDefinition(IToolLogger logger, IAmazonECS ecsClient, BaseCommand command, 
+        public static async Task<string> CreateOrUpdateTaskDefinition(IToolLogger logger, IAmazonECS ecsClient, ECSBaseCommand command, 
             TaskDefinitionProperties properties, string dockerImageTag)
         {
-            var ecsContainer = command.GetStringValueOrDefault(properties.ECSContainer, DefinedCommandOptions.ARGUMENT_ECS_CONTAINER, true);
-            var ecsTaskDefinition = command.GetStringValueOrDefault(properties.ECSTaskDefinition, DefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, true);
+            var ecsContainer = command.GetStringValueOrDefault(properties.ECSContainer, ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER, true);
+            var ecsTaskDefinition = command.GetStringValueOrDefault(properties.ECSTaskDefinition, ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, true);
 
             try
             {
@@ -54,7 +54,7 @@ namespace Amazon.ECS.Tools.Commands
                     registerRequest.Volumes = response.TaskDefinition.Volumes;
                 }
 
-                var taskIAMRole = command.GetStringValueOrDefault(properties.TaskDefinitionRole, DefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE, false);
+                var taskIAMRole = command.GetStringValueOrDefault(properties.TaskDefinitionRole, ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE, false);
                 if (!string.IsNullOrWhiteSpace(taskIAMRole))
                 {
                     registerRequest.TaskRoleArn = taskIAMRole;
@@ -76,7 +76,7 @@ namespace Amazon.ECS.Tools.Commands
                 containerDefinition.Image = dockerImageTag;
 
                 {
-                    var environmentVariables = command.GetKeyValuePairOrDefault(properties.EnvironmentVariables, DefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES, false);
+                    var environmentVariables = command.GetKeyValuePairOrDefault(properties.EnvironmentVariables, ECSDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES, false);
                     if (environmentVariables != null && environmentVariables.Count > 0)
                     {
                         var listEnv = new List<KeyValuePair>();
@@ -88,7 +88,7 @@ namespace Amazon.ECS.Tools.Commands
                     }
                 }
                 {
-                    var hardLimit = command.GetIntValueOrDefault(properties.ContainerMemoryHardLimit, DefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT, false);
+                    var hardLimit = command.GetIntValueOrDefault(properties.ContainerMemoryHardLimit, ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT, false);
                     if (hardLimit.HasValue)
                     {
                         logger?.WriteLine($"Setting container hard memory limit {hardLimit.Value}MiB");
@@ -96,7 +96,7 @@ namespace Amazon.ECS.Tools.Commands
                     }
                 }
                 {
-                    var softLimit = command.GetIntValueOrDefault(properties.ContainerMemorySoftLimit, DefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT, false);
+                    var softLimit = command.GetIntValueOrDefault(properties.ContainerMemorySoftLimit, ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT, false);
                     if (softLimit.HasValue)
                     {
                         logger?.WriteLine($"Setting container soft memory limit {softLimit.Value}MiB");
@@ -104,7 +104,7 @@ namespace Amazon.ECS.Tools.Commands
                     }
                 }
                 {
-                    var portMappings = command.GetStringValuesOrDefault(properties.PortMappings, DefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING, false);
+                    var portMappings = command.GetStringValuesOrDefault(properties.PortMappings, ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING, false);
                     if (portMappings != null)
                     {
                         containerDefinition.PortMappings = new List<PortMapping>();
@@ -113,7 +113,7 @@ namespace Amazon.ECS.Tools.Commands
                             var tokens = mapping.Split(':');
                             if (tokens.Length != 2)
                             {
-                                throw new DockerToolsException($"Port mapping {mapping} is invalid. Format should be <host-port>:<container-port>,<host-port>:<container-port>,...", DockerToolsException.ErrorCode.CommandLineParseError);
+                                throw new DockerToolsException($"Port mapping {mapping} is invalid. Format should be <host-port>:<container-port>,<host-port>:<container-port>,...", DockerToolsException.CommonErrorCode.CommandLineParseError);
                             }
 
                             logger?.WriteLine($"Adding port mapping host {tokens[0]} to container {tokens[1]}");
@@ -137,7 +137,7 @@ namespace Amazon.ECS.Tools.Commands
             }
             catch (Exception e)
             {
-                throw new DockerToolsException($"Error updating ECS task defintion {ecsTaskDefinition}: {e.Message}", DockerToolsException.ErrorCode.FailedToUpdateTaskDefinition);
+                throw new DockerToolsException($"Error updating ECS task defintion {ecsTaskDefinition}: {e.Message}", DockerToolsException.ECSErrorCode.FailedToUpdateTaskDefinition);
             }
         }
     }

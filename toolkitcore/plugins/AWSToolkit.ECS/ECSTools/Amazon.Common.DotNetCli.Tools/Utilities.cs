@@ -1,17 +1,16 @@
-﻿using Amazon.ECR;
-using Amazon.ECR.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Amazon.ECS.Tools
+namespace Amazon.Common.DotNetCli.Tools
 {
     public static class Utilities
     {
 
-        internal static string[] SplitByComma(this string str)
+        public static string[] SplitByComma(this string str)
         {
             return str?.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
         }
@@ -67,18 +66,18 @@ namespace Amazon.ECS.Tools
                     GetNextToken(option, ';', ref currentPos, out value);
 
                     if (string.IsNullOrEmpty(name))
-                        throw new DockerToolsException($"Error parsing option ({option}), format should be <key1>=<value1>;<key2>=<value2>", DockerToolsException.ErrorCode.CommandLineParseError);
+                        throw new ToolsException($"Error parsing option ({option}), format should be <key1>=<value1>;<key2>=<value2>", ToolsException.CommonErrorCode.CommandLineParseError);
 
                     parameters[name] = value ?? string.Empty;
                 }
             }
-            catch (DockerToolsException)
+            catch (ToolsException)
             {
                 throw;
             }
             catch (Exception e)
             {
-                throw new DockerToolsException($"Error parsing option ({option}), format should be <key1>=<value1>;<key2>=<value2>: {e.Message}", DockerToolsException.ErrorCode.CommandLineParseError);
+                throw new ToolsException($"Error parsing option ({option}), format should be <key1>=<value1>;<key2>=<value2>: {e.Message}", ToolsException.CommonErrorCode.CommandLineParseError);
             }
 
 
@@ -130,51 +129,21 @@ namespace Amazon.ECS.Tools
             currentPos++;
         }
 
-        public static async Task<string> ExpandImageTagIfNecessary(IToolLogger logger, IAmazonECR ecrClient, string dockerImageTag)
+        public static string DetermineToolVersion()
         {
+            AssemblyInformationalVersionAttribute attribute = null;
             try
             {
-                if (dockerImageTag.Contains(".amazonaws."))
-                    return dockerImageTag;
-
-                string repositoryName = dockerImageTag;
-                if (repositoryName.Contains(":"))
-                    repositoryName = repositoryName.Substring(0, repositoryName.IndexOf(':'));
-
-                DescribeRepositoriesResponse describeResponse = null;
-                try
-                {
-                    describeResponse = await ecrClient.DescribeRepositoriesAsync(new DescribeRepositoriesRequest
-                    {
-                        RepositoryNames = new List<string> { repositoryName }
-                    });
-                }
-                catch (Exception e)
-                {
-                    if (!(e is RepositoryNotFoundException))
-                    {
-                        throw;
-                    }
-                }
-
-                // Not found in ECR, assume pulling Docker Hub
-                if (describeResponse == null)
-                {
-                    return dockerImageTag;
-                }
-
-                var fullPath = describeResponse.Repositories[0].RepositoryUri + dockerImageTag.Substring(dockerImageTag.IndexOf(':'));
-                logger?.WriteLine($"Determined full image name to be {fullPath}");
-                return fullPath;
+                var assembly = Assembly.GetEntryAssembly();
+                if (assembly == null)
+                    return null;
+                attribute = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>();
             }
-            catch (DockerToolsException)
+            catch (Exception)
             {
-                throw;
             }
-            catch (Exception e)
-            {
-                throw new DockerToolsException($"Error determing full repository path for the image {dockerImageTag}: {e.Message}", DockerToolsException.ErrorCode.FailedToExpandImageTag);
-            }
+
+            return attribute != null ? attribute.InformationalVersion : null;
         }
     }
 }

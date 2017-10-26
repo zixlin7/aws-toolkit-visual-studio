@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Amazon.ECS.Tools;
+using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {

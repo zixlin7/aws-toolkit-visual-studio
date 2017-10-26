@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Amazon.ECS.Tools.Options
+namespace Amazon.Common.DotNetCli.Tools.Options
 {
     public static class CommandLineParser
     {
@@ -37,7 +37,7 @@ namespace Amazon.ECS.Tools.Options
                         {
                             if (i + 1 >= arguments.Length)
                             {
-                                throw new DockerToolsException($"Argument {arguments[i]} must be followed by a value", DockerToolsException.ErrorCode.CommandLineParseError);
+                                throw new ToolsException($"Argument {arguments[i]} must be followed by a value", ToolsException.CommonErrorCode.CommandLineParseError);
                             }
 
                             switch (option.ValueType)

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using ThirdParty.Json.LitJson;
 
-namespace Amazon.ECS.Tools
+namespace Amazon.Common.DotNetCli.Tools
 {
-    internal static class ExtensionMethods
+    public static class ExtensionMethods
     {
         public static void SetIfNotNull(this JsonData data, string key, string value)
         {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Amazon.ECS.Tools.Options
+namespace Amazon.Common.DotNetCli.Tools.Options
 {
     /// <summary>
     /// Container class for the actual value of the CommandOption

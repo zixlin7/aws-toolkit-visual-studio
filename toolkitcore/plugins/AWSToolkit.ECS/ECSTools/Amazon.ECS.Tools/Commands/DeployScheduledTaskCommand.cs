@@ -1,5 +1,4 @@
-﻿using Amazon.ECS.Tools.Options;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,40 +11,41 @@ using Amazon.ECS;
 using Amazon.ECS.Model;
 using ThirdParty.Json.LitJson;
 using System.IO;
-
+using Amazon.Common.DotNetCli.Tools.Options;
+using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.ECS.Tools.Commands
 {
-    public class DeployScheduledTaskCommand : BaseCommand
+    public class DeployScheduledTaskCommand : ECSBaseCommand
     {
         public const string COMMAND_NAME = "deploy-scheduled-task";
         public const string COMMAND_DESCRIPTION = "Push the application to ECR and then sets up CloudWatch Event Schedule rule to run the application.";
 
         public static readonly IList<CommandOption> CommandOptions = BuildLineOptions(new List<CommandOption>
         {
-            DefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
-            DefinedCommandOptions.ARGUMENT_CONFIGURATION,
-            DefinedCommandOptions.ARGUMENT_FRAMEWORK,
-            DefinedCommandOptions.ARGUMENT_DOCKER_TAG,
+            CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
+            ECSDefinedCommandOptions.ARGUMENT_CONFIGURATION,
+            ECSDefinedCommandOptions.ARGUMENT_FRAMEWORK,
+            ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG,
 
-            DefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH,
+            ECSDefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH,
 
-            DefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION,
-            DefinedCommandOptions.ARGUMENT_ECS_CONTAINER,
-            DefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT,
-            DefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT,
-            DefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING,
-            DefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE,
-            DefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING,
+            ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE,
+            ECSDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES,
 
-            DefinedCommandOptions.ARGUMENT_SCHEDULED_RULE_NAME,
-            DefinedCommandOptions.ARGUMENT_SCHEDULED_RULE_TARGET,
-            DefinedCommandOptions.ARGUMENT_SCHEDULE_EXPRESSION,
-            DefinedCommandOptions.ARGUMENT_CLOUDWATCHEVENT_ROLE,
+            ECSDefinedCommandOptions.ARGUMENT_SCHEDULED_RULE_NAME,
+            ECSDefinedCommandOptions.ARGUMENT_SCHEDULED_RULE_TARGET,
+            ECSDefinedCommandOptions.ARGUMENT_SCHEDULE_EXPRESSION,
+            ECSDefinedCommandOptions.ARGUMENT_CLOUDWATCHEVENT_ROLE,
 
-            DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT,
 
-            DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE,
+            CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE,
         });
 
         PushDockerImageProperties _pushProperties;
@@ -129,7 +129,7 @@ namespace Amazon.ECS.Tools.Commands
             this.DeployScheduledTaskProperties.ParseCommandArguments(values);
 
             Tuple<CommandOption, CommandOptionValue> tuple;
-            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE.Switch)) != null)
+            if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE.Switch)) != null)
                 this.PersistConfigFile = tuple.Item2.BoolValue;
         }
 
@@ -137,19 +137,19 @@ namespace Amazon.ECS.Tools.Commands
         {
             try
             {
-                var skipPush = this.GetBoolValueOrDefault(this.DeployScheduledTaskProperties.SkipImagePush, DefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH, false).GetValueOrDefault();
-                var ecsContainer = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSContainer, DefinedCommandOptions.ARGUMENT_ECS_CONTAINER, true);
-                var ecsTaskDefinition = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSTaskDefinition, DefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, true);
+                var skipPush = this.GetBoolValueOrDefault(this.DeployScheduledTaskProperties.SkipImagePush, ECSDefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH, false).GetValueOrDefault();
+                var ecsContainer = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSContainer, ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER, true);
+                var ecsTaskDefinition = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSTaskDefinition, ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, true);
 
 
-                string dockerImageTag = this.GetStringValueOrDefault(this.PushDockerImageProperties.DockerImageTag, DefinedCommandOptions.ARGUMENT_DOCKER_TAG, true);
+                string dockerImageTag = this.GetStringValueOrDefault(this.PushDockerImageProperties.DockerImageTag, ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG, true);
 
                 if (!dockerImageTag.Contains(":"))
                     dockerImageTag += ":latest";
 
                 if (skipPush)
                 {
-                    dockerImageTag = await Utilities.ExpandImageTagIfNecessary(this.Logger, this.ECRClient, dockerImageTag);
+                    dockerImageTag = await ECSUtilities.ExpandImageTagIfNecessary(this.Logger, this.ECRClient, dockerImageTag);
                 }
                 else
                 {
@@ -178,7 +178,7 @@ namespace Amazon.ECS.Tools.Commands
                 var taskDefinitionArn = await ECSTaskDefinitionUtilities.CreateOrUpdateTaskDefinition(this.Logger, this.ECSClient,
                     this, this.TaskDefinitionProperties, dockerImageTag);
 
-                var ecsCluster = this.GetStringValueOrDefault(this.ClusterProperties.ECSCluster, DefinedCommandOptions.ARGUMENT_ECS_CLUSTER, true);
+                var ecsCluster = this.GetStringValueOrDefault(this.ClusterProperties.ECSCluster, ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER, true);
 
                 if(!ecsCluster.Contains(":"))
                 {
@@ -186,14 +186,14 @@ namespace Amazon.ECS.Tools.Commands
                     ecsCluster = arnPrefix + ":cluster/" + ecsCluster;
                 }
 
-                var ruleName = this.GetStringValueOrDefault(this.DeployScheduledTaskProperties.ScheduleTaskRule, DefinedCommandOptions.ARGUMENT_SCHEDULED_RULE_NAME, true);
-                var targetName = this.GetStringValueOrDefault(this.DeployScheduledTaskProperties.ScheduleTaskRule, DefinedCommandOptions.ARGUMENT_SCHEDULED_RULE_NAME, false);
+                var ruleName = this.GetStringValueOrDefault(this.DeployScheduledTaskProperties.ScheduleTaskRule, ECSDefinedCommandOptions.ARGUMENT_SCHEDULED_RULE_NAME, true);
+                var targetName = this.GetStringValueOrDefault(this.DeployScheduledTaskProperties.ScheduleTaskRule, ECSDefinedCommandOptions.ARGUMENT_SCHEDULED_RULE_NAME, false);
                 if (string.IsNullOrEmpty(targetName))
                     targetName = ruleName;
 
-                var scheduleExpression = this.GetStringValueOrDefault(this.DeployScheduledTaskProperties.ScheduleExpression, DefinedCommandOptions.ARGUMENT_SCHEDULE_EXPRESSION, true);
-                var cweRole = this.GetStringValueOrDefault(this.DeployScheduledTaskProperties.CloudWatchEventIAMRole, DefinedCommandOptions.ARGUMENT_CLOUDWATCHEVENT_ROLE, true);
-                var desiredCount = this.GetIntValueOrDefault(this.DeployScheduledTaskProperties.DesiredCount, DefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false);
+                var scheduleExpression = this.GetStringValueOrDefault(this.DeployScheduledTaskProperties.ScheduleExpression, ECSDefinedCommandOptions.ARGUMENT_SCHEDULE_EXPRESSION, true);
+                var cweRole = this.GetStringValueOrDefault(this.DeployScheduledTaskProperties.CloudWatchEventIAMRole, ECSDefinedCommandOptions.ARGUMENT_CLOUDWATCHEVENT_ROLE, true);
+                var desiredCount = this.GetIntValueOrDefault(this.DeployScheduledTaskProperties.DesiredCount, ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false);
                 if (!desiredCount.HasValue)
                     desiredCount = 1;
 
@@ -211,7 +211,7 @@ namespace Amazon.ECS.Tools.Commands
                 }
                 catch(Exception e)
                 {
-                    throw new DockerToolsException("Error creating CloudWatch Event rule: " + e.Message, DockerToolsException.ErrorCode.PutRuleFail);
+                    throw new DockerToolsException("Error creating CloudWatch Event rule: " + e.Message, DockerToolsException.ECSErrorCode.PutRuleFail);
                 }
 
                 try
@@ -238,15 +238,15 @@ namespace Amazon.ECS.Tools.Commands
                 }
                 catch (Exception e)
                 {
-                    throw new DockerToolsException("Error creating CloudWatch Event target: " + e.Message, DockerToolsException.ErrorCode.PutTargetFail);
+                    throw new DockerToolsException("Error creating CloudWatch Event target: " + e.Message, DockerToolsException.ECSErrorCode.PutTargetFail);
                 }
 
-                if (this.GetBoolValueOrDefault(this.PersistConfigFile, DefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE, false).GetValueOrDefault())
+                if (this.GetBoolValueOrDefault(this.PersistConfigFile, CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE, false).GetValueOrDefault())
                 {
                     this.SaveConfigFile();
                 }
             }
-            catch (DockerToolsException e)
+            catch (ToolsException e)
             {
                 this.Logger.WriteLine(e.Message);
                 this.LastToolsException = e;

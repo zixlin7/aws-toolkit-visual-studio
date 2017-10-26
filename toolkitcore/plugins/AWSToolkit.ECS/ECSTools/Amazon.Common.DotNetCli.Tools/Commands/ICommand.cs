@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Amazon.ECS.Tools.Commands
+namespace Amazon.Common.DotNetCli.Tools.Commands
 {
     /// <summary>
     /// Interface for commands to implement.
