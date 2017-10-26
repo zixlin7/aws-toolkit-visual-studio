@@ -110,6 +110,8 @@ namespace Amazon.ECS.Tools.Commands
         }
 
 
+        public bool OverrideIgnoreTargetGroup { get; set; }
+
         public bool? PersistConfigFile { get; set; }
 
         public DeployServiceCommand(IToolLogger logger, string workingDirectory, string[] args)
@@ -257,7 +259,7 @@ namespace Amazon.ECS.Tools.Commands
                     };
 
                     var elbTargetGroup = this.GetStringValueOrDefault(this.DeployServiceProperties.ELBTargetGroup, DefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN, false);
-                    if(!string.IsNullOrWhiteSpace(elbTargetGroup))
+                    if (!this.OverrideIgnoreTargetGroup && !string.IsNullOrWhiteSpace(elbTargetGroup))
                     {
                         var serviceRole = this.GetStringValueOrDefault(this.DeployServiceProperties.ELBServiceRole, DefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE, false);
                         var port = this.GetIntValueOrDefault(this.DeployServiceProperties.ELBContainerPort, DefinedCommandOptions.ARGUMENT_ELB_CONTAINER_PORT, false);
@@ -273,7 +275,26 @@ namespace Amazon.ECS.Tools.Commands
                         request.Role = serviceRole;
                     }
 
-                    await this.ECSClient.CreateServiceAsync(request);
+                    try
+                    {
+                        await this.ECSClient.CreateServiceAsync(request);
+                    }
+                    catch(Amazon.ECS.Model.InvalidParameterException e)
+                    {
+                        if (e.Message.StartsWith("The target group") && !string.IsNullOrEmpty(elbTargetGroup) && string.IsNullOrEmpty(this.DeployServiceProperties.ELBTargetGroup))
+                        {
+                            request.LoadBalancers.Clear();
+                            request.Role = null;
+
+                            var defaultFile = string.IsNullOrEmpty(this.ConfigFile) ? DockerToolsDefaultsReader.DEFAULT_FILE_NAME : this.ConfigFile;
+                            this.Logger.WriteLine($"Warning: ELB Target Group ARN specified in config file {defaultFile} does not exist.");
+                            await this.ECSClient.CreateServiceAsync(request);
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
                 }
                 else
                 {

@@ -24,7 +24,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         IAmazonECS _ecsClient;
         IAmazonEC2 _ec2Client;
         IAmazonElasticLoadBalancingV2 _elbClient;
-        IAmazonIdentityManagementService _iamClient;
+        
 
         public DeployServiceWorker(IDockerDeploymentHelper helper,
             IAmazonECR ecrClient,
@@ -32,16 +32,14 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             IAmazonEC2 ec2Client,
             IAmazonElasticLoadBalancingV2 elbClient,
             IAmazonIdentityManagementService iamClient)
-            : base(helper)
+            : base(helper, iamClient)
         {
             this._ecrClient = ecrClient;
             this._ecsClient = ecsClient;
             this._ec2Client = ec2Client;
             this._elbClient = elbClient;
-            this._iamClient = iamClient;
         }
 
-        static readonly TimeSpan SLEEP_TIME_FOR_ROLE_PROPOGATION = TimeSpan.FromSeconds(15);
         public void Execute(State state)
         {
             ConfigureLoadBalancerChangeTracker elbChanges = null;
@@ -72,21 +70,6 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     PersistConfigFile = state.PersistConfigFile
                 };
 
-                if (state.HostingWizard[PublishContainerToAWSWizardProperties.TaskRole] is Role)
-                {
-                    command.TaskDefinitionProperties.TaskDefinitionRole = ((Role)state.HostingWizard[PublishContainerToAWSWizardProperties.TaskRole]).Arn;
-                }
-                else if(state.HostingWizard[PublishContainerToAWSWizardProperties.TaskRoleManagedPolicy] != null)
-                {
-                    command.TaskDefinitionProperties.TaskDefinitionRole = this.CreateRole(state);
-                    this.Helper.AppendUploadStatus(string.Format("Created IAM role {0} with managed policy {1}", 
-                        command.TaskDefinitionProperties.TaskDefinitionRole, 
-                        ((ManagedPolicy)state.HostingWizard[PublishContainerToAWSWizardProperties.TaskRoleManagedPolicy]).PolicyName));
-
-                    this.Helper.AppendUploadStatus("Waiting for new IAM Role to propagate to AWS regions");
-                    Thread.Sleep(SLEEP_TIME_FOR_ROLE_PROPOGATION);
-                }
-
                 if (elbChanges.CreatedServiceIAMRole)
                 {
                     command.DeployServiceProperties.ELBServiceRole = elbChanges.ServiceIAMRole;
@@ -96,22 +79,30 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     command.DeployServiceProperties.ELBServiceRole = state.HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] as string;
                 }
 
-                if (state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup] is bool &&
-                    ((bool)state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup]))
+                if ((state.HostingWizard[PublishContainerToAWSWizardProperties.ShouldConfigureELB] is bool) &&
+                    ((bool)state.HostingWizard[PublishContainerToAWSWizardProperties.ShouldConfigureELB]))
                 {
-                    command.DeployServiceProperties.ELBTargetGroup = elbChanges.TargetGroup;
+                    if (state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup] is bool &&
+                        ((bool)state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup]))
+                    {
+                        command.DeployServiceProperties.ELBTargetGroup = elbChanges.TargetGroup;
 
-                    // TODO Figure out container port
-                    command.DeployServiceProperties.ELBContainerPort = 80;
+                        // TODO Figure out container port
+                        command.DeployServiceProperties.ELBContainerPort = 80;
+                    }
+                    else if (state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] != null &&
+                        !string.IsNullOrEmpty(state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup].ToString()))
+                    {
+                        command.DeployServiceProperties.ELBTargetGroup =
+                            state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup].ToString();
+
+                        // TODO Figure out container port
+                        command.DeployServiceProperties.ELBContainerPort = 80;
+                    }
                 }
-                else if(state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] != null && 
-                    !string.IsNullOrEmpty(state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup].ToString()))
+                else
                 {
-                    command.DeployServiceProperties.ELBTargetGroup = 
-                        state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup].ToString();
-
-                    // TODO Figure out container port
-                    command.DeployServiceProperties.ELBContainerPort = 80;
+                    command.OverrideIgnoreTargetGroup = true;
                 }
 
                 if (command.ExecuteAsync().Result)
@@ -137,26 +128,6 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 LOGGER.Error("Error deploying to ECS Cluster.", e);
                 this.Helper.SendCompleteErrorAsync("Error deploying to ECS Cluster: " + e.Message);
             }
-        }
-
-        private string CreateRole(State state)
-        {
-            var newRole = IAMUtilities.CreateRole(this._iamClient, "ecs_execution_" + state.HostingWizard[PublishContainerToAWSWizardProperties.TaskDefinition], Constants.ECS_TASKS_ASSUME_ROLE_POLICY);
-
-            this.Helper.AppendUploadStatus("Created IAM Role {0}", newRole.RoleName);
-
-            var policy = state.HostingWizard[PublishContainerToAWSWizardProperties.TaskRoleManagedPolicy] as ManagedPolicy;
-            if (policy != null)
-            {
-                this._iamClient.AttachRolePolicy(new AttachRolePolicyRequest
-                {
-                    RoleName = newRole.RoleName,
-                    PolicyArn = policy.Arn
-                });
-                this.Helper.AppendUploadStatus("Attach policy {0} to role {1}", policy.PolicyName, newRole.RoleName);
-            }
-
-            return newRole.Arn;
         }
 
         public class ConfigureLoadBalancerChangeTracker
@@ -219,7 +190,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             var changeTracker = new ConfigureLoadBalancerChangeTracker();
             try
             {
-                if (!(state.HostingWizard[PublishContainerToAWSWizardProperties.ShouldConfigureELB] is bool) &&
+                if (!(state.HostingWizard[PublishContainerToAWSWizardProperties.ShouldConfigureELB] is bool) ||
                     !((bool)state.HostingWizard[PublishContainerToAWSWizardProperties.ShouldConfigureELB]))
                 {
                     changeTracker.Success = true;

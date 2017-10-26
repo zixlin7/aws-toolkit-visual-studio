@@ -64,5 +64,27 @@ namespace Amazon.AWSToolkit.ECS.Model
                 return this._nativeTask.StoppedAt.ToString();
             }
         }
+
+        public string CombinedStoppedReason
+        {
+            get
+            {
+                StringBuilder sb = new StringBuilder();
+
+                if (!string.Equals(this._nativeTask.StoppedReason, "Essential container in task exited"))
+                    sb.Append(this._nativeTask.StoppedReason);
+
+                foreach(var container in this._nativeTask.Containers)
+                {
+                    if(!string.IsNullOrEmpty(container.Reason))
+                    {
+                        if (sb.Length > 0) sb.AppendLine("");
+                        sb.Append(container.Reason);
+                    }
+                }
+
+                return sb.ToString();
+            }
+        }
     }
 }

@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using Amazon.ECS.Tools.Commands;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
+using Amazon.IdentityManagement.Model;
+using System.Threading;
+using Amazon.IdentityManagement;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
@@ -17,19 +20,22 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
         protected IDockerDeploymentHelper Helper { get; private set; }
 
-        public BaseWorker(IDockerDeploymentHelper helper)
+        protected IAmazonIdentityManagementService _iamClient;
+
+        public BaseWorker(IDockerDeploymentHelper helper, IAmazonIdentityManagementService iamClient)
         {
             this.Helper = helper;
+            this._iamClient = iamClient;
         }
 
-        public PushDockerImageProperties ConvertToPushDockerImageProperties(IAWSWizard hostWizard)
+        public PushDockerImageProperties ConvertToPushDockerImageProperties(IAWSWizard hostingWizard)
         {
             var properties = new PushDockerImageProperties();
 
-            properties.Configuration = hostWizard[PublishContainerToAWSWizardProperties.Configuration] as string;
+            properties.Configuration = hostingWizard[PublishContainerToAWSWizardProperties.Configuration] as string;
 
-            var dockerRepository = hostWizard[PublishContainerToAWSWizardProperties.DockerRepository] as string;
-            var dockerTag = hostWizard[PublishContainerToAWSWizardProperties.DockerTag] as string;
+            var dockerRepository = hostingWizard[PublishContainerToAWSWizardProperties.DockerRepository] as string;
+            var dockerTag = hostingWizard[PublishContainerToAWSWizardProperties.DockerTag] as string;
             var dockerImageTag = dockerRepository;
             if (!string.IsNullOrWhiteSpace(dockerTag))
                 dockerImageTag += ":" + dockerTag;
@@ -39,19 +45,19 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             return properties;
         }
 
-        public TaskDefinitionProperties ConvertToTaskDefinitionProperties(IAWSWizard hostWizard)
+        public TaskDefinitionProperties ConvertToTaskDefinitionProperties(IAWSWizard hostingWizard)
         {
             var properties = new TaskDefinitionProperties
             {
-                ECSTaskDefinition = hostWizard[PublishContainerToAWSWizardProperties.TaskDefinition] as string,
-                ECSContainer = hostWizard[PublishContainerToAWSWizardProperties.Container] as string,
-                ContainerMemoryHardLimit = hostWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit] as int?,
-                ContainerMemorySoftLimit = hostWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit] as int?
+                ECSTaskDefinition = hostingWizard[PublishContainerToAWSWizardProperties.TaskDefinition] as string,
+                ECSContainer = hostingWizard[PublishContainerToAWSWizardProperties.Container] as string,
+                ContainerMemoryHardLimit = hostingWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit] as int?,
+                ContainerMemorySoftLimit = hostingWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit] as int?
             };
 
-            if(hostWizard[PublishContainerToAWSWizardProperties.PortMappings] is IList<PortMappingItem>)
+            if(hostingWizard[PublishContainerToAWSWizardProperties.PortMappings] is IList<PortMappingItem>)
             {
-                var uiPortMapping = hostWizard[PublishContainerToAWSWizardProperties.PortMappings] as IList<PortMappingItem>;
+                var uiPortMapping = hostingWizard[PublishContainerToAWSWizardProperties.PortMappings] as IList<PortMappingItem>;
                 string[] mappings = new string[uiPortMapping.Count];
                 for (int i = 0; i < mappings.Length; i++)
                 {
@@ -59,9 +65,9 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 }
                 properties.PortMappings = mappings;
             }
-            if (hostWizard[PublishContainerToAWSWizardProperties.EnvironmentVariables] is IList<EnvironmentVariableItem>)
+            if (hostingWizard[PublishContainerToAWSWizardProperties.EnvironmentVariables] is IList<EnvironmentVariableItem>)
             {
-                var uiEnv = hostWizard[PublishContainerToAWSWizardProperties.EnvironmentVariables] as IList<EnvironmentVariableItem>;
+                var uiEnv = hostingWizard[PublishContainerToAWSWizardProperties.EnvironmentVariables] as IList<EnvironmentVariableItem>;
                 var variables = new Dictionary<string, string>();
                 for (int i = 0; i < uiEnv.Count; i++)
                 {
@@ -70,55 +76,93 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 properties.EnvironmentVariables = variables;
             }
 
+            if (hostingWizard[PublishContainerToAWSWizardProperties.TaskRole] is Role)
+            {
+                properties.TaskDefinitionRole = ((Role)hostingWizard[PublishContainerToAWSWizardProperties.TaskRole]).Arn;
+            }
+            else if (hostingWizard[PublishContainerToAWSWizardProperties.TaskRoleManagedPolicy] != null)
+            {
+                properties.TaskDefinitionRole = this.CreateRole(hostingWizard);
+                this.Helper.AppendUploadStatus(string.Format("Created IAM role {0} with managed policy {1}",
+                    properties.TaskDefinitionRole,
+                    ((ManagedPolicy)hostingWizard[PublishContainerToAWSWizardProperties.TaskRoleManagedPolicy]).PolicyName));
+
+                this.Helper.AppendUploadStatus("Waiting for new IAM Role to propagate to AWS regions");
+                Thread.Sleep(SLEEP_TIME_FOR_ROLE_PROPOGATION);
+            }
+
+
             return properties;
         }
 
-        public DeployScheduledTaskProperties ConvertToDeployScheduledTaskProperties(IAWSWizard hostWizard)
+        public DeployScheduledTaskProperties ConvertToDeployScheduledTaskProperties(IAWSWizard hostingWizard)
         {
             var properties = new DeployScheduledTaskProperties
             {
-                ScheduleTaskRule = hostWizard[PublishContainerToAWSWizardProperties.ScheduleTaskRuleName] as string,
-                ScheduleTaskRuleTarget = hostWizard[PublishContainerToAWSWizardProperties.ScheduleTaskRuleTarget] as string,
-                ScheduleExpression = hostWizard[PublishContainerToAWSWizardProperties.ScheduleExpression] as string,
-                CloudWatchEventIAMRole = hostWizard[PublishContainerToAWSWizardProperties.CloudWatchEventIAMRole] as string,
-                DesiredCount = (int)hostWizard[PublishContainerToAWSWizardProperties.DesiredCount],
+                ScheduleTaskRule = hostingWizard[PublishContainerToAWSWizardProperties.ScheduleTaskRuleName] as string,
+                ScheduleTaskRuleTarget = hostingWizard[PublishContainerToAWSWizardProperties.ScheduleTaskRuleTarget] as string,
+                ScheduleExpression = hostingWizard[PublishContainerToAWSWizardProperties.ScheduleExpression] as string,
+                CloudWatchEventIAMRole = hostingWizard[PublishContainerToAWSWizardProperties.CloudWatchEventIAMRole] as string,
+                DesiredCount = (int)hostingWizard[PublishContainerToAWSWizardProperties.DesiredCount],
             };
 
             return properties;
         }
 
-        public DeployServiceProperties ConvertToDeployServiceProperties(IAWSWizard hostWizard)
+        public DeployServiceProperties ConvertToDeployServiceProperties(IAWSWizard hostingWizard)
         {
             var properties = new DeployServiceProperties
             {
-                ECSService = hostWizard[PublishContainerToAWSWizardProperties.Service] as string,
-                DesiredCount = ((int)hostWizard[PublishContainerToAWSWizardProperties.DesiredCount]),
-                DeploymentMaximumPercent = ((int)hostWizard[PublishContainerToAWSWizardProperties.MaximumPercent]),
-                DeploymentMinimumHealthyPercent = ((int)hostWizard[PublishContainerToAWSWizardProperties.MinimumHealthy]),
+                ECSService = hostingWizard[PublishContainerToAWSWizardProperties.Service] as string,
+                DesiredCount = ((int)hostingWizard[PublishContainerToAWSWizardProperties.DesiredCount]),
+                DeploymentMaximumPercent = ((int)hostingWizard[PublishContainerToAWSWizardProperties.MaximumPercent]),
+                DeploymentMinimumHealthyPercent = ((int)hostingWizard[PublishContainerToAWSWizardProperties.MinimumHealthy]),
             };
 
             return properties;
         }
 
-        public DeployTaskProperties ConvertToDeployTaskProperties(IAWSWizard hostWizard)
+        public DeployTaskProperties ConvertToDeployTaskProperties(IAWSWizard hostingWizard)
         {
             var properties = new DeployTaskProperties
             {
-                DesiredCount = ((int)hostWizard[PublishContainerToAWSWizardProperties.DesiredCount]),
-                TaskGroup = hostWizard[PublishContainerToAWSWizardProperties.TaskGroup] as string
+                DesiredCount = ((int)hostingWizard[PublishContainerToAWSWizardProperties.DesiredCount]),
+                TaskGroup = hostingWizard[PublishContainerToAWSWizardProperties.TaskGroup] as string
             };
 
             return properties;
         }
 
-        public ClusterProperties ConvertToClusterProperties(IAWSWizard hostWizard)
+        public ClusterProperties ConvertToClusterProperties(IAWSWizard hostingWizard)
         {
             var properties = new ClusterProperties
             {
-                ECSCluster = hostWizard[PublishContainerToAWSWizardProperties.Cluster] as string
+                ECSCluster = hostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string
             };
 
             return properties;
+        }
+
+
+        static readonly TimeSpan SLEEP_TIME_FOR_ROLE_PROPOGATION = TimeSpan.FromSeconds(15);
+        private string CreateRole(IAWSWizard hostingWizard)
+        {
+            var newRole = IAMUtilities.CreateRole(this._iamClient, "ecs_execution_" + hostingWizard[PublishContainerToAWSWizardProperties.TaskDefinition], Constants.ECS_TASKS_ASSUME_ROLE_POLICY);
+
+            this.Helper.AppendUploadStatus("Created IAM Role {0}", newRole.RoleName);
+
+            var policy = hostingWizard[PublishContainerToAWSWizardProperties.TaskRoleManagedPolicy] as ManagedPolicy;
+            if (policy != null)
+            {
+                this._iamClient.AttachRolePolicy(new AttachRolePolicyRequest
+                {
+                    RoleName = newRole.RoleName,
+                    PolicyArn = policy.Arn
+                });
+                this.Helper.AppendUploadStatus("Attach policy {0} to role {1}", policy.PolicyName, newRole.RoleName);
+            }
+
+            return newRole.Arn;
         }
     }
 }

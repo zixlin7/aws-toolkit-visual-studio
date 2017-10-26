@@ -23,7 +23,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             IAmazonECR ecrClient,
             IAmazonECS ecsClient,
             IAmazonIdentityManagementService iamClient)
-            : base(helper)
+            : base(helper, iamClient)
         {
             this._ecrClient = ecrClient;
             this._ecsClient = ecsClient;

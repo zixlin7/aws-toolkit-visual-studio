@@ -19,7 +19,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         IAmazonECR _ecrClient;
 
         public PushImageToECRWorker(IDockerDeploymentHelper helper, IAmazonECR ecrClient)
-            : base(helper)
+            : base(helper, null)
         {
             this._ecrClient = ecrClient;
         }
