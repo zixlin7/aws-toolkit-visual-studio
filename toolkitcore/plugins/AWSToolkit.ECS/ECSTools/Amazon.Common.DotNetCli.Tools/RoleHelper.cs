@@ -26,6 +26,29 @@ namespace Amazon.Common.DotNetCli.Tools
         {
             this.IAMClient = iamClient;
         }
+
+        public string GenerateUniqueIAMRoleName(string baseName)
+        {
+            var existingRoleNames = new HashSet<string>();
+            var response = new ListRolesResponse();
+            do
+            {
+                var roles = this.IAMClient.ListRoles(new ListRolesRequest { Marker = response.Marker }).Roles;
+                roles.ForEach(x => existingRoleNames.Add(x.RoleName));
+
+            } while (response.IsTruncated);
+
+            if (!existingRoleNames.Contains(baseName))
+                return baseName;
+
+            for (int i = 1; true; i++)
+            {
+                var name = baseName + "-" + i;
+                if (!existingRoleNames.Contains(name))
+                    return name;
+            }
+        }
+
         /*
                 public string PromptForRole()
                 {
@@ -162,17 +185,51 @@ namespace Amazon.Common.DotNetCli.Tools
         }
 
 
-
-
-        public string CreateDefaultRole(string roleName, string managedRole)
+        public static string ExpandManagedPolicyName(IAmazonIdentityManagementService iamClient, string managedPolicy)
         {
+            if (managedPolicy.StartsWith("arn:aws"))
+                return managedPolicy;
+
+            // Wrapping this in a task to avoid dealing with aggregate exception.
+            var task = Task.Run<string>(async () =>
+            {
+                var listResponse = new ListPoliciesResponse();
+                do
+                {
+                    var listRequest = new ListPoliciesRequest { Marker = listResponse.Marker, Scope = PolicyScopeType.All };
+                    listResponse = await iamClient.ListPoliciesAsync(listRequest).ConfigureAwait(false);
+                    var policy = listResponse.Policies.FirstOrDefault(x => string.Equals(managedPolicy, x.PolicyName));
+                    if (policy != null)
+                        return policy.Arn;
+
+                } while (listResponse.IsTruncated);
+
+                return null;
+            });
+
+            if (task.Result == null)
+            {
+                throw new ToolsException($"Policy \"{managedPolicy}\" can not be found.", ToolsException.CommonErrorCode.PolicyNotFound);
+            }
+
+            return task.Result;
+        }
+
+        public string CreateDefaultRole(string roleName, string assuleRolePolicy, string managedPolicy)
+        {
+            if (!string.IsNullOrEmpty(managedPolicy) && !managedPolicy.StartsWith("arn:aws"))
+            {
+                managedPolicy = ExpandManagedPolicyName(this.IAMClient, managedPolicy);
+            }
+
+
             string roleArn;
             try
             {
                 CreateRoleRequest request = new CreateRoleRequest
                 {
                     RoleName = roleName,
-                    AssumeRolePolicyDocument = Constants.ECS_ASSUME_ROLE_POLICY
+                    AssumeRolePolicyDocument = assuleRolePolicy
                 };
 
                 var response = this.IAMClient.CreateRoleAsync(request).Result;
@@ -183,14 +240,14 @@ namespace Amazon.Common.DotNetCli.Tools
                 throw new ToolsException($"Error creating IAM Role: {e.Message}", ToolsException.CommonErrorCode.IAMCreateRole, e);
             }
 
-            if (!string.IsNullOrEmpty(managedRole))
+            if (!string.IsNullOrEmpty(managedPolicy))
             {
                 try
                 {
                     var request = new AttachRolePolicyRequest
                     {
                         RoleName = roleName,
-                        PolicyArn = managedRole
+                        PolicyArn = managedPolicy
                     };
                     this.IAMClient.AttachRolePolicyAsync(request).Wait();
                 }

@@ -21,6 +21,7 @@ namespace Amazon.Common.DotNetCli.Tools
             IAMCreateRole,
             IAMGetRole,
             RoleNotFound,
+            PolicyNotFound
 
         }
 

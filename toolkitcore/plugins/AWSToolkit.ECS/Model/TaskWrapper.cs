@@ -50,7 +50,7 @@ namespace Amazon.AWSToolkit.ECS.Model
                 if (this._nativeTask.StartedAt == DateTime.MinValue)
                     return null;
 
-                return this._nativeTask.StartedAt.ToString();
+                return this._nativeTask.StartedAt.ToLocalTime().ToString();
             }
         }
 
@@ -61,7 +61,7 @@ namespace Amazon.AWSToolkit.ECS.Model
                 if (this._nativeTask.StoppedAt == DateTime.MinValue)
                     return null;
 
-                return this._nativeTask.StoppedAt.ToString();
+                return this._nativeTask.StoppedAt.ToLocalTime().ToString();
             }
         }
 

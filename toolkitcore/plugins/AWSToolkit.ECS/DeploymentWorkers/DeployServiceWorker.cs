@@ -204,7 +204,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     CreateRoleRequest request = new CreateRoleRequest
                     {
                         RoleName = newRoleName,
-                        AssumeRolePolicyDocument = Constants.ECS_ASSUME_ROLE_POLICY
+                        AssumeRolePolicyDocument = Amazon.Common.DotNetCli.Tools.Constants.ECS_ASSUME_ROLE_POLICY
                     };
 
                     changeTracker.ServiceIAMRole = this._iamClient.CreateRole(request).Role.Arn;
@@ -214,7 +214,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     {
                         RoleName = request.RoleName,
                         PolicyName = "Default",
-                        PolicyDocument = Constants.ECS_DEFAULT_SERVICE_POLICY
+                        PolicyDocument = Amazon.ECS.Tools.Constants.ECS_DEFAULT_SERVICE_POLICY
                     });
                     changeTracker.CreatedServiceIAMRole = true;
                     this.Helper.AppendUploadStatus("Added policy to IAM role {0} to give ECS permission to manage the load balancer", newRoleName);

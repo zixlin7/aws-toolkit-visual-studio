@@ -147,7 +147,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         static readonly TimeSpan SLEEP_TIME_FOR_ROLE_PROPOGATION = TimeSpan.FromSeconds(15);
         private string CreateRole(IAWSWizard hostingWizard)
         {
-            var newRole = IAMUtilities.CreateRole(this._iamClient, "ecs_execution_" + hostingWizard[PublishContainerToAWSWizardProperties.TaskDefinition], Constants.ECS_TASKS_ASSUME_ROLE_POLICY);
+            var newRole = IAMUtilities.CreateRole(this._iamClient, "ecs_execution_" + hostingWizard[PublishContainerToAWSWizardProperties.TaskDefinition], Amazon.Common.DotNetCli.Tools.Constants.ECS_TASKS_ASSUME_ROLE_POLICY);
 
             this.Helper.AppendUploadStatus("Created IAM Role {0}", newRole.RoleName);
 
