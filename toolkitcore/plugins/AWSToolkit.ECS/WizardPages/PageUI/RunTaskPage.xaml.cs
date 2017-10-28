@@ -51,6 +51,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             get
             {
+                if (this.DesiredCount.GetValueOrDefault() <= 0)
+                    return false;
+
                 return true;
             }
         }

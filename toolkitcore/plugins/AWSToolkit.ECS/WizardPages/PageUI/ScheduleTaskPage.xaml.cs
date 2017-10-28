@@ -65,6 +65,18 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             get
             {
+                if (string.IsNullOrWhiteSpace(this.ScheduleRule))
+                    return false;
+                if (string.IsNullOrWhiteSpace(this.Target))
+                    return false;
+                if (this.DesiredCount.GetValueOrDefault() <= 0)
+                    return false;
+                if (this.IsRunTypeFixedInterval.GetValueOrDefault() && this.RunIntervalValue.GetValueOrDefault() <= 0)
+                    return false;
+                if (this.IsRunTypeCronExpression.GetValueOrDefault() && string.IsNullOrWhiteSpace(this.CronExpression))
+                    return false;
+
+
                 return true;
             }
         }
