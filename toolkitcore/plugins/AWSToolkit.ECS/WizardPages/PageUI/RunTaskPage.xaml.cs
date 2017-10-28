@@ -35,6 +35,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         public RunTaskPage()
         {
             InitializeComponent();
+            this.DataContext = this;
         }
 
         public RunTaskPage(RunTaskPageController pageController)
