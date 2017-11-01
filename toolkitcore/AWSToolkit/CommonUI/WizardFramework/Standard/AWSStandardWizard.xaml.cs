@@ -33,6 +33,11 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
             InitializeComponent();
 
             ThemeUtil.UpdateDictionariesForTheme(this.Resources);
+            var logo = ThemeUtil.GetLogoImageSource("logo_aws_wizard");
+            if (logo != null)
+            {
+                _ctlWizardHeaderLogo.Source = logo;
+            }
         }
 
         /// <summary>

@@ -4,9 +4,12 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 
 using Amazon.AWSToolkit.Shared;
+using log4net;
 
 namespace Amazon.AWSToolkit
 {
@@ -21,6 +24,8 @@ namespace Amazon.AWSToolkit
 
     public static class ThemeUtil
     {
+        static readonly ILog LOGGER = LogManager.GetLogger(typeof(ThemeUtil));
+
         private static readonly IDictionary<string, VsTheme> Themes = new Dictionary<string, VsTheme>(StringComparer.OrdinalIgnoreCase)
         {
             { "de3dbbcd-f642-433c-8353-8f1df4370aba", VsTheme.Light }, 
@@ -102,13 +107,37 @@ namespace Amazon.AWSToolkit
             return null;
         }
 
+        // Returns one of the logo_aws_* image resources, automatically selecting
+        // the white logo if we're in dark mode.
+        public static ImageSource GetLogoImageSource(string basename)
+        {
+            const string logoResourcePath = "/AWSToolkit;component/Resources/Logos/";
+
+            var logoResourceName = String.Concat(logoResourcePath, 
+                                                 basename, 
+                                                 GetCurrentTheme() == VsTheme.Dark ? "_white.png" : ".png");
+
+            try
+            {
+                var img = new BitmapImage();
+                img.BeginInit();
+                img.UriSource = new Uri(logoResourceName, UriKind.Relative);
+                img.EndInit();
+                return img;
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Failed to load logo resource " + logoResourceName, e);
+            }
+
+            return null;
+        }
 
         public static event EventHandler ThemeChange;
 
         public static void RaiseThemeChangeEvent()
         {
-            if (ThemeChange != null)
-                ThemeChange(null, new EventArgs());
+            ThemeChange?.Invoke(null, new EventArgs());
         }
 
         public static void UpdateDictionariesForTheme(ResourceDictionary controlResourceDictionary)

@@ -46,8 +46,11 @@
             </Grid.ColumnDefinitions>
 
             <Image
+                x:Name="_ctlWizardHeaderLogo"
                 Grid.Column="0"
-                Source="/AWSToolkit;component/Resources/Logos/logo_aws_notext.png"
+                Width="100"
+                Height="60"
+                Source="/AWSToolkit;component/Resources/Logos/logo_aws_wizard.png"
                 Style="{DynamicResource awsWizardHeaderStandardLogoStyle}" />
 
             <StackPanel Grid.Column="1" Margin="4,0">

@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Navigation;
 using System.Windows.Input;
+using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Model;
@@ -33,12 +34,25 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
             this.DataContext = this._controller.Model;
 
             InitializeComponent();
+            ThemeUtil.ThemeChange += ThemeUtilOnThemeChange;
 
             // if the user is in VS2013 or VS2015, they will have been asked about
             // analytics when running the installer
             var shellVersion = controller.HostPackage.ToolkitShellProviderService.ShellVersion;
             if (shellVersion == "2013" || shellVersion == "2015")
                 _analyticsPanel.Visibility = Visibility.Collapsed;
+
+            // match the logo header 'text' to the theme on startup
+            ThemeUtilOnThemeChange(null, null);
+        }
+
+        private void ThemeUtilOnThemeChange(object sender, EventArgs eventArgs)
+        {
+            var logo = ThemeUtil.GetLogoImageSource("logo_aws");
+            if (logo != null)
+            {
+                _ctlLogoImage.Source = logo;
+            }
         }
 
         public override string Title

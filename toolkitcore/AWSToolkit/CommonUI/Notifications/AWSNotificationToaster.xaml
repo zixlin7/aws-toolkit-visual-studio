@@ -33,13 +33,17 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Image HorizontalAlignment="Left"
+            <Image x:Name="_ctlLogo" 
+                   HorizontalAlignment="Left"
                    VerticalAlignment="Top"
                    Opacity=".85" 
                    Margin="2" 
                    Panel.ZIndex="-1"
                    Grid.RowSpan="2"
-                   Grid.ColumnSpan="2" Source="/AWSToolkit;component/Resources/Logos/logo_aws_notext.png" Width="93.333" />
+                   Grid.ColumnSpan="2" 
+                   Source="/AWSToolkit;component/Resources/Logos/logo_aws_small.png" 
+                   Width="80" 
+                   Height="48"/>
             
             <TextBlock Grid.Column="1" x:Name="_header" HorizontalAlignment="Right" Margin="0,4,4,4" Text="Header" 
                        Style="{DynamicResource awsTextBlock122PercentStyle}"/>

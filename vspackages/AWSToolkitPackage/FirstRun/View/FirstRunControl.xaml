@@ -124,18 +124,20 @@
             </Grid.ColumnDefinitions>
 
             <Image
-                Width="80"
-                Height="60"
+                x:Name="_ctlLogoImage"
+                Width="140"
+                Height="84"
                 Margin="2"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
-                Source="/AWSToolkit;component/Resources/Logos/logo_aws_notext.png" />
+                Source="/AWSToolkit;component/Resources/Logos/logo_aws.png" />
 
             <TextBlock
                 Grid.Column="1"
-                Margin="-33,2,4,0"
-                Panel.ZIndex="1"
-                Style="{DynamicResource awsTextBlock200PercentStyle}">
+                Margin="24,8,12,0"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Right"
+                Style="{DynamicResource awsTextBlock310PercentStyle}">
                 Getting Started with the AWS Toolkit for Visual Studio
             </TextBlock>
         </Grid>
