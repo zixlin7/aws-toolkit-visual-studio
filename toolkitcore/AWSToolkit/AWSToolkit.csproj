@@ -655,7 +655,6 @@
     <EmbeddedResource Include="Resources\generic-remove.png" />
     <EmbeddedResource Include="Resources\help.png" />
     <EmbeddedResource Include="Resources\import.png" />
-    <Resource Include="Resources\Logos\logo_aws.png" />
     <EmbeddedResource Include="Resources\navback.png" />
     <EmbeddedResource Include="Resources\navforward.png" />
     <EmbeddedResource Include="Resources\paste.png" />
@@ -668,7 +667,12 @@
     <EmbeddedResource Include="Resources\warning.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Logos\logo_aws_notext.png" />
+    <Resource Include="Resources\Logos\logo_aws.png" />
+    <Resource Include="Resources\Logos\logo_aws_wizard.png" />
+    <Resource Include="Resources\Logos\logo_aws_small.png" />
+    <Resource Include="Resources\Logos\logo_aws_white.png" />
+    <Resource Include="Resources\Logos\logo_aws_wizard_white.png" />
+    <Resource Include="Resources\Logos\logo_aws_small_white.png" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="CommonUI\Charts\CloudWatchChart.xaml">

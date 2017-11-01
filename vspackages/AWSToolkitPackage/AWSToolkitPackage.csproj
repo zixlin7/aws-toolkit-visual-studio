@@ -463,7 +463,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\aws_preview.gif">
+    <Content Include="Resources\aws.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

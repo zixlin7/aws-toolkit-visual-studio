@@ -35,6 +35,11 @@ namespace Amazon.AWSToolkit.CommonUI.Notifications
         public AWSNotificationToaster()
         {
             InitializeComponent();
+            var logo = ThemeUtil.GetLogoImageSource("logo_aws_small");
+            if (logo != null)
+            {
+                _ctlLogo.Source = logo;
+            }
         }
 
         public void ShowNotification(FrameworkElement toasterContent, string headerText)

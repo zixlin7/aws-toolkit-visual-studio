@@ -9,7 +9,7 @@
     <GettingStartedGuide>https://docs.aws.amazon.com/AWSToolkitVS/latest/UserGuide/welcome.html</GettingStartedGuide>
     <ReleaseNotes>https://aws-vs-toolkit.s3.amazonaws.com/versioninfo.html</ReleaseNotes>
     <Icon>Resources\Package.ico</Icon>
-    <PreviewImage>Resources\aws_preview.gif</PreviewImage>
+    <PreviewImage>Resources\aws.png</PreviewImage>
     <Tags>AWS;Cloud;Web Services;Amazon</Tags>
   </Metadata>
   <Installation InstalledByMsi="|%CurrentProject%;GetVsixInstalledByMsiFlag|" AllUsers="true">
