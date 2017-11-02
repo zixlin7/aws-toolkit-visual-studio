@@ -23,8 +23,8 @@ namespace Amazon.ECS.Tools.Commands
         public static readonly IList<CommandOption> CommandOptions = BuildLineOptions(new List<CommandOption>
         {
             CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
-            ECSDefinedCommandOptions.ARGUMENT_CONFIGURATION,
-            ECSDefinedCommandOptions.ARGUMENT_FRAMEWORK,
+            CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION,
+            CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK,
             ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG,
             ECSDefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH,
 
@@ -197,14 +197,14 @@ namespace Amazon.ECS.Tools.Commands
             }
             catch (DockerToolsException e)
             {
-                this.Logger.WriteLine(e.Message);
+                this.Logger?.WriteLine(e.Message);
                 this.LastToolsException = e;
                 return false;
             }
             catch (Exception e)
             {
-                this.Logger.WriteLine($"Unknown error executing deploy application to an ECS service: {e.Message}");
-                this.Logger.WriteLine(e.StackTrace);
+                this.Logger?.WriteLine($"Unknown error executing deploy application to an ECS service: {e.Message}");
+                this.Logger?.WriteLine(e.StackTrace);
                 return false;
             }
             return true;
@@ -288,7 +288,7 @@ namespace Amazon.ECS.Tools.Commands
                             request.Role = null;
 
                             var defaultFile = string.IsNullOrEmpty(this.ConfigFile) ? DockerToolsDefaults.DEFAULT_FILE_NAME : this.ConfigFile;
-                            this.Logger.WriteLine($"Warning: ELB Target Group ARN specified in config file {defaultFile} does not exist.");
+                            this.Logger?.WriteLine($"Warning: ELB Target Group ARN specified in config file {defaultFile} does not exist.");
                             await this.ECSClient.CreateServiceAsync(request);
                         }
                         else

@@ -17,8 +17,8 @@ namespace Amazon.ECS.Tools.Commands
         public static readonly IList<CommandOption> CommandOptions = BuildLineOptions(new List<CommandOption>
         {
             CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
-            ECSDefinedCommandOptions.ARGUMENT_CONFIGURATION,
-            ECSDefinedCommandOptions.ARGUMENT_FRAMEWORK,
+            CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION,
+            CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK,
             ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG,
 
             ECSDefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH,
@@ -207,14 +207,14 @@ namespace Amazon.ECS.Tools.Commands
             }
             catch (DockerToolsException e)
             {
-                this.Logger.WriteLine(e.Message);
+                this.Logger?.WriteLine(e.Message);
                 this.LastToolsException = e;
                 return false;
             }
             catch (Exception e)
             {
-                this.Logger.WriteLine($"Unknown error executing docker push to Amazon EC2 Container Registry: {e.Message}");
-                this.Logger.WriteLine(e.StackTrace);
+                this.Logger?.WriteLine($"Unknown error executing docker push to Amazon EC2 Container Registry: {e.Message}");
+                this.Logger?.WriteLine(e.StackTrace);
                 return false;
             }
             return true;

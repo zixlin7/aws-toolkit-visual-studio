@@ -42,6 +42,7 @@ namespace Amazon.Common.DotNetCli.Tools
         public void LoadDefaults(string projectLocation, string configFile)
         {
             string path = Path.Combine(projectLocation, configFile);
+            this.SourceFile = path;
 
             if (!File.Exists(path))
                 return;

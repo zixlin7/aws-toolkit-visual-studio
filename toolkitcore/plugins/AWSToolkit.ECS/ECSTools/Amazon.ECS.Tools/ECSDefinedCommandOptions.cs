@@ -13,25 +13,6 @@ namespace Amazon.ECS.Tools
     public static class ECSDefinedCommandOptions
     {
 
-        public static readonly CommandOption ARGUMENT_CONFIGURATION =
-            new CommandOption
-            {
-                Name = "Build Configuration",
-                ShortSwitch = "-c",
-                Switch = "--configuration",
-                ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "Configuration to build with, for example Release or Debug.",
-            };
-        public static readonly CommandOption ARGUMENT_FRAMEWORK =
-            new CommandOption
-            {
-                Name = "Framework",
-                ShortSwitch = "-f",
-                Switch = "--framework",
-                ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "Target framework to compile, for example netcoreapp1.0.",
-            };
-
         public static readonly CommandOption ARGUMENT_DOCKER_TAG =
             new CommandOption
             {

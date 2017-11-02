@@ -13,6 +13,8 @@ namespace Amazon.Common.DotNetCli.Tools
     public interface IToolLogger
     {
         void WriteLine(string message);
+
+        void WriteLine(string message, params object[] args);
     }
 
     /// <summary>
@@ -23,6 +25,11 @@ namespace Amazon.Common.DotNetCli.Tools
         public void WriteLine(string message)
         {
             Console.WriteLine(message);
+        }
+
+        public void WriteLine(string message, params object[] args)
+        {
+            Console.WriteLine(string.Format(message, args));
         }
     }
 }

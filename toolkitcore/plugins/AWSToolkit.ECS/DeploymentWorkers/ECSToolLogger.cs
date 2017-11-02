@@ -21,5 +21,10 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         {
             this.Helper.AppendUploadStatus(message);
         }
+
+        public void WriteLine(string message, params object[] args)
+        {
+            this.Helper.AppendUploadStatus(string.Format(message, args));
+        }
     }
 }

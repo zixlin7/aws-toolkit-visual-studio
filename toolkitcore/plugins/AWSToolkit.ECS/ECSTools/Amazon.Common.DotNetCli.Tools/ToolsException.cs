@@ -17,11 +17,17 @@ namespace Amazon.Common.DotNetCli.Tools
             MissingRequiredParameter,
             PersistConfigError,
 
+            DotnetPublishFailed,
+
             IAMAttachRole,
             IAMCreateRole,
             IAMGetRole,
             RoleNotFound,
-            PolicyNotFound
+            PolicyNotFound,
+
+            FailedToFindZipProgram,
+
+            S3UploadError
 
         }
 

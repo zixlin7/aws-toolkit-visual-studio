@@ -92,7 +92,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                     }
                 }
 
-                copyValues(ECSDefinedCommandOptions.ARGUMENT_CONFIGURATION, PublishContainerToAWSWizardProperties.Configuration);
+                copyValues(CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION, PublishContainerToAWSWizardProperties.Configuration);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, PublishContainerToAWSWizardProperties.TaskDefinition);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER, PublishContainerToAWSWizardProperties.Container);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT, PublishContainerToAWSWizardProperties.MemoryHardLimit);

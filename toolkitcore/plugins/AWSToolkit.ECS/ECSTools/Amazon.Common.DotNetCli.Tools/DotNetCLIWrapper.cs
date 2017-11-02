@@ -81,7 +81,38 @@ namespace Amazon.Common.DotNetCli.Tools
                 CreateNoWindow = true
             };
 
-            return base.ExecuteCommand(psi, "dotnet publish");
+            int exitCode = base.ExecuteCommand(psi, "dotnet publish");
+            if (exitCode != 0)
+                return exitCode;
+
+            var chmodPath = FindExecutableInPath("chmod");
+            if (!string.IsNullOrEmpty(chmodPath) && File.Exists(chmodPath))
+            {
+                // as we are not invoking through a shell, which would handle
+                // wildcard expansion for us, we need to invoke per-file
+                var dllFiles = Directory.GetFiles(outputLocation, "*.dll", SearchOption.TopDirectoryOnly);
+                foreach (var dllFile in dllFiles)
+                {
+                    var dllFilename = Path.GetFileName(dllFile);
+                    var psiChmod = new ProcessStartInfo
+                    {
+                        FileName = chmodPath,
+                        Arguments = "+r " + dllFilename,
+                        WorkingDirectory = outputLocation,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    };
+
+                    if(base.ExecuteCommand(psiChmod, "dotnet publish") == 0)
+                    {
+                        this._logger?.WriteLine($"Changed permissions on published dll (chmod +r {dllFilename}).");
+                    }
+                }
+            }
+
+            return 0;
         }
     }
 }

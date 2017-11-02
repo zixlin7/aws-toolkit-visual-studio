@@ -19,9 +19,9 @@ namespace Amazon.ECS.Tools.Commands
         internal void ParseCommandArguments(CommandOptions values)
         {
             Tuple<CommandOption, CommandOptionValue> tuple;
-            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_CONFIGURATION.Switch)) != null)
+            if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION.Switch)) != null)
                 this.Configuration = tuple.Item2.StringValue;
-            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_FRAMEWORK.Switch)) != null)
+            if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK.Switch)) != null)
                 this.TargetFramework = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG.Switch)) != null)
                 this.DockerImageTag = tuple.Item2.StringValue;
@@ -30,8 +30,8 @@ namespace Amazon.ECS.Tools.Commands
 
         internal void PersistSettings(ECSBaseCommand command, JsonData data)
         {
-            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_CONFIGURATION.ConfigFileKey, command.GetStringValueOrDefault(this.Configuration, ECSDefinedCommandOptions.ARGUMENT_CONFIGURATION, false));
-            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_FRAMEWORK.ConfigFileKey, command.GetStringValueOrDefault(this.TargetFramework, ECSDefinedCommandOptions.ARGUMENT_FRAMEWORK, false));
+            data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION.ConfigFileKey, command.GetStringValueOrDefault(this.Configuration, CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION, false));
+            data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK.ConfigFileKey, command.GetStringValueOrDefault(this.TargetFramework, CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK, false));
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG.ConfigFileKey, command.GetStringValueOrDefault(this.DockerImageTag, ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG, false));
         }
     }

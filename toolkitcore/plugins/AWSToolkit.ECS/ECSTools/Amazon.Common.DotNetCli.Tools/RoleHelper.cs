@@ -33,7 +33,7 @@ namespace Amazon.Common.DotNetCli.Tools
             var response = new ListRolesResponse();
             do
             {
-                var roles = this.IAMClient.ListRoles(new ListRolesRequest { Marker = response.Marker }).Roles;
+                var roles = this.IAMClient.ListRolesAsync(new ListRolesRequest { Marker = response.Marker }).Result.Roles;
                 roles.ForEach(x => existingRoleNames.Add(x.RoleName));
 
             } while (response.IsTruncated);

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using ThirdParty.Json.LitJson;
 
 using Amazon.IdentityManagement;
+using Amazon.S3;
 
 namespace Amazon.Common.DotNetCli.Tools.Commands
 {
@@ -461,6 +462,25 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
             set { this._iamClient = value; }
         }
 
+        IAmazonS3 _s3Client;
+        public IAmazonS3 S3Client
+        {
+            get
+            {
+                if (this._s3Client == null)
+                {
+                    SetUserAgentString();
+
+                    var config = new AmazonS3Config();
+                    config.RegionEndpoint = DetermineAWSRegion();
+
+                    this._s3Client = new AmazonS3Client(DetermineAWSCredentials(), config);
+                }
+                return this._s3Client;
+            }
+            set { this._s3Client = value; }
+        }
+
         protected void SaveConfigFile()
         {
             try
@@ -489,7 +509,7 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
 
                 var json = sb.ToString();
                 File.WriteAllText(this.DefaultConfig.SourceFile, json);
-                this.Logger.WriteLine($"Config settings saved to {this.DefaultConfig.SourceFile}");
+                this.Logger?.WriteLine($"Config settings saved to {this.DefaultConfig.SourceFile}");
             }
             catch (Exception e)
             {
