@@ -316,6 +316,8 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
 
         internal ILog Logger { get { return LOGGER; } }
 
+        internal string PageErrorText { get; set; }
+
         internal Func<bool> CommitAction
         {
             get;

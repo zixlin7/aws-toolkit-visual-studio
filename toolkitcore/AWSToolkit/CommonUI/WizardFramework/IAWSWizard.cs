@@ -241,5 +241,12 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
         /// <param name="propertyKey"></param>
         /// <param name="propertyValue"></param>
         void CancelRun(string propertyKey, object propertyValue);
+
+        /// <summary>
+        /// Toggles the display of the page error panel depending on the contents
+        /// of errorText.
+        /// </summary>
+        /// <param name="errorText">Null or empty to hide the panel, non-empty to show the specified error.</param>
+        void SetPageError(string errorText);
     }
 }
