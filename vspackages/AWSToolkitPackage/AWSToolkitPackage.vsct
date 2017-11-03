@@ -122,7 +122,7 @@
         <Strings>
           <CommandName>AWS.PublishContainerToAWS</CommandName>
           <ButtonText>Publish Container to AWS...</ButtonText>
-          <ToolTipText>Build and push the docker image AWS</ToolTipText>
+          <ToolTipText>Build and push the docker image to AWS</ToolTipText>
         </Strings>
       </Button>
       
@@ -340,25 +340,25 @@
     -->
 
     <!-- Place mmediately after VS Publish on Web Application Project context menu -->
+    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishContainerToAWS" priority="0x0601">
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
+    </CommandPlacement>
     <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" priority="0x0602">
       <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
     </CommandPlacement>
     <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidRepublishToAWS" priority="0x0603">
       <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
     </CommandPlacement>
-    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishContainerToAWS" priority="0x0604">
-      <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
-    </CommandPlacement>
 
     <!-- Place immediately after Publish Web Site command on main Build menu -->
+    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishContainerToAWS" priority="0x0501">
+      <Parent guid="guidSHLMainMenu" id="IDG_VS_BUILD_SELECTION" />
+    </CommandPlacement>
     <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishToAWS" priority="0x0502">
       <Parent guid="guidSHLMainMenu" id="IDG_VS_BUILD_SELECTION" />
     </CommandPlacement>
     <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidRepublishToAWS" priority="0x0503">
       <Parent guid="guidSHLMainMenu" id="IDG_VS_BUILD_SELECTION" />
-    </CommandPlacement>
-    <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishContainerToAWS" priority="0x0504">
-      <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
     </CommandPlacement>
 
     <!-- Place immediately after Publish Selection (text changes) command on web site context menu -->
