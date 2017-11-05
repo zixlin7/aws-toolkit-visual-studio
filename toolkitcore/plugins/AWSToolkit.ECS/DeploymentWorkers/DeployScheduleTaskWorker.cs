@@ -59,11 +59,9 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 if(state.HostingWizard[PublishContainerToAWSWizardProperties.CreateCloudWatchEventIAMRole] is bool &&
                     (bool)state.HostingWizard[PublishContainerToAWSWizardProperties.CreateCloudWatchEventIAMRole])
                 {
-                    var roleHelper = new Amazon.Common.DotNetCli.Tools.RoleHelper(this._iamClient);
-
-                    var newRoleName = roleHelper.GenerateUniqueIAMRoleName("ecsEventsRole");
+                    var newRoleName = Amazon.Common.DotNetCli.Tools.RoleHelper.GenerateUniqueIAMRoleName(this._iamClient, "ecsEventsRole");
                     this.Helper.AppendUploadStatus("Creating IAM role " + newRoleName + " for CloudWatch Events to use to run the ECS task");
-                    var roleArn = roleHelper.CreateDefaultRole(newRoleName, Amazon.Common.DotNetCli.Tools.Constants.CWE_ASSUME_ROLE_POLICY, "AmazonEC2ContainerServiceEventsRole");
+                    var roleArn = Amazon.Common.DotNetCli.Tools.RoleHelper.CreateRole(this._iamClient, newRoleName, Amazon.Common.DotNetCli.Tools.Constants.CWE_ASSUME_ROLE_POLICY, null, "AmazonEC2ContainerServiceEventsRole");
                     command.DeployScheduledTaskProperties.CloudWatchEventIAMRole = roleArn;
                 }
 

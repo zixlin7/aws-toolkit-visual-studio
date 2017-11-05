@@ -15,21 +15,21 @@ namespace Amazon.ECS.Tools
     /// <summary>
     /// This class gives access to the default values for the CommandOptions defined in the project's default json file.
     /// </summary>
-    public class DockerToolsDefaults : DefaultConfigFile
+    public class ECSToolsDefaults : DefaultConfigFile
     {
-        public const string DEFAULT_FILE_NAME = "aws-docker-tools-defaults.json";
+        public const string DEFAULT_FILE_NAME = "aws-ecs-tools-defaults.json";
 
-        public DockerToolsDefaults()
+        public ECSToolsDefaults()
         {
 
         }
 
-        public DockerToolsDefaults(string sourceFile)
+        public ECSToolsDefaults(string sourceFile)
             : this(new JsonData(), sourceFile)
         {
         }
 
-        public DockerToolsDefaults(JsonData data, string sourceFile)
+        public ECSToolsDefaults(JsonData data, string sourceFile)
             : base(data, sourceFile)
         {
         }

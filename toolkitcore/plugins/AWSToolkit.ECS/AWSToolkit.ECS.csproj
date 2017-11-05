@@ -153,8 +153,8 @@
     <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\PushDockerImageCommand.cs" />
     <Compile Include="ECSTools\Amazon.ECS.Tools\Constants.cs" />
     <Compile Include="ECSTools\Amazon.ECS.Tools\DockerCLIWrapper.cs" />
-    <Compile Include="ECSTools\Amazon.ECS.Tools\DockerToolsDefaults.cs" />
     <Compile Include="ECSTools\Amazon.ECS.Tools\ECSDefinedCommandOptions.cs" />
+    <Compile Include="ECSTools\Amazon.ECS.Tools\ECSToolsDefaults.cs" />
     <Compile Include="ECSTools\Amazon.ECS.Tools\ECSUtilities.cs" />
     <Compile Include="ECSTools\Amazon.ECS.Tools\Exceptions.cs" />
     <Compile Include="Model\ClusterWrapper.cs" />

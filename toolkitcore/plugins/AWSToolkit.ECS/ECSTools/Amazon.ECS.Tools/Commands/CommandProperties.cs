@@ -91,8 +91,8 @@ namespace Amazon.ECS.Tools.Commands
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT.ConfigFileKey, command.GetIntValueOrDefault(this.ContainerMemoryHardLimit, ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT, false));
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT.ConfigFileKey, command.GetIntValueOrDefault(this.ContainerMemorySoftLimit, ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT, false));
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE.ConfigFileKey, command.GetStringValueOrDefault(this.TaskDefinitionRole, ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE, false));
-            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING.ConfigFileKey, DockerToolsDefaults.FormatCommaDelimitedList(command.GetStringValuesOrDefault(this.PortMappings, ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING, false)));
-            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES.ConfigFileKey, DockerToolsDefaults.FormatKeyValue(command.GetKeyValuePairOrDefault(this.EnvironmentVariables, ECSDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES, false)));
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING.ConfigFileKey, ECSToolsDefaults.FormatCommaDelimitedList(command.GetStringValuesOrDefault(this.PortMappings, ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING, false)));
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES.ConfigFileKey, ECSToolsDefaults.FormatKeyValue(command.GetKeyValuePairOrDefault(this.EnvironmentVariables, ECSDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES, false)));
         }
     }
 

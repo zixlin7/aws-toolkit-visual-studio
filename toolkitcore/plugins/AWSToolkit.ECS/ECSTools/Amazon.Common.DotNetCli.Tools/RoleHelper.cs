@@ -15,25 +15,23 @@ namespace Amazon.Common.DotNetCli.Tools
     /// <summary>
     /// Utility class for interacting with console user to select or create an IAM role
     /// </summary>
-    public class RoleHelper
+    public static class RoleHelper
     {
+        public const string EC2_ASSUME_ROLE_PRINCIPAL = "ec2.amazonaws.com";
+        public const string ECS_TASK_ASSUME_ROLE_PRINCIPAL = "ecs-tasks.amazonaws.com";
+
         public const int DEFAULT_ITEM_MAX = 20;
         private const int MAX_LINE_LENGTH_FOR_MANAGED_ROLE = 95;
         static readonly TimeSpan SLEEP_TIME_FOR_ROLE_PROPOGATION = TimeSpan.FromSeconds(15);
-        public IAmazonIdentityManagementService IAMClient { get; private set; }
 
-        public RoleHelper(IAmazonIdentityManagementService iamClient)
-        {
-            this.IAMClient = iamClient;
-        }
 
-        public string GenerateUniqueIAMRoleName(string baseName)
+        public static string GenerateUniqueIAMRoleName(IAmazonIdentityManagementService iamClient, string baseName)
         {
             var existingRoleNames = new HashSet<string>();
             var response = new ListRolesResponse();
             do
             {
-                var roles = this.IAMClient.ListRolesAsync(new ListRolesRequest { Marker = response.Marker }).Result.Roles;
+                var roles = iamClient.ListRolesAsync(new ListRolesRequest { Marker = response.Marker }).Result.Roles;
                 roles.ForEach(x => existingRoleNames.Add(x.RoleName));
 
             } while (response.IsTruncated);
@@ -49,112 +47,7 @@ namespace Amazon.Common.DotNetCli.Tools
             }
         }
 
-        /*
-                public string PromptForRole()
-                {
-                    var existingRoles = FindExistingECSRoles(DEFAULT_ITEM_MAX);
-                    if (existingRoles.Count == 0)
-                    {
-                        return CreateRole();
-                    }
-
-                    var roleArn = SelectFromExisting(existingRoles);
-                    return roleArn;
-                }
-
-                private string SelectFromExisting(IList<Role> existingRoles)
-                {
-                    Console.Out.WriteLine("Select IAM Role that will provide AWS credentials to the application:");
-                    for (int i = 0; i < existingRoles.Count; i++)
-                    {
-                        Console.Out.WriteLine($"   {(i + 1).ToString().PadLeft(2)}) {existingRoles[i].RoleName}");
-                    }
-
-                    Console.Out.WriteLine($"   {(existingRoles.Count + 1).ToString().PadLeft(2)}) *** Create new IAM Role ***");
-                    Console.Out.Flush();
-
-                    int chosenIndex = WaitForIndexResponse(1, existingRoles.Count + 1);
-
-                    if (chosenIndex - 1 < existingRoles.Count)
-                    {
-                        return existingRoles[chosenIndex - 1].Arn;
-                    }
-                    else
-                    {
-                        return CreateRole();
-                    }
-                }
-
-                private string CreateRole()
-                {
-                    Console.Out.WriteLine($"Enter name of the new IAM Role:");
-                    var roleName = Console.ReadLine();
-                    if (string.IsNullOrWhiteSpace(roleName))
-                        return null;
-
-                    roleName = roleName.Trim();
-
-                    Console.Out.WriteLine("Select IAM Policy to attach to the new role and grant permissions");
-
-                    var managedPolices = FindECSManagedPoliciesAsync(this.IAMClient, DEFAULT_ITEM_MAX).Result;
-                    for (int i = 0; i < managedPolices.Count; i++)
-                    {
-                        var line = $"   {(i + 1).ToString().PadLeft(2)}) {managedPolices[i].PolicyName}";
-
-                        var description = AttemptToGetPolicyDescription(managedPolices[i].Arn);
-                        if (!string.IsNullOrEmpty(description))
-                        {
-                            if ((line.Length + description.Length) > MAX_LINE_LENGTH_FOR_MANAGED_ROLE)
-                                description = description.Substring(0, MAX_LINE_LENGTH_FOR_MANAGED_ROLE - line.Length) + " ...";
-                            line += $" ({description})";
-                        }
-
-                        Console.Out.WriteLine(line);
-                    }
-
-                    Console.Out.WriteLine($"   {(managedPolices.Count + 1).ToString().PadLeft(2)}) *** No policy, add permissions later ***");
-                    Console.Out.Flush();
-
-                    int chosenIndex = WaitForIndexResponse(1, managedPolices.Count + 1);
-
-                    string managedPolicyArn = null;
-                    if (chosenIndex < managedPolices.Count)
-                    {
-                        var selectedPolicy = managedPolices[chosenIndex - 1];
-                        managedPolicyArn = Constants.AWS_MANAGED_POLICY_ARN_PREFIX + selectedPolicy.Path + selectedPolicy.PolicyName;
-                    }
-
-                    string roleArn = CreateDefaultRole(roleName, managedPolicyArn);
-
-                    return roleArn;
-
-                }
-        */
-        private int WaitForIndexResponse(int min, int max)
-        {
-            int chosenIndex = -1;
-            while (chosenIndex == -1)
-            {
-                var indexInput = Console.ReadLine()?.Trim();
-                int parsedIndex;
-                if (int.TryParse(indexInput, out parsedIndex) && parsedIndex >= min && parsedIndex <= max)
-                {
-                    chosenIndex = parsedIndex;
-                }
-                else
-                {
-                    Console.Out.WriteLine($"Invalid selection, must be a number between {min} and {max}");
-                }
-            }
-
-            return chosenIndex;
-        }
-
-        private string ExpandRoleName(string roleName)
-        {
-            return ExpandRoleName(this.IAMClient, roleName);
-        }
-
+ 
         public static string ExpandRoleName(IAmazonIdentityManagementService iamClient, string roleName)
         {
             if (roleName.StartsWith("arn:aws"))
@@ -215,13 +108,15 @@ namespace Amazon.Common.DotNetCli.Tools
             return task.Result;
         }
 
-        public string CreateDefaultRole(string roleName, string assuleRolePolicy, string managedPolicy)
+        public static string CreateRole(IAmazonIdentityManagementService iamClient, string roleName, string assuleRolePolicy, params string[] managedPolicies)
         {
-            if (!string.IsNullOrEmpty(managedPolicy) && !managedPolicy.StartsWith("arn:aws"))
+            if (managedPolicies != null && managedPolicies.Length > 0)
             {
-                managedPolicy = ExpandManagedPolicyName(this.IAMClient, managedPolicy);
+                for(int i = 0; i < managedPolicies.Length; i++)
+                {
+                    managedPolicies[i] = ExpandManagedPolicyName(iamClient, managedPolicies[i]);
+                }
             }
-
 
             string roleArn;
             try
@@ -232,7 +127,7 @@ namespace Amazon.Common.DotNetCli.Tools
                     AssumeRolePolicyDocument = assuleRolePolicy
                 };
 
-                var response = this.IAMClient.CreateRoleAsync(request).Result;
+                var response = iamClient.CreateRoleAsync(request).Result;
                 roleArn = response.Role.Arn;
             }
             catch (Exception e)
@@ -240,16 +135,19 @@ namespace Amazon.Common.DotNetCli.Tools
                 throw new ToolsException($"Error creating IAM Role: {e.Message}", ToolsException.CommonErrorCode.IAMCreateRole, e);
             }
 
-            if (!string.IsNullOrEmpty(managedPolicy))
+            if (managedPolicies != null && managedPolicies.Length > 0)
             {
                 try
                 {
-                    var request = new AttachRolePolicyRequest
+                    foreach(var managedPolicy in managedPolicies)
                     {
-                        RoleName = roleName,
-                        PolicyArn = managedPolicy
-                    };
-                    this.IAMClient.AttachRolePolicyAsync(request).Wait();
+                        var request = new AttachRolePolicyRequest
+                        {
+                            RoleName = roleName,
+                            PolicyArn = managedPolicy
+                        };
+                        iamClient.AttachRolePolicyAsync(request).Wait();
+                    }
                 }
                 catch (Exception e)
                 {
@@ -275,7 +173,7 @@ namespace Amazon.Common.DotNetCli.Tools
 
                 try
                 {
-                    var getResponse = this.IAMClient.GetRoleAsync(new GetRoleRequest { RoleName = roleName }).Result;
+                    var getResponse = iamClient.GetRoleAsync(new GetRoleRequest { RoleName = roleName }).Result;
                     if (getResponse.Role != null)
                         found = true;
                 }
@@ -293,7 +191,7 @@ namespace Amazon.Common.DotNetCli.Tools
             return roleArn;
         }
 
-        public static async Task<IList<ManagedPolicy>> FindECSManagedPoliciesAsync(IAmazonIdentityManagementService iamClient, int maxPolicies)
+        public static async Task<IList<ManagedPolicy>> FindManagedPoliciesAsync(IAmazonIdentityManagementService iamClient, int maxPolicies)
         {
             ListPoliciesRequest request = new ListPoliciesRequest
             {
@@ -301,7 +199,7 @@ namespace Amazon.Common.DotNetCli.Tools
             };
             ListPoliciesResponse response = null;
 
-            IList<ManagedPolicy> ecsPolicies = new List<ManagedPolicy>();
+            IList<ManagedPolicy> policies = new List<ManagedPolicy>();
             do
             {
                 request.Marker = response?.Marker;
@@ -310,10 +208,10 @@ namespace Amazon.Common.DotNetCli.Tools
                 foreach (var policy in response.Policies)
                 {
                     if (policy.IsAttachable && KNOWN_MANAGED_POLICY_DESCRIPTIONS.ContainsKey(policy.PolicyName))
-                        ecsPolicies.Add(policy);
+                        policies.Add(policy);
 
-                    if (ecsPolicies.Count == maxPolicies)
-                        return ecsPolicies;
+                    if (policies.Count == maxPolicies)
+                        return policies;
                 }
 
             } while (response.IsTruncated);
@@ -326,17 +224,17 @@ namespace Amazon.Common.DotNetCli.Tools
             foreach (var policy in response.Policies)
             {
                 if (policy.IsAttachable)
-                    ecsPolicies.Add(policy);
+                    policies.Add(policy);
 
-                if (ecsPolicies.Count == maxPolicies)
-                    return ecsPolicies;
+                if (policies.Count == maxPolicies)
+                    return policies;
             }
 
 
-            return ecsPolicies;
+            return policies;
         }
 
-        public static async Task<IList<Role>> FindExistingECSRolesAsync(IAmazonIdentityManagementService iamClient, int maxRoles)
+        public static async Task<IList<Role>> FindExistingRolesAsync(IAmazonIdentityManagementService iamClient, string assumeRolePrincpal, int maxRoles)
         {
             List<Role> roles = new List<Role>();
 
@@ -351,7 +249,7 @@ namespace Amazon.Common.DotNetCli.Tools
 
                 foreach (var role in response.Roles)
                 {
-                    if (AssumeRoleServicePrincipalSelector(role, "ecs-tasks.amazonaws.com"))
+                    if (AssumeRoleServicePrincipalSelector(role, assumeRolePrincpal))
                     {
                         roles.Add(role);
                         if (roles.Count == maxRoles)
@@ -364,19 +262,20 @@ namespace Amazon.Common.DotNetCli.Tools
             } while (response.IsTruncated && roles.Count < maxRoles);
 
             return roles;
+
         }
 
-        private IList<Role> FindExistingECSRoles(int maxRoles)
+        private static IList<Role> FindExistingRoles(IAmazonIdentityManagementService iamClient, string assumeRolePrincpal, int maxRoles)
         {
             var task = Task.Run<IList<Role>>(async () =>
             {
-                return await FindExistingECSRolesAsync(this.IAMClient, maxRoles);
+                return await FindExistingRolesAsync(iamClient, assumeRolePrincpal, maxRoles);
             });
 
             return task.Result;
         }
 
-        public static bool AssumeRoleServicePrincipalSelector(Role r, string servicePrincipal)
+        private static bool AssumeRoleServicePrincipalSelector(Role r, string servicePrincipal)
         {
             if (string.IsNullOrEmpty(r.AssumeRolePolicyDocument))
                 return false;
@@ -401,6 +300,29 @@ namespace Amazon.Common.DotNetCli.Tools
             }
         }
 
+        public static async Task<IList<InstanceProfile>> FindExistingInstanceProfilesAsync(IAmazonIdentityManagementService iamClient, int maxRoles)
+        {
+            var profiles = new List<InstanceProfile>();
+
+            ListInstanceProfilesRequest request = new ListInstanceProfilesRequest();
+            ListInstanceProfilesResponse response = null;
+            do
+            {
+                if (response != null)
+                    request.Marker = response.Marker;
+
+                response = await iamClient.ListInstanceProfilesAsync(request).ConfigureAwait(false);
+
+                foreach (var profile in response.InstanceProfiles)
+                {
+                    profiles.Add(profile);
+                }
+
+            } while (response.IsTruncated && profiles.Count < maxRoles);
+
+            return profiles;
+        }
+
 
         static readonly Dictionary<string, string> KNOWN_MANAGED_POLICY_DESCRIPTIONS = new Dictionary<string, string>
         {
@@ -416,7 +338,7 @@ namespace Amazon.Common.DotNetCli.Tools
         /// </summary>
         /// <param name="policyArn"></param>
         /// <returns></returns>
-        public string AttemptToGetPolicyDescription(string policyArn)
+        public static string AttemptToGetPolicyDescription(string policyArn)
         {
             string content;
             if (!KNOWN_MANAGED_POLICY_DESCRIPTIONS.TryGetValue(policyArn, out content))

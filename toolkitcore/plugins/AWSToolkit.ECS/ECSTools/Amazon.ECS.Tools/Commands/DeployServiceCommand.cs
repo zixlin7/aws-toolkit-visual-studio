@@ -287,7 +287,7 @@ namespace Amazon.ECS.Tools.Commands
                             request.LoadBalancers.Clear();
                             request.Role = null;
 
-                            var defaultFile = string.IsNullOrEmpty(this.ConfigFile) ? DockerToolsDefaults.DEFAULT_FILE_NAME : this.ConfigFile;
+                            var defaultFile = string.IsNullOrEmpty(this.ConfigFile) ? ECSToolsDefaults.DEFAULT_FILE_NAME : this.ConfigFile;
                             this.Logger?.WriteLine($"Warning: ELB Target Group ARN specified in config file {defaultFile} does not exist.");
                             await this.ECSClient.CreateServiceAsync(request);
                         }

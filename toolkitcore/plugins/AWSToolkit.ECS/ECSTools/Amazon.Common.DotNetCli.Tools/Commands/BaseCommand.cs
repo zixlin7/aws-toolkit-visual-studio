@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using ThirdParty.Json.LitJson;
 
 using Amazon.IdentityManagement;
+using Amazon.IdentityManagement.Model;
 using Amazon.S3;
 
 namespace Amazon.Common.DotNetCli.Tools.Commands
@@ -405,6 +406,101 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
             return null;
         }
 
+        public string GetInstanceProfileOrDefault(string propertyValue, CommandOption option, bool required, string newRoleName)
+        {
+            var value = GetStringValueOrDefault(propertyValue, option, false);
+            if (!string.IsNullOrEmpty(value))
+            {
+                return value;
+            }
+            else if (required && !this.DisableInteractive)
+            {
+                var existingProfles = RoleHelper.FindExistingInstanceProfilesAsync(this.IAMClient, 20).Result;
+                var selections = new List<string>();
+                foreach (var profile in existingProfles)
+                    selections.Add(profile.InstanceProfileName);
+
+                selections.Add("*** Create new Instance Profile ***");
+                var chosenIndex = PromptForValue(option, selections);
+
+                if(chosenIndex < selections.Count - 1)
+                {
+                    return existingProfles[chosenIndex].Arn;
+                }
+                else
+                {
+                    var managedPolices = RoleHelper.FindManagedPoliciesAsync(this.IAMClient, 20).Result;
+                    var profileSelection = new List<string>();
+                    foreach (var profile in managedPolices)
+                        profileSelection.Add(profile.PolicyName);
+
+                    chosenIndex = PromptForValue("Select managed policy to assign to new instance profile: ", profileSelection);
+
+                    var uniqueRoleName = RoleHelper.GenerateUniqueIAMRoleName(this.IAMClient, newRoleName);
+
+                    this.Logger?.WriteLine("Creating role {0}", uniqueRoleName);
+                    RoleHelper.CreateRole(this.IAMClient, uniqueRoleName, Constants.EC2_ASSUME_ROLE_POLICY, managedPolices[chosenIndex].Arn);
+
+                    this.Logger?.WriteLine("Creating instance profile {0}", uniqueRoleName);
+                    var response = this.IAMClient.CreateInstanceProfileAsync(new IdentityManagement.Model.CreateInstanceProfileRequest
+                    {
+                        InstanceProfileName = uniqueRoleName
+                    }).Result;
+
+                    this.Logger?.WriteLine("Assigning role to instance profile");
+                    this.IAMClient.AddRoleToInstanceProfileAsync(new IdentityManagement.Model.AddRoleToInstanceProfileRequest
+                    {
+                        InstanceProfileName = uniqueRoleName,
+                        RoleName = uniqueRoleName
+                    }).Wait();
+
+                    return response.InstanceProfile.Arn;
+                }
+            }
+
+            if (required)
+            {
+                throw new ToolsException($"Missing required parameter: {option.Switch}", ToolsException.CommonErrorCode.MissingRequiredParameter);
+            }
+
+            return null;
+
+        }
+
+        protected string GetServiceRoleOrCreateIt(string propertyValue, CommandOption option, string roleName, string assumeRolePolicy, string policy, params string[] managedPolicies)
+        {
+            var value = GetStringValueOrDefault(propertyValue, option, false);
+            if (!string.IsNullOrEmpty(value))
+            {
+                return value;
+            }
+
+            Role role = null;
+            try
+            {
+                role = this.IAMClient.GetRoleAsync(new GetRoleRequest
+                {
+                    RoleName = roleName
+                }).Result.Role;
+            }
+            catch (AggregateException e)
+            {
+                if (!(e.InnerException is NoSuchEntityException))
+                    throw e.InnerException;
+            }
+
+            if(role == null)
+            {
+                this.Logger?.WriteLine("Creating service role " + roleName);
+                return RoleHelper.CreateRole(this.IAMClient, roleName, assumeRolePolicy, managedPolicies);
+            }
+
+
+            this.Logger?.WriteLine("Using service role " + role.RoleName);
+            return role.Arn;
+        }
+
+
         // Cache all prompted values so the user is never prompted for the same CommandOption later.
         Dictionary<CommandOption, string> _cachedRequestedValues = new Dictionary<CommandOption, string>();
         protected string PromptForValue(CommandOption option)
@@ -429,8 +525,45 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
             return input;
         }
 
+        protected int PromptForValue(CommandOption option, IList<string> items)
+        {
+            return PromptForValue("Select " + option.Name + ":", items);
+        }
+
+        protected int PromptForValue(string message, IList<string> items)
+        {
+            Console.Out.WriteLine(message);
+            for (int i = 0; i < items.Count; i++)
+            {
+                Console.Out.WriteLine($"   {(i + 1).ToString().PadLeft(2)}) {items[i]}");
+            }
+
+            Console.Out.Flush();
+
+            int chosenIndex = WaitForIndexResponse(1, items.Count);
+            return chosenIndex - 1;
+        }
 
 
+        private int WaitForIndexResponse(int min, int max)
+        {
+            int chosenIndex = -1;
+            while (chosenIndex == -1)
+            {
+                var indexInput = Console.ReadLine()?.Trim();
+                int parsedIndex;
+                if (int.TryParse(indexInput, out parsedIndex) && parsedIndex >= min && parsedIndex <= max)
+                {
+                    chosenIndex = parsedIndex;
+                }
+                else
+                {
+                    Console.Out.WriteLine($"Invalid selection, must be a number between {min} and {max}");
+                }
+            }
+
+            return chosenIndex;
+        }
 
 
         public IToolLogger Logger { get; protected set; }

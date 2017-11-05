@@ -22,7 +22,7 @@ using Amazon.Common.DotNetCli.Tools.Options;
 namespace Amazon.ECS.Tools.Commands
 {
 
-    public abstract class ECSBaseCommand : BaseCommand<DockerToolsDefaults>
+    public abstract class ECSBaseCommand : BaseCommand<ECSToolsDefaults>
     {
 
 

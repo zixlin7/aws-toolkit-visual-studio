@@ -35,13 +35,13 @@ namespace Amazon.AWSToolkit.ECS.Controller
         private void LoadPreviousSettings(Dictionary<string, object> seedValues)
         {
             var sourcePath = seedValues[PublishContainerToAWSWizardProperties.SourcePath] as string;
-            if (!File.Exists(Path.Combine(sourcePath, DockerToolsDefaults.DEFAULT_FILE_NAME)))
+            if (!File.Exists(Path.Combine(sourcePath, ECSToolsDefaults.DEFAULT_FILE_NAME)))
                 return;
 
             try
             {
-                var defaults = new DockerToolsDefaults();
-                defaults.LoadDefaults(sourcePath, DockerToolsDefaults.DEFAULT_FILE_NAME);
+                var defaults = new ECSToolsDefaults();
+                defaults.LoadDefaults(sourcePath, ECSToolsDefaults.DEFAULT_FILE_NAME);
 
                 Action<CommandOption, string> copyValues = (commandOption, seedKey) =>
                 {

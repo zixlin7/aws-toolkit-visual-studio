@@ -42,6 +42,23 @@ namespace Amazon.Common.DotNetCli.Tools
 }
 ".Trim();
 
+        public static readonly string EC2_ASSUME_ROLE_POLICY =
+@"
+{
+  ""Version"": ""2008-10-17"",
+  ""Statement"": [
+    {
+      ""Sid"": """",
+      ""Effect"": ""Allow"",
+      ""Principal"": {
+        ""Service"": ""ec2.amazonaws.com""
+      },
+      ""Action"": ""sts:AssumeRole""
+    }
+  ]
+}
+".Trim();
+
         public static readonly string ECS_TASKS_ASSUME_ROLE_POLICY =
 @"
 {
