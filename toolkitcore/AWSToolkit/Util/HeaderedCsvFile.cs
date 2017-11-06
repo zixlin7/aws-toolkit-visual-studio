@@ -156,10 +156,12 @@ namespace Amazon.AWSToolkit.Util
                 throw new Exception(err);
             }
 
-            foreach (var i in colIndices)
+            for (var i = 0; i < colIndices.Count; i++)
             {
-                var data = rowData.ElementAt(i);
                 var key = columnsToRead.ElementAt(i);
+
+                var dataIndex = colIndices[i];
+                var data = rowData.ElementAt(dataIndex);
 
                 d.Add(key, data);
             }
