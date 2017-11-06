@@ -6,6 +6,7 @@ using Microsoft.Win32;
 
 using log4net;
 using log4net.Config;
+using ThirdParty.Json.LitJson;
 
 namespace Amazon.AWSToolkit
 {
@@ -170,8 +171,18 @@ namespace Amazon.AWSToolkit
             return null;
         }
 
-        public static void AddDotnetCliToolReference(string projectFilePath, string nuGetPackageName, string version)
+        public static void AddDotnetCliToolReference(string projectFilePath, string nuGetPackageName)
         {
+            var versionContent = S3FileFetcher.Instance.GetFileContent("nuget-versions.json");
+            if (string.IsNullOrEmpty(versionContent))
+                return;
+
+            var data = JsonMapper.ToObject(versionContent);
+            if (data[nuGetPackageName] == null)
+                return;
+
+            var version = data[nuGetPackageName].ToString();
+
             var content = File.ReadAllText(projectFilePath);
             if (!content.Contains(nuGetPackageName) && content.StartsWith("<Project Sdk="))
             {

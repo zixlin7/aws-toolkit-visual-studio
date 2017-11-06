@@ -116,7 +116,7 @@ namespace Amazon.AWSToolkit.VisualStudio.DeploymentProcessors
             File.WriteAllText(defaultsFilePath, json);
 
 
-            Utility.AddDotnetCliToolReference(taskInfo.ProjectInfo.VsProjectLocationAndName, "Amazon.ElasticBeanstalk.Tools", "0.8.0");
+            Utility.AddDotnetCliToolReference(taskInfo.ProjectInfo.VsProjectLocationAndName, "Amazon.ElasticBeanstalk.Tools");
 
         }
     }

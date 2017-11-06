@@ -302,7 +302,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (HostingWizard[PublishContainerToAWSWizardProperties.SelectedProjectFile] is string)
             {
                 var projectFile = HostingWizard[PublishContainerToAWSWizardProperties.SelectedProjectFile] as string;
-                Utility.AddDotnetCliToolReference(projectFile, "Amazon.ECS.Tools", "0.8.0");
+                Utility.AddDotnetCliToolReference(projectFile, "Amazon.ECS.Tools");
             }
 
         }
