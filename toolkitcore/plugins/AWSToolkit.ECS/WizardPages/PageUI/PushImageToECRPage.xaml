@@ -185,7 +185,7 @@
                 Margin="18,10,4,4"
                 IsChecked="True"
                 Style="{DynamicResource awsCheckboxButtonBaseStyle}">
-                Save settings to aws-docker-tools-defaults.json and configure project for command line deployment.
+                Save settings to aws-ecs-tools-defaults.json and configure project for command line deployment.
             </CheckBox>
             <TextBlock
                     Grid.Row="1"
@@ -194,7 +194,7 @@
                     Style="{DynamicResource awsInfoTextStyle}"
                     TextWrapping="Wrap">
                 If this is checked the dotnet CLI tool package Amazon.ECS.Tools will be added to the project. Once
-                added you can do future deployments from the command line with the command "dotnet ecs deploy".
+                added you can do future deployments from the command line. Run the command "dotnet ecs --help" for more information.
             </TextBlock>
         </Grid>
     </Grid>

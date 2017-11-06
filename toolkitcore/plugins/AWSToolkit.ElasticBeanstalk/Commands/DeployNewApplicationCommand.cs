@@ -190,6 +190,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                     Deployment.Redeploy();
 
                 success = true;
+
+
             }
             catch (Exception e)
             {

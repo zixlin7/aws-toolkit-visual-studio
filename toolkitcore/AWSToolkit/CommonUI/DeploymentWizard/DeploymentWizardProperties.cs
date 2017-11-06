@@ -317,6 +317,8 @@
             /// be saved
             /// </summary>
             public static readonly string propkey_ConfigFileDestination = "configFileDestination";
+
+            public static readonly string propkey_SaveBeanstalkTools = "saveBeanstalkTools";
         }
     }
 }

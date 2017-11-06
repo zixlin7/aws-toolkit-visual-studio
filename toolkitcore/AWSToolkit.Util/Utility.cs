@@ -169,5 +169,24 @@ namespace Amazon.AWSToolkit
 
             return null;
         }
+
+        public static void AddDotnetCliToolReference(string projectFilePath, string nuGetPackageName, string version)
+        {
+            var content = File.ReadAllText(projectFilePath);
+            if (!content.Contains(nuGetPackageName) && content.StartsWith("<Project Sdk="))
+            {
+                content = content.Replace("</Project>",
+@"
+  <ItemGroup>
+    <DotNetCliToolReference Include=""NUGET_PACKAGE"" Version=""NUGET_VERSION"" />
+  </ItemGroup>
+</Project>
+");
+                content = content.Replace("NUGET_PACKAGE", nuGetPackageName);
+                content = content.Replace("NUGET_VERSION", version);
+
+                File.WriteAllText(projectFilePath, content);
+            }
+        }
     }
 }
