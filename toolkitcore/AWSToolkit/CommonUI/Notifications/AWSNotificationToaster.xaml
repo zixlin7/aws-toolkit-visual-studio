@@ -42,18 +42,22 @@
                    Grid.RowSpan="2"
                    Grid.ColumnSpan="2" 
                    Source="/AWSToolkit;component/Resources/Logos/logo_aws_small.png" 
-                   Width="80" 
-                   Height="48"/>
+                   Width="60" 
+                   Height="36"/>
             
-            <TextBlock Grid.Column="1" x:Name="_header" HorizontalAlignment="Right" Margin="0,4,4,4" Text="Header" 
+            <TextBlock Grid.Column="1" 
+                       x:Name="_header" 
+                       HorizontalAlignment="Right" 
+                       Margin="0,4,4,4" 
+                       Text="Header" 
                        Style="{DynamicResource awsTextBlock122PercentStyle}"/>
             
             <ContentControl 
                     Grid.Row="1" 
-                    Grid.Column="1"
+                    Grid.Column="0"
                     Grid.ColumnSpan="2"
                     x:Name="_toasterContent" 
-                    Margin="4,0,4,2" 
+                    Margin="4,4,4,2" 
                     HorizontalAlignment="Left" 
                     VerticalAlignment="Top" 
                     Panel.ZIndex="1"/>
