@@ -228,7 +228,7 @@
                 Margin="8,4,4,4"
                 VerticalAlignment="Center"
                 Style="{DynamicResource awsLabelBaseStyle}"
-                ToolTip="Provide an IAM role for your code with appropriate permissions. For example, if your code needs to write to S3, the role you provide must have write permissions to S3. If you want Lambda to automatically write your logs to CloudWatch logs and generate CloudWatch metrics for you, make sure the role has permissions to write to CloudWatch logs and CloudWatch metrics.">
+                ToolTip="Provide an IAM role for your code with appropriate permissions. For example, if your code needs to write to S3, the role you provide must have write permissions to S3.">
                     _Task Role:
                 </Label>
                 <commoncomponents:IAMRolePicker
@@ -236,7 +236,7 @@
                 Grid.Row="2"
                 Grid.Column="1"
                 Margin="0,4,2,0"
-                ToolTip="Provide an IAM role for your code with appropriate permissions to the AWS services your Lambda function will access."
+                ToolTip="Provide an IAM role for your code with appropriate permissions to the AWS services your application will access."
                 Visibility="Visible" />
             </Grid>
         </Grid>
