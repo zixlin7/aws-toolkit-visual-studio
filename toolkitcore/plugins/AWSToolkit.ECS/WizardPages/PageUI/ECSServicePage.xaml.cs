@@ -98,8 +98,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     this._ctlDesiredCount.Text = "1";
                 }
 
-                this._ctlMinimumHealthy.Text = "50";
-                this._ctlMaximumPercent.Text = "100";
+                this._ctlMinimumHealthy.Text = "100";
+                this._ctlMaximumPercent.Text = "200";
 
                 if (!this._ctlServicePicker.Items.Contains(PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string))
                     this._ctlNewServiceName.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
