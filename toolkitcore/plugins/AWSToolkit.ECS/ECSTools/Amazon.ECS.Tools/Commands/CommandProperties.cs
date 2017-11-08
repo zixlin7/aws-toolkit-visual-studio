@@ -103,7 +103,8 @@ namespace Amazon.ECS.Tools.Commands
         public bool SkipImagePush { get; set; }
         public string ECSService { get; set; }
         public int? DesiredCount { get; set; }
-
+        public string[] PlacementConstraints { get; set; }
+        public string[] PlacementStrategy { get; set; }
 
         public int? DeploymentMinimumHealthyPercent { get; set; }
         public int? DeploymentMaximumPercent { get; set; }
@@ -128,6 +129,10 @@ namespace Amazon.ECS.Tools.Commands
                 this.ELBTargetGroup = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_ELB_CONTAINER_PORT.Switch)) != null)
                 this.ELBContainerPort = tuple.Item2.IntValue;
+            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS.Switch)) != null)
+                this.PlacementConstraints = tuple.Item2.StringValues;
+            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY.Switch)) != null)
+                this.PlacementStrategy = tuple.Item2.StringValues;
         }
 
         internal void PersistSettings(ECSBaseCommand command, JsonData data)
@@ -139,6 +144,9 @@ namespace Amazon.ECS.Tools.Commands
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE.ConfigFileKey, command.GetStringValueOrDefault(this.ELBServiceRole, ECSDefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE, false));
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN.ConfigFileKey, command.GetStringValueOrDefault(this.ELBTargetGroup, ECSDefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN, false));
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ELB_CONTAINER_PORT.ConfigFileKey, command.GetIntValueOrDefault(this.ELBContainerPort, ECSDefinedCommandOptions.ARGUMENT_ELB_CONTAINER_PORT, false));
+
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS.ConfigFileKey, ECSToolsDefaults.FormatCommaDelimitedList(command.GetStringValuesOrDefault(this.PlacementConstraints, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS, false)));
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY.ConfigFileKey, ECSToolsDefaults.FormatCommaDelimitedList(command.GetStringValuesOrDefault(this.PlacementStrategy, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY, false)));
         }
     }
 
@@ -147,19 +155,29 @@ namespace Amazon.ECS.Tools.Commands
         public bool SkipImagePush { get; set; }
 
         public string TaskGroup { get; set; }
-        public int? DesiredCount { get; set; }
+        public int? TaskCount { get; set; }
+        public string[] PlacementConstraints { get; set; }
+        public string[] PlacementStrategy { get; set; }
 
         internal void ParseCommandArguments(CommandOptions values)
         {
             Tuple<CommandOption, CommandOptionValue> tuple;
-            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT.Switch)) != null)
-                this.DesiredCount = tuple.Item2.IntValue;
+            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_COUNT.Switch)) != null)
+                this.TaskCount = tuple.Item2.IntValue;
+            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS.Switch)) != null)
+                this.PlacementConstraints = tuple.Item2.StringValues;
+            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY.Switch)) != null)
+                this.PlacementStrategy = tuple.Item2.StringValues;
         }
 
         internal void PersistSettings(ECSBaseCommand command, JsonData data)
         {
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_GROUP.ConfigFileKey, command.GetStringValueOrDefault(this.TaskGroup, ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_GROUP, false));
-            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT.ConfigFileKey, command.GetIntValueOrDefault(this.DesiredCount, ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false));
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_COUNT.ConfigFileKey, command.GetIntValueOrDefault(this.TaskCount, ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_COUNT, false));
+
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS.ConfigFileKey, ECSToolsDefaults.FormatCommaDelimitedList(command.GetStringValuesOrDefault(this.PlacementConstraints, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS, false)));
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY.ConfigFileKey, ECSToolsDefaults.FormatCommaDelimitedList(command.GetStringValuesOrDefault(this.PlacementStrategy, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY, false)));
+
         }
     }
 

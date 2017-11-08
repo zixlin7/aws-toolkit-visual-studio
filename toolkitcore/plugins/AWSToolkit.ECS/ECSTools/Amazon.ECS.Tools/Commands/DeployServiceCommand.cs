@@ -41,6 +41,8 @@ namespace Amazon.ECS.Tools.Commands
             ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT,
             ECSDefinedCommandOptions.ARGUMENT_DEPLOYMENT_MAXIMUM_PERCENT,
             ECSDefinedCommandOptions.ARGUMENT_DEPLOYMENT_MINIMUM_HEALTHY_PERCENT,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY,
 
             ECSDefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE,
             ECSDefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN,
@@ -256,7 +258,9 @@ namespace Amazon.ECS.Tools.Commands
                         ServiceName = ecsService,
                         TaskDefinition = taskDefinitionArn,
                         DesiredCount = desiredCount.HasValue ? desiredCount.Value : 1,
-                        DeploymentConfiguration = deploymentConfiguration
+                        DeploymentConfiguration = deploymentConfiguration,
+                        PlacementConstraints = ECSUtilities.ConvertPlacementConstraint(this.GetStringValuesOrDefault(this.DeployServiceProperties.PlacementConstraints, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS, false)),
+                        PlacementStrategy = ECSUtilities.ConvertPlacementStrategy(this.GetStringValuesOrDefault(this.DeployServiceProperties.PlacementStrategy, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY, false))
                     };
 
                     var elbTargetGroup = this.GetStringValueOrDefault(this.DeployServiceProperties.ELBTargetGroup, ECSDefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN, false);

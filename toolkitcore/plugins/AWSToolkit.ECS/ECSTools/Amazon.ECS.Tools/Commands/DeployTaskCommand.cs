@@ -31,8 +31,11 @@ namespace Amazon.ECS.Tools.Commands
             ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE,
             ECSDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES,
 
-            ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_COUNT,
             ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_GROUP,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS,
+            ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY,
+
 
             CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE,
         });
@@ -169,9 +172,9 @@ namespace Amazon.ECS.Tools.Commands
 
                 var ecsCluster = this.GetStringValueOrDefault(this.ClusterProperties.ECSCluster, ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER, true);
 
-                var desiredCount = this.GetIntValueOrDefault(this.DeployTaskProperties.DesiredCount, ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false);
-                if (!desiredCount.HasValue)
-                    desiredCount = 1;
+                var taskCount = this.GetIntValueOrDefault(this.DeployTaskProperties.TaskCount, ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_COUNT, false);
+                if (!taskCount.HasValue)
+                    taskCount = 1;
 
                 var taskGroup = this.GetStringValueOrDefault(this.DeployTaskProperties.TaskGroup, ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_GROUP, false);
 
@@ -179,7 +182,9 @@ namespace Amazon.ECS.Tools.Commands
                 {
                     Cluster = ecsCluster,
                     TaskDefinition = taskDefinitionArn,
-                    Count = desiredCount.Value
+                    Count = taskCount.Value,
+                    PlacementConstraints = ECSUtilities.ConvertPlacementConstraint(this.GetStringValuesOrDefault(this.DeployTaskProperties.PlacementConstraints, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS, false)),
+                    PlacementStrategy = ECSUtilities.ConvertPlacementStrategy(this.GetStringValuesOrDefault(this.DeployTaskProperties.PlacementStrategy, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY, false))
                 };
 
                 if (!string.IsNullOrEmpty(taskGroup))
@@ -213,7 +218,7 @@ namespace Amazon.ECS.Tools.Commands
             }
             catch (Exception e)
             {
-                this.Logger?.WriteLine($"Unknown error executing docker push to Amazon EC2 Container Registry: {e.Message}");
+                this.Logger?.WriteLine($"Unknown error executing deploy task: {e.Message}");
                 this.Logger?.WriteLine(e.StackTrace);
                 return false;
             }

@@ -34,18 +34,18 @@ namespace Amazon.ECS.Tools
         public static readonly CommandOption ARGUMENT_ECS_TASK_DEFINITION =
             new CommandOption
             {
-                Name = "ECS Task Definition Name",
-                ShortSwitch = "-etd",
-                Switch = "--ecs-task-definition",
+                Name = "Task Definition Name",
+                ShortSwitch = "-td",
+                Switch = "--task-definition",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
                 Description = "Name of the ECS Task Defintion to be created or updated.",
             };
         public static readonly CommandOption ARGUMENT_ECS_CONTAINER =
             new CommandOption
             {
-                Name = "ECS Container Name",
-                ShortSwitch = "-econt",
-                Switch = "--ecs-container",
+                Name = "Container Name",
+                ShortSwitch = "-cont",
+                Switch = "--container",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
                 Description = "Name of the Container in a Task Definition to be created/updated.",
             };
@@ -54,7 +54,7 @@ namespace Amazon.ECS.Tools
             new CommandOption
             {
                 Name = "Container Memory Hard Limit",
-                ShortSwitch = "-emhl",
+                ShortSwitch = "-cmhl",
                 Switch = "--container-memory-hard-limit",
                 ValueType = CommandOption.CommandOptionValueType.IntValue,
                 Description = "The hard limit (in MiB) of memory to present to the container.",
@@ -64,7 +64,7 @@ namespace Amazon.ECS.Tools
             new CommandOption
             {
                 Name = "Container Memory Soft Limit",
-                ShortSwitch = "-emsl",
+                ShortSwitch = "-cmsl",
                 Switch = "--container-memory-soft-limit",
                 ValueType = CommandOption.CommandOptionValueType.IntValue,
                 Description = "The soft limit (in MiB) of memory to reserve for the container.",
@@ -73,9 +73,9 @@ namespace Amazon.ECS.Tools
         public static readonly CommandOption ARGUMENT_ECS_CLUSTER =
             new CommandOption
             {
-                Name = "ECS Cluster Name",
+                Name = "Cluster Name",
                 ShortSwitch = "-ec",
-                Switch = "--ecs-cluster",
+                Switch = "--cluster",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
                 Description = "Name of the ECS Cluster to run the docker image.",
             };
@@ -83,9 +83,9 @@ namespace Amazon.ECS.Tools
         public static readonly CommandOption ARGUMENT_ECS_SERVICE =
             new CommandOption
             {
-                Name = "ECS Service Name",
-                ShortSwitch = "-ecs",
-                Switch = "--ecs-cluster-service",
+                Name = "Service Name",
+                ShortSwitch = "-cs",
+                Switch = "--cluster-service",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
                 Description = "Name of the service to run on the ECS Cluster.",
             };
@@ -94,10 +94,38 @@ namespace Amazon.ECS.Tools
             new CommandOption
             {
                 Name = "Desired Count",
-                ShortSwitch = "-edc",
-                Switch = "--ecs-desired-count",
+                ShortSwitch = "-dc",
+                Switch = "--desired-count",
                 ValueType = CommandOption.CommandOptionValueType.IntValue,
                 Description = "The number of instantiations of the task to place and keep running in your service. Default is 1.",
+            };
+
+        public static readonly CommandOption ARGUMENT_ECS_TASK_COUNT =
+            new CommandOption
+            {
+                Name = "Task Count",
+                ShortSwitch = "-tc",
+                Switch = "--task-count",
+                ValueType = CommandOption.CommandOptionValueType.IntValue,
+                Description = "The number of instantiations of the task to place and keep running in your service. Default is 1.",
+            };
+
+        public static readonly CommandOption ARGUMENT_ECS_PLACEMENT_CONSTRAINTS =
+            new CommandOption
+            {
+                Name = "Placement Constraints",
+                Switch = "--placement-constraints",
+                ValueType = CommandOption.CommandOptionValueType.CommaDelimitedList,
+                Description = "Placement constraint to use for tasks in service. Format is <type>=<optional expression>,...",
+            };
+
+        public static readonly CommandOption ARGUMENT_ECS_PLACEMENT_STRATEGY =
+            new CommandOption
+            {
+                Name = "Placement Strategy",
+                Switch = "--placement-strategy",
+                ValueType = CommandOption.CommandOptionValueType.CommaDelimitedList,
+                Description = "Placement strategy to use for tasks in service. Format is <type>=<optional field>,...",
             };
 
         public static readonly CommandOption ARGUMENT_ECS_CONTAINER_PORT_MAPPING =
@@ -107,7 +135,7 @@ namespace Amazon.ECS.Tools
                 ShortSwitch = "-cpm",
                 Switch = "--container-port-mapping",
                 ValueType = CommandOption.CommandOptionValueType.CommaDelimitedList,
-                Description = "The mapping of container ports to host ports. Format is <host-port>:<container-port>,<host-port>:<container-port>,...",
+                Description = "The mapping of ports. Format is <host-port>:<container-port>,...",
             };
         public static readonly CommandOption ARGUMENT_ENVIRONMENT_VARIABLES =
             new CommandOption
@@ -149,7 +177,7 @@ namespace Amazon.ECS.Tools
             new CommandOption
             {
                 Name = "Deployment Maximum Percent",
-                ShortSwitch = "-ecp",
+                ShortSwitch = "-dmp",
                 Switch = "--deployment-maximum-percent",
                 ValueType = CommandOption.CommandOptionValueType.IntValue,
                 Description = "The upper limit of the number of tasks that are allowed in the RUNNING or PENDING state in a service during a deployment."
@@ -211,7 +239,7 @@ namespace Amazon.ECS.Tools
                 Name = "Task Group",
                 Switch = "--task-group",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "The name of the task group to associate with the task. The default value is the family name of the task definition."
+                Description = "The task group to associate with the task. The default value is the family name of the task definition."
             };
     }
 }

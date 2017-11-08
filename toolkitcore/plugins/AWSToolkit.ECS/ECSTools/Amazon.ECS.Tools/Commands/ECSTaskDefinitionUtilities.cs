@@ -79,10 +79,10 @@ namespace Amazon.ECS.Tools.Commands
                     var environmentVariables = command.GetKeyValuePairOrDefault(properties.EnvironmentVariables, ECSDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES, false);
                     if (environmentVariables != null && environmentVariables.Count > 0)
                     {
-                        var listEnv = new List<KeyValuePair>();
+                        var listEnv = new List<Amazon.ECS.Model.KeyValuePair>();
                         foreach (var e in environmentVariables)
                         {
-                            listEnv.Add(new KeyValuePair { Name = e.Key, Value = e.Value });
+                            listEnv.Add(new Amazon.ECS.Model.KeyValuePair { Name = e.Key, Value = e.Value });
                         }
                         containerDefinition.Environment = listEnv;
                     }

@@ -47,7 +47,36 @@ namespace Amazon.Common.DotNetCli.Tools
             }
         }
 
- 
+        public static string ExpandInstanceProfile(IAmazonIdentityManagementService iamClient, string instanceProfile)
+        {
+            if (instanceProfile.StartsWith("arn:aws"))
+                return instanceProfile;
+
+            // Wrapping this in a task to avoid dealing with aggregate exception.
+            var task = Task.Run<string>(async () =>
+            {
+                try
+                {
+                    var request = new GetInstanceProfileRequest { InstanceProfileName = instanceProfile };
+                    var response = await iamClient.GetInstanceProfileAsync(request).ConfigureAwait(false);
+                    return response.InstanceProfile.Arn;
+                }
+                catch (NoSuchEntityException)
+                {
+                    return null;
+                }
+
+            });
+
+            if (task.Result == null)
+            {
+                throw new ToolsException($"Instance Profile \"{instanceProfile}\" can not be found.", ToolsException.CommonErrorCode.RoleNotFound);
+            }
+
+            return task.Result;
+        }
+
+
         public static string ExpandRoleName(IAmazonIdentityManagementService iamClient, string roleName)
         {
             if (roleName.StartsWith("arn:aws"))

@@ -126,7 +126,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         {
             var properties = new DeployTaskProperties
             {
-                DesiredCount = ((int)hostingWizard[PublishContainerToAWSWizardProperties.DesiredCount]),
+                TaskCount = ((int)hostingWizard[PublishContainerToAWSWizardProperties.DesiredCount]),
                 TaskGroup = hostingWizard[PublishContainerToAWSWizardProperties.TaskGroup] as string
             };
 

@@ -411,6 +411,7 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
             var value = GetStringValueOrDefault(propertyValue, option, false);
             if (!string.IsNullOrEmpty(value))
             {
+                value = RoleHelper.ExpandInstanceProfile(this.IAMClient, value);
                 return value;
             }
             else if (required && !this.DisableInteractive)
