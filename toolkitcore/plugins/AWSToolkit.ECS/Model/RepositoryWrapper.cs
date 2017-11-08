@@ -97,6 +97,14 @@ namespace Amazon.AWSToolkit.ECS.Model
             }
         }
 
+        public string Region
+        {
+            get
+            {
+                return _repositoryArn.Split(':')[3];
+            }
+        }
+
         private readonly RangeObservableCollection<ImageDetailWrapper> _images = new RangeObservableCollection<ImageDetailWrapper>();
 
         public ObservableCollection<ImageDetailWrapper> Images

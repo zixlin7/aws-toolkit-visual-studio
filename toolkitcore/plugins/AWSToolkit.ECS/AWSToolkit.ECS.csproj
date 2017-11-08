@@ -185,6 +185,9 @@
     <Compile Include="Nodes\TaskDefinitionViewMetaNode.cs" />
     <Compile Include="Nodes\TaskDefinitionViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="View\Components\PushCommandsControl.xaml.cs">
+      <DependentUpon>PushCommandsControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Components\ScheduledTasksTab.xaml.cs">
       <DependentUpon>ScheduledTasksTab.xaml</DependentUpon>
     </Compile>
@@ -264,6 +267,10 @@
     <EmbeddedResource Include="Resources\EmbeddedImages\launch-cluster.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="View\Components\PushCommandsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Components\ScheduledTasksTab.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

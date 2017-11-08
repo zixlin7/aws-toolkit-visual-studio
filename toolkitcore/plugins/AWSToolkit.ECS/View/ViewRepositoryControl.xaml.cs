@@ -22,6 +22,7 @@ namespace Amazon.AWSToolkit.ECS.View
         {
             this._controller = controller;
             InitializeComponent();
+            this._ctlPushCommands.Initialize(controller);
         }
 
         public override string Title
@@ -103,24 +104,6 @@ namespace Amazon.AWSToolkit.ECS.View
             {
                 _ctlPushCommandsFlyover.Visibility = Visibility.Collapsed;
                 _ctlViewHidePushCommands.Content = "View Push Commands";
-            }
-        }
-
-        private void ECRDocumentationLink_OnRequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            LaunchBrowserToUrl(e.Uri);
-            e.Handled = true;
-        }
-
-        private void LaunchBrowserToUrl(Uri uri)
-        {
-            try
-            {
-                ToolkitFactory.Instance.ShellProvider.OpenInBrowser(uri.ToString(), true);
-            }
-            catch (Exception ex)
-            {
-                LOGGER.Error("Failed to launch process to go to endpoint " + uri, ex);
             }
         }
 
