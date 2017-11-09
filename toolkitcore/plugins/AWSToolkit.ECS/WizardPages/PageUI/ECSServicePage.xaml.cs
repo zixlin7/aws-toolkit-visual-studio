@@ -103,11 +103,21 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
                 if (!this._ctlServicePicker.Items.Contains(PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string))
                     this._ctlNewServiceName.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
+
+                this._ctlPlacementTemplate.IsEnabled = true;
+                this._ctlPlacementTemplate.Visibility = Visibility.Visible;
+                this._ctlPlacementDescription.Visibility = Visibility.Visible;
+                this._ctlPlacementLabel.Visibility = Visibility.Visible;
             }
             else
             {
                 this._ctlNewServiceName.Visibility = Visibility.Collapsed;
                 this._ctlNewServiceName.IsEnabled = false;
+                this._ctlPlacementTemplate.IsEnabled = false;
+                this._ctlPlacementTemplate.Visibility = Visibility.Collapsed;
+                this._ctlPlacementDescription.Visibility = Visibility.Collapsed;
+                this._ctlPlacementLabel.Visibility = Visibility.Collapsed;
+
                 FetchDetailsForExistingService();
             }
 

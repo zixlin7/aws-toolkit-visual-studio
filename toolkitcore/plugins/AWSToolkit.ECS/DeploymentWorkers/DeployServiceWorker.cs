@@ -481,11 +481,12 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
             foreach(var groupId in groupIds)
             {
-                this.Helper.AppendUploadStatus("Authorizing the ELB security group {0} to the EC2 instance security group {1}", elbSecurityGroupId, groupId);
-                this._ec2Client.AuthorizeSecurityGroupIngress(new AuthorizeSecurityGroupIngressRequest
+                try
                 {
-                    GroupId = groupId,
-                    IpPermissions = new List<IpPermission>
+                    this._ec2Client.AuthorizeSecurityGroupIngress(new AuthorizeSecurityGroupIngressRequest
+                    {
+                        GroupId = groupId,
+                        IpPermissions = new List<IpPermission>
                     {
                         new IpPermission
                         {
@@ -493,7 +494,13 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                             UserIdGroupPairs = new List<UserIdGroupPair>{ new UserIdGroupPair { GroupId = elbSecurityGroupId } }
                         }
                     }
-                });
+                    });
+                    this.Helper.AppendUploadStatus("Authorizing the ELB security group {0} to the EC2 instance security group {1}", elbSecurityGroupId, groupId);
+                }
+                catch(Exception e)
+                {
+                    this.Helper.AppendUploadStatus("Warning failed authorizing the ELB security group {0} to the EC2 instance security group {1}: {2}", elbSecurityGroupId, groupId, e.Message);
+                }
             }
 
             return groupIds;
@@ -631,16 +638,19 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     }
                 };
 
-                foreach(var instanceSecurityGroup in elbChanges.AssignedSecurityGroups)
+                if (elbChanges.AssignedSecurityGroups != null)
                 {
-                    try
+                    foreach (var instanceSecurityGroup in elbChanges.AssignedSecurityGroups)
                     {
-                        this._ec2Client.RevokeSecurityGroupIngress(new RevokeSecurityGroupIngressRequest { GroupId = instanceSecurityGroup, IpPermissions = ipPermissions });
-                        this.Helper.AppendUploadStatus("Revoke EC2 security group {0} access from {1}", elbChanges.SecurityGroup, instanceSecurityGroup);
-                    }
-                    catch (Exception e)
-                    {
-                        this.Helper.AppendUploadStatus("Failed to revoke EC2 security group {0} access from {1}: {2}", elbChanges.SecurityGroup, instanceSecurityGroup, e.Message);
+                        try
+                        {
+                            this._ec2Client.RevokeSecurityGroupIngress(new RevokeSecurityGroupIngressRequest { GroupId = instanceSecurityGroup, IpPermissions = ipPermissions });
+                            this.Helper.AppendUploadStatus("Revoke EC2 security group {0} access from {1}", elbChanges.SecurityGroup, instanceSecurityGroup);
+                        }
+                        catch (Exception e)
+                        {
+                            this.Helper.AppendUploadStatus("Failed to revoke EC2 security group {0} access from {1}: {2}", elbChanges.SecurityGroup, instanceSecurityGroup, e.Message);
+                        }
                     }
                 }
 
