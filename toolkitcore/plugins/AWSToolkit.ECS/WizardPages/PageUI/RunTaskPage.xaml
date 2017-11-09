@@ -115,17 +115,18 @@
 
             <ComboBox
                 Name="_ctlPlacementTemplate"
+                SelectionChanged="_ctlPlacementTemplate_SelectionChanged"
                 Grid.Row="2"
                 Grid.Column="1"
                 Grid.ColumnSpan="3"
                 SelectedIndex="0"
                 Margin="4,2,4,2"
-                SelectedItem="{Binding Service, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                DisplayMemberPath="DisplayName"
                 Style="{DynamicResource awsComboBoxStyle}">
-                <ComboBoxItem>Availability Zone Balanced Spread</ComboBoxItem>
             </ComboBox>
 
             <TextBlock
+                Name="_ctlPlacementDescription"
                 Grid.Row="3"
                 Grid.Column="1"
                 Grid.ColumnSpan="3"
@@ -133,7 +134,6 @@
                 FontStyle="Italic"
                 Style="{DynamicResource awsInfoTextStyle}"
                 TextWrapping="Wrap">
-                This template will spread tasks across availability zones and within the availability zone spread tasks across instances.
             </TextBlock>
         </Grid>
 

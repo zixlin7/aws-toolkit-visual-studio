@@ -39,6 +39,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             : this()
         {
             PageController = pageController;
+
+            this._ctlPlacementTemplate.ItemsSource = ECSWizardUtils.PlacementTemplates.Options;
+            this._ctlPlacementTemplate.SelectedIndex = 0;
         }
 
         public bool AllRequiredFieldsAreSet
@@ -62,9 +65,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public void InitializeWithNewCluster()
         {
-            this.DesiredCount = null;
-            this.MinimumHealthy = null;
-            this.MaximumPercent = null;
             UpdateExistingServices();
         }
 
@@ -155,6 +155,29 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             {
                 _maximumPercent = value;
                 NotifyPropertyChanged("MaximumPercent");
+            }
+        }
+
+        public ECSWizardUtils.PlacementTemplates PlacementTemplate
+        {
+            get { return this._ctlPlacementTemplate.SelectedItem as ECSWizardUtils.PlacementTemplates; }
+        }
+
+        public bool IsPlacementTemplateEnabled
+        {
+            get { return this._ctlPlacementTemplate.IsEnabled; }
+            set { this._ctlPlacementTemplate.IsEnabled = value; }
+        }
+
+
+
+        private void _ctlPlacementTemplate_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            NotifyPropertyChanged("PlacementTemplate");
+            if (e.AddedItems.Count > 0)
+            {
+                var item = e.AddedItems[0] as ECSWizardUtils.PlacementTemplates;
+                this._ctlPlacementDescription.Text = item.Description;
             }
         }
 

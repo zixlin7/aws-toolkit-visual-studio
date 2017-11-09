@@ -119,6 +119,9 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 DeploymentMinimumHealthyPercent = ((int)hostingWizard[PublishContainerToAWSWizardProperties.MinimumHealthy]),
             };
 
+            properties.PlacementConstraints = hostingWizard[PublishContainerToAWSWizardProperties.PlacementConstraints] as string[];
+            properties.PlacementStrategy = hostingWizard[PublishContainerToAWSWizardProperties.PlacementStrategy] as string[];
+
             return properties;
         }
 
@@ -129,6 +132,9 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 TaskCount = ((int)hostingWizard[PublishContainerToAWSWizardProperties.DesiredCount]),
                 TaskGroup = hostingWizard[PublishContainerToAWSWizardProperties.TaskGroup] as string
             };
+
+            properties.PlacementConstraints = hostingWizard[PublishContainerToAWSWizardProperties.PlacementConstraints] as string[];
+            properties.PlacementStrategy = hostingWizard[PublishContainerToAWSWizardProperties.PlacementStrategy] as string[];
 
             return properties;
         }

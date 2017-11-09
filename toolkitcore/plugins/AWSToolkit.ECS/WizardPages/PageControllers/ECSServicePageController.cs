@@ -148,6 +148,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             HostingWizard[PublishContainerToAWSWizardProperties.MinimumHealthy] = this._pageUI.MinimumHealthy;
             HostingWizard[PublishContainerToAWSWizardProperties.MaximumPercent] = this._pageUI.MaximumPercent;
 
+            if (this._pageUI.IsPlacementTemplateEnabled)
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.PlacementConstraints] = this._pageUI.PlacementTemplate.PlacementConstraints;
+                HostingWizard[PublishContainerToAWSWizardProperties.PlacementStrategy] = this._pageUI.PlacementTemplate.PlacementStrategy;
+            }
+
             return true;
         }
 

@@ -43,6 +43,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             PageController = pageController;
 
+            this._ctlPlacementTemplate.ItemsSource = ECSWizardUtils.PlacementTemplates.Options;
+            this._ctlPlacementTemplate.SelectedIndex = 0;
             this.DesiredCount = 1;
 
         }
@@ -77,6 +79,29 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             {
                 this._taskGroup = value;
                 NotifyPropertyChanged("TaskGroup");
+            }
+        }
+
+        public ECSWizardUtils.PlacementTemplates PlacementTemplate
+        {
+            get { return this._ctlPlacementTemplate.SelectedItem as ECSWizardUtils.PlacementTemplates; }
+        }
+
+        public bool IsPlacementTemplateEnabled
+        {
+            get { return this._ctlPlacementTemplate.IsEnabled; }
+            set { this._ctlPlacementTemplate.IsEnabled = value; }
+        }
+
+
+
+        private void _ctlPlacementTemplate_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            NotifyPropertyChanged("PlacementTemplate");
+            if(e.AddedItems.Count > 0)
+            {
+                var item = e.AddedItems[0] as ECSWizardUtils.PlacementTemplates;
+                this._ctlPlacementDescription.Text = item.Description;
             }
         }
     }

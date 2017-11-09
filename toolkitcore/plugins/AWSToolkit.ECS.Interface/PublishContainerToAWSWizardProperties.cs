@@ -80,6 +80,9 @@ namespace Amazon.AWSToolkit.ECS
 
         public static readonly string TaskGroup = "TaskGroup";
 
+        public static readonly string PlacementConstraints = "PlacementConstraints";
+        public static readonly string PlacementStrategy = "PlacementStrategy";
+
 
         public static readonly string ScheduleTaskRuleName = "ScheduleTaskRuleName";
         public static readonly string CloudWatchEventIAMRole = "CloudWatchEventIAMRole";

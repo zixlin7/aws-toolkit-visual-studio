@@ -64,5 +64,44 @@ namespace Amazon.AWSToolkit.ECS.WizardPages
             var client = account.CreateServiceClient<AmazonCloudWatchEventsClient>(region.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_EVENT_SERVICE_NAME));
             return client;
         }
+
+
+        public class PlacementTemplates
+        {
+            public static readonly PlacementTemplates[] Options = new PlacementTemplates[]
+            {
+                new PlacementTemplates
+                {
+                    DisplayName = "AZ Balanced Spread",
+                    Description = "This template will spread tasks across availability zones and within the availability zone spread tasks across instances.",
+                    PlacementStrategy = new string[]{ "spread=attribute:ecs.availability-zone", "spread=instanceId" }
+                },
+                new PlacementTemplates
+                {
+                    DisplayName = "AZ Balanced BinPack",
+                    Description = "This template will spread tasks across availability zones and within the availability zone pack tasks on least number of instances by memory.",
+                    PlacementStrategy = new string[]{ "spread=attribute:ecs.availability-zone", "binpack=memory" }
+                },
+                new PlacementTemplates
+                {
+                    DisplayName = "BinPack",
+                    Description = "This template will pack tasks least number of instances by memory.",
+                    PlacementStrategy = new string[]{ "binpack=memory" }
+                },
+                new PlacementTemplates
+                {
+                    DisplayName = "AZ Balanced BinPack",
+                    Description = "This template will place only one task per instance.",
+                    PlacementConstraints = new string[]{ "distinctInstance" }
+                }
+            };
+
+            public string DisplayName { get; set; }
+            public string Description { get; set; }
+
+            public string[] PlacementConstraints { get; set; }
+            public string[] PlacementStrategy { get; set; }
+        }
+
     }
 }
