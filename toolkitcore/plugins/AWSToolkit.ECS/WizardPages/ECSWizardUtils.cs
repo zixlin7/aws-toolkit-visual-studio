@@ -90,7 +90,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages
                 },
                 new PlacementTemplates
                 {
-                    DisplayName = "AZ Balanced BinPack",
+                    DisplayName = "One Task Per Host",
                     Description = "This template will place only one task per instance.",
                     PlacementConstraints = new string[]{ "distinctInstance" }
                 }
