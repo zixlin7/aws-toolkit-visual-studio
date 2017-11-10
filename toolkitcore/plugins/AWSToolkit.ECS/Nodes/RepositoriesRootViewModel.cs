@@ -50,7 +50,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
                 var response = this.ECRClient.DescribeRepositories(request);
                 items.AddRange(response.Repositories.Select(repo =>
                     new RepositoryViewModel(this.MetaNode.FindChild<RepositoryViewMetaNode>(),
-                        this._rootViewModel,
+                        this,
                         new RepositoryWrapper(repo))).Cast<IViewModel>().ToList());
 
                 request.NextToken = response.NextToken;
@@ -66,7 +66,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 
         public void AddRepository(RepositoryWrapper instance)
         {
-            var child = new RepositoryViewModel(this.MetaNode.FindChild<RepositoryViewMetaNode>(), this._rootViewModel, instance);
+            var child = new RepositoryViewModel(this.MetaNode.FindChild<RepositoryViewMetaNode>(), this, instance);
             base.AddChild(child);
         }
     }

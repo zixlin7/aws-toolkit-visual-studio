@@ -13,19 +13,19 @@ namespace Amazon.AWSToolkit.ECS.Nodes
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(RepositoryViewModel));
 
-        readonly RootViewModel _rootViewModel;
+        readonly RepositoriesRootViewModel _rootViewModel;
         readonly IAmazonECR _ecrClient;
         readonly RepositoryWrapper _repository;
 
-        public RepositoryViewModel(RepositoryViewMetaNode metaNode, RootViewModel viewModel, RepositoryWrapper repository)
-            : base(metaNode, viewModel, repository.Name)
+        public RepositoryViewModel(RepositoryViewMetaNode metaNode, RepositoriesRootViewModel rootViewModel, RepositoryWrapper repository)
+            : base(metaNode, rootViewModel.FindAncestor<RootViewModel>(), repository.Name)
         {
-            this._rootViewModel = viewModel;
+            this._rootViewModel = rootViewModel;
             this._repository = repository;
-            this._ecrClient = viewModel.ECRClient;
+            this._ecrClient = rootViewModel.ECRClient;
         }
 
-        public RootViewModel RootViewModel
+        public RepositoriesRootViewModel RootViewModel
         {
             get { return this._rootViewModel; }
         }

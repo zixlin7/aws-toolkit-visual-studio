@@ -5,6 +5,12 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 {
     public class RepositoryViewMetaNode : FeatureViewMetaNode
     {
+        public ActionHandlerWrapper.ActionHandler OnDelete
+        {
+            get;
+            set;
+        }
+
         public override IList<ActionHandlerWrapper> Actions
         {
             get
@@ -15,7 +21,14 @@ namespace Amazon.AWSToolkit.ECS.Nodes
                         null,
                         true,
                         this.GetType().Assembly,
-                        "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.repository.png")
+                        "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.repository.png"),
+                null,
+                new ActionHandlerWrapper("Delete",
+                        OnDelete,
+                        null,
+                        false,
+                        this.GetType().Assembly,
+                        "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.delete-repository.png")
                 );
             }
         }

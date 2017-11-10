@@ -68,6 +68,7 @@ namespace Amazon.AWSToolkit.ECS
             repositoriesRootNode.OnCreateRepository = new CommandInstantiator<CreateRepositoryController>().Execute;
             var repositoryNode = repositoriesRootNode.FindChild<RepositoryViewMetaNode>();
             repositoryNode.OnView = new CommandInstantiator<ViewRepositoryController>().Execute;
+            repositoryNode.OnDelete = new CommandInstantiator<DeleteRepositoryController>().Execute;
         }
 
         public void PublishContainerToAWS(Dictionary<string, object> seedProperties)
