@@ -11,7 +11,7 @@ namespace Amazon.ECS.Tools.Commands
     public class ECSTaskDefinitionUtilities
     {
         public static async Task<string> CreateOrUpdateTaskDefinition(IToolLogger logger, IAmazonECS ecsClient, ECSBaseCommand command, 
-            TaskDefinitionProperties properties, string dockerImageTag)
+            TaskDefinitionProperties properties, string dockerImageTag, bool isFargate)
         {
             var ecsContainer = command.GetStringValueOrDefault(properties.ECSContainer, ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER, true);
             var ecsTaskDefinition = command.GetStringValueOrDefault(properties.ECSTaskDefinition, ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, true);
@@ -48,8 +48,12 @@ namespace Amazon.ECS.Tools.Commands
                     logger?.WriteLine("Updating existing task definition");
 
                     registerRequest.ContainerDefinitions = response.TaskDefinition.ContainerDefinitions;
+                    registerRequest.Cpu = response.TaskDefinition.Cpu;
+                    registerRequest.ExecutionRoleArn = registerRequest.ExecutionRoleArn;
+                    registerRequest.Memory = response.TaskDefinition.Memory;
                     registerRequest.NetworkMode = response.TaskDefinition.NetworkMode;
                     registerRequest.PlacementConstraints = response.TaskDefinition.PlacementConstraints;
+                    registerRequest.RequiresCompatibilities = response.TaskDefinition.RequiresCompatibilities;
                     registerRequest.TaskRoleArn = response.TaskDefinition.TaskRoleArn;
                     registerRequest.Volumes = response.TaskDefinition.Volumes;
                 }
@@ -126,6 +130,19 @@ namespace Amazon.ECS.Tools.Commands
                     }
                 }
 
+                if(isFargate)
+                {
+                    registerRequest.NetworkMode = NetworkMode.Awsvpc;
+
+                    if (registerRequest.RequiresCompatibilities == null)
+                        registerRequest.RequiresCompatibilities = new List<string>();
+
+                    if (!registerRequest.RequiresCompatibilities.Contains("FARGATE"))
+                        registerRequest.RequiresCompatibilities.Add("FARGATE");
+
+                    registerRequest.Memory = 2048;
+                    registerRequest.Cpu = 1024;
+                }
 
                 var registerResponse = await ecsClient.RegisterTaskDefinitionAsync(registerRequest);
                 logger?.WriteLine($"Registered new task definition revision {registerResponse.TaskDefinition.Revision}");
@@ -137,7 +154,7 @@ namespace Amazon.ECS.Tools.Commands
             }
             catch (Exception e)
             {
-                throw new DockerToolsException($"Error updating ECS task defintion {ecsTaskDefinition}: {e.Message}", DockerToolsException.ECSErrorCode.FailedToUpdateTaskDefinition);
+                throw new DockerToolsException($"Error updating ECS task definition {ecsTaskDefinition}: {e.Message}", DockerToolsException.ECSErrorCode.FailedToUpdateTaskDefinition);
             }
         }
     }

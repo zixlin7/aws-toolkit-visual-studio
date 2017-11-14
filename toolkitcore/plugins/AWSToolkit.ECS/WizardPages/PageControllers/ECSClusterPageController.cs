@@ -142,7 +142,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] = this._pageUI.Cluster;
             }
 
-            HostingWizard[PublishContainerToAWSWizardProperties.ExistingCluster] = this._pageUI.LaunchType.Value;
+            HostingWizard[PublishContainerToAWSWizardProperties.LaunchType] = this._pageUI.LaunchType.Value;
             if(this._pageUI.LaunchType == Amazon.ECS.LaunchType.FARGATE)
             {
                 if (this._pageUI.CreateNewIAMRole)
@@ -153,7 +153,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 else
                 {
                     HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole] = false;
-                    HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] = _pageUI.ServiceIAMRole;
+                    HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] = "AmazonECSServiceRolePolicy";
                 }
 
                 string vpcId = null;

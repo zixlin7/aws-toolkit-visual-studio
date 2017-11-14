@@ -183,8 +183,9 @@ namespace Amazon.ECS.Tools.Commands
                     dockerImageTag = pushCommand.PushedImageUri;
                 }
 
+
                 var taskDefinitionArn = await ECSTaskDefinitionUtilities.CreateOrUpdateTaskDefinition(this.Logger, this.ECSClient, 
-                    this, this.TaskDefinitionProperties, dockerImageTag);
+                    this, this.TaskDefinitionProperties, dockerImageTag, IsFargateLaunch(this.ClusterProperties.LaunchType));
 
                 var ecsCluster = this.GetStringValueOrDefault(this.ClusterProperties.ECSCluster, ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER, true);
                 await ECSUtilities.EnsureClusterExistsAsync(this.Logger, this.ECSClient, ecsCluster);
@@ -232,7 +233,20 @@ namespace Amazon.ECS.Tools.Commands
 
 
                 var launchType = this.GetStringValueOrDefault(this.ClusterProperties.LaunchType, ECSDefinedCommandOptions.ARGUMENT_LAUNCH_TYPE, true);
-                sdfgnsklnl
+                NetworkConfiguration networkConfiguration = null;
+                if (IsFargateLaunch(this.ClusterProperties.LaunchType))
+                {
+                    var subnets = this.GetStringValuesOrDefault(this.ClusterProperties.SubnetIds, ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SUBNETS, false);
+                    var securityGroups = this.GetStringValuesOrDefault(this.ClusterProperties.SecurityGroupIds, ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SECURITYGROUPS, false);
+
+                    networkConfiguration = new NetworkConfiguration();
+                    networkConfiguration.AwsvpcConfiguration = new AwsVpcConfiguration
+                    {
+                        SecurityGroups = new List<string>(securityGroups),
+                        Subnets = new List<string>(subnets)
+                    };
+
+                }
 
                 DeploymentConfiguration deploymentConfiguration = null;
                 if (deploymentMaximumPercent.HasValue || deploymentMinimumHealthyPercent.HasValue)
@@ -246,6 +260,8 @@ namespace Amazon.ECS.Tools.Commands
 
                 if (describeServiceResponse.Services.Count == 0 || describeServiceResponse.Services[0].Status == "INACTIVE")
                 {
+                    var serviceRole = this.GetStringValueOrDefault(this.DeployServiceProperties.ELBServiceRole, ECSDefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE, false);
+
                     this.Logger?.WriteLine($"Creating new service: {ecsService}");
                     var request = new CreateServiceRequest
                     {
@@ -255,6 +271,9 @@ namespace Amazon.ECS.Tools.Commands
                         TaskDefinition = taskDefinitionArn,
                         DesiredCount = desiredCount.HasValue ? desiredCount.Value : 1,
                         DeploymentConfiguration = deploymentConfiguration,
+                        LaunchType = launchType,
+                        NetworkConfiguration = networkConfiguration,
+                        Role = serviceRole,
                         PlacementConstraints = ECSUtilities.ConvertPlacementConstraint(this.GetStringValuesOrDefault(this.DeployServiceProperties.PlacementConstraints, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS, false)),
                         PlacementStrategy = ECSUtilities.ConvertPlacementStrategy(this.GetStringValuesOrDefault(this.DeployServiceProperties.PlacementStrategy, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY, false))
                     };
@@ -262,7 +281,6 @@ namespace Amazon.ECS.Tools.Commands
                     var elbTargetGroup = this.GetStringValueOrDefault(this.DeployServiceProperties.ELBTargetGroup, ECSDefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN, false);
                     if (!this.OverrideIgnoreTargetGroup && !string.IsNullOrWhiteSpace(elbTargetGroup))
                     {
-                        var serviceRole = this.GetStringValueOrDefault(this.DeployServiceProperties.ELBServiceRole, ECSDefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE, false);
                         var port = this.GetIntValueOrDefault(this.DeployServiceProperties.ELBContainerPort, ECSDefinedCommandOptions.ARGUMENT_ELB_CONTAINER_PORT, false);
                         if (!port.HasValue)
                             port = 80;
@@ -272,8 +290,6 @@ namespace Amazon.ECS.Tools.Commands
                             ContainerName = ecsContainer,
                             ContainerPort = port.Value
                         });
-
-                        request.Role = serviceRole;
                     }
 
                     try
@@ -305,7 +321,8 @@ namespace Amazon.ECS.Tools.Commands
                         Cluster = ecsCluster,
                         Service = ecsService,
                         TaskDefinition = taskDefinitionArn,
-                        DeploymentConfiguration = deploymentConfiguration
+                        DeploymentConfiguration = deploymentConfiguration,
+                        NetworkConfiguration = networkConfiguration
                     };
 
                     if(desiredCount.HasValue)

@@ -176,7 +176,7 @@ namespace Amazon.ECS.Tools.Commands
                 }
 
                 var taskDefinitionArn = await ECSTaskDefinitionUtilities.CreateOrUpdateTaskDefinition(this.Logger, this.ECSClient,
-                    this, this.TaskDefinitionProperties, dockerImageTag);
+                    this, this.TaskDefinitionProperties, dockerImageTag, IsFargateLaunch(this.ClusterProperties.LaunchType));
 
                 var ecsCluster = this.GetStringValueOrDefault(this.ClusterProperties.ECSCluster, ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER, true);
 

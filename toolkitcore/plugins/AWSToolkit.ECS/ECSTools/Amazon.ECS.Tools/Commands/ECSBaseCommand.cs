@@ -96,5 +96,12 @@ namespace Amazon.ECS.Tools.Commands
             }
             set { this._ecsClient = value; }
         }
+
+        public bool IsFargateLaunch(string property)
+        {
+            var launchType = this.GetStringValueOrDefault(property, ECSDefinedCommandOptions.ARGUMENT_LAUNCH_TYPE, true);
+            bool isFargate = string.Equals(launchType, LaunchType.FARGATE, StringComparison.OrdinalIgnoreCase);
+            return isFargate;
+        }
     }
 }
