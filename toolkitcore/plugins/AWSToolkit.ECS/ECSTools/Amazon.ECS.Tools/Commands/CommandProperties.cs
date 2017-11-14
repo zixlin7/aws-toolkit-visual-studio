@@ -40,17 +40,29 @@ namespace Amazon.ECS.Tools.Commands
     public class ClusterProperties
     {
         public string ECSCluster { get; set; }
+        public string LaunchType { get; set; }
+        public string[] SubnetIds { get; set; }
+        public string[] SecurityGroupIds { get; set; }
 
         internal void ParseCommandArguments(CommandOptions values)
         {
             Tuple<CommandOption, CommandOptionValue> tuple;
             if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER.Switch)) != null)
                 this.ECSCluster = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_TYPE.Switch)) != null)
+                this.LaunchType = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SUBNETS.Switch)) != null)
+                this.SubnetIds = tuple.Item2.StringValues;
+            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SECURITYGROUPS.Switch)) != null)
+                this.SecurityGroupIds = tuple.Item2.StringValues;
         }
 
         internal void PersistSettings(ECSBaseCommand command, JsonData data)
         {
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER.ConfigFileKey, command.GetStringValueOrDefault(this.ECSCluster, ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER, false));
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_TYPE.ConfigFileKey, command.GetStringValueOrDefault(this.LaunchType, ECSDefinedCommandOptions.ARGUMENT_LAUNCH_TYPE, false));
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SUBNETS.ConfigFileKey, ECSToolsDefaults.FormatCommaDelimitedList(command.GetStringValuesOrDefault(this.SubnetIds, ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SUBNETS, false)));
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SECURITYGROUPS.ConfigFileKey, ECSToolsDefaults.FormatCommaDelimitedList(command.GetStringValuesOrDefault(this.SecurityGroupIds, ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SECURITYGROUPS, false)));
         }
     }
 

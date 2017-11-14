@@ -143,8 +143,15 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         {
             var properties = new ClusterProperties
             {
-                ECSCluster = hostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string
+                ECSCluster = hostingWizard[PublishContainerToAWSWizardProperties.ClusterName] as string,
+                LaunchType = hostingWizard[PublishContainerToAWSWizardProperties.LaunchType] as string,
             };
+
+            if(string.Equals(properties.LaunchType, Amazon.ECS.LaunchType.FARGATE, StringComparison.OrdinalIgnoreCase))
+            {
+                properties.SubnetIds = hostingWizard[PublishContainerToAWSWizardProperties.LaunchSubnets] as string[];
+                properties.SecurityGroupIds = hostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] as string[];
+            }
 
             return properties;
         }

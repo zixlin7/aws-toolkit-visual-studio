@@ -58,7 +58,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
         {
-            var cluster = HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string;
+            var cluster = HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] as string;
             if(!string.Equals(cluster, this.Cluster))
             {
                 this.Cluster = cluster;
@@ -92,16 +92,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DeploymentMode))
             {
                 var mode = (Constants.DeployMode)HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
-                if (mode != Constants.DeployMode.DeployToECSCluster)
+                if (mode != Constants.DeployMode.DeployService)
                 {
                     return true;
-                }
-
-                if (HostingWizard[PublishContainerToAWSWizardProperties.IsExistingCluster] is bool)
-                {
-                    var isExistingService = (bool)HostingWizard[PublishContainerToAWSWizardProperties.IsExistingCluster];
-                    if (isExistingService)
-                        return false;
                 }
             }
 
@@ -114,7 +107,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DeploymentMode))
             {
                 var mode = (Constants.DeployMode)HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
-                return mode == Constants.DeployMode.DeployToECSCluster;
+                return mode == Constants.DeployMode.DeployService;
             }
 
             return false;

@@ -97,7 +97,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER, PublishContainerToAWSWizardProperties.Container);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT, PublishContainerToAWSWizardProperties.MemoryHardLimit);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT, PublishContainerToAWSWizardProperties.MemorySoftLimit);
-                copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER, PublishContainerToAWSWizardProperties.Cluster);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER, PublishContainerToAWSWizardProperties.ClusterName);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_SERVICE, PublishContainerToAWSWizardProperties.Service);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, PublishContainerToAWSWizardProperties.DesiredCount);
 

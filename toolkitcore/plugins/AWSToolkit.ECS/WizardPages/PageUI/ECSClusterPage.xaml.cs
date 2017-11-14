@@ -16,6 +16,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
+using static Amazon.AWSToolkit.ECS.WizardPages.ECSWizardUtils;
+using Amazon.AWSToolkit.EC2.Model;
+using System.Collections.ObjectModel;
+using Amazon.EC2.Model;
+using System.Windows.Input;
+using Amazon.AWSToolkit.EC2.Workers;
+using Amazon.AWSToolkit.SimpleWorkers;
+using System.Windows.Data;
+
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 {
     /// <summary>
@@ -29,8 +38,37 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public ECSClusterPage()
         {
+            AvailableSecurityGroups = new ObservableCollection<SecurityGroupWrapper>();
+            AvailableVpcSubnets = new ObservableCollection<VpcAndSubnetWrapper>();
+
             InitializeComponent();
             DataContext = this;
+
+            _ctlSecurityGroupsPicker.PropertyChanged += ForwardEmbeddedControlPropertyChanged;
+            _ctlSubnetsPicker.PropertyChanged += ForwardEmbeddedControlPropertyChanged;
+            _ctlSubnetsPicker.PropertyChanged += _ctlSubnetsPicker_PropertyChanged;
+
+        }
+
+        private void _ctlSubnetsPicker_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var subnets = SelectedSubnets;
+            string vpcId = null;
+            if (subnets != null)
+            {
+                // relying here that the page has rejected attempt to select subnets
+                // across multiple vpcs
+                foreach (var subnet in subnets)
+                {
+                    vpcId = subnet.VpcId;
+                    break;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(vpcId))
+                LoadExistingSecurityGroups(vpcId);
+            else
+                SetAvailableSecurityGroups(null, null);
         }
 
         public ECSClusterPage(ECSClusterPageController pageController)
@@ -38,8 +76,18 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             PageController = pageController;
 
-            UpdateExistingClusters();
+            UpdateExistingResources();
             LoadPreviousValues(PageController.HostingWizard);
+
+            this._ctlLaunchTypePicker.Items.Add(Amazon.ECS.LaunchType.FARGATE);
+            this._ctlLaunchTypePicker.Items.Add(Amazon.ECS.LaunchType.EC2);
+            this._ctlLaunchTypePicker.SelectedIndex = 0;
+
+        }
+
+        private void ForwardEmbeddedControlPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            NotifyPropertyChanged(e.PropertyName);
         }
 
         private void LoadPreviousValues(IAWSWizard hostWizard)
@@ -53,20 +101,30 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 if (string.IsNullOrWhiteSpace(this.Cluster))
                     return false;
 
+                if (_ctlSubnetsPicker.SubnetsSpanVPCs)
+                    return false;
+
                 return true;
             }
         }
 
-        private void UpdateExistingClusters()
+        private void UpdateExistingResources()
         {
+            this._ctlServiceIAMRole.Items.Clear();
+            this._ctlServiceIAMRole.Items.Add(CREATE_NEW_TEXT);
+            this._ctlServiceIAMRole.SelectedIndex = 0;
+
             var currentTextValue = !string.IsNullOrWhiteSpace(this._ctlClusterPicker.Text) && 
                 this._ctlClusterPicker.SelectedValue == null ? this._ctlClusterPicker.Text : null;
             this._ctlClusterPicker.Items.Clear();
+            this._ctlClusterPicker.Items.Add(CREATE_NEW_TEXT);
 
             try
             {
                 var account = PageController.HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
                 var region = PageController.HostingWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+
+                new QueryVpcsAndSubnetsWorker(ECSWizardUtils.CreateEC2Client(PageController.HostingWizard), LOGGER, new QueryVpcsAndSubnetsWorker.DataAvailableCallback(OnVpcSubnetsAvailable));
 
                 Task task1 = Task.Run(() =>
                 {
@@ -96,7 +154,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         }
 
 
-                        var previousValue = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string;
+                        string previousValue = null; // TODO  this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string;
                         if (!string.IsNullOrWhiteSpace(previousValue) && items.Contains(previousValue))
                             this._ctlClusterPicker.SelectedItem = previousValue;
                         else
@@ -105,6 +163,28 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                                 this._ctlClusterPicker.Text = currentTextValue;
                             else
                                 this._ctlClusterPicker.Text = "";
+                        }
+                    }));
+                });
+
+                Task.Run<List<string>>(() =>
+                {
+                    return LoadECSRoles(this.PageController.HostingWizard);
+                }).ContinueWith(t =>
+                {
+                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((System.Action)(() =>
+                    {
+                        foreach (var item in t.Result.OrderBy(x => x))
+                        {
+                            this._ctlServiceIAMRole.Items.Add(item);
+                        }
+
+                        var previousValue = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] as string;
+                        if (!string.IsNullOrWhiteSpace(previousValue) && t.Result.Contains(previousValue))
+                            this._ctlServiceIAMRole.SelectedItem = previousValue;
+                        else
+                        {
+                            this._ctlServiceIAMRole.SelectedIndex = this._ctlServiceIAMRole.Items.Count > 1 ? 1 : 0;
                         }
                     }));
                 });
@@ -122,14 +202,129 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             set { this._ctlClusterPicker.Text = value; }
         }
 
-        private void _ctlClusterPicker_TextChanged(object sender, RoutedEventArgs e)
+        public bool CreateNewCluster
         {
-            NotifyPropertyChanged("Cluster");
+            get { return this._ctlClusterPicker.SelectedIndex == 0; }
+        }
+
+        string _newClusterName;
+        public string NewClusterName
+        {
+            get { return _newClusterName; }
+            set
+            {
+                _newClusterName = value;
+                NotifyPropertyChanged("NewClusterName");
+            }
         }
 
         private void _ctlClusterPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (this.CreateNewCluster)
+            {
+                this._ctlNewClusterName.Visibility = Visibility.Visible;
+                this._ctlNewClusterName.IsEnabled = true;
+                this._ctlNewClusterName.Focus();
+                this._ctlLaunchTypePicker.SelectedIndex = 0;
+                this._ctlLaunchTypePicker.IsEnabled = false;
+            }
+            else
+            {
+                this._ctlNewClusterName.Visibility = Visibility.Collapsed;
+                this._ctlNewClusterName.IsEnabled = false;
+                this._ctlLaunchTypePicker.IsEnabled = true;
+            }
+
             NotifyPropertyChanged("Cluster");
+        }
+
+        public Amazon.ECS.LaunchType LaunchType
+        {
+            get { return this._ctlLaunchTypePicker.SelectedItem as Amazon.ECS.LaunchType; }
+        }
+
+
+        private void _ctlLaunchTypePicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var isFargateLaunch = this._ctlLaunchTypePicker.SelectedIndex == 0;
+            this._ctlServiceIAMRole.IsEnabled = isFargateLaunch;
+            this._ctlSubnetsPicker.IsEnabled = isFargateLaunch;
+            this._ctlSecurityGroupsPicker.IsEnabled = isFargateLaunch;
+            this._ctlServiceIAMRole.IsEnabled = isFargateLaunch;
+        }
+
+        public string ServiceIAMRole
+        {
+            get { return this._ctlServiceIAMRole.Text; }
+            set { this._ctlServiceIAMRole.Text = value; }
+        }
+
+        public bool CreateNewIAMRole
+        {
+            get { return this._ctlServiceIAMRole.SelectedIndex == 0; }
+        }
+
+
+        private void _ctlServiceIAMRole_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            NotifyPropertyChanged("ServiceIAMRole");
+        }
+
+        private void _ctlSubnetsPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(e.AddedItems.Count > 0)
+            {
+                var subnet = e.AddedItems[0] as VpcAndSubnetWrapper;
+                if(subnet != null)
+                {
+                    LoadExistingSecurityGroups(subnet.Vpc.VpcId);
+                }
+            }
+        }
+
+        public ObservableCollection<SecurityGroupWrapper> AvailableSecurityGroups { get; private set; }
+
+        void LoadExistingSecurityGroups(string vpcId)
+        {
+            new QuerySecurityGroupsWorker(CreateEC2Client(PageController.HostingWizard),
+                                          vpcId,
+                                          LOGGER,
+                                          OnSecurityGroupsAvailable);
+        }
+
+        void OnSecurityGroupsAvailable(ICollection<SecurityGroup> securityGroups)
+        {
+            SetAvailableSecurityGroups(securityGroups, string.Empty);
+        }
+
+        public IEnumerable<SecurityGroupWrapper> SelectedSecurityGroups
+        {
+            get
+            {
+                return _ctlSecurityGroupsPicker.SelectedSecurityGroups;
+            }
+        }
+
+        public void SetAvailableSecurityGroups(ICollection<SecurityGroup> existingGroups, string autoSelectGroup)
+        {
+            _ctlSecurityGroupsPicker.SetAvailableSecurityGroups(existingGroups, autoSelectGroup, null);
+        }
+
+        void OnVpcSubnetsAvailable(ICollection<Vpc> vpcs, ICollection<Subnet> subnets)
+        {
+            var defaultSelection = _ctlSubnetsPicker.SetAvailableVpcSubnets(vpcs, subnets, null);
+            if (defaultSelection == null)
+                _ctlSecurityGroupsPicker.SetAvailableSecurityGroups(null, null, null);
+        }
+
+        public ObservableCollection<VpcAndSubnetWrapper> AvailableVpcSubnets { get; private set; }
+
+        public IEnumerable<SubnetWrapper> SelectedSubnets
+        {
+            get
+            {
+                return _ctlSubnetsPicker.SelectedSubnets;
+            }
         }
     }
 }

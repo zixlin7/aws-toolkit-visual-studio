@@ -108,5 +108,27 @@ namespace Amazon.ECS.Tools
                 throw new DockerToolsException($"Error determing full repository path for the image {dockerImageTag}: {e.Message}", DockerToolsException.ECSErrorCode.FailedToExpandImageTag);
             }
         }
+
+        public static async System.Threading.Tasks.Task EnsureClusterExistsAsync(IToolLogger logger, IAmazonECS ecsClient, string clusterName)
+        {
+            try
+            {
+                logger.WriteLine($"Checking to see if cluster {clusterName} exists");
+                var response = await ecsClient.DescribeClustersAsync(new DescribeClustersRequest { Clusters = new List<string> { clusterName } });
+                if(response.Clusters.Count == 0)
+                {
+                    logger.WriteLine($"... Cluster does not exist, creating cluster {clusterName}");
+                    await ecsClient.CreateClusterAsync(new CreateClusterRequest { ClusterName = clusterName });
+                }
+            }
+            catch (DockerToolsException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new DockerToolsException($"Error ensuring ECS cluster {clusterName} exists: {e.Message}", DockerToolsException.ECSErrorCode.EnsureClusterExistsFail);
+            }
+        }
     }
 }

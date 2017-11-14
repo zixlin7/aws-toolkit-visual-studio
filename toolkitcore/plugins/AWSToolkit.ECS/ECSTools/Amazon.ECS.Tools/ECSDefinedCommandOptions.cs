@@ -80,6 +80,36 @@ namespace Amazon.ECS.Tools
                 Description = "Name of the ECS Cluster to run the docker image.",
             };
 
+        public static readonly CommandOption ARGUMENT_LAUNCH_TYPE =
+            new CommandOption
+            {
+                Name = "Launch Type",
+                ShortSwitch = "-lt",
+                Switch = "--launch-type",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "The launch type on which to run tasks. Valid values EC2 | FARGATE.",
+            };
+
+        public static readonly CommandOption ARGUMENT_LAUNCH_SUBNETS =
+            new CommandOption
+            {
+                Name = "Launch VPC Subnets",
+                ShortSwitch = "-ls",
+                Switch = "--launch-subnets",
+                ValueType = CommandOption.CommandOptionValueType.CommaDelimitedList,
+                Description = "Comma delimited list of subnet ids used when launch type is FARGATE",
+            };
+
+        public static readonly CommandOption ARGUMENT_LAUNCH_SECURITYGROUPS =
+            new CommandOption
+            {
+                Name = "Launch Type",
+                ShortSwitch = "-lsg",
+                Switch = "--launch-security-groups",
+                ValueType = CommandOption.CommandOptionValueType.CommaDelimitedList,
+                Description = "Comma delimited list of security group ids used when launch type is FARGATE",
+            };
+
         public static readonly CommandOption ARGUMENT_ECS_SERVICE =
             new CommandOption
             {

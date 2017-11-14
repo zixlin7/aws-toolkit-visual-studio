@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:Amazon.AWSToolkit.ECS.WizardPages.PageUI"
     mc:Ignorable="d" 
     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:lambdacomponents="clr-namespace:Amazon.AWSToolkit.Lambda.View.Components;assembly=AWSToolkit.Lambda"
               
     d:DesignHeight="400"
     d:DesignWidth="600">
@@ -24,6 +25,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
 
@@ -31,7 +34,6 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
@@ -51,9 +53,96 @@
             Grid.Column="1"
             Margin="16,10,4,2"
             IsEditable="False"
-            SelectedItem="{Binding Cluster, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             SelectionChanged="_ctlClusterPicker_SelectionChanged"
             Style="{DynamicResource awsComboBoxStyle}" />
+
+        <TextBox
+                Name="_ctlNewClusterName"
+                Grid.Row="0"
+                Grid.Column="2"
+                Margin="4,10,4,2"
+                Style="{DynamicResource awsTextBoxStyle}"
+                Text="{Binding NewClusterName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                />
+
+        <Label
+            Grid.Row="1"
+            Grid.Column="0"
+            Margin="10,10,4,2"
+            VerticalAlignment="Center"
+            Style="{DynamicResource awsLabelBaseStyle}">
+            _Launch Type:
+        </Label>
+
+
+        <ComboBox
+            Name="_ctlLaunchTypePicker"
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="16,10,4,2"
+            IsEditable="False"
+            SelectionChanged="_ctlLaunchTypePicker_SelectionChanged"
+            DisplayMemberPath="Value"
+            Style="{DynamicResource awsComboBoxStyle}" />
+
+        <Label
+                Grid.Row="2"
+                Grid.Column="0"
+                Margin="10,2,4,2"
+                VerticalAlignment="Center"
+                Style="{DynamicResource awsLabelBaseStyle}">
+            Select IAM role for service:
+        </Label>
+
+        <ComboBox
+                Name="_ctlServiceIAMRole"
+                Grid.Row="2"
+                Grid.Column="1"
+                Margin="16,2,4,2"
+                SelectionChanged="_ctlServiceIAMRole_SelectionChanged"
+                Style="{DynamicResource awsComboBoxStyle}"/>
+
+        <Label
+                Grid.Row="3"
+                Grid.ColumnSpan="2"
+                Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
+            Network Configuration
+        </Label>
+
+        
+        <Label
+            Grid.Row="4"
+            Grid.Column="0"
+            Margin="10,10,4,2"
+            VerticalAlignment="Center"
+            Style="{DynamicResource awsLabelBaseStyle}">
+            VPC Subnets:
+        </Label>
+
+        <lambdacomponents:SubnetMultiSelectionControl
+                    x:Name="_ctlSubnetsPicker"
+                    Grid.Row="4"
+                    Grid.Column="1"
+                    Margin="16,10,4,2"
+                    HorizontalAlignment="Stretch"
+                    Cursor="Wait" />
+
+        <Label
+            Grid.Row="5"
+            Grid.Column="0"
+            Margin="10,10,4,2"
+            VerticalAlignment="Center"
+            Style="{DynamicResource awsLabelBaseStyle}">
+            Security Groups:
+        </Label>
+
+        <lambdacomponents:SecurityGroupMultiSelectionControl
+                    x:Name="_ctlSecurityGroupsPicker"
+                    Grid.Row="5"
+                    Grid.Column="1"
+                    Margin="16,10,4,2"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center" />
 
     </Grid>
 </commonUi:BaseAWSUserControl>

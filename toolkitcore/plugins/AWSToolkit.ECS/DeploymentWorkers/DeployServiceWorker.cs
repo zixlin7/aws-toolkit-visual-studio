@@ -163,7 +163,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
         private string GenerateIAMRoleName(State state)
         {
-            var baseName = "ecsServiceRole" + "-" + state.HostingWizard[PublishContainerToAWSWizardProperties.Cluster];
+            var baseName = "ecsServiceRole" + "-" + state.HostingWizard[PublishContainerToAWSWizardProperties.ClusterName];
 
             var existingRoleNames = new HashSet<string>();
             var response = new ListRolesResponse();
@@ -305,7 +305,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                         this.Helper.AppendUploadStatus("Creating default TargetGroup for ELB Listener");
                         targetArn = this._elbClient.CreateTargetGroup(new CreateTargetGroupRequest
                         {
-                            Name = makeTargetGroupNameUnique("Default-ECS-" + state.HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string),
+                            Name = makeTargetGroupNameUnique("Default-ECS-" + state.HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] as string),
                             Port = 80,
                             Protocol = ProtocolEnum.HTTP,
                             TargetType = TargetTypeEnum.Instance,
@@ -450,12 +450,12 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             this.Helper.AppendUploadStatus("Determining security groups of EC2 instances in cluster");
             var containerInstanceArns = _ecsClient.ListContainerInstances(new ListContainerInstancesRequest
             {
-                Cluster = state.HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string
+                Cluster = state.HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] as string
             }).ContainerInstanceArns;
 
             var containerInstances = _ecsClient.DescribeContainerInstances(new DescribeContainerInstancesRequest
             {
-                Cluster = state.HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string,
+                Cluster = state.HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] as string,
                 ContainerInstances = containerInstanceArns
             }).ContainerInstances;
 
@@ -514,7 +514,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 Filters = new List<Filter> { new Filter { Name = "vpc-id", Values = new List<string> { state.HostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string } } }
             }).SecurityGroups;
 
-            var baseSecurityGroupName = "ecs-" + state.HostingWizard[PublishContainerToAWSWizardProperties.Cluster] + "-load-balancer";
+            var baseSecurityGroupName = "ecs-" + state.HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] + "-load-balancer";
             string securityGroupName = null;
             for (int i = 1; true; i++)
             {
@@ -528,13 +528,13 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             {
                 VpcId = state.HostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string,
                 GroupName = securityGroupName,
-                Description = "Load Balancer create for the ECS Cluster " + state.HostingWizard[PublishContainerToAWSWizardProperties.Cluster]
+                Description = "Load Balancer created for the ECS Cluster " + state.HostingWizard[PublishContainerToAWSWizardProperties.ClusterName]
             }).GroupId;
 
             this._ec2Client.CreateTags(new CreateTagsRequest
             {
                 Resources = new List<string> { groupId },
-                Tags = new List<EC2.Model.Tag> { new EC2.Model.Tag { Key = Constants.WIZARD_CREATE_TAG_KEY, Value = Constants.WIZARD_CREATE_TAG_VALUE } }
+                Tags = new List<Amazon.EC2.Model.Tag> { new Amazon.EC2.Model.Tag { Key = Constants.WIZARD_CREATE_TAG_KEY, Value = Constants.WIZARD_CREATE_TAG_VALUE } }
             });
 
             this.Helper.AppendUploadStatus("Authorizing access to port " + state.HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort] + " for CidrIp 0.0.0.0/0");

@@ -146,7 +146,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 var worker = new PushImageToECRWorker(this, ecrClient);
                 threadPoolWorker = x => worker.Execute(state);
             }
-            else if(mode == Constants.DeployMode.DeployToECSCluster)
+            else if(mode == Constants.DeployMode.DeployService)
             {
                 var state = new DeployServiceWorker.State
                 {
@@ -282,7 +282,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                     {
                         clusterRootNode.Refresh(false);
 
-                        var cluster = hostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string;
+                        var cluster = hostingWizard[PublishContainerToAWSWizardProperties.ClusterName] as string;
                         var clusterNode = clusterRootNode.Children.FirstOrDefault(x => string.Equals(x.Name, cluster)) as ClusterViewModel;
                         if (clusterNode != null)
                         {

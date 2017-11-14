@@ -187,6 +187,8 @@ namespace Amazon.ECS.Tools.Commands
                     this, this.TaskDefinitionProperties, dockerImageTag);
 
                 var ecsCluster = this.GetStringValueOrDefault(this.ClusterProperties.ECSCluster, ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER, true);
+                await ECSUtilities.EnsureClusterExistsAsync(this.Logger, this.ECSClient, ecsCluster);
+
                 var ecsService = this.GetStringValueOrDefault(this.DeployServiceProperties.ECSService, ECSDefinedCommandOptions.ARGUMENT_ECS_SERVICE, true);
 
                 await CreateOrUpdateService(ecsCluster, ecsService, taskDefinitionArn, ecsContainer);
@@ -218,16 +220,6 @@ namespace Amazon.ECS.Tools.Commands
         {
             try
             { 
-                var describeClusterResponse = await this.ECSClient.DescribeClustersAsync(new DescribeClustersRequest
-                {
-                    Clusters = new List<string> { ecsCluster }
-                });
-
-                if(describeClusterResponse.Clusters.Count == 0)
-                {
-                    throw new DockerToolsException($"Cluster {ecsCluster} can not be found.", DockerToolsException.ECSErrorCode.ClusterNotFound);
-                }
-
                 var describeServiceResponse = await this.ECSClient.DescribeServicesAsync(new DescribeServicesRequest
                 {
                     Cluster = ecsCluster,
@@ -237,6 +229,10 @@ namespace Amazon.ECS.Tools.Commands
                 var desiredCount = this.GetIntValueOrDefault(this.DeployServiceProperties.DesiredCount, ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false);
                 var deploymentMaximumPercent = this.GetIntValueOrDefault(this.DeployServiceProperties.DeploymentMaximumPercent, ECSDefinedCommandOptions.ARGUMENT_DEPLOYMENT_MAXIMUM_PERCENT, false);
                 var deploymentMinimumHealthyPercent = this.GetIntValueOrDefault(this.DeployServiceProperties.DeploymentMinimumHealthyPercent, ECSDefinedCommandOptions.ARGUMENT_DEPLOYMENT_MINIMUM_HEALTHY_PERCENT, false);
+
+
+                var launchType = this.GetStringValueOrDefault(this.ClusterProperties.LaunchType, ECSDefinedCommandOptions.ARGUMENT_LAUNCH_TYPE, true);
+                sdfgnsklnl
 
                 DeploymentConfiguration deploymentConfiguration = null;
                 if (deploymentMaximumPercent.HasValue || deploymentMinimumHealthyPercent.HasValue)

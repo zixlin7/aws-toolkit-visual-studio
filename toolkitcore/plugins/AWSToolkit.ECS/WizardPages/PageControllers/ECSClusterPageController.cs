@@ -87,7 +87,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DeploymentMode))
             {
                 var mode = (Constants.DeployMode)HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
-                if (mode != Constants.DeployMode.DeployToECSCluster && mode != Constants.DeployMode.ScheduleTask && mode != Constants.DeployMode.RunTask)
+                if (mode != Constants.DeployMode.DeployService && mode != Constants.DeployMode.ScheduleTask && mode != Constants.DeployMode.RunTask)
                 {
                     return true;
                 }
@@ -102,7 +102,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DeploymentMode))
             {
                 var mode = (Constants.DeployMode)HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
-                return mode == Constants.DeployMode.DeployToECSCluster || mode == Constants.DeployMode.ScheduleTask || mode == Constants.DeployMode.RunTask;
+                return mode == Constants.DeployMode.DeployService || mode == Constants.DeployMode.ScheduleTask || mode == Constants.DeployMode.RunTask;
             }
 
             return false;
@@ -130,13 +130,52 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (_pageUI == null)
                 return false;
 
-            if(!string.Equals(HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string, this._pageUI.Cluster))
+            if (this._pageUI.CreateNewCluster)
             {
+                HostingWizard[PublishContainerToAWSWizardProperties.CreateNewCluster] = this._pageUI.CreateNewCluster;
+                HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] = this._pageUI.NewClusterName;
+            }
+            else
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.CreateNewCluster] = this._pageUI.CreateNewCluster;
                 HostingWizard[PublishContainerToAWSWizardProperties.ExistingCluster] = FetchExistingCluster(this._pageUI.Cluster);
+                HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] = this._pageUI.Cluster;
             }
 
-            HostingWizard[PublishContainerToAWSWizardProperties.Cluster] = _pageUI.Cluster;
-            HostingWizard[PublishContainerToAWSWizardProperties.IsExistingCluster] = true;
+            HostingWizard[PublishContainerToAWSWizardProperties.ExistingCluster] = this._pageUI.LaunchType.Value;
+            if(this._pageUI.LaunchType == Amazon.ECS.LaunchType.FARGATE)
+            {
+                if (this._pageUI.CreateNewIAMRole)
+                {
+                    HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole] = true;
+                    HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] = null;
+                }
+                else
+                {
+                    HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole] = false;
+                    HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] = _pageUI.ServiceIAMRole;
+                }
+
+                string vpcId = null;
+                var subnetIds = new List<string>();
+                foreach(var subnet in this._pageUI.SelectedSubnets)
+                {
+                    vpcId = subnet.VpcId;
+                    subnetIds.Add(subnet.SubnetId);
+                }
+                HostingWizard[PublishContainerToAWSWizardProperties.LaunchSubnets] = subnetIds.ToArray();
+
+                HostingWizard[PublishContainerToAWSWizardProperties.VpcId] = vpcId;
+
+                var groupIds = new List<string>();
+                foreach(var group in this._pageUI.SelectedSecurityGroups)
+                {
+                    groupIds.Add(group.GroupId);
+                }
+                HostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] = groupIds.ToArray();
+
+                HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] = this._pageUI.ServiceIAMRole;
+            }
 
             return true;
         }

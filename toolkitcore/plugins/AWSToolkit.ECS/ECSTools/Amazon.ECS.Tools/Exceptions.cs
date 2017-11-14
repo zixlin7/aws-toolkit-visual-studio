@@ -23,6 +23,7 @@ namespace Amazon.ECS.Tools
             DockerCLILoginFail,
             DockerTagFail,
             DockerPushFail,
+            EnsureClusterExistsFail,
 
             FailedToUpdateTaskDefinition,
             FailedToExpandImageTag,

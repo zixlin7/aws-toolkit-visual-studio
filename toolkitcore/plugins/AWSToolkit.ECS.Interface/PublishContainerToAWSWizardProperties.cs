@@ -75,8 +75,12 @@ namespace Amazon.AWSToolkit.ECS
         public static readonly string HealthCheckPath = "HealthCheckPath";
 
         public static readonly string ExistingCluster = "existingCluster";
-        public static readonly string IsExistingCluster = "isExistingCluster";
-        public static readonly string Cluster = "cluster";
+        public static readonly string CreateNewCluster = "CreateNewCluster";
+        public static readonly string ClusterName = "ClusterName";
+
+        public static readonly string LaunchType = "LaunchType";
+        public static readonly string LaunchSubnets = "LaunchSubnets";
+        public static readonly string LaunchSecurityGroups = "LaunchSecurityGroups";
 
         public static readonly string TaskGroup = "TaskGroup";
 

@@ -62,7 +62,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
         {
-            var cluster = HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string;
+            var cluster = HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] as string;
             if (!string.Equals(cluster, this.Cluster))
             {
                 this.Cluster = cluster;

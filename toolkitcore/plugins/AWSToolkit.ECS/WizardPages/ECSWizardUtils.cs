@@ -12,6 +12,7 @@ using Amazon.IdentityManagement;
 
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Account;
+using Amazon.IdentityManagement.Model;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages
 {
@@ -63,6 +64,27 @@ namespace Amazon.AWSToolkit.ECS.WizardPages
 
             var client = account.CreateServiceClient<AmazonCloudWatchEventsClient>(region.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_EVENT_SERVICE_NAME));
             return client;
+        }
+
+        public static List<string> LoadECSRoles(IAWSWizard hostWizard)
+        {
+            using (var client = CreateIAMClient(hostWizard))
+            {
+                var roles = new List<string>();
+                var response = new ListRolesResponse();
+                do
+                {
+                    var request = new ListRolesRequest() { Marker = response.Marker };
+                    response = client.ListRoles(request);
+
+                    var validRoles = RolePolicyFilter.FilterByAssumeRoleServicePrincipal(response.Roles, "ecs.amazonaws.com");
+                    foreach (var role in validRoles)
+                    {
+                        roles.Add(role.RoleName);
+                    }
+                } while (!string.IsNullOrEmpty(response.Marker));
+                return roles;
+            }
         }
 
 

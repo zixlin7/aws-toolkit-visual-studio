@@ -64,6 +64,17 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
         {
+            // Role could have already been set on on the cluster page if launched as fargate
+            this._pageUI.EnableServiceIAMRole = !string.Equals(this.HostingWizard[PublishContainerToAWSWizardProperties.LaunchType] as string, Amazon.ECS.LaunchType.FARGATE.Value, StringComparison.OrdinalIgnoreCase);
+            if(!string.IsNullOrEmpty(HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] as string))
+            {
+                this._pageUI.ServiceIAMRole = HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] as string;
+            }
+            else if(HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] is bool && (bool)HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole])
+            {
+                this._pageUI.SetCreateNewIAMRole();
+            }
+
             var service = HostingWizard[PublishContainerToAWSWizardProperties.Service] as string;
             if (!string.Equals(service, this.Service))
             {
@@ -98,7 +109,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DeploymentMode))
             {
                 var mode = (Constants.DeployMode)HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
-                if (mode != Constants.DeployMode.DeployToECSCluster)
+                if (mode != Constants.DeployMode.DeployService)
                 {
                     return true;
                 }
@@ -113,7 +124,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             if (HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DeploymentMode))
             {
                 var mode = (Constants.DeployMode)HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
-                if (mode == Constants.DeployMode.DeployToECSCluster &&
+                if (mode == Constants.DeployMode.DeployService &&
                     (HostingWizard[PublishContainerToAWSWizardProperties.CreateNewService] is bool) &&
                     ((bool)HostingWizard[PublishContainerToAWSWizardProperties.CreateNewService]))
                 {
@@ -220,43 +231,51 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         private string DetermineClusterVPC()
         {
-            using (var ec2Client = ECSWizardUtils.CreateEC2Client(this.HostingWizard))
-            using (var ecsClient = ECSWizardUtils.CreateECSClient(this.HostingWizard))
+            if (string.Equals(this.HostingWizard[PublishContainerToAWSWizardProperties.LaunchType] as string, Amazon.ECS.LaunchType.FARGATE.Value, StringComparison.OrdinalIgnoreCase))
             {
-                var containerInstanceArns = ecsClient.ListContainerInstances(new ListContainerInstancesRequest
+                return this.HostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string;
+            }
+            else
+            {
+                using (var ec2Client = ECSWizardUtils.CreateEC2Client(this.HostingWizard))
+                using (var ecsClient = ECSWizardUtils.CreateECSClient(this.HostingWizard))
                 {
-                    Cluster = HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string
-                }).ContainerInstanceArns;
-
-                var containerInstances = ecsClient.DescribeContainerInstances(new DescribeContainerInstancesRequest
-                {
-                    Cluster = HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string,
-                    ContainerInstances = containerInstanceArns
-                }).ContainerInstances;
-
-                var describeIntanceRequest = new DescribeInstancesRequest();
-                containerInstances.ForEach(x => describeIntanceRequest.InstanceIds.Add(x.Ec2InstanceId));
-
-                string vpcId = null;
-                var reservations = ec2Client.DescribeInstances(describeIntanceRequest).Reservations;
-                foreach(var reservation in reservations)
-                {
-                    foreach(var instance in reservation.Instances)
+                    var cluster = HostingWizard[PublishContainerToAWSWizardProperties.ExistingCluster] as Amazon.ECS.Model.Cluster;
+                    var containerInstanceArns = ecsClient.ListContainerInstances(new ListContainerInstancesRequest
                     {
-                        if(!string.IsNullOrWhiteSpace(instance.VpcId))
+                        Cluster = cluster.ClusterName
+                    }).ContainerInstanceArns;
+
+                    var containerInstances = ecsClient.DescribeContainerInstances(new DescribeContainerInstancesRequest
+                    {
+                        Cluster = cluster.ClusterName as string,
+                        ContainerInstances = containerInstanceArns
+                    }).ContainerInstances;
+
+                    var describeIntanceRequest = new DescribeInstancesRequest();
+                    containerInstances.ForEach(x => describeIntanceRequest.InstanceIds.Add(x.Ec2InstanceId));
+
+                    string vpcId = null;
+                    var reservations = ec2Client.DescribeInstances(describeIntanceRequest).Reservations;
+                    foreach (var reservation in reservations)
+                    {
+                        foreach (var instance in reservation.Instances)
                         {
-                            vpcId = instance.VpcId;
-                            break;
+                            if (!string.IsNullOrWhiteSpace(instance.VpcId))
+                            {
+                                vpcId = instance.VpcId;
+                                break;
+                            }
                         }
                     }
-                }
 
-                if(vpcId == null)
-                {
-                    throw new Exception("There are no EC2 instances in the cluster currently running with a VPC");
-                }
+                    if (vpcId == null)
+                    {
+                        throw new Exception("There are no EC2 instances in the cluster currently running with a VPC");
+                    }
 
-                return vpcId;
+                    return vpcId;
+                }
             }
         }
 

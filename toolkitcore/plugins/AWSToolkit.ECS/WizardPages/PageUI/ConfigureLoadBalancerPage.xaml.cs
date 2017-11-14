@@ -89,6 +89,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             set { this._ctlServiceIAMRole.Text = value; }
         }
 
+        public bool EnableServiceIAMRole
+        {
+            get { return this._ctlServiceIAMRole.IsEnabled; }
+            set { this._ctlServiceIAMRole.IsEnabled = value; }
+        }
+
+
         private void _ctlServiceIAMRole_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             NotifyPropertyChanged("ServiceIAMRole");
@@ -96,7 +103,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public bool CreateNewIAMRole
         {
-            get { return this._ctlServiceIAMRole.SelectedIndex == 0; }
+            get { return this._ctlServiceIAMRole.SelectedIndex == 0; }            
+        }
+
+        public void SetCreateNewIAMRole()
+        {
+            this._ctlServiceIAMRole.SelectedIndex = 0;
         }
 
         public string LoadBalancer
@@ -358,23 +370,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             Task.Run<List<string>>(() =>
             {
-                using (var client = CreateIAMClient(this.PageController.HostingWizard))
-                {
-                    var roles = new List<string>();
-                    var response = new ListRolesResponse();
-                    do
-                    {
-                        var request = new ListRolesRequest() { Marker = response.Marker };
-                        response = client.ListRoles(request);
-
-                        var validRoles = RolePolicyFilter.FilterByAssumeRoleServicePrincipal(response.Roles, "ecs.amazonaws.com");
-                        foreach (var role in validRoles)
-                        {
-                            roles.Add(role.RoleName);
-                        }
-                    } while (!string.IsNullOrEmpty(response.Marker));
-                    return roles;
-                }
+                return LoadECSRoles(this.PageController.HostingWizard);
             }).ContinueWith(t =>
             { 
                 ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((System.Action)(() =>
