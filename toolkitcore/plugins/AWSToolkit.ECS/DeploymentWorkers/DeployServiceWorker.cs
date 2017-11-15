@@ -286,12 +286,15 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                         string.Equals(state.HostingWizard[PublishContainerToAWSWizardProperties.NewPathPattern].ToString(), "/"))
                     {
                         this.Helper.AppendUploadStatus("Creating TargetGroup for ELB Listener");
+
+                        var targetType = this.IsFargateLaunch(state.HostingWizard) ? TargetTypeEnum.Ip : TargetTypeEnum.Instance;
+
                         targetArn = this._elbClient.CreateTargetGroup(new CreateTargetGroupRequest
                         {
                             Name = makeTargetGroupNameUnique(state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] as string),
                             Port = 80,
                             Protocol = ProtocolEnum.HTTP,
-                            TargetType = TargetTypeEnum.Instance,
+                            TargetType = targetType,
                             HealthCheckPath = state.HostingWizard[PublishContainerToAWSWizardProperties.HealthCheckPath] as string,
                             VpcId = state.HostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string
                         }).TargetGroups[0].TargetGroupArn;
@@ -445,35 +448,45 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             return selectedSubnets;
         }
 
+
         private List<string> AssignELBSecurityGroupToEC2SecurityGroup(State state, string elbSecurityGroupId)
         {
-            this.Helper.AppendUploadStatus("Determining security groups of EC2 instances in cluster");
-            var containerInstanceArns = _ecsClient.ListContainerInstances(new ListContainerInstancesRequest
-            {
-                Cluster = state.HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] as string
-            }).ContainerInstanceArns;
-
-            var containerInstances = _ecsClient.DescribeContainerInstances(new DescribeContainerInstancesRequest
-            {
-                Cluster = state.HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] as string,
-                ContainerInstances = containerInstanceArns
-            }).ContainerInstances;
-
-            var describeIntanceRequest = new DescribeInstancesRequest();
-            containerInstances.ForEach(x => describeIntanceRequest.InstanceIds.Add(x.Ec2InstanceId));
-
             List<string> groupIds = new List<string>();
-            var reservations = _ec2Client.DescribeInstances(describeIntanceRequest).Reservations;
-            foreach (var reservation in reservations)
+
+            if (IsFargateLaunch(state.HostingWizard))
             {
-                foreach (var instance in reservation.Instances)
+                var launchGroupsIds = state.HostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] as string[];
+                groupIds = new List<string>(launchGroupsIds);
+            }
+            else
+            {
+                this.Helper.AppendUploadStatus("Determining security groups of EC2 instances in cluster");
+                var containerInstanceArns = _ecsClient.ListContainerInstances(new ListContainerInstancesRequest
                 {
-                    if (!string.IsNullOrWhiteSpace(instance.VpcId))
+                    Cluster = state.HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] as string
+                }).ContainerInstanceArns;
+
+                var containerInstances = _ecsClient.DescribeContainerInstances(new DescribeContainerInstancesRequest
+                {
+                    Cluster = state.HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] as string,
+                    ContainerInstances = containerInstanceArns
+                }).ContainerInstances;
+
+                var describeIntanceRequest = new DescribeInstancesRequest();
+                containerInstances.ForEach(x => describeIntanceRequest.InstanceIds.Add(x.Ec2InstanceId));
+
+                var reservations = _ec2Client.DescribeInstances(describeIntanceRequest).Reservations;
+                foreach (var reservation in reservations)
+                {
+                    foreach (var instance in reservation.Instances)
                     {
-                        foreach(var securityGroup in instance.SecurityGroups)
+                        if (!string.IsNullOrWhiteSpace(instance.VpcId))
                         {
-                            this.Helper.AppendUploadStatus("\t" + securityGroup.GroupId);
-                            groupIds.Add(securityGroup.GroupId);
+                            foreach (var securityGroup in instance.SecurityGroups)
+                            {
+                                this.Helper.AppendUploadStatus("\t" + securityGroup.GroupId);
+                                groupIds.Add(securityGroup.GroupId);
+                            }
                         }
                     }
                 }

@@ -260,7 +260,7 @@ namespace Amazon.ECS.Tools.Commands
 
                 if (describeServiceResponse.Services.Count == 0 || describeServiceResponse.Services[0].Status == "INACTIVE")
                 {
-                    var serviceRole = this.GetStringValueOrDefault(this.DeployServiceProperties.ELBServiceRole, ECSDefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE, false);
+                    var serviceRole = "arn:aws:iam::626492997873:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS";// this.GetStringValueOrDefault(this.DeployServiceProperties.ELBServiceRole, ECSDefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE, false);
 
                     this.Logger?.WriteLine($"Creating new service: {ecsService}");
                     var request = new CreateServiceRequest
@@ -273,9 +273,9 @@ namespace Amazon.ECS.Tools.Commands
                         DeploymentConfiguration = deploymentConfiguration,
                         LaunchType = launchType,
                         NetworkConfiguration = networkConfiguration,
-                        Role = serviceRole,
+//                        Role = serviceRole,
                         PlacementConstraints = ECSUtilities.ConvertPlacementConstraint(this.GetStringValuesOrDefault(this.DeployServiceProperties.PlacementConstraints, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS, false)),
-                        PlacementStrategy = ECSUtilities.ConvertPlacementStrategy(this.GetStringValuesOrDefault(this.DeployServiceProperties.PlacementStrategy, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY, false))
+//                        PlacementStrategy = ECSUtilities.ConvertPlacementStrategy(this.GetStringValuesOrDefault(this.DeployServiceProperties.PlacementStrategy, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY, false))
                     };
 
                     var elbTargetGroup = this.GetStringValueOrDefault(this.DeployServiceProperties.ELBTargetGroup, ECSDefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN, false);

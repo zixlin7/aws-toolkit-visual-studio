@@ -11,6 +11,7 @@ using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
 using Amazon.IdentityManagement.Model;
 using System.Threading;
 using Amazon.IdentityManagement;
+using Amazon.ECS;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
@@ -26,6 +27,13 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         {
             this.Helper = helper;
             this._iamClient = iamClient;
+        }
+
+        public bool IsFargateLaunch(IAWSWizard hostingWizard)
+        {
+            var launchType = hostingWizard[PublishContainerToAWSWizardProperties.LaunchType] as string;
+            bool isFargate = string.Equals(launchType, LaunchType.FARGATE, StringComparison.OrdinalIgnoreCase);
+            return isFargate;
         }
 
         public PushDockerImageProperties ConvertToPushDockerImageProperties(IAWSWizard hostingWizard)

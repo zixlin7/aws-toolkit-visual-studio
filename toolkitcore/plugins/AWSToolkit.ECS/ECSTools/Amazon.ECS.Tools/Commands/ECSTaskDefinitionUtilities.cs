@@ -49,7 +49,7 @@ namespace Amazon.ECS.Tools.Commands
 
                     registerRequest.ContainerDefinitions = response.TaskDefinition.ContainerDefinitions;
                     registerRequest.Cpu = response.TaskDefinition.Cpu;
-                    registerRequest.ExecutionRoleArn = registerRequest.ExecutionRoleArn;
+                    registerRequest.ExecutionRoleArn = response.TaskDefinition.ExecutionRoleArn;
                     registerRequest.Memory = response.TaskDefinition.Memory;
                     registerRequest.NetworkMode = response.TaskDefinition.NetworkMode;
                     registerRequest.PlacementConstraints = response.TaskDefinition.PlacementConstraints;
@@ -140,8 +140,8 @@ namespace Amazon.ECS.Tools.Commands
                     if (!registerRequest.RequiresCompatibilities.Contains("FARGATE"))
                         registerRequest.RequiresCompatibilities.Add("FARGATE");
 
-                    registerRequest.Memory = 2048;
-                    registerRequest.Cpu = 1024;
+                    registerRequest.Memory = "2048";
+                    registerRequest.Cpu = "1024";
                 }
 
                 var registerResponse = await ecsClient.RegisterTaskDefinitionAsync(registerRequest);
