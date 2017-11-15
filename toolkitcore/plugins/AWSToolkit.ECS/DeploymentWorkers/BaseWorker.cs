@@ -12,6 +12,7 @@ using Amazon.IdentityManagement.Model;
 using System.Threading;
 using Amazon.IdentityManagement;
 using Amazon.ECS;
+using Amazon.AWSToolkit.ECS.WizardPages;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
@@ -27,13 +28,6 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         {
             this.Helper = helper;
             this._iamClient = iamClient;
-        }
-
-        public bool IsFargateLaunch(IAWSWizard hostingWizard)
-        {
-            var launchType = hostingWizard[PublishContainerToAWSWizardProperties.LaunchType] as string;
-            bool isFargate = string.Equals(launchType, LaunchType.FARGATE, StringComparison.OrdinalIgnoreCase);
-            return isFargate;
         }
 
         public PushDockerImageProperties ConvertToPushDockerImageProperties(IAWSWizard hostingWizard)
@@ -69,7 +63,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 string[] mappings = new string[uiPortMapping.Count];
                 for (int i = 0; i < mappings.Length; i++)
                 {
-                    mappings[i] = $"{uiPortMapping[i].HostPort}:{uiPortMapping[i].ContainerPort}";
+                    var hostPort = hostingWizard.IsFargateLaunch() ? uiPortMapping[i].ContainerPort : uiPortMapping[i].HostPort;
+                    mappings[i] = $"{hostPort}:{uiPortMapping[i].ContainerPort}";
                 }
                 properties.PortMappings = mappings;
             }
@@ -97,6 +92,23 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
                 this.Helper.AppendUploadStatus("Waiting for new IAM Role to propagate to AWS regions");
                 Thread.Sleep(SLEEP_TIME_FOR_ROLE_PROPOGATION);
+            }
+
+            if(hostingWizard.IsFargateLaunch())
+            {
+                if(hostingWizard[PublishContainerToAWSWizardProperties.CreateNewTaskExecutionRole] is bool &&
+                    ((bool)hostingWizard[PublishContainerToAWSWizardProperties.CreateNewTaskExecutionRole]))
+                {
+                    properties.TaskDefinitionExecutionRole = Amazon.Common.DotNetCli.Tools.RoleHelper.CreateRole(
+                        this._iamClient, "ecsTaskExecutionRole", Amazon.Common.DotNetCli.Tools.Constants.ECS_TASKS_ASSUME_ROLE_POLICY, "CloudWatchLogsFullAccess", "AmazonEC2ContainerRegistryReadOnly");
+                }
+                else
+                {
+                    properties.TaskDefinitionExecutionRole = hostingWizard[PublishContainerToAWSWizardProperties.TaskExecutionRole] as string;
+                }
+
+                properties.TaskCPU = hostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskCPU] as string;
+                properties.TaskMemory = hostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskMemory] as string;
             }
 
 

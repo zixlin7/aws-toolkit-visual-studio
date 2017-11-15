@@ -140,8 +140,10 @@ namespace Amazon.ECS.Tools.Commands
                     if (!registerRequest.RequiresCompatibilities.Contains("FARGATE"))
                         registerRequest.RequiresCompatibilities.Add("FARGATE");
 
-                    registerRequest.Memory = "2048";
-                    registerRequest.Cpu = "1024";
+                    registerRequest.Memory = command.GetStringValueOrDefault(properties.TaskMemory, ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_MEMORY, true);
+                    registerRequest.Cpu = command.GetStringValueOrDefault(properties.TaskCPU, ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_CPU, true);
+
+                    registerRequest.ExecutionRoleArn = command.GetStringValueOrDefault(properties.TaskDefinitionExecutionRole, ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_EXECUTION_ROLE, true);
                 }
 
                 var registerResponse = await ecsClient.RegisterTaskDefinitionAsync(registerRequest);

@@ -139,13 +139,24 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             else
                 HostingWizard[PublishContainerToAWSWizardProperties.Container] = _pageUI.Container;
 
+            if(this.HostingWizard.IsFargateLaunch())
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTaskExecutionRole] = _pageUI.CreateNewTaskExecutionRole;
+                HostingWizard[PublishContainerToAWSWizardProperties.TaskExecutionRole] = _pageUI.TaskExecutionRole;
+            }
+            else
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTaskExecutionRole] = false;
+                HostingWizard[PublishContainerToAWSWizardProperties.TaskExecutionRole] = null;
+            }
+
+            HostingWizard[PublishContainerToAWSWizardProperties.TaskRole] = _pageUI.SelectedRole;
+            HostingWizard[PublishContainerToAWSWizardProperties.TaskRoleManagedPolicy] = _pageUI.SelectedManagedPolicy;
+
             HostingWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit] = _pageUI.MemoryHardLimit;
             HostingWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit] = _pageUI.MemorySoftLimit;
             HostingWizard[PublishContainerToAWSWizardProperties.PortMappings] = _pageUI.PortMappings.ToList();
             HostingWizard[PublishContainerToAWSWizardProperties.EnvironmentVariables] = _pageUI.EnvironmentVariables.ToList();
-
-            HostingWizard[PublishContainerToAWSWizardProperties.TaskRole] = _pageUI.SelectedRole;
-            HostingWizard[PublishContainerToAWSWizardProperties.TaskRoleManagedPolicy] = _pageUI.SelectedManagedPolicy;
 
             return true;
         }

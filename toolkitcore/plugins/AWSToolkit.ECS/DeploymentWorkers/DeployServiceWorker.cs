@@ -16,6 +16,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
+using Amazon.AWSToolkit.ECS.WizardPages;
+
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
     public class DeployServiceWorker : BaseWorker
@@ -287,7 +289,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     {
                         this.Helper.AppendUploadStatus("Creating TargetGroup for ELB Listener");
 
-                        var targetType = this.IsFargateLaunch(state.HostingWizard) ? TargetTypeEnum.Ip : TargetTypeEnum.Instance;
+                        var targetType = state.HostingWizard.IsFargateLaunch() ? TargetTypeEnum.Ip : TargetTypeEnum.Instance;
 
                         targetArn = this._elbClient.CreateTargetGroup(new CreateTargetGroupRequest
                         {
@@ -453,7 +455,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         {
             List<string> groupIds = new List<string>();
 
-            if (IsFargateLaunch(state.HostingWizard))
+            if (state.HostingWizard.IsFargateLaunch())
             {
                 var launchGroupsIds = state.HostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] as string[];
                 groupIds = new List<string>(launchGroupsIds);

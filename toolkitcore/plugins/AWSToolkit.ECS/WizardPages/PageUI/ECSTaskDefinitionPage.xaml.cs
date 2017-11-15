@@ -617,9 +617,27 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             NotifyPropertyChanged("EnvironmentVariable3s");
         }
 
+        public bool CreateNewTaskExecutionRole
+        {
+            get { return this._ctlExecutionRole.SelectedIndex == 0; }
+        }
+
+        public string TaskExecutionRole
+        {
+            get
+            {
+                if (this.CreateNewTaskExecutionRole)
+                    return null;
+
+                return this._ctlExecutionRole.SelectedValue as string;
+            }
+        }
+
+
         private void _ctlExecutionRole_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            NotifyPropertyChanged("CreateNewTaskExecutionRole");
+            NotifyPropertyChanged("TaskExecutionRole");
         }
     }
 

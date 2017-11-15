@@ -53,6 +53,9 @@ namespace Amazon.AWSToolkit.ECS
         public static readonly string TaskRole = "TaskRole";
         public static readonly string TaskRoleManagedPolicy = "TaskRoleManagedPolicy";
 
+        public static readonly string CreateNewTaskExecutionRole = "CreateNewTaskExecutionRole";
+        public static readonly string TaskExecutionRole = "TaskExecutionRole";
+
         public static readonly string CreateNewService = "isExistingService";
         public static readonly string Service = "service";
         public static readonly string DesiredCount = "desiredCount";

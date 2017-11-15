@@ -185,6 +185,30 @@ namespace Amazon.ECS.Tools
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
                 Description = "The IAM role that will provide AWS credentials for the containers in the Task Definition."
             };
+        public static readonly CommandOption ARGUMENT_TASK_DEFINITION_EXECUTION_ROLE =
+            new CommandOption
+            {
+                Name = "Task Definition Execution Role",
+                Switch = "--task-execution-role",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "The IAM role ECS assumes to pull images from ECR and publish logs to CloudWatch Logs. Fargate only."
+            };
+        public static readonly CommandOption ARGUMENT_TASK_DEFINITION_CPU =
+            new CommandOption
+            {
+                Name = "Task Definition Allocated CPU",
+                Switch = "--task-memory",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "The amount of cpu to allocate for the task definition. Fargate only."
+            };
+        public static readonly CommandOption ARGUMENT_TASK_DEFINITION_MEMORY =
+            new CommandOption
+            {
+                Name = "Task Definition Allocated Memory",
+                Switch = "--task-cpu",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "The amount of memory to allocated for the task definition. Fargate only."
+            };
         public static readonly CommandOption ARGUMENT_ELB_TARGET_GROUP_ARN =
             new CommandOption
             {

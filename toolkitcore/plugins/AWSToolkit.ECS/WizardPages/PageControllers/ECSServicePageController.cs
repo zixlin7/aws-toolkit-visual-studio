@@ -148,6 +148,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 HostingWizard[PublishContainerToAWSWizardProperties.PlacementConstraints] = this._pageUI.PlacementTemplate.PlacementConstraints;
                 HostingWizard[PublishContainerToAWSWizardProperties.PlacementStrategy] = this._pageUI.PlacementTemplate.PlacementStrategy;
             }
+            else
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.PlacementConstraints] = null;
+                HostingWizard[PublishContainerToAWSWizardProperties.PlacementStrategy] = null;
+            }
 
             return true;
         }

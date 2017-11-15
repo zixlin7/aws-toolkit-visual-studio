@@ -35,6 +35,10 @@ namespace Amazon.ECS.Tools.Commands
             ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING,
             ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE,
             ECSDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES,
+            ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_EXECUTION_ROLE,
+            ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_CPU,
+            ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_MEMORY,
+
 
             ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER,
             ECSDefinedCommandOptions.ARGUMENT_ECS_SERVICE,
@@ -260,8 +264,6 @@ namespace Amazon.ECS.Tools.Commands
 
                 if (describeServiceResponse.Services.Count == 0 || describeServiceResponse.Services[0].Status == "INACTIVE")
                 {
-                    var serviceRole = "arn:aws:iam::626492997873:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS";// this.GetStringValueOrDefault(this.DeployServiceProperties.ELBServiceRole, ECSDefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE, false);
-
                     this.Logger?.WriteLine($"Creating new service: {ecsService}");
                     var request = new CreateServiceRequest
                     {
@@ -272,15 +274,23 @@ namespace Amazon.ECS.Tools.Commands
                         DesiredCount = desiredCount.HasValue ? desiredCount.Value : 1,
                         DeploymentConfiguration = deploymentConfiguration,
                         LaunchType = launchType,
-                        NetworkConfiguration = networkConfiguration,
-//                        Role = serviceRole,
-                        PlacementConstraints = ECSUtilities.ConvertPlacementConstraint(this.GetStringValuesOrDefault(this.DeployServiceProperties.PlacementConstraints, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS, false)),
-//                        PlacementStrategy = ECSUtilities.ConvertPlacementStrategy(this.GetStringValuesOrDefault(this.DeployServiceProperties.PlacementStrategy, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY, false))
+                        NetworkConfiguration = networkConfiguration
                     };
+
+                    if(!IsFargateLaunch(this.ClusterProperties.LaunchType))
+                    {
+                        request.PlacementConstraints = ECSUtilities.ConvertPlacementConstraint(this.GetStringValuesOrDefault(this.DeployServiceProperties.PlacementConstraints, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS, false));
+                        request.PlacementStrategy = ECSUtilities.ConvertPlacementStrategy(this.GetStringValuesOrDefault(this.DeployServiceProperties.PlacementStrategy, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY, false));
+                    }
 
                     var elbTargetGroup = this.GetStringValueOrDefault(this.DeployServiceProperties.ELBTargetGroup, ECSDefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN, false);
                     if (!this.OverrideIgnoreTargetGroup && !string.IsNullOrWhiteSpace(elbTargetGroup))
                     {
+                        if(!IsFargateLaunch(this.ClusterProperties.LaunchType))
+                        {
+                            request.Role = this.GetStringValueOrDefault(this.DeployServiceProperties.ELBServiceRole, ECSDefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE, false);
+                        }
+
                         var port = this.GetIntValueOrDefault(this.DeployServiceProperties.ELBContainerPort, ECSDefinedCommandOptions.ARGUMENT_ELB_CONTAINER_PORT, false);
                         if (!port.HasValue)
                             port = 80;
@@ -329,15 +339,6 @@ namespace Amazon.ECS.Tools.Commands
                     {
                         updateRequest.DesiredCount = desiredCount.Value;
                     }
-
-                    //if (describeClusterResponse.Clusters[0].RegisteredContainerInstancesCount == 1)
-                    //{
-                    //    this.Logger?.WriteLine("Allowing minimum health to go down to zero during deployment since there is only one EC2 instance in the ECS cluster.");
-                    //    updateRequest.DeploymentConfiguration = new DeploymentConfiguration
-                    //    {
-                    //        MinimumHealthyPercent = 0
-                    //    };
-                    //}
 
                     await this.ECSClient.UpdateServiceAsync(updateRequest);
                 }

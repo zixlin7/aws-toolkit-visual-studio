@@ -74,6 +74,9 @@ namespace Amazon.ECS.Tools.Commands
         public int? ContainerMemoryHardLimit { get; set; }
         public int? ContainerMemorySoftLimit { get; set; }
         public string TaskDefinitionRole { get; set; }
+        public string TaskDefinitionExecutionRole { get; set; }
+        public string TaskCPU { get; set; }
+        public string TaskMemory { get; set; }
         public string[] PortMappings { get; set; }
         public Dictionary<string, string> EnvironmentVariables { get; set; }
 
@@ -92,6 +95,12 @@ namespace Amazon.ECS.Tools.Commands
                 this.PortMappings = tuple.Item2.StringValues;
             if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE.Switch)) != null)
                 this.TaskDefinitionRole = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_EXECUTION_ROLE.Switch)) != null)
+                this.TaskDefinitionExecutionRole = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_CPU.Switch)) != null)
+                this.TaskCPU = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_MEMORY.Switch)) != null)
+                this.TaskMemory = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES.Switch)) != null)
                 this.EnvironmentVariables = tuple.Item2.KeyValuePairs;
         }
@@ -103,6 +112,9 @@ namespace Amazon.ECS.Tools.Commands
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT.ConfigFileKey, command.GetIntValueOrDefault(this.ContainerMemoryHardLimit, ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT, false));
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT.ConfigFileKey, command.GetIntValueOrDefault(this.ContainerMemorySoftLimit, ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT, false));
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE.ConfigFileKey, command.GetStringValueOrDefault(this.TaskDefinitionRole, ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE, false));
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_EXECUTION_ROLE.ConfigFileKey, command.GetStringValueOrDefault(this.TaskDefinitionExecutionRole, ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_EXECUTION_ROLE, false));
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_CPU.ConfigFileKey, command.GetStringValueOrDefault(this.TaskCPU, ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_CPU, false));
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_MEMORY.ConfigFileKey, command.GetStringValueOrDefault(this.TaskMemory, ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_MEMORY, false));
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING.ConfigFileKey, ECSToolsDefaults.FormatCommaDelimitedList(command.GetStringValuesOrDefault(this.PortMappings, ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING, false)));
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES.ConfigFileKey, ECSToolsDefaults.FormatKeyValue(command.GetKeyValuePairOrDefault(this.EnvironmentVariables, ECSDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES, false)));
         }
