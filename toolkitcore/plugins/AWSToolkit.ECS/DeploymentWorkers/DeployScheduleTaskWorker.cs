@@ -19,7 +19,6 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         IAmazonCloudWatchEvents _cweClient;
         IAmazonECR _ecrClient;
         IAmazonECS _ecsClient;
-        IAmazonIdentityManagementService _iamClient;
 
         public DeployScheduleTaskWorker(IDockerDeploymentHelper helper,
             IAmazonCloudWatchEvents cweClient,

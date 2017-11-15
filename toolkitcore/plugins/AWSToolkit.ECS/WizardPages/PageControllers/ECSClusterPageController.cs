@@ -145,17 +145,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             HostingWizard[PublishContainerToAWSWizardProperties.LaunchType] = this._pageUI.LaunchType.Value;
             if(this._pageUI.LaunchType == Amazon.ECS.LaunchType.FARGATE)
             {
-                if (this._pageUI.CreateNewIAMRole)
-                {
-                    HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole] = true;
-                    HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] = null;
-                }
-                else
-                {
-                    HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole] = false;
-                    HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] = "AmazonECSServiceRolePolicy";
-                }
-
                 string vpcId = null;
                 var subnetIds = new List<string>();
                 foreach(var subnet in this._pageUI.SelectedSubnets)
@@ -167,14 +156,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
                 HostingWizard[PublishContainerToAWSWizardProperties.VpcId] = vpcId;
 
-                var groupIds = new List<string>();
-                foreach(var group in this._pageUI.SelectedSecurityGroups)
-                {
-                    groupIds.Add(group.GroupId);
-                }
-                HostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] = groupIds.ToArray();
-
-                HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] = this._pageUI.ServiceIAMRole;
+                //var groupIds = new List<string>();
+                //foreach(var group in this._pageUI.SelectedSecurityGroups)
+                //{
+                //    groupIds.Add(group.GroupId);
+                //}
+                //HostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] = groupIds.ToArray();
             }
 
             return true;

@@ -17,7 +17,6 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
     {
         IAmazonECR _ecrClient;
         IAmazonECS _ecsClient;
-        IAmazonIdentityManagementService _iamClient;
 
         public DeployTaskWorker(IDockerDeploymentHelper helper,
             IAmazonECR ecrClient,

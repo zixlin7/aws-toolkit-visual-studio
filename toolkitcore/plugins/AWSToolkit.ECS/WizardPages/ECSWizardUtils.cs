@@ -87,6 +87,64 @@ namespace Amazon.AWSToolkit.ECS.WizardPages
             }
         }
 
+        public class TaskCPUItemValue
+        {
+            public static readonly TaskCPUItemValue VCPU_0_25 = new TaskCPUItemValue
+            {
+                DisplayName = "0.25 vCPU (256)",
+                SystemName = "256",
+                MemoryOptions = new string[] { "512MB", "1GB", "2GB" }
+            };
+            public static readonly TaskCPUItemValue VCPU_0_50 = new TaskCPUItemValue
+            {
+                DisplayName = "0.50 vCPU (512)",
+                SystemName = "512",
+                MemoryOptions = GetOptions(1, 4)
+            };
+            public static readonly TaskCPUItemValue VCPU_1_00 = new TaskCPUItemValue
+            {
+                DisplayName = "1.00 vCPU (1024)",
+                SystemName = "1024",
+                MemoryOptions = GetOptions(2, 8)
+            };
+            public static readonly TaskCPUItemValue VCPU_2_00 = new TaskCPUItemValue
+            {
+                DisplayName = "2.00 vCPU (2048)",
+                SystemName = "2048",
+                MemoryOptions = GetOptions(4, 16)
+            };
+            public static readonly TaskCPUItemValue VCPU_4_00 = new TaskCPUItemValue
+            {
+                DisplayName = "4.00 vCPU (4096)",
+                SystemName = "4096",
+                MemoryOptions = GetOptions(8, 30)
+            };
+
+            public static readonly IEnumerable<TaskCPUItemValue> AllValues = new TaskCPUItemValue[]
+            {
+                VCPU_0_25,
+                VCPU_0_50,
+                VCPU_1_00,
+                VCPU_2_00,
+                VCPU_4_00
+            };
+
+            private static string [] GetOptions(int min, int max)
+            {
+                var values = new List<string>();
+                for(int i = min; i <= max; i++)
+                {
+                    values.Add(i + "GB");
+                }
+
+                return values.ToArray();
+            }
+
+
+            public string DisplayName { get; set; }
+            public string SystemName { get; set; }
+            public string[] MemoryOptions { get; set; }
+        }
 
         public class PlacementTemplates
         {

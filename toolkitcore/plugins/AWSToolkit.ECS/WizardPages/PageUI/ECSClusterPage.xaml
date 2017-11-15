@@ -27,6 +27,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
 
@@ -87,23 +89,49 @@
 
         <Label
                 Grid.Row="2"
-                Grid.Column="0"
-                Margin="10,2,4,2"
-                VerticalAlignment="Center"
-                Style="{DynamicResource awsLabelBaseStyle}">
-            Select IAM role for service:
+                Grid.ColumnSpan="2"
+                Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
+            Allocated Compute Capacity
         </Label>
-
-        <ComboBox
-                Name="_ctlServiceIAMRole"
-                Grid.Row="2"
-                Grid.Column="1"
-                Margin="16,2,4,2"
-                SelectionChanged="_ctlServiceIAMRole_SelectionChanged"
-                Style="{DynamicResource awsComboBoxStyle}"/>
 
         <Label
                 Grid.Row="3"
+                Grid.Column="0"
+                Margin="10,10,4,2"
+                VerticalAlignment="Center"
+                Style="{DynamicResource awsLabelBaseStyle}">
+            CPU Maximum (vCPU):
+        </Label>
+
+        <ComboBox
+                Name="_ctlTaskCPU"
+                Grid.Row="3"
+                Grid.Column="1"
+                Margin="16,10,4,2"
+                DisplayMemberPath="DisplayName"
+                SelectionChanged="_ctlTaskCPU_SelectionChanged"
+                Style="{DynamicResource awsComboBoxStyle}"/>
+
+        <Label
+                Grid.Row="4"
+                Grid.Column="0"
+                Margin="10,10,4,2"
+                VerticalAlignment="Center"
+                Style="{DynamicResource awsLabelBaseStyle}">
+            Memory Maximum (GB):
+        </Label>
+
+        <ComboBox
+                Name="_ctlTaskMemory"
+                Grid.Row="4"
+                Grid.Column="1"
+                Margin="16,10,4,2"
+                SelectionChanged="_ctlTaskMemory_SelectionChanged"
+                Style="{DynamicResource awsComboBoxStyle}"/>
+
+        
+        <Label
+                Grid.Row="5"
                 Grid.ColumnSpan="2"
                 Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
             Network Configuration
@@ -111,7 +139,7 @@
 
         
         <Label
-            Grid.Row="4"
+            Grid.Row="6"
             Grid.Column="0"
             Margin="10,10,4,2"
             VerticalAlignment="Center"
@@ -121,14 +149,14 @@
 
         <lambdacomponents:SubnetMultiSelectionControl
                     x:Name="_ctlSubnetsPicker"
-                    Grid.Row="4"
+                    Grid.Row="6"
                     Grid.Column="1"
                     Margin="16,10,4,2"
                     HorizontalAlignment="Stretch"
                     Cursor="Wait" />
 
         <Label
-            Grid.Row="5"
+            Grid.Row="7"
             Grid.Column="0"
             Margin="10,10,4,2"
             VerticalAlignment="Center"
@@ -136,13 +164,13 @@
             Security Groups:
         </Label>
 
-        <lambdacomponents:SecurityGroupMultiSelectionControl
-                    x:Name="_ctlSecurityGroupsPicker"
-                    Grid.Row="5"
-                    Grid.Column="1"
-                    Margin="16,10,4,2"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Center" />
+        <ComboBox
+                Name="_ctlSecurityGroup"
+                Grid.Row="7"
+                Grid.Column="1"
+                Margin="16,10,4,2"
+                SelectionChanged="_ctlSecurityGroup_SelectionChanged"
+                Style="{DynamicResource awsComboBoxStyle}"/>
 
     </Grid>
 </commonUi:BaseAWSUserControl>
