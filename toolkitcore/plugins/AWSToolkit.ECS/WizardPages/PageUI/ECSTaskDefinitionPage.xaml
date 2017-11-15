@@ -172,20 +172,6 @@
             </StackPanel>
 
 
-            <TextBlock
-                Grid.Row="3"
-                Grid.Column="0"
-                Grid.ColumnSpan="4"
-                Margin="16,2,4,0"
-                FontStyle="Italic"
-                Style="{DynamicResource awsInfoTextStyle}"
-                TextWrapping="Wrap">
-                The hard limit is the most
-                memory the app will be able to exceed. The soft limit is the minimum memory the app needs.
-                    
-                ECS recommends 300-500 as a starting point for web applications.
-            </TextBlock>
-
         </Grid>
 
         <Grid Grid.Row="1">
@@ -196,6 +182,9 @@
 
             <Grid Grid.Row="0" Margin="4,2,4,0">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -212,19 +201,8 @@
                     Permissions
                 </Label>
 
-                <TextBlock
-                Grid.Row="1"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                Margin="12,4,4,2"
-                FontStyle="Italic"
-                Style="{DynamicResource awsInfoTextStyle}"
-                TextWrapping="Wrap">
-                You can provide an IAM role for your application with appropriate permissions. For example, if your code needs to write to S3, the role you provide must have write permissions to S3.
-                </TextBlock>
-
                 <Label
-                Grid.Row="2"
+                Grid.Row="1"
                 Margin="8,4,4,4"
                 VerticalAlignment="Center"
                 Style="{DynamicResource awsLabelBaseStyle}"
@@ -233,11 +211,50 @@
                 </Label>
                 <commoncomponents:IAMRolePicker
                 Name="_ctlIAMRolePicker"
-                Grid.Row="2"
+                Grid.Row="1"
                 Grid.Column="1"
                 Margin="0,4,2,0"
                 ToolTip="Provide an IAM role for your code with appropriate permissions to the AWS services your application will access."
                 Visibility="Visible" />
+                <TextBlock
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Margin="30,4,4,2"
+                    FontStyle="Italic"
+                    Style="{DynamicResource awsInfoTextStyle}"
+                    TextWrapping="Wrap">
+                    Select an IAM role to provide AWS credentials to your application to access AWS Servces.
+                </TextBlock>
+
+                <Label
+                Grid.Row="3"
+                Margin="8,4,4,4"
+                VerticalAlignment="Center"
+                Style="{DynamicResource awsLabelBaseStyle}"
+                ToolTip="Provide an IAM role for your code with appropriate permissions. For example, if your code needs to write to S3, the role you provide must have write permissions to S3.">
+                    Task Execution Role:
+                </Label>
+                <ComboBox
+                Name="_ctlExecutionRole"
+                Grid.Row="3"
+                Grid.Column="1"
+                Margin="0,4,2,0"
+                SelectedItem="{Binding Container, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                SelectionChanged="_ctlExecutionRole_SelectionChanged"
+                Style="{DynamicResource awsComboBoxStyle}" />
+                <TextBlock
+                    Name="_ctlExecutionRoleDescription"
+                    Grid.Row="4"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Margin="30,4,4,2"
+                    FontStyle="Italic"
+                    Style="{DynamicResource awsInfoTextStyle}"
+                    TextWrapping="Wrap">
+                    Fargate requires a role to puill private images and publish logs on your behalf.
+                </TextBlock>
+
             </Grid>
         </Grid>
 
@@ -270,7 +287,7 @@
                 </Label>
 
                 <commonUi:ToolkitDataGridWrapper
-                    x:Name="_ctlPortMappings"
+                    x:Name="_ctlEC2PortMappings"
                     Grid.Row="1"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
@@ -310,7 +327,7 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <Button x:Name="_removePortMapping" Click="RemovePortMapping_Click">
+                                        <Button Click="RemovePortMapping_Click">
                                             <Image
                                                 Width="16"
                                                 Height="16"
@@ -326,6 +343,55 @@
 
                 </commonUi:ToolkitDataGridWrapper>
 
+                <commonUi:ToolkitDataGridWrapper
+                    x:Name="_ctlFargatePortMappings"
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Margin="6,10,4,0"
+                    HorizontalAlignment="Stretch"
+                    VerticalContentAlignment="Center"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    CanUserSortColumns="False"
+                    CellEditEnding="_ctlPortMappings_CellEditEnding"
+                    FrozenColumnCount="1"
+                    HeadersVisibility="All"
+                    HorizontalScrollBarVisibility="Hidden"
+                    ItemsSource="{Binding PortMappings}">
+
+                    <commonUi:ToolkitDataGridWrapper.Columns>
+
+                        <DataGridTextColumn
+                            Width="*"
+                            Binding="{Binding ContainerPort, Mode=TwoWay}"
+                            Header="Container Port">
+                            <DataGridTextColumn.EditingElementStyle>
+                                <Style TargetType="TextBox" />
+                            </DataGridTextColumn.EditingElementStyle>
+                        </DataGridTextColumn>
+
+                        <DataGridTemplateColumn Width="20" Header="">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <Button Click="RemovePortMapping_Click">
+                                            <Image
+                                                Width="16"
+                                                Height="16"
+                                                DataContext="{DynamicResource CommonIcons}"
+                                                Source="{Binding RemoveIcon}" />
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                    </commonUi:ToolkitDataGridWrapper.Columns>
+
+                </commonUi:ToolkitDataGridWrapper>
+                
                 <Button
                     Grid.Row="2"
                     Grid.Column="1"

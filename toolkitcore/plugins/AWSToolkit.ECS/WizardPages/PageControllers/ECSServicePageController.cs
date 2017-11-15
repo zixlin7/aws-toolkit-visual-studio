@@ -64,6 +64,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 this.Cluster = cluster;
                 this._pageUI.InitializeWithNewCluster();
             }
+            this._pageUI.PageActivating();
+
 
             TestForwardTransitionEnablement();
         }

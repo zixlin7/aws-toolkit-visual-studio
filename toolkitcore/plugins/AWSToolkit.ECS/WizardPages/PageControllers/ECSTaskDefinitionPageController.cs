@@ -68,6 +68,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 _pageUI.PropertyChanged += _pageUI_PropertyChanged;
             }
 
+            _pageUI.PageActivating();
+
             return _pageUI;
         }
 

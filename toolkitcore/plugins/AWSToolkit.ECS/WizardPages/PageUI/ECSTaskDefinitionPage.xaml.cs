@@ -69,6 +69,24 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             IntializeIAMPickerForAccountAsync(role);
         }
 
+        public void PageActivating()
+        {
+            if(this.PageController.HostingWizard.IsFargateLaunch())
+            {
+                this._ctlFargatePortMappings.Visibility = Visibility.Visible;
+                this._ctlEC2PortMappings.Visibility = Visibility.Collapsed;
+                this._ctlExecutionRole.Visibility = Visibility.Visible;
+                this._ctlExecutionRoleDescription.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                this._ctlFargatePortMappings.Visibility = Visibility.Collapsed;
+                this._ctlEC2PortMappings.Visibility = Visibility.Visible;
+                this._ctlExecutionRole.Visibility = Visibility.Collapsed;
+                this._ctlExecutionRoleDescription.Visibility = Visibility.Collapsed;
+            }
+        }
+
         private void LoadPreviousValues(IAWSWizard hostWizard)
         {
             if (hostWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit] is int?)
@@ -134,9 +152,17 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     policies = taskPolicies.Result;
                 }
 
+
                 if (roles != null)
                 {
                     this._ctlIAMRolePicker.Initialize(roles, policies, selectedRole);
+
+                    this._ctlExecutionRole.Items.Clear();
+                    this._ctlExecutionRole.Items.Add(ECSWizardUtils.CREATE_NEW_TEXT);
+                    foreach(var role in roles)
+                    {
+                        this._ctlExecutionRole.Items.Add(role.RoleName);
+                    }
                 }
                 else
                 {
@@ -480,7 +506,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         private void RemovePortMapping_Click(object sender, RoutedEventArgs e)
         {
-            PortMappingItem cellData = _ctlPortMappings.CurrentCell.Item as PortMappingItem;
+            var grid = this.PageController.HostingWizard.IsFargateLaunch() ? this._ctlFargatePortMappings : this._ctlEC2PortMappings;
+            PortMappingItem cellData = grid.CurrentCell.Item as PortMappingItem;
             for (int i = PortMappings.Count - 1; i >= 0; i--)
             {
                 if (PortMappings[i].HostPort == cellData.HostPort)
@@ -517,8 +544,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 return;
             }
 
-
-            PortMappingItem cellData = _ctlPortMappings.CurrentCell.Item as PortMappingItem;
+            var grid = this.PageController.HostingWizard.IsFargateLaunch() ? this._ctlFargatePortMappings : this._ctlEC2PortMappings;
+            PortMappingItem cellData = grid.CurrentCell.Item as PortMappingItem;
             if (cellData != null)
             {
                 foreach (PortMappingItem ev in PortMappings)
@@ -588,6 +615,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
 
             NotifyPropertyChanged("EnvironmentVariable3s");
+        }
+
+        private void _ctlExecutionRole_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 

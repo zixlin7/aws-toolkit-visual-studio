@@ -41,7 +41,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             PageController = pageController;
 
             this._ctlPlacementTemplate.ItemsSource = ECSWizardUtils.PlacementTemplates.Options;
-            this._ctlPlacementTemplate.SelectedIndex = 0;
         }
 
         public bool AllRequiredFieldsAreSet
@@ -66,6 +65,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         public void InitializeWithNewCluster()
         {
             UpdateExistingServices();
+        }
+
+        public void PageActivating()
+        {
+            UpdatePlacementEditableState();
         }
 
         public bool CreateNewService
@@ -103,7 +107,24 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
                 if (!this._ctlServicePicker.Items.Contains(PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string))
                     this._ctlNewServiceName.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
+            }
+            else
+            {
+                this._ctlNewServiceName.Visibility = Visibility.Collapsed;
+                this._ctlNewServiceName.IsEnabled = false;
 
+                
+                FetchDetailsForExistingService();
+            }
+
+            UpdatePlacementEditableState();
+            NotifyPropertyChanged("Service");
+        }
+
+        private void UpdatePlacementEditableState()
+        {
+            if(!this.PageController.HostingWizard.IsFargateLaunch() && this.CreateNewService)
+            {
                 this._ctlPlacementTemplate.IsEnabled = true;
                 this._ctlPlacementTemplate.Visibility = Visibility.Visible;
                 this._ctlPlacementDescription.Visibility = Visibility.Visible;
@@ -111,17 +132,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
             else
             {
-                this._ctlNewServiceName.Visibility = Visibility.Collapsed;
-                this._ctlNewServiceName.IsEnabled = false;
                 this._ctlPlacementTemplate.IsEnabled = false;
                 this._ctlPlacementTemplate.Visibility = Visibility.Collapsed;
                 this._ctlPlacementDescription.Visibility = Visibility.Collapsed;
                 this._ctlPlacementLabel.Visibility = Visibility.Collapsed;
-
-                FetchDetailsForExistingService();
             }
-
-            NotifyPropertyChanged("Service");
         }
 
         string _newServiceName;
@@ -188,6 +203,10 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             {
                 var item = e.AddedItems[0] as ECSWizardUtils.PlacementTemplates;
                 this._ctlPlacementDescription.Text = item.Description;
+            }
+            else
+            {
+                this._ctlPlacementDescription.Text = null;
             }
         }
 

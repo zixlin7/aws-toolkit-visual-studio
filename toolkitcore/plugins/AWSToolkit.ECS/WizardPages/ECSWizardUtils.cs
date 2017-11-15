@@ -87,6 +87,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages
             }
         }
 
+        internal static bool IsFargateLaunch(this IAWSWizard hostWizard)
+        {
+            var launchType = hostWizard[PublishContainerToAWSWizardProperties.LaunchType] as string;
+            return string.Equals(launchType, Amazon.ECS.LaunchType.FARGATE, StringComparison.OrdinalIgnoreCase);
+        }
+
         public class TaskCPUItemValue
         {
             public static readonly TaskCPUItemValue VCPU_0_25 = new TaskCPUItemValue

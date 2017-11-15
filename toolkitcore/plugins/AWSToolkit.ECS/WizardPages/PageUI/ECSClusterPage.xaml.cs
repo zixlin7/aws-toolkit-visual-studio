@@ -99,8 +99,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 if (string.IsNullOrWhiteSpace(this.Cluster))
                     return false;
 
-                if (_ctlSubnetsPicker.SubnetsSpanVPCs)
-                    return false;
+                //if (_ctlSubnetsPicker.SubnetsSpanVPCs)
+                //    return false;
 
                 return true;
             }
@@ -117,6 +117,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             {
                 var account = PageController.HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
                 var region = PageController.HostingWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+
+                new QueryVpcsAndSubnetsWorker(ECSWizardUtils.CreateEC2Client(PageController.HostingWizard), LOGGER, new QueryVpcsAndSubnetsWorker.DataAvailableCallback(OnVpcSubnetsAvailable));
 
                 Task task1 = Task.Run(() =>
                 {
@@ -168,8 +170,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string Cluster
         {
-            get { return this._ctlClusterPicker.Text; }
-            set { this._ctlClusterPicker.Text = value; }
+            get { return this._ctlClusterPicker.SelectedValue as string; }
+            set { this._ctlClusterPicker.SelectedValue = value; }
         }
 
         public bool CreateNewCluster
@@ -235,7 +237,14 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string TaskCPU
         {
-            get { return this._ctlTaskCPU.Text; }
+            get
+            {
+                var item = this._ctlTaskCPU.SelectedValue as TaskCPUItemValue;
+                if (item == null)
+                    return null;
+
+                return item.SystemName;
+            }
         }
 
         private void _ctlTaskCPU_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -260,7 +269,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string TaskMemory
         {
-            get { return this._ctlTaskMemory.Text; }
+            get { return this._ctlTaskMemory.SelectedValue as string; }
         }
 
         private void _ctlTaskMemory_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -303,14 +312,18 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public void SetAvailableSecurityGroups(ICollection<SecurityGroup> existingGroups, string autoSelectGroup)
         {
-            //_ctlSecurityGroupsPicker.SetAvailableSecurityGroups(existingGroups, autoSelectGroup, null);
+            this._ctlSecurityGroup.Items.Clear();
+            foreach(var group in existingGroups)
+            {
+                this._ctlSecurityGroup.Items.Add(string.Format("{0} ({1})", group.GroupId, group.GroupName));
+            }
         }
 
         void OnVpcSubnetsAvailable(ICollection<Vpc> vpcs, ICollection<Subnet> subnets)
         {
             var defaultSelection = _ctlSubnetsPicker.SetAvailableVpcSubnets(vpcs, subnets, null);
-            //if (defaultSelection == null)
-            //    _ctlSecurityGroupsPicker.SetAvailableSecurityGroups(null, null, null);
+            if (defaultSelection == null)
+                this._ctlSecurityGroup.Items.Clear();
         }
 
         public ObservableCollection<VpcAndSubnetWrapper> AvailableVpcSubnets { get; private set; }
@@ -322,5 +335,19 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 return _ctlSubnetsPicker.SelectedSubnets;
             }
         }
+
+        public string SecurityGroup
+        {
+            get
+            {
+                var groupLabel = this._ctlSecurityGroup.SelectedValue as string;
+                int pos = groupLabel.IndexOf('(');
+                if (pos == -1)
+                    return groupLabel;
+
+                return groupLabel.Substring(0, pos).Trim();
+            }
+        }
+
     }
 }

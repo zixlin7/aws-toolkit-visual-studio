@@ -155,13 +155,17 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 HostingWizard[PublishContainerToAWSWizardProperties.LaunchSubnets] = subnetIds.ToArray();
 
                 HostingWizard[PublishContainerToAWSWizardProperties.VpcId] = vpcId;
+                HostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] = new string[] { this._pageUI.SecurityGroup };
 
-                //var groupIds = new List<string>();
-                //foreach(var group in this._pageUI.SelectedSecurityGroups)
-                //{
-                //    groupIds.Add(group.GroupId);
-                //}
-                //HostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] = groupIds.ToArray();
+                HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskCPU] = this._pageUI.TaskCPU;
+                HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskMemory] = this._pageUI.TaskMemory;
+            }
+            else
+            {
+                HostingWizard[PublishContainerToAWSWizardProperties.VpcId] = null;
+                HostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] = null;
+                HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskCPU] = null;
+                HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskMemory] = null;
             }
 
             return true;

@@ -63,6 +63,7 @@
                 Grid.Row="0"
                 Grid.Column="2"
                 Margin="4,10,4,2"
+                Visibility="Collapsed"
                 Style="{DynamicResource awsTextBoxStyle}"
                 Text="{Binding NewClusterName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 />
