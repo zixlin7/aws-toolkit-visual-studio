@@ -105,6 +105,7 @@
                 />
 
             <Label
+                Name="_ctlPlacementLabel"
                 Grid.Row="2"
                 Grid.Column="0"
                 Margin="10,2,4,2"

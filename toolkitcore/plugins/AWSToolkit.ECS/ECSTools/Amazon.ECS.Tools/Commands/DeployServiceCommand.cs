@@ -39,6 +39,9 @@ namespace Amazon.ECS.Tools.Commands
             ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_CPU,
             ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_MEMORY,
 
+            ECSDefinedCommandOptions.ARGUMENT_LAUNCH_TYPE,
+            ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SUBNETS,
+            ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SECURITYGROUPS,
 
             ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER,
             ECSDefinedCommandOptions.ARGUMENT_ECS_SERVICE,

@@ -49,6 +49,24 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         }
 
+        public void PageActivating()
+        {
+            if (!this.PageController.HostingWizard.IsFargateLaunch())
+            {
+                this._ctlPlacementTemplate.IsEnabled = true;
+                this._ctlPlacementTemplate.Visibility = Visibility.Visible;
+                this._ctlPlacementDescription.Visibility = Visibility.Visible;
+                this._ctlPlacementLabel.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                this._ctlPlacementTemplate.IsEnabled = false;
+                this._ctlPlacementTemplate.Visibility = Visibility.Collapsed;
+                this._ctlPlacementDescription.Visibility = Visibility.Collapsed;
+                this._ctlPlacementLabel.Visibility = Visibility.Collapsed;
+            }
+        }
+
         public bool AllRequiredFieldsAreSet
         {
             get

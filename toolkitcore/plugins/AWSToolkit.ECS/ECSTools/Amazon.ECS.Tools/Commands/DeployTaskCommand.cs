@@ -30,6 +30,13 @@ namespace Amazon.ECS.Tools.Commands
             ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING,
             ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE,
             ECSDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES,
+            ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_EXECUTION_ROLE,
+            ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_CPU,
+            ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_MEMORY,
+
+            ECSDefinedCommandOptions.ARGUMENT_LAUNCH_TYPE,
+            ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SUBNETS,
+            ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SECURITYGROUPS,
 
             ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_COUNT,
             ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_GROUP,
@@ -177,15 +184,35 @@ namespace Amazon.ECS.Tools.Commands
                     taskCount = 1;
 
                 var taskGroup = this.GetStringValueOrDefault(this.DeployTaskProperties.TaskGroup, ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_GROUP, false);
+                var launchType = this.GetStringValueOrDefault(this.ClusterProperties.LaunchType, ECSDefinedCommandOptions.ARGUMENT_LAUNCH_TYPE, true);
 
                 var runTaskRequest = new Amazon.ECS.Model.RunTaskRequest
                 {
                     Cluster = ecsCluster,
                     TaskDefinition = taskDefinitionArn,
                     Count = taskCount.Value,
-                    PlacementConstraints = ECSUtilities.ConvertPlacementConstraint(this.GetStringValuesOrDefault(this.DeployTaskProperties.PlacementConstraints, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS, false)),
-                    PlacementStrategy = ECSUtilities.ConvertPlacementStrategy(this.GetStringValuesOrDefault(this.DeployTaskProperties.PlacementStrategy, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY, false))
+                    LaunchType = launchType
                 };
+
+                Amazon.ECS.Model.NetworkConfiguration networkConfiguration = null;
+                if (IsFargateLaunch(this.ClusterProperties.LaunchType))
+                {
+                    var subnets = this.GetStringValuesOrDefault(this.ClusterProperties.SubnetIds, ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SUBNETS, false);
+                    var securityGroups = this.GetStringValuesOrDefault(this.ClusterProperties.SecurityGroupIds, ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SECURITYGROUPS, false);
+
+                    networkConfiguration = new Amazon.ECS.Model.NetworkConfiguration();
+                    networkConfiguration.AwsvpcConfiguration = new Amazon.ECS.Model.AwsVpcConfiguration
+                    {
+                        SecurityGroups = new List<string>(securityGroups),
+                        Subnets = new List<string>(subnets)
+                    };
+                    runTaskRequest.NetworkConfiguration = networkConfiguration;
+                }
+                else
+                {
+                    runTaskRequest.PlacementConstraints = ECSUtilities.ConvertPlacementConstraint(this.GetStringValuesOrDefault(this.DeployTaskProperties.PlacementConstraints, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS, false));
+                    runTaskRequest.PlacementStrategy = ECSUtilities.ConvertPlacementStrategy(this.GetStringValuesOrDefault(this.DeployTaskProperties.PlacementStrategy, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY, false));
+                }
 
                 if (!string.IsNullOrEmpty(taskGroup))
                     runTaskRequest.Group = taskGroup;
