@@ -1,8 +1,8 @@
-﻿using Amazon.AWSToolkit.CommonUI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,20 +12,19 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.ECS.View
 {
     /// <summary>
-    /// Interaction logic for DeleteRepositoryControl.xaml
+    /// Interaction logic for DeleteClusterControl.xaml
     /// </summary>
-    public partial class DeleteRepositoryControl : BaseAWSControl
+    public partial class DeleteClusterControl : BaseAWSControl
     {
         /// <summary>
-        /// Name of the repository to be deleted.
+        /// Name of the cluster to be deleted.
         /// </summary>
-        public string RepositoryName { get; private set; }
-
-        public bool ForceDelete { get; set; }
+        public string ClusterName { get; private set; }
 
         /// <summary>
         /// Title for the window in which the control is displayed.
@@ -34,7 +33,7 @@ namespace Amazon.AWSToolkit.ECS.View
         {
             get
             {
-                return "Delete Repository";
+                return "Delete Cluster";
             }
         }
 
@@ -42,11 +41,11 @@ namespace Amazon.AWSToolkit.ECS.View
         /// Default constructor.
         /// </summary>
         /// <param name="repositoryName">Name of the repository to be deleted.</param>
-        public DeleteRepositoryControl(string repositoryName)
+        public DeleteClusterControl(string clusterName)
         {
-            this.RepositoryName = repositoryName;      
-            this.DataContext = this;                  
-            InitializeComponent();   
+            this.ClusterName = clusterName;
+            this.DataContext = this;
+            InitializeComponent();
         }
     }
 }

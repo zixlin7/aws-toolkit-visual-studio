@@ -9,19 +9,19 @@ namespace Amazon.AWSToolkit.ECS.Nodes
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ClusterViewModel));
 
-        readonly RootViewModel _rootViewModel;
+        readonly ClustersRootViewModel _rootViewModel;
         readonly IAmazonECS _ecsClient;
         readonly ClusterWrapper _cluster;
 
-        public ClusterViewModel(ClusterViewMetaNode metaNode, RootViewModel viewModel, ClusterWrapper cluster)
-            : base(metaNode, viewModel, cluster.Name)
+        public ClusterViewModel(ClusterViewMetaNode metaNode, ClustersRootViewModel rootViewModel, ClusterWrapper cluster)
+            : base(metaNode, rootViewModel.FindAncestor<RootViewModel>(), cluster.Name)
         {
-            this._rootViewModel = viewModel;
+            this._rootViewModel = rootViewModel;
             this._cluster = cluster;
-            this._ecsClient = viewModel.ECSClient;
+            this._ecsClient = rootViewModel.ECSClient;
         }
 
-        public RootViewModel RootViewModel
+        public ClustersRootViewModel RootViewModel
         {
             get { return this._rootViewModel; }
         }

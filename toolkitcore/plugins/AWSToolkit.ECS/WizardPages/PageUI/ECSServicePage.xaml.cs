@@ -47,7 +47,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             get
             {
-                if (this.CreateNewService && string.IsNullOrWhiteSpace(this._ctlNewServiceName.Text))
+                if (this.CreateNewService && string.IsNullOrWhiteSpace(this.NewServiceName))
                     return false;
                 if (!this.DesiredCount.HasValue || this.DesiredCount.Value <= 0)
                     return false;
@@ -100,7 +100,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 this.MaximumPercent = 200;
 
                 if (!this._ctlServicePicker.Items.Contains(PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string))
-                    this._ctlNewServiceName.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
+                    this.NewServiceName = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
             }
             else
             {
@@ -244,7 +244,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 if (this.PageController.Cluster == null)
                 {
                     this._ctlServicePicker.SelectedIndex = 0;
-                    this._ctlServicePicker.IsEnabled = false;
                     return;
                 }
 

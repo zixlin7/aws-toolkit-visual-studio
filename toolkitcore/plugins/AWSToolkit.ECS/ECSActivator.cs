@@ -53,6 +53,7 @@ namespace Amazon.AWSToolkit.ECS
             clustersRootNode.OnLaunchCluster = new CommandInstantiator<LaunchClusterController>().Execute;
             var clusterNode = clustersRootNode.FindChild<ClusterViewMetaNode>();
             clusterNode.OnView = new CommandInstantiator<ViewClusterController>().Execute;
+            clusterNode.OnDelete = new CommandInstantiator<DeleteClusterController>().Execute;
 
             // taskdef hierarchy
             var taskdefsRootNode = rootNode.FindChild<TaskDefinitionsRootViewMetaNode>();

@@ -112,6 +112,7 @@
     <Compile Include="CloudWatchEventHelper.cs" />
     <Compile Include="Controller\CreateRepositoryController.cs" />
     <Compile Include="Controller\CreateTaskDefinitionController.cs" />
+    <Compile Include="Controller\DeleteClusterController.cs" />
     <Compile Include="Controller\DeleteRepositoryController.cs" />
     <Compile Include="Controller\DeleteServiceConfirmationController.cs" />
     <Compile Include="Controller\FeatureController.cs" />
@@ -204,6 +205,9 @@
     </Compile>
     <Compile Include="View\CreateRepositoryControl.xaml.cs">
       <DependentUpon>CreateRepositoryControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\DeleteClusterControl.xaml.cs">
+      <DependentUpon>DeleteClusterControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\DeleteRepositoryControl.xaml.cs">
       <DependentUpon>DeleteRepositoryControl.xaml</DependentUpon>
@@ -311,6 +315,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="View\DeleteClusterControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\DeleteRepositoryControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -384,6 +392,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ECSTools\Amazon.ECS.Tools\Properties\launchSettings.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\delete-cluster.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

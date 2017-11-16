@@ -49,7 +49,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
                 var listResponse = this.ECSClient.ListClusters(listRequest);
                 items.AddRange(listResponse.ClusterArns.Select(arn =>
                     new ClusterViewModel(this.MetaNode.FindChild<ClusterViewMetaNode>(),
-                                            this._rootViewModel,
+                                            this,
                                             new ClusterWrapper(arn))).Cast<IViewModel>().ToList());
 
                 listRequest.NextToken = listResponse.NextToken;
@@ -65,7 +65,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 
         public void AddCluster(ClusterWrapper instance)
         {
-            var child = new ClusterViewModel(this.MetaNode.FindChild<ClusterViewMetaNode>(), this._rootViewModel, instance);
+            var child = new ClusterViewModel(this.MetaNode.FindChild<ClusterViewMetaNode>(), this, instance);
             base.AddChild(child);
         }
     }

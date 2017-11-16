@@ -6,6 +6,12 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 {
     public class ClusterViewMetaNode : FeatureViewMetaNode
     {
+        public ActionHandlerWrapper.ActionHandler OnDelete
+        {
+            get;
+            set;
+        }
+
         public override IList<ActionHandlerWrapper> Actions
         {
             get
@@ -16,7 +22,14 @@ namespace Amazon.AWSToolkit.ECS.Nodes
                                              null, 
                                              true,
                                              this.GetType().Assembly, 
-                                             "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.clusters.png")
+                                             "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.clusters.png"),
+                    null,
+                    new ActionHandlerWrapper("Delete",
+                        OnDelete,
+                        null,
+                        false,
+                        this.GetType().Assembly,
+                        "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.delete-cluster.png")
                     );
             }
         }
