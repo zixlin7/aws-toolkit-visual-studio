@@ -94,6 +94,16 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             if (hostWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit] is int?)
                 this.MemorySoftLimit = (int)hostWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit];
 
+            if(!this.MemoryHardLimit.HasValue && !this.MemorySoftLimit.HasValue && hostWizard[PublishContainerToAWSWizardProperties.AllocatedTaskMemory] is string)
+            {
+                var taskMemoryStr = hostWizard[PublishContainerToAWSWizardProperties.AllocatedTaskMemory] as string;
+                int taskMemory;
+                if (int.TryParse(taskMemoryStr, out taskMemory))
+                {
+                    this.MemoryHardLimit = taskMemory;
+                }
+            }
+
             var previousMappings = hostWizard[PublishContainerToAWSWizardProperties.PortMappings] as IList<PortMappingItem>;
             if (previousMappings != null)
             {
@@ -342,9 +352,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(this.TaskDefinition))
+                if (!this.CreateTaskDefinition && string.IsNullOrWhiteSpace(this.TaskDefinition))
                     return false;
-                if (string.IsNullOrWhiteSpace(this.Container))
+                if (this.CreateTaskDefinition && string.IsNullOrWhiteSpace(this.NewTaskDefinitionName))
+                    return false;
+                if (!this.CreateContainer && string.IsNullOrWhiteSpace(this.Container))
+                    return false;
+                if (this.CreateContainer && string.IsNullOrWhiteSpace(this.NewContainerName))
+                    return false;
+                if (this.PageController.HostingWizard.IsFargateLaunch() && string.IsNullOrEmpty(this.TaskExecutionRole) && !this.CreateNewTaskExecutionRole)
                     return false;
 
                 if (!this.MemoryHardLimit.HasValue && !this.MemorySoftLimit.HasValue)
@@ -356,8 +372,14 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string TaskDefinition
         {
-            get { return this._ctlTaskDefinitionPicker.Text; }
-            set { this._ctlTaskDefinitionPicker.Text = value; }
+            get
+            {
+                if (this.CreateTaskDefinition)
+                    return null;
+
+                return this._ctlTaskDefinitionPicker.SelectedValue as string;
+            }
+            set { this._ctlTaskDefinitionPicker.SelectedValue = value; }
         }
 
         public bool CreateTaskDefinition
@@ -405,8 +427,14 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string Container
         {
-            get { return this._ctlContainerPicker.Text; }
-            set { this._ctlContainerPicker.Text = value; }
+            get
+            {
+                if (this.CreateContainer)
+                    return null;
+
+                return this._ctlContainerPicker.SelectedValue as string;
+            }
+            set { this._ctlContainerPicker.SelectedValue = value; }
         }
 
         public bool CreateContainer
