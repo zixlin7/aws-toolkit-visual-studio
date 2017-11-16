@@ -225,7 +225,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             if(isFargateLaunch)
             {
-                this._ctlTaskCPU.ItemsSource = TaskCPUItemValue.AllValues;
+                this._ctlTaskCPU.ItemsSource = TaskCPUAllowedValues;
                 this._ctlTaskCPU.SelectedIndex = 0;
             }
             else
@@ -269,7 +269,14 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string TaskMemory
         {
-            get { return this._ctlTaskMemory.SelectedValue as string; }
+            get
+            {
+                var item = this._ctlTaskMemory.SelectedValue as MemoryOption;
+                if (item == null)
+                    return null;
+
+                return item.SystemName;
+            }
         }
 
         private void _ctlTaskMemory_SelectionChanged(object sender, SelectionChangedEventArgs e)

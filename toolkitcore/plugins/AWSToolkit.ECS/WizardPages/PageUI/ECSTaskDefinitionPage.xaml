@@ -240,7 +240,6 @@
                 Grid.Row="3"
                 Grid.Column="1"
                 Margin="0,4,2,0"
-                SelectedItem="{Binding Container, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 SelectionChanged="_ctlExecutionRole_SelectionChanged"
                 Style="{DynamicResource awsComboBoxStyle}" />
                 <TextBlock

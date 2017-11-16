@@ -127,6 +127,7 @@
                 Grid.Row="4"
                 Grid.Column="1"
                 Margin="16,10,4,2"
+                DisplayMemberPath="DisplayName"
                 SelectionChanged="_ctlTaskMemory_SelectionChanged"
                 Style="{DynamicResource awsComboBoxStyle}"/>
 
