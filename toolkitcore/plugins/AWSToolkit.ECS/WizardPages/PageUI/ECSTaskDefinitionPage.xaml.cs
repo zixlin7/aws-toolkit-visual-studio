@@ -69,7 +69,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             IntializeIAMPickerForAccountAsync(role);
         }
 
-        public void PageActivating()
+        public void PageActivated()
         {
             if(this.PageController.HostingWizard.IsFargateLaunch())
             {

@@ -58,13 +58,19 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
         {
-            var cluster = HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] as string;
-            if(!string.Equals(cluster, this.Cluster))
+            string clusterName = null;
+            if(!(HostingWizard[PublishContainerToAWSWizardProperties.CreateNewCluster] is bool) || 
+                !(bool)HostingWizard[PublishContainerToAWSWizardProperties.CreateNewCluster])
             {
-                this.Cluster = cluster;
+                clusterName = HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] as string;
+            }
+
+            if (!string.Equals(clusterName, this.Cluster))
+            {
+                this.Cluster = clusterName;
                 this._pageUI.InitializeWithNewCluster();
             }
-            this._pageUI.PageActivating();
+            this._pageUI.PageActivated();
 
 
             TestForwardTransitionEnablement();

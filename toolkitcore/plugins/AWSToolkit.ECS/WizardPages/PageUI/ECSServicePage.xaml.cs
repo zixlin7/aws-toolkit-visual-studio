@@ -67,8 +67,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             UpdateExistingServices();
         }
 
-        public void PageActivating()
+        public void PageActivated()
         {
+            if (this._ctlServicePicker.Items.Count == 0)
+                UpdateExistingServices();
+
             UpdatePlacementEditableState();
         }
 
@@ -92,18 +95,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 this._ctlNewServiceName.IsEnabled = true;
                 this._ctlNewServiceName.Focus();
 
-                if(this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.ExistingCluster] != null)
-                {
-                    var cluster = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.ExistingCluster] as Cluster;
-                    this._ctlDesiredCount.Text = (cluster.RegisteredContainerInstancesCount == 0 ? 1 : cluster.RegisteredContainerInstancesCount).ToString();
-                }
-                else
-                {
-                    this._ctlDesiredCount.Text = "1";
-                }
-
-                this._ctlMinimumHealthy.Text = "50";
-                this._ctlMaximumPercent.Text = "200";
+                this.DesiredCount = 1;
+                this.MinimumHealthy = 50;
+                this.MaximumPercent = 200;
 
                 if (!this._ctlServicePicker.Items.Contains(PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string))
                     this._ctlNewServiceName.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
@@ -248,7 +242,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             try
             {
                 if (this.PageController.Cluster == null)
+                {
+                    this._ctlServicePicker.SelectedIndex = 0;
+                    this._ctlServicePicker.IsEnabled = false;
                     return;
+                }
+
+                this._ctlServicePicker.IsEnabled = true;
 
                 Task task1 = Task.Run(() =>
                 {

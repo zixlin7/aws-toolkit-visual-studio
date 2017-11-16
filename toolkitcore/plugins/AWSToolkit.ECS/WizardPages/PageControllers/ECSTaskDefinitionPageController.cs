@@ -57,6 +57,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
         {
+            _pageUI.PageActivated();
             TestForwardTransitionEnablement();
         }
 
@@ -67,8 +68,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 _pageUI = new ECSTaskDefinitionPage(this);
                 _pageUI.PropertyChanged += _pageUI_PropertyChanged;
             }
-
-            _pageUI.PageActivating();
 
             return _pageUI;
         }

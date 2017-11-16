@@ -49,7 +49,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         }
 
-        public void PageActivating()
+        public void PageActivated()
         {
             if (!this.PageController.HostingWizard.IsFargateLaunch())
             {
