@@ -529,6 +529,10 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         private void AddPortMapping_Click(object sender, RoutedEventArgs e)
         {
             PortMappings.Add(new PortMappingItem());
+
+            var grid = this.PageController.HostingWizard.IsFargateLaunch() ? this._ctlFargatePortMappings : this._ctlEC2PortMappings;
+            DataGridHelper.PutCellInEditMode(grid, this.PortMappings.Count - 1, 0);
+
             // todo: usability tweak here - put focus into the new key cell...
         }
 
@@ -595,18 +599,18 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         private void AddEnvironmentVariable_Click(object sender, RoutedEventArgs e)
         {
             EnvironmentVariables.Add(new EnvironmentVariableItem());
-            // todo: usability tweak here - put focus into the new key cell...
+            DataGridHelper.PutCellInEditMode(this._ctlEnvironmentVariables, this.EnvironmentVariables.Count - 1, 0);
         }
 
         private void RemoveEnvironmentVariable_Click(object sender, RoutedEventArgs e)
         {
             EnvironmentVariableItem cellData = _ctlEnvironmentVariables.CurrentCell.Item as EnvironmentVariableItem;
-            for (int i = PortMappings.Count - 1; i >= 0; i--)
+            for (int i = EnvironmentVariables.Count - 1; i >= 0; i--)
             {
                 if (EnvironmentVariables[i].Variable == cellData.Variable)
                 {
-                    PortMappings.RemoveAt(i);
-                    NotifyPropertyChanged("PortMappings");
+                    EnvironmentVariables.RemoveAt(i);
+                    NotifyPropertyChanged("EnvironmentVariables");
                     return;
                 }
             }
