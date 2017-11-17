@@ -59,7 +59,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                             int b;
                             if (int.TryParse(value, out b))
                             {
-                                if (commandOption == ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT || commandOption == ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT)
+                                if (commandOption == ECSDefinedCommandOptions.ARGUMENT_CONTAINER_MEMORY_HARD_LIMIT || commandOption == ECSDefinedCommandOptions.ARGUMENT_CONTAINER_MEMORY_SOFT_LIMIT)
                                 {
                                     seedValues[seedKey] = new int?(b);
                                 }
@@ -93,18 +93,18 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 }
 
                 copyValues(CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION, PublishContainerToAWSWizardProperties.Configuration);
-                copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, PublishContainerToAWSWizardProperties.TaskDefinition);
-                copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER, PublishContainerToAWSWizardProperties.Container);
-                copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT, PublishContainerToAWSWizardProperties.MemoryHardLimit);
-                copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT, PublishContainerToAWSWizardProperties.MemorySoftLimit);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_TD_NAME, PublishContainerToAWSWizardProperties.TaskDefinition);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_CONTAINER_NAME, PublishContainerToAWSWizardProperties.Container);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_CONTAINER_MEMORY_HARD_LIMIT, PublishContainerToAWSWizardProperties.MemoryHardLimit);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_CONTAINER_MEMORY_SOFT_LIMIT, PublishContainerToAWSWizardProperties.MemorySoftLimit);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER, PublishContainerToAWSWizardProperties.ClusterName);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_SERVICE, PublishContainerToAWSWizardProperties.Service);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, PublishContainerToAWSWizardProperties.DesiredCount);
 
-                if (defaults.GetValueAsString(ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING) != null)
+                if (defaults.GetValueAsString(ECSDefinedCommandOptions.ARGUMENT_CONTAINER_PORT_MAPPING) != null)
                 {
                     var mappings = new List<WizardPages.PageUI.PortMappingItem>();
-                    var portMappingStr = defaults.GetValueAsString(ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING);
+                    var portMappingStr = defaults.GetValueAsString(ECSDefinedCommandOptions.ARGUMENT_CONTAINER_PORT_MAPPING);
                     foreach (var token in portMappingStr.Split(';'))
                     {
                         var ports = token.Split(':');

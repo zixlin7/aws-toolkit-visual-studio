@@ -19,33 +19,25 @@ namespace Amazon.ECS.Tools.Commands
             CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
             CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION,
             CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK,
+
             ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG,
 
             ECSDefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH,
-
-            ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION,
-            ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER,
-            ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT,
-            ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT,
-            ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING,
-            ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE,
-            ECSDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES,
-            ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_EXECUTION_ROLE,
-            ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_CPU,
-            ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_MEMORY,
 
             ECSDefinedCommandOptions.ARGUMENT_LAUNCH_TYPE,
             ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SUBNETS,
             ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SECURITYGROUPS,
 
+
             ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_COUNT,
             ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_GROUP,
-            ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS,
-            ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY,
+            ECSDefinedCommandOptions.ARGUMENT_PLACEMENT_CONSTRAINTS,
+            ECSDefinedCommandOptions.ARGUMENT_PLACEMENT_STRATEGY,
 
 
             CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE,
-        });
+        },
+        TaskDefinitionProperties.CommandOptions);
 
         PushDockerImageProperties _pushProperties;
         public PushDockerImageProperties PushDockerImageProperties
@@ -137,8 +129,8 @@ namespace Amazon.ECS.Tools.Commands
             try
             {
                 var skipPush = this.GetBoolValueOrDefault(this.DeployTaskProperties.SkipImagePush, ECSDefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH, false).GetValueOrDefault();
-                var ecsContainer = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSContainer, ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER, true);
-                var ecsTaskDefinition = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSTaskDefinition, ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, true);
+                var ecsContainer = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ContainerName, ECSDefinedCommandOptions.ARGUMENT_CONTAINER_NAME, true);
+                var ecsTaskDefinition = this.GetStringValueOrDefault(this.TaskDefinitionProperties.TaskDefinitionName, ECSDefinedCommandOptions.ARGUMENT_TD_NAME, true);
 
 
                 string dockerImageTag = this.GetStringValueOrDefault(this.PushDockerImageProperties.DockerImageTag, ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG, true);
@@ -210,8 +202,8 @@ namespace Amazon.ECS.Tools.Commands
                 }
                 else
                 {
-                    runTaskRequest.PlacementConstraints = ECSUtilities.ConvertPlacementConstraint(this.GetStringValuesOrDefault(this.DeployTaskProperties.PlacementConstraints, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_CONSTRAINTS, false));
-                    runTaskRequest.PlacementStrategy = ECSUtilities.ConvertPlacementStrategy(this.GetStringValuesOrDefault(this.DeployTaskProperties.PlacementStrategy, ECSDefinedCommandOptions.ARGUMENT_ECS_PLACEMENT_STRATEGY, false));
+                    runTaskRequest.PlacementConstraints = ECSUtilities.ConvertPlacementConstraint(this.GetStringValuesOrDefault(this.DeployTaskProperties.PlacementConstraints, ECSDefinedCommandOptions.ARGUMENT_PLACEMENT_CONSTRAINTS, false));
+                    runTaskRequest.PlacementStrategy = ECSUtilities.ConvertPlacementStrategy(this.GetStringValuesOrDefault(this.DeployTaskProperties.PlacementStrategy, ECSDefinedCommandOptions.ARGUMENT_PLACEMENT_STRATEGY, false));
                 }
 
                 if (!string.IsNullOrEmpty(taskGroup))

@@ -43,6 +43,7 @@ namespace Amazon.Common.DotNetCli.Tools.Options
                             switch (option.ValueType)
                             {
                                 case CommandOption.CommandOptionValueType.StringValue:
+                                case CommandOption.CommandOptionValueType.JsonValue:
                                     value.StringValue = arguments?[i + 1];
                                     break;
                                 case CommandOption.CommandOptionValueType.CommaDelimitedList:

@@ -30,14 +30,6 @@ namespace Amazon.ECS.Tools.Commands
 
             ECSDefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH,
 
-            ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION,
-            ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER,
-            ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_HARD_LIMIT,
-            ECSDefinedCommandOptions.ARGUMENT_ECS_MEMORY_SOFT_LIMIT,
-            ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER_PORT_MAPPING,
-            ECSDefinedCommandOptions.ARGUMENT_TASK_DEFINITION_ROLE,
-            ECSDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES,
-
             ECSDefinedCommandOptions.ARGUMENT_SCHEDULED_RULE_NAME,
             ECSDefinedCommandOptions.ARGUMENT_SCHEDULED_RULE_TARGET,
             ECSDefinedCommandOptions.ARGUMENT_SCHEDULE_EXPRESSION,
@@ -46,7 +38,8 @@ namespace Amazon.ECS.Tools.Commands
             ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT,
 
             CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE,
-        });
+        },
+        TaskDefinitionProperties.CommandOptions);
 
         PushDockerImageProperties _pushProperties;
         public PushDockerImageProperties PushDockerImageProperties
@@ -138,8 +131,8 @@ namespace Amazon.ECS.Tools.Commands
             try
             {
                 var skipPush = this.GetBoolValueOrDefault(this.DeployScheduledTaskProperties.SkipImagePush, ECSDefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH, false).GetValueOrDefault();
-                var ecsContainer = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSContainer, ECSDefinedCommandOptions.ARGUMENT_ECS_CONTAINER, true);
-                var ecsTaskDefinition = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ECSTaskDefinition, ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_DEFINITION, true);
+                var ecsContainer = this.GetStringValueOrDefault(this.TaskDefinitionProperties.ContainerName, ECSDefinedCommandOptions.ARGUMENT_CONTAINER_NAME, true);
+                var ecsTaskDefinition = this.GetStringValueOrDefault(this.TaskDefinitionProperties.TaskDefinitionName, ECSDefinedCommandOptions.ARGUMENT_TD_NAME, true);
 
 
                 string dockerImageTag = this.GetStringValueOrDefault(this.PushDockerImageProperties.DockerImageTag, ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG, true);

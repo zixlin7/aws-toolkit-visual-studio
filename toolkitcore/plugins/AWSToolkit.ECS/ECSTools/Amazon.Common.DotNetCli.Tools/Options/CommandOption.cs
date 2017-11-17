@@ -13,7 +13,7 @@ namespace Amazon.Common.DotNetCli.Tools.Options
         /// <summary>
         /// An enum for the possible values for an option
         /// </summary>
-        public enum CommandOptionValueType { NoValue, StringValue, BoolValue, IntValue, CommaDelimitedList, KeyValuePairs }
+        public enum CommandOptionValueType { NoValue, StringValue, BoolValue, IntValue, CommaDelimitedList, KeyValuePairs, JsonValue }
 
         /// <summary>
         /// The name of the option.

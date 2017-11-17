@@ -59,13 +59,17 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
         /// <summary>
         /// Used to combine the command specific command options with the common options.
         /// </summary>
-        /// <param name="options"></param>
+        /// <param name="optionCollections"></param>
         /// <returns></returns>
-        protected static IList<CommandOption> BuildLineOptions(List<CommandOption> options)
+        protected static IList<CommandOption> BuildLineOptions(params IList<CommandOption>[] optionCollections)
         {
             var list = new List<CommandOption>();
             list.AddRange(CommonOptions);
-            list.AddRange(options);
+            if(optionCollections != null)
+            {
+                foreach (var options in optionCollections)
+                    list.AddRange(options);
+            }
 
             return list;
         }
@@ -227,6 +231,29 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Complex parameters are formatted as a JSON string. This method parses the string into the JsonData object
+        /// </summary>
+        /// <param name="propertyValue"></param>
+        /// <param name="option"></param>
+        /// <returns></returns>
+        public JsonData GetJsonValueOrDefault(string propertyValue, CommandOption option)
+        {
+            string jsonContent = GetStringValueOrDefault(propertyValue, option, false);
+            if (string.IsNullOrWhiteSpace(jsonContent))
+                return null;
+
+            try
+            {
+                var data = JsonMapper.ToObject(jsonContent);
+                return data;
+            }
+            catch(Exception e)
+            {
+                throw new ToolsException($"Error parsing JSON string for parameter {option.Switch}: {e.Message}", ToolsException.CommonErrorCode.CommandLineParseError);
+            }
         }
 
         /// <summary>

@@ -51,8 +51,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         {
             var properties = new TaskDefinitionProperties
             {
-                ECSTaskDefinition = hostingWizard[PublishContainerToAWSWizardProperties.TaskDefinition] as string,
-                ECSContainer = hostingWizard[PublishContainerToAWSWizardProperties.Container] as string,
+                TaskDefinitionName = hostingWizard[PublishContainerToAWSWizardProperties.TaskDefinition] as string,
+                ContainerName = hostingWizard[PublishContainerToAWSWizardProperties.Container] as string,
                 ContainerMemoryHardLimit = hostingWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit] as int?,
                 ContainerMemorySoftLimit = hostingWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit] as int?
             };
@@ -66,7 +66,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     var hostPort = hostingWizard.IsFargateLaunch() ? uiPortMapping[i].ContainerPort : uiPortMapping[i].HostPort;
                     mappings[i] = $"{hostPort}:{uiPortMapping[i].ContainerPort}";
                 }
-                properties.PortMappings = mappings;
+                properties.ContainerPortMappings = mappings;
             }
             if (hostingWizard[PublishContainerToAWSWizardProperties.EnvironmentVariables] is IList<EnvironmentVariableItem>)
             {
@@ -76,7 +76,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 {
                     variables[uiEnv[i].Variable] = uiEnv[i].Value;
                 }
-                properties.EnvironmentVariables = variables;
+                properties.ContainerEnvironmentVariables = variables;
             }
 
             if (hostingWizard[PublishContainerToAWSWizardProperties.TaskRole] is Role)
