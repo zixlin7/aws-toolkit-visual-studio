@@ -679,5 +679,20 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
         }
 
         protected abstract void SaveConfigFile(JsonData data);
+
+        public bool ConfirmDeletion(string resource)
+        {
+            if (this.DisableInteractive)
+                return true;
+
+            Console.WriteLine("Are you sure you want to delete the {0}? [y/n]", resource);
+            char input;
+            do
+            {
+                input = Console.ReadKey().KeyChar;
+            } while (input != 'y' && input != 'n');
+
+            return input == 'y';
+        }
     }
 }
