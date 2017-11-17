@@ -22,7 +22,7 @@ namespace Amazon.Common.DotNetCli.Tools
 
         public const int DEFAULT_ITEM_MAX = 20;
         private const int MAX_LINE_LENGTH_FOR_MANAGED_ROLE = 95;
-        static readonly TimeSpan SLEEP_TIME_FOR_ROLE_PROPOGATION = TimeSpan.FromSeconds(15);
+        public static readonly TimeSpan SLEEP_TIME_FOR_ROLE_PROPOGATION = TimeSpan.FromSeconds(15);
 
 
         public static string GenerateUniqueIAMRoleName(IAmazonIdentityManagementService iamClient, string baseName)
@@ -187,7 +187,7 @@ namespace Amazon.Common.DotNetCli.Tools
             bool found = false;
             do
             {
-                // There is no way check if the role has propagted yet so to
+                // There is no way check if the role has propagated yet so to
                 // avoid error during deployment creation do a generous sleep.
                 Console.WriteLine("Waiting for new IAM Role to propagate to AWS regions");
                 long start = DateTime.Now.Ticks;

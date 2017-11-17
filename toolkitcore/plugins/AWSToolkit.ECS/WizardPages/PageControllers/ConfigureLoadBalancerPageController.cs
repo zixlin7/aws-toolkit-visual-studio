@@ -159,15 +159,23 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
             HostingWizard[PublishContainerToAWSWizardProperties.ShouldConfigureELB] = this._pageUI.ShouldConfigureELB;
 
-            if (this._pageUI.CreateNewIAMRole)
+            if (!this.HostingWizard.IsFargateLaunch())
             {
-                HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole] = true;
-                HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] = null;
+                if (this._pageUI.CreateNewIAMRole)
+                {
+                    HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole] = true;
+                    HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] = null;
+                }
+                else
+                {
+                    HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole] = false;
+                    HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] = _pageUI.ServiceIAMRole;
+                }
             }
             else
             {
-                HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole] = false;
-                HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] = _pageUI.ServiceIAMRole;
+                HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole] = null;
+                HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] = null;
             }
 
             if (this._pageUI.CreateNewLoadBalancer)

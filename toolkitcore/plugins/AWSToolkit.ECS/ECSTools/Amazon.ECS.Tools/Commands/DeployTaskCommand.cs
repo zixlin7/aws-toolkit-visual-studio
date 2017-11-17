@@ -199,6 +199,8 @@ namespace Amazon.ECS.Tools.Commands
                         Subnets = new List<string>(subnets)
                     };
                     runTaskRequest.NetworkConfiguration = networkConfiguration;
+
+                    await this.AttemptToCreateServiceLinkRoleAsync();
                 }
                 else
                 {

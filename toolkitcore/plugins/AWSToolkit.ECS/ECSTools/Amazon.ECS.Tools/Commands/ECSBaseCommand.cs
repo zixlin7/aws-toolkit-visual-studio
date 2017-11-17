@@ -18,6 +18,8 @@ using System.IO;
 using Amazon.Common.DotNetCli.Tools.Commands;
 using Amazon.Common.DotNetCli.Tools;
 using Amazon.Common.DotNetCli.Tools.Options;
+using Amazon.IdentityManagement.Model;
+using System.Threading;
 
 namespace Amazon.ECS.Tools.Commands
 {
@@ -102,6 +104,32 @@ namespace Amazon.ECS.Tools.Commands
             var launchType = this.GetStringValueOrDefault(property, ECSDefinedCommandOptions.ARGUMENT_LAUNCH_TYPE, true);
             bool isFargate = string.Equals(launchType, LaunchType.FARGATE, StringComparison.OrdinalIgnoreCase);
             return isFargate;
+        }
+
+        public async Task AttemptToCreateServiceLinkRoleAsync()
+        {
+            try
+            {
+                await this.IAMClient.CreateServiceLinkedRoleAsync(new CreateServiceLinkedRoleRequest
+                {
+                    AWSServiceName = "ecs.amazonaws.com"
+                });
+                this.Logger.WriteLine("Created IAM Role service role for ecs.amazonaws.com");
+
+                this.Logger.WriteLine("Waiting for new IAM Role to propagate to AWS regions");
+                long start = DateTime.Now.Ticks;
+                while (TimeSpan.FromTicks(DateTime.Now.Ticks - start).TotalSeconds < RoleHelper.SLEEP_TIME_FOR_ROLE_PROPOGATION.TotalSeconds)
+                {
+                    Thread.Sleep(TimeSpan.FromSeconds(1));
+                    Console.Write(".");
+                    Console.Out.Flush();
+                }
+                Console.WriteLine("\t Done");
+            }
+            catch(Exception)
+            {
+
+            }
         }
     }
 }

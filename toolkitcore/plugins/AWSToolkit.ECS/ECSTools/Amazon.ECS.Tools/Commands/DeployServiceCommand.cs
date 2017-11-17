@@ -270,7 +270,11 @@ namespace Amazon.ECS.Tools.Commands
                         NetworkConfiguration = networkConfiguration
                     };
 
-                    if(!IsFargateLaunch(this.ClusterProperties.LaunchType))
+                    if(IsFargateLaunch(this.ClusterProperties.LaunchType))
+                    {
+                        await this.AttemptToCreateServiceLinkRoleAsync();
+                    }
+                    else
                     {
                         request.PlacementConstraints = ECSUtilities.ConvertPlacementConstraint(this.GetStringValuesOrDefault(this.DeployServiceProperties.PlacementConstraints, ECSDefinedCommandOptions.ARGUMENT_PLACEMENT_CONSTRAINTS, false));
                         request.PlacementStrategy = ECSUtilities.ConvertPlacementStrategy(this.GetStringValuesOrDefault(this.DeployServiceProperties.PlacementStrategy, ECSDefinedCommandOptions.ARGUMENT_PLACEMENT_STRATEGY, false));
