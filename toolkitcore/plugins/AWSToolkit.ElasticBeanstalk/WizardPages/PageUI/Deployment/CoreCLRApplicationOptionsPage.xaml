@@ -210,15 +210,6 @@
             </Grid>
         </Grid>
 
-        <Grid Grid.Row="2">
-            <TextBlock
-                Margin="2,10,2,2"
-                Style="{DynamicResource awsInfoTextStyle}"
-                TextWrapping="Wrap">
-                NOTE: Changes have been announced for .NET Core project files and the use of project.json. This wizard will be updated to be compatible with the upcoming changes which might break compatiblity with older project files.
-            </TextBlock>
-        </Grid>
-
     </Grid>
 
 </commonui:BaseAWSUserControl>
