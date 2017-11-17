@@ -91,8 +91,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public bool EnableServiceIAMRole
         {
-            get { return this._ctlServiceIAMRole.IsEnabled; }
-            set { this._ctlServiceIAMRole.IsEnabled = value; }
+            get
+            {
+                return this._ctlServiceIAMRole.Visibility == Visibility.Visible; }
+            set
+            {
+                Visibility vis = value ? Visibility.Visible : Visibility.Collapsed;
+                this._ctlServiceIAMRole.Visibility = vis;
+                this._ctlServiceIAMRoleLabel.Visibility = vis;
+            }
         }
 
 
