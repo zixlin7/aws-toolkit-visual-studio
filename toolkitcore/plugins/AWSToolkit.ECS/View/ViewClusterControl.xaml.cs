@@ -42,7 +42,7 @@ namespace Amazon.AWSToolkit.ECS.View
         {
             get
             {
-                return string.Format("{0} ECS Cluster", this._controller.RegionDisplayName);
+                return string.Format("ECS Cluster: {0}", this._controller.FeatureViewModel.Name);
             }
         }
 
