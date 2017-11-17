@@ -170,7 +170,49 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             if(string.Equals(properties.LaunchType, Amazon.ECS.LaunchType.FARGATE, StringComparison.OrdinalIgnoreCase))
             {
                 properties.SubnetIds = hostingWizard[PublishContainerToAWSWizardProperties.LaunchSubnets] as string[];
-                properties.SecurityGroupIds = hostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] as string[];
+
+                if(hostingWizard[PublishContainerToAWSWizardProperties.CreateNewSecurityGroup] != null && 
+                    (bool)hostingWizard[PublishContainerToAWSWizardProperties.CreateNewSecurityGroup])
+                {
+                    using (var ec2Client = ECSWizardUtils.CreateEC2Client(hostingWizard))
+                    {
+                        var groupName = properties.ECSCluster + "-" + DateTime.Now.Ticks;
+                        var vpcId = hostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string;
+
+                        this.Helper.AppendUploadStatus("Creating security group {0}", groupName);
+                        var groupId = ec2Client.CreateSecurityGroup(new Amazon.EC2.Model.CreateSecurityGroupRequest
+                        {
+                            GroupName = groupName,
+                            VpcId = vpcId,
+                            Description = "Created from VSToolkit " + DateTime.Now.ToString()
+                        }).GroupId;
+                        this.Helper.AppendUploadStatus("... Created: {0}", groupId);
+
+                        var authorizeRequest = new Amazon.EC2.Model.AuthorizeSecurityGroupIngressRequest
+                        {
+                            GroupId = groupId
+                        };
+                        this.Helper.AppendUploadStatus("Authorizing port 80 for new security group");
+                        authorizeRequest.IpPermissions.Add(new Amazon.EC2.Model.IpPermission
+                        {
+                            FromPort = 80,
+                            ToPort = 80,
+                            IpProtocol = "tcp",
+                            Ipv4Ranges = new List<Amazon.EC2.Model.IpRange> { new Amazon.EC2.Model.IpRange {CidrIp="0.0.0.0/0" } },
+                            Ipv6Ranges = new List<Amazon.EC2.Model.Ipv6Range> { new Amazon.EC2.Model.Ipv6Range { CidrIpv6 = "::/0" } },
+                        });
+                        ec2Client.AuthorizeSecurityGroupIngress(authorizeRequest);
+
+                        properties.SecurityGroupIds = new string[] { groupId };
+
+                        hostingWizard[PublishContainerToAWSWizardProperties.CreateNewSecurityGroup] = false;
+                        hostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] = properties.SecurityGroupIds;
+                    }
+                }
+                else
+                {
+                    properties.SecurityGroupIds = hostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] as string[];
+                }
             }
 
             return properties;

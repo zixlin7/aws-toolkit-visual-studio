@@ -320,6 +320,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         public void SetAvailableSecurityGroups(ICollection<SecurityGroup> existingGroups, string autoSelectGroup)
         {
             this._ctlSecurityGroup.Items.Clear();
+            this._ctlSecurityGroup.Items.Add(CREATE_NEW_TEXT);
             foreach(var group in existingGroups)
             {
                 this._ctlSecurityGroup.Items.Add(string.Format("{0} ({1})", group.GroupId, group.GroupName));
@@ -347,6 +348,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             get
             {
+                if (this.CreateNewSecurityGroup)
+                    return null;
+
                 var groupLabel = this._ctlSecurityGroup.SelectedValue as string;
                 int pos = groupLabel.IndexOf('(');
                 if (pos == -1)
@@ -355,6 +359,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 return groupLabel.Substring(0, pos).Trim();
             }
         }
+
+        public bool CreateNewSecurityGroup
+        {
+            get { return this._ctlSecurityGroup.SelectedIndex == 0; }
+        }
+
 
     }
 }

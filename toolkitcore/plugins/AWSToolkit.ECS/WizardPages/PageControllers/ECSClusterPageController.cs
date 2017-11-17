@@ -143,11 +143,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             }
 
             HostingWizard[PublishContainerToAWSWizardProperties.LaunchType] = this._pageUI.LaunchType.Value;
-            if(this._pageUI.LaunchType == Amazon.ECS.LaunchType.FARGATE)
+            if (this._pageUI.LaunchType == Amazon.ECS.LaunchType.FARGATE)
             {
                 string vpcId = null;
                 var subnetIds = new List<string>();
-                foreach(var subnet in this._pageUI.SelectedSubnets)
+                foreach (var subnet in this._pageUI.SelectedSubnets)
                 {
                     vpcId = subnet.VpcId;
                     subnetIds.Add(subnet.SubnetId);
@@ -155,7 +155,17 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 HostingWizard[PublishContainerToAWSWizardProperties.LaunchSubnets] = subnetIds.ToArray();
 
                 HostingWizard[PublishContainerToAWSWizardProperties.VpcId] = vpcId;
-                HostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] = new string[] { this._pageUI.SecurityGroup };
+
+                if (this._pageUI.CreateNewSecurityGroup)
+                {
+                    HostingWizard[PublishContainerToAWSWizardProperties.CreateNewSecurityGroup] = true;
+                    HostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] = null;
+                }
+                else
+                {
+                    HostingWizard[PublishContainerToAWSWizardProperties.CreateNewSecurityGroup] = false;
+                    HostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] = new string[] { this._pageUI.SecurityGroup };
+                }
 
                 HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskCPU] = this._pageUI.TaskCPU;
                 HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskMemory] = this._pageUI.TaskMemory;

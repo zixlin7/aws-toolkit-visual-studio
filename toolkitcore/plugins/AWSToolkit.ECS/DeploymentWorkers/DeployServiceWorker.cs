@@ -47,13 +47,6 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             ConfigureLoadBalancerChangeTracker elbChanges = null;
             try
             {
-                elbChanges = ConfigureLoadBalancer(state);
-                if(!elbChanges.Success)
-                {
-                    throw new Exception(elbChanges.ErrorMessage);
-                }
-
-
 
                 var command = new DeployServiceCommand(new ECSToolLogger(this.Helper), state.WorkingDirectory, new string[0])
                 {
@@ -71,6 +64,14 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
                     PersistConfigFile = state.PersistConfigFile
                 };
+
+                elbChanges = ConfigureLoadBalancer(state);
+                if(!elbChanges.Success)
+                {
+                    throw new Exception(elbChanges.ErrorMessage);
+                }
+
+
 
                 if (elbChanges.CreatedServiceIAMRole)
                 {
