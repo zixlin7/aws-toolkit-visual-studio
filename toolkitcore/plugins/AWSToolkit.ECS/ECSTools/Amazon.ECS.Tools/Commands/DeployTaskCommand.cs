@@ -27,6 +27,7 @@ namespace Amazon.ECS.Tools.Commands
             ECSDefinedCommandOptions.ARGUMENT_LAUNCH_TYPE,
             ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SUBNETS,
             ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SECURITYGROUPS,
+            ECSDefinedCommandOptions.ARGUMENT_LAUNCH_ASSIGN_PUBLIC_IP,
 
 
             ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_COUNT,
@@ -198,6 +199,13 @@ namespace Amazon.ECS.Tools.Commands
                         SecurityGroups = new List<string>(securityGroups),
                         Subnets = new List<string>(subnets)
                     };
+
+                    var assignPublicIp = this.GetBoolValueOrDefault(this.ClusterProperties.AssignPublicIpAddress, ECSDefinedCommandOptions.ARGUMENT_LAUNCH_ASSIGN_PUBLIC_IP, false);
+                    if (assignPublicIp.HasValue)
+                    {
+                        networkConfiguration.AwsvpcConfiguration.AssignPublicIp = assignPublicIp.Value ? AssignPublicIp.ENABLED : AssignPublicIp.DISABLED;
+                    }
+
                     runTaskRequest.NetworkConfiguration = networkConfiguration;
 
                     await this.AttemptToCreateServiceLinkRoleAsync();

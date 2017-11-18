@@ -43,6 +43,7 @@ namespace Amazon.ECS.Tools.Commands
         public string LaunchType { get; set; }
         public string[] SubnetIds { get; set; }
         public string[] SecurityGroupIds { get; set; }
+        public bool? AssignPublicIpAddress { get; set; }
 
         internal void ParseCommandArguments(CommandOptions values)
         {
@@ -55,6 +56,8 @@ namespace Amazon.ECS.Tools.Commands
                 this.SubnetIds = tuple.Item2.StringValues;
             if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SECURITYGROUPS.Switch)) != null)
                 this.SecurityGroupIds = tuple.Item2.StringValues;
+            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_ASSIGN_PUBLIC_IP.Switch)) != null)
+                this.AssignPublicIpAddress = tuple.Item2.BoolValue;
         }
 
         internal void PersistSettings(ECSBaseCommand command, JsonData data)
@@ -63,6 +66,7 @@ namespace Amazon.ECS.Tools.Commands
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_TYPE.ConfigFileKey, command.GetStringValueOrDefault(this.LaunchType, ECSDefinedCommandOptions.ARGUMENT_LAUNCH_TYPE, false));
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SUBNETS.ConfigFileKey, ECSToolsDefaults.FormatCommaDelimitedList(command.GetStringValuesOrDefault(this.SubnetIds, ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SUBNETS, false)));
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SECURITYGROUPS.ConfigFileKey, ECSToolsDefaults.FormatCommaDelimitedList(command.GetStringValuesOrDefault(this.SecurityGroupIds, ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SECURITYGROUPS, false)));
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_ASSIGN_PUBLIC_IP.ConfigFileKey, command.GetBoolValueOrDefault(this.AssignPublicIpAddress, ECSDefinedCommandOptions.ARGUMENT_LAUNCH_ASSIGN_PUBLIC_IP, false));
         }
     }
 

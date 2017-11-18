@@ -213,6 +213,11 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 {
                     properties.SecurityGroupIds = hostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] as string[];
                 }
+
+                if(hostingWizard[PublishContainerToAWSWizardProperties.AssignPublicIpAddress] is bool)
+                {
+                    properties.AssignPublicIpAddress = (bool)hostingWizard[PublishContainerToAWSWizardProperties.AssignPublicIpAddress];
+                }
             }
 
             return properties;

@@ -66,9 +66,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             // Role could have already been set on on the cluster page if launched as fargate
             this._pageUI.EnableServiceIAMRole = !string.Equals(this.HostingWizard[PublishContainerToAWSWizardProperties.LaunchType] as string, Amazon.ECS.LaunchType.FARGATE.Value, StringComparison.OrdinalIgnoreCase);
-            if(!string.IsNullOrEmpty(HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] as string))
+            if(HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] is Amazon.IdentityManagement.Model.Role)
             {
-                this._pageUI.ServiceIAMRole = HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] as string;
+                this._pageUI.ServiceIAMRole = HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] as Amazon.IdentityManagement.Model.Role;
             }
             else if(HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] is bool && (bool)HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole])
             {
@@ -169,7 +169,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 else
                 {
                     HostingWizard[PublishContainerToAWSWizardProperties.CreateNewIAMRole] = false;
-                    HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] = _pageUI.ServiceIAMRole;
+
+                    if (this._pageUI.ServiceIAMRole != null && !this._pageUI.ServiceIAMRole.Path.Contains("aws-service-role/ecs.amazonaws.com"))
+                    {
+                        HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] = _pageUI.ServiceIAMRole.RoleName;
+                    }
                 }
             }
             else

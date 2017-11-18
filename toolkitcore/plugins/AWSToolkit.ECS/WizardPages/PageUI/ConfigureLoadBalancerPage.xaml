@@ -80,6 +80,7 @@
                 Grid.Column="1"
                 Margin="16,2,4,2"
                 SelectionChanged="_ctlServiceIAMRole_SelectionChanged"
+                DisplayMemberPath="RoleName"
                 Style="{DynamicResource awsComboBoxStyle}"/>
 
             <Label

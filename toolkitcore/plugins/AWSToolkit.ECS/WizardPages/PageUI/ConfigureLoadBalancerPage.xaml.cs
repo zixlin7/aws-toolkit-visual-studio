@@ -83,10 +83,16 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 UpdateExistingResources();
         }
 
-        public string ServiceIAMRole
+        public Role ServiceIAMRole
         {
-            get { return this._ctlServiceIAMRole.Text; }
-            set { this._ctlServiceIAMRole.Text = value; }
+            get
+            {
+                if (this._ctlServiceIAMRole.SelectedIndex == 0)
+                    return null;
+
+                return this._ctlServiceIAMRole.SelectedValue as Role;
+            }
+            set { this._ctlServiceIAMRole.SelectedValue = value; }
         }
 
         public bool EnableServiceIAMRole
@@ -367,7 +373,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         private void UpdateExistingResources()
         {
             this._ctlServiceIAMRole.Items.Clear();
-            this._ctlServiceIAMRole.Items.Add(CREATE_NEW_TEXT);
+            this._ctlServiceIAMRole.Items.Add(new Role {RoleName = CREATE_NEW_TEXT });
             this._ctlServiceIAMRole.SelectedIndex = 0;
 
             this._ctlLoadBalancer.Items.Clear();
@@ -375,21 +381,24 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 //            this._ctlLoadBalancer.SelectedIndex = 0;
             this._existingLoadBalancers.Clear();
 
-            Task.Run<List<string>>(() =>
+
+            System.Threading.Tasks.Task.Run<List<Role>>(() =>
             {
                 return LoadECSRoles(this.PageController.HostingWizard);
             }).ContinueWith(t =>
-            { 
+            {
                 ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((System.Action)(() =>
                 {
-                    foreach (var item in t.Result.OrderBy(x => x))
+                    foreach (var item in t.Result.OrderBy(x => x.RoleName))
                     {
                         this._ctlServiceIAMRole.Items.Add(item);
                     }
 
                     var previousValue = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] as string;
-                    if (!string.IsNullOrWhiteSpace(previousValue) && t.Result.Contains(previousValue))
-                        this._ctlServiceIAMRole.SelectedItem = previousValue;
+                    if (!string.IsNullOrWhiteSpace(previousValue) && t.Result.FirstOrDefault(x => string.Equals(x.RoleName, previousValue, StringComparison.Ordinal)) != null)
+                    {
+                        this._ctlServiceIAMRole.SelectedItem = t.Result.FirstOrDefault(x => string.Equals(x.RoleName, previousValue, StringComparison.Ordinal));
+                    }
                     else
                     {
                         this._ctlServiceIAMRole.SelectedIndex = this._ctlServiceIAMRole.Items.Count > 1 ? 1 : 0;

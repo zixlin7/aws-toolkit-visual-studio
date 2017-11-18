@@ -70,11 +70,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages
             return client;
         }
 
-        public static List<string> LoadECSRoles(IAWSWizard hostWizard)
+        public static List<Role> LoadECSRoles(IAWSWizard hostWizard)
         {
             using (var client = CreateIAMClient(hostWizard))
             {
-                var roles = new List<string>();
+                var roles = new List<Role>();
                 var response = new ListRolesResponse();
                 do
                 {
@@ -84,7 +84,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages
                     var validRoles = RolePolicyFilter.FilterByAssumeRoleServicePrincipal(response.Roles, "ecs.amazonaws.com");
                     foreach (var role in validRoles)
                     {
-                        roles.Add(role.RoleName);
+                        roles.Add(role);
                     }
                 } while (!string.IsNullOrEmpty(response.Marker));
                 return roles;

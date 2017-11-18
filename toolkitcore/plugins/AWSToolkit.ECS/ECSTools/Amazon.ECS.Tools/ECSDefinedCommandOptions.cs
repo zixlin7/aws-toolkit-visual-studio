@@ -62,6 +62,15 @@ namespace Amazon.ECS.Tools
                 Description = "Comma delimited list of subnet ids used when launch type is FARGATE",
             };
 
+        public static readonly CommandOption ARGUMENT_LAUNCH_ASSIGN_PUBLIC_IP =
+            new CommandOption
+            {
+                Name = "Assign Public IP Address",
+                Switch = "--assign-public-ip",
+                ValueType = CommandOption.CommandOptionValueType.BoolValue,
+                Description = "If true a public IP address is assigned to the task when launch type is FARGATE",
+            };
+
         public static readonly CommandOption ARGUMENT_LAUNCH_SECURITYGROUPS =
             new CommandOption
             {

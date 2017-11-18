@@ -169,6 +169,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
                 HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskCPU] = this._pageUI.TaskCPU;
                 HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskMemory] = this._pageUI.TaskMemory;
+                HostingWizard[PublishContainerToAWSWizardProperties.AssignPublicIpAddress] = this._pageUI.AssignPublicIpAddress;
             }
             else
             {
@@ -176,6 +177,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 HostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] = null;
                 HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskCPU] = null;
                 HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskMemory] = null;
+                HostingWizard[PublishContainerToAWSWizardProperties.AssignPublicIpAddress] = false;
             }
 
             return true;

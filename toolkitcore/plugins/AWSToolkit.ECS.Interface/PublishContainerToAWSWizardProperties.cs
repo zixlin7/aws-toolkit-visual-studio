@@ -85,6 +85,7 @@ namespace Amazon.AWSToolkit.ECS
         public static readonly string LaunchSubnets = "LaunchSubnets";
         public static readonly string LaunchSecurityGroups = "LaunchSecurityGroups";
         public static readonly string CreateNewSecurityGroup = "CreateNewSecurityGroup";
+        public static readonly string AssignPublicIpAddress = "AssignPublicIpAddress";
 
         public static readonly string AllocatedTaskCPU = "AllocatedTaskCPU";
         public static readonly string AllocatedTaskMemory = "AllocatedTaskMemory";

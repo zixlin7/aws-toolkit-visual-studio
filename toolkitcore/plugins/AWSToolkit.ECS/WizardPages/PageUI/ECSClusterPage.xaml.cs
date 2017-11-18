@@ -221,7 +221,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             var isFargateLaunch = this._ctlLaunchTypePicker.SelectedIndex == 0;
             this._ctlTaskCPU.IsEnabled = isFargateLaunch;
             this._ctlTaskMemory.IsEnabled = isFargateLaunch;
+            this._ctlSubnetsPicker.IsEnabled = isFargateLaunch;
             this._ctlSecurityGroup.IsEnabled = isFargateLaunch;
+            this._ctlAssignPublicIp.IsEnabled = isFargateLaunch;
 
             if(isFargateLaunch)
             {
@@ -365,6 +367,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             get { return this._ctlSecurityGroup.SelectedIndex == 0; }
         }
 
-
+        private bool _assignPublicIpAddress;
+        public bool AssignPublicIpAddress
+        {
+            get { return _assignPublicIpAddress; }
+            set { this._assignPublicIpAddress = value; }
+        }
     }
 }

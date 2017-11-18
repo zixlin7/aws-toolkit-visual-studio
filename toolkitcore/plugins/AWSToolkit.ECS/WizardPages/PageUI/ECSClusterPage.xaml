@@ -29,6 +29,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
 
@@ -173,6 +174,16 @@
                 Margin="16,10,4,2"
                 SelectionChanged="_ctlSecurityGroup_SelectionChanged"
                 Style="{DynamicResource awsComboBoxStyle}"/>
+
+        <CheckBox
+                Grid.Row="8"
+                Grid.ColumnSpan="3"
+                Name="_ctlAssignPublicIp"
+                Margin="10,10,4,2"
+                IsChecked="{Binding AssignPublicIpAddress}"
+                Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+            Assign Public IP Address
+        </CheckBox>
 
     </Grid>
 </commonUi:BaseAWSUserControl>
