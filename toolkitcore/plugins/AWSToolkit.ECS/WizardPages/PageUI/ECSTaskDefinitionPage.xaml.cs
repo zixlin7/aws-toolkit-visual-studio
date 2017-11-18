@@ -104,6 +104,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 }
             }
 
+            if(hostWizard[PublishContainerToAWSWizardProperties.TaskExecutionRole] is string)
+            {
+                this.TaskExecutionRole = hostWizard[PublishContainerToAWSWizardProperties.TaskExecutionRole] as string;
+            }
+
             var previousMappings = hostWizard[PublishContainerToAWSWizardProperties.PortMappings] as IList<PortMappingItem>;
             if (previousMappings != null)
             {
@@ -111,6 +116,16 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 foreach(var mapping in previousMappings)
                 {
                     this.PortMappings.Add(mapping);
+                }
+            }
+
+            var previousEnvironmentVariables = hostWizard[PublishContainerToAWSWizardProperties.EnvironmentVariables] as IList<EnvironmentVariableItem>;
+            if (previousEnvironmentVariables != null)
+            {
+                this.EnvironmentVariables.Clear();
+                foreach (var item in previousEnvironmentVariables)
+                {
+                    this.EnvironmentVariables.Add(item);
                 }
             }
         }
@@ -662,6 +677,10 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     return null;
 
                 return this._ctlExecutionRole.SelectedValue as string;
+            }
+            set
+            {
+                this._ctlExecutionRole.SelectedValue = value;
             }
         }
 

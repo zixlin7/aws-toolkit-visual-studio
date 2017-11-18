@@ -75,21 +75,23 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             PageController = pageController;
 
             UpdateExistingResources();
-            LoadPreviousValues(PageController.HostingWizard);
+
 
             this._ctlLaunchTypePicker.Items.Add(Amazon.ECS.LaunchType.FARGATE);
             this._ctlLaunchTypePicker.Items.Add(Amazon.ECS.LaunchType.EC2);
             this._ctlLaunchTypePicker.SelectedIndex = 0;
 
+
+            string previousLaunchType = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.LaunchType] as string;
+            if(!string.IsNullOrEmpty(previousLaunchType))
+            {
+                this._ctlLaunchTypePicker.SelectedValue = previousLaunchType;
+            }
         }
 
         private void ForwardEmbeddedControlPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             NotifyPropertyChanged(e.PropertyName);
-        }
-
-        private void LoadPreviousValues(IAWSWizard hostWizard)
-        {
         }
 
         public bool AllRequiredFieldsAreSet
@@ -148,7 +150,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         }
 
 
-                        string previousValue = null; // TODO  this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.Cluster] as string;
+                        string previousValue = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] as string;
                         if (!string.IsNullOrWhiteSpace(previousValue) && items.Contains(previousValue))
                             this._ctlClusterPicker.SelectedItem = previousValue;
                         else
@@ -225,10 +227,30 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             this._ctlSecurityGroup.IsEnabled = isFargateLaunch;
             this._ctlAssignPublicIp.IsEnabled = isFargateLaunch;
 
-            if(isFargateLaunch)
+            if (isFargateLaunch)
             {
                 this._ctlTaskCPU.ItemsSource = TaskCPUAllowedValues;
-                this._ctlTaskCPU.SelectedIndex = 0;
+
+                var previousCPU = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskCPU] as string;
+                if (!string.IsNullOrEmpty(previousCPU))
+                {
+                    var item = TaskCPUAllowedValues.FirstOrDefault(x => string.Equals(x.SystemName, previousCPU, StringComparison.Ordinal));
+                    if (item != null)
+                    {
+                        this._ctlTaskCPU.SelectedItem = item;
+                    }
+                }
+                else
+                {
+                    this._ctlTaskCPU.SelectedIndex = 0;
+                }
+
+                if (this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.AssignPublicIpAddress] is bool)
+                {
+                    var previousAssign = (bool)this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.AssignPublicIpAddress];
+                    this._ctlAssignPublicIp.IsChecked = previousAssign;
+                }
+                
             }
             else
             {
@@ -259,7 +281,25 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 {
                     this._ctlTaskMemory.Items.Add(memory);
                 }
-                this._ctlTaskMemory.SelectedIndex = 0;
+
+                var previous = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskMemory] as string;
+                if (!string.IsNullOrEmpty(previous))
+                {
+                    var cpu = this._ctlTaskCPU.SelectedItem as TaskCPUItemValue;
+                    if(cpu != null)
+                    {
+                        var itemMemory = cpu.MemoryOptions.FirstOrDefault(x => string.Equals(x.SystemName, previous, StringComparison.Ordinal));
+                        if (itemMemory != null)
+                        {
+                            this._ctlTaskMemory.SelectedItem = itemMemory;
+                        }
+                    }
+                }
+
+                if(this._ctlTaskMemory.SelectedItem == null)
+                {
+                    this._ctlTaskMemory.SelectedIndex = 0;
+                }
             }
             else
             {
@@ -291,18 +331,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         }
 
-        private void _ctlSubnetsPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if(e.AddedItems.Count > 0)
-            {
-                var subnet = e.AddedItems[0] as VpcAndSubnetWrapper;
-                if(subnet != null)
-                {
-                    LoadExistingSecurityGroups(subnet.Vpc.VpcId);
-                }
-            }
-        }
-
         public ObservableCollection<SecurityGroupWrapper> AvailableSecurityGroups { get; private set; }
 
         void LoadExistingSecurityGroups(string vpcId)
@@ -315,7 +343,14 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         void OnSecurityGroupsAvailable(ICollection<SecurityGroup> securityGroups)
         {
-            SetAvailableSecurityGroups(securityGroups, string.Empty);
+            string previousSecurityGroup = null;
+            var previousSecurityGroups = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.LaunchSecurityGroups] as string[];
+            if (previousSecurityGroups != null && previousSecurityGroups.Length == 1)
+            {
+                previousSecurityGroup = previousSecurityGroups[0];
+            }
+
+            SetAvailableSecurityGroups(securityGroups, previousSecurityGroup);
         }
 
 
@@ -323,17 +358,33 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             this._ctlSecurityGroup.Items.Clear();
             this._ctlSecurityGroup.Items.Add(CREATE_NEW_TEXT);
+
+            string selectedItem = null;
             foreach(var group in existingGroups)
             {
-                this._ctlSecurityGroup.Items.Add(string.Format("{0} ({1})", group.GroupId, group.GroupName));
+                var item = string.Format("{0} ({1})", group.GroupId, group.GroupName);
+                if(string.Equals(group.GroupId, autoSelectGroup, StringComparison.Ordinal))
+                {
+                    selectedItem = item;
+                }
+
+                this._ctlSecurityGroup.Items.Add(item);
+            }
+
+            if(!string.IsNullOrEmpty(selectedItem))
+            {
+                this._ctlSecurityGroup.SelectedItem = selectedItem;
             }
         }
 
         void OnVpcSubnetsAvailable(ICollection<Vpc> vpcs, ICollection<Subnet> subnets)
         {
-            var defaultSelection = _ctlSubnetsPicker.SetAvailableVpcSubnets(vpcs, subnets, null);
+            var previousSubnets = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.LaunchSubnets] as string[];
+            var defaultSelection = _ctlSubnetsPicker.SetAvailableVpcSubnets(vpcs, subnets, previousSubnets);
             if (defaultSelection == null)
+            {
                 this._ctlSecurityGroup.Items.Clear();
+            }
         }
 
         public ObservableCollection<VpcAndSubnetWrapper> AvailableVpcSubnets { get; private set; }

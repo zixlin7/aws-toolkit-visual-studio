@@ -69,6 +69,11 @@ namespace Amazon.AWSToolkit.ECS.Controller
                                 }
                             }
                         }
+                        else if(commandOption.ValueType == CommandOption.CommandOptionValueType.CommaDelimitedList)
+                        {
+                            var tokens = value.Split(',');
+                            seedValues[seedKey] = tokens;
+                        }
                         else
                         {
                             seedValues[seedKey] = defaults.GetValueAsString(commandOption);
@@ -97,9 +102,19 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_CONTAINER_NAME, PublishContainerToAWSWizardProperties.Container);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_CONTAINER_MEMORY_HARD_LIMIT, PublishContainerToAWSWizardProperties.MemoryHardLimit);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_CONTAINER_MEMORY_SOFT_LIMIT, PublishContainerToAWSWizardProperties.MemorySoftLimit);
-                copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER, PublishContainerToAWSWizardProperties.ClusterName);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_TD_ROLE, PublishContainerToAWSWizardProperties.TaskRole);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_TD_EXECUTION_ROLE, PublishContainerToAWSWizardProperties.TaskExecutionRole);
+
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_SERVICE, PublishContainerToAWSWizardProperties.Service);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, PublishContainerToAWSWizardProperties.DesiredCount);
+
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_CLUSTER, PublishContainerToAWSWizardProperties.ClusterName);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_TYPE, PublishContainerToAWSWizardProperties.LaunchType);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_TD_CPU, PublishContainerToAWSWizardProperties.AllocatedTaskCPU);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_TD_MEMORY, PublishContainerToAWSWizardProperties.AllocatedTaskMemory);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SUBNETS, PublishContainerToAWSWizardProperties.LaunchSubnets);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SECURITYGROUPS, PublishContainerToAWSWizardProperties.LaunchSecurityGroups);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_ASSIGN_PUBLIC_IP, PublishContainerToAWSWizardProperties.AssignPublicIpAddress);
 
                 if (defaults.GetValueAsString(ECSDefinedCommandOptions.ARGUMENT_CONTAINER_PORT_MAPPING) != null)
                 {
@@ -119,6 +134,29 @@ namespace Amazon.AWSToolkit.ECS.Controller
                     }
 
                     seedValues[PublishContainerToAWSWizardProperties.PortMappings] = mappings;
+                }
+
+                if (defaults.GetValueAsString(ECSDefinedCommandOptions.ARGUMENT_CONTAINER_ENVIRONMENT_VARIABLES) != null)
+                {
+                    var items = new List<WizardPages.PageUI.EnvironmentVariableItem>();
+                    var str = defaults.GetValueAsString(ECSDefinedCommandOptions.ARGUMENT_CONTAINER_ENVIRONMENT_VARIABLES);
+                    foreach (var token in str.Split(';'))
+                    {
+                        var tokens = token.Split('=');
+                        if (tokens.Length == 2)
+                        {
+                            items.Add(new EnvironmentVariableItem
+                            {
+                                Variable = tokens[0].Replace("\"", ""),
+                                Value = tokens[1].Replace("\"", "")
+                            });
+                        }
+                    }
+
+                    if (items.Count > 0)
+                    {
+                        seedValues[PublishContainerToAWSWizardProperties.EnvironmentVariables] = items;
+                    }
                 }
             }
             catch(Exception e)

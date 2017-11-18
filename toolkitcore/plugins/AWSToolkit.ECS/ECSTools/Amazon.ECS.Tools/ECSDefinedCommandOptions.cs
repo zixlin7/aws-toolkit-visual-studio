@@ -124,7 +124,7 @@ namespace Amazon.ECS.Tools
             new CommandOption
             {
                 Name = "Task Definition Allocated CPU",
-                Switch = "--task-memory",
+                Switch = "--task-cpu",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
                 Description = "The amount of cpu to allocate for the task definition. Fargate only."
             };
@@ -132,7 +132,7 @@ namespace Amazon.ECS.Tools
             new CommandOption
             {
                 Name = "Task Definition Allocated Memory",
-                Switch = "--task-cpu",
+                Switch = "--task-memory",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
                 Description = "The amount of memory to allocated for the task definition. Fargate only."
             };
