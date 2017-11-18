@@ -32,8 +32,12 @@ namespace Amazon.AWSToolkit.ECS.Model
             _cluster = cluster;
             NotifyPropertyChanged("Name");
             NotifyPropertyChanged("Services");
-            NotifyPropertyChanged("RunningTasks");
-            NotifyPropertyChanged("PendingTasks");
+            NotifyPropertyChanged("RunningEC2Tasks");
+            NotifyPropertyChanged("PendingEC2Tasks");
+            NotifyPropertyChanged("RunningFargateTasks");
+            NotifyPropertyChanged("PendingFargateTasks");
+            NotifyPropertyChanged("ActiveEC2ServiceCount");
+            NotifyPropertyChanged("ActiveFargateServiceCount");
             NotifyPropertyChanged("ContainerInstances");
             NotifyPropertyChanged("Status");
             NotifyPropertyChanged("StatusHealthColor");
@@ -68,16 +72,60 @@ namespace Amazon.AWSToolkit.ECS.Model
             get { return _cluster?.ActiveServicesCount ?? 0; }
         }
 
-        [DisplayName("Running tasks")]
-        public int RunningTasks
+        [DisplayName("Running EC2 tasks")]
+        public int RunningEC2Tasks
         {
-            get { return _cluster?.RunningTasksCount ?? 0; }
+            get
+            {
+                return GetStatistic("runningEC2TasksCount");
+            }
         }
 
-        [DisplayName("Pending tasks")]
-        public int PendingTasks
+
+
+        [DisplayName("Pending EC2 tasks")]
+        public int PendingEC2Tasks
         {
-            get { return _cluster?.PendingTasksCount ?? 0; }
+            get
+            {
+                return GetStatistic("pendingEC2TasksCount");
+            }
+        }
+
+        [DisplayName("Running Fargate tasks")]
+        public int RunningFargateTasks
+        {
+            get
+            {
+                return GetStatistic("runningFargateTasksCount");
+            }
+        }
+
+        [DisplayName("Pending Fargate tasks")]
+        public int PendingFargateTasks
+        {
+            get
+            {
+                return GetStatistic("pendingFargateTasksCount");
+            }
+        }
+
+        [DisplayName("Active EC2 Service")]
+        public int ActiveEC2ServiceCount
+        {
+            get
+            {
+                return GetStatistic("activeEC2ServiceCount");
+            }
+        }
+
+        [DisplayName("Active Fargate Service")]
+        public int ActiveFargateServiceCount
+        {
+            get
+            {
+                return GetStatistic("activeFargateServiceCount");
+            }
         }
 
         [DisplayName("Container instances")]
@@ -149,5 +197,21 @@ namespace Amazon.AWSToolkit.ECS.Model
             }
         }
 
+
+        private int GetStatistic(string name)
+        {
+            if (this._cluster == null)
+                return 0;
+
+            var stat = this._cluster.Statistics.FirstOrDefault(x => string.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+            if (stat == null)
+                return 0;
+
+            int count;
+            if (!int.TryParse(stat.Value, out count))
+                return 0;
+
+            return count;
+        }
     }
 }

@@ -19,7 +19,10 @@
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
@@ -33,7 +36,7 @@
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         
-        <ToolBar Grid.Row="0" Grid.ColumnSpan="4" ToolBarTray.IsLocked="True" >
+        <ToolBar Grid.Row="0" Grid.ColumnSpan="7" ToolBarTray.IsLocked="True" >
             <Button Click="onRefreshClick">
                 <Button.Content>
                     <WrapPanel>
@@ -53,15 +56,31 @@
         <TextBox Grid.Column="1" Grid.Row="2" Margin="0,5,0,5" Text="{Binding Cluster.ContainerInstances, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
                  TextWrapping="NoWrap"/>
 
-        <TextBlock Grid.Column="0" Grid.Row="3" Margin="5,5,5,5" Text="Running tasks count:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
-        <TextBox Grid.Column="1" Grid.Row="3" Margin="0,5,0,5" Text="{Binding Cluster.RunningTasks, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
+        <TextBlock Grid.Column="0" Grid.Row="3" Margin="5,5,5,5" Text="Active Fargate Services:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="1" Grid.Row="3" Margin="0,5,0,5" Text="{Binding Cluster.ActiveFargateServiceCount, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
                  TextWrapping="NoWrap"/>
 
-        <TextBlock Grid.Column="0" Grid.Row="4" Margin="5,5,5,5" Text="Pending tasks count:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
-        <TextBox Grid.Column="1" Grid.Row="4" Margin="0,5,0,5" Text="{Binding Cluster.PendingTasks, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
+        <TextBlock Grid.Column="0" Grid.Row="4" Margin="5,5,5,5" Text="Active EC2 Services:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="1" Grid.Row="4" Margin="0,5,0,5" Text="{Binding Cluster.ActiveEC2ServiceCount, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
                  TextWrapping="NoWrap"/>
 
-        <TabControl Margin="5,5,5,5" Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="4" Style="{DynamicResource awsPropertyPageVerticalTabStyle}" SelectionChanged="onTabSelectionChange" >
+        <TextBlock Grid.Column="2" Grid.Row="3" Margin="5,5,5,5" Text="Running Fargate Tasks:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="3" Grid.Row="3" Margin="0,5,75,5" Text="{Binding Cluster.RunningFargateTasks, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
+                 TextWrapping="NoWrap"/>
+
+        <TextBlock Grid.Column="2" Grid.Row="4" Margin="5,5,5,5" Text="Running EC2 Tasks:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="3" Grid.Row="4" Margin="0,5,75,5" Text="{Binding Cluster.RunningEC2Tasks, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
+                 TextWrapping="NoWrap"/>
+
+        <TextBlock Grid.Column="4" Grid.Row="3" Margin="5,5,5,5" Text="Pending Fargate Tasks:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="5" Grid.Row="3" Margin="0,5,0,5" Text="{Binding Cluster.PendingFargateTasks, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
+                 TextWrapping="NoWrap"/>
+
+        <TextBlock Grid.Column="4" Grid.Row="4" Margin="5,5,5,5" Text="Pending EC2 Tasks:"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+        <TextBox Grid.Column="5" Grid.Row="4" Margin="0,5,0,5" Text="{Binding Cluster.PendingEC2Tasks, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}" 
+                 TextWrapping="NoWrap"/>
+
+        <TabControl Margin="5,5,5,5" Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="7" Style="{DynamicResource awsPropertyPageVerticalTabStyle}" SelectionChanged="onTabSelectionChange" >
             <TabItem Header="Services">
                 <components:ServicesTab x:Name="_ctlServices"/>
             </TabItem>

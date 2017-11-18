@@ -65,14 +65,15 @@
             <commonui:ToolkitDataGridWrapper.Columns>
 
                 <DataGridTextColumn Header="Task" Binding="{Binding TaskId, Mode=OneWay}" Width="auto"/>
+                <DataGridTextColumn Header="Launch Type" Binding="{Binding LaunchType, Mode=OneWay}" Width="auto"/>
                 <DataGridTextColumn Header="Task Definition" Binding="{Binding TaskDefinition, Mode=OneWay}" Width="auto"/>
-                <DataGridTextColumn Header="Group" Binding="{Binding NativeTask.Group, Mode=OneWay}" Width="auto"/>
                 <DataGridTextColumn Header="Last Status" Binding="{Binding NativeTask.LastStatus, Mode=OneWay}" Width="auto"/>
                 <DataGridTextColumn Header="Desired Status" Binding="{Binding NativeTask.DesiredStatus, Mode=OneWay}" Width="auto"/>
-                <DataGridTextColumn Header="Started By" Binding="{Binding NativeTask.StartedBy, Mode=OneWay}" Width="auto"/>
                 <DataGridTextColumn Header="Started At" Binding="{Binding StartedAt, Mode=OneWay}" Width="auto"/>
                 <DataGridTextColumn Header="Stopped At" Binding="{Binding StoppedAt, Mode=OneWay}" Width="auto"/>
                 <DataGridTextColumn Header="Stopped Reason" Binding="{Binding CombinedStoppedReason, Mode=OneWay}" Width="auto"/>
+                <DataGridTextColumn Header="Group" Binding="{Binding NativeTask.Group, Mode=OneWay}" Width="auto"/>
+                <DataGridTextColumn Header="Started By" Binding="{Binding NativeTask.StartedBy, Mode=OneWay}" Width="auto"/>
 
             </commonui:ToolkitDataGridWrapper.Columns>
         </commonui:ToolkitDataGridWrapper>

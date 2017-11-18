@@ -43,6 +43,14 @@ namespace Amazon.AWSToolkit.ECS.Model
             }
         }
 
+        public string LaunchType
+        {
+            get
+            {
+                return this._nativeTask.LaunchType;
+            }
+        }
+
         public string StartedAt
         {
             get

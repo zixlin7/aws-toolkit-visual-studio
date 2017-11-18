@@ -104,7 +104,8 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 Clusters = new List<string>
                 {
                     this._clusterArn
-                }
+                },
+                Include = new List<string> { "STATISTICS" }
             };
             ((Amazon.Runtime.Internal.IAmazonWebServiceRequest)request).AddBeforeRequestHandler(AWSToolkit.Constants.AWSExplorerDescribeUserAgentRequestEventHandler);
             var response = this.ECSClient.DescribeClusters(request);
