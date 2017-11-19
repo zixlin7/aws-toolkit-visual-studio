@@ -159,5 +159,14 @@ namespace Amazon.Common.DotNetCli.Tools
 
             return sb.ToString();
         }
+
+        public string GetRawString(string key)
+        {
+            var data = this._rootData[key];
+            if (data == null || !data.IsString)
+                return null;
+
+            return data.ToString();
+        }
     }
 }

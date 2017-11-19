@@ -44,6 +44,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 if (command.ExecuteAsync().Result)
                 {
                     this.Helper.SendCompleteSuccessAsync(state);
+                    if (state.PersistConfigFile.GetValueOrDefault())
+                        base.PersistDeploymentMode(state.HostingWizard);
                 }
                 else
                 {

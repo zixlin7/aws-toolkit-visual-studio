@@ -94,6 +94,17 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             if(hostWizard[PublishContainerToAWSWizardProperties.Configuration] is string)
                 this.Configuration = hostWizard[PublishContainerToAWSWizardProperties.Configuration] as string;
+            if (hostWizard[PublishContainerToAWSWizardProperties.DeploymentMode] is Constants.DeployMode)
+            {
+                var mode = (Constants.DeployMode)hostWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
+                foreach (DeploymentOptionItem item in this._ctlDeploymentOptionPicker.Items)
+                {
+                    if(item.Mode == mode)
+                    {
+                        this._ctlDeploymentOptionPicker.SelectedItem = item;
+                    }
+                }
+            }
         }
 
         void UpdateExistingResources()

@@ -14,6 +14,9 @@ using Amazon.IdentityManagement;
 using Amazon.ECS;
 using Amazon.AWSToolkit.ECS.WizardPages;
 
+using ThirdParty.Json.LitJson;
+using System.IO;
+
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
     public class BaseWorker
@@ -28,6 +31,37 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         {
             this.Helper = helper;
             this._iamClient = iamClient;
+        }
+
+        protected void PersistDeploymentMode(IAWSWizard hostingWizard)
+        {
+            try
+            {
+                if (!(hostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode] is Constants.DeployMode))
+                    return;
+
+                if (!(hostingWizard[PublishContainerToAWSWizardProperties.SourcePath] is string))
+                    return;
+
+                var defaultsPath = Path.Combine(hostingWizard[PublishContainerToAWSWizardProperties.SourcePath] as string, "aws-ecs-tools-defaults.json");
+                if (!File.Exists(defaultsPath))
+                    return;
+
+                var data = JsonMapper.ToObject(File.ReadAllText(defaultsPath));
+                data[ECSWizardUtils.PERSISTED_DEPLOYMENT_MODE] = hostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode].ToString();
+
+                StringBuilder sb = new StringBuilder();
+                JsonWriter writer = new JsonWriter(sb);
+                writer.PrettyPrint = true;
+                JsonMapper.ToJson(data, writer);
+
+                var json = sb.ToString();
+                File.WriteAllText(defaultsPath, json);
+            }
+            catch
+            {
+
+            }
         }
 
         public PushDockerImageProperties ConvertToPushDockerImageProperties(IAWSWizard hostingWizard)

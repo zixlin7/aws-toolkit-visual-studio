@@ -25,6 +25,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ECSWizardUtils));
 
         public const string DEFAULT_ECS_TASK_EXECUTION_ROLE = "ecsTaskExecutionRole";
+        public const string PERSISTED_DEPLOYMENT_MODE = "vstoolkit-deployment-mode";
 
 
         public static IAmazonECS CreateECSClient(IAWSWizard hostWizard)

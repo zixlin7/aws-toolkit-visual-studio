@@ -73,6 +73,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
                     this.Helper.SendCompleteSuccessAsync(state);
+                    if (state.PersistConfigFile.GetValueOrDefault())
+                        base.PersistDeploymentMode(state.HostingWizard);
                 }
                 else
                 {
