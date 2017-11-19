@@ -42,6 +42,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
             get { return "Enter the details for your new application environment. To create a new environment for an existing application, select the appropriate application."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             if (HostingWizard.IsPropertySet(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy))

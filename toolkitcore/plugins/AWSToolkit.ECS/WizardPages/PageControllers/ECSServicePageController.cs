@@ -56,6 +56,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             return true;
         }
 
+        public void ResetPage()
+        {
+            this._pageUI = null;
+        }
+
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
         {
             string clusterName = null;
@@ -138,10 +143,22 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             }
         }
 
+        string _lastServiceName;
+        bool _lastCreateService;
+
         bool StorePageData()
         {
             if (_pageUI == null)
                 return false;
+
+            bool resetForwardPages = false;
+            if(_lastCreateService != this._pageUI.CreateNewService || 
+                string.Equals(_lastServiceName, _pageUI.Service))
+            {
+                resetForwardPages = true;
+            }
+            _lastCreateService = this._pageUI.CreateNewService;
+            _lastServiceName = _pageUI.Service;
 
             HostingWizard[PublishContainerToAWSWizardProperties.CreateNewService] = this._pageUI.CreateNewService;
             HostingWizard[PublishContainerToAWSWizardProperties.Service] = this._pageUI.CreateNewService ? _pageUI.NewServiceName : _pageUI.Service;
@@ -158,6 +175,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             {
                 HostingWizard[PublishContainerToAWSWizardProperties.PlacementConstraints] = null;
                 HostingWizard[PublishContainerToAWSWizardProperties.PlacementStrategy] = null;
+            }
+
+            if (resetForwardPages)
+            {
+                this.HostingWizard.NotifyForwardPagesReset(this);
             }
 
             return true;

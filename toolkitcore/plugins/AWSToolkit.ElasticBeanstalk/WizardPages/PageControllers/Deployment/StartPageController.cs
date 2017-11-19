@@ -82,6 +82,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
             get { return "Publish can create a new application/environment or redeploy to an existing environment."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;

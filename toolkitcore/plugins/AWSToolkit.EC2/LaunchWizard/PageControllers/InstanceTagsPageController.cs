@@ -45,6 +45,11 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
             get { return "Define custom tags for the instance(s)."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;

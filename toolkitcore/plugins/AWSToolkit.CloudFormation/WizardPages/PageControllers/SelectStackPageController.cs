@@ -63,6 +63,11 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
             get { return "To create a stack, fill in the name for your stack and select a template. You may choose one of the sample templates to get started quickly or on your local hard drive."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;

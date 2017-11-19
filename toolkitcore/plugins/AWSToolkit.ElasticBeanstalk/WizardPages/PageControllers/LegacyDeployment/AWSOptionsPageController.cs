@@ -72,6 +72,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyD
             get { return "Set Amazon EC2 options for the deployed application."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             if (IsWizardInBeanstalkMode)

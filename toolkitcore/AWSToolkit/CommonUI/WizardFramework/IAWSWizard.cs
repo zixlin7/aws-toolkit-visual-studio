@@ -248,5 +248,11 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
         /// </summary>
         /// <param name="errorText">Null or empty to hide the panel, non-empty to show the specified error.</param>
         void SetPageError(string errorText);
+
+        /// <summary>
+        /// Notifies pages that a state change has happen like changing account so further pages should reset.
+        /// </summary>
+        /// <param name="requestorPage"></param>
+        void NotifyForwardPagesReset(IAWSWizardPageController requestorPage);
     }
 }

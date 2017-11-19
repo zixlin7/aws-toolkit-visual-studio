@@ -60,6 +60,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             return true;
         }
 
+        public void ResetPage()
+        {
+            this._pageUI = null;
+        }
+
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
         {
             _pageUI.PageActivated();

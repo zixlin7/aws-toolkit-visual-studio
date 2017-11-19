@@ -77,6 +77,11 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
             get { return "Set additional network and database options for your instance."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;

@@ -97,6 +97,11 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
             }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             // If we're seeded to an ami, ok to show page. If we're in general quick-launch mode,

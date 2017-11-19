@@ -51,6 +51,11 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
             get { return "Configure the root device and add additional storage for the instance."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;

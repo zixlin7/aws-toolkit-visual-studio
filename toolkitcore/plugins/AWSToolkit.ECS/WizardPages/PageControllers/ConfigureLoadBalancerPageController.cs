@@ -51,6 +51,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             get { return null; }
         }
 
+        public void ResetPage()
+        {
+            this._pageUI = null;
+        }
+
         public bool AllowShortCircuit()
         {
             return true;

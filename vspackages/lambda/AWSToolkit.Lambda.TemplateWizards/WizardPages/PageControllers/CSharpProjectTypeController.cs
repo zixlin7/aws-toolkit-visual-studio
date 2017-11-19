@@ -67,6 +67,11 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageControllers
             return IsForwardsNavigationAllowed;
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
         {
             HostingWizard.RequestFinishEnablement(this);

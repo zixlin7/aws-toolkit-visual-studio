@@ -469,5 +469,10 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public void NotifyForwardPagesReset(IAWSWizardPageController requestorPage)
+        {
+            this._awsBaseWizardImpl.NotifyForwardPagesReset(requestorPage);
+        }
     }
 }

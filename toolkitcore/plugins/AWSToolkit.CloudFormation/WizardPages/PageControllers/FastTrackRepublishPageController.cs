@@ -115,6 +115,11 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
             get { return "Verify the details of the last deployment."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;

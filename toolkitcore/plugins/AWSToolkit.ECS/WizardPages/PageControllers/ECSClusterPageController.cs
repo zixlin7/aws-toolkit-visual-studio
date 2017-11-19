@@ -58,6 +58,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             return true;
         }
 
+        public void ResetPage()
+        {
+            this._pageUI = null;
+        }
+
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
         {
             this._pageUI.PageActivated();
@@ -137,18 +142,43 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             }
         }
 
+        bool _lastCreateNewCluster;
+        string _lastExistingClusterName;
+        Amazon.ECS.LaunchType _lastLaunchType;
+
         bool StorePageData()
         {
             if (_pageUI == null)
                 return false;
 
+            bool resetForwardPages = false;
+
+            if(_lastLaunchType != this._pageUI.LaunchType)
+            {
+                resetForwardPages = true;
+            }
+            _lastLaunchType = this._pageUI.LaunchType;
+
+
             if (this._pageUI.CreateNewCluster)
             {
                 HostingWizard[PublishContainerToAWSWizardProperties.CreateNewCluster] = this._pageUI.CreateNewCluster;
                 HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] = this._pageUI.NewClusterName;
+
+                if (!_lastCreateNewCluster)
+                {
+                    resetForwardPages = true;
+                }
+                _lastCreateNewCluster = true;
             }
             else
             {
+                if (_lastCreateNewCluster)
+                {
+                    resetForwardPages = true;
+                }
+                _lastCreateNewCluster = false;
+
                 HostingWizard[PublishContainerToAWSWizardProperties.CreateNewCluster] = this._pageUI.CreateNewCluster;
                 try
                 {
@@ -160,6 +190,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                     return false;
                 }
                 HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] = this._pageUI.Cluster;
+
+                if(!string.Equals(this._pageUI.Cluster, _lastExistingClusterName))
+                {
+                    resetForwardPages = true;
+                }
+                _lastExistingClusterName = this._pageUI.Cluster;
             }
 
             HostingWizard[PublishContainerToAWSWizardProperties.LaunchType] = this._pageUI.LaunchType.Value;
@@ -198,6 +234,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskCPU] = null;
                 HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskMemory] = null;
                 HostingWizard[PublishContainerToAWSWizardProperties.AssignPublicIpAddress] = false;
+            }
+
+            if(resetForwardPages)
+            {
+                this.HostingWizard.NotifyForwardPagesReset(this);
             }
 
             return true;

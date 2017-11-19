@@ -99,6 +99,11 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
             get { return "Set additional options and credentials for the deployed application."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         protected abstract bool OnQueryPageActivation(AWSWizardConstants.NavigationReason navigationReason);
 
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)

@@ -69,6 +69,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyD
             get { return "Set Amazon VPC options for the deployed application."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             if (IsWizardInBeanstalkMode && (bool)HostingWizard[BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_CreateNewEnv])

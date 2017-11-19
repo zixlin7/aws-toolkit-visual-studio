@@ -88,6 +88,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             return true;
         }
 
+        public void ResetPage()
+        {
+
+        }
+
+
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
         {
             // we'll re-enable Back if an error occurs. Cancel (aka Close) will enable if we have

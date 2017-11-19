@@ -1,4 +1,5 @@
-﻿using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
+﻿using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
 using log4net;
@@ -52,6 +53,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         public bool AllowShortCircuit()
         {
             return true;
+        }
+
+        public void ResetPage()
+        {
+
         }
 
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
@@ -112,10 +118,25 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             }
         }
 
+        AccountViewModel _lastSavedAccount;
+        RegionEndPointsManager.RegionEndPoints _lastSavedRegion;
+
         bool StorePageData()
         {
             if (_pageUI == null)
                 return false;
+
+            bool resetForwardPages = false;
+            if (_lastSavedAccount == null)
+            {
+                _lastSavedAccount = _pageUI.SelectedAccount;
+                _lastSavedRegion = _pageUI.SelectedRegion;
+            }
+            else
+            {
+                if (_lastSavedAccount != _pageUI.SelectedAccount || _lastSavedRegion != _pageUI.SelectedRegion)
+                    resetForwardPages = true;
+            }
 
             HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] = _pageUI.SelectedAccount;
             HostingWizard[PublishContainerToAWSWizardProperties.Region] = _pageUI.SelectedRegion;
@@ -127,6 +148,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode] = _pageUI.DeploymentOption.Mode;
 
             HostingWizard[PublishContainerToAWSWizardProperties.PersistSettingsToConfigFile] = _pageUI.PersistSettingsToConfigFile;
+
+            if (resetForwardPages)
+            {
+                this.HostingWizard.NotifyForwardPagesReset(this);
+            }
 
             return true;
         }

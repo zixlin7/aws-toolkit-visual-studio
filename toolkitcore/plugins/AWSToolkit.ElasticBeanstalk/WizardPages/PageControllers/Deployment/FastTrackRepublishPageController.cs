@@ -58,6 +58,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
             get { return "Verify the details of the last deployment."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;

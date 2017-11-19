@@ -74,6 +74,11 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
             get { return "Update one or more details of your running RDS instance."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;
