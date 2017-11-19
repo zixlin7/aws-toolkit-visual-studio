@@ -28,7 +28,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "";
+                return "Choose the number instances of the task and how the instances should be deployed.";
             }
         }
 
@@ -46,7 +46,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "Amazon ECS Task";
+                return "Task Configuration";
             }
         }
 

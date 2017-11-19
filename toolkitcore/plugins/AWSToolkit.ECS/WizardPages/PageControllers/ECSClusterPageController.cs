@@ -26,7 +26,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "A Cluster is the logical grouping for the compute resources that will run your Docker images.";
+                return "Choose how to provide compute capacity to your application.";
             }
         }
 
@@ -44,7 +44,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "ECS Cluster Setup";
+                return "Launch Configuration";
             }
         }
 

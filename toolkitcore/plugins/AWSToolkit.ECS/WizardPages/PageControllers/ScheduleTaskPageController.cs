@@ -28,7 +28,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "Run Amazon ECS tasks on a cron-like schedule using CloudWatch Events rules and targets.";
+                return "Run Amazon ECS tasks on a cron like schedule using CloudWatch Events rules and targets.";
             }
         }
 
@@ -46,7 +46,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "Scheduled Task";
+                return "Scheduled Task Configuration";
             }
         }
 

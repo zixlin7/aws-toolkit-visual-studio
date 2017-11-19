@@ -24,7 +24,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "";
+                return "Choose the number of instances of the service and how the instances should be deployed.";
             }
         }
 
@@ -42,7 +42,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "Amazon ECS Service";
+                return "Service Configuration";
             }
         }
 

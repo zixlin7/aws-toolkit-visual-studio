@@ -42,7 +42,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "Application Load Balancer";
+                return "Application Load Balancer Configuration";
             }
         }
 

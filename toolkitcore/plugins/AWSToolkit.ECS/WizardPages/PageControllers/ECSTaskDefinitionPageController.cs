@@ -41,7 +41,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             get
             {
-                return "ECS Task Definition";
+                return "Task Definition";
             }
         }
 
