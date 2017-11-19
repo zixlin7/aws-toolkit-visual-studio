@@ -58,7 +58,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             get
             {
-                if (!this._ctlConfigureLoadBalancer.IsChecked.GetValueOrDefault())
+                if (!this.ShouldConfigureELB)
                     return true;
 
                 if (!this.CreateNewIAMRole && this.ServiceIAMRole == null)
