@@ -138,10 +138,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         private void UpdateExistingResources()
         {
-            var currentTextValue = !string.IsNullOrWhiteSpace(this._ctlClusterPicker.Text) && 
-                this._ctlClusterPicker.SelectedValue == null ? this._ctlClusterPicker.Text : null;
             this._ctlClusterPicker.Items.Clear();
-            this._ctlClusterPicker.Items.Add(CREATE_NEW_TEXT);
+            this._ctlClusterPicker.Items.Add("Create an empty cluster");
 
             try
             {
@@ -189,13 +187,18 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
                         string previousValue = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] as string;
                         if (!string.IsNullOrWhiteSpace(previousValue) && items.Contains(previousValue))
-                            this._ctlClusterPicker.SelectedItem = previousValue;
-                        else
                         {
-                            if (currentTextValue != null)
-                                this._ctlClusterPicker.Text = currentTextValue;
-                            else
-                                this._ctlClusterPicker.Text = "";
+                            this._ctlClusterPicker.SelectedItem = previousValue;
+                        }
+                        // If they have no clusters preselect create new
+                        else if (this._ctlClusterPicker.Items.Count == 1)
+                        {
+                            this._ctlClusterPicker.SelectedIndex = 0;
+                        }
+                        // If they only have one cluster select that cluster
+                        else if (this._ctlClusterPicker.Items.Count == 2)
+                        {
+                            this._ctlClusterPicker.SelectedIndex = 1;
                         }
                     }));
                 });
@@ -235,6 +238,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             if (this.CreateNewCluster)
             {
                 this._ctlNewClusterName.Visibility = Visibility.Visible;
+                this._ctNewClusterDescription.Visibility = Visibility.Visible;
                 this._ctlNewClusterName.IsEnabled = true;
                 this._ctlNewClusterName.Focus();
                 this._ctlLaunchTypePicker.SelectedIndex = 0;
@@ -243,6 +247,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             else
             {
                 this._ctlNewClusterName.Visibility = Visibility.Collapsed;
+                this._ctNewClusterDescription.Visibility = Visibility.Collapsed;
                 this._ctlNewClusterName.IsEnabled = false;
                 this._ctlLaunchTypePicker.IsEnabled = !this.PageController.DeploymentMode.HasValue || this.PageController.DeploymentMode.Value != Constants.DeployMode.ScheduleTask;
             }

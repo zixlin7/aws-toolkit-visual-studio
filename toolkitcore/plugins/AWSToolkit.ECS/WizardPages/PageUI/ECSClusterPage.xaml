@@ -31,6 +31,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
 
@@ -70,9 +71,24 @@
                 Style="{DynamicResource awsTextBoxStyle}"
                 Text="{Binding NewClusterName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 />
-
+        
+        <TextBlock
+                    Name="_ctNewClusterDescription"
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="4"
+                    Margin="30,4,4,2"
+                    FontStyle="Italic"
+                    Style="{DynamicResource awsInfoTextStyle}"
+                    TextWrapping="Wrap">
+            This wizard supports creating an empty cluster which is suitable for running Fargate 
+            based services and tasks. It will not have any EC2 instances registered to it so
+            services and tasks with the EC2 launch type will not run. The easiest way to create
+            a cluster with EC2 instances registered is to use the AWS web console.
+        </TextBlock>
+        
         <Label
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.Column="0"
             Margin="10,10,4,2"
             VerticalAlignment="Center"
@@ -83,7 +99,7 @@
 
         <ComboBox
             Name="_ctlLaunchTypePicker"
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.Column="1"
             Margin="16,10,4,2"
             IsEditable="False"
@@ -93,7 +109,7 @@
 
         <TextBlock
                     Name="_ctlLaunchTypeDescription"
-                    Grid.Row="2"
+                    Grid.Row="3"
                     Grid.Column="0"
                     Grid.ColumnSpan="4"
                     Margin="30,4,4,2"
@@ -104,14 +120,14 @@
         </TextBlock>
 
         <Label
-                Grid.Row="3"
+                Grid.Row="4"
                 Grid.ColumnSpan="2"
                 Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
             Allocated Compute Capacity
         </Label>
 
         <Label
-                Grid.Row="4"
+                Grid.Row="5"
                 Grid.Column="0"
                 Margin="10,10,4,2"
                 VerticalAlignment="Center"
@@ -121,7 +137,7 @@
 
         <ComboBox
                 Name="_ctlTaskCPU"
-                Grid.Row="4"
+                Grid.Row="5"
                 Grid.Column="1"
                 Margin="16,10,4,2"
                 DisplayMemberPath="DisplayName"
@@ -129,7 +145,7 @@
                 Style="{DynamicResource awsComboBoxStyle}"/>
 
         <Label
-                Grid.Row="4"
+                Grid.Row="5"
                 Grid.Column="2"
                 Margin="10,10,4,2"
                 VerticalAlignment="Center"
@@ -139,7 +155,7 @@
 
         <ComboBox
                 Name="_ctlTaskMemory"
-                Grid.Row="4"
+                Grid.Row="5"
                 Grid.Column="3"
                 Margin="16,10,4,2"
                 DisplayMemberPath="DisplayName"
