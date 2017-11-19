@@ -48,6 +48,38 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             _ctlSubnetsPicker.PropertyChanged += _ctlSubnetsPicker_PropertyChanged;
         }
 
+        public ECSClusterPage(ECSClusterPageController pageController)
+            : this()
+        {
+            PageController = pageController;
+
+            UpdateExistingResources();
+
+
+            this._ctlLaunchTypePicker.Items.Add(Amazon.ECS.LaunchType.FARGATE);
+            this._ctlLaunchTypePicker.Items.Add(Amazon.ECS.LaunchType.EC2);
+            this._ctlLaunchTypePicker.SelectedIndex = 0;
+
+            string previousLaunchType = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.LaunchType] as string;
+            if(!string.IsNullOrEmpty(previousLaunchType))
+            {
+                this._ctlLaunchTypePicker.SelectedItem = Amazon.ECS.LaunchType.FindValue(previousLaunchType);
+            }
+        }
+
+        public void PageActivated()
+        {
+            if (this.PageController.DeploymentMode.Value == Constants.DeployMode.ScheduleTask)
+            {
+                this._ctlLaunchTypePicker.SelectedIndex = 1;
+                this._ctlLaunchTypePicker.IsEnabled = false;
+            }
+            else
+            {
+                this._ctlLaunchTypePicker.IsEnabled = true;
+            }
+        }
+
         private void _ctlSubnetsPicker_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var subnets = SelectedSubnets;
@@ -67,26 +99,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 LoadExistingSecurityGroups(vpcId);
             else
                 SetAvailableSecurityGroups(null, null);
-        }
-
-        public ECSClusterPage(ECSClusterPageController pageController)
-            : this()
-        {
-            PageController = pageController;
-
-            UpdateExistingResources();
-
-
-            this._ctlLaunchTypePicker.Items.Add(Amazon.ECS.LaunchType.FARGATE);
-            this._ctlLaunchTypePicker.Items.Add(Amazon.ECS.LaunchType.EC2);
-            this._ctlLaunchTypePicker.SelectedIndex = 0;
-
-
-            string previousLaunchType = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.LaunchType] as string;
-            if(!string.IsNullOrEmpty(previousLaunchType))
-            {
-                this._ctlLaunchTypePicker.SelectedValue = previousLaunchType;
-            }
         }
 
         private void ForwardEmbeddedControlPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -120,7 +132,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 var account = PageController.HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
                 var region = PageController.HostingWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
 
-                new QueryVpcsAndSubnetsWorker(ECSWizardUtils.CreateEC2Client(PageController.HostingWizard), LOGGER, new QueryVpcsAndSubnetsWorker.DataAvailableCallback(OnVpcSubnetsAvailable));
+                new QueryVpcsAndSubnetsWorker(ECSWizardUtils.CreateEC2Client(PageController.HostingWizard), LOGGER, 
+                    OnVpcSubnetsAvailable, OnVpcSubnetsError);
 
                 Task task1 = Task.Run(() =>
                 {
@@ -132,7 +145,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         {
                             var request = new ListClustersRequest() { NextToken = response.NextToken };
 
-                            response = ecsClient.ListClusters(request);
+                            try
+                            {
+                                response = ecsClient.ListClusters(request);
+                            }
+                            catch(Exception e)
+                            {
+                                this.PageController.HostingWizard.SetPageError("Error listing existing clusters: " + e.Message);
+                                throw;
+                            }
 
                             foreach (var arn in response.ClusterArns)
                             {
@@ -165,6 +186,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
             catch (Exception e)
             {
+                this.PageController.HostingWizard.SetPageError("Error refreshing existing ECS Clusters: " + e.Message);
                 LOGGER.Error("Error refreshing existing ECS Clusters.", e);
             }
         }
@@ -206,7 +228,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             {
                 this._ctlNewClusterName.Visibility = Visibility.Collapsed;
                 this._ctlNewClusterName.IsEnabled = false;
-                this._ctlLaunchTypePicker.IsEnabled = true;
+                this._ctlLaunchTypePicker.IsEnabled = !this.PageController.DeploymentMode.HasValue || this.PageController.DeploymentMode.Value != Constants.DeployMode.ScheduleTask;
             }
 
             NotifyPropertyChanged("Cluster");
@@ -229,6 +251,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             if (isFargateLaunch)
             {
+                this._ctlLaunchTypeDescription.Text = "FARGATE will automatically provision the necessary compute capacity needed to run the application based on the CPU and Memory settings. " +
+                                                      "This removes the need to add any EC2 instances to your cluster.";
                 this._ctlTaskCPU.ItemsSource = TaskCPUAllowedValues;
 
                 var previousCPU = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskCPU] as string;
@@ -254,6 +278,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
             else
             {
+                this._ctlLaunchTypeDescription.Text = "With the EC2 launch type, the application will run on the registered container instances for the cluster.";
                 this._ctlTaskCPU.ItemsSource = new TaskCPUItemValue[0];
                 this._ctlTaskMemory.Items.Clear();
             }
@@ -338,7 +363,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             new QuerySecurityGroupsWorker(CreateEC2Client(PageController.HostingWizard),
                                           vpcId,
                                           LOGGER,
-                                          OnSecurityGroupsAvailable);
+                                          OnSecurityGroupsAvailable,
+                                          OnSecurityGroupsError);
         }
 
         void OnSecurityGroupsAvailable(ICollection<SecurityGroup> securityGroups)
@@ -353,27 +379,36 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             SetAvailableSecurityGroups(securityGroups, previousSecurityGroup);
         }
 
+        void OnSecurityGroupsError(Exception e)
+        {
+            this.PageController.HostingWizard.SetPageError("Error describing existing security groups: " + e.Message);
+            SetAvailableSecurityGroups(null, null);
+        }
+
 
         public void SetAvailableSecurityGroups(ICollection<SecurityGroup> existingGroups, string autoSelectGroup)
         {
             this._ctlSecurityGroup.Items.Clear();
             this._ctlSecurityGroup.Items.Add(CREATE_NEW_TEXT);
 
-            string selectedItem = null;
-            foreach(var group in existingGroups)
+            if (existingGroups != null)
             {
-                var item = string.Format("{0} ({1})", group.GroupId, group.GroupName);
-                if(string.Equals(group.GroupId, autoSelectGroup, StringComparison.Ordinal))
+                string selectedItem = null;
+                foreach (var group in existingGroups)
                 {
-                    selectedItem = item;
+                    var item = string.Format("{0} ({1})", group.GroupId, group.GroupName);
+                    if (string.Equals(group.GroupId, autoSelectGroup, StringComparison.Ordinal))
+                    {
+                        selectedItem = item;
+                    }
+
+                    this._ctlSecurityGroup.Items.Add(item);
                 }
 
-                this._ctlSecurityGroup.Items.Add(item);
-            }
-
-            if(!string.IsNullOrEmpty(selectedItem))
-            {
-                this._ctlSecurityGroup.SelectedItem = selectedItem;
+                if (!string.IsNullOrEmpty(selectedItem))
+                {
+                    this._ctlSecurityGroup.SelectedItem = selectedItem;
+                }
             }
         }
 
@@ -385,6 +420,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             {
                 this._ctlSecurityGroup.Items.Clear();
             }
+        }
+
+        void OnVpcSubnetsError(Exception e)
+        {
+            this.PageController.HostingWizard.SetPageError("Error describing existing subnets: " + e.Message);
+            _ctlSubnetsPicker.SetAvailableVpcSubnets(new Vpc[0], new Subnet[0], new string[0]);
         }
 
         public ObservableCollection<VpcAndSubnetWrapper> AvailableVpcSubnets { get; private set; }

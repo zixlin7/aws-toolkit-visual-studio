@@ -443,9 +443,12 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
 
         void IAWSWizard.SetPageError(string errorText)
         {
-            _awsBaseWizardImpl.PageErrorText = errorText;
-            NotifyPropertyChanged("PageErrorText");
-            _pageErrorPanel.Visibility = string.IsNullOrEmpty(errorText) ? Visibility.Collapsed : Visibility.Visible;
+            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            {
+                _awsBaseWizardImpl.PageErrorText = errorText;
+                NotifyPropertyChanged("PageErrorText");
+                _pageErrorPanel.Visibility = string.IsNullOrEmpty(errorText) ? Visibility.Collapsed : Visibility.Visible;
+            }));
         }
 
 

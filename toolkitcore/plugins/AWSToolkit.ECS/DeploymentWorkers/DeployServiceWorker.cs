@@ -17,6 +17,8 @@ using System.Linq;
 using System.Threading;
 
 using Amazon.AWSToolkit.ECS.WizardPages;
+using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
@@ -117,16 +119,26 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     CleanupELBResources(elbChanges);
                     if (command.LastToolsException != null)
                     {
+                        ToolkitEvent evnt = new ToolkitEvent();
+                        evnt.AddProperty(AttributeKeys.ECSDeployService, command.LastToolsException is ToolsException ? ((ToolsException)command.LastToolsException).Code.ToString() : "Unknown");
+                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
                         this.Helper.SendCompleteErrorAsync("Error publishing container to AWS: " + command.LastToolsException.Message);
                     }
                     else
                     {
+                        ToolkitEvent evnt = new ToolkitEvent();
+                        evnt.AddProperty(AttributeKeys.ECSDeployService, "Success");
+                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
                         this.Helper.SendCompleteErrorAsync("Unknown error publishing container to AWS");
                     }
                 }
             }
             catch (Exception e)
             {
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.ECSDeployService, "Unknown");
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
                 CleanupELBResources(elbChanges);
                 LOGGER.Error("Error deploying to ECS Cluster.", e);
                 this.Helper.SendCompleteErrorAsync("Error deploying to ECS Cluster: " + e.Message);
@@ -420,6 +432,10 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 changeTracker.Success = false;
                 changeTracker.ErrorMessage = e.Message;
             }
+
+            ToolkitEvent evnt = new ToolkitEvent();
+            evnt.AddProperty(AttributeKeys.ECSConfiguredELB, changeTracker.Success.ToString());
+            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
             return changeTracker;
         }

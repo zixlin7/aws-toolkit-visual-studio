@@ -29,21 +29,31 @@ namespace Amazon.AWSToolkit.ECS
 
                     Action<Rule> targetSearcher = x =>
                     {
-                        var targets = cweClient.ListTargetsByRule(new ListTargetsByRuleRequest { Rule = ruleName }).Targets;
-                        List<Target> ecsTargets = new List<Target>();
-                        foreach (var target in targets)
+                        try
                         {
-                            if (target.EcsParameters != null)
+                            var targets = cweClient.ListTargetsByRule(new ListTargetsByRuleRequest { Rule = ruleName }).Targets;
+                            List<Target> ecsTargets = new List<Target>();
+                            foreach (var target in targets)
                             {
-                                ecsTargets.Add(target);
+                                if (target.EcsParameters != null)
+                                {
+                                    ecsTargets.Add(target);
+                                }
                             }
-                        }
 
-                        if (ecsTargets.Count > 0)
-                        {
-                            lock (state)
+                            if (ecsTargets.Count > 0)
                             {
-                                state.AddRule(rule, ecsTargets);
+                                lock (state)
+                                {
+                                    state.AddRule(rule, ecsTargets);
+                                }
+                            }
+                        }                        
+                        catch(Exception e)
+                        {
+                            if(!(e is TaskCanceledException))
+                            {
+                                state.LastException = e;
                             }
                         }
                     };
@@ -54,9 +64,9 @@ namespace Amazon.AWSToolkit.ECS
 
                 return state;
             }
-            catch
+            catch(Exception e)
             {
-                return new ScheduleRulesState();
+                return new ScheduleRulesState() {LastException = e } ;
             }
         }
 
@@ -94,6 +104,8 @@ namespace Amazon.AWSToolkit.ECS
                 return new List<Target>();
 
             }
+
+            public Exception LastException { get; set; }
         }
     }
 }

@@ -378,13 +378,20 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             this._ctlLoadBalancer.Items.Clear();
             this._ctlLoadBalancer.Items.Add(CREATE_NEW_TEXT);
-//            this._ctlLoadBalancer.SelectedIndex = 0;
             this._existingLoadBalancers.Clear();
 
 
             System.Threading.Tasks.Task.Run<List<Role>>(() =>
             {
-                return LoadECSRoles(this.PageController.HostingWizard);
+                try
+                {
+                    return LoadECSRoles(this.PageController.HostingWizard);
+                }
+                catch(Exception e)
+                {
+                    this.PageController.HostingWizard.SetPageError("Error listing IAM roles: " + e.Message);
+                    return new List<Role>();
+                }
             }).ContinueWith(t =>
             {
                 ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((System.Action)(() =>
@@ -411,21 +418,28 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 using (var client = CreateELBv2Client(this.PageController.HostingWizard))
                 {
                     var loadBalancers = new List<string>();
-                    var response = new DescribeLoadBalancersResponse();
-                    do
+                    try
                     {
-                        var request = new DescribeLoadBalancersRequest() { Marker = response.NextMarker };
-                        response = client.DescribeLoadBalancers(request);
-
-                        foreach (var loadBalancer in response.LoadBalancers)
+                        var response = new DescribeLoadBalancersResponse();
+                        do
                         {
-                            if(loadBalancer.Type == LoadBalancerTypeEnum.Application)
+                            var request = new DescribeLoadBalancersRequest() { Marker = response.NextMarker };
+                            response = client.DescribeLoadBalancers(request);
+
+                            foreach (var loadBalancer in response.LoadBalancers)
                             {
-                                loadBalancers.Add(loadBalancer.LoadBalancerName);
-                                this._existingLoadBalancers[loadBalancer.LoadBalancerName] = loadBalancer;
+                                if (loadBalancer.Type == LoadBalancerTypeEnum.Application)
+                                {
+                                    loadBalancers.Add(loadBalancer.LoadBalancerName);
+                                    this._existingLoadBalancers[loadBalancer.LoadBalancerName] = loadBalancer;
+                                }
                             }
-                        }
-                    } while (!string.IsNullOrEmpty(response.NextMarker));
+                        } while (!string.IsNullOrEmpty(response.NextMarker));
+                    }
+                    catch(Exception e)
+                    {
+                        this.PageController.HostingWizard.SetPageError("Error describing existing load balancers: " + e.Message);
+                    }
                     return loadBalancers;
                 }
             }).ContinueWith(t =>
@@ -436,8 +450,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     {
                         this._ctlLoadBalancer.Items.Add(item);
                     }
-
-//                    this._ctlLoadBalancer.SelectedIndex = this._ctlLoadBalancer.Items.Count > 1 ? 1 : 0;
                 }));
             });
         }
@@ -447,7 +459,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             this._ctlListenerPorts.Items.Clear();
             this._ctlListenerPorts.Items.Add(CREATE_NEW_TEXT);
-//            this._ctlListenerPorts.SelectedIndex = 0;
             this._existingListeners.Clear();
 
 
@@ -459,20 +470,27 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 using (var client = CreateELBv2Client(this.PageController.HostingWizard))
                 {
                     var listenerPorts = new List<string>();
-                    var response = new DescribeListenersResponse();
-                    do
+                    try
                     {
-
-                        var request = new DescribeListenersRequest() { Marker = response.NextMarker, LoadBalancerArn = this._existingLoadBalancers[loadBalancer].LoadBalancerArn };
-                        response = client.DescribeListeners(request);
-
-                        foreach (var listener in response.Listeners)
+                        var response = new DescribeListenersResponse();
+                        do
                         {
-                            var token = $"{listener.Port} ({listener.Protocol})";
-                            listenerPorts.Add(token);
-                            this._existingListeners[token] = listener;
-                        }
-                    } while (!string.IsNullOrEmpty(response.NextMarker));
+
+                            var request = new DescribeListenersRequest() { Marker = response.NextMarker, LoadBalancerArn = this._existingLoadBalancers[loadBalancer].LoadBalancerArn };
+                            response = client.DescribeListeners(request);
+
+                            foreach (var listener in response.Listeners)
+                            {
+                                var token = listener.Port + "(" + listener.Protocol + ")";
+                                listenerPorts.Add(token);
+                                this._existingListeners[token] = listener;
+                            }
+                        } while (!string.IsNullOrEmpty(response.NextMarker));
+                    }
+                    catch(Exception e)
+                    {
+                        this.PageController.HostingWizard.SetPageError("Error describing existing listeners: " + e.Message);
+                    }
                     return listenerPorts;
                 }
             }).ContinueWith(t =>
@@ -483,8 +501,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     {
                         this._ctlListenerPorts.Items.Add(item);
                     }
-
-//                    this._ctlListenerPorts.SelectedIndex = this._ctlListenerPorts.Items.Count > 1 ? 1 : 0;
                 }));
             });
         }
@@ -495,7 +511,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             this._ctlTargetGroup.Items.Clear();
             this._ctlTargetGroup.Items.Add(CREATE_NEW_TEXT);
-//            this._ctlTargetGroup.SelectedIndex = 0;
             this._existingTargetGroups.Clear();
             this._existingRules.Clear();
 
@@ -509,6 +524,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 using (var client = CreateELBv2Client(this.PageController.HostingWizard))
                 {
                     var targetGroups = new List<string>();
+                    try
                     {
                         var response = new DescribeTargetGroupsResponse();
                         do
@@ -523,8 +539,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                             }
                         } while (!string.IsNullOrEmpty(response.NextMarker));
                     }
+                    catch(Exception e)
+                    {
+                        this.PageController.HostingWizard.SetPageError("Error describing existing ELB target groups: " + e.Message);
+                    }
 
                     var pathPatterns = new List<string>();
+                    try
                     {
                         var response = new DescribeRulesResponse();
                         do
@@ -553,6 +574,10 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
                         } while (!string.IsNullOrEmpty(response.NextMarker));
                     }
+                    catch(Exception e)
+                    {
+                        this.PageController.HostingWizard.SetPageError("Error describing existing rules for ELB listener: " + e.Message);
+                    }
                     return new Tuple<List<string>, List<string>>(targetGroups, pathPatterns);
                 }
             }).ContinueWith(t =>
@@ -563,8 +588,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     {
                         this._ctlTargetGroup.Items.Add(item);
                     }
-
-//                    this._ctlTargetGroup.SelectedIndex = this._ctlTargetGroup.Items.Count > 1 ? 1 : 0;
                 }));
             });
         }

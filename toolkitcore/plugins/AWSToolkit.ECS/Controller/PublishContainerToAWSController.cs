@@ -17,6 +17,7 @@ using Amazon.AWSToolkit.ECS.WizardPages.PageControllers;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
 using Amazon.ECS.Tools;
 using Amazon.Common.DotNetCli.Tools.Options;
+using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.ECS.Controller
 {
@@ -172,6 +173,10 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
         private void DisplayPublishWizard(Dictionary<string, object> seedProperties)
         {
+            ToolkitEvent evnt = new ToolkitEvent();
+            evnt.AddProperty(AttributeKeys.ECSPublishContainerWizardStart, true.ToString());
+            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
             var navigator = ToolkitFactory.Instance.Navigator;
             seedProperties[PublishContainerToAWSWizardProperties.UserAccount] = navigator.SelectedAccount;
             seedProperties[PublishContainerToAWSWizardProperties.Region] = navigator.SelectedRegionEndPoints;
@@ -196,14 +201,14 @@ namespace Amazon.AWSToolkit.ECS.Controller
             wizard.SetNavigationButtonText(AWSWizardConstants.NavigationButtons.Finish, "Publish");
             wizard.SetShortCircuitPage(AWSWizardConstants.WizardPageReferences.LastPageID);
 
-            // as the last page of the wizard performs the upload process, and invokes CancelRun
-            // to shutdown the UI, we place no stock in the result of Run() and instead will look
-            // for a specific property to be true on exit indicating successful upload vs user
-            // cancel.
+
             wizard.Run();
             var success = wizard.IsPropertySet(PublishContainerToAWSWizardProperties.WizardResult) && (bool)wizard[PublishContainerToAWSWizardProperties.WizardResult];
             _results = new ActionResults().WithSuccess(success);
 
+            ToolkitEvent evnt = new ToolkitEvent();
+            evnt.AddProperty(AttributeKeys.ECSPublishContainerWizardFinish, success.ToString());
+            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
         }
     }
 }

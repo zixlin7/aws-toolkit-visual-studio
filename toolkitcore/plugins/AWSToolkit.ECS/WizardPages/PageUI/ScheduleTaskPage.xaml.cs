@@ -65,7 +65,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(this.ScheduleRule))
+                if (this.CreateNewScheduleRule && string.IsNullOrWhiteSpace(this.NewScheduleRule))
+                    return false;
+                if (!this.CreateNewScheduleRule && string.IsNullOrWhiteSpace(this.ScheduleRule))
                     return false;
                 if (string.IsNullOrWhiteSpace(this.Target))
                     return false;
@@ -88,13 +90,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string ScheduleRule
         {
-            get { return this._ctlScheduleRule.Text; }
-            set { this._ctlScheduleRule.Text = value; }
+            get { return this._ctlScheduleRule.SelectedItem as string; }
         }
 
         private void _ctlScheduleRule_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            NotifyPropertyChanged("ScheduleRule");
             string ruleName = null;
             if (e.AddedItems.Count == 1)
                 ruleName = e.AddedItems[0] as string;
@@ -118,6 +118,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 this._ctlTarget.IsEnabled = false;
                 this._ctlNewTarget.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
             }
+
+            NotifyPropertyChanged("ScheduleRule");
         }
 
         public bool CreateNewScheduleRule
@@ -204,20 +206,19 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
             catch (Exception ex)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error navigating to CloudWatch Events user guid: " + ex.Message);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error navigating to CloudWatch Events user guide: " + ex.Message);
             }
         }
 
 
         public string Target
         {
-            get { return this._ctlTarget.Text; }
-            set { this._ctlTarget.Text = value; }
+            get { return this._ctlTarget.SelectedItem as string; }
+            set { this._ctlTarget.SelectedItem = value; }
         }
 
         private void _ctlTarget_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            NotifyPropertyChanged("Target");
             if (this._ctlTarget.SelectedIndex != 0)
             {
                 this._ctlNewTarget.Visibility = Visibility.Collapsed;
@@ -229,6 +230,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 this._ctlNewTarget.IsEnabled = true;
                 this._ctlNewTarget.Text = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
             }
+            NotifyPropertyChanged("Target");
         }
 
         public bool CreateNewTarget
@@ -260,8 +262,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string CloudWatchEventIAMRole
         {
-            get { return this._ctlCloudWatchEventIAMRole.Text; }
-            set { this._ctlCloudWatchEventIAMRole.Text = value; }
+            get { return this._ctlCloudWatchEventIAMRole.SelectedItem as string; }
+            set { this._ctlCloudWatchEventIAMRole.SelectedItem = value; }
         }
 
         public string CloudWatchEventIAMRoleArn
@@ -334,19 +336,26 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     using (var client = CreateIAMClient(this.PageController.HostingWizard))
                     {
                         var roles = new List<string>();
-                        var response = new ListRolesResponse();
-                        do
+                        try
                         {
-                            var request = new ListRolesRequest() { Marker = response.Marker };
-                            response = client.ListRoles(request);
-
-                            var validRoles = RolePolicyFilter.FilterByAssumeRoleServicePrincipal(response.Roles, "events.amazonaws.com");
-                            foreach (var role in validRoles)
+                            var response = new ListRolesResponse();
+                            do
                             {
-                                roles.Add(role.RoleName);
-                                this._existingRoles[role.RoleName] = role;
-                            }
-                        } while (!string.IsNullOrEmpty(response.Marker));
+                                var request = new ListRolesRequest() { Marker = response.Marker };
+                                response = client.ListRoles(request);
+
+                                var validRoles = RolePolicyFilter.FilterByAssumeRoleServicePrincipal(response.Roles, "events.amazonaws.com");
+                                foreach (var role in validRoles)
+                                {
+                                    roles.Add(role.RoleName);
+                                    this._existingRoles[role.RoleName] = role;
+                                }
+                            } while (!string.IsNullOrEmpty(response.Marker));
+                        }
+                        catch(Exception e)
+                        {
+                            this.PageController.HostingWizard.SetPageError("Error listing existing IAM roles: " + e.Message);
+                        }
                         return roles;
                     }
                 }).ContinueWith(t =>
@@ -370,6 +379,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
             catch (Exception e)
             {
+                this.PageController.HostingWizard.SetPageError("Error listing existing IAM roles: " + e.Message);
                 LOGGER.Error("Error refreshing existing IAM Roles.", e);
             }
 
@@ -378,9 +388,23 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 Task task1 = Task.Run(() =>
                 {
                     var items = new List<string>();
-                    using (var cweClient = CreateCloudWatchEventsClient(PageController.HostingWizard))
+                    try
                     {
-                        this._scheduleRulesState = CloudWatchEventHelper.FetchScheduleRuleState(cweClient, this.PageController.Cluster);
+                        using (var cweClient = CreateCloudWatchEventsClient(PageController.HostingWizard))
+                        {
+                            this._scheduleRulesState = CloudWatchEventHelper.FetchScheduleRuleState(cweClient, this.PageController.Cluster);
+                            if(this._scheduleRulesState.LastException != null)
+                            {
+                                this.PageController.HostingWizard.SetPageError("Error fetching existing CloudWatch Events schedule rules: " + this._scheduleRulesState.LastException.Message);
+                            }
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        this.PageController.HostingWizard.SetPageError("Error fetching existing CloudWatch Events schedule rules: " + e.Message);
+
+                        // Create an empty version to avoid null pointer exceptions
+                        this._scheduleRulesState = new CloudWatchEventHelper.ScheduleRulesState();
                     }
 
                     ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
@@ -404,6 +428,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
             catch (Exception e)
             {
+                this.PageController.HostingWizard.SetPageError("Error refreshing existing CloudWatch Event rules: " + e.Message);
                 LOGGER.Error("Error refreshing existing CloudWatch Event rules.", e);
             }
         }

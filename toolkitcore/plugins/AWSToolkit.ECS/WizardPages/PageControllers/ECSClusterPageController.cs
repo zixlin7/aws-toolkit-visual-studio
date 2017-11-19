@@ -60,6 +60,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
         {
+            this._pageUI.PageActivated();
             TestForwardTransitionEnablement();
         }
 
@@ -72,6 +73,17 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             }
 
             return _pageUI;
+        }
+
+        public Constants.DeployMode? DeploymentMode
+        {
+            get
+            {
+                if (!HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DeploymentMode))
+                    return null;
+
+                return (Constants.DeployMode)HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
+            }
         }
 
         public bool PageDeactivating(AWSWizardConstants.NavigationReason navigationReason)
@@ -138,7 +150,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             else
             {
                 HostingWizard[PublishContainerToAWSWizardProperties.CreateNewCluster] = this._pageUI.CreateNewCluster;
-                HostingWizard[PublishContainerToAWSWizardProperties.ExistingCluster] = FetchExistingCluster(this._pageUI.Cluster);
+                try
+                {
+                    HostingWizard[PublishContainerToAWSWizardProperties.ExistingCluster] = FetchExistingCluster(this._pageUI.Cluster);
+                }
+                catch(Exception e)
+                {
+                    this.HostingWizard.SetPageError("Error describing existing cluster: " + e.Message);
+                    return false;
+                }
                 HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] = this._pageUI.Cluster;
             }
 

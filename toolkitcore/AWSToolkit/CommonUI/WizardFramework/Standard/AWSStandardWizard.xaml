@@ -154,6 +154,7 @@
                     <TextBlock x:Name="_pageErrorText" 
                                 Style="{DynamicResource awsTextBlockBaseStyle}"
                                 Foreground="{DynamicResource awsStatusTextErrorForeground}"
+                                TextWrapping="Wrap"
                                 Margin="4"
                                 Text="{Binding PageErrorText, Mode=OneWay}"/>
                 </Border>

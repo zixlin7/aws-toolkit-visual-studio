@@ -1,6 +1,8 @@
 ﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
+using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.Common.DotNetCli.Tools;
 using Amazon.ECR;
 using Amazon.ECS;
 using Amazon.ECS.Tools.Commands;
@@ -52,10 +54,19 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
                 if (command.ExecuteAsync().Result)
                 {
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.ECSDeployTask, "Success");
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
                     this.Helper.SendCompleteSuccessAsync(state);
                 }
                 else
                 {
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.ECSDeployTask, command.LastToolsException is ToolsException ? ((ToolsException)command.LastToolsException).Code.ToString() : "Unknown");
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
+
                     if (command.LastToolsException != null)
                         this.Helper.SendCompleteErrorAsync("Error deploy task to AWS: " + command.LastToolsException.Message);
                     else
@@ -64,6 +75,10 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             }
             catch (Exception e)
             {
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.ECSDeployTask, "Unknown");
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
                 LOGGER.Error("Error deploy task.", e);
                 this.Helper.SendCompleteErrorAsync("Error deploy task: " + e.Message);
             }

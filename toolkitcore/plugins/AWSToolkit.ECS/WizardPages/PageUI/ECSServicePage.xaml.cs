@@ -235,21 +235,28 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             Service service;
             if(!_previousFetchServices.TryGetValue(this._ctlServicePicker.Text, out service))
             {
-                using (var ecsClient = CreateECSClient(PageController.HostingWizard))
+                try
                 {
-                    var response = ecsClient.DescribeServices(new DescribeServicesRequest
+                    using (var ecsClient = CreateECSClient(PageController.HostingWizard))
                     {
-                        Cluster = this.PageController.Cluster,
-                        Services = new List<string> { this._ctlServicePicker.Text }
-                    });
+                        var response = ecsClient.DescribeServices(new DescribeServicesRequest
+                        {
+                            Cluster = this.PageController.Cluster,
+                            Services = new List<string> { this._ctlServicePicker.Text }
+                        });
 
-                    if (response.Services.Count == 0)
-                        return;
+                        if (response.Services.Count == 0)
+                            return;
 
-                    service = response.Services[0];
+                        service = response.Services[0];
+                    }
+
+                    _previousFetchServices[service.ServiceName] = service;
                 }
-
-                _previousFetchServices[service.ServiceName] = service;
+                catch(Exception e)
+                {
+                    this.PageController.HostingWizard.SetPageError("Error describing existing service: " + e.Message);
+                }
             }
 
             this._ctlDesiredCount.Text = service.DesiredCount == 0 ? "1" : service.DesiredCount.ToString();
@@ -277,21 +284,28 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 Task task1 = Task.Run(() =>
                 {
                     var items = new List<string>();
-                    using (var ecsClient = CreateECSClient(PageController.HostingWizard))
+                    try
                     {
-                        var response = new ListServicesResponse();
-                        do
+                        using (var ecsClient = CreateECSClient(PageController.HostingWizard))
                         {
-                            var request = new ListServicesRequest() { Cluster = this.PageController.Cluster, NextToken = response.NextToken };
-
-                            response = ecsClient.ListServices(request);
-
-                            foreach (var arn in response.ServiceArns)
+                            var response = new ListServicesResponse();
+                            do
                             {
-                                var name = arn.Substring(arn.IndexOf('/') + 1);
-                                items.Add(name);
-                            }
-                        } while (!string.IsNullOrEmpty(response.NextToken));
+                                var request = new ListServicesRequest() { Cluster = this.PageController.Cluster, NextToken = response.NextToken };
+
+                                response = ecsClient.ListServices(request);
+
+                                foreach (var arn in response.ServiceArns)
+                                {
+                                    var name = arn.Substring(arn.IndexOf('/') + 1);
+                                    items.Add(name);
+                                }
+                            } while (!string.IsNullOrEmpty(response.NextToken));
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        this.PageController.HostingWizard.SetPageError("Error listing existing service: " + e.Message);
                     }
 
                     ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>

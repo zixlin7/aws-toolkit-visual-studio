@@ -18,7 +18,9 @@ namespace Amazon.AWSToolkit.SimpleWorkers
     public class QuerySecurityGroupsWorker
     {
         public delegate void DataAvailableCallback(ICollection<SecurityGroup> data);
+        public delegate void ErrorCallback(Exception e);
         DataAvailableCallback _callback;
+        ErrorCallback _errorCallback;
 
         /// <summary>
         /// Perform synchronous fetch 
@@ -33,18 +35,23 @@ namespace Amazon.AWSToolkit.SimpleWorkers
             return images;
         }
 
-        /// <summary>
-        /// Perform async fetch
-        /// </summary>
-        /// <param name="ec2Client"></param>
-        /// <param name="logger"></param>
-        /// <param name="callback"></param>
         public QuerySecurityGroupsWorker(IAmazonEC2 ec2Client,
                                          string vpcId,
                                          ILog logger,
                                          DataAvailableCallback callback)
+            : this(ec2Client, vpcId, logger, callback, null)
+        {
+
+        }
+
+        public QuerySecurityGroupsWorker(IAmazonEC2 ec2Client,
+                                         string vpcId,
+                                         ILog logger,
+                                         DataAvailableCallback callback,
+                                         ErrorCallback errorCallback)
         {
             _callback = callback;
+            _errorCallback = errorCallback;
 
             BackgroundWorker bw = new BackgroundWorker();
             bw.WorkerReportsProgress = true;
@@ -109,6 +116,13 @@ namespace Amazon.AWSToolkit.SimpleWorkers
             }
             catch (Exception exc)
             {
+                if(this._errorCallback != null)
+                {
+                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                    {
+                        this._errorCallback(exc);
+                    }));
+                }
                 logger.Error(GetType().FullName + ", exception in QueryGroups", exc);
             }
         }

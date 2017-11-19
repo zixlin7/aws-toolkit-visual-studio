@@ -1,5 +1,6 @@
 ﻿using Amazon.AWSToolkit.ECS.Model;
 using Amazon.AWSToolkit.ECS.View;
+using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.EC2;
 using Amazon.EC2.Model;
 using Amazon.ECS;
@@ -52,8 +53,16 @@ namespace Amazon.AWSToolkit.ECS.Controller
             this._control = new DeleteServiceConfirmation(this);
             if (ToolkitFactory.Instance.ShellProvider.ShowModal(this._control, System.Windows.MessageBoxButton.OKCancel))
             {
+                ToolkitEvent evntSuccess = new ToolkitEvent();
+                evntSuccess.AddProperty(AttributeKeys.ECSDeleteService, "true");
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evntSuccess);
+
                 return true;
             }
+
+            ToolkitEvent evnt = new ToolkitEvent();
+            evnt.AddProperty(AttributeKeys.ECSDeleteService, "false");
+            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
             return false;
         }

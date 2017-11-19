@@ -270,20 +270,27 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 Task task1 = Task.Run(() =>
                 {
                     var items = new List<string>();
-                    using (var ecsClient = account.CreateServiceClient<AmazonECSClient>(region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP)))
+                    try
                     {
-                        var response = new ListTaskDefinitionFamiliesResponse();
-                        do
+                        using (var ecsClient = account.CreateServiceClient<AmazonECSClient>(region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP)))
                         {
-                            var request = new ListTaskDefinitionFamiliesRequest() { NextToken = response.NextToken, Status = TaskDefinitionFamilyStatus.ACTIVE };
-
-                            response = ecsClient.ListTaskDefinitionFamilies(request);
-
-                            foreach (var family in response.Families)
+                            var response = new ListTaskDefinitionFamiliesResponse();
+                            do
                             {
-                                items.Add(family);
-                            }
-                        } while (!string.IsNullOrEmpty(response.NextToken));
+                                var request = new ListTaskDefinitionFamiliesRequest() { NextToken = response.NextToken, Status = TaskDefinitionFamilyStatus.ACTIVE };
+
+                                response = ecsClient.ListTaskDefinitionFamilies(request);
+
+                                foreach (var family in response.Families)
+                                {
+                                    items.Add(family);
+                                }
+                            } while (!string.IsNullOrEmpty(response.NextToken));
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        this.PageController.HostingWizard.SetPageError("Error listing existing task definition families: " + e.Message);
                     }
 
                     ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
@@ -316,6 +323,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
             catch (Exception e)
             {
+                this.PageController.HostingWizard.SetPageError("Error refreshing existing ECS Task Definition: " + e.Message);
                 LOGGER.Error("Error refreshing existing ECS Task Definition.", e);
             }
         }
@@ -343,20 +351,27 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 Task task1 = Task.Run(() =>
                 {
                     var items = new List<string>();
-                    TaskDefinition taskDefinition;
-                    using (var ecsClient = account.CreateServiceClient<AmazonECSClient>(region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP)))
+                    TaskDefinition taskDefinition = null;
+                    try
                     {
-                        taskDefinition = ecsClient.DescribeTaskDefinition(new DescribeTaskDefinitionRequest
+                        using (var ecsClient = account.CreateServiceClient<AmazonECSClient>(region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP)))
                         {
-                            TaskDefinition = taskDefinitionFamily
-                        }).TaskDefinition;
+                            taskDefinition = ecsClient.DescribeTaskDefinition(new DescribeTaskDefinitionRequest
+                            {
+                                TaskDefinition = taskDefinitionFamily
+                            }).TaskDefinition;
 
 
-                        foreach(var container in taskDefinition.ContainerDefinitions)
-                        {
-                            items.Add(container.Name);
-                            this._existingContainerDefinitions[container.Name] = container;
+                            foreach (var container in taskDefinition.ContainerDefinitions)
+                            {
+                                items.Add(container.Name);
+                                this._existingContainerDefinitions[container.Name] = container;
+                            }
                         }
+                    }
+                    catch(Exception e)
+                    {
+                        this.PageController.HostingWizard.SetPageError("Error describing existing task definition: " + e.Message);
                     }
 
                     ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
@@ -377,12 +392,16 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                                 this._ctlContainerPicker.SelectedIndex = 0;
                         }
 
-                        this._ctlIAMRolePicker.SelectExistingRole(taskDefinition.TaskRoleArn);
+                        if (taskDefinition != null)
+                        {
+                            this._ctlIAMRolePicker.SelectExistingRole(taskDefinition.TaskRoleArn);
+                        }
                     }));
                 });
             }
             catch (Exception e)
             {
+                this.PageController.HostingWizard.SetPageError("Error refreshing existing ECS Task Definition Container: " + e.Message);
                 LOGGER.Error("Error refreshing existing ECS Task Definition Container.", e);
             }
         }

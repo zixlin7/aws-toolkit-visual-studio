@@ -118,7 +118,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     {
                         var request = new DescribeRepositoriesRequest() { NextToken = response.NextToken };
 
-                        response = this._ecrClient.DescribeRepositories(request);
+                        try
+                        {
+                            response = this._ecrClient.DescribeRepositories(request);
+                        }
+                        catch(Exception e)
+                        {
+                            this.PageController.HostingWizard.SetPageError("Error describing existing ECR repositories: " + e.Message);
+                            throw;
+                        }
 
                         foreach (var repo in response.Repositories)
                         {
@@ -158,6 +166,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
             catch (Exception e)
             {
+                this.PageController.HostingWizard.SetPageError("Error loading existing ECR repositories: " + e.Message);
                 LOGGER.Error("Error refreshing existing ECR Repositories.", e);
             }
         }
@@ -179,7 +188,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 {
                     var request = new ListImagesRequest() { RepositoryName = repository, NextToken = response.NextToken };
 
-                    response = this._ecrClient.ListImages(request);
+                    try
+                    {
+                        response = this._ecrClient.ListImages(request);
+                    }
+                    catch(Exception e)
+                    {
+                        this.PageController.HostingWizard.SetPageError("Error listing images in repository: " + e.Message);
+                        throw;
+                    }
 
                     foreach (var image in response.ImageIds)
                     {
