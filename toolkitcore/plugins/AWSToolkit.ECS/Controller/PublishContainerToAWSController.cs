@@ -118,6 +118,9 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SECURITYGROUPS, PublishContainerToAWSWizardProperties.LaunchSecurityGroups);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_ASSIGN_PUBLIC_IP, PublishContainerToAWSWizardProperties.AssignPublicIpAddress);
 
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_COUNT, PublishContainerToAWSWizardProperties.DesiredCount);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_ECS_TASK_GROUP, PublishContainerToAWSWizardProperties.TaskGroup);
+
                 if (defaults.GetValueAsString(ECSDefinedCommandOptions.ARGUMENT_CONTAINER_PORT_MAPPING) != null)
                 {
                     var mappings = new List<WizardPages.PageUI.PortMappingItem>();

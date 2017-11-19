@@ -259,6 +259,7 @@ namespace Amazon.ECS.Tools.Commands
             this.PushDockerImageProperties.PersistSettings(this, data);
             this.TaskDefinitionProperties.PersistSettings(this, data);
             this.ClusterProperties.PersistSettings(this, data);
+            this.DeployTaskProperties.PersistSettings(this, data);
         }
 
     }

@@ -45,8 +45,19 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             this._ctlPlacementTemplate.ItemsSource = ECSWizardUtils.PlacementTemplates.Options;
             this._ctlPlacementTemplate.SelectedIndex = 0;
-            this.DesiredCount = 1;
+            LoadPreviousValues();
 
+        }
+
+        private void LoadPreviousValues()
+        {
+            if (this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.DesiredCount] is int)
+                this.DesiredCount = (int)this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.DesiredCount];
+            else
+                this.DesiredCount = 1;
+
+            if (this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.TaskGroup] is string)
+                this.TaskGroup = (string)this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.TaskGroup];
         }
 
         public void PageActivated()

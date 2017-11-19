@@ -24,6 +24,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages
         internal const string CREATE_NEW_TEXT = "Create New";
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ECSWizardUtils));
 
+        public const string DEFAULT_ECS_TASK_EXECUTION_ROLE = "ecsTaskExecutionRole";
+
 
         public static IAmazonECS CreateECSClient(IAWSWizard hostWizard)
         {

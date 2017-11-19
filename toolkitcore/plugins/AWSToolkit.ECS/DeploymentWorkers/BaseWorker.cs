@@ -100,7 +100,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     ((bool)hostingWizard[PublishContainerToAWSWizardProperties.CreateNewTaskExecutionRole]))
                 {
                     properties.TaskDefinitionExecutionRole = Amazon.Common.DotNetCli.Tools.RoleHelper.CreateRole(
-                        this._iamClient, "ecsTaskExecutionRole", Amazon.Common.DotNetCli.Tools.Constants.ECS_TASKS_ASSUME_ROLE_POLICY, "CloudWatchLogsFullAccess", "AmazonEC2ContainerRegistryReadOnly");
+                        this._iamClient, ECSWizardUtils.DEFAULT_ECS_TASK_EXECUTION_ROLE, Amazon.Common.DotNetCli.Tools.Constants.ECS_TASKS_ASSUME_ROLE_POLICY, "CloudWatchLogsFullAccess", "AmazonEC2ContainerRegistryReadOnly");
                 }
                 else
                 {

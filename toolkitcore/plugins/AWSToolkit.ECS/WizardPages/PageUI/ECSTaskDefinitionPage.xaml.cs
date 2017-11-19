@@ -188,6 +188,30 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     {
                         this._ctlExecutionRole.Items.Add(role.RoleName);
                     }
+
+                    string defaultRole = null;
+                    var previousExecutionRole = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.TaskExecutionRole] as string;
+                    if(!string.IsNullOrEmpty(previousExecutionRole))
+                    {
+                        var role = roles.FirstOrDefault(x => x.Arn.EndsWith(previousExecutionRole));
+                        if (role != null)
+                            defaultRole = role.RoleName;
+                    }
+                    else if(defaultRole == null)
+                    {
+                        var role = roles.FirstOrDefault(x => string.Equals(x.RoleName, ECSWizardUtils.DEFAULT_ECS_TASK_EXECUTION_ROLE, StringComparison.Ordinal));
+                        if (role != null)
+                            defaultRole = role.RoleName;
+                    }
+
+                    if(defaultRole != null)
+                    {
+                        this._ctlExecutionRole.SelectedItem = defaultRole;
+                    }
+                    else
+                    {
+                        this._ctlExecutionRole.SelectedIndex = 0;
+                    }
                 }
                 else
                 {
