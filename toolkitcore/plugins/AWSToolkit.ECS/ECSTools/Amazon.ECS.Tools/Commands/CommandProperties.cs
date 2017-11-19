@@ -285,6 +285,10 @@ namespace Amazon.ECS.Tools.Commands
                 this.ECSService = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT.Switch)) != null)
                 this.DesiredCount = tuple.Item2.IntValue;
+            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_DEPLOYMENT_MINIMUM_HEALTHY_PERCENT.Switch)) != null)
+                this.DeploymentMinimumHealthyPercent = tuple.Item2.IntValue;
+            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_DEPLOYMENT_MAXIMUM_PERCENT.Switch)) != null)
+                this.DeploymentMaximumPercent = tuple.Item2.IntValue;
             if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE.Switch)) != null)
                 this.ELBServiceRole = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN.Switch)) != null)
@@ -302,6 +306,8 @@ namespace Amazon.ECS.Tools.Commands
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH.ConfigFileKey, command.GetBoolValueOrDefault(this.SkipImagePush, ECSDefinedCommandOptions.ARGUMENT_SKIP_IMAGE_PUSH, false));
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ECS_SERVICE.ConfigFileKey, command.GetStringValueOrDefault(this.ECSService, ECSDefinedCommandOptions.ARGUMENT_ECS_SERVICE, false));
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT.ConfigFileKey, command.GetIntValueOrDefault(this.DesiredCount, ECSDefinedCommandOptions.ARGUMENT_ECS_DESIRED_COUNT, false));
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_DEPLOYMENT_MINIMUM_HEALTHY_PERCENT.ConfigFileKey, command.GetIntValueOrDefault(this.DeploymentMinimumHealthyPercent, ECSDefinedCommandOptions.ARGUMENT_DEPLOYMENT_MINIMUM_HEALTHY_PERCENT, false));
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_DEPLOYMENT_MAXIMUM_PERCENT.ConfigFileKey, command.GetIntValueOrDefault(this.DeploymentMaximumPercent, ECSDefinedCommandOptions.ARGUMENT_DEPLOYMENT_MAXIMUM_PERCENT, false));
 
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE.ConfigFileKey, command.GetStringValueOrDefault(this.ELBServiceRole, ECSDefinedCommandOptions.ARGUMENT_ELB_SERVICE_ROLE, false));
             data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN.ConfigFileKey, command.GetStringValueOrDefault(this.ELBTargetGroup, ECSDefinedCommandOptions.ARGUMENT_ELB_TARGET_GROUP_ARN, false));

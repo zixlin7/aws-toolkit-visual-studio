@@ -248,7 +248,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 if (this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.AssignPublicIpAddress] is bool)
                 {
                     var previousAssign = (bool)this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.AssignPublicIpAddress];
-                    this._ctlAssignPublicIp.IsChecked = previousAssign;
+                    this.AssignPublicIpAddress = previousAssign;
                 }
                 
             }

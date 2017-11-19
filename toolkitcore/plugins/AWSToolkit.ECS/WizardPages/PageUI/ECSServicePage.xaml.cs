@@ -95,9 +95,34 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 this._ctlNewServiceName.IsEnabled = true;
                 this._ctlNewServiceName.Focus();
 
-                this.DesiredCount = 1;
-                this.MinimumHealthy = 50;
-                this.MaximumPercent = 200;
+                if (this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.DesiredCount] is int)
+                {
+                    this.DesiredCount = (int)this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.DesiredCount];
+                }
+                else
+                {
+                    this.DesiredCount = 1;
+                }
+                if (this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.MinimumHealthy] is int)
+                {
+                    this.MinimumHealthy = (int)this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.MinimumHealthy];
+                }
+                else
+                {
+                    this.MinimumHealthy = 50;
+                }
+                if (this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.MaximumPercent] is int)
+                {
+                    this.MaximumPercent = (int)this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.MaximumPercent];
+                }
+                else
+                {
+                    this.MaximumPercent = 200;
+                }
+
+                
+                
+                
 
                 if (!this._ctlServicePicker.Items.Contains(PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string))
                     this.NewServiceName = PageController.HostingWizard[PublishContainerToAWSWizardProperties.SafeProjectName] as string;
