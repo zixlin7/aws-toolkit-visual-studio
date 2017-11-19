@@ -466,6 +466,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             {
                 this._ctlNewTaskDefinition.Visibility = Visibility.Collapsed;
                 this._ctlNewTaskDefinition.IsEnabled = false;
+                this._ctlContainerPicker.IsEnabled = true;
             }
             else
             {

@@ -110,11 +110,27 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(this.Cluster))
+                if (this.CreateNewCluster && string.IsNullOrEmpty(this.NewClusterName))
+                    return false;
+                if (!this.CreateNewCluster && string.IsNullOrEmpty(this.Cluster))
                     return false;
 
-                //if (_ctlSubnetsPicker.SubnetsSpanVPCs)
-                //    return false;
+                if (this.LaunchType == LaunchType.FARGATE)
+                {
+                    if (string.IsNullOrEmpty(this.TaskCPU))
+                        return false;
+                    if (string.IsNullOrEmpty(this.TaskMemory))
+                        return false;
+
+                    if (_ctlSubnetsPicker.SubnetsSpanVPCs)
+                        return false;
+
+                    if (this.SelectedSubnets.Count() == 0)
+                        return false;
+                    if (string.IsNullOrEmpty(this.SecurityGroup))
+                        return false;
+                }
+
 
                 return true;
             }
@@ -353,7 +369,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         private void _ctlSecurityGroup_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            NotifyPropertyChanged("SecurityGroup");
         }
 
         public ObservableCollection<SecurityGroupWrapper> AvailableSecurityGroups { get; private set; }
@@ -446,6 +462,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     return null;
 
                 var groupLabel = this._ctlSecurityGroup.SelectedValue as string;
+                if (groupLabel == null)
+                    return null;
+
                 int pos = groupLabel.IndexOf('(');
                 if (pos == -1)
                     return groupLabel;

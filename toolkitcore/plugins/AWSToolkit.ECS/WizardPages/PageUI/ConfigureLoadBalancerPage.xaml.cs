@@ -61,6 +61,28 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 if (!this._ctlConfigureLoadBalancer.IsChecked.GetValueOrDefault())
                     return true;
 
+                if (!this.CreateNewIAMRole && this.ServiceIAMRole == null)
+                    return false;
+
+                if (this.CreateNewLoadBalancer && string.IsNullOrEmpty(this.NewLoadBalancerName))
+                    return false;
+                if (!this.CreateNewLoadBalancer && string.IsNullOrEmpty(this.LoadBalancer))
+                    return false;
+
+                if (this.CreateNewListenerPort && !this.NewListenerPort.HasValue)
+                    return false;
+                if (!this.CreateNewListenerPort && string.IsNullOrEmpty(this.ListenerPort))
+                    return false;
+
+                if (this.CreateNewTargetGroup && string.IsNullOrEmpty(this.NewTargetGroupName))
+                    return false;
+                if (!this.CreateNewTargetGroup && string.IsNullOrEmpty(this.TargetGroup))
+                    return false;
+
+                if (string.IsNullOrEmpty(this.PathPattern))
+                    return false;
+                if (string.IsNullOrEmpty(this.HealthCheckPath))
+                    return false;
 
                 return true;
             }
