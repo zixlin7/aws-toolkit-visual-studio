@@ -48,6 +48,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
 
         ECSPublishContainerWizardStart,
         ECSPublishContainerWizardFinish,
+        ECSPublishContainerDockerBase,
         ECSDeployService,
         ECSDeployScheduleTask,
         ECSDeployTask,

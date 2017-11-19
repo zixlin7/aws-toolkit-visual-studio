@@ -173,9 +173,17 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
         private void DisplayPublishWizard(Dictionary<string, object> seedProperties)
         {
-            ToolkitEvent evnt = new ToolkitEvent();
-            evnt.AddProperty(AttributeKeys.ECSPublishContainerWizardStart, true.ToString());
-            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+            ToolkitEvent evntStart = new ToolkitEvent();
+            evntStart.AddProperty(AttributeKeys.ECSPublishContainerWizardStart, true.ToString());
+            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evntStart);
+
+            var baseDockerImage = DetermineImageBase(seedProperties);
+            if(!string.IsNullOrEmpty(baseDockerImage))
+            {
+                ToolkitEvent evntDockerBase = new ToolkitEvent();
+                evntDockerBase.AddProperty(AttributeKeys.ECSPublishContainerDockerBase, baseDockerImage);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evntDockerBase);
+            }
 
             var navigator = ToolkitFactory.Instance.Navigator;
             seedProperties[PublishContainerToAWSWizardProperties.UserAccount] = navigator.SelectedAccount;
@@ -206,9 +214,44 @@ namespace Amazon.AWSToolkit.ECS.Controller
             var success = wizard.IsPropertySet(PublishContainerToAWSWizardProperties.WizardResult) && (bool)wizard[PublishContainerToAWSWizardProperties.WizardResult];
             _results = new ActionResults().WithSuccess(success);
 
-            ToolkitEvent evnt = new ToolkitEvent();
-            evnt.AddProperty(AttributeKeys.ECSPublishContainerWizardFinish, success.ToString());
-            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+            ToolkitEvent evntFinish = new ToolkitEvent();
+            evntFinish.AddProperty(AttributeKeys.ECSPublishContainerWizardFinish, success.ToString());
+            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evntFinish);
+        }
+
+        private string DetermineImageBase(Dictionary<string, object> seedProperties)
+        {
+            try
+            {
+                if (!seedProperties.ContainsKey(PublishContainerToAWSWizardProperties.SourcePath))
+                    return null;
+
+                var dockerFilePath = Path.Combine(seedProperties[PublishContainerToAWSWizardProperties.SourcePath] as string, "Dockerfile");
+                if (!File.Exists(dockerFilePath))
+                    return null;
+
+                using (var reader = new StreamReader(dockerFilePath))
+                {
+                    string line;
+                    while((line = reader.ReadLine()) != null)
+                    {
+                        if (!line.StartsWith("FROM "))
+                            continue;
+
+                        var tokens = line.Split(' ');
+                        if(tokens.Length > 1)
+                        {
+                            return tokens[1];
+                        }
+                    }
+                }
+
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }
