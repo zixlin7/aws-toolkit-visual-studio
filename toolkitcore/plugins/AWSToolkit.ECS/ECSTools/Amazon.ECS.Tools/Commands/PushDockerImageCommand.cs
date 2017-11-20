@@ -33,7 +33,7 @@ namespace Amazon.ECS.Tools.Commands
         {
             get
             {
-                if(this._pushProperties == null)
+                if (this._pushProperties == null)
                 {
                     this._pushProperties = new PushDockerImageProperties();
                 }
@@ -104,7 +104,7 @@ namespace Amazon.ECS.Tools.Commands
 
                 var targetTag = repository.RepositoryUri + dockerImageTag.Substring(dockerImageTag.IndexOf(':'));
                 this.Logger?.WriteLine($"Taging image {dockerImageTag} with {targetTag}");
-                if(dockerCli.Tag(dockerImageTag, targetTag) != 0)
+                if (dockerCli.Tag(dockerImageTag, targetTag) != 0)
                 {
                     throw new DockerToolsException("Error executing \"docker tag\"", DockerToolsException.ECSErrorCode.DockerTagFail);
                 }
@@ -151,7 +151,7 @@ namespace Amazon.ECS.Tools.Commands
                         RepositoryNames = new List<string> { ecrRepositoryName }
                     });
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     if (!(e is RepositoryNotFoundException))
                     {
@@ -176,7 +176,7 @@ namespace Amazon.ECS.Tools.Commands
 
                 return repository;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new DockerToolsException($"Error determining Amazon ECR repository: {e.Message}", DockerToolsException.ECSErrorCode.FailedToSetupECRRepository);
             }
@@ -199,11 +199,11 @@ namespace Amazon.ECS.Tools.Commands
                     throw new DockerToolsException($"Error executing the docker login command", DockerToolsException.ECSErrorCode.DockerCLILoginFail);
                 }
             }
-            catch(DockerToolsException)
+            catch (DockerToolsException)
             {
                 throw;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new DockerToolsException($"Error logging on with the docker CLI: {e.Message}", DockerToolsException.ECSErrorCode.GetECRAuthTokens);
             }
@@ -219,14 +219,15 @@ namespace Amazon.ECS.Tools.Commands
             var location = "obj/Docker/publish";
 
             var dockerFilePath = Path.Combine(projectLocation, "Dockerfile");
-            if(File.Exists(dockerFilePath))
+            if (File.Exists(dockerFilePath))
             {
-                using (StreamReader reader = new StreamReader(dockerFilePath))
+                using (var stream = File.OpenRead(dockerFilePath))
+                using (var reader = new StreamReader(stream))
                 {
                     string line;
-                    while((line = reader.ReadLine()) != null)
+                    while ((line = reader.ReadLine()) != null)
                     {
-                        if(line.StartsWith("COPY ") && line.Contains(":-"))
+                        if (line.StartsWith("COPY ") && line.Contains(":-"))
                         {
                             int start = line.IndexOf(":-") + 2;
                             int end = line.IndexOf('}', start);
