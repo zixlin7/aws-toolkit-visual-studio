@@ -44,7 +44,7 @@ namespace Amazon.AWSToolkit.ECS.Model
 
         public string PushedAt
         {
-            get { return _inner?.ImagePushedAt.ToString() ?? ""; }
+            get { return _inner?.ImagePushedAt.ToLocalTime().ToString() ?? ""; }
         }
     }
 }
