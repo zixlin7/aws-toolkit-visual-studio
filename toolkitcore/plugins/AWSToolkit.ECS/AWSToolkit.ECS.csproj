@@ -35,7 +35,7 @@
     <Reference Include="AWSSDK.MobileAnalytics">
       <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.MobileAnalytics.dll</HintPath>
       <Private>False</Private>
-    </Reference>  
+    </Reference>
     <Reference Include="AWSSDK.Core">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Core.dll</HintPath>
@@ -207,6 +207,9 @@
     <Compile Include="View\Components\TasksTab.xaml.cs">
       <DependentUpon>TasksTab.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Components\TasksTabTemplate.xaml.cs">
+      <DependentUpon>TasksTabTemplate.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\CreateRepositoryControl.xaml.cs">
       <DependentUpon>CreateRepositoryControl.xaml</DependentUpon>
     </Compile>
@@ -312,6 +315,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Components\TasksTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\TasksTabTemplate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

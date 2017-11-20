@@ -349,10 +349,44 @@ namespace Amazon.AWSToolkit.ECS.Controller
                     Tasks = tasksArns
                 }).Tasks;
 
+                Dictionary<string, TaskWrapper> tasksToLookupENI = new Dictionary<string, TaskWrapper>();
                 foreach (var nativeTask in nativeTasks)
                 {
-                    this.Model.Tasks.Add(new TaskWrapper(nativeTask));
+                    var taskWrapper = new TaskWrapper(nativeTask);
+                    var networkInterfaceId = taskWrapper.NetworkInterfaceId;
+                    if(!string.IsNullOrEmpty(networkInterfaceId))
+                    {
+                        tasksToLookupENI[networkInterfaceId] = taskWrapper;
+                    }
+
+                    this.Model.Tasks.Add(taskWrapper);
                 }
+
+                System.Threading.Tasks.Task.Run(() =>
+                {
+                    try
+                    {
+                        var request = new Amazon.EC2.Model.DescribeNetworkInterfacesRequest();
+                        foreach (var id in tasksToLookupENI.Keys)
+                            request.NetworkInterfaceIds.Add(id);
+
+                        var networkInterfaces = this._ec2Client.DescribeNetworkInterfaces(request).NetworkInterfaces;
+                        foreach(var networkInterface in networkInterfaces)
+                        {
+                            if(networkInterface.Association != null && !string.IsNullOrEmpty(networkInterface.Association.PublicIp))
+                            {
+                                var task = tasksToLookupENI[networkInterface.NetworkInterfaceId];
+                                task.AddNetworkInterfaceInfo(networkInterface.Association.PublicIp, networkInterface.Association.PublicDnsName);
+                            }
+
+                        }
+
+                    }
+                    catch(Exception e)
+                    {
+                        LOGGER.Error("Error looking up networking interfaces", e);
+                    }
+                });
             }
         }
 

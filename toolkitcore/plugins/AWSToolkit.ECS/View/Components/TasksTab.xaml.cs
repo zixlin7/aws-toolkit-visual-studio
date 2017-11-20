@@ -69,7 +69,7 @@ namespace Amazon.AWSToolkit.ECS.View.Components
             try
             {
                 var tasks = new List<TaskWrapper>();
-                foreach (TaskWrapper task in _ctlTasks.SelectedItems)
+                foreach (TaskWrapper task in _ctlListOfTasks.SelectedItems)
                 {
                     tasks.Add(task);
                 }
@@ -123,9 +123,9 @@ namespace Amazon.AWSToolkit.ECS.View.Components
             RefreshTasks();
         }
 
-        void onTasksSelectionChanged(object sender, RoutedEventArgs evnt)
+        void onTasksSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            this._ctlStop.IsEnabled = this._ctlTasks.SelectedItems.Count > 0 && this._controller.Model.TaskTabDesiredStatus == DesiredStatus.RUNNING;
+            this._ctlStop.IsEnabled = this._ctlListOfTasks.SelectedItems.Count > 0 && this._controller.Model.TaskTabDesiredStatus == DesiredStatus.RUNNING;
         }
     }
 }

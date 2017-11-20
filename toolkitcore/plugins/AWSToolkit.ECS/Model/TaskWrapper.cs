@@ -8,10 +8,11 @@ using Amazon.ECS.Model;
 
 using Task = Amazon.ECS.Model.Task;
 using Amazon.AWSToolkit.CommonUI;
+using System.Windows;
 
 namespace Amazon.AWSToolkit.ECS.Model
 {
-    public class TaskWrapper
+    public class TaskWrapper : PropertiesModel
     {
         Task _nativeTask;
 
@@ -93,6 +94,77 @@ namespace Amazon.AWSToolkit.ECS.Model
 
                 return sb.ToString();
             }
+        }
+
+        public string FormattedAttachments
+        {
+            get
+            {
+                var sb = new StringBuilder();
+
+                foreach(var attachment in this.NativeTask.Attachments)
+                {
+                    foreach(var detail in attachment.Details)
+                    {
+                        sb.AppendLine(detail.Name + ": " + detail.Value);
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(this._publicIp))
+                    sb.AppendLine("publicIPv4Address: " + this._publicIp);
+                if (!string.IsNullOrEmpty(this._publicDns))
+                    sb.AppendLine("publicDNS: " + this._publicDns);
+
+                return sb.ToString();
+            }
+        }
+
+        string _publicIp;
+        string _publicDns;
+        public void AddNetworkInterfaceInfo(string publicIp, string publicDns)
+        {
+            this._publicIp = publicIp;
+            this._publicDns = publicDns;
+            base.NotifyPropertyChanged("FormattedAttachments");
+        }
+
+
+
+        public string NetworkInterfaceId
+        {
+            get
+            {
+                foreach(var attachment in this.NativeTask.Attachments)
+                {
+                    foreach(var detail in attachment.Details)
+                    {
+                        if (string.Equals("networkInterfaceId", detail.Name, StringComparison.OrdinalIgnoreCase))
+                            return detail.Value;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+
+        public Visibility StoppedVisibility
+        {
+            get
+            {
+                return string.Equals(this._nativeTask.DesiredStatus, "STOPPED", StringComparison.OrdinalIgnoreCase) ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        public Visibility RunningVisibility
+        {
+            get { return this.StoppedVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible; }
+        }
+
+        public override void GetPropertyNames(out string className, out string componentName)
+        {
+            className = "Task";
+            componentName = this.TaskId;
         }
     }
 }

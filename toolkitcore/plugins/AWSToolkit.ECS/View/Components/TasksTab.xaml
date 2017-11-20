@@ -57,25 +57,16 @@
             <Button Name="_ctlStopAll" Click="StopAll_Click" Width="60">Stop All</Button>
         </ToolBar>
 
-        <commonui:ToolkitDataGridWrapper Grid.Row="1" ItemsSource="{Binding Tasks}" AutoGenerateColumns="False" CellStyle="{DynamicResource awsDataGridCellCentering}"
-                         CanUserAddRows="False" CanUserDeleteRows="False" DockPanel.Dock="Top"
-                         Name="_ctlTasks"
-                         SelectionChanged="onTasksSelectionChanged"
-                         HorizontalAlignment="Stretch" HeadersVisibility="Column">
-            <commonui:ToolkitDataGridWrapper.Columns>
-
-                <DataGridTextColumn Header="Task" Binding="{Binding TaskId, Mode=OneWay}" Width="auto"/>
-                <DataGridTextColumn Header="Launch Type" Binding="{Binding LaunchType, Mode=OneWay}" Width="auto"/>
-                <DataGridTextColumn Header="Task Definition" Binding="{Binding TaskDefinition, Mode=OneWay}" Width="auto"/>
-                <DataGridTextColumn Header="Last Status" Binding="{Binding NativeTask.LastStatus, Mode=OneWay}" Width="auto"/>
-                <DataGridTextColumn Header="Desired Status" Binding="{Binding NativeTask.DesiredStatus, Mode=OneWay}" Width="auto"/>
-                <DataGridTextColumn Header="Started At" Binding="{Binding StartedAt, Mode=OneWay}" Width="auto"/>
-                <DataGridTextColumn Header="Stopped At" Binding="{Binding StoppedAt, Mode=OneWay}" Width="auto"/>
-                <DataGridTextColumn Header="Stopped Reason" Binding="{Binding CombinedStoppedReason, Mode=OneWay}" Width="auto"/>
-                <DataGridTextColumn Header="Group" Binding="{Binding NativeTask.Group, Mode=OneWay}" Width="auto"/>
-                <DataGridTextColumn Header="Started By" Binding="{Binding NativeTask.StartedBy, Mode=OneWay}" Width="auto"/>
-
-            </commonui:ToolkitDataGridWrapper.Columns>
-        </commonui:ToolkitDataGridWrapper>
+        <ListBox Grid.Row="1" Name="_ctlListOfTasks" HorizontalContentAlignment="Stretch"
+            ScrollViewer.CanContentScroll="False"
+            SelectionChanged="onTasksSelectionChanged"
+            ItemsSource="{Binding Tasks}"
+            >
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <local:TasksTabTemplate/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </Grid>
 </commonui:BaseAWSUserControl>
