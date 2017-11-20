@@ -86,7 +86,7 @@ namespace Amazon.ECS.Tools.Commands
 
                 var dotnetCli = new DotNetCLIWrapper(this.Logger, projectLocation);
                 this.Logger?.WriteLine("Executing publish command");
-                if (dotnetCli.Publish(projectLocation, "obj/Docker/publish", targetFramework, configuration) != 0)
+                if (dotnetCli.Publish(projectLocation, DetermineDockerCopyLocation(projectLocation), targetFramework, configuration) != 0)
                 {
                     throw new DockerToolsException("Error executing \"dotnet publish\"", DockerToolsException.CommonErrorCode.DotnetPublishFailed);
                 }
@@ -212,6 +212,37 @@ namespace Amazon.ECS.Tools.Commands
         protected override void SaveConfigFile(JsonData data)
         {
             this.PushDockerImageProperties.PersistSettings(this, data);
+        }
+
+        private string DetermineDockerCopyLocation(string projectLocation)
+        {
+            var location = "obj/Docker/publish";
+
+            var dockerFilePath = Path.Combine(projectLocation, "Dockerfile");
+            if(File.Exists(dockerFilePath))
+            {
+                using (StreamReader reader = new StreamReader(dockerFilePath))
+                {
+                    string line;
+                    while((line = reader.ReadLine()) != null)
+                    {
+                        if(line.StartsWith("COPY ") && line.Contains(":-"))
+                        {
+                            int start = line.IndexOf(":-") + 2;
+                            int end = line.IndexOf('}', start);
+                            if (end == -1)
+                                continue;
+
+                            location = line.Substring(start, end - start).Trim();
+                            break;
+                        }
+                    }
+                }
+            }
+
+
+            this.Logger.WriteLine("Determine docker publish location to be {0}.", location);
+            return location;
         }
     }
 }
