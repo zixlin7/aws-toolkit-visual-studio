@@ -27,6 +27,11 @@ namespace Amazon.AWSToolkit.ECS.Model
             get { return _inner?.ImageDigest ?? ""; }
         }
 
+        public ImageDetail NativeImageDetail
+        {
+            get { return this._inner; }
+        }
+
         public string Size
         {
             get

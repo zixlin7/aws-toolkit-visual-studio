@@ -115,7 +115,7 @@ namespace Amazon.AWSToolkit.ECS.Model
         public void SetImages(ICollection<ImageDetailWrapper> images)
         {
             _images.Clear();
-            _images.AddRange(images);
+            _images.AddRange(images.OrderByDescending(x => x.NativeImageDetail.ImagePushedAt));
         }
     }
 }
