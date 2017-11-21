@@ -183,7 +183,7 @@
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="760"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" Text="{Binding Title}" Style="{DynamicResource awsTextBlock155PercentStyle}" />
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" Text="{Binding Title}" Style="{DynamicResource awsTextBlock133PercentStyle}" />
                                         <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" TextWrapping="Wrap" Text="{Binding InfoText}" Style="{DynamicResource awsInfoTextStyle}"/>
                                     </Grid>
                                 </Border>
