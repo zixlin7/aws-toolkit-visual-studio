@@ -303,6 +303,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 this._ctlTaskCPU.ItemsSource = new TaskCPUItemValue[0];
                 this._ctlTaskMemory.Items.Clear();
             }
+
+            NotifyPropertyChanged("LaunchType");
         }
 
         public string TaskCPU

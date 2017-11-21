@@ -62,19 +62,19 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             this._ctlDeploymentOptionPicker.Items.Add
             (
                 new DeploymentOptionItem(Constants.DeployMode.DeployService, "Service on an ECS Cluster",
-                    "After building a Docker image with the dotnet and docker CLI tools the image will be deployed to an Amazon EC2 Container Service Cluster.")
+                    "Deploy the application as a service on an Amazon EC2 Container Service Cluster. A service is for applications like Web applications that are intended to run indefinitely.")
+            );
+
+            this._ctlDeploymentOptionPicker.Items.Add
+            (
+                new DeploymentOptionItem(Constants.DeployMode.RunTask, "Run Task on an ECS Cluster",
+                    "Execute the application on an Amazon EC2 Container Service Cluster as a task.")
             );
 
             this._ctlDeploymentOptionPicker.Items.Add
             (
                 new DeploymentOptionItem(Constants.DeployMode.ScheduleTask, "Scheduled Task on an ECS Cluster",
                     "Deploy the application as a scheduled task running on an Amazon EC2 Container Service Cluster.")
-            );
-
-            this._ctlDeploymentOptionPicker.Items.Add
-            (
-                new DeploymentOptionItem(Constants.DeployMode.RunTask, "Run Task on an ECS Cluster",
-                    "Execute the application on an Amazon EC2 Container Service Cluster as Task.")
             );
 
             this._ctlDeploymentOptionPicker.Items.Add
@@ -336,7 +336,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         private void _ctlDeploymentOptionPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var option = this._ctlDeploymentOptionPicker.SelectedItem as DeploymentOptionItem;
-            this._ctlDeploymentOptionInfoText.Text = option != null ? option.InfoText : string.Empty;
             NotifyPropertyChanged("DeploymentOption");
         }
 

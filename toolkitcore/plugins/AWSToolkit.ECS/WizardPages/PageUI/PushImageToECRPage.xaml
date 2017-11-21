@@ -9,6 +9,10 @@
     d:DesignHeight="400"
     d:DesignWidth="600"
     mc:Ignorable="d">
+    
+    
+
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -145,9 +149,9 @@
 
                 <Label
                 Grid.Row="0"
-                Margin="0"
+                Margin="0, 15,0,0"
                 Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
-                    Deployment
+                    Deployment Target
                 </Label>
 
                 <ComboBox
@@ -156,20 +160,38 @@
                     Grid.Column="0"
                     Margin="16,2,4,2"
                     SelectedIndex="0"
-                    DisplayMemberPath="Title"
                     SelectionChanged="_ctlDeploymentOptionPicker_SelectionChanged"
-                    Style="{DynamicResource awsComboBoxStyle}"/>
+                    Style="{DynamicResource awsComboBoxStyle}">
 
 
-                <TextBlock
-                    Name="_ctlDeploymentOptionInfoText"
-                    Grid.Row="2"
-                    Grid.Column="0"
-                    Margin="16,2,4,0"
-                    FontStyle="Italic"
-                    Style="{DynamicResource awsInfoTextStyle}"
-                    TextWrapping="Wrap">
-                </TextBlock>
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <Grid HorizontalAlignment="Stretch">
+                                <Border
+                                    HorizontalAlignment="Stretch"
+                                    Padding="2"
+                                    Background="{DynamicResource awsListBoxPanelItemBackgroundBrushKey}"
+                                    BorderBrush="{DynamicResource awsListBoxPanelItemBackgroundBrushKey}"
+                                    BorderThickness="2"
+                                    CornerRadius="4"
+                                    >
+                                    <Grid HorizontalAlignment="Stretch">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="auto"/>
+                                            <RowDefinition Height="auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="760"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Row="0" Grid.Column="0" Margin="3" Text="{Binding Title}" Style="{DynamicResource awsTextBlock155PercentStyle}" />
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Margin="3" TextWrapping="Wrap" Text="{Binding InfoText}" Style="{DynamicResource awsInfoTextStyle}"/>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                    
+                </ComboBox>
 
             </Grid>
         </Grid>
@@ -182,7 +204,7 @@
             <CheckBox
                 Grid.Row="0"
                 Name="_ctlPersistSettings"
-                Margin="18,10,4,4"
+                Margin="18,30,4,4"
                 IsChecked="True"
                 Style="{DynamicResource awsCheckboxButtonBaseStyle}">
                 Save settings to aws-ecs-tools-defaults.json and configure project for command line deployment.
