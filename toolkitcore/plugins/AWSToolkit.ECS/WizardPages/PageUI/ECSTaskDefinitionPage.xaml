@@ -224,7 +224,7 @@
                     FontStyle="Italic"
                     Style="{DynamicResource awsInfoTextStyle}"
                     TextWrapping="Wrap">
-                    Select an IAM role to provide AWS credentials to your application to access AWS Servces.
+                    Select an IAM role to provide AWS credentials to your application to access AWS Services.
                 </TextBlock>
 
                 <Label

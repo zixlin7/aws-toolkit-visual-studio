@@ -50,7 +50,7 @@ namespace Amazon.AWSToolkit.ECS.View
         {
             get
             {
-                return "Cluster: " + this._controller.EndPoint + "_" + this._controller.Account.SettingsUniqueKey;
+                return "Cluster: " + this._controller.EndPoint + "_" + this._controller.Account.SettingsUniqueKey + "_" + this._controller.FeatureViewModel.Name;
             }
         }
 
