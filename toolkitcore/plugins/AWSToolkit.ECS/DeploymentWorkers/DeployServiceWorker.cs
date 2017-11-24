@@ -456,9 +456,12 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             var perZones = new Dictionary<string, Subnet>();
             foreach(var subnet in allSubnets)
             {
-                if (subnet.State == SubnetState.Available)
+                if (!perZones.ContainsKey(subnet.AvailabilityZone) && subnet.MapPublicIpOnLaunch)
                 {
-                    perZones[subnet.AvailabilityZone] = subnet;
+                    if (subnet.State == SubnetState.Available)
+                    {
+                        perZones[subnet.AvailabilityZone] = subnet;
+                    }
                 }
             }
 
@@ -471,7 +474,6 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
             return selectedSubnets;
         }
-
 
         private List<string> AssignELBSecurityGroupToEC2SecurityGroup(State state, string elbSecurityGroupId)
         {

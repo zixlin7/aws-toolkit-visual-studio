@@ -241,7 +241,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 this._ctNewClusterDescription.Visibility = Visibility.Visible;
                 this._ctlNewClusterName.IsEnabled = true;
                 this._ctlNewClusterName.Focus();
-                this._ctlLaunchTypePicker.SelectedIndex = 0;
+                this._ctlLaunchTypePicker.SelectedIndex = this.PageController.IsFargateSupported ? 0 : 1;
                 this._ctlLaunchTypePicker.IsEnabled = false;
             }
             else
