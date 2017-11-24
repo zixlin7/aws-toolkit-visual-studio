@@ -141,9 +141,12 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 evnt.AddProperty(AttributeKeys.ECSDeployService, "Unknown");
                 SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
-                CleanupELBResources(elbChanges);
-                LOGGER.Error("Error deploying to ECS Cluster.", e);
-                this.Helper.SendCompleteErrorAsync("Error deploying to ECS Cluster: " + e.Message);
+                if (elbChanges != null)
+                {
+                    CleanupELBResources(elbChanges);
+                    LOGGER.Error("Error deploying to ECS Cluster.", e);
+                    this.Helper.SendCompleteErrorAsync("Error deploying to ECS Cluster: " + e.Message);
+                }
             }
         }
 

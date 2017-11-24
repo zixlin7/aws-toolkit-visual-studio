@@ -69,6 +69,17 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             IntializeIAMPickerForAccountAsync(role);
         }
 
+        public Visibility MemorySettingsVisibility
+        {
+            get
+            {
+                if (this.PageController.HostingWizard.IsFargateLaunch())
+                    return Visibility.Collapsed;
+
+                return Visibility.Visible;
+            }
+        }
+
         public void PageActivated()
         {
             if(this.PageController.HostingWizard.IsFargateLaunch())
@@ -421,7 +432,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 if (this.PageController.HostingWizard.IsFargateLaunch() && string.IsNullOrEmpty(this.TaskExecutionRole) && !this.CreateNewTaskExecutionRole)
                     return false;
 
-                if (!this.MemoryHardLimit.HasValue && !this.MemorySoftLimit.HasValue)
+                if (!this.PageController.HostingWizard.IsFargateLaunch() && !this.MemoryHardLimit.HasValue && !this.MemorySoftLimit.HasValue)
                     return false;
 
                 return true;

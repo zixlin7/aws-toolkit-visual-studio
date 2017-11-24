@@ -80,14 +80,14 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             return _pageUI;
         }
 
-        public Constants.DeployMode? DeploymentMode
+        public bool IsFargateSupported
         {
             get
             {
-                if (!HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DeploymentMode))
-                    return null;
+                if (!HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.IsFargateSupported))
+                    return false;
 
-                return (Constants.DeployMode)HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
+                return (bool)HostingWizard[PublishContainerToAWSWizardProperties.IsFargateSupported];
             }
         }
 

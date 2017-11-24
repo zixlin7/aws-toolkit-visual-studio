@@ -35,6 +35,8 @@ namespace Amazon.AWSToolkit.ECS
 
         public static readonly string IsWebProject = "isWebProject";
 
+        public static readonly string IsFargateSupported = "IsFargateSupported";
+
         public static readonly string SelectedProjectFile = "selectedProjectFile";
         public static readonly string SourcePath = "sourcePath";
         public static readonly string SafeProjectName = "safeProjectName";

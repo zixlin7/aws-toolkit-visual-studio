@@ -69,7 +69,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public void PageActivated()
         {
-            if (this.PageController.DeploymentMode.Value == Constants.DeployMode.ScheduleTask)
+            if (!this.PageController.IsFargateSupported)
             {
                 this._ctlLaunchTypePicker.SelectedIndex = 1;
                 this._ctlLaunchTypePicker.IsEnabled = false;
@@ -249,7 +249,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 this._ctlNewClusterName.Visibility = Visibility.Collapsed;
                 this._ctNewClusterDescription.Visibility = Visibility.Collapsed;
                 this._ctlNewClusterName.IsEnabled = false;
-                this._ctlLaunchTypePicker.IsEnabled = !this.PageController.DeploymentMode.HasValue || this.PageController.DeploymentMode.Value != Constants.DeployMode.ScheduleTask;
+                this._ctlLaunchTypePicker.IsEnabled = this.PageController.IsFargateSupported;
             }
 
             NotifyPropertyChanged("Cluster");
@@ -295,11 +295,22 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     var previousAssign = (bool)this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.AssignPublicIpAddress];
                     this.AssignPublicIpAddress = previousAssign;
                 }
+                else
+                {
+                    this.AssignPublicIpAddress = true;
+                }
                 
             }
             else
             {
-                this._ctlLaunchTypeDescription.Text = "With the EC2 launch type, the application will run on the registered container instances for the cluster.";
+                if(!this.PageController.IsFargateSupported)
+                {
+                    this._ctlLaunchTypeDescription.Text = $"Fargate is currently not supported in this region. Fargate is supported in the regions: {string.Join(", ", ECSWizardUtils.GetFargateSupportedRegions().ToArray())}";
+                }
+                else
+                {
+                    this._ctlLaunchTypeDescription.Text = "With the EC2 launch type, the application will run on the registered container instances for the cluster.";
+                }
                 this._ctlTaskCPU.ItemsSource = new TaskCPUItemValue[0];
                 this._ctlTaskMemory.Items.Clear();
             }

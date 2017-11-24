@@ -127,27 +127,25 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 return false;
 
             bool resetForwardPages = false;
-            if (_lastSavedAccount == null)
-            {
-                _lastSavedAccount = _pageUI.SelectedAccount;
-                _lastSavedRegion = _pageUI.SelectedRegion;
-            }
-            else
-            {
-                if (_lastSavedAccount != _pageUI.SelectedAccount || _lastSavedRegion != _pageUI.SelectedRegion)
-                    resetForwardPages = true;
-            }
+            if (_lastSavedAccount != _pageUI.SelectedAccount || _lastSavedRegion != _pageUI.SelectedRegion)
+                resetForwardPages = true;
+
+            _lastSavedAccount = _pageUI.SelectedAccount;
+            _lastSavedRegion = _pageUI.SelectedRegion;
+
 
             HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] = _pageUI.SelectedAccount;
             HostingWizard[PublishContainerToAWSWizardProperties.Region] = _pageUI.SelectedRegion;
 
             HostingWizard[PublishContainerToAWSWizardProperties.Configuration] = _pageUI.Configuration;
-            HostingWizard[PublishContainerToAWSWizardProperties.DockerRepository] = _pageUI.DockerRepository;
-            HostingWizard[PublishContainerToAWSWizardProperties.DockerTag] = _pageUI.DockerTag;
+            HostingWizard[PublishContainerToAWSWizardProperties.DockerRepository] = _pageUI.DockerRepository.ToLower();
+            HostingWizard[PublishContainerToAWSWizardProperties.DockerTag] = _pageUI.DockerTag.ToLower();
 
             HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode] = _pageUI.DeploymentOption.Mode;
 
             HostingWizard[PublishContainerToAWSWizardProperties.PersistSettingsToConfigFile] = _pageUI.PersistSettingsToConfigFile;
+
+            HostingWizard[PublishContainerToAWSWizardProperties.IsFargateSupported] = ECSWizardUtils.IsFargateSupportInRegion(this._pageUI.SelectedRegion.SystemName) && _pageUI.DeploymentOption.Mode != Constants.DeployMode.ScheduleTask;
 
             if (resetForwardPages)
             {

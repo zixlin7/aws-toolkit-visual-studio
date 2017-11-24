@@ -111,6 +111,7 @@
                 Grid.Column="0"
                 Margin="10,2,4,2"
                 VerticalAlignment="Center"
+                Visibility="{Binding MemorySettingsVisibility}"
                 Style="{DynamicResource awsLabelBaseStyle}">
                 _Memory (MiB):
             </Label>
@@ -119,6 +120,7 @@
                 Grid.Row="2"
                 Grid.Column="1"
                 Grid.ColumnSpan="3"
+                Visibility="{Binding MemorySettingsVisibility}"
                 Orientation="Horizontal"
                 >
 
