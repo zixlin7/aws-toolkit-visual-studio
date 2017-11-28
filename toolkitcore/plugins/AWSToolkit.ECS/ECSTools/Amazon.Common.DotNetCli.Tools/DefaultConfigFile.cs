@@ -12,7 +12,7 @@ namespace Amazon.Common.DotNetCli.Tools
         JsonData _rootData;
 
         public DefaultConfigFile()
-    :       this(new JsonData(), string.Empty)
+    : this(new JsonData(), string.Empty)
         {
         }
 
