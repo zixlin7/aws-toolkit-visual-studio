@@ -254,7 +254,7 @@
                     FontStyle="Italic"
                     Style="{DynamicResource awsInfoTextStyle}"
                     TextWrapping="Wrap">
-                    Fargate requires a role to puill private images and publish logs on your behalf.
+                    Fargate requires a role to pull private images and publish logs on your behalf.
                 </TextBlock>
 
             </Grid>
