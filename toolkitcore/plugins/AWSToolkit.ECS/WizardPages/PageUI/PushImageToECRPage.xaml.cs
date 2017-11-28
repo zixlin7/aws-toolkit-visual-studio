@@ -62,25 +62,25 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             this._ctlDeploymentOptionPicker.Items.Add
             (
                 new DeploymentOptionItem(Constants.DeployMode.DeployService, "Service on an ECS Cluster",
-                    "Deploy the application as a service on an Amazon EC2 Container Service Cluster. A service is for applications like Web applications that are intended to run indefinitely.")
+                    "Deploy the application as a service on an Amazon Elastic Container Service Cluster. A service is for applications like Web applications that are intended to run indefinitely.")
             );
 
             this._ctlDeploymentOptionPicker.Items.Add
             (
                 new DeploymentOptionItem(Constants.DeployMode.RunTask, "Run Task on an ECS Cluster",
-                    "Execute the application on an Amazon EC2 Container Service Cluster as a task.")
+                    "Execute the application on an Amazon Elastic Container Service Cluster as a task.")
             );
 
             this._ctlDeploymentOptionPicker.Items.Add
             (
                 new DeploymentOptionItem(Constants.DeployMode.ScheduleTask, "Scheduled Task on an ECS Cluster",
-                    "Deploy the application as a scheduled task running on an Amazon EC2 Container Service Cluster.")
+                    "Deploy the application as a scheduled task running on an Amazon Elastic Container Service Cluster.")
             );
 
             this._ctlDeploymentOptionPicker.Items.Add
             (
-                new DeploymentOptionItem(Constants.DeployMode.PushOnly, "Push only the Docker image to Amazon EC2 Container Registry",
-                    "The Docker image will be pushed to Amazon EC2 Container Registry. Afterwards you can choose how to run the Docker image.")
+                new DeploymentOptionItem(Constants.DeployMode.PushOnly, "Push only the Docker image to Amazon Elastic Container Registry",
+                    "The Docker image will be pushed to Amazon Elastic Container Registry. Afterwards you can choose how to run the Docker image.")
             );
 
             this._ctlDeploymentOptionPicker.SelectedIndex = 0;
