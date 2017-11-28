@@ -138,7 +138,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public bool CreateNewIAMRole
         {
-            get { return this._ctlServiceIAMRole.SelectedIndex == 0; }            
+            get { return this.ShouldConfigureELB && this._ctlServiceIAMRole.SelectedIndex == 0; }            
         }
 
         public void SetCreateNewIAMRole()
@@ -148,14 +148,17 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string LoadBalancer
         {
-            get { return this._ctlLoadBalancer.Text; }
-            set { this._ctlLoadBalancer.Text = value; }
+            get { return this._ctlLoadBalancer.SelectedItem as string; }
+            set { this._ctlLoadBalancer.SelectedItem = value; }
         }
 
         public string LoadBalancerArn
         {
             get
             {
+                if (!this.ShouldConfigureELB || string.IsNullOrEmpty(this.LoadBalancer))
+                    return null;
+
                 Amazon.ElasticLoadBalancingV2.Model.LoadBalancer loadBalancer;
                 if (this._existingLoadBalancers.TryGetValue(this.LoadBalancer, out loadBalancer))
                     return loadBalancer.LoadBalancerArn;
@@ -216,14 +219,17 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string ListenerPort
         {
-            get { return this._ctlListenerPorts.Text; }
-            set { this._ctlListenerPorts.Text = value; }
+            get { return this._ctlListenerPorts.SelectedItem as string; }
+            set { this._ctlListenerPorts.SelectedItem = value; }
         }
 
         public string ListenerArn
         {
             get
             {
+                if (!this.ShouldConfigureELB || string.IsNullOrEmpty(this.ListenerPort))
+                    return null;
+
                 Amazon.ElasticLoadBalancingV2.Model.Listener listener;
                 if (this._existingListeners.TryGetValue(this.ListenerPort, out listener))
                     return listener.ListenerArn;
@@ -275,14 +281,17 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string TargetGroup
         {
-            get { return this._ctlTargetGroup.Text; }
-            set { this._ctlTargetGroup.Text = value; }
+            get { return this._ctlTargetGroup.SelectedItem as string; }
+            set { this._ctlTargetGroup.SelectedItem = value; }
         }
 
         public string TargetGroupArn
         {
             get
             {
+                if (!this.ShouldConfigureELB || string.IsNullOrEmpty(this.TargetGroup))
+                    return null;
+
                 Amazon.ElasticLoadBalancingV2.Model.TargetGroup targetGroup;
                 if (this._existingTargetGroups.TryGetValue(this.TargetGroup, out targetGroup))
                     return targetGroup.TargetGroupArn;
@@ -355,17 +364,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
-        public string ExistingPathPatterns
-        {
-            get { return this._ctlListenerPorts.Text; }
-            set { this._ctlListenerPorts.Text = value; }
-        }
-
-        private void _ctlExistingPathPatterns_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            NotifyPropertyChanged("ExistingPathPatterns");
-        }
-
         string _healthCheckPath;
         public string HealthCheckPath
         {
@@ -381,6 +379,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             get
             {
+                if (!this.ShouldConfigureELB || string.IsNullOrEmpty(this.TargetGroup))
+                    return false;
+
                 if (this.CreateNewTargetGroup)
                     return true;
 

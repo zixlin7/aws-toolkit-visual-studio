@@ -22,7 +22,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
         static ILog _logger = LogManager.GetLogger(typeof(ServiceRootViewModel));
 
         public RootViewModel(AccountViewModel accountViewModel)
-            : base(accountViewModel.MetaNode.FindChild<RootViewMetaNode>(), accountViewModel, "Amazon ECS")
+            : base(accountViewModel.MetaNode.FindChild<RootViewMetaNode>(), accountViewModel, "Amazon Elastic Container Service")
         {
             this._metaNode = base.MetaNode as RootViewMetaNode;
             this._accountViewModel = accountViewModel;
@@ -61,8 +61,8 @@ namespace Amazon.AWSToolkit.ECS.Nodes
         {
             get
             {
-                return "Amazon EC2 Container Service (Amazon ECS) is a highly scalable, fast, container management service that makes it easy to run, stop, "
-                        + "and manage Docker containers on a cluster of EC2 instances. Images may be managed using Amazon EC2 Container Registry (Amazon ECR), "
+                return "Amazon Elastic Container Service (Amazon ECS) is a highly scalable, fast, container management service that makes it easy to run, stop, "
+                        + "and manage Docker containers. Images may be managed using Amazon Elastic Container Registry (Amazon ECR), "
                         + "a managed AWS Docker registry service";
             }
         }

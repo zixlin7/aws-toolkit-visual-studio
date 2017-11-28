@@ -135,6 +135,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 {
                     properties.TaskDefinitionExecutionRole = Amazon.Common.DotNetCli.Tools.RoleHelper.CreateRole(
                         this._iamClient, ECSWizardUtils.DEFAULT_ECS_TASK_EXECUTION_ROLE, Amazon.Common.DotNetCli.Tools.Constants.ECS_TASKS_ASSUME_ROLE_POLICY, "CloudWatchLogsFullAccess", "AmazonEC2ContainerRegistryReadOnly");
+
+                    properties.TaskDefinitionNetworkMode = NetworkMode.Awsvpc;
                 }
                 else
                 {
@@ -143,6 +145,10 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
                 properties.TaskCPU = hostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskCPU] as string;
                 properties.TaskMemory = hostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskMemory] as string;
+            }
+            else
+            {
+                properties.TaskDefinitionNetworkMode = NetworkMode.Bridge;
             }
 
 

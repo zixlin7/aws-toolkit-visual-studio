@@ -72,7 +72,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
             ThreadPool.QueueUserWorkItem(new WaitCallback(this.DeleteServiceAsync));
         }
 
-        private void CleanupEC2SeurityGroup(string vpcId, List<string> elbSecurityGroups)
+        private void CleanupEC2SecurityGroup(string vpcId, List<string> elbSecurityGroups)
         {
             try
             {
@@ -147,7 +147,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 if (performedRevoke)
                 {
                     this._control.AppendOutputMessage("Waiting for permission revokes to finish up");
-                    Thread.Sleep(TimeSpan.FromSeconds(15));
+                    Thread.Sleep(TimeSpan.FromSeconds(20));
                 }
 
                 this._control.AppendOutputMessage("Deleting load balancer security group {0}", elbSecurityGroup.GroupId);
@@ -156,7 +156,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 {
                     if(retries != 0)
                     {
-                        Thread.Sleep(TimeSpan.FromSeconds(4));
+                        Thread.Sleep(TimeSpan.FromSeconds(5));
                     }
 
                     deleteSecurityGroupException = null;
@@ -199,7 +199,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                     this._control.AppendOutputMessage("Waiting for load balancer deletion to finish up");
                     Thread.Sleep(TimeSpan.FromSeconds(8));
 
-                    this.CleanupEC2SeurityGroup(this.LoadBalancer.VpcId, this.LoadBalancer.SecurityGroups);
+                    this.CleanupEC2SecurityGroup(this.LoadBalancer.VpcId, this.LoadBalancer.SecurityGroups);
                 }
                 else if (this._control.DeleteListener)
                 {

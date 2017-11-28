@@ -230,6 +230,7 @@
                 </TextBlock>
 
                 <Label
+                Name="_ctlExecutionRoleLabel"
                 Grid.Row="3"
                 Margin="8,4,4,4"
                 VerticalAlignment="Center"

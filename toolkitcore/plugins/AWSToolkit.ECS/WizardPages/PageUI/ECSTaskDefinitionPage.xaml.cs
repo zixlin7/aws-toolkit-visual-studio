@@ -88,6 +88,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 this._ctlEC2PortMappings.Visibility = Visibility.Collapsed;
                 this._ctlExecutionRole.Visibility = Visibility.Visible;
                 this._ctlExecutionRoleDescription.Visibility = Visibility.Visible;
+                this._ctlExecutionRoleLabel.Visibility = Visibility.Visible;
             }
             else
             {
@@ -95,6 +96,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 this._ctlEC2PortMappings.Visibility = Visibility.Visible;
                 this._ctlExecutionRole.Visibility = Visibility.Collapsed;
                 this._ctlExecutionRoleDescription.Visibility = Visibility.Collapsed;
+                this._ctlExecutionRoleLabel.Visibility = Visibility.Collapsed;
             }
         }
 
