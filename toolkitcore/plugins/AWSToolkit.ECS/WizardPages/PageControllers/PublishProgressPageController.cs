@@ -23,6 +23,7 @@ using Amazon.ElasticLoadBalancingV2;
 using System.IO;
 using Amazon.AWSToolkit.ECS.Nodes;
 using Amazon.CloudWatchEvents;
+using Amazon.CloudWatchLogs;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 {
@@ -170,8 +171,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 var elbClient = state.Account.CreateServiceClient<AmazonElasticLoadBalancingV2Client>(state.Region.GetEndpoint(RegionEndPointsManager.ELB_SERVICE_NAME));
                 var iamClient = state.Account.CreateServiceClient<AmazonIdentityManagementServiceClient>(state.Region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME));
                 var ec2Client = state.Account.CreateServiceClient<AmazonEC2Client>(state.Region.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME));
+                var cwlClient = state.Account.CreateServiceClient<AmazonCloudWatchLogsClient>(state.Region.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_LOGS_NAME));
 
-                var worker = new DeployServiceWorker(this, ecrClient, ecsClient, ec2Client, elbClient, iamClient);
+                var worker = new DeployServiceWorker(this, ecrClient, ecsClient, ec2Client, elbClient, iamClient, cwlClient);
                 threadPoolWorker = x => worker.Execute(state);
             }
             else if(mode == Constants.DeployMode.ScheduleTask)
@@ -191,8 +193,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 var ecsClient = state.Account.CreateServiceClient<AmazonECSClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP));
                 var iamClient = state.Account.CreateServiceClient<AmazonIdentityManagementServiceClient>(state.Region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME));
                 var cweClient = state.Account.CreateServiceClient<AmazonCloudWatchEventsClient>(state.Region.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_EVENT_SERVICE_NAME));
+                var cwlClient = state.Account.CreateServiceClient<AmazonCloudWatchLogsClient>(state.Region.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_LOGS_NAME));
 
-                var worker = new DeployScheduleTaskWorker(this, cweClient, ecrClient, ecsClient, iamClient);
+                var worker = new DeployScheduleTaskWorker(this, cweClient, ecrClient, ecsClient, iamClient, cwlClient);
                 threadPoolWorker = x => worker.Execute(state);
             }
             else if(mode == Constants.DeployMode.RunTask)
@@ -212,8 +215,10 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 var ecsClient = state.Account.CreateServiceClient<AmazonECSClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP));
                 var iamClient = state.Account.CreateServiceClient<AmazonIdentityManagementServiceClient>(state.Region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME));
                 var cweClient = state.Account.CreateServiceClient<AmazonCloudWatchEventsClient>(state.Region.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_EVENT_SERVICE_NAME));
+                var cwlClient = state.Account.CreateServiceClient<AmazonCloudWatchLogsClient>(state.Region.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_LOGS_NAME));
 
-                var worker = new DeployTaskWorker(this, ecrClient, ecsClient, iamClient);
+
+                var worker = new DeployTaskWorker(this, ecrClient, ecsClient, iamClient, cwlClient);
                 threadPoolWorker = x => worker.Execute(state);
             }
 

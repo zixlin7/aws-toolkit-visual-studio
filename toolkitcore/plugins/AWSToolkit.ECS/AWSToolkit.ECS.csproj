@@ -46,6 +46,11 @@
       <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudWatchEvents.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AWSSDK.CloudWatchLogs">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudWatchLogs.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="AWSSDK.EC2">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.EC2.dll</HintPath>

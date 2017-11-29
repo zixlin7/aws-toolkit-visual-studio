@@ -3,6 +3,7 @@ using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.CloudWatchEvents;
+using Amazon.CloudWatchLogs;
 using Amazon.Common.DotNetCli.Tools;
 using Amazon.ECR;
 using Amazon.ECS;
@@ -19,6 +20,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
     public class DeployScheduleTaskWorker : BaseWorker
     {
         IAmazonCloudWatchEvents _cweClient;
+        IAmazonCloudWatchLogs _cwlClient;
         IAmazonECR _ecrClient;
         IAmazonECS _ecsClient;
 
@@ -26,13 +28,15 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             IAmazonCloudWatchEvents cweClient,
             IAmazonECR ecrClient,
             IAmazonECS ecsClient,
-            IAmazonIdentityManagementService iamClient)
+            IAmazonIdentityManagementService iamClient,
+            IAmazonCloudWatchLogs cwlClient)
             : base(helper, iamClient)
         {
             this._cweClient = cweClient;
             this._ecrClient = ecrClient;
             this._ecsClient = ecsClient;
             this._iamClient = iamClient;
+            this._cwlClient = cwlClient;
         }
 
         public void Execute(State state)
@@ -48,6 +52,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     CWEClient = this._cweClient,
                     ECRClient = this._ecrClient,
                     ECSClient = this._ecsClient,
+                    CWLClient = this._cwlClient,
 
                     PushDockerImageProperties = ConvertToPushDockerImageProperties(state.HostingWizard),
                     TaskDefinitionProperties = ConvertToTaskDefinitionProperties(state.HostingWizard),

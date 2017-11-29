@@ -19,6 +19,7 @@ using System.Threading;
 using Amazon.AWSToolkit.ECS.WizardPages;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.Common.DotNetCli.Tools;
+using Amazon.CloudWatchLogs;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
@@ -28,20 +29,23 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         IAmazonECS _ecsClient;
         IAmazonEC2 _ec2Client;
         IAmazonElasticLoadBalancingV2 _elbClient;
-        
+        IAmazonCloudWatchLogs _cwlClient;
+
 
         public DeployServiceWorker(IDockerDeploymentHelper helper,
             IAmazonECR ecrClient,
             IAmazonECS ecsClient,
             IAmazonEC2 ec2Client,
             IAmazonElasticLoadBalancingV2 elbClient,
-            IAmazonIdentityManagementService iamClient)
+            IAmazonIdentityManagementService iamClient,
+            IAmazonCloudWatchLogs cwlClient)
             : base(helper, iamClient)
         {
             this._ecrClient = ecrClient;
             this._ecsClient = ecsClient;
             this._ec2Client = ec2Client;
             this._elbClient = elbClient;
+            this._cwlClient = cwlClient;
         }
 
         public void Execute(State state)
@@ -58,6 +62,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     DisableInteractive = true,
                     ECRClient = this._ecrClient,
                     ECSClient = this._ecsClient,
+                    CWLClient = this._cwlClient,
 
                     PushDockerImageProperties = ConvertToPushDockerImageProperties(state.HostingWizard),
                     TaskDefinitionProperties = ConvertToTaskDefinitionProperties(state.HostingWizard),
