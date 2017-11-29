@@ -11,8 +11,22 @@ namespace Amazon.AWSToolkit.ECS
     {
         public override string PluginName => "ECS";
 
+        public bool SupportedInThisVersionOfVS()
+        {
+            var shellVersion = ToolkitFactory.Instance.ShellProvider.ShellVersion;
+            if (shellVersion == "2013" || shellVersion == "2015")
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public override void RegisterMetaNodes()
         {
+            if (!SupportedInThisVersionOfVS())
+                return;
+
             var clustersRootMetaNode = new ClustersRootViewMetaNode();
             var clusterMetaNode = new ClusterViewMetaNode();
             clustersRootMetaNode.Children.Add(clusterMetaNode);

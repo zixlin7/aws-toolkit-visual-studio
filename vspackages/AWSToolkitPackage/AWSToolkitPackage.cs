@@ -318,6 +318,10 @@ namespace Amazon.AWSToolkit.VisualStudio
                     }
                 }
                 catch (Exception) { }
+
+                if (_awsECSPlugin == null || !_awsECSPlugin.SupportedInThisVersionOfVS())
+                    return null;
+
                 return _awsECSPlugin;
             }
         }
