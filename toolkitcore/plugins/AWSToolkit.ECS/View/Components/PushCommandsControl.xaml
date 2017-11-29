@@ -351,7 +351,7 @@
                     </FlowDocument>
                 </FlowDocumentScrollViewer>
             </TabItem>
-
+<!--
             <TabItem Header="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type components:PushCommandsControl}}, 
                 Path=DotNetCliTabHeader, Mode=OneTime}">
                 <FlowDocumentScrollViewer VerticalScrollBarVisibility="Auto">
@@ -364,6 +364,7 @@
                     </FlowDocument>
                 </FlowDocumentScrollViewer>
             </TabItem>
+-->
         </TabControl>
     </Grid>    
     

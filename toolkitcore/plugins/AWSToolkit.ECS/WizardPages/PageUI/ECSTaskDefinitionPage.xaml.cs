@@ -573,25 +573,57 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
-        int? _memorySoftLimit;
-        public int? MemorySoftLimit
+        string _memorySoftLimitStr;
+        public string MemorySoftLimitStr
         {
-            get { return _memorySoftLimit; }
+            get { return _memorySoftLimitStr; }
             set
             {
-                _memorySoftLimit = value;
+                _memorySoftLimitStr = value;
+                NotifyPropertyChanged("MemorySoftLimitStr");
                 NotifyPropertyChanged("MemorySoftLimit");
             }
         }
-
-        int? _memoryHardLimit;
-        public int? MemoryHardLimit
+        public int? MemorySoftLimit
         {
-            get { return _memoryHardLimit; }
+            get
+            {
+                int value;
+                if (!int.TryParse(this._memorySoftLimitStr, out value))
+                    return null;
+
+                return value;
+            }
             set
             {
-                _memoryHardLimit = value;
+                MemorySoftLimitStr = value.ToString();
+            }
+        }
+
+        string _memoryHardLimitStr;
+        public string MemoryHardLimitStr
+        {
+            get { return _memoryHardLimitStr; }
+            set
+            {
+                _memoryHardLimitStr = value;
+                NotifyPropertyChanged("MemoryHardLimitStr");
                 NotifyPropertyChanged("MemoryHardLimit");
+            }
+        }
+        public int? MemoryHardLimit
+        {
+            get
+            {
+                int value;
+                if (!int.TryParse(this._memoryHardLimitStr, out value))
+                    return null;
+
+                return value;
+            }
+            set
+            {
+                MemoryHardLimitStr = value.ToString();
             }
         }
 

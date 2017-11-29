@@ -131,7 +131,7 @@
                 Width="50"
                 Margin="16,2,4,2"
                 Style="{DynamicResource awsTextBoxStyle}"
-                Text="{Binding MemorySoftLimit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Text="{Binding MemorySoftLimitStr, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 />
 
                 <Label
@@ -150,7 +150,7 @@
                 Width="50"
                 Margin="16,2,4,2"
                 Style="{DynamicResource awsTextBoxStyle}"
-                Text="{Binding MemoryHardLimit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Text="{Binding MemoryHardLimitStr, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 />
 
                 <Label

@@ -154,8 +154,16 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             {
                 HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTaskExecutionRole] = false;
                 HostingWizard[PublishContainerToAWSWizardProperties.TaskExecutionRole] = null;
-                HostingWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit] = _pageUI.MemoryHardLimit;
-                HostingWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit] = _pageUI.MemorySoftLimit;
+
+                if (this._pageUI.MemoryHardLimit.GetValueOrDefault() > 0)
+                {
+                    HostingWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit] = _pageUI.MemoryHardLimit;
+                }
+
+                if (this._pageUI.MemorySoftLimit.GetValueOrDefault() > 0)
+                {
+                    HostingWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit] = _pageUI.MemorySoftLimit;
+                }
             }
 
             HostingWizard[PublishContainerToAWSWizardProperties.TaskRole] = _pageUI.SelectedRole;
