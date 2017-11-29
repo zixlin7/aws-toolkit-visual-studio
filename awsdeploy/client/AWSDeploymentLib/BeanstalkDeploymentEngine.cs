@@ -30,6 +30,7 @@ using Amazon.IdentityManagement.Model;
 using Amazon.Auth.AccessControlPolicy;
 using Amazon.S3.Model;
 using Amazon.Auth.AccessControlPolicy.ActionIdentifiers;
+using S3Location = Amazon.ElasticBeanstalk.Model.S3Location;
 
 namespace AWSDeployment
 {

@@ -27,6 +27,7 @@ using AWSDeploymentCryptoUtility;
 using AWSDeploymentHostManagerClient;
 using ThirdParty.Json.LitJson;
 using Amazon.AWSToolkit.Util;
+using S3Location = Amazon.ElasticBeanstalk.Model.S3Location;
 
 namespace AWSDeployment
 {
