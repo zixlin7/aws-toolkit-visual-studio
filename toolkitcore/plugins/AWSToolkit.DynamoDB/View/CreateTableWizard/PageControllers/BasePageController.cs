@@ -30,6 +30,11 @@ namespace Amazon.AWSToolkit.DynamoDB.View.CreateTableWizard.PageControllers
 
         public IAWSWizard HostingWizard { get; set; }
 
+        public virtual void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;

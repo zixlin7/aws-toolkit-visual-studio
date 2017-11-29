@@ -6,6 +6,7 @@ using Microsoft.Win32;
 
 using log4net;
 using log4net.Config;
+using ThirdParty.Json.LitJson;
 
 namespace Amazon.AWSToolkit
 {
@@ -168,6 +169,35 @@ namespace Amazon.AWSToolkit
                 return KNOWN_LOCATIONS[command];
 
             return null;
+        }
+
+        public static void AddDotnetCliToolReference(string projectFilePath, string nuGetPackageName)
+        {
+            var versionContent = S3FileFetcher.Instance.GetFileContent("nuget-versions.json");
+            if (string.IsNullOrEmpty(versionContent))
+                return;
+
+            var data = JsonMapper.ToObject(versionContent);
+            if (data[nuGetPackageName] == null)
+                return;
+
+            var version = data[nuGetPackageName].ToString();
+
+            var content = File.ReadAllText(projectFilePath);
+            if (!content.Contains(nuGetPackageName) && content.StartsWith("<Project Sdk="))
+            {
+                content = content.Replace("</Project>",
+@"
+  <ItemGroup>
+    <DotNetCliToolReference Include=""NUGET_PACKAGE"" Version=""NUGET_VERSION"" />
+  </ItemGroup>
+</Project>
+");
+                content = content.Replace("NUGET_PACKAGE", nuGetPackageName);
+                content = content.Replace("NUGET_VERSION", version);
+
+                File.WriteAllText(projectFilePath, content);
+            }
         }
     }
 }

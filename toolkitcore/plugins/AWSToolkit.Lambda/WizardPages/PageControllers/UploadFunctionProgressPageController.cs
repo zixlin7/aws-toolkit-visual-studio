@@ -88,6 +88,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             return true;
         }
 
+        public void ResetPage()
+        {
+
+        }
+
+
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
         {
             // we'll re-enable Back if an error occurs. Cancel (aka Close) will enable if we have
@@ -305,7 +311,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
         {
             var iamClient = account.CreateServiceClient<AmazonIdentityManagementServiceClient>(region);
 
-            var newRole = LambdaUtilities.CreateRole(iamClient, "lambda_exec_" + functionName, LambdaConstants.LAMBDA_ASSUME_ROLE_POLICY);
+            var newRole = IAMUtilities.CreateRole(iamClient, "lambda_exec_" + functionName, LambdaConstants.LAMBDA_ASSUME_ROLE_POLICY);
 
             (this as ILambdaFunctionUploadHelpers).AppendUploadStatus("Created IAM Role {0}", newRole.RoleName);
 

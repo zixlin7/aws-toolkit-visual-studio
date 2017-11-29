@@ -58,6 +58,11 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageControllers
             get { return this._pageDescription; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;

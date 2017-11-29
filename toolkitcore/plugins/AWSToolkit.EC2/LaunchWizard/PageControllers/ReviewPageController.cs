@@ -44,6 +44,11 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
             get { return "Review your selections and click Launch to start the instance(s)."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;

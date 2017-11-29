@@ -93,7 +93,7 @@
     </Reference>
     <Reference Include="YamlDotNet">
       <HintPath>$(BuildRoot)\thirdparty\YamlDotNet.dll</HintPath>
-    </Reference>	
+    </Reference>
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build.Framework" />
@@ -175,12 +175,10 @@
   <ItemGroup Condition="'$(VSTarget)' == '15.0'">
     <Reference Include="Microsoft.VisualStudio.Shell.Framework, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Utilities, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-
     <Reference Include="Microsoft.VisualStudio.Threading, Version=15.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Shell.Interop.15.3.DesignTime, Version=15.3.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-
   </ItemGroup>
   <ItemGroup Condition="'$(VSTarget)' != '15.0'">
     <Reference Include="Microsoft.VisualStudio.Threading, Version=$(VSTarget).0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -518,6 +516,14 @@
       <Link>Plugins\AWSToolkit.EC2.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.ECS.dll">
+      <Link>Plugins\AWSToolkit.ECS.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.ECS.Interface.dll">
+      <Link>Plugins\AWSToolkit.ECS.Interface.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.ElasticBeanstalk.dll">
       <Link>Plugins\AWSToolkit.ElasticBeanstalk.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -773,6 +779,11 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ECR.dll">
+      <Link>SDK\AWSSDK.ECR.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ECS.dll">
       <Link>SDK\AWSSDK.ECS.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -795,6 +806,11 @@
     </Content>
     <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ElasticLoadBalancing.dll">
       <Link>SDK\AWSSDK.ElasticLoadBalancing.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ElasticLoadBalancingV2.dll">
+      <Link>SDK\AWSSDK.ElasticLoadBalancingV2.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -1008,6 +1024,16 @@
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.CloudFormation\AWSToolkit.CloudFormation.csproj">
       <Project>{6ae302db-2304-47c8-8e3c-96c85ac1d469}</Project>
       <Name>AWSToolkit.CloudFormation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj">
+      <Project>{e3d3dffd-6668-44be-9d8e-823f53b58f29}</Project>
+      <Name>AWSToolkit.ECS.Interface</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ECS\AWSToolkit.ECS.csproj">
+      <Project>{a09c427c-dbf7-49c8-9590-e99ad60dece2}</Project>
+      <Name>AWSToolkit.ECS</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk\AWSToolkit.ElasticBeanstalk.csproj">

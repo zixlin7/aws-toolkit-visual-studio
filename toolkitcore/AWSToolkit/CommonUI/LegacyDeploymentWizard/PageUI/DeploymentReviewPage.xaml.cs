@@ -33,6 +33,28 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
             get { return this._launchStatusWindow.IsChecked == true; }
         }
 
+        public bool IsNETCoreProjectType
+        {
+            get
+            {
+                return this._ctlDotnetCliTools.Visibility == Visibility.Visible;
+            }
+            set
+            {
+                if(value)
+                {
+                    this._ctlAWSDeployPanel.Visibility = Visibility.Collapsed;
+                    this._ctlDotnetCliTools.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    this._ctlAWSDeployPanel.Visibility = Visibility.Visible;
+                    this._ctlDotnetCliTools.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
+
         public string ConfigFileDestination
         {
             get
@@ -42,6 +64,14 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
                     return this._configurationPath.Text;
                 }
                 return string.Empty;
+            }
+        }
+
+        public bool SaveBeanstalkTools
+        {
+            get
+            {
+                return this._ctlDotnetCliPersistSettings.IsChecked.GetValueOrDefault();
             }
         }
 

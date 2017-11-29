@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-
+using Amazon.AWSToolkit.CommonUI;
 using Amazon.EC2.Model;
 
 using Amazon.AWSToolkit.EC2.Model;
@@ -108,9 +108,9 @@ namespace Amazon.AWSToolkit.EC2.View.DataGrid
 
                 EC2ColumnDefinition def;
                 if (iconAttribute == null)
-                    def = new EC2ColumnDefinition(displayNameAtt.DisplayName, EC2ColumnDefinition.ColumnType.Property, mi.Name, false, null);
+                    def = new EC2ColumnDefinition(displayNameAtt.DisplayName, ColumnType.Property, mi.Name, false, null);
                 else
-                    def = new EC2ColumnDefinition(displayNameAtt.DisplayName, EC2ColumnDefinition.ColumnType.Property, mi.Name, iconAttribute.IsIconDynamic, iconAttribute.IconPath);
+                    def = new EC2ColumnDefinition(displayNameAtt.DisplayName, ColumnType.Property, mi.Name, iconAttribute.IsIconDynamic, iconAttribute.IconPath);
 
                 columns.Add(def);
             }

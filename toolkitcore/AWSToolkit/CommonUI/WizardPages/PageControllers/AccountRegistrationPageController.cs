@@ -99,6 +99,11 @@ namespace Amazon.AWSToolkit.CommonUI.WizardPages.PageControllers
             return false;
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         #endregion
 
         bool IsForwardsNavigationAllowed

@@ -1,0 +1,411 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A09C427C-DBF7-49C8-9590-E99AD60DECE2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Amazon.AWSToolkit.ECS</RootNamespace>
+    <AssemblyName>AWSToolkit.ECS</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(BuildRoot)\buildtools\awstoolkit.snk</AssemblyOriginatorKeyFile>
+    <OldToolsVersion>3.5</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
+    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AWSSDK.MobileAnalytics">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.MobileAnalytics.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.Core">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.CloudWatchEvents">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudWatchEvents.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.EC2">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.EC2.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.ECR">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ECR.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.ECS">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ECS.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.ElasticLoadBalancingV2">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ElasticLoadBalancingV2.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.IdentityManagement">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.IdentityManagement.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="AWSSDK.S3">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.S3.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\thirdparty\log4net.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="PresentationFramework.Aero">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>4.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CloudWatchEventHelper.cs" />
+    <Compile Include="Controller\CreateRepositoryController.cs" />
+    <Compile Include="Controller\CreateTaskDefinitionController.cs" />
+    <Compile Include="Controller\DeleteClusterController.cs" />
+    <Compile Include="Controller\DeleteRepositoryController.cs" />
+    <Compile Include="Controller\DeleteServiceConfirmationController.cs" />
+    <Compile Include="Controller\FeatureController.cs" />
+    <Compile Include="Controller\LaunchClusterController.cs" />
+    <Compile Include="Controller\PublishContainerToAWSController.cs" />
+    <Compile Include="Controller\ViewClusterController.cs" />
+    <Compile Include="Controller\ViewRepositoryController.cs" />
+    <Compile Include="Controller\ViewTaskDefinitionController.cs" />
+    <Compile Include="DeploymentWorkers\BaseWorker.cs" />
+    <Compile Include="DeploymentWorkers\DeployScheduleTaskWorker.cs" />
+    <Compile Include="DeploymentWorkers\DeployServiceWorker.cs" />
+    <Compile Include="DeploymentWorkers\DeployTaskWorker.cs" />
+    <Compile Include="DeploymentWorkers\ECSToolLogger.cs" />
+    <Compile Include="DeploymentWorkers\IDockerDeploymentHelper.cs" />
+    <Compile Include="DeploymentWorkers\PushImageToECRWorker.cs" />
+    <Compile Include="ECSActivator.cs" />
+    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\AbstractCLIWrapper.cs" />
+    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Commands\BaseCommand.cs" />
+    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Commands\CommandInfo.cs" />
+    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Commands\ICommand.cs" />
+    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Constants.cs" />
+    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\DefaultConfigFile.cs" />
+    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\DotNetCLIWrapper.cs" />
+    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\ExtensionMethods.cs" />
+    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\IToolLogger.cs" />
+    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Options\CommandLineParser.cs" />
+    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Options\CommandOption.cs" />
+    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Options\CommandOptions.cs" />
+    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Options\CommandOptionValue.cs" />
+    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Options\CommonDefinedCommandOptions.cs" />
+    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\RoleHelper.cs" />
+    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\ToolsException.cs" />
+    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Utilities.cs" />
+    <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\CommandProperties.cs" />
+    <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\DeployScheduledTaskCommand.cs" />
+    <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\DeployServiceCommand.cs" />
+    <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\DeployTaskCommand.cs" />
+    <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\ECSBaseCommand.cs" />
+    <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\ECSTaskDefinitionUtilities.cs" />
+    <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\PushDockerImageCommand.cs" />
+    <Compile Include="ECSTools\Amazon.ECS.Tools\Constants.cs" />
+    <Compile Include="ECSTools\Amazon.ECS.Tools\DockerCLIWrapper.cs" />
+    <Compile Include="ECSTools\Amazon.ECS.Tools\ECSDefinedCommandOptions.cs" />
+    <Compile Include="ECSTools\Amazon.ECS.Tools\ECSToolsDefaults.cs" />
+    <Compile Include="ECSTools\Amazon.ECS.Tools\ECSUtilities.cs" />
+    <Compile Include="ECSTools\Amazon.ECS.Tools\Exceptions.cs" />
+    <Compile Include="Model\ClusterWrapper.cs" />
+    <Compile Include="Model\CreateRepositoryModel.cs" />
+    <Compile Include="Model\ImageDetailWrapper.cs" />
+    <Compile Include="Model\IWrapper.cs" />
+    <Compile Include="Model\RepositoryWrapper.cs" />
+    <Compile Include="Model\ScheduledTaskWrapper.cs" />
+    <Compile Include="Model\ServiceWrapper.cs" />
+    <Compile Include="Model\TaskDefinitionWrapper.cs" />
+    <Compile Include="Model\TaskWrapper.cs" />
+    <Compile Include="Model\ViewClusterModel.cs" />
+    <Compile Include="Model\ViewRepositoryModel.cs" />
+    <Compile Include="Model\ViewTaskDefinitionModel.cs" />
+    <Compile Include="Nodes\ClustersRootViewMetaNode.cs" />
+    <Compile Include="Nodes\ClustersRootViewModel.cs" />
+    <Compile Include="Nodes\FeatureViewMetaNode.cs" />
+    <Compile Include="Nodes\FeatureViewModel.cs" />
+    <Compile Include="Nodes\ClusterViewMetaNode.cs" />
+    <Compile Include="Nodes\ClusterViewModel.cs" />
+    <Compile Include="Nodes\RepositoriesRootViewMetaNode.cs" />
+    <Compile Include="Nodes\RepositoriesRootViewModel.cs" />
+    <Compile Include="Nodes\RepositoryViewMetaNode.cs" />
+    <Compile Include="Nodes\RepositoryViewModel.cs" />
+    <Compile Include="Nodes\RootViewMetaNode.cs" />
+    <Compile Include="Nodes\RootViewModel.cs" />
+    <Compile Include="Nodes\TaskDefinitionsRootViewMetaNode.cs" />
+    <Compile Include="Nodes\TaskDefinitionsRootViewModel.cs" />
+    <Compile Include="Nodes\TaskDefinitionViewMetaNode.cs" />
+    <Compile Include="Nodes\TaskDefinitionViewModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="View\Components\PushCommandsControl.xaml.cs">
+      <DependentUpon>PushCommandsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\ScheduledTasksTab.xaml.cs">
+      <DependentUpon>ScheduledTasksTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\ServicesTab.xaml.cs">
+      <DependentUpon>ServicesTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\ServicesTabTemplate.xaml.cs">
+      <DependentUpon>ServicesTabTemplate.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\TasksTab.xaml.cs">
+      <DependentUpon>TasksTab.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\TasksTabTemplate.xaml.cs">
+      <DependentUpon>TasksTabTemplate.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\CreateRepositoryControl.xaml.cs">
+      <DependentUpon>CreateRepositoryControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\DeleteClusterControl.xaml.cs">
+      <DependentUpon>DeleteClusterControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\DeleteRepositoryControl.xaml.cs">
+      <DependentUpon>DeleteRepositoryControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\DeleteServiceConfirmation.xaml.cs">
+      <DependentUpon>DeleteServiceConfirmation.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ViewClusterControl.xaml.cs">
+      <DependentUpon>ViewClusterControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ViewRepositoryControl.xaml.cs">
+      <DependentUpon>ViewRepositoryControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\ECSWizardUtils.cs" />
+    <Compile Include="WizardPages\PageControllers\ConfigureLoadBalancerPageController.cs" />
+    <Compile Include="View\ViewTaskDefinitionControl.xaml.cs">
+      <DependentUpon>ViewTaskDefinitionControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageControllers\ECSClusterPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\ECSServicePageController.cs" />
+    <Compile Include="WizardPages\PageControllers\ECSTaskDefinitionPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\PublishProgressPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\PushImageToECRPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\RunTaskPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\ScheduleTaskPageController.cs" />
+    <Compile Include="WizardPages\PageUI\ConfigureLoadBalancerPage.xaml.cs">
+      <DependentUpon>ConfigureLoadBalancerPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\ECSClusterPage.xaml.cs">
+      <DependentUpon>ECSClusterPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\ECSServicePage.xaml.cs">
+      <DependentUpon>ECSServicePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\ECSTaskDefinitionPage.xaml.cs">
+      <DependentUpon>ECSTaskDefinitionPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\PublishProgressPage.xaml.cs">
+      <DependentUpon>PublishProgressPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\PushImageToECRPage.xaml.cs">
+      <DependentUpon>PushImageToECRPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\RunTaskPage.xaml.cs">
+      <DependentUpon>RunTaskPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\PageUI\ScheduleTaskPage.xaml.cs">
+      <DependentUpon>ScheduleTaskPage.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\AWSToolkit.Util\AWSToolkit.Util.csproj">
+      <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
+      <Name>AWSToolkit.Util</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\AWSToolkit\AWSToolkit.csproj">
+      <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
+      <Name>AWSToolkit</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj">
+      <Project>{B8C28B72-63C0-406B-B5C6-405667DB1D6D}</Project>
+      <Name>AWSToolkit.EC2.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.EC2\AWSToolkit.EC2.csproj">
+      <Project>{bd907681-afe8-4008-97cd-11b138fddca7}</Project>
+      <Name>AWSToolkit.EC2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj">
+      <Project>{e3d3dffd-6668-44be-9d8e-823f53b58f29}</Project>
+      <Name>AWSToolkit.ECS.Interface</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.Lambda\AWSToolkit.Lambda.csproj">
+      <Project>{7102b4cf-9b9d-4827-adca-d23971cd84c3}</Project>
+      <Name>AWSToolkit.Lambda</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\launch-cluster.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="View\Components\PushCommandsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\ScheduledTasksTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\ServicesTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\ServicesTabTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\TasksTab.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\TasksTabTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\CreateRepositoryControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\DeleteClusterControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\DeleteRepositoryControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\DeleteServiceConfirmation.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ViewClusterControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ViewRepositoryControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\PageUI\ConfigureLoadBalancerPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ViewTaskDefinitionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\PageUI\ECSClusterPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\PageUI\ECSServicePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\PageUI\ECSTaskDefinitionPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\PageUI\PublishProgressPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\PageUI\PushImageToECRPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\PageUI\RunTaskPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\PageUI\ScheduleTaskPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\service-root-icon.png" />
+    <EmbeddedResource Include="Resources\EmbeddedImages\clusters.png" />
+    <EmbeddedResource Include="Resources\EmbeddedImages\repository.png" />
+    <EmbeddedResource Include="Resources\EmbeddedImages\create-repository.png" />
+    <EmbeddedResource Include="Resources\EmbeddedImages\delete-repository.png" />
+    <EmbeddedResource Include="Resources\EmbeddedImages\new-taskdef.png" />
+    <EmbeddedResource Include="Resources\EmbeddedImages\taskdef.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\launch-cluster.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\create-repository.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\new-taskdef.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ECSTools\Amazon.ECS.Tools\Properties\launchSettings.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\delete-cluster.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

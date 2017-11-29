@@ -59,7 +59,8 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
             {
                 Cursor = Cursors.Wait;
                 ReshowNavButtons(AWSWizardConstants.NavigationReason.movingBack);
-                _awsBaseWizardImpl.TransitionPage(AWSWizardConstants.NavigationReason.movingBack, _pagesContainer.Children);
+                (this as IAWSWizard).SetPageError(null);
+                _awsBaseWizardImpl.TransitionPage(AWSWizardConstants.NavigationReason.movingBack, _pageContainerPanel.Children);
             }
             catch (Exception exc)
             {
@@ -77,7 +78,7 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
             {
                 Cursor = Cursors.Wait;
                 ReshowNavButtons(AWSWizardConstants.NavigationReason.movingForward);
-                _awsBaseWizardImpl.TransitionPage(AWSWizardConstants.NavigationReason.movingForward, _pagesContainer.Children);
+                _awsBaseWizardImpl.TransitionPage(AWSWizardConstants.NavigationReason.movingForward, _pageContainerPanel.Children);
             }
             catch (Exception exc)
             {
@@ -93,7 +94,7 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
         {
             Cursor = Cursors.Wait;
             ReshowNavButtons(AWSWizardConstants.NavigationReason.movingForward);
-            bool quit = _awsBaseWizardImpl.FinishPressed(_pagesContainer.Children);
+            bool quit = _awsBaseWizardImpl.FinishPressed(_pageContainerPanel.Children);
             Cursor = Cursors.Arrow;
             if (quit)
             {
@@ -319,7 +320,7 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
                     NotifyPropertyChanged("TableOfContents");
                 }
 
-                _awsBaseWizardImpl.TransitionPage(AWSWizardConstants.NavigationReason.movingForward, _pagesContainer.Children);
+                _awsBaseWizardImpl.TransitionPage(AWSWizardConstants.NavigationReason.movingForward, _pageContainerPanel.Children);
                 Cursor = Cursors.Arrow;
 
                 var wizard = this as IAWSWizard;
@@ -440,7 +441,26 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
             Close();
         }
 
+        void IAWSWizard.SetPageError(string errorText)
+        {
+            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            {
+                _awsBaseWizardImpl.PageErrorText = errorText;
+                NotifyPropertyChanged("PageErrorText");
+                _pageErrorPanel.Visibility = string.IsNullOrEmpty(errorText) ? Visibility.Collapsed : Visibility.Visible;
+            }));
+        }
+
+
         #endregion
+
+        public string PageErrorText
+        {
+            get
+            {
+                return _awsBaseWizardImpl?.PageErrorText;
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -448,6 +468,11 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void NotifyForwardPagesReset(IAWSWizardPageController requestorPage)
+        {
+            this._awsBaseWizardImpl.NotifyForwardPagesReset(requestorPage);
         }
     }
 }

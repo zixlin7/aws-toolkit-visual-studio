@@ -56,6 +56,11 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
             get { return "Choose an Amazon Machine Image (AMI) to launch."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return !HostingWizard.IsPropertySet(LaunchWizardProperties.AMIOptions.propkey_SeedAMI);

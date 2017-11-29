@@ -50,6 +50,11 @@ namespace Amazon.AWSToolkit.CloudFront.DistributionWizard.PageController
             get { return "Turn on logging and specify where in S3 to log to."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;

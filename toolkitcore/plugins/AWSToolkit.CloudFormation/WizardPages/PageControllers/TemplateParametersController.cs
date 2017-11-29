@@ -56,6 +56,11 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
             get { return "These are parameters associated with your AWS CloudFormation template. You may review and proceed with the default parameters or make customizations as needed."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             // used in several CloudFormation deployment wizards, so only reject if Beanstalk is explicitly set

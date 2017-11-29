@@ -66,6 +66,11 @@ namespace Amazon.AWSToolkit.CloudFormation.TemplateWizards.WizardPages.PageContr
             get { return this._pageDescription; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;

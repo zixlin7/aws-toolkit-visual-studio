@@ -51,6 +51,11 @@ namespace Amazon.AWSToolkit.CloudFront.DistributionWizard.PageController
         {
             get { return "Set the CNAMEs associated with the distribution."; }
         }
+        public void ResetPage()
+        {
+
+        }
+
 
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {

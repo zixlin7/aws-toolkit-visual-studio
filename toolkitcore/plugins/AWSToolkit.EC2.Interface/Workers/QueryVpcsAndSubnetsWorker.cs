@@ -11,8 +11,9 @@ namespace Amazon.AWSToolkit.EC2.Workers
     public class QueryVpcsAndSubnetsWorker
     {
         public delegate void DataAvailableCallback(ICollection<Vpc> vpcs, ICollection<Subnet> subnets);
-
+        public delegate void ErrorCallback(Exception e);
         readonly DataAvailableCallback _callback;
+        ErrorCallback _errorCallback;
 
         struct WorkerData
         {
@@ -20,15 +21,16 @@ namespace Amazon.AWSToolkit.EC2.Workers
             public ILog Logger { get; set; }
         }
 
-        /// <summary>
-        /// Do an asynchronous query for all VPCs and the related subnets available to the user
-        /// </summary>
-        /// <param name="ec2Client"></param>
-        /// <param name="logger"></param>
-        /// <param name="callback"></param>
         public QueryVpcsAndSubnetsWorker(IAmazonEC2 ec2Client, ILog logger, DataAvailableCallback callback)
+            : this(ec2Client, logger, callback, null)
+        {
+
+        }
+
+        public QueryVpcsAndSubnetsWorker(IAmazonEC2 ec2Client, ILog logger, DataAvailableCallback callback, ErrorCallback errorCallback)
         {
             _callback = callback;
+            _errorCallback = errorCallback;
 
             var bw = new BackgroundWorker();
             bw.DoWork += Worker;
@@ -57,6 +59,13 @@ namespace Amazon.AWSToolkit.EC2.Workers
             }
             catch (Exception exc)
             {
+                if(this._errorCallback != null)
+                {
+                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                    {
+                        this._errorCallback(exc);
+                    }));
+                }
                 workerData.Logger.Error(GetType().FullName + ", exception in Worker", exc);
             }
 

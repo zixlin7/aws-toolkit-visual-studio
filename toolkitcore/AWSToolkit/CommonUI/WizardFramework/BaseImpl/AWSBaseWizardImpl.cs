@@ -316,6 +316,8 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
 
         internal ILog Logger { get { return LOGGER; } }
 
+        internal string PageErrorText { get; set; }
+
         internal Func<bool> CommitAction
         {
             get;
@@ -854,6 +856,26 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
         }
 
         private AWSBaseWizardImpl() { }
+
+        internal void NotifyForwardPagesReset(IAWSWizardPageController requestorPage)
+        {
+            if (IsFinalPage(requestorPage))
+                return;
+
+            var pageReference = ActivePageReference.Clone();
+
+
+            var page = PeekNextPage(pageReference);
+            while (page != null)
+            {
+                if (page != requestorPage)
+                {
+                    page.ResetPage();
+                }
+
+                page = PeekNextPage(pageReference);
+            }
+        }
     }
 
     /// <summary>

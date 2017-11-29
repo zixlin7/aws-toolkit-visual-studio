@@ -103,5 +103,11 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
         /// </summary>
         /// <returns></returns>
         bool AllowShortCircuit();
+
+        /// <summary>
+        /// This is called when a page earlier in the stack of pages has a major change state like changing accounts so all 
+        /// previously viewed pages that displayed data based on the earlier page state should reset itself.
+        /// </summary>
+        void ResetPage();
     }
 }

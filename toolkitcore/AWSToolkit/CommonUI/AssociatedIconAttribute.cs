@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Amazon.AWSToolkit.EC2.Model
+namespace Amazon.AWSToolkit.CommonUI
 {
-    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
-    public class AssociatedIconAttribute : System.Attribute
+    [AttributeUsage(AttributeTargets.Property)]
+    public class AssociatedIconAttribute : Attribute
     {
         public AssociatedIconAttribute(bool isIconDynamic, string iconPath)
         {
@@ -17,13 +14,11 @@ namespace Amazon.AWSToolkit.EC2.Model
         public bool IsIconDynamic
         {
             get;
-            private set;
         }
 
         public string IconPath
         {
             get;
-            private set;
         }
     }
 }

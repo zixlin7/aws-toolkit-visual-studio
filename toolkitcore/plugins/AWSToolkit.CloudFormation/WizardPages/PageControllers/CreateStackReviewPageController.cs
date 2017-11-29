@@ -49,6 +49,11 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
             get { return "Review the information below, then click Finish to start deployment."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;

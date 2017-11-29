@@ -29,8 +29,11 @@ namespace Amazon.AWSToolkit.CommonUI
                 DataGridCellInfo cellInfo = new DataGridCellInfo(grid.Items[row], grid.Columns[col]);
                 //set the cell to be the active one
                 grid.CurrentCell = cellInfo;
-                //scroll the item into view
-                grid.ScrollIntoView(grid.SelectedItem);
+                if (grid.SelectedItem != null)
+                {
+                    //scroll the item into view
+                    grid.ScrollIntoView(grid.SelectedItem);
+                }
                 //begin the edit
                 grid.BeginEdit();
             }

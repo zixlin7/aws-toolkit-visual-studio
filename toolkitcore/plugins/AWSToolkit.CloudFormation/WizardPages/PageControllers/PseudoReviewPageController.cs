@@ -52,6 +52,11 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
             get { return string.Empty; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             if (navigationReason != AWSWizardConstants.NavigationReason.movingBack)

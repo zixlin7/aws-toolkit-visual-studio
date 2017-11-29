@@ -1,0 +1,48 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.ECS.View.CreateRepositoryControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    Loaded="OnLoaded"
+    Height="110" Width="300">
+    
+    <commonui:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </commonui:BaseAWSControl.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Column="0" Grid.Row="0" Margin="5,5,5,5" 
+                   Style="{DynamicResource awsLabelBaseStyle}">
+            Repository _Name:
+        </Label>
+        <TextBox Name="_ctlNewRepositoryName"  
+                 Grid.Column="1" Grid.Row="0" Margin="5,5,5,5" 
+                 Text="{Binding RepositoryName, UpdateSourceTrigger=PropertyChanged}"
+                 Style="{DynamicResource awsTextBoxStyle}"/>
+        
+        <TextBlock Grid.Row="1"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
+                   Margin="20,2,5,2"
+                   Style="{DynamicResource awsInfoTextStyle}"
+                   TextWrapping="Wrap"
+                   FontStyle="Italic"
+                   >
+            Namespaces are optional, and they can be included in the repository 
+            name with a slash (for example, namespace/repo).
+        </TextBlock>
+
+    </Grid>
+</commonui:BaseAWSControl>

@@ -1,0 +1,219 @@
+﻿<commonUi:BaseAWSUserControl x:Class="Amazon.AWSToolkit.ECS.WizardPages.PageUI.ECSClusterPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.ECS.WizardPages.PageUI"
+    mc:Ignorable="d" 
+    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:lambdacomponents="clr-namespace:Amazon.AWSToolkit.Lambda.View.Components;assembly=AWSToolkit.Lambda"
+              
+    d:DesignHeight="400"
+    d:DesignWidth="600">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Label
+            Grid.Row="0"
+            Grid.Column="0"
+            Margin="10,10,4,2"
+            VerticalAlignment="Center"
+            Style="{DynamicResource awsLabelBaseStyle}">
+            _ECS Cluster:
+        </Label>
+
+
+        <ComboBox
+            Name="_ctlClusterPicker"
+            Grid.Row="0"
+            Grid.Column="1"
+            Margin="16,10,4,2"
+            IsEditable="False"
+            SelectionChanged="_ctlClusterPicker_SelectionChanged"
+            Style="{DynamicResource awsComboBoxStyle}" />
+
+        <TextBox
+                Name="_ctlNewClusterName"
+                Grid.Row="0"
+                Grid.Column="2"
+                Margin="4,10,4,2"
+                Visibility="Collapsed"
+                Style="{DynamicResource awsTextBoxStyle}"
+                Text="{Binding NewClusterName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                />
+        
+        <TextBlock
+                    Name="_ctNewClusterDescription"
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="4"
+                    Margin="30,4,4,2"
+                    FontStyle="Italic"
+                    Style="{DynamicResource awsInfoTextStyle}"
+                    TextWrapping="Wrap">
+            This wizard supports creating an empty cluster which is suitable for running Fargate 
+            based services and tasks. It will not have any EC2 instances registered to it so
+            services and tasks with the EC2 launch type will not run. The easiest way to create
+            a cluster with EC2 instances registered is to use the AWS web console.
+        </TextBlock>
+        
+        <Label
+            Grid.Row="2"
+            Grid.Column="0"
+            Margin="10,10,4,2"
+            VerticalAlignment="Center"
+            Style="{DynamicResource awsLabelBaseStyle}">
+            _Launch Type:
+        </Label>
+
+
+        <ComboBox
+            Name="_ctlLaunchTypePicker"
+            Grid.Row="2"
+            Grid.Column="1"
+            Margin="16,10,4,2"
+            IsEditable="False"
+            SelectionChanged="_ctlLaunchTypePicker_SelectionChanged"
+            DisplayMemberPath="Value"
+            Style="{DynamicResource awsComboBoxStyle}" />
+
+        <TextBlock
+                    Name="_ctlLaunchTypeDescription"
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="4"
+                    Margin="30,4,4,2"
+                    FontStyle="Italic"
+                    Style="{DynamicResource awsInfoTextStyle}"
+                    TextWrapping="Wrap">
+            Place Holder
+        </TextBlock>
+
+        <Label
+                Grid.Row="4"
+                Grid.ColumnSpan="2"
+                Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
+            Allocated Compute Capacity
+        </Label>
+
+        <Label
+                Grid.Row="5"
+                Grid.Column="0"
+                Margin="10,10,4,2"
+                VerticalAlignment="Center"
+                Style="{DynamicResource awsLabelBaseStyle}">
+            CPU Maximum (vCPU):
+        </Label>
+
+        <ComboBox
+                Name="_ctlTaskCPU"
+                Grid.Row="5"
+                Grid.Column="1"
+                Margin="16,10,4,2"
+                DisplayMemberPath="DisplayName"
+                SelectionChanged="_ctlTaskCPU_SelectionChanged"
+                Style="{DynamicResource awsComboBoxStyle}"/>
+
+        <Label
+                Grid.Row="5"
+                Grid.Column="2"
+                Margin="10,10,4,2"
+                VerticalAlignment="Center"
+                Style="{DynamicResource awsLabelBaseStyle}">
+            Memory Maximum (GB):
+        </Label>
+
+        <ComboBox
+                Name="_ctlTaskMemory"
+                Grid.Row="5"
+                Grid.Column="3"
+                Margin="16,10,4,2"
+                DisplayMemberPath="DisplayName"
+                SelectionChanged="_ctlTaskMemory_SelectionChanged"
+                Style="{DynamicResource awsComboBoxStyle}"/>
+
+        
+        <Label
+                Grid.Row="6"
+                Grid.ColumnSpan="2"
+                Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
+            Network Configuration
+        </Label>
+
+        
+        <Label
+            Grid.Row="7"
+            Grid.Column="0"
+            Margin="10,10,4,2"
+            VerticalAlignment="Center"
+            Style="{DynamicResource awsLabelBaseStyle}">
+            VPC Subnets:
+        </Label>
+
+        <lambdacomponents:SubnetMultiSelectionControl
+                    x:Name="_ctlSubnetsPicker"
+                    Grid.Row="7"
+                    Grid.Column="1"
+                    Margin="16,10,4,2"
+                    HorizontalAlignment="Stretch"
+                    Cursor="Wait" />
+
+        <Label
+            Grid.Row="7"
+            Grid.Column="2"
+            Margin="10,10,4,2"
+            VerticalAlignment="Center"
+            Style="{DynamicResource awsLabelBaseStyle}">
+            Security Groups:
+        </Label>
+
+        <ComboBox
+                Name="_ctlSecurityGroup"
+                Grid.Row="7"
+                Grid.Column="3"
+                Margin="16,10,4,2"
+                SelectionChanged="_ctlSecurityGroup_SelectionChanged"
+                Style="{DynamicResource awsComboBoxStyle}"/>
+
+        <CheckBox
+                Grid.Row="9"
+                Grid.ColumnSpan="3"
+                Name="_ctlAssignPublicIp"
+                Margin="10,10,4,2"
+                IsChecked="{Binding AssignPublicIpAddress}"
+                Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+            Assign Public IP Address
+        </CheckBox>
+
+    </Grid>
+</commonUi:BaseAWSUserControl>

@@ -56,6 +56,11 @@ namespace Amazon.AWSToolkit.CloudFront.DistributionWizard.PageController
             }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;

@@ -24,6 +24,7 @@ using Amazon.AWSToolkit.Shared;
 
 using Amazon.AWSToolkit.CloudFormation;
 using Amazon.AWSToolkit.ElasticBeanstalk;
+using Amazon.AWSToolkit.ECS;
 
 using Amazon.AWSToolkit.VisualStudio.ToolWindow;
 using Amazon.AWSToolkit.VisualStudio.HostedEditor;
@@ -303,6 +304,24 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
+        private IAWSECS _awsECSPlugin;
+        internal IAWSECS AWSECSPlugin
+        {
+            get
+            {
+                try
+                {
+                    if (_awsECSPlugin == null)
+                    {
+                        _awsECSPlugin = ToolkitShellProviderService.QueryAWSToolkitPluginService(typeof(IAWSECS))
+                            as IAWSECS;
+                    }
+                }
+                catch (Exception) { }
+                return _awsECSPlugin;
+            }
+        }
+
         internal IAWSElasticBeanstalk AWSBeanstalkPlugin
         {
             get
@@ -525,6 +544,10 @@ namespace Amazon.AWSToolkit.VisualStudio
 #if VS2015_OR_LATER                
                 SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidTeamExplorerConnect, AddTeamExplorerConnection, null);
 #endif                
+
+#if VS2017_OR_LATER
+                SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidPublishContainerToAWS, PublishContainerToAWS, PublishContainerToAWS_BeforeQueryStatus);
+#endif
             }
 
             var shellService = GetService(typeof(SVsShell)) as IVsShell;
@@ -791,6 +814,58 @@ namespace Amazon.AWSToolkit.VisualStudio
 
             deploymentHistory.IsInvalid = true;
             return false;
+        }
+
+        void PublishContainerToAWS(object sender, EventArgs e)
+        {
+            if(this.AWSECSPlugin != null)
+            {
+                var item = VSUtility.GetSelectedProject();
+
+                if (item == null)
+                {
+                    var shell = GetService(typeof(SAWSToolkitShellProvider)) as IAWSToolkitShellProvider;
+                    if (shell != null)
+                        shell.ShowError("The selected item is not a project that can be deployed to AWS");
+                    return;
+                }
+
+                var rootDirectory = Path.GetDirectoryName(item.FullName);
+
+                var seedProperties = new Dictionary<string, object>();
+                seedProperties[PublishContainerToAWSWizardProperties.SourcePath] = rootDirectory;
+                seedProperties[PublishContainerToAWSWizardProperties.SelectedProjectFile] = item.FullName;
+
+                seedProperties[PublishContainerToAWSWizardProperties.IsWebProject] = VSUtility.SelectedWebProject != null;
+
+                StringBuilder safeProjectName = new StringBuilder();
+                foreach(var c in Path.GetFileNameWithoutExtension(item.FullName).ToCharArray())
+                {
+                    if (char.IsLetterOrDigit(c))
+                        safeProjectName.Append(c);
+                }
+                seedProperties[PublishContainerToAWSWizardProperties.SafeProjectName] = safeProjectName.ToString();
+
+                this.AWSECSPlugin.PublishContainerToAWS(seedProperties);
+            }
+        }
+
+        void PublishContainerToAWS_BeforeQueryStatus(object sender, EventArgs evnt)
+        {
+            var publishMenuCommand = sender as OleMenuCommand;
+            publishMenuCommand.Visible = false;
+
+            try
+            {
+                if (AWSECSPlugin != null)
+                {
+                    publishMenuCommand.Visible = VSUtility.IsNETCoreDockerProject;
+                    publishMenuCommand.Enabled = !_performingDeployment;
+                }
+            }
+            catch (Exception)
+            {
+            }
         }
 
         /// <summary>

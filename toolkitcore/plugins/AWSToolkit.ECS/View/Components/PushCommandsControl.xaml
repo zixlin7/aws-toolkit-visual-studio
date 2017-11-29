@@ -1,0 +1,552 @@
+﻿<commonui:BaseAWSUserControl 
+    x:Class="Amazon.AWSToolkit.ECS.View.Components.PushCommandsControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.ECS.View.Components"
+    mc:Ignorable="d" 
+    d:DesignHeight="600" d:DesignWidth="450">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            
+            <Style x:Key="CommandGridStyle" TargetType="{x:Type Grid}">
+                <Setter Property="Margin" Value="0,8,2,8"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            </Style>
+            
+            <Style x:Key="CopyCommandButtonStyle" TargetType="{x:Type Button}">
+                <Setter Property="Margin" Value="0,0,4,0" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="ToolTip" Value="Copy"/>
+                <Setter Property="Grid.Column" Value="0"/>
+                <Setter Property="Width" Value="20"/>
+                <Setter Property="Height" Value="20"/>
+            </Style>
+            
+            <Style x:Key="CommandTextStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource awsSelectableTextBoxStyle}">
+                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="HorizontalScrollBarVisibility" Value="Hidden" />
+                <Setter Property="Grid.Column" Value="1"/>
+                <Setter Property="FontFamily" Value="Consolas"/>
+                <Setter Property="FontWeight" Value="DemiBold"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <FlowDocumentScrollViewer Grid.Row="0" 
+                                  VerticalScrollBarVisibility="Hidden">
+
+            <FlowDocument Style="{DynamicResource awsFlowDocumentBaseStyle}">
+                <Paragraph>
+                    <Run>
+                        Push commands can be used outside of Visual Studio to interact with your repository at the command line.
+                    </Run>
+                </Paragraph>
+                <Paragraph>
+                    <Run>
+                        To install Docker and either the AWS Tools for PowerShell or the AWS CLI, 
+                        and for more information on the steps below, visit the
+                    </Run>
+                    <Hyperlink
+                        IsEnabled="True"
+                        NavigateUri="https://docs.aws.amazon.com/AmazonECR/latest/userguide/ECR_GetStarted.html"
+                        RequestNavigate="HelpLink_OnRequestNavigate">
+                        ECR documentation page
+                    </Hyperlink>
+                    <Run>.</Run>
+                </Paragraph>
+            </FlowDocument>
+        </FlowDocumentScrollViewer>
+        
+        <TabControl Grid.Row="1"
+                    HorizontalContentAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    Style="{DynamicResource awsPropertyPageHorizontalTabStyle}"
+                    Margin="8,0,8,2"
+                    x:Name="_ctlTools">
+
+            <TabItem Header="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type components:PushCommandsControl}}, 
+                Path=PowerShellTabHeader, Mode=OneTime}">
+                <FlowDocumentScrollViewer VerticalScrollBarVisibility="Auto">
+                    <FlowDocument Style="{DynamicResource awsFlowDocumentBaseStyle}">
+                        <List MarkerStyle="Decimal" Padding="8,0,0,0">
+                            <ListItem>
+                                <Paragraph>
+                                    <Run>
+                                        Retrieve the docker login command that you can use to authenticate your Docker 
+                                        client to your registry.
+                                    </Run>
+                                    <LineBreak/>
+                                    <Grid Style="{StaticResource CommandGridStyle}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Style="{StaticResource CopyCommandButtonStyle}"
+                                                Click="OnClick_CopyGetLoginCommand">
+                                            <Image DataContext="{DynamicResource CommonIcons}" 
+                                                   Source="{Binding CopyIcon}"
+                                            />
+                                        </Button>
+                                        <TextBox Style="{StaticResource CommandTextStyle}"
+                                                 Text="{Binding PowerShellGetLoginCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </Grid>
+                                </Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>
+                                    <Run>
+                                        Run the docker login command that was returned in the previous step.
+                                    </Run>
+                                    <LineBreak/>
+                                    <Grid Style="{StaticResource CommandGridStyle}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Style="{StaticResource CopyCommandButtonStyle}"
+                                                Click="OnClick_CopyRunLoginCommand">
+                                            <Image DataContext="{DynamicResource CommonIcons}" 
+                                                   Source="{Binding CopyIcon}"
+                                            />
+                                        </Button>
+                                        <TextBox Style="{StaticResource CommandTextStyle}"
+                                                 Text="{Binding PowerShellRunLoginCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </Grid>
+                                </Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>
+                                    <Run>
+                                        Build your Docker image using the following command. For information on building a Docker file from 
+                                        scratch see the instructions 
+                                    </Run>
+                                    <Hyperlink
+                                        IsEnabled="True"
+                                        NavigateUri="http://docs.aws.amazon.com/AmazonECS/latest/developerguide/docker-basics.html"
+                                        RequestNavigate="HelpLink_OnRequestNavigate">
+                                        here
+                                    </Hyperlink>
+                                    <Run>.You can skip this step if your image is already built.</Run>
+                                    <LineBreak/>
+                                    <Grid Style="{StaticResource CommandGridStyle}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Style="{StaticResource CopyCommandButtonStyle}"
+                                                Click="OnClick_CopyDockerBuildCommand">
+                                            <Image DataContext="{DynamicResource CommonIcons}" 
+                                                   Source="{Binding CopyIcon}"
+                                            />
+                                        </Button>
+                                        <TextBox Style="{StaticResource CommandTextStyle}"
+                                                 Text="{Binding DockerBuildCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </Grid>
+                                </Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>
+                                    <Run>
+                                        After the build completes, tag your image so you can push the image 
+                                        to this AWS repository.
+                                    </Run>
+                                    <LineBreak/>
+                                    <Grid Style="{StaticResource CommandGridStyle}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Style="{StaticResource CopyCommandButtonStyle}"
+                                                Click="OnClick_CopyDockerTagCommand">
+                                            <Image DataContext="{DynamicResource CommonIcons}" 
+                                                   Source="{Binding CopyIcon}"
+                                            />
+                                        </Button>
+                                        <TextBox Style="{StaticResource CommandTextStyle}"
+                                                 Text="{Binding DockerTagCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </Grid>
+                                </Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>
+                                    <Run>
+                                        Run the following command to push this image to your AWS repository.
+                                    </Run>
+                                    <LineBreak/>
+                                    <Grid Style="{StaticResource CommandGridStyle}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Style="{StaticResource CopyCommandButtonStyle}"
+                                                Click="OnClick_CopyDockerPushCommand">
+                                            <Image DataContext="{DynamicResource CommonIcons}" 
+                                                   Source="{Binding CopyIcon}"
+                                            />
+                                        </Button>
+                                        <TextBox Style="{StaticResource CommandTextStyle}"
+                                                 Text="{Binding DockerPushCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </Grid>
+                                </Paragraph>
+                            </ListItem>
+                        </List>
+                    </FlowDocument>
+                </FlowDocumentScrollViewer>
+            </TabItem>
+
+            <TabItem Header="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type components:PushCommandsControl}}, 
+                Path=AwsCliTabHeader, Mode=OneTime}">
+                <FlowDocumentScrollViewer VerticalScrollBarVisibility="Auto">
+                    <FlowDocument Style="{DynamicResource awsFlowDocumentBaseStyle}">
+                        <List MarkerStyle="Decimal" Padding="8,0,0,0">
+                            <ListItem>
+                                <Paragraph>
+                                    <Run>
+                                        Retrieve the docker login command that you can use to authenticate your Docker 
+                                        client to your registry.
+                                    </Run>
+                                    <LineBreak/>
+                                    <LineBreak/>
+                                    <Run>
+                                        Note: If you receive an "Unknown options: --no-include-email" error, install the latest version of the AWS CLI.
+                                    </Run>
+                                    <Hyperlink
+                                        IsEnabled="True"
+                                        NavigateUri="https://docs.aws.amazon.com/cli/latest/userguide/installing.html"
+                                        RequestNavigate="HelpLink_OnRequestNavigate">
+                                        Learn more
+                                    </Hyperlink>
+                                    <LineBreak/>
+                                    <Grid Style="{StaticResource CommandGridStyle}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Style="{StaticResource CopyCommandButtonStyle}"
+                                                Click="OnClick_CopyGetLoginCommand">
+                                            <Image DataContext="{DynamicResource CommonIcons}" 
+                                                   Source="{Binding CopyIcon}"
+                                            />
+                                        </Button>
+                                        <TextBox Style="{StaticResource CommandTextStyle}"
+                                                 Text="{Binding AwsCliGetLoginCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </Grid>
+                                </Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>
+                                    <Run>
+                                        Run the docker login command that was returned in the previous step.</Run>
+                                    <LineBreak/>
+                                    <LineBreak/>
+                                    <Run>Note: If you are using the AWS CLI in a Windows PowerShell command prompt, run the 
+                                        following command instead:
+                                    </Run>
+                                    <LineBreak/>
+                                    <Grid Style="{StaticResource CommandGridStyle}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Style="{StaticResource CopyCommandButtonStyle}"
+                                                Click="OnClick_CopyRunLoginCommand">
+                                            <Image DataContext="{DynamicResource CommonIcons}" 
+                                                   Source="{Binding CopyIcon}"
+                                            />
+                                        </Button>
+                                        <TextBox Style="{StaticResource CommandTextStyle}"
+                                                 Text="{Binding AwsCliRunLoginCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </Grid>
+                                </Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>
+                                    <Run>
+                                        Build your Docker image using the following command. For information on building a Docker file from 
+                                        scratch see the instructions
+                                    </Run>
+                                    <Hyperlink
+                                        IsEnabled="True"
+                                        NavigateUri="http://docs.aws.amazon.com/AmazonECS/latest/developerguide/docker-basics.html"
+                                        RequestNavigate="HelpLink_OnRequestNavigate">
+                                        here
+                                    </Hyperlink>
+                                    <Run>.You can skip this step if your image is already built.</Run>
+                                    <LineBreak/>
+                                    <Grid Style="{StaticResource CommandGridStyle}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Style="{StaticResource CopyCommandButtonStyle}"
+                                                Click="OnClick_CopyDockerBuildCommand">
+                                            <Image DataContext="{DynamicResource CommonIcons}" 
+                                                   Source="{Binding CopyIcon}"
+                                            />
+                                        </Button>
+                                        <TextBox Style="{StaticResource CommandTextStyle}"
+                                                 Text="{Binding DockerBuildCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </Grid>
+                                </Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>
+                                    <Run>
+                                        After the build completes, tag your image so you can push the image to this repository:
+                                    </Run>
+                                    <LineBreak/>
+                                    <Grid Style="{StaticResource CommandGridStyle}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Style="{StaticResource CopyCommandButtonStyle}"
+                                                Click="OnClick_CopyDockerTagCommand">
+                                            <Image DataContext="{DynamicResource CommonIcons}" 
+                                                   Source="{Binding CopyIcon}"
+                                            />
+                                        </Button>
+                                        <TextBox Style="{StaticResource CommandTextStyle}"
+                                                 Text="{Binding DockerTagCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </Grid>
+                                </Paragraph>
+                            </ListItem>
+                            <ListItem>
+                                <Paragraph>
+                                    <Run>
+                                        Run the following command to push this image to your AWS repository:
+                                    </Run>
+                                    <LineBreak/>
+                                    <Grid Style="{StaticResource CommandGridStyle}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Button Style="{StaticResource CopyCommandButtonStyle}"
+                                                Click="OnClick_CopyDockerPushCommand">
+                                            <Image DataContext="{DynamicResource CommonIcons}" 
+                                                   Source="{Binding CopyIcon}"
+                                            />
+                                        </Button>
+                                        <TextBox Style="{StaticResource CommandTextStyle}"
+                                                 Text="{Binding DockerPushCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    </Grid>
+                                </Paragraph>
+                            </ListItem>
+                        </List>
+                    </FlowDocument>
+                </FlowDocumentScrollViewer>
+            </TabItem>
+
+            <TabItem Header="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type components:PushCommandsControl}}, 
+                Path=DotNetCliTabHeader, Mode=OneTime}">
+                <FlowDocumentScrollViewer VerticalScrollBarVisibility="Auto">
+                    <FlowDocument Style="{DynamicResource awsFlowDocumentBaseStyle}">
+                        <Paragraph>
+                            <Run>Coming real soon now!</Run>
+                        </Paragraph>
+                        <List MarkerStyle="Decimal" Padding="8,0,0,0">
+                        </List>
+                    </FlowDocument>
+                </FlowDocumentScrollViewer>
+            </TabItem>
+        </TabControl>
+    </Grid>    
+    
+    <!--
+    <FlowDocumentScrollViewer VerticalScrollBarVisibility="Auto">
+
+        <FlowDocument Style="{DynamicResource awsFlowDocumentBaseStyle}">
+
+    <List MarkerStyle="Decimal">
+                <ListItem>
+                    <Paragraph>
+                        <Run>
+                            Retrieve the docker login command that you can use to authenticate your Docker 
+                                                client to your registry:
+                        </Run>
+                        <LineBreak/>
+                        <Grid HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TabControl Margin="0,4,2,4" 
+                                                            Grid.Column="0"
+                                                            Style="{DynamicResource awsPropertyPageHorizontalTabStyle}"
+                                                            HorizontalAlignment="Stretch"
+                                                            HorizontalContentAlignment="Stretch">
+                                <TabItem Header="PowerShell">
+                                    <TextBox Style="{DynamicResource awsSelectableTextBoxStyle}"
+                                                                 HorizontalAlignment="Stretch"
+                                                                 Text="{Binding PowerShellGetLoginCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </TabItem>
+                                <TabItem Header="Dotnet CLI">
+                                    <TextBox Style="{DynamicResource awsSelectableTextBoxStyle}"
+                                                                 HorizontalAlignment="Stretch"
+                                                                 Text="(not applicable)"/>
+                                </TabItem>
+                                <TabItem Header="AWS CLI">
+                                    <TextBox Style="{DynamicResource awsSelectableTextBoxStyle}"
+                                                                 HorizontalAlignment="Stretch"
+                                                                 Text="{Binding AwsCliGetLoginCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </TabItem>
+                            </TabControl>
+                            <Button Grid.Column="1"
+                                                        VerticalAlignment="Center"
+                                                        Margin="2,32,0,0"
+                                                        Click="OnClick_CopyGetLoginCommand">
+                                <Image Width="16" Height="16" 
+                                                           DataContext="{DynamicResource CommonIcons}" 
+                                                           Source="{Binding CopyIcon}"
+                                                           />
+                            </Button>
+                        </Grid>
+                    </Paragraph>
+                </ListItem>
+                <ListItem>
+                    <Paragraph>
+                        <Run>
+                            Run the docker login command that was returned in the previous step.
+                        </Run>
+                        <LineBreak/>
+                        <Grid HorizontalAlignment="Stretch">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TabControl Margin="0,4,2,4" 
+                                                            Grid.Column="0"
+                                                            Style="{DynamicResource awsPropertyPageHorizontalTabStyle}"
+                                                            HorizontalAlignment="Stretch"
+                                                            HorizontalContentAlignment="Stretch">
+                                <TabItem Header="PowerShell">
+                                    <TextBox Style="{DynamicResource awsSelectableTextBoxStyle}"
+                                                                 HorizontalAlignment="Stretch"
+                                                                 Text="{Binding PowerShellRunLoginCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </TabItem>
+                                <TabItem Header="Dotnet CLI">
+                                    <TextBox Style="{DynamicResource awsSelectableTextBoxStyle}"
+                                                                 HorizontalAlignment="Stretch"
+                                                                 Text="(not applicable)"/>
+                                </TabItem>
+                                <TabItem Header="AWS CLI">
+                                    <TextBox Style="{DynamicResource awsSelectableTextBoxStyle}"
+                                                                 HorizontalAlignment="Stretch"
+                                                                 Text="{Binding AwsCliRunLoginCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </TabItem>
+                            </TabControl>
+                            <Button Grid.Column="1"
+                                                        VerticalAlignment="Center"
+                                                        Margin="2,32,0,0"
+                                                        Click="OnClick_CopyRunLoginCommand">
+                                <Image Width="16" Height="16" 
+                                                           DataContext="{DynamicResource CommonIcons}" 
+                                                           Source="{Binding CopyIcon}"
+                                                           />
+                            </Button>
+                        </Grid>
+                    </Paragraph>
+                </ListItem>
+                <ListItem>
+                    <Paragraph>
+                        <Run>
+                            Build your Docker image using the following command. You can skip this step 
+                                                if your image is already built:
+                        </Run>
+                        <LineBreak/>
+                        <Grid HorizontalAlignment="Stretch" Margin="4,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" 
+                                                         Style="{DynamicResource awsSelectableTextBoxStyle}"
+                                                         HorizontalAlignment="Stretch"
+                                                         Text="{Binding DockerBuildCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Button Grid.Column="1"
+                                                        VerticalAlignment="Center"
+                                                        Margin="2,0,0,0"
+                                                        Click="OnClick_CopyDockerBuildCommand">
+                                <Image Width="16" Height="16" 
+                                                           DataContext="{DynamicResource CommonIcons}" 
+                                                           Source="{Binding CopyIcon}"
+                                                    />
+                            </Button>
+                        </Grid>
+                    </Paragraph>
+                </ListItem>
+                <ListItem>
+                    <Paragraph>
+                        <Run>
+                            After the build completes, tag your image so you can push the image to this repository:
+                        </Run>
+                        <LineBreak/>
+                        <Grid HorizontalAlignment="Stretch" Margin="4,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" 
+                                                         Style="{DynamicResource awsSelectableTextBoxStyle}"
+                                                         HorizontalAlignment="Stretch"
+                                                         Text="{Binding DockerTagCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Button Grid.Column="1"
+                                                        VerticalAlignment="Center"
+                                                        Margin="2,0,0,0"
+                                                        Click="OnClick_CopyDockerTagCommand">
+                                <Image Width="16" Height="16" 
+                                                           DataContext="{DynamicResource CommonIcons}" 
+                                                           Source="{Binding CopyIcon}"
+                                                    />
+                            </Button>
+                        </Grid>
+                    </Paragraph>
+                </ListItem>
+                <ListItem>
+                    <Paragraph>
+                        <Run>
+                            Run the following command to push this image to your newly created AWS repository:
+                        </Run>
+                        <LineBreak/>
+                        <Grid HorizontalAlignment="Stretch" Margin="4,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" 
+                                                         Style="{DynamicResource awsSelectableTextBoxStyle}"
+                                                         HorizontalAlignment="Stretch"
+                                                         Text="{Binding DockerPushCommand, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Button Grid.Column="1"
+                                                        VerticalAlignment="Center"
+                                                        Margin="2,0,0,0"
+                                                        Click="OnClick_CopyDockerPushCommand">
+                                <Image Width="16" Height="16" 
+                                                           DataContext="{DynamicResource CommonIcons}" 
+                                                           Source="{Binding CopyIcon}"
+                                                    />
+                            </Button>
+                        </Grid>
+                    </Paragraph>
+                </ListItem>
+            </List>
+        </FlowDocument>
+    </FlowDocumentScrollViewer>
+    -->
+
+</commonui:BaseAWSUserControl>

@@ -44,7 +44,17 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         FirstExperienceDisplayStatus,
         FirstExperienceSaveCredentialsStatus,
         FirstExperienceImport,
-        FirstExperienceLinkClick
+        FirstExperienceLinkClick,
+
+        ECSPublishContainerWizardStart,
+        ECSPublishContainerWizardFinish,
+        ECSPublishContainerDockerBase,
+        ECSDeployService,
+        ECSDeployScheduleTask,
+        ECSDeployTask,
+
+        ECSConfiguredELB,
+        ECSDeleteService
     };
 
     public enum MetricKeys

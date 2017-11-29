@@ -49,6 +49,11 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
             get { return "Review the information below, then click Finish to start deployment."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;
@@ -57,7 +62,19 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
         public UserControl PageActivating(AWSWizardConstants.NavigationReason navigationReason)
         {
             if (_pageUI == null)
+            {
                 _pageUI = new DeploymentReviewPage();
+
+#if VS2017
+                if (this.HostingWizard.GetProperty(DeploymentWizardProperties.SeedData.propkey_ProjectType) is string)
+                {
+                    var isNETCoreProjectType = (this.HostingWizard.GetProperty(DeploymentWizardProperties.SeedData.propkey_ProjectType) as string)
+                                            .Equals(DeploymentWizardProperties.NetCoreWebProject, StringComparison.OrdinalIgnoreCase);
+
+                    _pageUI.IsNETCoreProjectType = isNETCoreProjectType;
+                }
+#endif
+            }
 
             return _pageUI;
         }
@@ -91,6 +108,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
                 {
                     HostingWizard[DeploymentWizardProperties.ReviewProperties.propkey_LaunchStatusOnClose] = _pageUI.OpenStatusOnClose;
                     HostingWizard[DeploymentWizardProperties.ReviewProperties.propkey_ConfigFileDestination] = _pageUI.ConfigFileDestination;
+                    HostingWizard[DeploymentWizardProperties.ReviewProperties.propkey_SaveBeanstalkTools] = _pageUI.SaveBeanstalkTools;
                 }
             }
             else

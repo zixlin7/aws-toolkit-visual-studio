@@ -114,7 +114,7 @@
     </Reference>
     <Reference Include="YamlDotNet">
       <HintPath>$(BuildRoot)\thirdparty\YamlDotNet.dll</HintPath>
-    </Reference>	
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq">
@@ -138,6 +138,7 @@
     <Compile Include="Account\View\RegisterServiceCredentialsControl.xaml.cs">
       <DependentUpon>RegisterServiceCredentialsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CommonUI\AssociatedIconAttribute.cs" />
     <Compile Include="CommonUI\CommandHandler.cs" />
     <Compile Include="CommonUI\Components\RegisteredProfilesPicker.xaml.cs">
       <DependentUpon>RegisteredProfilesPicker.xaml</DependentUpon>
@@ -546,6 +547,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Themes\Default\FlowDocument.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Default\ListBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -563,6 +568,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Default\Scrollbar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Default\Separators.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -60,6 +60,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyD
             get { return "Connect your AWS Elastic Beanstalk environment to your RDS DB instance."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             if (!IsWizardInBeanstalkMode || this.IsLaunchIntoVPC)

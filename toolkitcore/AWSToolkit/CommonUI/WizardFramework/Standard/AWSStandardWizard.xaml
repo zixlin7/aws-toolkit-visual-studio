@@ -117,19 +117,47 @@
                     Background="{DynamicResource awsWizardPanelVerticalDividerBrushKey}" />
             </Grid>
 
-            <Grid
-                x:Name="_pagesContainer"
-                Grid.Column="1"
-                Margin="4,10,4,4"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch"
-                Style="{DynamicResource awsWizardPagesContainerStyle}">
+            <Grid x:Name="_pagesPanel"
+                  Grid.Column="1"
+                  Margin="4,10,4,4"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
+
+                <Grid
+                    x:Name="_pageContainerPanel"
+                    Grid.Row="0"
+                    Margin="0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Style="{DynamicResource awsWizardPagesContainerStyle}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                </Grid>
+
+                <Border x:Name="_pageErrorPanel" 
+                        Grid.Row="1" 
+                        Visibility="Collapsed"
+                        BorderThickness="2"
+                        BorderBrush="{DynamicResource awsStatusTextErrorForeground}"
+                        Margin="0,4,0,2">
+                    <TextBlock x:Name="_pageErrorText" 
+                                Style="{DynamicResource awsTextBlockBaseStyle}"
+                                Foreground="{DynamicResource awsStatusTextErrorForeground}"
+                                TextWrapping="Wrap"
+                                Margin="4"
+                                Text="{Binding PageErrorText, Mode=OneWay}"/>
+                </Border>
             </Grid>
         </Grid>
 

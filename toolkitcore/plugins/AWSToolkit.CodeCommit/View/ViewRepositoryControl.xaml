@@ -14,26 +14,6 @@
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <Style x:Key="HorizontalSeparatorBar" TargetType="{x:Type Rectangle}">
-                <Setter Property="Height" Value="2" />
-                <Setter Property="Fill" Value="{DynamicResource awsPanelBorderBrushKey}" />
-                <Setter Property="Margin" Value="0,2,0,2" />
-            </Style>
-
-            <Style x:Key="VerticalHeaderBar" TargetType="{x:Type Rectangle}">
-                <Setter Property="MinHeight" Value="50" />
-                <Setter Property="Width" Value="6" />
-                <Setter Property="Fill" Value="{DynamicResource awsPanelBorderBrushKey}" />
-                <Setter Property="Margin" Value="0,0,8,0" />
-            </Style>
-
-            <Style x:Key="DetailsVerticalSeparatorBar" TargetType="{x:Type Rectangle}">
-                <Setter Property="MinHeight" Value="25" />
-                <Setter Property="Width" Value="3" />
-                <Setter Property="Fill" Value="{DynamicResource awsPanelBorderBrushKey}" />
-                <Setter Property="Margin" Value="0,0,8,0" />
-            </Style>
-
         </ResourceDictionary>
     </commonui:BaseAWSView.Resources>
 
@@ -177,7 +157,7 @@
 
             </Grid>
             
-            <Rectangle Style="{StaticResource HorizontalSeparatorBar}"
+            <Rectangle Style="{DynamicResource awsHorizontalSeparatorBar}"
                        Grid.Row="3"
                        Grid.Column="0"
                        Grid.ColumnSpan="2"

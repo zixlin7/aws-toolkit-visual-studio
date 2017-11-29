@@ -44,6 +44,11 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
             get { return "Set backup and maintenance options for your instance."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;

@@ -55,6 +55,11 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
             get { return "Choose a database engine for your new instance."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;

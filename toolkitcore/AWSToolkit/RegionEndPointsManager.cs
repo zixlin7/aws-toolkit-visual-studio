@@ -15,6 +15,8 @@ namespace Amazon.AWSToolkit
     public class RegionEndPointsManager
     {
         public const string EC2_SERVICE_NAME = "EC2";
+        public const string ECS_SERVICE_NAME = "ECS";
+        public const string ECR_SERVICE_NAME = "ECR";
         public const string ELB_SERVICE_NAME = "ELB";
         public const string AUTOSCALING_SERVICE_NAME = "AutoScaling";
         public const string CLOUDWATCH_SERVICE_NAME = "CloudWatch";
@@ -33,6 +35,9 @@ namespace Amazon.AWSToolkit
         public const string CLOUDWATCH_LOGS_NAME = "Logs";
         public const string KMS_SERVICE_NAME = "KMS";
         public const string CODECOMMIT_SERVICE_NAME = "CodeCommit";
+        public const string ECR_ENDPOINT_LOOKUP = "ECR";
+        public const string ECS_ENDPOINT_LOOKUP = "ECS";
+
 
         public const string US_EAST_1 = "us-east-1";
         const string DEFAULT_REGION = "us-west-2";

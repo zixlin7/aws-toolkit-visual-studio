@@ -69,6 +69,11 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
             get { return "Set Amazon EC2 and AWS CloudFormation options for the deployed application."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             if (IsWizardInCloudFormationMode)

@@ -51,6 +51,11 @@ namespace Amazon.AWSToolkit.CloudFront.DistributionWizard.PageController
             get { return "Additional settings for setting up a private distribution."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return this.IsValidToSet;

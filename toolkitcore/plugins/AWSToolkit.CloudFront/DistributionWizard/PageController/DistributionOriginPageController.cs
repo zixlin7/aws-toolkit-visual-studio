@@ -51,6 +51,11 @@ namespace Amazon.AWSToolkit.CloudFront.DistributionWizard.PageController
             get { return "Origin of the CloudFront distribution."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;

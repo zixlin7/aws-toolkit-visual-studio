@@ -76,6 +76,11 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
             get { return "Additional options for controlling your AMI instance."; }
         }
 
+        public void ResetPage()
+        {
+
+        }
+
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
             return true;
