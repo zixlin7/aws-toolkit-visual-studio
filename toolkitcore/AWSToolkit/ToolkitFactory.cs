@@ -6,6 +6,7 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.ComponentModel.Design;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using System.Globalization;
@@ -45,7 +46,7 @@ namespace Amazon.AWSToolkit
             }
         }
 
-        public static void InitializeToolkit(NavigatorControl navigator, IAWSToolkitShellProvider shellProvider, string additionalPluginPaths)
+        public static void InitializeToolkit(NavigatorControl navigator, IAWSToolkitShellProvider shellProvider, string additionalPluginPaths, Action initializeCompleteCallback)
         {
             if (INSTANCE != null)
                 throw new ApplicationException("Toolkit has already been initialized");
@@ -55,11 +56,24 @@ namespace Amazon.AWSToolkit
 
             INSTANCE = new ToolkitFactory(navigator, shellProvider);
 
-            INSTANCE.loadPluginActivators(additionalPluginPaths);
-            INSTANCE.registerMetaNodes();
+            Task.Run(() =>
+            {
 
-            INSTANCE._rootViewModel = new AWSViewModel(INSTANCE._shellProvider.ShellDispatcher, INSTANCE._rootViewMetaNode);
-            INSTANCE._navigator.Initialize(INSTANCE._rootViewModel);
+                INSTANCE.loadPluginActivators(additionalPluginPaths);
+                INSTANCE.registerMetaNodes();
+
+
+                INSTANCE.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                {
+                    INSTANCE._rootViewModel = new AWSViewModel(INSTANCE._shellProvider.ShellDispatcher, INSTANCE._rootViewMetaNode);
+                    INSTANCE._navigator.Initialize(INSTANCE._rootViewModel);
+
+                    if(initializeCompleteCallback != null)
+                    {
+                        initializeCompleteCallback();
+                    }
+                }));
+            });
 
             if(Application.Current != null)
                 Application.Current.DispatcherUnhandledException += onDispatcherUnhandledException;

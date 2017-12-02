@@ -509,7 +509,11 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
 
             var navigator = new NavigatorControl();
-            ToolkitFactory.InitializeToolkit(navigator, ToolkitShellProviderService as IAWSToolkitShellProvider, additionalPluginFolders);
+            ToolkitFactory.InitializeToolkit(navigator, ToolkitShellProviderService as IAWSToolkitShellProvider, additionalPluginFolders, () =>
+            {
+                _toolkitInitialized = true;
+                ShowFirstRun();
+            });
 			
             var dte = (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
 
@@ -584,26 +588,37 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                     _vsShellPropertyChangeEventSinkCookie = 0;
 
-                    // see if the toolkit wants to run a 'first 5 minutes' setup dialog
-                    ShellDispatcher.Invoke((Action) (() =>
-                    {
-                        try
-                        {
-                            if (FirstRunController.ShouldShowFirstRunSetupPage)
-                            {
-                                var controller = new FirstRunController(this);
-                                controller.Execute();
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            LOGGER.ErrorFormat("Caught exception on first-run setup, message {0}, stack {1}", e.Message, e.StackTrace);
-                        }
-                    }));
+                    _shellInitialized = true;
+                    ShowFirstRun();
                 }
             }
 
             return VSConstants.S_OK;
+        }
+
+        bool _shellInitialized = false;
+        bool _toolkitInitialized = false;
+
+        private void ShowFirstRun()
+        {
+            if (_shellInitialized && _toolkitInitialized)
+            {
+                ShellDispatcher.Invoke((Action)(() =>
+                {
+                    try
+                    {
+                        if (FirstRunController.ShouldShowFirstRunSetupPage)
+                        {
+                            var controller = new FirstRunController(this);
+                            controller.Execute();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        LOGGER.ErrorFormat("Caught exception on first-run setup, message {0}, stack {1}", e.Message, e.StackTrace);
+                    }
+                }));
+            }
         }
 
         static void SetupMenuCommand(OleMenuCommandService mcs, Guid cmdSetGuid, uint commandId, EventHandler command, EventHandler queryStatus)
