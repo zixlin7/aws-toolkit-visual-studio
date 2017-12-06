@@ -51,9 +51,9 @@ namespace Amazon.AWSToolkit.EC2.Model
                 }
                 else
                 {
-                    foreach (var source in permission.IpRanges)
+                    foreach (var source in permission.Ipv4Ranges)
                     {
-                        preSortedCollection.Add(new IPPermissionWrapper(permission.IpProtocol, (int)permission.FromPort, (int)permission.ToPort, null, null, source));
+                        preSortedCollection.Add(new IPPermissionWrapper(permission.IpProtocol, (int)permission.FromPort, (int)permission.ToPort, null, null, source.CidrIp));
                     }
                 }
             }

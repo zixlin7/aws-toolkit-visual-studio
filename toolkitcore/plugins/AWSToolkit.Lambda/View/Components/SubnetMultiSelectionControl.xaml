@@ -73,6 +73,7 @@
                                                         </GridViewColumn>
                                                         <GridViewColumn DisplayMemberBinding="{Binding InnerObject.Subnet.DisplayName}" Header="Subnet ID" />
                                                         <GridViewColumn DisplayMemberBinding="{Binding InnerObject.Subnet.AvailabilityZone}" Header="Availability Zone" />
+                                                        <GridViewColumn DisplayMemberBinding="{Binding InnerObject.Subnet.FormattedMapPublicIpOnLaunch}" Header="Map Public IP" />
                                                     </GridView.Columns>
                                                 </GridView>
                                             </ListView.View>

@@ -215,5 +215,18 @@
             Assign Public IP Address
         </CheckBox>
 
+        <TextBlock
+                    Grid.Row="10"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="4"
+                    Margin="30,4,4,2"
+                    FontStyle="Italic"
+                    Style="{DynamicResource awsInfoTextStyle}"
+                    TextWrapping="Wrap">
+            Fargate tasks need out bound internet access to download the container image. Choose
+            subnets that have an Internet Gateway associated and check "Assign Public IP Address"
+            or select subnets that have access to the internet through a NAT Gateway.
+        </TextBlock>
+
     </Grid>
 </commonUi:BaseAWSUserControl>

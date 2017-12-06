@@ -53,6 +53,17 @@ namespace Amazon.AWSToolkit.EC2.Model
             }
         }
 
+        public string FormattedMapPublicIpOnLaunch
+        {
+            get
+            {
+                if (Subnet == null)
+                    return string.Empty;
+
+                return Subnet.NativeSubnet.MapPublicIpOnLaunch.ToString();
+            }
+        }
+
         public VPCWrapper Vpc { get; set; }
 
         public SubnetWrapper Subnet { get; set; }
