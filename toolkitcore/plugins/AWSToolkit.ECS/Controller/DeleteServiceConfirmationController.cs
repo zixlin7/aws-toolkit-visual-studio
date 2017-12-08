@@ -15,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using LoadBalancer = Amazon.ElasticLoadBalancingV2.Model.LoadBalancer;
+using TargetGroup = Amazon.ElasticLoadBalancingV2.Model.TargetGroup;
 
 namespace Amazon.AWSToolkit.ECS.Controller
 {
