@@ -407,7 +407,7 @@ namespace Amazon.AWSToolkit.CloudFormation.View
             {
                 foreach (var output in this._controller.Model.Outputs.OrderBy(x => x.OutputKey))
                 {
-                    var outputUI = new TemplateOuputControl(output);
+                    var outputUI = new TemplateOutputControl(output);
                     outputUI.Width = double.NaN;
                     this._ctlTemplateOutputPanel.Children.Add(outputUI);
                 }

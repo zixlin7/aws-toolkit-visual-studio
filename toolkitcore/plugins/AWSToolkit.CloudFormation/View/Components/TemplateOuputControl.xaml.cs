@@ -20,22 +20,29 @@ namespace Amazon.AWSToolkit.CloudFormation.View.Components
     /// <summary>
     /// Interaction logic for TemplateOuputControl.xaml
     /// </summary>
-    public partial class TemplateOuputControl
+    public partial class TemplateOutputControl
     {
-        public TemplateOuputControl(Output output)
+        public TemplateOutputControl(Output output)
         {
             InitializeComponent();
             this.DataContext = output;
 
-            if (output.OutputValue.ToLower().StartsWith("http"))
+            if (!string.IsNullOrEmpty(output.OutputValue))
             {
-                this._ctlValue.Visibility = Visibility.Hidden;
-                this._ctlLinkInner.Text = output.OutputValue;
+                if (output.OutputValue.ToLower().StartsWith("http"))
+                {
+                    this._ctlValue.Visibility = Visibility.Hidden;
+                    this._ctlLinkInner.Text = output.OutputValue;
+                }
+                else
+                {
+                    this._ctlLinkOuter.Visibility = Visibility.Hidden;
+                    this._ctlValue.Text = output.OutputValue;
+                }
             }
             else
             {
                 this._ctlLinkOuter.Visibility = Visibility.Hidden;
-                this._ctlValue.Text = output.OutputValue;
             }
         }
 
