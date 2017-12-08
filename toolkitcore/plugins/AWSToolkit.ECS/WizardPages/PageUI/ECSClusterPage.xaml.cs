@@ -127,7 +127,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
                     if (this.SelectedSubnets.Count() == 0)
                         return false;
-                    if (string.IsNullOrEmpty(this.SecurityGroup))
+                    if (string.IsNullOrEmpty(this.SecurityGroup) && !this.CreateNewSecurityGroup)
                         return false;
                 }
 
