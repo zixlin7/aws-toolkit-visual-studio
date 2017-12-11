@@ -119,7 +119,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                 var request = new CreateStackRequest()
                 {
                     StackName = collectedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName] as string,
-                    Capabilities = new List<string>() { "CAPABILITY_IAM" }
+                    Capabilities = new List<string>() { "CAPABILITY_IAM", "CAPABILITY_NAMED_IAM" }
                 };
 
                 if (collectedProperties.ContainsKey(DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplateName))
