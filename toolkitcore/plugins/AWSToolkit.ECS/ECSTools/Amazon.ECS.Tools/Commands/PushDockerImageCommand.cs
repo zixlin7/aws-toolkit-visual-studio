@@ -228,6 +228,7 @@ namespace Amazon.ECS.Tools.Commands
             var dockerFilePath = Path.Combine(projectLocation, "Dockerfile");
             if (File.Exists(dockerFilePath))
             {
+                this.Logger?.WriteLine("Inspecting Dockerfile to figure how to build project and docker image");
                 using (var stream = File.OpenRead(dockerFilePath))
                 using (var reader = new StreamReader(stream))
                 {
@@ -257,6 +258,12 @@ namespace Amazon.ECS.Tools.Commands
                         }
                     }
                 }
+
+                if(!details.SkipDotnetBuild && string.IsNullOrEmpty(details.ExpectedPublishLocation))
+                {
+                    details.ExpectedPublishLocation = "obj/Docker/publish";
+                    this.Logger?.WriteLine("Warning: unable to determine dotnet publish folder location that Dockerfile expects. Assuming Visual Studio's default of " + details.ExpectedPublishLocation);
+                }
             }
 
             return details;
@@ -278,7 +285,7 @@ namespace Amazon.ECS.Tools.Commands
         {
             public bool BuildFromSolutionDirectory { get; set; }
             public bool SkipDotnetBuild { get; set; }
-            public string ExpectedPublishLocation { get; set; } = "obj/Docker/publish";
+            public string ExpectedPublishLocation { get; set; }
         }
     }
 }
