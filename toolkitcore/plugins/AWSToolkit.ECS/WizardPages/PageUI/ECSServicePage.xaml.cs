@@ -51,7 +51,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     return false;
                 if (!this.DesiredCount.HasValue || this.DesiredCount.Value <= 0)
                     return false;
-                if (!this.MinimumHealthy.HasValue || this.MinimumHealthy.Value <= 0)
+                if (!this.MinimumHealthy.HasValue || this.MinimumHealthy.Value < 0)
                     return false;
                 if (!this.MaximumPercent.HasValue || this.MaximumPercent.Value <= 0)
                     return false;
