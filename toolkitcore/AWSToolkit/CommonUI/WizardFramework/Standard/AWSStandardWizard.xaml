@@ -19,7 +19,7 @@
     mc:Ignorable="d">
 
     <Window.Resources>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
     </Window.Resources>
 
     <Grid

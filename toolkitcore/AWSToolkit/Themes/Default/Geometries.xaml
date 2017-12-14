@@ -1,6 +1,4 @@
-﻿<!-- AWS Toolkit theme defaults defining colors and brushes for use across all shells.
--->
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Geometry x:Key="awsDownArrowGeometry">M 0 0 L 3.5 4 L 7 0 Z</Geometry>

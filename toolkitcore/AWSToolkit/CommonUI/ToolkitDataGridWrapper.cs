@@ -32,7 +32,7 @@ namespace Amazon.AWSToolkit.CommonUI
         }
 
         static readonly Uri ShellThemeDefaultsUri 
-            = new Uri("/AWSToolkit;component/Themes/DefaultTheme.xaml", 
+            = new Uri("/AWSToolkit;component/Themes/Generic.xaml", 
                       UriKind.RelativeOrAbsolute);
 
         public ToolkitDataGridWrapper()

@@ -6,7 +6,7 @@
     Height="120" Width="300">
     
     <commonui:BaseAWSControl.Resources>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
     </commonui:BaseAWSControl.Resources>
 
     <Grid>

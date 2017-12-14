@@ -8,7 +8,7 @@
         VerticalAlignment="Stretch">
 
     <UserControl.Resources>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
     </UserControl.Resources>
 
     <Grid>

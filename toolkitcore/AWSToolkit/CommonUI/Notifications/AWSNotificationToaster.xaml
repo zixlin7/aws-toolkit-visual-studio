@@ -19,7 +19,7 @@
         >
 
     <Window.Resources>
-        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/DefaultTheme.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
     </Window.Resources>
 
     <Border BorderBrush="Black" BorderThickness="2" CornerRadius="8" Background="White">
