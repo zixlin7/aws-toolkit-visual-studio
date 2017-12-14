@@ -25,7 +25,7 @@ namespace Amazon.ECS.Tools
             _logger?.WriteLine($"... invoking 'docker build', working folder '{workingDirectory}, docker file {dockerFile}, image name {imageTag}'");
 
 
-            StringBuilder arguments = new StringBuilder($"build -f {dockerFile} -t {imageTag} .");
+            StringBuilder arguments = new StringBuilder($"build -f \"{dockerFile}\" -t {imageTag} .");
 
             var psi = new ProcessStartInfo
             {
