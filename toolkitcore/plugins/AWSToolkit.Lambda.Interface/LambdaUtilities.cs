@@ -14,7 +14,7 @@ namespace Amazon.AWSToolkit.Lambda
     public static class LambdaUtilities
     {
         public const int MIN_MEMORY_SIZE = 128;
-        public const int MAX_MEMORY_SIZE = 1536;
+        public const int MAX_MEMORY_SIZE = 3008;
 
         public const int MIN_TIMEOUT = 1;
         public const int MAX_TIMEOUT = 300;
