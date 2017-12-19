@@ -493,7 +493,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                 var response = this._logsClient.GetLogEvents(request);
                 foreach (var evnt in response.Events)
                 {
-                    writer.Write("{0:yyyy-mm-dd HH:mm:ss}: {1}", evnt.Timestamp.ToLocalTime(), evnt.Message);
+                    writer.Write("{0:yyyy-MM-dd HH:mm:ss}: {1}", evnt.Timestamp.ToLocalTime(), evnt.Message);
                 }
             }
 
