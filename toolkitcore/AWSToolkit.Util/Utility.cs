@@ -7,6 +7,7 @@ using Microsoft.Win32;
 using log4net;
 using log4net.Config;
 using ThirdParty.Json.LitJson;
+using System.Text;
 
 namespace Amazon.AWSToolkit
 {
@@ -197,6 +198,45 @@ namespace Amazon.AWSToolkit
                 content = content.Replace("NUGET_VERSION", version);
 
                 File.WriteAllText(projectFilePath, content);
+            }
+            else
+            {
+                StringBuilder sb = new StringBuilder();
+                bool changed = false;
+                string line = null;
+                using (var reader = new StringReader(content))
+                {
+                    while((line = reader.ReadLine()) != null)
+                    {
+                        var changedLine = line;
+                        if(line.Contains("DotNetCliToolReference") && line.Contains(nuGetPackageName))
+                        {
+                            var startPos = line.IndexOf("Version=\"");
+                            if(startPos != -1)
+                            {
+                                startPos += "Version=\"".Length;
+                            }
+
+                            var endPos = line.IndexOf("\"", startPos + 1);
+                            var currentVersion = line.Substring(startPos, endPos - startPos);
+                            if(!string.Equals(currentVersion, version, StringComparison.Ordinal))
+                            {
+                                changedLine = changedLine.Replace(currentVersion, version);
+                                changed = true;
+                            }
+                        }
+
+                        sb.AppendLine(changedLine);
+                    }
+
+                    content = sb.ToString();
+                }
+                
+
+                if(changed)
+                {
+                    File.WriteAllText(projectFilePath, content);
+                }
             }
         }
     }

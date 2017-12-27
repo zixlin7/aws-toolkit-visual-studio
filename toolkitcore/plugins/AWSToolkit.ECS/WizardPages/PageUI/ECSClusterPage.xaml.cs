@@ -409,6 +409,10 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             {
                 previousSecurityGroup = previousSecurityGroups[0];
             }
+            else
+            {
+                previousSecurityGroup = securityGroups?.FirstOrDefault(x => string.Equals("default", x.GroupName, StringComparison.OrdinalIgnoreCase))?.GroupId;
+            }
 
             SetAvailableSecurityGroups(securityGroups, previousSecurityGroup);
         }
@@ -448,8 +452,30 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         void OnVpcSubnetsAvailable(ICollection<Vpc> vpcs, ICollection<Subnet> subnets)
         {
+            IEnumerable<string> selectedSubnets = null;
             var previousSubnets = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.LaunchSubnets] as string[];
-            var defaultSelection = _ctlSubnetsPicker.SetAvailableVpcSubnets(vpcs, subnets, previousSubnets);
+            if(previousSubnets != null && previousSubnets.Length > 0)
+            {
+                selectedSubnets = previousSubnets;
+            }
+            else
+            {
+                var defaultSubnets = new List<string>();
+                foreach(var subnet in subnets)
+                {
+                    if(subnet.DefaultForAz)
+                    {
+                        defaultSubnets.Add(subnet.SubnetId);
+                    }
+                }
+
+                if(defaultSubnets.Count > 0)
+                {
+                    selectedSubnets = defaultSubnets;
+                }
+            }
+
+            var defaultSelection = _ctlSubnetsPicker.SetAvailableVpcSubnets(vpcs, subnets, selectedSubnets);
             if (defaultSelection == null)
             {
                 this._ctlSecurityGroup.Items.Clear();
