@@ -21,30 +21,6 @@ namespace Amazon.AWSToolkit.Lambda
         ""Service"": ""lambda.amazonaws.com""
       },
       ""Action"": ""sts:AssumeRole""
-    },
-    {
-      ""Sid"": """",
-      ""Effect"": ""Allow"",
-      ""Principal"": {
-        ""AWS"": ""arn:aws:iam::771762743097:root""
-      },
-      ""Action"": ""sts:AssumeRole""
-    },
-    {
-      ""Sid"": """",
-      ""Effect"": ""Allow"",
-      ""Principal"": {
-        ""AWS"": ""arn:aws:iam::147242972042:root""
-      },
-      ""Action"": ""sts:AssumeRole""
-    },
-    {
-      ""Sid"": """",
-      ""Effect"": ""Allow"",
-      ""Principal"": {
-        ""AWS"": ""arn:aws:iam::571267556732:root""
-      },
-      ""Action"": ""sts:AssumeRole""
     }
   ]
 }
