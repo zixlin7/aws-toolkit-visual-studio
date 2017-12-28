@@ -160,7 +160,7 @@
     <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\DeployServiceCommand.cs" />
     <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\DeployTaskCommand.cs" />
     <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\ECSBaseCommand.cs" />
-    <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\ECSTaskDefinitionUtilities.cs" />
+    <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\ECSBaseDeployCommand.cs" />
     <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\PushDockerImageCommand.cs" />
     <Compile Include="ECSTools\Amazon.ECS.Tools\Constants.cs" />
     <Compile Include="ECSTools\Amazon.ECS.Tools\DockerCLIWrapper.cs" />
