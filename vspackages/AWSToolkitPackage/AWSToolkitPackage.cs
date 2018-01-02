@@ -2085,6 +2085,17 @@ namespace Amazon.AWSToolkit.VisualStudio
                         
                 }
 
+                // Make sure all open editors are saved before deploying.
+                try
+                {
+                    var dte = (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
+                    dte.Documents.SaveAll();
+                }
+                catch(Exception ex)
+                {
+                    LOGGER.Warn("Error while saving all opening documents before uploading to Lambda", ex);
+                }
+
                 this.LambdaPlugin.UploadFunctionFromPath(seedProperties);
             }
         }
