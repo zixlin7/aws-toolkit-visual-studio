@@ -28,101 +28,6 @@ namespace Amazon.Lambda.Tools
 {
     public static class Utilities
     {
-        /// <summary>
-        /// Make sure the handler specified actually exists.
-        /// 
-        /// TODO: This method's validation is not complete so disabled for now
-        /// </summary>
-        /// <param name="publishLocation"></param>
-        /// <param name="handler"></param>
-        public static void ValidateHandler(string publishLocation, string handler)
-        {
-            var tokens = handler.Split(new string[] { "::" }, StringSplitOptions.None);
-
-            if (tokens.Length != 3)
-            {
-                throw new ValidateHandlerException(publishLocation, handler, "Invalid format for handler, format should be <assembly>::<type>::<method>");
-            }
-
-            var assemblyName = tokens[0];
-            var typeName = tokens[1];
-            var methodName = tokens[2];
-
-            if (!assemblyName.EndsWith(".dll"))
-                assemblyName += ".dll";
-
-            var assemblyFullPath = Path.Combine(publishLocation, assemblyName);
-            if (!File.Exists(assemblyFullPath))
-            {
-                throw new ValidateHandlerException(publishLocation, handler, $"Failed to find assembly {assemblyFullPath}");
-            }
-
-            Assembly assembly = GetAssembly(publishLocation, handler, assemblyFullPath);
-
-            Type type = null;
-            try
-            {
-                type = assembly.GetType(typeName);
-            }
-            catch (Exception e)
-            {
-                throw new ValidateHandlerException(publishLocation, handler, $"Error finding type {typeName}: {e.Message}");
-            }
-
-            if (type == null)
-                throw new ValidateHandlerException(publishLocation, handler, $"Failed to find type {typeName}");
-
-            var method = type.GetMethods(BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance | BindingFlags.FlattenHierarchy).FirstOrDefault(x =>
-            {
-                return string.Equals(methodName, x.Name, StringComparison.Ordinal);
-            });
-
-            if (method == null)
-                throw new ValidateHandlerException(publishLocation, handler, $"Failed to find method {methodName}");
-
-            if (method.GetParameters().Length > 2)
-                throw new ValidateHandlerException(publishLocation, handler, $"Method {methodName} contains too parameters. Lambda functions can take 0 or 1 parameters plus an optional ILambdaContext object.");
-        }
-
-        private static Assembly GetAssembly(string publishLocation, string handler, string assemblyFullPath)
-        {
-            Assembly assembly = null;
-#if NETCORE            
-            try
-            {
-                var name = AssemblyLoadContext.GetAssemblyName(assemblyFullPath);
-                try
-                {
-                    assembly = Assembly.Load(name);
-                    if (assembly != null)
-                        return assembly;
-                }
-                catch
-                {
-
-                }
-
-                if (assembly == null)
-                {
-                    assembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(assemblyFullPath);
-                }
-            }
-            catch (Exception e)
-            {
-                throw new ValidateHandlerException(publishLocation, handler, $"Error loading assembly {assemblyFullPath}: {e.Message}");
-            }
-#else
-            try
-            {
-                assembly = Assembly.LoadFile(assemblyFullPath);
-            }
-            catch (Exception e)
-            {
-                throw new ValidateHandlerException(publishLocation, handler, $"Error loading assembly {assemblyFullPath}: {e.Message}");
-            }
-#endif
-            return assembly;
-        }
 
         internal static string[] SplitByComma(this string str)
         {
@@ -152,7 +57,7 @@ namespace Amazon.Lambda.Tools
         public static async Task<string> UploadToS3Async(IToolLogger logger, IAmazonS3 s3Client, string bucket, string prefix, string rootName, Stream stream)
         {
             var extension = ".zip";
-            if (!string.IsNullOrEmpty(Path.GetExtension(rootName)))
+            if(!string.IsNullOrEmpty(Path.GetExtension(rootName)))
             {
                 extension = Path.GetExtension(rootName);
                 rootName = Path.GetFileNameWithoutExtension(rootName);
@@ -173,7 +78,7 @@ namespace Amazon.Lambda.Tools
             {
                 await s3Client.PutObjectAsync(request);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 throw new LambdaToolsException($"Error uploading to {key} in bucket {bucket}: {e.Message}", LambdaToolsException.ErrorCode.S3UploadError, e);
             }
@@ -188,13 +93,13 @@ namespace Amazon.Lambda.Tools
             {
                 bucketRegion = await Utilities.GetBucketRegionAsync(s3Client, s3Bucket);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 throw new LambdaToolsException($"Error determining region for bucket {s3Bucket}: {e.Message}", LambdaToolsException.ErrorCode.S3GetBucketLocation, e);
             }
 
             var configuredRegion = s3Client.Config.RegionEndpoint?.SystemName;
-            if (configuredRegion == null && !string.IsNullOrEmpty(s3Client.Config.ServiceURL))
+            if(configuredRegion == null && !string.IsNullOrEmpty(s3Client.Config.ServiceURL))
             {
                 configuredRegion = AWSSDKUtils.DetermineRegion(s3Client.Config.ServiceURL);
             }
@@ -203,7 +108,7 @@ namespace Amazon.Lambda.Tools
             // knows what they are doing.
             if (configuredRegion == null)
                 return;
-
+            
             if (!string.Equals(bucketRegion, configuredRegion))
             {
                 throw new LambdaToolsException($"Error: S3 bucket must be in the same region as the configured region {configuredRegion}. {s3Bucket} is in the region {bucketRegion}.", LambdaToolsException.ErrorCode.BucketInDifferentRegionThenStack);
@@ -226,7 +131,7 @@ namespace Amazon.Lambda.Tools
 
                 return response.Location.Value;
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 throw new LambdaToolsException($"Error determining region for bucket {bucket}: {e.Message}", LambdaToolsException.ErrorCode.S3GetBucketLocation, e);
             }
@@ -332,9 +237,9 @@ namespace Amazon.Lambda.Tools
         /// </summary>
         /// <param name="option"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> ParseKeyValueOption(string option)
+        public static Dictionary<string,string> ParseKeyValueOption(string option)
         {
-            var parameters = new Dictionary<string, string>();
+            var parameters = new Dictionary<string,string>();
             if (string.IsNullOrWhiteSpace(option))
                 return parameters;
 
@@ -349,17 +254,17 @@ namespace Amazon.Lambda.Tools
                     string value;
                     GetNextToken(option, ';', ref currentPos, out value);
 
-                    if (string.IsNullOrEmpty(name))
+                    if(string.IsNullOrEmpty(name))
                         throw new LambdaToolsException($"Error parsing option ({option}), format should be <key1>=<value1>;<key2>=<value2>", LambdaToolsException.ErrorCode.CommandLineParseError);
 
                     parameters[name] = value ?? string.Empty;
                 }
             }
-            catch (LambdaToolsException)
+            catch(LambdaToolsException)
             {
                 throw;
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 throw new LambdaToolsException($"Error parsing option ({option}), format should be <key1>=<value1>;<key2>=<value2>: {e.Message}", LambdaToolsException.ErrorCode.CommandLineParseError);
             }
@@ -379,7 +284,7 @@ namespace Amazon.Lambda.Tools
             int tokenStart = currentPos;
             int tokenEnd = -1;
             bool inQuote = false;
-            if (option[currentPos] == '"')
+            if(option[currentPos] == '"')
             {
                 inQuote = true;
                 tokenStart++;
@@ -388,7 +293,7 @@ namespace Amazon.Lambda.Tools
                 while (currentPos < option.Length && option[currentPos] != '"')
                 {
                     currentPos++;
-                }
+                } 
 
                 if (option[currentPos] == '"')
                     tokenEnd = currentPos;
@@ -398,9 +303,9 @@ namespace Amazon.Lambda.Tools
             {
                 currentPos++;
             }
+                
 
-
-            if (!inQuote)
+            if(!inQuote)
             {
                 if (currentPos < option.Length && option[currentPos] == endToken)
                     tokenEnd = currentPos;
@@ -422,7 +327,7 @@ namespace Amazon.Lambda.Tools
             logger?.WriteLine($"Processing {substitutions.Count} substitutions.");
             var root = JsonConvert.DeserializeObject(templateBody) as JObject;
 
-            foreach (var kvp in substitutions)
+            foreach(var kvp in substitutions)
             {
                 logger?.WriteLine($"Processing substitution: {kvp.Key}");
                 var token = root.SelectToken(kvp.Key);
@@ -445,14 +350,14 @@ namespace Amazon.Lambda.Tools
 
                 try
                 {
-                    switch (token.Type)
+                    switch(token.Type)
                     {
                         case JTokenType.String:
                             ((JValue)token).Value = replacementValue;
                             break;
                         case JTokenType.Boolean:
                             bool b;
-                            if (bool.TryParse(replacementValue, out b))
+                            if(bool.TryParse(replacementValue, out b))
                             {
                                 ((JValue)token).Value = b;
                             }
@@ -460,7 +365,7 @@ namespace Amazon.Lambda.Tools
                             {
                                 throw new LambdaToolsException($"Failed to convert {replacementValue} to a bool", LambdaToolsException.ErrorCode.ServerlessTemplateSubstitutionError);
                             }
-
+                            
                             break;
                         case JTokenType.Integer:
                             int i;
@@ -493,7 +398,7 @@ namespace Amazon.Lambda.Tools
                             {
                                 subData = JsonConvert.DeserializeObject(replacementValue) as JToken;
                             }
-                            catch (Exception e)
+                            catch(Exception e)
                             {
                                 throw new LambdaToolsException($"Failed to parse substitue JSON data: {e.Message}", LambdaToolsException.ErrorCode.ServerlessTemplateSubstitutionError);
                             }
@@ -502,11 +407,11 @@ namespace Amazon.Lambda.Tools
                         default:
                             throw new LambdaToolsException($"Unable to determine how to convert substitute value into the template. " +
                                                             "Make sure to have a default value in the template which is used to determine the type. " +
-                                                            "For example \"\" for string fields or {} for JSON objects.",
+                                                            "For example \"\" for string fields or {} for JSON objects.", 
                                                             LambdaToolsException.ErrorCode.ServerlessTemplateSubstitutionError);
                     }
                 }
-                catch (Exception e)
+                catch(Exception e)
                 {
                     throw new LambdaToolsException($"Error setting property {kvp.Key} with value {kvp.Value}: {e.Message}", LambdaToolsException.ErrorCode.ServerlessTemplateSubstitutionError);
                 }
@@ -596,7 +501,7 @@ namespace Amazon.Lambda.Tools
             var resources = root["Resources"] as IDictionary<object, object>;
 
 
-            foreach (var kvp in resources)
+            foreach(var kvp in resources)
             {
                 var resource = kvp.Value as IDictionary<object, object>;
                 if (resource == null)
