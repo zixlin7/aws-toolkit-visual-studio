@@ -75,7 +75,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 this.Configuration = buildConfiguration;
             }
 
-            var targetFramework = hostWizard[UploadFunctionWizardProperties.Configuration] as string;
+            var targetFramework = hostWizard[UploadFunctionWizardProperties.Framework] as string;
             if (!string.IsNullOrEmpty(targetFramework) && this._ctlFrameworkPicker.Items.Contains(targetFramework))
             {
                 this.Framework = targetFramework;
@@ -230,9 +230,22 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             this._ctlConfigurationPicker.Items.Add("Debug");
             this.Configuration = "Release";
 
-            this._ctlFrameworkPicker.Items.Add("netcoreapp1.0");
+            var projectFrameworks = this.PageController.HostingWizard[UploadFunctionWizardProperties.ProjectTargetFrameworks] as IList<string>;
+            if(projectFrameworks != null && projectFrameworks.Count > 0)
+            {
+                foreach(var framework in projectFrameworks)
+                {
+                    this._ctlFrameworkPicker.Items.Add(framework);
+                }
+            }
+            else
+            {
+                this._ctlFrameworkPicker.Items.Add("netcoreapp2.0");
+                this._ctlFrameworkPicker.Items.Add("netcoreapp1.0");
+            }
+
             this._ctlFrameworkPicker.SelectedIndex = 0;
-            this.Framework = "netcoreapp1.0";
+            this.Framework = this._ctlFrameworkPicker.Items[0].ToString();
         }
 
         public string FunctionName
@@ -281,6 +294,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
         }
 
+        bool _inRuntimeFrameworkEvent;
+
         string _framework;
         public string Framework
         {
@@ -288,7 +303,28 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             set
             {
                 _framework = value;
-                NotifyPropertyChanged("Framework");
+                if(!_inRuntimeFrameworkEvent)
+                {
+                    _inRuntimeFrameworkEvent = true;
+                    try
+                    {
+                        NotifyPropertyChanged("Framework");
+                        if(string.Equals(_framework, "netcoreapp2.0", StringComparison.OrdinalIgnoreCase))
+                        {
+                            _runtime = RuntimeOption.NetCore_v2_0;
+                            this._ctlRuntime.SelectedItem = _runtime;
+                        }
+                        else if(string.Equals(_framework, "netcoreapp1.0", StringComparison.OrdinalIgnoreCase))
+                        {
+                            _runtime = RuntimeOption.NetCore_v1_0;
+                            this._ctlRuntime.SelectedItem = _runtime;
+                        }
+                    }
+                    finally
+                    {
+                        _inRuntimeFrameworkEvent = false;
+                    }
+                }
             }
         }
 
@@ -299,7 +335,28 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             set
             {
                 _runtime = value;
-                NotifyPropertyChanged("Runtime");
+                if (!_inRuntimeFrameworkEvent)
+                {
+                    _inRuntimeFrameworkEvent = true;
+                    try
+                    {
+                        NotifyPropertyChanged("Runtime");
+                        if (RuntimeOption.NetCore_v2_0 == _runtime && this._ctlFrameworkPicker.Items.Contains("netcoreapp2.0"))
+                        {
+                            _framework = "netcoreapp2.0";
+                            this._ctlFrameworkPicker.SelectedItem = "netcoreapp2.0";
+                        }
+                        else if (RuntimeOption.NetCore_v1_0 == _runtime && this._ctlFrameworkPicker.Items.Contains("netcoreapp1.0"))
+                        {
+                            _framework = "netcoreapp1.0";
+                            this._ctlFrameworkPicker.SelectedItem = "netcoreapp1.0";
+                        }
+                    }
+                    finally
+                    {
+                        _inRuntimeFrameworkEvent = false;
+                    }
+                }
             }
         }
 

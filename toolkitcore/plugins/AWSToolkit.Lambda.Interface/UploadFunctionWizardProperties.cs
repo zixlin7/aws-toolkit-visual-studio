@@ -171,6 +171,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages
         public const string CloudFormationTemplateWrapper = "CloudFormationTemplateWrapper";
         public const string CloudFormationTemplateParameters = "CloudFormationTemplateParameters";
 
+        public const string ProjectTargetFrameworks = "ProjectTargetFrameworks";
+
 
     }
 }

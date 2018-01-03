@@ -2096,6 +2096,12 @@ namespace Amazon.AWSToolkit.VisualStudio
                     LOGGER.Warn("Error while saving all opening documents before uploading to Lambda", ex);
                 }
 
+                var projectFrameworks = VSUtility.GetSelectedNetCoreProjectFrameworks();
+                if(projectFrameworks != null && projectFrameworks.Count > 0)
+                {
+                    seedProperties[UploadFunctionWizardProperties.ProjectTargetFrameworks] = projectFrameworks;
+                }
+
                 this.LambdaPlugin.UploadFunctionFromPath(seedProperties);
             }
         }
