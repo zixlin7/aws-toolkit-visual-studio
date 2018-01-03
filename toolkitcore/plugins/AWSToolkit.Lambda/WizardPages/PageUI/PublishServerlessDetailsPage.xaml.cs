@@ -88,9 +88,22 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             this._ctlConfigurationPicker.Items.Add("Debug");
             this.Configuration = "Release";
 
-            this._ctlFrameworkPicker.Items.Add("netcoreapp1.0");
+            var projectFrameworks = this.PageController.HostingWizard[UploadFunctionWizardProperties.ProjectTargetFrameworks] as IList<string>;
+            if (projectFrameworks != null && projectFrameworks.Count > 0)
+            {
+                foreach (var framework in projectFrameworks)
+                {
+                    this._ctlFrameworkPicker.Items.Add(framework);
+                }
+            }
+            else
+            {
+                this._ctlFrameworkPicker.Items.Add("netcoreapp2.0");
+                this._ctlFrameworkPicker.Items.Add("netcoreapp1.0");
+            }
+
             this._ctlFrameworkPicker.SelectedIndex = 0;
-            this.Framework = "netcoreapp1.0";
+            this.Framework = this._ctlFrameworkPicker.Items[0].ToString();
         }
 
         public AccountViewModel SelectedAccount
