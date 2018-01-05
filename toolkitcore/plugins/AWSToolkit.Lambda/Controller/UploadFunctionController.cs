@@ -249,7 +249,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         public static DeploymentType DetermineDeploymentType(string sourcePath)
         {
-            if (Directory.Exists(sourcePath) && (Directory.GetFiles(sourcePath, "*.csproj").FirstOrDefault() != null || File.Exists(Path.Combine(sourcePath, "project.json"))))
+            if (Directory.Exists(sourcePath) && (Directory.GetFiles(sourcePath, "*.csproj").FirstOrDefault() != null || Directory.GetFiles(sourcePath, "*.fsproj").FirstOrDefault() != null || File.Exists(Path.Combine(sourcePath, "project.json"))))
                 return DeploymentType.NETCore;
 
             return DeploymentType.Generic;

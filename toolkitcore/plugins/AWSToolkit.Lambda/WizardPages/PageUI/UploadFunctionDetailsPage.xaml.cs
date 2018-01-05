@@ -189,9 +189,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                     this._ctlNETCoreHandlerPanel.Visibility = Visibility.Visible;
                     this._ctlGenericHandlerPanel.Visibility = Visibility.Collapsed;
                     this._ctlPersistPanel.Visibility = Visibility.Visible;
-                    Runtime = RuntimeOption.NetCore_v1_0;
                     if (isFirstTimeConfig)
                     {
+                        Runtime = RuntimeOption.NetCore_v1_0;
                         InitializeControlForNETCore(PageController.HostingWizard[UploadFunctionWizardProperties.SourcePath] as string);
                         InitializeNETCoreFields();
                     }
