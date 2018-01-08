@@ -119,7 +119,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
                 var srcDirInfo = new DirectoryInfo(Path.GetDirectoryName(project.FullName));
 
                 var localZipFile = Path.GetTempFileName() + ".zip";
-                using (var stream = S3FileFetcher.Instance.OpenFileStream(Path.Combine(BlueprintsManifest.BlueprintsManifestPathMsbuildV1, this._blueprint.File), S3FileFetcher.CacheMode.PerInstance))
+                using (var stream = S3FileFetcher.Instance.OpenFileStream(Path.Combine(BlueprintsManifest.BlueprintsManifestPathMsbuildV2, this._blueprint.File), S3FileFetcher.CacheMode.PerInstance))
                 {
                     
                     using (Stream output = File.OpenWrite(localZipFile))
@@ -200,7 +200,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
 
                 IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
                 {
-                    new CSharpProjectTypeController("Select Blueprint", this.Description, this.RequiredTags, BlueprintsManifest.BlueprintsManifestPathMsbuildV1)
+                    new CSharpProjectTypeController("Select Blueprint", this.Description, this.RequiredTags, BlueprintsManifest.BlueprintsManifestPathMsbuildV2)
                 };
 
                 wizard.RegisterPageControllers(defaultPages, 0);
