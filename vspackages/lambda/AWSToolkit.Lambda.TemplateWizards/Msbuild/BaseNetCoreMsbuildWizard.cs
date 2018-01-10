@@ -146,8 +146,10 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
                         targetDirInfo.Create();
 
                         var testProjectFile = ProcessProject(zipArchive, targetDirInfo, "test/BlueprintBaseName.Tests/");
-
-                        this._dte.Solution.AddFromFile(testProjectFile);
+                        if (!string.IsNullOrEmpty(testProjectFile))
+                        {
+                            this._dte.Solution.AddFromFile(testProjectFile);
+                        }
                     }
                 }
             }
