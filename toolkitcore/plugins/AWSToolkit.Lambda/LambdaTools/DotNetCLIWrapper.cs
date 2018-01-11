@@ -92,8 +92,6 @@ namespace Amazon.Lambda.Tools
                 }
             }
 
-
-
             var psi = new ProcessStartInfo
             {
                 FileName = dotnetCLI,
