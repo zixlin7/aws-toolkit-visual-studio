@@ -80,6 +80,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             {
                 this.Framework = targetFramework;
             }
+
+            this._ctlPersistSettings.IsChecked = true;
         }
 
         private void InitializeNETCoreFields()

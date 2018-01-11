@@ -147,6 +147,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             {
                 Runtime = hostWizard[UploadFunctionWizardProperties.Runtime] as RuntimeOption;
             }
+
+            this._ctlPersistSettings.IsChecked = true;
         }
 
         private void SetPanelsForOriginatorAndType(bool isFirstTimeConfig)
