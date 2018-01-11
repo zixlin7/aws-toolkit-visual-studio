@@ -63,7 +63,8 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 if (command.ExecuteAsync().Result)
                 {
                     ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentSuccess, MOBILEANALYTICS_TYPE);
+                    evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentSuccess, string.Concat(MOBILEANALYTICS_TYPE, "-", command.TargetFramework));
+                    evnt.AddProperty(AttributeKeys.LambdaFunctionTargetFramework, command.TargetFramework);
 
                     var zipArchivePath = Path.Combine(Settings.SourcePath, "bin", Settings.Configuration, Settings.Framework, new DirectoryInfo(Settings.SourcePath).Name + ".zip");
                     if (File.Exists(zipArchivePath))

@@ -26,6 +26,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         LambdaNETCoreNewProject,
         LambdaNETCoreNewProjectType,
 
+        LambdaFunctionTargetFramework,
+
         LambdaFunctionDeploymentSuccess,
         LambdaFunctionDeploymentError,
         LambdaFunctionDeploymentErrorDetail,
