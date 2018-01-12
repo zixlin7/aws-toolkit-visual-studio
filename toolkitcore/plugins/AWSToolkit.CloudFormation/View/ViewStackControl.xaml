@@ -271,7 +271,15 @@
                         Text="{Binding AWSServerlessURL}" />
                 </Hyperlink>
             </TextBlock>
-            <Button Name="_ctlServerlessApplicationURLCopy" Visibility="{Binding AWSServerlessCopyVisibility}" Margin="5,5,5,5" Padding="5,0,5,0" Click="onCopyClick" HorizontalAlignment="Left">Copy</Button>
+            <Button Name="_ctlServerlessApplicationURLCopy" 
+                    Visibility="{Binding AWSServerlessCopyVisibility}" 
+                    Margin="5" Padding="5,0" 
+                    Click="onCopyClick" 
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Bottom"
+                    Style="{DynamicResource ActionLinkButton}">
+                Copy
+            </Button>
 
         </StackPanel>
 
