@@ -109,6 +109,7 @@
       <HintPath>&gt;$(BuildRoot)\thirdparty\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="System.Net.Http" />
     <Reference Include="YamlDotNet">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(BuildRoot)\thirdparty\YamlDotNet.dll</HintPath>
@@ -170,6 +171,7 @@
     <Compile Include="LambdaTools\Options\CommandOptionValue.cs" />
     <Compile Include="LambdaTools\Options\DefinedCommandOptions.cs" />
     <Compile Include="LambdaTools\RoleHelper.cs" />
+    <Compile Include="LambdaTools\ToolkitConfigFileFetcher.cs" />
     <Compile Include="LambdaTools\Utilities.cs" />
     <Compile Include="Model\EventSourceWrapper.cs" />
     <Compile Include="Model\KeyAndAliasWrapper.cs" />
