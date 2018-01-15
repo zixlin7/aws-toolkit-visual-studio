@@ -2063,6 +2063,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 var rootDirectory = Path.GetDirectoryName(item.FullName);
 
                 var seedProperties = new Dictionary<string, object>();
+                seedProperties[UploadFunctionWizardProperties.SelectedProjectFile] = item.FullName;
 
                 IDictionary<string, IList<string>> suggestedMethods = VSLambdaUtility.SearchForLambdaFunctionSuggestions(item);
                 seedProperties[UploadFunctionWizardProperties.SuggestedMethods] = suggestedMethods;

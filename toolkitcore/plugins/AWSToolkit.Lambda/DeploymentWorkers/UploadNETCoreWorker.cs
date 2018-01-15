@@ -72,7 +72,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                     ToolkitEvent evnt = new ToolkitEvent();
                     evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentSuccess, uploadState.Request.Runtime);
                     evnt.AddProperty(AttributeKeys.LambdaFunctionTargetFramework, command.TargetFramework);
-                    evnt.AddProperty(AttributeKeys.LambdaFunctionTargetFramework, command.MemorySize.GetValueOrDefault().ToString());
+                    evnt.AddProperty(AttributeKeys.LambdaFunctionMemorySize, command.MemorySize.GetValueOrDefault().ToString());
 
                     var zipArchivePath = Path.Combine(uploadState.SourcePath, "bin", uploadState.Configuration, uploadState.Framework, new DirectoryInfo(uploadState.SourcePath).Name + ".zip");
                     if(File.Exists(zipArchivePath))

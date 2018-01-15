@@ -330,6 +330,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         void ILambdaFunctionUploadHelpers.PublishServerlessAsyncCompleteSuccess(PublishServerlessApplicationWorkerSettings settings)
         {
+            UpdateLambdaTools(settings.SaveSettings);
             ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
             {
                 (this as UploadFunctionProgressPageController)._pageUI.StopProgressBar();
@@ -361,6 +362,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         void ILambdaFunctionUploadHelpers.UploadFunctionAsyncCompleteSuccess(UploadFunctionState uploadState)
         {
+            UpdateLambdaTools(uploadState.SaveSettings);
             ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
             {
                 (this as UploadFunctionProgressPageController)._pageUI.StopProgressBar();
@@ -390,6 +392,19 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                     HostingWizard.CancelRun();
             }));
         }
+
+        private void UpdateLambdaTools(bool persist)
+        {
+            if (!persist)
+                return;
+
+            if (HostingWizard[UploadFunctionWizardProperties.SelectedProjectFile] is string)
+            {
+                var projectFile = HostingWizard[UploadFunctionWizardProperties.SelectedProjectFile] as string;
+                Utility.AddDotnetCliToolReference(projectFile, "Amazon.Lambda.Tools");
+            }
+        }
+
 
         void ILambdaFunctionUploadHelpers.UploadFunctionAsyncCompleteError(string message)
         {

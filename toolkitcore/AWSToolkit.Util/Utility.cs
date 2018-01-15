@@ -174,6 +174,12 @@ namespace Amazon.AWSToolkit
 
         public static void AddDotnetCliToolReference(string projectFilePath, string nuGetPackageName)
         {
+            // Skip VS 2015 .NET Core project format and Node.js projects
+            var projectExt = Path.GetExtension(projectFilePath);
+            if (string.Equals(projectExt, ".xproj", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(projectExt, ".njsproj", StringComparison.OrdinalIgnoreCase))
+                return;
+
             var versionContent = S3FileFetcher.Instance.GetFileContent("nuget-versions.json");
             if (string.IsNullOrEmpty(versionContent))
                 return;

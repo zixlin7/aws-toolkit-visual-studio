@@ -173,6 +173,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages
 
         public const string ProjectTargetFrameworks = "ProjectTargetFrameworks";
 
+        public const string SelectedProjectFile = "SelectedProjectFile";
+
 
     }
 }
