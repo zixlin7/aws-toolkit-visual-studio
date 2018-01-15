@@ -82,8 +82,7 @@ namespace Amazon.Lambda.Tools
             }
 
             string manifestPath = null;
-            if (!string.Equals("netcoreapp1.0", targetFramework, StringComparison.OrdinalIgnoreCase) &&
-                    Directory.GetFiles(fullProjectLocation, "project.json", SearchOption.TopDirectoryOnly).Length == 0)
+            if (!string.Equals("netcoreapp1.0", targetFramework, StringComparison.OrdinalIgnoreCase))
             {
                 arguments.Append(" /p:GenerateRuntimeConfigurationFiles=true");
 
