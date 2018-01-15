@@ -100,7 +100,10 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
             else
             {
-                this._ctlFrameworkPicker.Items.Add("netcoreapp2.0");
+                if(!this.IsVS2015)
+                {
+                    this._ctlFrameworkPicker.Items.Add("netcoreapp2.0");
+                }
                 this._ctlFrameworkPicker.Items.Add("netcoreapp1.0");
             }
 
@@ -347,6 +350,17 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
 
             return null;
+        }
+
+        private bool IsVS2015
+        {
+            get
+            {
+                if (string.Equals("2015", ToolkitFactory.Instance.ShellProvider.ShellVersion, StringComparison.Ordinal))
+                    return true;
+
+                return false;
+            }
         }
     }
 }

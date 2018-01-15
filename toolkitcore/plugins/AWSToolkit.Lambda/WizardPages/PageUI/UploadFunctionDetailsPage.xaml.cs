@@ -57,7 +57,10 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             this._ctlTypeName.DataContext = this;
             this._ctlMethodName.DataContext = this;
 
-            this._ctlRuntime.ItemsSource = RuntimeOption.ALL_OPTIONS;
+            if(this.IsVS2015)
+                this._ctlRuntime.ItemsSource = RuntimeOption.VS2015_OPTIONS;
+            else
+                this._ctlRuntime.ItemsSource = RuntimeOption.ALL_OPTIONS;
 
             this.ResetToDefaults();
 
@@ -242,7 +245,10 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
             else
             {
-                this._ctlFrameworkPicker.Items.Add("netcoreapp2.0");
+                if(!this.IsVS2015)
+                {
+                    this._ctlFrameworkPicker.Items.Add("netcoreapp2.0");
+                }
                 this._ctlFrameworkPicker.Items.Add("netcoreapp1.0");
             }
 
@@ -728,6 +734,17 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
             DeploymentType = runtime.IsNetCore ? DeploymentType.NETCore : DeploymentType.Generic;
             SetPanelsForOriginatorAndType(false);
+        }
+
+        private bool IsVS2015
+        {
+            get
+            {
+                if (string.Equals("2015", ToolkitFactory.Instance.ShellProvider.ShellVersion, StringComparison.Ordinal))
+                    return true;
+
+                return false;
+            }
         }
     }
 }
