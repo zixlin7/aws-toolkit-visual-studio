@@ -82,22 +82,21 @@ namespace Amazon.Lambda.Tools
             }
 
             string manifestPath = null;
-            if (!string.Equals("netcoreapp1.0", targetFramework, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals("netcoreapp1.0", targetFramework, StringComparison.OrdinalIgnoreCase) &&
+                    Directory.GetFiles(fullProjectLocation, "project.json", SearchOption.TopDirectoryOnly).Length == 0)
             {
                 arguments.Append(" /p:GenerateRuntimeConfigurationFiles=true");
 
                 // If you set the runtime linux-x64 it will trim out the Windows and Mac OS specific dependencies but Razor view precompilation
                 // will not run. So only do this packaging optimization if there are no Razor views.
-                if (Directory.GetFiles(fullProjectLocation, "*.cshtml", SearchOption.AllDirectories).Length == 0 &&
-                    Directory.GetFiles(fullProjectLocation, "project.json", SearchOption.TopDirectoryOnly).Length == 0)
+                if (Directory.GetFiles(fullProjectLocation, "*.cshtml", SearchOption.AllDirectories).Length == 0)
                 {
                     arguments.Append(" -r linux-x64 --self-contained false /p:PreserveCompilationContext=false");
                 }
 
                 // If we have a manifest of packages already deploy in target deployment environment then write it to disk and add the 
                 // command line switch
-                if(!string.IsNullOrEmpty(deploymentTargetPackageStoreManifestContent) &&
-                    Directory.GetFiles(fullProjectLocation, "project.json", SearchOption.TopDirectoryOnly).Length == 0)
+                if(!string.IsNullOrEmpty(deploymentTargetPackageStoreManifestContent))
                 {
                     manifestPath = Path.GetTempFileName();
                     File.WriteAllText(manifestPath, deploymentTargetPackageStoreManifestContent);
