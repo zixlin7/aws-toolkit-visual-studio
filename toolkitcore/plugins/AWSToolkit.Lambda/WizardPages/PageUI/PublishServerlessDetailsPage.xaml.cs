@@ -75,7 +75,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 this.Configuration = buildConfiguration;
             }
 
-            var targetFramework = hostWizard[UploadFunctionWizardProperties.Configuration] as string;
+            var targetFramework = hostWizard[UploadFunctionWizardProperties.Framework] as string;
             if (!string.IsNullOrEmpty(targetFramework) && this._ctlFrameworkPicker.Items.Contains(targetFramework))
             {
                 this.Framework = targetFramework;
