@@ -96,7 +96,8 @@ namespace Amazon.Lambda.Tools
 
                 // If we have a manifest of packages already deploy in target deployment environment then write it to disk and add the 
                 // command line switch
-                if(!string.IsNullOrEmpty(deploymentTargetPackageStoreManifestContent))
+                if(!string.IsNullOrEmpty(deploymentTargetPackageStoreManifestContent) &&
+                    Directory.GetFiles(fullProjectLocation, "project.json", SearchOption.TopDirectoryOnly).Length == 0)
                 {
                     manifestPath = Path.GetTempFileName();
                     File.WriteAllText(manifestPath, deploymentTargetPackageStoreManifestContent);
