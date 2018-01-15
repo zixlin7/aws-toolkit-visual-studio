@@ -157,9 +157,11 @@
                         ToolTip="A space separated collection of tags to filter the available blueprints" />
                     <Button
                         Margin="4,2,0,2"
+                        Padding="4,1"
                         Click="OnClickApplyFilter"
                         IsEnabled="{Binding ElementName=_ctlBlueprintProject, Path=IsChecked}"
-                        Style="{DynamicResource awsButtonBaseStyle}">
+                        Style="{DynamicResource awsButtonBaseStyle}"
+                        VerticalAlignment="Center">
                         _Apply
                     </Button>
                 </StackPanel>
