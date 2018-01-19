@@ -56,7 +56,11 @@ namespace Amazon.AWSToolkit.RDS.Model
         {
             string iconPath = null;
             // clunky, but it works for now until we determine how we can describe available engines
-            if (engine.StartsWith("mysql", StringComparison.InvariantCultureIgnoreCase))
+            if (engine.StartsWith("aurora", StringComparison.InvariantCultureIgnoreCase))
+                iconPath = "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.logo_aurora.png";
+            else if (engine.StartsWith("mariadb", StringComparison.InvariantCultureIgnoreCase))
+                iconPath = "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.logo_mariadb.png";
+            else if (engine.StartsWith("mysql", StringComparison.InvariantCultureIgnoreCase))
                 iconPath = "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.logo_mysql.png";
             else if (engine.StartsWith("oracle", StringComparison.InvariantCultureIgnoreCase))
                 iconPath = "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.logo_oracle.png";

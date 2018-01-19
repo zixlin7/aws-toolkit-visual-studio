@@ -384,6 +384,8 @@
     <EmbeddedResource Include="Resources\EmbeddedImages\DBInstance_Launch.png" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Resources\EmbeddedImages\logo_aurora.png" />
+    <EmbeddedResource Include="Resources\EmbeddedImages\logo_mariadb.png" />
     <EmbeddedResource Include="Resources\EmbeddedImages\logo_mysql.png" />
     <EmbeddedResource Include="Resources\EmbeddedImages\logo_oracle.png" />
     <EmbeddedResource Include="Resources\EmbeddedImages\logo_sqlserver.png" />
