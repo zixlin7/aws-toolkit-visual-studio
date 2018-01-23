@@ -55,6 +55,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         ECSDeployService,
         ECSDeployScheduleTask,
         ECSDeployTask,
+        ECSPushImage,
+        ECSLaunchType,
 
         ECSConfiguredELB,
         ECSDeleteService
