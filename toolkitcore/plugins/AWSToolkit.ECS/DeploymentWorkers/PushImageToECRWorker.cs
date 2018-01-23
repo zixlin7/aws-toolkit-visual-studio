@@ -11,6 +11,8 @@ using Amazon.ECS.Tools;
 using Amazon.ECS.Tools.Commands;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
@@ -43,13 +45,21 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
                 if (command.ExecuteAsync().Result)
                 {
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.ECSPushImage, "Success");
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
                     this.Helper.SendCompleteSuccessAsync(state);
                     if (state.PersistConfigFile.GetValueOrDefault())
                         base.PersistDeploymentMode(state.HostingWizard);
                 }
                 else
                 {
-                    if(command.LastToolsException != null)
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.ECSPushImage, command.LastToolsException is ToolsException ? ((ToolsException)command.LastToolsException).Code.ToString() : "Unknown");
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
+                    if (command.LastToolsException != null)
                         this.Helper.SendCompleteErrorAsync("Error publishing container to AWS: " + command.LastToolsException.Message);
                     else
                         this.Helper.SendCompleteErrorAsync("Unknown error publishing container to AWS");
