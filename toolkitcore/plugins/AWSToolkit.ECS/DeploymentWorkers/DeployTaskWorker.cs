@@ -57,6 +57,13 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     PersistConfigFile = state.PersistConfigFile
                 };
 
+                if (!string.IsNullOrEmpty(command.ClusterProperties?.LaunchType))
+                {
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.ECSLaunchType, command.ClusterProperties.LaunchType);
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                }
+
                 if (command.ExecuteAsync().Result)
                 {
                     ToolkitEvent evnt = new ToolkitEvent();
