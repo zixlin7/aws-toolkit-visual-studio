@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="2.0.0" Type="Project"
+    xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+    <Name>AWS Lambda Project with Tests (.NET Core)</Name>
+    <Description>A project for creating a AWS Lambda Functions using .NET Core.</Description>
+    <Icon>LambdaTemplateProject.ico</Icon>
+    <ProjectType>FSharp</ProjectType>
+    <DefaultName>AWSLambda</DefaultName>
+    <RequiredFrameworkVersion>4.5</RequiredFrameworkVersion>
+    <SortOrder>200</SortOrder>
+    <TemplateID>2A458983-1389-4948-B6D9-5DC845CB58A7</TemplateID>
+    <CreateNewFolder>true</CreateNewFolder>
+    <CreateInPlace>true</CreateInPlace>
+    <ProvideDefaultName>true</ProvideDefaultName>
+  </TemplateData>
+
+  <TemplateContent>
+    <Project File="BlueprintBaseName.fsproj" ReplaceParameters="true">
+      <ProjectItem ReplaceParameters="true" TargetFileName="Readme.md">Readme.md</ProjectItem>
+    </Project>
+  </TemplateContent>
+
+
+  <WizardExtension>
+    <Assembly>AWSToolkit.Lambda.TemplateWizards,Culture=neutral,PublicKeyToken=8339e7e97bb08995</Assembly>
+    <FullClassName>Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild.NETCoreFunctionWithTestsFSharpWizard</FullClassName>
+  </WizardExtension>
+
+</VSTemplate>

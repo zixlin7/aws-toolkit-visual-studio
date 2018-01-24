@@ -68,6 +68,16 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
 
                             File.WriteAllBytes(projectFile, ms.ToArray());
                         }
+                        else if (string.Equals(Path.GetExtension(fullPath), ".fsproj"))
+                        {
+                            projectFile = Directory.GetFiles(destinationDirectory.FullName, "*.fsproj").FirstOrDefault();
+                            if (projectFile == null)
+                            {
+                                projectFile = Path.Combine(destinationDirectory.FullName, destinationDirectory.Name + ".fsproj");
+                            }
+
+                            File.WriteAllBytes(projectFile, ms.ToArray());
+                        }
                         else
                         {
                             var parentDir = new DirectoryInfo(Path.GetDirectoryName(fullPath));
@@ -95,7 +105,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
                         replacedContent = replacedContent.Replace("DefaultProfile", ToolkitFactory.Instance.Navigator.SelectedAccount?.DisplayName);
                         replacedContent = replacedContent.Replace("DefaultRegion", ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints?.SystemName);
                     }
-                    else if(file.EndsWith(".Tests.csproj"))
+                    else if(file.EndsWith(".Tests.csproj") || file.EndsWith(".Tests.fsproj"))
                     {
                         replacedContent = replacedContent.Replace(@"..\..\src\", @"..\");
                     }

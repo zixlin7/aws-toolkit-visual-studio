@@ -89,6 +89,10 @@
     <EmbeddedResource Include="Resources\basic-startupfiles.zip" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Msbuild\NETCoreFunctionFSharpWizard.cs" />
+    <Compile Include="Msbuild\NETCoreFunctionWithTestsFSharpWizard.cs" />
+    <Compile Include="Msbuild\ServerlessNETCoreFunctionFSharpWizard.cs" />
+    <Compile Include="Msbuild\ServerlessNETCoreFunctionWithTestsFSharpWizard.cs" />
     <Compile Include="Msbuild\ServerlessNETCoreFunctionWithTestsWizard.cs" />
     <Compile Include="Msbuild\NETCoreFunctionWithTestsWizard.cs" />
     <Compile Include="Msbuild\ServerlessNETCoreFunctionWizard.cs" />

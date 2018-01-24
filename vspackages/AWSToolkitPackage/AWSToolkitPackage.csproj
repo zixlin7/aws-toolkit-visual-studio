@@ -1138,6 +1138,38 @@
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
+
+	<!-- FSharp Lambda -->
+    <ProjectReference Include="..\lambda\MsbuildFunctionTemplateFSharp\MsbuildFunctionTemplateFSharp.csproj">
+      <Project>{ED237B5F-FD05-4994-86E0-CE4DD09B5BAC}</Project>
+      <Name>MsbuildFunctionTemplateFSharp</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+    <ProjectReference Include="..\lambda\MsbuildFunctionWithTestsTemplateFSharp\MsbuildFunctionWithTestsTemplateFSharp.csproj">
+      <Project>{ED2385B8-E0E7-479F-BFCC-50B646E2AC35}</Project>
+      <Name>MsbuildFunctionWithTestsTemplateFSharp</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+    <ProjectReference Include="..\lambda\MsbuildServerlessTemplateFSharp\MsbuildServerlessTemplateFSharp.csproj">
+      <Project>{D1833CEF-ABAB-472C-A9A0-5CF39C45A36B}</Project>
+      <Name>MsbuildServerlessTemplateFSharp</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+    <ProjectReference Include="..\lambda\MsbuildServerlessWithTestsTemplateFSharp\MsbuildServerlessWithTestsTemplateFSharp.csproj">
+      <Project>{D14A5D26-391E-4327-A1DC-29572D4521FF}</Project>
+      <Name>MsbuildServerlessWithTestsTemplateFSharp</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
+    </ProjectReference>
+
+
   </ItemGroup>
   <ItemGroup Condition="'$(VSTarget)' == '14.0'">
     <ProjectReference Include="..\lambda\ProjectJsonFunctionTemplate\ProjectJsonFunctionTemplate.csproj">

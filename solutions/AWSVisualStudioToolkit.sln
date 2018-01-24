@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "buildtools", "buildtools", "{77A27C21-7B4C-4137-8959-88861F5EAE73}"
 	ProjectSection(SolutionItems) = preProject
@@ -143,6 +143,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.ECS", "..\toolkitcore\plugins\AWSToolkit.ECS\AWSToolkit.ECS.csproj", "{A09C427C-DBF7-49C8-9590-E99AD60DECE2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.ECS.Interface", "..\toolkitcore\plugins\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj", "{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbuildFunctionTemplateFSharp", "..\vspackages\lambda\MsbuildFunctionTemplateFSharp\MsbuildFunctionTemplateFSharp.csproj", "{ED237B5F-FD05-4994-86E0-CE4DD09B5BAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbuildFunctionWithTestsTemplateFSharp", "..\vspackages\lambda\MsbuildFunctionWithTestsTemplateFSharp\MsbuildFunctionWithTestsTemplateFSharp.csproj", "{ED2385B8-E0E7-479F-BFCC-50B646E2AC35}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbuildServerlessTemplateFSharp", "..\vspackages\lambda\MsbuildServerlessTemplateFSharp\MsbuildServerlessTemplateFSharp.csproj", "{D1833CEF-ABAB-472C-A9A0-5CF39C45A36B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbuildServerlessWithTestsTemplateFSharp", "..\vspackages\lambda\MsbuildServerlessWithTestsTemplateFSharp\MsbuildServerlessWithTestsTemplateFSharp.csproj", "{D14A5D26-391E-4327-A1DC-29572D4521FF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -370,6 +378,22 @@ Global
 		{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED237B5F-FD05-4994-86E0-CE4DD09B5BAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED237B5F-FD05-4994-86E0-CE4DD09B5BAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED237B5F-FD05-4994-86E0-CE4DD09B5BAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED237B5F-FD05-4994-86E0-CE4DD09B5BAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED2385B8-E0E7-479F-BFCC-50B646E2AC35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED2385B8-E0E7-479F-BFCC-50B646E2AC35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED2385B8-E0E7-479F-BFCC-50B646E2AC35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED2385B8-E0E7-479F-BFCC-50B646E2AC35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1833CEF-ABAB-472C-A9A0-5CF39C45A36B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1833CEF-ABAB-472C-A9A0-5CF39C45A36B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1833CEF-ABAB-472C-A9A0-5CF39C45A36B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1833CEF-ABAB-472C-A9A0-5CF39C45A36B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D14A5D26-391E-4327-A1DC-29572D4521FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D14A5D26-391E-4327-A1DC-29572D4521FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D14A5D26-391E-4327-A1DC-29572D4521FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D14A5D26-391E-4327-A1DC-29572D4521FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -438,6 +462,10 @@ Global
 		{9AA7DD53-7BC4-4971-BC0C-0540A391DC22} = {C261BDE7-0557-4579-A31E-EB2D5C5503B4}
 		{A09C427C-DBF7-49C8-9590-E99AD60DECE2} = {C261BDE7-0557-4579-A31E-EB2D5C5503B4}
 		{E3D3DFFD-6668-44BE-9D8E-823F53B58F29} = {62237430-5212-4823-924E-344007109D14}
+		{ED237B5F-FD05-4994-86E0-CE4DD09B5BAC} = {60D866A4-6F20-4C7D-876B-3014884AE2FF}
+		{ED2385B8-E0E7-479F-BFCC-50B646E2AC35} = {60D866A4-6F20-4C7D-876B-3014884AE2FF}
+		{D1833CEF-ABAB-472C-A9A0-5CF39C45A36B} = {60D866A4-6F20-4C7D-876B-3014884AE2FF}
+		{D14A5D26-391E-4327-A1DC-29572D4521FF} = {60D866A4-6F20-4C7D-876B-3014884AE2FF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50B40085-A3FF-4E79-90F0-ECAA786ECF93}
