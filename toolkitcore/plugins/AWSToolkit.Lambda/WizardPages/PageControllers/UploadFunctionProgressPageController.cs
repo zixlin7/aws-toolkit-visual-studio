@@ -215,6 +215,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             var selectedRole = HostingWizard[UploadFunctionWizardProperties.Role] as Role;
             var selectedManagedPolicy = HostingWizard[UploadFunctionWizardProperties.ManagedPolicy] as ManagedPolicy;
 
+            var selectedDeadLetterTargetArn = HostingWizard[UploadFunctionWizardProperties.DeadLetterTargetArn] as string;
+            var selectedTracingMode = HostingWizard[UploadFunctionWizardProperties.TracingMode] as string;
+
             var subnets = HostingWizard[UploadFunctionWizardProperties.Subnets] as IEnumerable<SubnetWrapper>;
             var securityGroups = HostingWizard[UploadFunctionWizardProperties.SecurityGroups] as IEnumerable<SecurityGroupWrapper>;
 
@@ -237,6 +240,16 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 Timeout = timeout,
                 Handler = handler
             };
+
+            if(selectedDeadLetterTargetArn != null)
+            {
+                request.DeadLetterConfig = new DeadLetterConfig { TargetArn = selectedDeadLetterTargetArn };
+            }
+
+            if(selectedTracingMode != null)
+            {
+                request.TracingConfig = new TracingConfig { Mode = selectedTracingMode };
+            }
 
             if(environmentVariables != null)
             {

@@ -162,6 +162,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages
         /// </summary>
         public static readonly string WizardResult = "wizardResult";
 
+
+        public const string DeadLetterTargetArn = "DLQTargetArn";
+        public const string TracingMode = "TracingMode";
         public const string CloudFormationTemplate = "cloudformationTemplate";
         public const string CloudFormationParameters = "cloudFormationTemplateParameters";
         public const string StackName = "stackName";

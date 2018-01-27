@@ -646,6 +646,13 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 hostWizard.SetProperty(UploadFunctionWizardProperties.Timeout, existingConfig.Timeout);
 
 
+                if (existingConfig.DeadLetterConfig?.TargetArn != null)
+                    hostWizard.SetProperty(UploadFunctionWizardProperties.DeadLetterTargetArn, existingConfig.DeadLetterConfig.TargetArn);
+
+                if(existingConfig.TracingConfig?.Mode != null)
+                    hostWizard.SetProperty(UploadFunctionWizardProperties.TracingMode, existingConfig.TracingConfig.Mode.ToString());
+
+
                 List<EnvironmentVariable> variables = new List<EnvironmentVariable>();
                 if(existingConfig?.Environment?.Variables != null)
                 { 

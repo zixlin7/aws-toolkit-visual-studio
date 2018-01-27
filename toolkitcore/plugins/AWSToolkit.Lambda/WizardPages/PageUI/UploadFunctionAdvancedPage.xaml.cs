@@ -70,6 +70,13 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             _ctlSecurityGroups.PropertyChanged += ForwardEmbeddedControlPropertyChanged;
             _ctlVpcSubnets.PropertyChanged += ForwardEmbeddedControlPropertyChanged;
             _ctlKMSKey.PropertyChanged += ForwardEmbeddedControlPropertyChanged;
+            _ctlDLQ.PropertyChanged += ForwardEmbeddedControlPropertyChanged;
+
+            if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.TracingMode))
+            {
+                var defaultValue = _ctlTimeout.Text = hostWizard[UploadFunctionWizardProperties.TracingMode] as string;
+                this._ctlEnableActiveTracing.IsChecked = string.Equals(defaultValue, Amazon.Lambda.TracingMode.Active, StringComparison.OrdinalIgnoreCase);
+            }
         }
 
         public ObservableCollection<EnvironmentVariable> EnvironmentVariables { get; private set; }
@@ -118,6 +125,31 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                                         aliases, 
                                         new KeyAndAliasWrapper[] { KeyAndAliasWrapper.LambdaDefaultKMSKey }, 
                                         defaultSelection);
+        }
+
+        public void SetAvailableDLQTargets(IList<string> topicArns, IList<string> queueArns)
+        {
+            string defaultSelection = null;
+            if (PageController.HostingWizard.IsPropertySet(UploadFunctionWizardProperties.DeadLetterTargetArn))
+                defaultSelection = PageController.HostingWizard[UploadFunctionWizardProperties.DeadLetterTargetArn] as string;
+
+            _ctlDLQ.SetAvailableDLQTargets(topicArns, queueArns, defaultSelection);
+        }
+
+        public string SelectedDLQTargetArn
+        {
+            get
+            {
+                return this._ctlDLQ.SelectedArn;
+            }
+        }
+
+        public bool IsEnableActiveTracing
+        {
+            get
+            {
+                return this._ctlEnableActiveTracing.IsChecked.GetValueOrDefault();
+            }
         }
 
         public IEnumerable<SubnetWrapper> SelectedSubnets

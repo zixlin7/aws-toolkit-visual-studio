@@ -94,6 +94,11 @@
       <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.SimpleNotificationService.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AWSSDK.SQS">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.SQS.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(BuildRoot)\thirdparty\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -189,6 +194,9 @@
     <Compile Include="View\Components\AdvancedSettingsControl.xaml.cs">
       <DependentUpon>AdvancedSettingsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Components\DLQSelectionControl.xaml.cs">
+      <DependentUpon>DLQSelectionControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Components\EventSourcesControl.xaml.cs">
       <DependentUpon>EventSourcesControl.xaml</DependentUpon>
     </Compile>
@@ -277,6 +285,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Components\AdvancedSettingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\DLQSelectionControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
