@@ -301,7 +301,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
-            ToolkitFactory.Instance.ShellProvider.OpenInBrowser(e.Uri.ToString(), true);
+            Utility.LaunchXRayHelp(true);
         }
     }
 }

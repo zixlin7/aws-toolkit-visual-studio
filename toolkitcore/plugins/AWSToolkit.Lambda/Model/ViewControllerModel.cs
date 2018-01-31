@@ -64,6 +64,28 @@ namespace Amazon.AWSToolkit.Lambda.Model
             }
         }
 
+        bool _isEnabledActiveTracing;
+        public bool IsEnabledActiveTracing
+        {
+            get { return this._isEnabledActiveTracing; }
+            set
+            {
+                this._isEnabledActiveTracing = value;
+                this.NotifyPropertyChanged("IsEnabledActiveTracing");
+            }
+        }
+
+        string _dlqTargetArn;
+        public string DLQTargetArn
+        {
+            get { return this._dlqTargetArn; }
+            set
+            {
+                this._dlqTargetArn = value;
+                this.NotifyPropertyChanged("DLQTargetArn");
+            }
+        }
+
         public string CodeSizeFormatted
         {
             get { return string.Format("{0} bytes", this.CodeSize.ToString("0,0.")); }

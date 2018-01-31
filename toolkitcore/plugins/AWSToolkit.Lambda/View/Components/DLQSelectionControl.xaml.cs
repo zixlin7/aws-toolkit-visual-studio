@@ -31,8 +31,6 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
 
         public void SetAvailableDLQTargets(IList<string> topicArns, IList<string> queueArns, string defaultTargetArn)
         {
-            this._ctlDLQOptions.Items.Clear();
-
             DisplayItem selectedItem = null;
             Func<string, string> nameFromArn = x =>
             {
