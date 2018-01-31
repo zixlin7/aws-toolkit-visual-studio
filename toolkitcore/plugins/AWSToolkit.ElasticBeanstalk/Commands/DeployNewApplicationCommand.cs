@@ -140,7 +140,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                         Deployment.LaunchIntoVPC = !string.IsNullOrEmpty(Deployment.VPCId);
                     }
                 }
-                
+
+                string enableXRayDaemon = getValue<string>(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon);
+                if (!string.IsNullOrEmpty(enableXRayDaemon))
+                    Deployment.EnableXRayDaemon = Convert.ToBoolean(enableXRayDaemon);
+
                 Deployment.VPCSecurityGroupId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_VPCSecurityGroup);
                 Deployment.InstanceSubnetId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_InstanceSubnet);
                 Deployment.ELBSubnetId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ELBSubnet);

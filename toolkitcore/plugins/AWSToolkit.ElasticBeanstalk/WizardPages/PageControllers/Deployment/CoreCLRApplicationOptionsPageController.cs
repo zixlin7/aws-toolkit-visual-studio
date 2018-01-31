@@ -76,6 +76,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                 //    enable32BitApps = (bool)HostingWizard[DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications];
                 //_pageUI.Enable32BitAppPool = enable32BitApps;
 
+                var enableXRayDaemon = false;
+                if (HostingWizard.IsPropertySet(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon))
+                    enableXRayDaemon = (bool)HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon];
+
+                _pageUI.EnableXRayDaemon = enableXRayDaemon;
+
+
                 var availableFrameworks = HostingWizard[DeploymentWizardProperties.SeedData.propkey_ProjectFrameworks] as Dictionary<string, string>;
                 _pageUI.SetDefaultRuntimesOrFrameworks(targetRuntime, availableFrameworks);
 
@@ -111,6 +118,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
         readonly Dictionary<string, string> _originalAppSettings = new Dictionary<string, string>();
         string _originalHealthCheckUri = "/";
         bool _originalEnable32bitAppPool = false;
+        bool _originalEnableXRayDaemon = false;
 
         bool _needToFetchData;
 
@@ -185,6 +193,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                     var healthCheckUri = "/";
                     var enable32Bit = false;
                     var isSingleInstanceEnvironment = false;
+                    var enableXRayDaemon = false;
                     var appSettings = new Dictionary<string, string>();
                     this._originalAppSettings.Clear();
 
@@ -228,6 +237,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
                                         continue;
                                     }
+
+                                    if (optionSetting.Namespace == "aws:elasticbeanstalk:xray")
+                                    {
+                                        if (optionSetting.OptionName == "XRayEnabled")
+                                            bool.TryParse(optionSetting.Value, out enableXRayDaemon);
+
+                                        continue;
+                                    }
                                 }
                             }
                         }
@@ -241,6 +258,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                     {
                         this._originalHealthCheckUri = healthCheckUri;
                         this._pageUI.HealthCheckUri = healthCheckUri;
+
+                        this._originalEnableXRayDaemon = enableXRayDaemon;
+                        this._pageUI.EnableXRayDaemon = enableXRayDaemon;
 
                         this._pageUI.ConfigureForEnvironmentType(isSingleInstanceEnvironment);
 
@@ -309,6 +329,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
             HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_VersionLabel] = _pageUI.DeploymentVersionLabel;
             HostingWizard[BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_AppOptionsUpdated] = this.HasEnvironmentSettingsChanged;
+
+            HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon] = this._pageUI.EnableXRayDaemon;
         }
 
         private bool HasEnvironmentSettingsChanged
@@ -329,6 +351,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                 }
 
                 if (this._pageUI.HealthCheckUri != this._originalHealthCheckUri)
+                    return true;
+
+                if (this._pageUI.EnableXRayDaemon != this._originalEnableXRayDaemon)
                     return true;
 
                 return false;
