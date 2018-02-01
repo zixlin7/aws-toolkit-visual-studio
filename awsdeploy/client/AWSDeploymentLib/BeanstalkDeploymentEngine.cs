@@ -1522,40 +1522,52 @@ namespace AWSDeployment
         /// configures it appropriately. If the user specified a custom role of their own,
         /// we do nothing other than ensure an instance profile of the same name exists.
         /// </summary>
-        /// <param name="roleName"></param>
+        /// <param name="roleOrProfileName"></param>
         /// <returns></returns>
-        string ConfigureRoleAndProfile(string roleName)
+        string ConfigureRoleAndProfile(string roleOrProfileName)
         {
-            string instanceProfileName = string.Empty;
+            var instanceProfileName = string.Empty;
             try
             {
+                // if we've been handed an instance profile name, use it otherwise probe for
+                // a role matching the name and wrap a profile around it with the same name as
+                // the role
+                var ip = getInstanceProfile(roleOrProfileName);
+                if (ip != null)
+                {
+                    return roleOrProfileName;
+                }
+
                 // ensure the default or user-defined role exists
-                bool isDefaultRole = roleName == BeanstalkParameters.DefaultRoleName;
-                Role role = getRole(roleName);
+                var isDefaultRole = roleOrProfileName == BeanstalkParameters.DefaultRoleName;
+                var role = getRole(roleOrProfileName);
                 if (role == null)
                 {
                     if (isDefaultRole)
                     {
-                        var ASSUME_ROLE_POLICY 
-                            = Amazon.AWSToolkit.Constants.GetIAMRoleAssumeRolePolicyDocument(RegionEndPointsManager.EC2_SERVICE_NAME,
-                                                                                             this.RegionEndPoints);
-                        var request = new CreateRoleRequest()
+                        var ASSUME_ROLE_POLICY
+                            = Amazon.AWSToolkit.Constants.GetIAMRoleAssumeRolePolicyDocument(
+                                RegionEndPointsManager.EC2_SERVICE_NAME,
+                                this.RegionEndPoints);
+                        var request = new CreateRoleRequest
                         {
-                            RoleName = roleName,
+                            RoleName = roleOrProfileName,
                             Path = "/",
                             AssumeRolePolicyDocument = ASSUME_ROLE_POLICY
                         };
-                        role = IAMClient.CreateRole(request).Role;
+                        IAMClient.CreateRole(request);
                     }
                     else
                     {
-                        Observer.Warn("Unable to find role with name '{0}'; launch configuration settings for role will be skipped.", roleName);
+                        Observer.Warn(
+                            "Unable to find role with name '{0}'; launch configuration settings for role will be skipped.",
+                            roleOrProfileName);
                         return string.Empty;
                     }
                 }
 
                 /* Beanstalk doesn't need this for default role, and we've elected to not modify
-                 * permissions on custom roles
+                    * permissions on custom roles
                 bool logPolicyExists = false;
                 try
                 {
@@ -1584,15 +1596,20 @@ namespace AWSDeployment
                 }
                 */
 
-                InstanceProfile ip = getInstanceProfile(roleName);
+                ip = getInstanceProfile(roleOrProfileName);
                 if (ip == null)
                 {
                     ip = IAMClient.CreateInstanceProfile(new CreateInstanceProfileRequest()
+                    {
+                        InstanceProfileName = roleOrProfileName,
+                        Path = "/"
+                    }).InstanceProfile;
+                    IAMClient.AddRoleToInstanceProfile(
+                        new AddRoleToInstanceProfileRequest()
                         {
-                            InstanceProfileName = roleName,
-                            Path = "/"
-                        }).InstanceProfile;
-                    IAMClient.AddRoleToInstanceProfile(new AddRoleToInstanceProfileRequest(){InstanceProfileName = roleName, RoleName = roleName});
+                            InstanceProfileName = roleOrProfileName,
+                            RoleName = roleOrProfileName
+                        });
                 }
 
                 instanceProfileName = ip.InstanceProfileName;
