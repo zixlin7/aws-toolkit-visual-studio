@@ -225,6 +225,9 @@
     <Compile Include="View\Components\TailLogViewer.xaml.cs">
       <DependentUpon>TailLogViewer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Components\XRaySetting.xaml.cs">
+      <DependentUpon>XRaySetting.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\DesignData\EBDesignData.cs" />
     <Compile Include="View\EnvironmentStatusControl.xaml.cs">
       <DependentUpon>EnvironmentStatusControl.xaml</DependentUpon>
@@ -473,6 +476,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Components\XRaySetting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\EditorTheme.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -612,6 +619,9 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\trace-timeline.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

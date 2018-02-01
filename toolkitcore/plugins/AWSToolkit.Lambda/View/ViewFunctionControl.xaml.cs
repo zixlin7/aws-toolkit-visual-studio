@@ -33,6 +33,7 @@ namespace Amazon.AWSToolkit.Lambda.View
             this._ctlFunctionInvokeComponent.Initialize(this._controller);
             this._ctlAdvancedSettingsComponent.Initialize(this._controller);
             this._ctlEventSourcesComponent.Initialize(this._controller);
+            this._ctlXRayComponent.Initialize(this._controller);
             this._ctlLogsComponent.Initialize(this._controller);
 
             this._ctlAdvancedSettingsComponent.PropertyChanged += _ctlAdvancedSettingsComponent_PropertyChanged;
