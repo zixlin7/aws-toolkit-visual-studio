@@ -29,6 +29,7 @@ using Amazon.KeyManagementService.Model;
 using Amazon.KeyManagementService;
 using Amazon.SimpleNotificationService;
 using Amazon.SQS;
+using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.Lambda.Controller
 {
@@ -633,6 +634,13 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
             this._model.LastModified = DateTime.Parse(response.LastModified);
             this._model.IsDirty = false;
+
+            if(this._model.IsEnabledActiveTracing)
+            {
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.XRayEnabled, "Lambda");
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+            }
         }
 
         public bool UploadNewFunctionSource()

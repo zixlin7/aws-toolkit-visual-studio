@@ -59,7 +59,9 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         ECSLaunchType,
 
         ECSConfiguredELB,
-        ECSDeleteService
+        ECSDeleteService,
+
+        XRayEnabled
     };
 
     public enum MetricKeys
