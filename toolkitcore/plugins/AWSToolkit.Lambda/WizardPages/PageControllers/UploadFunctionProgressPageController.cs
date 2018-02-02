@@ -24,6 +24,8 @@ using Amazon.AWSToolkit.CloudFormation.Nodes;
 using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
 using Amazon.AWSToolkit.Lambda.DeploymentWorkers;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
+using System.IO;
+using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 {
@@ -343,7 +345,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         void ILambdaFunctionUploadHelpers.PublishServerlessAsyncCompleteSuccess(PublishServerlessApplicationWorkerSettings settings)
         {
-            UpdateLambdaTools(settings.SaveSettings);
+            PostDeploymentAnalysis(settings.SaveSettings);
             ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
             {
                 (this as UploadFunctionProgressPageController)._pageUI.StopProgressBar();
@@ -375,7 +377,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         void ILambdaFunctionUploadHelpers.UploadFunctionAsyncCompleteSuccess(UploadFunctionState uploadState)
         {
-            UpdateLambdaTools(uploadState.SaveSettings);
+            PostDeploymentAnalysis(uploadState.SaveSettings);
             ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
             {
                 (this as UploadFunctionProgressPageController)._pageUI.StopProgressBar();
@@ -406,15 +408,39 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             }));
         }
 
-        private void UpdateLambdaTools(bool persist)
+        private void PostDeploymentAnalysis(bool persist)
         {
-            if (!persist)
-                return;
-
             if (HostingWizard[UploadFunctionWizardProperties.SelectedProjectFile] is string)
             {
                 var projectFile = HostingWizard[UploadFunctionWizardProperties.SelectedProjectFile] as string;
-                Utility.AddDotnetCliToolReference(projectFile, "Amazon.Lambda.Tools");
+
+                int razorPages = Directory.GetFiles(Path.GetDirectoryName(projectFile), "*.cshtml", SearchOption.AllDirectories).Length;
+                if (razorPages > 0)
+                {
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.LambdaFunctionUsesRazorPages, razorPages.ToString());
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                }
+
+                var projectContent = File.ReadAllText(projectFile);
+                if(projectContent.Contains("Microsoft.AspNetCore"))
+                {
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.LambdaFunctionUsesAspNetCore, "true");
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                }
+                if (projectContent.Contains("AWSXRayRecorder"))
+                {
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.LambdaFunctionUsesXRay, "true");
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                }
+                
+
+                if (persist)
+                {
+                    Utility.AddDotnetCliToolReference(projectFile, "Amazon.Lambda.Tools");
+                }
             }
         }
 
