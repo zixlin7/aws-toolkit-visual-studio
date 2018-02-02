@@ -253,16 +253,24 @@
                     Margin="4,2"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Center" />
-                
-                <CheckBox
+
+                <StackPanel
+                    Orientation="Horizontal"
                     Grid.Row="2"
                     Grid.Column="0"
-                    Grid.ColumnSpan="2"
+                    Grid.ColumnSpan="2"                    
+                    >
+                    <CheckBox
                     Name="_ctlEnableActiveTracing"
                     Margin="8,4,4,2"
                     Style="{DynamicResource awsCheckboxButtonBaseStyle}">
-                    Enable active tracing (AWS X-Ray)
-                </CheckBox>
+                        Enable active tracing (AWS X-Ray)
+                    </CheckBox>
+
+                    <TextBlock Margin="10,5" TextWrapping="WrapWithOverflow" Style="{DynamicResource awsInfoTextStyle}" Background="Transparent">
+                        <Hyperlink NavigateUri="https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-dotnet.html" RequestNavigate="Hyperlink_RequestNavigate">Learn More</Hyperlink>.
+                    </TextBlock>
+                </StackPanel>
                 
                 <Label
                     Grid.Row="3"

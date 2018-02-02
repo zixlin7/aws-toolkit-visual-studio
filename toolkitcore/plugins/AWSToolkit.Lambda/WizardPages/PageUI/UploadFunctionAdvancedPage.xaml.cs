@@ -453,6 +453,16 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
             NotifyPropertyChanged("EnvironmentVariables");
         }
+
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            var runtime = PageController.HostingWizard[UploadFunctionWizardProperties.Runtime] as string;
+
+            if (runtime != null && runtime.StartsWith("dotnetcore", StringComparison.OrdinalIgnoreCase))
+                Amazon.AWSToolkit.Utility.LaunchXRayHelp(true);
+            else
+                Amazon.AWSToolkit.Utility.LaunchXRayHelp(false);
+        }
     }
 
     public class EnvironmentVariable
