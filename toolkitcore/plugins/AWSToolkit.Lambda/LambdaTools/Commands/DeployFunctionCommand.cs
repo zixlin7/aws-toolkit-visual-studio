@@ -41,6 +41,7 @@ namespace Amazon.Lambda.Tools.Commands
         {
             DefinedCommandOptions.ARGUMENT_CONFIGURATION,
             DefinedCommandOptions.ARGUMENT_FRAMEWORK,
+            DefinedCommandOptions.ARGUMENT_MSBUILD_PARAMETERS,
             DefinedCommandOptions.ARGUMENT_PACKAGE,
             DefinedCommandOptions.ARGUMENT_FUNCTION_NAME,
             DefinedCommandOptions.ARGUMENT_FUNCTION_DESCRIPTION,
@@ -50,9 +51,11 @@ namespace Amazon.Lambda.Tools.Commands
             DefinedCommandOptions.ARGUMENT_FUNCTION_ROLE,
             DefinedCommandOptions.ARGUMENT_FUNCTION_TIMEOUT,
             DefinedCommandOptions.ARGUMENT_FUNCTION_RUNTIME,
+            DefinedCommandOptions.ARGUMENT_FUNCTION_TAGS,
             DefinedCommandOptions.ARGUMENT_FUNCTION_SUBNETS,
             DefinedCommandOptions.ARGUMENT_FUNCTION_SECURITY_GROUPS,
             DefinedCommandOptions.ARGUMENT_DEADLETTER_TARGET_ARN,
+            DefinedCommandOptions.ARGUMENT_TRACING_MODE,
             DefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES,
             DefinedCommandOptions.ARGUMENT_KMS_KEY_ARN,
             DefinedCommandOptions.ARGUMENT_APPLY_DEFAULTS_FOR_UPDATE,
@@ -65,6 +68,7 @@ namespace Amazon.Lambda.Tools.Commands
         public string Configuration { get; set; }
         public string TargetFramework { get; set; }
         public string Package { get; set; }
+        public string MSBuildParameters { get; set; }
 
         public string S3Bucket { get; set; }
         public string S3Prefix { get; set; }
@@ -112,6 +116,17 @@ namespace Amazon.Lambda.Tools.Commands
                 this.PersistConfigFile = tuple.Item2.BoolValue;
             if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_DISABLE_VERSION_CHECK.Switch)) != null)
                 this.DisableVersionCheck = tuple.Item2.BoolValue;
+
+            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_MSBUILD_PARAMETERS.Switch)) != null)
+                this.MSBuildParameters = tuple.Item2.StringValue;
+
+            if (!string.IsNullOrEmpty(values.MSBuildParameters))
+            {
+                if (this.MSBuildParameters == null)
+                    this.MSBuildParameters = values.MSBuildParameters;
+                else
+                    this.MSBuildParameters += " " + values.MSBuildParameters;
+            }
         }
 
 
@@ -128,11 +143,12 @@ namespace Amazon.Lambda.Tools.Commands
                 {
                     string configuration = this.GetStringValueOrDefault(this.Configuration, DefinedCommandOptions.ARGUMENT_CONFIGURATION, true);
                     string targetFramework = this.GetStringValueOrDefault(this.TargetFramework, DefinedCommandOptions.ARGUMENT_FRAMEWORK, true);
+                    string msbuildParameters = this.GetStringValueOrDefault(this.MSBuildParameters, DefinedCommandOptions.ARGUMENT_MSBUILD_PARAMETERS, false);
 
                     ValidateTargetFrameworkAndLambdaRuntime();
 
                     bool disableVersionCheck = this.GetBoolValueOrDefault(this.DisableVersionCheck, DefinedCommandOptions.ARGUMENT_DISABLE_VERSION_CHECK, false).GetValueOrDefault();
-                    LambdaPackager.CreateApplicationBundle(this.DefaultConfig, this.Logger, this.WorkingDirectory, projectLocation, configuration, targetFramework, disableVersionCheck, out publishLocation, ref zipArchivePath);
+                    LambdaPackager.CreateApplicationBundle(this.DefaultConfig, this.Logger, this.WorkingDirectory, projectLocation, configuration, targetFramework, msbuildParameters, disableVersionCheck, out publishLocation, ref zipArchivePath);
                     if (string.IsNullOrEmpty(zipArchivePath))
                         return false;
                 }
@@ -194,10 +210,22 @@ namespace Amazon.Lambda.Tools.Commands
 
                         }
 
+                        var tags = this.GetKeyValuePairOrDefault(this.Tags, DefinedCommandOptions.ARGUMENT_FUNCTION_TAGS, false);
+                        if(tags != null && tags.Count > 0)
+                        {
+                            createRequest.Tags = tags;
+                        }
+
                         var deadLetterQueue = this.GetStringValueOrDefault(this.DeadLetterTargetArn, DefinedCommandOptions.ARGUMENT_DEADLETTER_TARGET_ARN, false);
                         if(!string.IsNullOrEmpty(deadLetterQueue))
                         {
                             createRequest.DeadLetterConfig = new DeadLetterConfig {TargetArn = deadLetterQueue };
+                        }
+
+                        var tracingMode = this.GetStringValueOrDefault(this.TracingMode, DefinedCommandOptions.ARGUMENT_TRACING_MODE, false);
+                        if(!string.IsNullOrEmpty(tracingMode))
+                        {
+                            createRequest.TracingConfig = new TracingConfig { Mode = tracingMode };
                         }
 
                         if (s3Bucket != null)
@@ -256,6 +284,8 @@ namespace Amazon.Lambda.Tools.Commands
                         }
 
                         await base.UpdateConfigAsync(currentConfiguration);
+
+                        await base.ApplyTags(currentConfiguration.FunctionArn);
 
                         var publish = this.GetBoolValueOrDefault(this.Publish, DefinedCommandOptions.ARGUMENT_FUNCTION_PUBLISH, false).GetValueOrDefault();
                         if(publish)
@@ -322,8 +352,10 @@ namespace Amazon.Lambda.Tools.Commands
 
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_CONFIGURATION.ConfigFileKey, this.GetStringValueOrDefault(this.Configuration, DefinedCommandOptions.ARGUMENT_CONFIGURATION, false));
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_FRAMEWORK.ConfigFileKey, this.GetStringValueOrDefault(this.TargetFramework, DefinedCommandOptions.ARGUMENT_FRAMEWORK, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_MSBUILD_PARAMETERS.ConfigFileKey, this.GetStringValueOrDefault(this.MSBuildParameters, DefinedCommandOptions.ARGUMENT_MSBUILD_PARAMETERS, false));
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_FUNCTION_NAME.ConfigFileKey, this.GetStringValueOrDefault(this.FunctionName, DefinedCommandOptions.ARGUMENT_FUNCTION_NAME, false));
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_FUNCTION_DESCRIPTION.ConfigFileKey, this.GetStringValueOrDefault(this.Description, DefinedCommandOptions.ARGUMENT_FUNCTION_DESCRIPTION, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_FUNCTION_TAGS.ConfigFileKey, LambdaToolsDefaults.FormatKeyValue(this.GetKeyValuePairOrDefault(this.Tags, DefinedCommandOptions.ARGUMENT_FUNCTION_TAGS, false)));
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_FUNCTION_PUBLISH.ConfigFileKey, this.GetBoolValueOrDefault(this.Publish, DefinedCommandOptions.ARGUMENT_FUNCTION_PUBLISH, false));
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_FUNCTION_HANDLER.ConfigFileKey, this.GetStringValueOrDefault(this.Handler, DefinedCommandOptions.ARGUMENT_FUNCTION_HANDLER, false));
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_FUNCTION_MEMORY_SIZE.ConfigFileKey, this.GetIntValueOrDefault(this.MemorySize, DefinedCommandOptions.ARGUMENT_FUNCTION_MEMORY_SIZE, false));
@@ -335,6 +367,7 @@ namespace Amazon.Lambda.Tools.Commands
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_FUNCTION_SECURITY_GROUPS.ConfigFileKey, LambdaToolsDefaults.FormatCommaDelimitedList(this.GetStringValuesOrDefault(this.SecurityGroupIds, DefinedCommandOptions.ARGUMENT_FUNCTION_SECURITY_GROUPS, false)));
 
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_DEADLETTER_TARGET_ARN.ConfigFileKey, this.GetStringValueOrDefault(this.DeadLetterTargetArn, DefinedCommandOptions.ARGUMENT_DEADLETTER_TARGET_ARN, false));
+                data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_TRACING_MODE.ConfigFileKey, this.GetStringValueOrDefault(this.TracingMode, DefinedCommandOptions.ARGUMENT_TRACING_MODE, false));
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES.ConfigFileKey, LambdaToolsDefaults.FormatKeyValue(this.GetKeyValuePairOrDefault(this.EnvironmentVariables, DefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES, false)));
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_KMS_KEY_ARN.ConfigFileKey, this.GetStringValueOrDefault(this.KMSKeyArn, DefinedCommandOptions.ARGUMENT_KMS_KEY_ARN, false));
                 data.SetIfNotNull(DefinedCommandOptions.ARGUMENT_S3_BUCKET.ConfigFileKey, this.GetStringValueOrDefault(this.S3Bucket, DefinedCommandOptions.ARGUMENT_S3_BUCKET, false));

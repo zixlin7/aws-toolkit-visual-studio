@@ -29,6 +29,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
             /// String, version label to be applied to deployment
             /// </summary>
             public static readonly string propkey_VersionLabel = "versionLabel";
+
+            public static readonly string propkey_EnableXRayDaemon = "enableXRayDaemon";
+
         }
 
         public static class DeploymentModeProperties
@@ -122,6 +125,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
             /// [Optional], String, email address for notification emails
             /// </summary>
             public static readonly string propkey_NotificationEmail = "notificationEmail";
+
         }
 
         public static class DatabaseOptions

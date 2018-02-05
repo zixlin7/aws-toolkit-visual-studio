@@ -1,0 +1,59 @@
+﻿<commonui:BaseAWSUserControl x:Class="Amazon.AWSToolkit.ElasticBeanstalk.View.Components.XRaySetting"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Amazon.AWSToolkit.ElasticBeanstalk.View.Components"
+             xmlns:components="clr-namespace:Amazon.AWSToolkit.ElasticBeanstalk.View.Components"
+             xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="500"
+             Height="auto" Width="auto">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,5,5,20" Grid.ColumnSpan="2" TextWrapping="Wrap" Style="{DynamicResource awsTextBlockBaseStyle}">
+            AWS X-Ray is a service that collects data about requests that your application serves, and provides tools you can use to view, filter, and gain insights into that data to identify issues and opportunities for optimization. For any traced request to your application, you can see detailed information not only about the request and response, but also about calls that your application makes to downstream AWS resources, microservices, databases and HTTP web APIs.
+        </TextBlock>
+
+        <Image Grid.Row="1" Margin="10,20,10,10" Name="_ctlImage"
+            Source="/AWSToolkit.ElasticBeanstalk;component/Resources/Images/trace-timeline.png"/>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="2">
+            <TextBlock Margin="5,5,5,5" VerticalAlignment="Center" Style="{DynamicResource awsTextBlockBaseStyle}">Enable AWS X-Ray</TextBlock>
+            <components:ConfigurationOptionControl
+                    Margin="5,5,5,5" HorizontalAlignment="Left"
+                    DataContext="{Binding ConfigModel}" 
+                    PropertyNamespaceName="aws:elasticbeanstalk:xray"
+                    PropertySystemName="XRayEnabled" 
+                    />
+        </StackPanel>
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Margin="5,5,5,5" Grid.ColumnSpan="2" TextWrapping="Wrap" Style="{DynamicResource awsTextBlockBaseStyle}">
+            To see your application's service map and traces visit the 
+            <Hyperlink NavigateUri="https://us-west-2.console.aws.amazon.com/xray/home" RequestNavigate="Hyperlink_RequestNavigate">AWS X-Ray Console</Hyperlink>.
+        </TextBlock>
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Margin="5,5,5,5" Grid.ColumnSpan="2" TextWrapping="Wrap" Style="{DynamicResource awsTextBlockBaseStyle}">
+            To learn how to instrument your .NET application visit the
+            <Hyperlink NavigateUri="https://github.com/aws/aws-xray-sdk-dotnet" RequestNavigate="Hyperlink_RequestNavigate">AWS X-Ray SDK for .NET GitHub repository</Hyperlink>.
+        </TextBlock>
+    </Grid>
+</commonui:BaseAWSUserControl>

@@ -47,6 +47,8 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 command.TargetFramework = uploadState.Framework;
                 command.Runtime = uploadState.Request.Runtime;
                 command.EnvironmentVariables = uploadState.Request?.Environment?.Variables;
+                command.TracingMode = uploadState.Request?.TracingConfig?.Mode;
+                command.DeadLetterTargetArn = uploadState.Request?.DeadLetterConfig?.TargetArn;
 
                 if (uploadState.Request.VpcConfig != null)
                 {
@@ -73,6 +75,11 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                     evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentSuccess, uploadState.Request.Runtime);
                     evnt.AddProperty(AttributeKeys.LambdaFunctionTargetFramework, command.TargetFramework);
                     evnt.AddProperty(AttributeKeys.LambdaFunctionMemorySize, command.MemorySize.GetValueOrDefault().ToString());
+
+                    if(string.Equals(command.TracingMode, TracingMode.Active, StringComparison.OrdinalIgnoreCase))
+                    {
+                        evnt.AddProperty(AttributeKeys.XRayEnabled, "Lambda");
+                    }
 
                     var zipArchivePath = Path.Combine(uploadState.SourcePath, "bin", uploadState.Configuration, uploadState.Framework, new DirectoryInfo(uploadState.SourcePath).Name + ".zip");
                     if(File.Exists(zipArchivePath))

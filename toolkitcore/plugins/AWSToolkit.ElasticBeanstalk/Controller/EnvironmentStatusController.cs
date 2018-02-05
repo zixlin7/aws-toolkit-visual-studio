@@ -29,6 +29,7 @@ using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using Amazon.ElasticLoadBalancing;
 using log4net;
+using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 {
@@ -220,6 +221,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
                     ToolkitFactory.Instance.ShellProvider.ShowError("Error Applying Changes", sb.ToString());
                     return;
+                }
+
+                var xraySetting = settings.FirstOrDefault(x => string.Equals(x.OptionName, "XRayEnabled", StringComparison.Ordinal));
+                if(xraySetting != null && string.Equals(xraySetting.Value, "true", StringComparison.OrdinalIgnoreCase))
+                {
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.XRayEnabled, "Beanstalk");
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
                 }
 
                 this._beanstalkClient.UpdateEnvironment(new UpdateEnvironmentRequest()

@@ -73,7 +73,15 @@ namespace Amazon.Lambda.Tools.Options
                 ShortSwitch = "-f",
                 Switch = "--framework",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "Target framework to compile, for example netcoreapp1.0",
+                Description = "Target framework to compile, for example netcoreapp2.0",
+            };
+        public static readonly CommandOption ARGUMENT_MSBUILD_PARAMETERS =
+            new CommandOption
+            {
+                Name = "MSBuild Parameters",
+                Switch = "--msbuild-parameters",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "Additional msbuild parameters passed to the 'dotnet publish' command",
             };
         public static readonly CommandOption ARGUMENT_DISABLE_VERSION_CHECK =
             new CommandOption
@@ -192,6 +200,15 @@ namespace Amazon.Lambda.Tools.Options
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
                 Description = "Target ARN of an SNS topic or SQS Queue for the Dead Letter Queue"
             };
+        public static readonly CommandOption ARGUMENT_TRACING_MODE =
+            new CommandOption
+            {
+                Name = "Tracing Mode",
+                ShortSwitch = "-tm",
+                Switch = "--tracing-mode",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "Configures when AWS X-Ray should trace the function. Valid values: PassThrough or Active"
+            };
         public static readonly CommandOption ARGUMENT_ENVIRONMENT_VARIABLES =
             new CommandOption
             {
@@ -200,6 +217,14 @@ namespace Amazon.Lambda.Tools.Options
                 Switch = "--environment-variables",
                 ValueType = CommandOption.CommandOptionValueType.KeyValuePairs,
                 Description = "Environment variables set for the function. Format is <key1>=<value1>;<key2>=<value2>"
+            };
+        public static readonly CommandOption ARGUMENT_FUNCTION_TAGS =
+            new CommandOption
+            {
+                Name = "Function Tags",
+                Switch = "--tags",
+                ValueType = CommandOption.CommandOptionValueType.KeyValuePairs,
+                Description = "Tags applied to the function. Format is <name1>=<value1>;<name2>=<value2>"
             };
         public static readonly CommandOption ARGUMENT_KMS_KEY_ARN =
             new CommandOption

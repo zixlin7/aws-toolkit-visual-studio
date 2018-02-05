@@ -107,6 +107,11 @@ namespace Amazon.AWSToolkit.VisualStudio.DeploymentProcessors
                 }
             }
 
+            if(taskInfo.Options.ContainsKey(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon) && taskInfo.Options[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon] is bool)
+            {
+                data["enable-xray"] = (bool)taskInfo.Options[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon];
+            }
+
             StringBuilder sb = new StringBuilder();
             JsonWriter writer = new JsonWriter(sb);
             writer.PrettyPrint = true;

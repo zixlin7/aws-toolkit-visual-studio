@@ -36,6 +36,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AWSSDK.MobileAnalytics">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.MobileAnalytics.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="AWSSDK.AutoScaling">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.AutoScaling.dll</HintPath>
@@ -224,6 +228,9 @@
     </Compile>
     <Compile Include="View\Components\TailLogViewer.xaml.cs">
       <DependentUpon>TailLogViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\XRaySetting.xaml.cs">
+      <DependentUpon>XRaySetting.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\DesignData\EBDesignData.cs" />
     <Compile Include="View\EnvironmentStatusControl.xaml.cs">
@@ -473,6 +480,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="View\Components\XRaySetting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\EditorTheme.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -612,6 +623,9 @@
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\trace-timeline.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

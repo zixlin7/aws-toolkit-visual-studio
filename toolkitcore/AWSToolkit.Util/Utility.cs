@@ -8,6 +8,7 @@ using log4net;
 using log4net.Config;
 using ThirdParty.Json.LitJson;
 using System.Text;
+using System.Diagnostics;
 
 namespace Amazon.AWSToolkit
 {
@@ -244,6 +245,12 @@ namespace Amazon.AWSToolkit
                     File.WriteAllText(projectFilePath, content);
                 }
             }
+        }
+
+        public static void LaunchXRayHelp(bool isDotNet)
+        {
+            var url = isDotNet ? "https://github.com/aws/aws-xray-sdk-dotnet" : "https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html";
+            Process.Start(new ProcessStartInfo(url));
         }
     }
 }

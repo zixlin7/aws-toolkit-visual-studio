@@ -24,6 +24,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         public static readonly string uiProperty_HealthCheckUrl = "HealthCheckUri";
         public static readonly string uiProperty_DeploymentVersionLabel = "DeploymentVersionLabel";
+        public static readonly string uiProperty_EnableXRayDaemon = "EnableXRayDaemon";
 
         public CoreCLRApplicationOptionsPage()
         {
@@ -181,6 +182,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             }
         }
 
+        private bool _enableXRayDaemon;
+        public bool EnableXRayDaemon
+        {
+            get { return this._enableXRayDaemon; }
+            set
+            {
+                this._enableXRayDaemon = value;
+                NotifyPropertyChanged(uiProperty_EnableXRayDaemon);
+            }
+        }
+
         public bool VersionLabelIsValid
         {
             get
@@ -247,6 +259,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
                 // this is a hack to get around wpf validators just not working for no obvious reason
                 _versionLabelInvalid.Visibility = VersionLabelIsValid ? Visibility.Collapsed : Visibility.Visible;
             }
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            Utility.LaunchXRayHelp(true);
         }
     }
 }

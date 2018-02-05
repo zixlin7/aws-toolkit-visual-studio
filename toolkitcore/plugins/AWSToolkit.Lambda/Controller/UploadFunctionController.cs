@@ -164,6 +164,10 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                             seedValues[UploadFunctionWizardProperties.Configuration] = defaults.Configuration;
                         if (!string.IsNullOrEmpty(defaults.Framework))
                             seedValues[UploadFunctionWizardProperties.Framework] = defaults.Framework;
+                        if (!string.IsNullOrEmpty(defaults.DeadLetterTargetArn))
+                            seedValues[UploadFunctionWizardProperties.DeadLetterTargetArn] = defaults.DeadLetterTargetArn;
+                        if (!string.IsNullOrEmpty(defaults.TracingMode))
+                            seedValues[UploadFunctionWizardProperties.TracingMode] = defaults.TracingMode;
 
                         if (defaults.EnvironmentVariables != null)
                         {

@@ -870,6 +870,16 @@ namespace AWSDeployment
                     Value = (Enable32BitApplications.GetValueOrDefault()).ToString()
                 });
             }
+            if (EnableXRayDaemon != null && configOptionSettings.FirstOrDefault(
+                x => (x.Namespace == "aws:elasticbeanstalk:xray" && x.OptionName == "XRayEnabled")) == null)
+            {
+                configOptionSettings.Add(new ConfigurationOptionSetting()
+                {
+                    Namespace = "aws:elasticbeanstalk:xray",
+                    OptionName = "XRayEnabled",
+                    Value = (EnableXRayDaemon.GetValueOrDefault()).ToString()
+                });
+            }
             if (!IsSingleInstanceEnvironmentType && !string.IsNullOrEmpty(ApplicationHealthcheckPath) && configOptionSettings.FirstOrDefault(
                 x => (x.Namespace == "aws:elasticbeanstalk:application" && x.OptionName == "Application Healthcheck URL")) == null)
             {
@@ -1460,6 +1470,16 @@ namespace AWSDeployment
                     Namespace = "aws:elasticbeanstalk:container:dotnet:apppool",
                     OptionName = "Enable 32-bit Applications",
                     Value = (Enable32BitApplications.GetValueOrDefault()).ToString()
+                });
+            }
+            if (EnableXRayDaemon != null && configOptionSettings.FirstOrDefault(
+                x => (x.Namespace == "aws:elasticbeanstalk:xray" && x.OptionName == "XRayEnabled")) == null)
+            {
+                configOptionSettings.Add(new ConfigurationOptionSetting()
+                {
+                    Namespace = "aws:elasticbeanstalk:xray",
+                    OptionName = "XRayEnabled",
+                    Value = (EnableXRayDaemon.GetValueOrDefault()).ToString()
                 });
             }
             if (!string.IsNullOrEmpty(TargetRuntime) && configOptionSettings.FirstOrDefault(

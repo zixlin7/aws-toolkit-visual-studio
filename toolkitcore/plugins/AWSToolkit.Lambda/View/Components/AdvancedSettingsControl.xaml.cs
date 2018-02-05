@@ -30,9 +30,12 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
 
             FillAdvanceSettingsComboBoxes();
 
+
+
             _ctlSecurityGroups.PropertyChanged += ForwardEmbeddedControlPropertyChanged;
             _ctlVpcSubnets.PropertyChanged += ForwardEmbeddedControlPropertyChanged;
             _ctlKMSKey.PropertyChanged += ForwardEmbeddedControlPropertyChanged;
+            _ctlDLQ.PropertyChanged += ForwardEmbeddedControlPropertyChanged;
         }
 
         public void Initialize(ViewFunctionController controller)
@@ -48,6 +51,19 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
         public void SetAvailableSecurityGroups(IEnumerable<SecurityGroup> existingGroups, string autoSelectGroup, IEnumerable<string> selectedSecurityGroups)
         {
             _ctlSecurityGroups.SetAvailableSecurityGroups(existingGroups, autoSelectGroup, selectedSecurityGroups);
+        }
+
+        public void SetAvailableDLQTargets(IList<string> topicArns, IList<string> queueArns, string selectedTargetArn)
+        {
+            _ctlDLQ.SetAvailableDLQTargets(topicArns, queueArns, selectedTargetArn);
+        }
+
+        public string SelectedDLQTargetArn
+        {
+            get
+            {
+                return this._ctlDLQ.SelectedArn;
+            }
         }
 
         public IEnumerable<SubnetWrapper> SelectedSubnets
@@ -178,6 +194,12 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
             {
                 this._ctlMemory.Items.Add(value);
             }
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            bool isDotnet = this.Controller.Model.Runtime.Value.StartsWith("dotnetcore", System.StringComparison.OrdinalIgnoreCase);
+            Utility.LaunchXRayHelp(isDotnet);
         }
     }
 }

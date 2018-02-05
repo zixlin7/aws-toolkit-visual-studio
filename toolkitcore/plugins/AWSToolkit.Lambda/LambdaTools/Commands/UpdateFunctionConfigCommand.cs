@@ -37,9 +37,11 @@ namespace Amazon.Lambda.Tools.Commands
             DefinedCommandOptions.ARGUMENT_FUNCTION_ROLE,
             DefinedCommandOptions.ARGUMENT_FUNCTION_TIMEOUT,
             DefinedCommandOptions.ARGUMENT_FUNCTION_RUNTIME,
+            DefinedCommandOptions.ARGUMENT_FUNCTION_TAGS,
             DefinedCommandOptions.ARGUMENT_FUNCTION_SUBNETS,
             DefinedCommandOptions.ARGUMENT_FUNCTION_SECURITY_GROUPS,
             DefinedCommandOptions.ARGUMENT_DEADLETTER_TARGET_ARN,
+            DefinedCommandOptions.ARGUMENT_TRACING_MODE,
             DefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES,
             DefinedCommandOptions.ARGUMENT_KMS_KEY_ARN, 
             DefinedCommandOptions.ARGUMENT_APPLY_DEFAULTS_FOR_UPDATE
@@ -56,8 +58,10 @@ namespace Amazon.Lambda.Tools.Commands
         public string[] SecurityGroupIds { get; set; }
         public Runtime Runtime { get; set; }
         public Dictionary<string, string> EnvironmentVariables { get; set; }
+        public Dictionary<string, string> Tags { get; set; }
         public string KMSKeyArn { get; set; }
         public string DeadLetterTargetArn { get; set; }
+        public string TracingMode { get; set; }
         public bool? ApplyDefaultsForUpdate { get; set; }
 
         public UpdateFunctionConfigCommand(IToolLogger logger, string workingDirectory, string[] args)
@@ -101,12 +105,16 @@ namespace Amazon.Lambda.Tools.Commands
                 this.Timeout = tuple.Item2.IntValue;
             if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_FUNCTION_RUNTIME.Switch)) != null)
                 this.Runtime = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_FUNCTION_TAGS.Switch)) != null)
+                this.Tags = tuple.Item2.KeyValuePairs;
             if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_FUNCTION_SUBNETS.Switch)) != null)
                 this.SubnetIds = tuple.Item2.StringValues;
             if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_FUNCTION_SECURITY_GROUPS.Switch)) != null)
                 this.SecurityGroupIds = tuple.Item2.StringValues;
             if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_DEADLETTER_TARGET_ARN.Switch)) != null)
                 this.DeadLetterTargetArn = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_TRACING_MODE.Switch)) != null)
+                this.TracingMode = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES.Switch)) != null)
                 this.EnvironmentVariables = tuple.Item2.KeyValuePairs;
             if ((tuple = values.FindCommandOption(DefinedCommandOptions.ARGUMENT_KMS_KEY_ARN.Switch)) != null)
@@ -127,6 +135,8 @@ namespace Amazon.Lambda.Tools.Commands
                     return false;
                 }
                 await UpdateConfigAsync(currentConfiguration);
+
+                await ApplyTags(currentConfiguration.FunctionArn);
 
                 var publish = this.GetBoolValueOrDefault(this.Publish, DefinedCommandOptions.ARGUMENT_FUNCTION_PUBLISH, false).GetValueOrDefault();
                 if (publish)
@@ -163,6 +173,29 @@ namespace Amazon.Lambda.Tools.Commands
             catch (Exception e)
             {
                 throw new LambdaToolsException($"Error publishing Lambda function: {e.Message}", LambdaToolsException.ErrorCode.LambdaPublishFunction, e);
+            }
+        }
+
+        protected async Task ApplyTags(string functionArn)
+        {
+            try
+            {
+                var tags = this.GetKeyValuePairOrDefault(this.Tags, DefinedCommandOptions.ARGUMENT_FUNCTION_TAGS, false);
+                if (tags == null || tags.Count == 0)
+                    return;
+
+                var tagRequest = new TagResourceRequest
+                {
+                    Resource = functionArn,
+                    Tags = tags
+                };
+
+                await this.LambdaClient.TagResourceAsync(tagRequest);
+                this.Logger?.WriteLine($"Applying {tags.Count} tag(s) to function");
+            }
+            catch (Exception e)
+            {
+                throw new LambdaToolsException($"Error tagging Lambda function: {e.Message}", LambdaToolsException.ErrorCode.LambdaTaggingFunction, e);
             }
         }
 
@@ -330,6 +363,17 @@ namespace Amazon.Lambda.Tools.Commands
                 }
             }
 
+            var tracingMode = applyDefaultsFile ? this.GetStringValueOrDefault(this.TracingMode, DefinedCommandOptions.ARGUMENT_TRACING_MODE, false) : this.TracingMode;
+            if (tracingMode != null)
+            {
+                var eTraceMode = Amazon.Lambda.TracingMode.FindValue(tracingMode);
+                if (eTraceMode != existingConfiguration.TracingConfig?.Mode)
+                {
+                    request.TracingConfig = new TracingConfig();
+                    request.TracingConfig.Mode = eTraceMode;
+                    different = true;
+                }
+            }
 
             var kmsKeyArn = applyDefaultsFile ? this.GetStringValueOrDefault(this.KMSKeyArn, DefinedCommandOptions.ARGUMENT_KMS_KEY_ARN, false) : this.KMSKeyArn;
             if (!string.IsNullOrEmpty(kmsKeyArn) && !string.Equals(kmsKeyArn, existingConfiguration.KMSKeyArn, StringComparison.Ordinal))
