@@ -877,7 +877,7 @@ namespace AWSDeployment
                 {
                     Namespace = "aws:elasticbeanstalk:xray",
                     OptionName = "XRayEnabled",
-                    Value = (EnableXRayDaemon.GetValueOrDefault()).ToString()
+                    Value = (EnableXRayDaemon.GetValueOrDefault()).ToString().ToLower()
                 });
             }
             if (!IsSingleInstanceEnvironmentType && !string.IsNullOrEmpty(ApplicationHealthcheckPath) && configOptionSettings.FirstOrDefault(
@@ -1479,7 +1479,7 @@ namespace AWSDeployment
                 {
                     Namespace = "aws:elasticbeanstalk:xray",
                     OptionName = "XRayEnabled",
-                    Value = (EnableXRayDaemon.GetValueOrDefault()).ToString()
+                    Value = (EnableXRayDaemon.GetValueOrDefault()).ToString().ToLower()
                 });
             }
             if (!string.IsNullOrEmpty(TargetRuntime) && configOptionSettings.FirstOrDefault(
