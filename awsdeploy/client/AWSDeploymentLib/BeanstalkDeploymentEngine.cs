@@ -870,15 +870,19 @@ namespace AWSDeployment
                     Value = (Enable32BitApplications.GetValueOrDefault()).ToString()
                 });
             }
-            if (EnableXRayDaemon != null && configOptionSettings.FirstOrDefault(
-                x => (x.Namespace == "aws:elasticbeanstalk:xray" && x.OptionName == "XRayEnabled")) == null)
+
+            if (RegionEndPoints.GetEndpoint(RegionEndPointsManager.XRAY_ENDPOINT_LOOKUP) != null)
             {
-                configOptionSettings.Add(new ConfigurationOptionSetting()
+                if (EnableXRayDaemon != null && configOptionSettings.FirstOrDefault(
+                        x => (x.Namespace == "aws:elasticbeanstalk:xray" && x.OptionName == "XRayEnabled")) == null)
                 {
-                    Namespace = "aws:elasticbeanstalk:xray",
-                    OptionName = "XRayEnabled",
-                    Value = (EnableXRayDaemon.GetValueOrDefault()).ToString().ToLower()
-                });
+                    configOptionSettings.Add(new ConfigurationOptionSetting()
+                    {
+                        Namespace = "aws:elasticbeanstalk:xray",
+                        OptionName = "XRayEnabled",
+                        Value = (EnableXRayDaemon.GetValueOrDefault()).ToString().ToLower()
+                    });
+                }
             }
             if (!IsSingleInstanceEnvironmentType && !string.IsNullOrEmpty(ApplicationHealthcheckPath) && configOptionSettings.FirstOrDefault(
                 x => (x.Namespace == "aws:elasticbeanstalk:application" && x.OptionName == "Application Healthcheck URL")) == null)
@@ -1472,15 +1476,19 @@ namespace AWSDeployment
                     Value = (Enable32BitApplications.GetValueOrDefault()).ToString()
                 });
             }
-            if (EnableXRayDaemon != null && configOptionSettings.FirstOrDefault(
-                x => (x.Namespace == "aws:elasticbeanstalk:xray" && x.OptionName == "XRayEnabled")) == null)
+
+            if (RegionEndPoints.GetEndpoint(RegionEndPointsManager.XRAY_ENDPOINT_LOOKUP) != null)
             {
-                configOptionSettings.Add(new ConfigurationOptionSetting()
+                if (EnableXRayDaemon != null && configOptionSettings.FirstOrDefault(
+                        x => (x.Namespace == "aws:elasticbeanstalk:xray" && x.OptionName == "XRayEnabled")) == null)
                 {
-                    Namespace = "aws:elasticbeanstalk:xray",
-                    OptionName = "XRayEnabled",
-                    Value = (EnableXRayDaemon.GetValueOrDefault()).ToString().ToLower()
-                });
+                    configOptionSettings.Add(new ConfigurationOptionSetting()
+                    {
+                        Namespace = "aws:elasticbeanstalk:xray",
+                        OptionName = "XRayEnabled",
+                        Value = (EnableXRayDaemon.GetValueOrDefault()).ToString().ToLower()
+                    });
+                }
             }
             if (!string.IsNullOrEmpty(TargetRuntime) && configOptionSettings.FirstOrDefault(
                 x => (x.Namespace == "aws:elasticbeanstalk:container:dotnet:apppool" && x.OptionName == "Target Runtime")) == null)

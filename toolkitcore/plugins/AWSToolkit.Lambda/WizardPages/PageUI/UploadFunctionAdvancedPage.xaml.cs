@@ -176,6 +176,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
         }
 
+        public void SetXRayAvailability(bool xrayIsAvailable)
+        {
+            // hide rather than collapse to avoid disturbing layout
+            _ctlXRayOptionsPanel.Visibility = xrayIsAvailable ? Visibility.Visible : Visibility.Hidden;
+        }
+
         private void ForwardEmbeddedControlPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             NotifyPropertyChanged(e.PropertyName);

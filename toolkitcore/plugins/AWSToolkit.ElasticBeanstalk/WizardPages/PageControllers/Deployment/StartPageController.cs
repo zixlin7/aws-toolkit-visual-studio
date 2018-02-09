@@ -228,6 +228,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
             HostingWizard.SetProperty(CommonWizardProperties.AccountSelection.propkey_SelectedAccount, _pageUI.SelectedAccount);
             HostingWizard.SetProperty(CommonWizardProperties.AccountSelection.propkey_SelectedRegion, _pageUI.SelectedRegion);
 
+            var xrayEndpoint = _pageUI.SelectedRegion.GetEndpoint(RegionEndPointsManager.XRAY_ENDPOINT_LOOKUP);
+            HostingWizard.SetProperty(BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_XRayAvailable, xrayEndpoint != null);
+
             // this wizard is locked to Beanstalk deployments for now
             HostingWizard.SetProperty(DeploymentWizardProperties.DeploymentTemplate.propkey_TemplateServiceOwner, DeploymentServiceIdentifiers.BeanstalkServiceName);
 

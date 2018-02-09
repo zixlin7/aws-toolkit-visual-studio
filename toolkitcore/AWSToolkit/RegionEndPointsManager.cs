@@ -37,6 +37,7 @@ namespace Amazon.AWSToolkit
         public const string CODECOMMIT_SERVICE_NAME = "CodeCommit";
         public const string ECR_ENDPOINT_LOOKUP = "ECR";
         public const string ECS_ENDPOINT_LOOKUP = "ECS";
+        public const string XRAY_ENDPOINT_LOOKUP = "XRay";
 
 
         public const string US_EAST_1 = "us-east-1";

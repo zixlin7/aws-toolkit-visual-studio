@@ -78,13 +78,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
                 _pageUI.Enable32BitAppPool = enable32BitApps;
 
-                var enableXRayDaemon = false;
-                if (HostingWizard.IsPropertySet(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon))
-                    enableXRayDaemon = (bool)HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon];
-
-                _pageUI.EnableXRayDaemon = enableXRayDaemon;
-
-
                 var availableRuntimes = HostingWizard[DeploymentWizardProperties.SeedData.propkey_ProjectFrameworks] as Dictionary<string, string>;
                 _pageUI.SetDefaultRuntimesOrFrameworks(targetRuntime, availableRuntimes);
 
@@ -158,6 +151,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                     // yield an empty version collection for as-yet-unknown apps
                     _pageUI.LoadExistingVersions();                    
                 }
+            }
+
+            var xrayAvailable = (bool)HostingWizard.GetProperty(BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_XRayAvailable);
+            _pageUI.SetXRayAvailability(xrayAvailable);
+            if (xrayAvailable)
+            {
+                var enableXRayDaemon = false;
+                if (HostingWizard.IsPropertySet(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon))
+                    enableXRayDaemon = (bool)HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon];
+
+                _pageUI.EnableXRayDaemon = enableXRayDaemon;
             }
 
             TestForwardTransitionEnablement();

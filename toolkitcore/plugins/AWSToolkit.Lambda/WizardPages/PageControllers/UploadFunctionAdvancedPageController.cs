@@ -93,6 +93,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
             LoadDLQTargets();
 
+            _pageUI.SetXRayAvailability((bool)HostingWizard.GetProperty(UploadFunctionWizardProperties.XRayAvailable));
+
             TestForwardTransitionEnablement();
         }
 
@@ -168,7 +170,13 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                     HostingWizard[UploadFunctionWizardProperties.EnvironmentVariables] = _pageUI.SelectedEnvironmentVariables;
 
                     HostingWizard[UploadFunctionWizardProperties.DeadLetterTargetArn] = _pageUI.SelectedDLQTargetArn ?? "";
-                    HostingWizard[UploadFunctionWizardProperties.TracingMode] = _pageUI.IsEnableActiveTracing ? Amazon.Lambda.TracingMode.Active.ToString() : Amazon.Lambda.TracingMode.PassThrough.ToString();
+
+                    if ((bool) HostingWizard[UploadFunctionWizardProperties.XRayAvailable])
+                        HostingWizard[UploadFunctionWizardProperties.TracingMode] = _pageUI.IsEnableActiveTracing
+                            ? Amazon.Lambda.TracingMode.Active.ToString()
+                            : Amazon.Lambda.TracingMode.PassThrough.ToString();
+                    else
+                        HostingWizard[UploadFunctionWizardProperties.TracingMode] = Amazon.Lambda.TracingMode.PassThrough.ToString();
 
                     // Lambda's api treats 'no key specified' as 'use service default key'
                     var kmsKey = _pageUI.SelectedKMSKey;

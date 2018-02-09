@@ -132,6 +132,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             HostingWizard[UploadFunctionWizardProperties.UserAccount] = _pageUI.SelectedAccount;
             HostingWizard[UploadFunctionWizardProperties.Region] = _pageUI.SelectedRegion;
 
+            var xrayEndpoint = _pageUI.SelectedRegion.GetEndpoint(RegionEndPointsManager.XRAY_ENDPOINT_LOOKUP);
+            HostingWizard.SetProperty(UploadFunctionWizardProperties.XRayAvailable, xrayEndpoint != null);
+
             HostingWizard[UploadFunctionWizardProperties.FunctionName] = _pageUI.FunctionName;
             HostingWizard[UploadFunctionWizardProperties.Description] = _pageUI.Description;
             HostingWizard[UploadFunctionWizardProperties.Configuration] = _pageUI.Configuration;

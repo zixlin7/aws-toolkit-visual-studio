@@ -126,6 +126,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
             /// </summary>
             public static readonly string propkey_NotificationEmail = "notificationEmail";
 
+            /// <summary>
+            /// Bool, indicates if xray is available in the region the app is being deployed to
+            /// and therefore we can offer to enable.
+            /// </summary>
+            public static readonly string propkey_XRayAvailable = "xrayAvailableInRegion";
+
         }
 
         public static class DatabaseOptions

@@ -258,7 +258,8 @@
                     Orientation="Horizontal"
                     Grid.Row="2"
                     Grid.Column="0"
-                    Grid.ColumnSpan="2"                    
+                    Grid.ColumnSpan="2"  
+                    x:Name="_ctlXRayOptionsPanel"
                     >
                     <CheckBox
                     Name="_ctlEnableActiveTracing"
