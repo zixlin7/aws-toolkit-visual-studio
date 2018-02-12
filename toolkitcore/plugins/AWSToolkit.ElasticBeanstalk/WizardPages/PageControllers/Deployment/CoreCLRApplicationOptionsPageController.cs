@@ -71,17 +71,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                 _pageUI.PropertyChanged += OnPagePropertyChanged;
 
                 var targetRuntime = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] as string;
-                //var enable32BitApps = false;
-                //if (HostingWizard.IsPropertySet(DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications))
-                //    enable32BitApps = (bool)HostingWizard[DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications];
-                //_pageUI.Enable32BitAppPool = enable32BitApps;
-
-                var enableXRayDaemon = false;
-                if (HostingWizard.IsPropertySet(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon))
-                    enableXRayDaemon = (bool)HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon];
-
-                _pageUI.EnableXRayDaemon = enableXRayDaemon;
-
 
                 var availableFrameworks = HostingWizard[DeploymentWizardProperties.SeedData.propkey_ProjectFrameworks] as Dictionary<string, string>;
                 _pageUI.SetDefaultRuntimesOrFrameworks(targetRuntime, availableFrameworks);
@@ -155,6 +144,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                     // always load versions as we could be deploying a new environment for an existing app; the load will
                     // yield an empty version collection for as-yet-unknown apps
                     _pageUI.LoadExistingVersions();                    
+                }
+
+                var xrayAvailable = (bool)HostingWizard.GetProperty(BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_XRayAvailable);
+                _pageUI.SetXRayAvailability(xrayAvailable);
+                if (xrayAvailable)
+                {
+                    var enableXRayDaemon = false;
+                    if (HostingWizard.IsPropertySet(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon))
+                        enableXRayDaemon = (bool)HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon];
+
+                    _pageUI.EnableXRayDaemon = enableXRayDaemon;
                 }
             }
 

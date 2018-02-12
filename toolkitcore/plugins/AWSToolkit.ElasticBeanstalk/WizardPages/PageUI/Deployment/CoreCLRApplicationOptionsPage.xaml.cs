@@ -193,6 +193,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             }
         }
 
+        public void SetXRayAvailability(bool xrayIsAvailable)
+        {
+            _ctlXRayOptionsPanel.Visibility = xrayIsAvailable ? Visibility.Visible : Visibility.Collapsed;
+        }
+
         public bool VersionLabelIsValid
         {
             get

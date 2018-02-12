@@ -151,17 +151,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                     // yield an empty version collection for as-yet-unknown apps
                     _pageUI.LoadExistingVersions();                    
                 }
-            }
 
-            var xrayAvailable = (bool)HostingWizard.GetProperty(BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_XRayAvailable);
-            _pageUI.SetXRayAvailability(xrayAvailable);
-            if (xrayAvailable)
-            {
-                var enableXRayDaemon = false;
-                if (HostingWizard.IsPropertySet(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon))
-                    enableXRayDaemon = (bool)HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon];
+                var xrayAvailable = (bool)HostingWizard.GetProperty(BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_XRayAvailable);
+                _pageUI.SetXRayAvailability(xrayAvailable);
+                if (xrayAvailable)
+                {
+                    var enableXRayDaemon = false;
+                    if (HostingWizard.IsPropertySet(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon))
+                        enableXRayDaemon = (bool)HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon];
 
-                _pageUI.EnableXRayDaemon = enableXRayDaemon;
+                    _pageUI.EnableXRayDaemon = enableXRayDaemon;
+                }
             }
 
             TestForwardTransitionEnablement();
