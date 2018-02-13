@@ -200,6 +200,9 @@ namespace AWSDeployment
                 throw new ArgumentException("Section is not in recognised format; missing ':' namespace separator(s)");
         }
 
+        public const string XRayOptionsNamespace = "aws:elasticbeanstalk:xray";
+        public const string XRayEnabledOption = "XRayEnabled";
+
         #endregion
 
         #region AWS Clients
@@ -871,19 +874,28 @@ namespace AWSDeployment
                 });
             }
 
+            // solution stack may not support the xray config so do additional check beyond endpoint availability
             if (RegionEndPoints.GetEndpoint(RegionEndPointsManager.XRAY_ENDPOINT_LOOKUP) != null)
             {
-                if (EnableXRayDaemon != null && configOptionSettings.FirstOrDefault(
-                        x => (x.Namespace == "aws:elasticbeanstalk:xray" && x.OptionName == "XRayEnabled")) == null)
+                if (TestEnvironnmentSupportsXRayOptions())
                 {
-                    configOptionSettings.Add(new ConfigurationOptionSetting()
+                    if (EnableXRayDaemon != null && configOptionSettings.FirstOrDefault(
+                            x => (x.Namespace == XRayOptionsNamespace && x.OptionName == XRayEnabledOption)) == null)
                     {
-                        Namespace = "aws:elasticbeanstalk:xray",
-                        OptionName = "XRayEnabled",
-                        Value = (EnableXRayDaemon.GetValueOrDefault()).ToString().ToLower()
-                    });
+                        configOptionSettings.Add(new ConfigurationOptionSetting()
+                        {
+                            Namespace = XRayOptionsNamespace,
+                            OptionName = XRayEnabledOption,
+                            Value = (EnableXRayDaemon.GetValueOrDefault()).ToString().ToLower()
+                        });
+                    }
+                }
+                else
+                {
+                    Observer.Warn("Solution stack for environment does not support X-Ray configuration options, ignoring requested X-Ray settings");
                 }
             }
+
             if (!IsSingleInstanceEnvironmentType && !string.IsNullOrEmpty(ApplicationHealthcheckPath) && configOptionSettings.FirstOrDefault(
                 x => (x.Namespace == "aws:elasticbeanstalk:application" && x.OptionName == "Application Healthcheck URL")) == null)
             {
@@ -910,6 +922,63 @@ namespace AWSDeployment
             };
 
             BeanstalkClient.UpdateEnvironment(request);
+        }
+
+        bool TestEnvironnmentSupportsXRayOptions()
+        {
+            var xrayOptionSupported = false;
+            try
+            {
+                var response = BeanstalkClient.DescribeConfigurationOptions(new DescribeConfigurationOptionsRequest
+                {
+                    ApplicationName = ApplicationName,
+                    EnvironmentName = EnvironmentName,
+                    Options = new List<OptionSpecification>
+                    {
+                        new OptionSpecification
+                        {
+                            Namespace = XRayOptionsNamespace,
+                            OptionName = XRayEnabledOption
+                        }
+                    }
+                });
+
+                xrayOptionSupported = response.Options != null && response.Options.Count == 1;
+            }
+            catch (Exception e)
+            {
+                Observer.LogOnly("Test for option {0} in namespace {1} returned error {2}", XRayEnabledOption, XRayOptionsNamespace, e.Message);
+            }
+
+            return xrayOptionSupported;
+        }
+
+        bool TestSolutionStackSupportsXRayOptions()
+        {
+            var xrayOptionSupported = false;
+            try
+            {
+                var response = BeanstalkClient.DescribeConfigurationOptions(new DescribeConfigurationOptionsRequest
+                {
+                    SolutionStackName = SolutionStack,
+                    Options = new List<OptionSpecification>
+                    {
+                        new OptionSpecification
+                        {
+                            Namespace = XRayOptionsNamespace,
+                            OptionName = XRayEnabledOption
+                        }
+                    }
+                });
+
+                xrayOptionSupported = response.Options != null && response.Options.Count == 1;
+            }
+            catch (Exception e)
+            {
+                Observer.LogOnly("Test for option {0} in namespace {1} returned error {2}", XRayEnabledOption, XRayOptionsNamespace, e.Message);
+            }
+
+            return xrayOptionSupported;
         }
 
         void UpdateChangedEnvironmentSettings()
@@ -1477,17 +1546,25 @@ namespace AWSDeployment
                 });
             }
 
+            // solution stack may not support the xray config so do additional check beyond endpoint availability
             if (RegionEndPoints.GetEndpoint(RegionEndPointsManager.XRAY_ENDPOINT_LOOKUP) != null)
             {
-                if (EnableXRayDaemon != null && configOptionSettings.FirstOrDefault(
-                        x => (x.Namespace == "aws:elasticbeanstalk:xray" && x.OptionName == "XRayEnabled")) == null)
+                if (TestSolutionStackSupportsXRayOptions())
                 {
-                    configOptionSettings.Add(new ConfigurationOptionSetting()
+                    if (EnableXRayDaemon != null && configOptionSettings.FirstOrDefault(
+                            x => (x.Namespace == XRayOptionsNamespace && x.OptionName == XRayEnabledOption)) == null)
                     {
-                        Namespace = "aws:elasticbeanstalk:xray",
-                        OptionName = "XRayEnabled",
-                        Value = (EnableXRayDaemon.GetValueOrDefault()).ToString().ToLower()
-                    });
+                        configOptionSettings.Add(new ConfigurationOptionSetting()
+                        {
+                            Namespace = XRayOptionsNamespace,
+                            OptionName = XRayEnabledOption,
+                            Value = (EnableXRayDaemon.GetValueOrDefault()).ToString().ToLower()
+                        });
+                    }
+                }
+                else
+                {
+                    Observer.Warn("Solution stack does not support X-Ray configuration options, ignoring requested X-Ray settings");
                 }
             }
             if (!string.IsNullOrEmpty(TargetRuntime) && configOptionSettings.FirstOrDefault(
