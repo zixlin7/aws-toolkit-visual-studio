@@ -6,6 +6,7 @@ using System.Text;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
+using log4net;
 
 namespace Amazon.AWSToolkit.ECS.Nodes
 {
@@ -13,6 +14,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
     {
         public const string ECS_ENDPOINT_LOOKUP = RegionEndPointsManager.ECS_SERVICE_NAME;
         public const string ECR_ENDPOINT_LOOKUP = RegionEndPointsManager.ECR_SERVICE_NAME;
+        static ILog _logger = LogManager.GetLogger(typeof(RootViewMetaNode));
 
         public override string EndPointSystemName
         {
@@ -22,6 +24,21 @@ namespace Amazon.AWSToolkit.ECS.Nodes
         public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
         {
             return new RootViewModel(account);
+        }
+
+        public override bool CanSupportRegion(RegionEndPointsManager.RegionEndPoints region)
+        {
+            var ecsEndpoint = region.GetEndpoint(ECS_ENDPOINT_LOOKUP);
+            if (ecsEndpoint == null)
+            {
+                _logger.InfoFormat("Region {0} has no ECS endpoint", region.SystemName);
+            }
+            var ecrEndpoint = region.GetEndpoint(ECR_ENDPOINT_LOOKUP);
+            if (ecrEndpoint == null)
+            {
+                _logger.InfoFormat("Region {0} has no ECR endpoint", region.SystemName);
+            }
+            return ecsEndpoint != null && ecrEndpoint != null;
         }
 
         public ActionHandlerWrapper.ActionHandler OnLaunch
