@@ -1,0 +1,166 @@
+<templates>
+  <region systemname="us-east-1">
+	<template location="https://s3.amazonaws.com/cloudformation-templates-us-east-1/ec2_instance_with_instance_profile.template">Create an EC2 instance with an associated instance profile.</template>
+    <template location="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Windows_Single_Server_SharePoint_Foundation.template">SharePoint Foundation 2010 running on Microsoft Windows Server 2008 R2</template>
+	<template location="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Windows_Single_Server_Active_Directory.template">Create a single server installation of Active Directory running on Microsoft Windows Server 2008 R2.</template>
+	<template location="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Windows_Roles_And_Features.template">Create a single server specifying server roles running on Microsoft Windows Server 2008 R2.</template>
+	<template location="https://s3.amazonaws.com/cloudformation-templates-us-east-1/DynamoDB_Table.template">Example of creating and using a DynamoDB table.</template>
+	<template location="https://s3.amazonaws.com/cloudformation-templates-us-east-1/EC2WebSiteSample.template">Simple EC2-based website.</template>
+	<template location="https://s3.amazonaws.com/cloudformation-templates-us-east-1/EC2WithMetadata.template">Example of using resource metadata with an EC2 instance resource.</template>
+	<template location="https://s3.amazonaws.com/cloudformation-templates-us-east-1/ELBSample.template">Elastic Load Balancer with a health check</template>
+	
+    <template location="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Drupal_Single_Instance.template">Drupal Content Management System</template>
+    <template location="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Gollum_Single_Instance.template">Gollum is a simple wiki system built on top of Git that powers GitHub Wikis</template>
+    <template location="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Insoshi_Single_Instance.template">Insoshi is an open source social networking platform in Ruby on Rails</template>
+    <template location="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Joomla!_Single_Instance.template">Joomla! is a free, open-source content management system</template>
+    <template location="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Redmine_Single_Instance.template">Redmine is a flexible project management web application</template>
+    <template location="https://s3.amazonaws.com/cloudformation-templates-us-east-1/Tracks_Single_Instance.template">Tracks implements David Allen's Getting Things Done methodology</template>
+    <template location="https://s3.amazonaws.com/cloudformation-templates-us-east-1/WordPress_Single_Instance.template">WordPress is web software you can use to create a beautiful website or blog</template>
+  </region>
+
+  <region systemname="us-west-1">
+	<template location="https://s3-us-west-1.amazonaws.com/cloudformation-templates-us-west-1/ec2_instance_with_instance_profile.template">Create an EC2 instance with an associated instance profile.</template>
+    <template location="https://s3-us-west-1.amazonaws.com/cloudformation-templates-us-west-1/Windows_Single_Server_SharePoint_Foundation.template">SharePoint Foundation 2010 running on Microsoft Windows Server 2008 R2</template>
+	<template location="https://s3-us-west-1.amazonaws.com/cloudformation-templates-us-west-1/Windows_Single_Server_Active_Directory.template">Create a single server installation of Active Directory running on Microsoft Windows Server 2008 R2.</template>
+	<template location="https://s3-us-west-1.amazonaws.com/cloudformation-templates-us-west-1/Windows_Roles_And_Features.template">Create a single server specifying server roles running on Microsoft Windows Server 2008 R2.</template>
+	<template location="https://s3-us-west-1.amazonaws.com/cloudformation-templates-us-west-1/DynamoDB_Table.template">Example of creating and using a DynamoDB table.</template>
+	<template location="https://s3-us-west-1.amazonaws.com/cloudformation-templates-us-west-1/EC2WebSiteSample.template">Simple EC2-based website.</template>
+	<template location="https://s3-us-west-1.amazonaws.com/cloudformation-templates-us-west-1/EC2WithMetadata.template">Example of using resource metadata with an EC2 instance resource.</template>
+	<template location="https://s3-us-west-1.amazonaws.com/cloudformation-templates-us-west-1/ELBSample.template">Elastic Load Balancer with a health check</template>
+  
+    <template location="https://s3-us-west-1.amazonaws.com/cloudformation-templates-us-west-1/Drupal_Single_Instance.template">Drupal Content Management System</template>
+    <template location="https://s3-us-west-1.amazonaws.com/cloudformation-templates-us-west-1/Gollum_Single_Instance.template">Gollum is a simple wiki system built on top of Git that powers GitHub Wikis</template>
+    <template location="https://s3-us-west-1.amazonaws.com/cloudformation-templates-us-west-1/Insoshi_Single_Instance.template">Insoshi is an open source social networking platform in Ruby on Rails</template>
+    <template location="https://s3-us-west-1.amazonaws.com/cloudformation-templates-us-west-1/Joomla!_Single_Instance.template">Joomla! is a free, open-source content management system</template>
+    <template location="https://s3-us-west-1.amazonaws.com/cloudformation-templates-us-west-1/Redmine_Single_Instance.template">Redmine is a flexible project management web application</template>
+    <template location="https://s3-us-west-1.amazonaws.com/cloudformation-templates-us-west-1/Tracks_Single_Instance.template">Tracks implements David Allen's Getting Things Done methodology</template>
+    <template location="https://s3-us-west-1.amazonaws.com/cloudformation-templates-us-west-1/WordPress_Single_Instance.template">WordPress is web software you can use to create a beautiful website or blog</template>
+  </region>
+
+  <region systemname="us-west-2">
+	<template location="https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/ec2_instance_with_instance_profile.template">Create an EC2 instance with an associated instance profile.</template>
+    <template location="https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/Windows_Single_Server_SharePoint_Foundation.template">SharePoint Foundation 2010 running on Microsoft Windows Server 2008 R2</template>
+	<template location="https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/Windows_Single_Server_Active_Directory.template">Create a single server installation of Active Directory running on Microsoft Windows Server 2008 R2.</template>
+	<template location="https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/Windows_Roles_And_Features.template">Create a single server specifying server roles running on Microsoft Windows Server 2008 R2.</template>
+	<template location="https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/DynamoDB_Table.template">Example of creating and using a DynamoDB table.</template>
+	<template location="https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/EC2WebSiteSample.template">Simple EC2-based website.</template>
+	<template location="https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/EC2WithMetadata.template">Example of using resource metadata with an EC2 instance resource.</template>
+	<template location="https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/ELBSample.template">Elastic Load Balancer with a health check</template>
+
+    <template location="https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/Drupal_Single_Instance.template">Drupal Content Management System</template>
+    <template location="https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/Gollum_Single_Instance.template">Gollum is a simple wiki system built on top of Git that powers GitHub Wikis</template>
+    <template location="https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/Insoshi_Single_Instance.template">Insoshi is an open source social networking platform in Ruby on Rails</template>
+    <template location="https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/Joomla!_Single_Instance.template">Joomla! is a free, open-source content management system</template>
+    <template location="https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/Redmine_Single_Instance.template">Redmine is a flexible project management web application</template>
+    <template location="https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/Tracks_Single_Instance.template">Tracks implements David Allen's Getting Things Done methodology</template>
+    <template location="https://s3-us-west-2.amazonaws.com/cloudformation-templates-us-west-2/WordPress_Single_Instance.template">WordPress is web software you can use to create a beautiful website or blog</template>
+  </region>
+
+  <region systemname="eu-west-1">
+	<template location="https://s3-eu-west-1.amazonaws.com/cloudformation-templates-eu-west-1/ec2_instance_with_instance_profile.template">Create an EC2 instance with an associated instance profile.</template>
+    <template location="https://s3-eu-west-1.amazonaws.com/cloudformation-templates-eu-west-1/Windows_Single_Server_SharePoint_Foundation.template">SharePoint Foundation 2010 running on Microsoft Windows Server 2008 R2</template>
+	<template location="https://s3-eu-west-1.amazonaws.com/cloudformation-templates-eu-west-1/Windows_Single_Server_Active_Directory.template">Create a single server installation of Active Directory running on Microsoft Windows Server 2008 R2.</template>
+	<template location="https://s3-eu-west-1.amazonaws.com/cloudformation-templates-eu-west-1/Windows_Roles_And_Features.template">Create a single server specifying server roles running on Microsoft Windows Server 2008 R2.</template>
+	<template location="https://s3-eu-west-1.amazonaws.com/cloudformation-templates-eu-west-1/DynamoDB_Table.template">Example of creating and using a DynamoDB table.</template>
+	<template location="https://s3-eu-west-1.amazonaws.com/cloudformation-templates-eu-west-1/EC2WebSiteSample.template">Simple EC2-based website.</template>
+	<template location="https://s3-eu-west-1.amazonaws.com/cloudformation-templates-eu-west-1/EC2WithMetadata.template">Example of using resource metadata with an EC2 instance resource.</template>
+	<template location="https://s3-eu-west-1.amazonaws.com/cloudformation-templates-eu-west-1/ELBSample.template">Elastic Load Balancer with a health check</template>
+  
+    <template location="https://s3-eu-west-1.amazonaws.com/cloudformation-templates-eu-west-1/Drupal_Single_Instance.template">Drupal Content Management System</template>
+    <template location="https://s3-eu-west-1.amazonaws.com/cloudformation-templates-eu-west-1/Gollum_Single_Instance.template">Gollum is a simple wiki system built on top of Git that powers GitHub Wikis</template>
+    <template location="https://s3-eu-west-1.amazonaws.com/cloudformation-templates-eu-west-1/Insoshi_Single_Instance.template">Insoshi is an open source social networking platform in Ruby on Rails</template>
+    <template location="https://s3-eu-west-1.amazonaws.com/cloudformation-templates-eu-west-1/Joomla!_Single_Instance.template">Joomla! is a free, open-source content management system</template>
+    <template location="https://s3-eu-west-1.amazonaws.com/cloudformation-templates-eu-west-1/Redmine_Single_Instance.template">Redmine is a flexible project management web application</template>
+    <template location="https://s3-eu-west-1.amazonaws.com/cloudformation-templates-eu-west-1/Tracks_Single_Instance.template">Tracks implements David Allen's Getting Things Done methodology</template>
+    <template location="https://s3-eu-west-1.amazonaws.com/cloudformation-templates-eu-west-1/WordPress_Single_Instance.template">WordPress is web software you can use to create a beautiful website or blog</template>
+  </region>
+
+  <region systemname="ap-southeast-1">
+	<template location="https://s3-ap-southeast-1.amazonaws.com/cloudformation-templates-ap-southeast-1/ec2_instance_with_instance_profile.template">Create an EC2 instance with an associated instance profile.</template>
+    <template location="https://s3-ap-southeast-1.amazonaws.com/cloudformation-templates-ap-southeast-1/Windows_Single_Server_SharePoint_Foundation.template">SharePoint Foundation 2010 running on Microsoft Windows Server 2008 R2</template>
+	<template location="https://s3-ap-southeast-1.amazonaws.com/cloudformation-templates-ap-southeast-1/Windows_Single_Server_Active_Directory.template">Create a single server installation of Active Directory running on Microsoft Windows Server 2008 R2.</template>
+	<template location="https://s3-ap-southeast-1.amazonaws.com/cloudformation-templates-ap-southeast-1/Windows_Roles_And_Features.template">Create a single server specifying server roles running on Microsoft Windows Server 2008 R2.</template>
+	<template location="https://s3-ap-southeast-1.amazonaws.com/cloudformation-templates-ap-southeast-1/DynamoDB_Table.template">Example of creating and using a DynamoDB table.</template>
+	<template location="https://s3-ap-southeast-1.amazonaws.com/cloudformation-templates-ap-southeast-1/EC2WebSiteSample.template">Simple EC2-based website.</template>
+	<template location="https://s3-ap-southeast-1.amazonaws.com/cloudformation-templates-ap-southeast-1/EC2WithMetadata.template">Example of using resource metadata with an EC2 instance resource.</template>
+	<template location="https://s3-ap-southeast-1.amazonaws.com/cloudformation-templates-ap-southeast-1/ELBSample.template">Elastic Load Balancer with a health check</template>
+
+    <template location="https://s3-ap-southeast-1.amazonaws.com/cloudformation-templates-ap-southeast-1/Drupal_Single_Instance.template">Drupal Content Management System</template>
+    <template location="https://s3-ap-southeast-1.amazonaws.com/cloudformation-templates-ap-southeast-1/Gollum_Single_Instance.template">Gollum is a simple wiki system built on top of Git that powers GitHub Wikis</template>
+    <template location="https://s3-ap-southeast-1.amazonaws.com/cloudformation-templates-ap-southeast-1/Insoshi_Single_Instance.template">Insoshi is an open source social networking platform in Ruby on Rails</template>
+    <template location="https://s3-ap-southeast-1.amazonaws.com/cloudformation-templates-ap-southeast-1/Joomla!_Single_Instance.template">Joomla! is a free, open-source content management system</template>
+    <template location="https://s3-ap-southeast-1.amazonaws.com/cloudformation-templates-ap-southeast-1/Redmine_Single_Instance.template">Redmine is a flexible project management web application</template>
+    <template location="https://s3-ap-southeast-1.amazonaws.com/cloudformation-templates-ap-southeast-1/Tracks_Single_Instance.template">Tracks implements David Allen's Getting Things Done methodology</template>
+    <template location="https://s3-ap-southeast-1.amazonaws.com/cloudformation-templates-ap-southeast-1/WordPress_Single_Instance.template">WordPress is web software you can use to create a beautiful website or blog</template>
+  </region>
+  
+  <region systemname="ap-southeast-2">
+	<template location="https://s3-ap-southeast-2.amazonaws.com/cloudformation-templates-ap-southeast-2/ec2_instance_with_instance_profile.template">Create an EC2 instance with an associated instance profile.</template>
+    <template location="https://s3-ap-southeast-2.amazonaws.com/cloudformation-templates-ap-southeast-2/Windows_Single_Server_SharePoint_Foundation.template">SharePoint Foundation 2010 running on Microsoft Windows Server 2008 R2</template>
+	<template location="https://s3-ap-southeast-2.amazonaws.com/cloudformation-templates-ap-southeast-2/Windows_Single_Server_Active_Directory.template">Create a single server installation of Active Directory running on Microsoft Windows Server 2008 R2.</template>
+	<template location="https://s3-ap-southeast-2.amazonaws.com/cloudformation-templates-ap-southeast-2/Windows_Roles_And_Features.template">Create a single server specifying server roles running on Microsoft Windows Server 2008 R2.</template>
+	<template location="https://s3-ap-southeast-2.amazonaws.com/cloudformation-templates-ap-southeast-2/DynamoDB_Table.template">Example of creating and using a DynamoDB table.</template>
+	<template location="https://s3-ap-southeast-2.amazonaws.com/cloudformation-templates-ap-southeast-2/EC2WebSiteSample.template">Simple EC2-based website.</template>
+	<template location="https://s3-ap-southeast-2.amazonaws.com/cloudformation-templates-ap-southeast-2/EC2WithMetadata.template">Example of using resource metadata with an EC2 instance resource.</template>
+	<template location="https://s3-ap-southeast-2.amazonaws.com/cloudformation-templates-ap-southeast-2/ELBSample.template">Elastic Load Balancer with a health check</template>
+
+    <template location="https://s3-ap-southeast-2.amazonaws.com/cloudformation-templates-ap-southeast-2/Drupal_Single_Instance.template">Drupal Content Management System</template>
+    <template location="https://s3-ap-southeast-2.amazonaws.com/cloudformation-templates-ap-southeast-2/Gollum_Single_Instance.template">Gollum is a simple wiki system built on top of Git that powers GitHub Wikis</template>
+    <template location="https://s3-ap-southeast-2.amazonaws.com/cloudformation-templates-ap-southeast-2/Insoshi_Single_Instance.template">Insoshi is an open source social networking platform in Ruby on Rails</template>
+    <template location="https://s3-ap-southeast-2.amazonaws.com/cloudformation-templates-ap-southeast-2/Joomla!_Single_Instance.template">Joomla! is a free, open-source content management system</template>
+    <template location="https://s3-ap-southeast-2.amazonaws.com/cloudformation-templates-ap-southeast-2/Redmine_Single_Instance.template">Redmine is a flexible project management web application</template>
+    <template location="https://s3-ap-southeast-2.amazonaws.com/cloudformation-templates-ap-southeast-2/Tracks_Single_Instance.template">Tracks implements David Allen's Getting Things Done methodology</template>
+    <template location="https://s3-ap-southeast-2.amazonaws.com/cloudformation-templates-ap-southeast-2/WordPress_Single_Instance.template">WordPress is web software you can use to create a beautiful website or blog</template>
+  </region>  
+
+
+  <region systemname="ap-northeast-1">
+	<template location="https://s3-ap-northeast-1.amazonaws.com/cloudformation-templates-ap-northeast-1/ec2_instance_with_instance_profile.template">Create an EC2 instance with an associated instance profile.</template>
+    <template location="https://s3-ap-northeast-1.amazonaws.com/cloudformation-templates-ap-northeast-1/Windows_Single_Server_SharePoint_Foundation.template">SharePoint Foundation 2010 running on Microsoft Windows Server 2008 R2</template>
+	<template location="https://s3-ap-northeast-1.amazonaws.com/cloudformation-templates-ap-northeast-1/Windows_Single_Server_Active_Directory.template">Create a single server installation of Active Directory running on Microsoft Windows Server 2008 R2.</template>
+	<template location="https://s3-ap-northeast-1.amazonaws.com/cloudformation-templates-ap-northeast-1/Windows_Roles_And_Features.template">Create a single server specifying server roles running on Microsoft Windows Server 2008 R2.</template>
+	<template location="https://s3-ap-northeast-1.amazonaws.com/cloudformation-templates-ap-northeast-1/DynamoDB_Table.template">Example of creating and using a DynamoDB table.</template>
+	<template location="https://s3-ap-northeast-1.amazonaws.com/cloudformation-templates-ap-northeast-1/EC2WebSiteSample.template">Simple EC2-based website.</template>
+	<template location="https://s3-ap-northeast-1.amazonaws.com/cloudformation-templates-ap-northeast-1/EC2WithMetadata.template">Example of using resource metadata with an EC2 instance resource.</template>
+	<template location="https://s3-ap-northeast-1.amazonaws.com/cloudformation-templates-ap-northeast-1/ELBSample.template">Elastic Load Balancer with a health check</template>
+  
+    <template location="https://s3-ap-northeast-1.amazonaws.com/cloudformation-templates-ap-northeast-1/Drupal_Single_Instance.template">Drupal Content Management System</template>
+    <template location="https://s3-ap-northeast-1.amazonaws.com/cloudformation-templates-ap-northeast-1/Gollum_Single_Instance.template">Gollum is a simple wiki system built on top of Git that powers GitHub Wikis</template>
+    <template location="https://s3-ap-northeast-1.amazonaws.com/cloudformation-templates-ap-northeast-1/Insoshi_Single_Instance.template">Insoshi is an open source social networking platform in Ruby on Rails</template>
+    <template location="https://s3-ap-northeast-1.amazonaws.com/cloudformation-templates-ap-northeast-1/Joomla!_Single_Instance.template">Joomla! is a free, open-source content management system</template>
+    <template location="https://s3-ap-northeast-1.amazonaws.com/cloudformation-templates-ap-northeast-1/Redmine_Single_Instance.template">Redmine is a flexible project management web application</template>
+    <template location="https://s3-ap-northeast-1.amazonaws.com/cloudformation-templates-ap-northeast-1/Tracks_Single_Instance.template">Tracks implements David Allen's Getting Things Done methodology</template>
+    <template location="https://s3-ap-northeast-1.amazonaws.com/cloudformation-templates-ap-northeast-1/WordPress_Single_Instance.template">WordPress is web software you can use to create a beautiful website or blog</template>
+  </region>
+  
+  <region systemname="sa-east-1">
+	<template location="https://s3-sa-east-1.amazonaws.com/cloudformation-templates-sa-east-1/ec2_instance_with_instance_profile.template">Create an EC2 instance with an associated instance profile.</template>
+    <template location="https://s3-sa-east-1.amazonaws.com/cloudformation-templates-sa-east-1/Windows_Single_Server_SharePoint_Foundation.template">SharePoint Foundation 2010 running on Microsoft Windows Server 2008 R2</template>
+	<template location="https://s3-sa-east-1.amazonaws.com/cloudformation-templates-sa-east-1/Windows_Single_Server_Active_Directory.template">Create a single server installation of Active Directory running on Microsoft Windows Server 2008 R2.</template>
+	<template location="https://s3-sa-east-1.amazonaws.com/cloudformation-templates-sa-east-1/Windows_Roles_And_Features.template">Create a single server specifying server roles running on Microsoft Windows Server 2008 R2.</template>
+	<template location="https://s3-sa-east-1.amazonaws.com/cloudformation-templates-sa-east-1/DynamoDB_Table.template">Example of creating and using a DynamoDB table.</template>
+	<template location="https://s3-sa-east-1.amazonaws.com/cloudformation-templates-sa-east-1/EC2WebSiteSample.template">Simple EC2-based website.</template>
+	<template location="https://s3-sa-east-1.amazonaws.com/cloudformation-templates-sa-east-1/EC2WithMetadata.template">Example of using resource metadata with an EC2 instance resource.</template>
+	<template location="https://s3-sa-east-1.amazonaws.com/cloudformation-templates-sa-east-1/ELBSample.template">Elastic Load Balancer with a health check</template>
+  
+    <template location="https://s3-sa-east-1.amazonaws.com/cloudformation-templates-sa-east-1/Drupal_Single_Instance.template">Drupal Content Management System</template>
+    <template location="https://s3-sa-east-1.amazonaws.com/cloudformation-templates-sa-east-1/Gollum_Single_Instance.template">Gollum is a simple wiki system built on top of Git that powers GitHub Wikis</template>
+    <template location="https://s3-sa-east-1.amazonaws.com/cloudformation-templates-sa-east-1/Insoshi_Single_Instance.template">Insoshi is an open source social networking platform in Ruby on Rails</template>
+    <template location="https://s3-sa-east-1.amazonaws.com/cloudformation-templates-sa-east-1/Joomla!_Single_Instance.template">Joomla! is a free, open-source content management system</template>
+    <template location="https://s3-sa-east-1.amazonaws.com/cloudformation-templates-sa-east-1/Redmine_Single_Instance.template">Redmine is a flexible project management web application</template>
+    <template location="https://s3-sa-east-1.amazonaws.com/cloudformation-templates-sa-east-1/Tracks_Single_Instance.template">Tracks implements David Allen's Getting Things Done methodology</template>
+    <template location="https://s3-sa-east-1.amazonaws.com/cloudformation-templates-sa-east-1/WordPress_Single_Instance.template">WordPress is web software you can use to create a beautiful website or blog</template>
+  </region>
+  
+  <region systemname="us-gov-west-1">
+    <template location="https://s3-us-gov-west-1.amazonaws.com/cloudformation-templates-us-gov-west-1/Windows_Single_Server_SharePoint_Foundation.template">SharePoint Foundation 2010 running on Microsoft Windows Server 2008 R2</template>
+    <template location="https://s3-us-gov-west-1.amazonaws.com/cloudformation-templates-us-gov-west-1/Windows_Single_Server_Active_Directory.template">Create a single server installation of Active Directory running on Microsoft Windows Server 2008 R2</template>
+    <template location="https://s3-us-gov-west-1.amazonaws.com/cloudformation-templates-us-gov-west-1/Windows_Roles_And_Features.template">Create a single server specifying server roles running on Microsoft Windows Server 2008 R2</template>
+    <template location="https://s3-us-gov-west-1.amazonaws.com/cloudformation-templates-us-gov-west-1/RDS_VPC.template">Example of creating an Amazon RDS database instance in a VPC using VPC security groups</template>
+    <template location="https://s3-us-gov-west-1.amazonaws.com/cloudformation-templates-us-gov-west-1/ELB_and_AutoScaling_In_VPC.template">Example of creating an Elastic Load Balancer and an Auto Scaling Group in a VPC</template>
+    <template location="https://s3-us-gov-west-1.amazonaws.com/cloudformation-templates-us-gov-west-1/EC2InstanceWithSecurityGroupSample.template">Simple EC2 instance with a security group</template>
+    <template location="https://s3-us-gov-west-1.amazonaws.com/cloudformation-templates-us-gov-west-1/EC2_Instance_With_Block_Device_Mapping.template">Example of creating an EC2 instance with Block Device Mappings</template>
+    <template location="https://s3-us-gov-west-1.amazonaws.com/cloudformation-templates-us-gov-west-1/EC2_Instance_With_Ephemeral_Drives.template">Example of creating an EC2 instance using Ephemeral storage devices</template>
+    <template location="https://s3-us-gov-west-1.amazonaws.com/cloudformation-templates-us-gov-west-1/IAM_Users_Groups_and_Policies.template">Example of creating IAM users, groups and policies</template>
+  </region>  
+</templates>

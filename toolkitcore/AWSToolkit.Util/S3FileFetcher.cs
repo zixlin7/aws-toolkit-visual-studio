@@ -13,27 +13,30 @@ using Amazon.Runtime.Internal.Settings;
 
 namespace Amazon.AWSToolkit
 {
-    public class S3FileFetcher
+    /// <summary>
+    /// Interface to help with testing of the file fetcher and construction of mocks
+    /// </summary>
+    public interface IS3FileFetcherContentResolver
     {
-        public enum CacheMode { Never, PerInstance, Permanent, IfDifferent };
+        Uri HostedFilesLocation { get; set; }
+        string GetLocalCachePath(string filename);
+        string GetLocalRepositoryDirectory();
+        string GetUserConfiguredLocalHostedFilesPath();
+        Uri ResolveRegionLocation(string location);
+        HttpWebRequest ConstructWebRequest(string url);
+    }
 
-        const string CLOUDFRONT_CONFIG_FILES_LOCATION = @"https://d3rrggjwfhwld2.cloudfront.net/";
-        const string S3_FALLBACK_LOCATION = @"https://aws-vs-toolkit.s3.amazonaws.com/";
+    /// <summary>
+    /// Default content resolver that returns the real locations and web requests to obtain
+    /// hosted files.
+    /// </summary>
+    internal class DefaultS3FileFetcherContentResolver : IS3FileFetcherContentResolver
+    {
+        private readonly ILog _logger;
 
-        const string AWSVSTOOLKIT_BUCKETPREFIX = "aws-vs-toolkit";
-        const string REGIONALENDPOINTSCHEME = "region://";
-
-        ILog _logger = LogManager.GetLogger(typeof(S3FileFetcher));
-        Dictionary<string, string> _filesFetched = new Dictionary<string, string>();
-
-        static S3FileFetcher INSTANCE = new S3FileFetcher();
-        private S3FileFetcher()
+        public DefaultS3FileFetcherContentResolver(ILog logger)
         {
-        }
-
-        public static S3FileFetcher Instance
-        {
-            get { return INSTANCE; }
+            _logger = logger;
         }
 
         // for testing purposes only
@@ -43,22 +46,23 @@ namespace Amazon.AWSToolkit
         {
             get
             {
-                var configLocation = _testHostingFilesLocation != null ? 
-                                _testHostingFilesLocation.OriginalString 
-                                : PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.HostedFilesLocation);
+                var configLocation = _testHostingFilesLocation != null 
+                    ? _testHostingFilesLocation.OriginalString
+                    : PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.HostedFilesLocation);
 
                 if (!string.IsNullOrEmpty(configLocation))
                 {
                     var resolvedLocation = ResolveRegionLocation(configLocation);
-                    _logger.InfoFormat("Found hosted files config override '{0}', resolved to '{1}'", 
-                                       configLocation, 
-                                       resolvedLocation);
+                    _logger.InfoFormat("Found hosted files config override '{0}', resolved to '{1}'",
+                        configLocation,
+                        resolvedLocation);
                     return resolvedLocation;
                 }
 
                 _logger.InfoFormat("Null/empty hosted files location override");
                 return null;
             }
+
             set
             {
                 // for testing purposes only
@@ -66,144 +70,130 @@ namespace Amazon.AWSToolkit
             }
         }
 
-        public string GetFileContent(string filename)
+        public string GetLocalCachePath(string filename)
         {
-            return GetFileContent(filename, CacheMode.PerInstance);
+            var path = GetLocalRepositoryDirectory() + filename;
+            return path;
         }
 
-        public Stream OpenFileStream(string filename, CacheMode cacheMode)
+        public string GetLocalRepositoryDirectory()
         {
+            var folder = PersistenceManager.GetSettingsStoreFolder() + "/downloadedfiles";
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+            return folder + "/";
+        }
+
+        public string GetUserConfiguredLocalHostedFilesPath()
+        {
+            const string SubKeyName = @"Software\AWSToolkit";
+            const string KeyName = "LocalHostedFilesPath";
+
+            string location = null;
             try
             {
-                filename = filename.Replace(@"\", "/");
-
-                Stream stream = this.GetType().Assembly.GetManifestResourceStream("Amazon.AWSToolkit.HostedFiles." + filename.Replace('/', '.'));
-                if (stream != null)
+                var key = Registry.LocalMachine.OpenSubKey(SubKeyName);
+                if (key?.GetValue(KeyName) != null)
                 {
-                    _logger.InfoFormat("Loaded hosted file '{0}' from assembly resources", filename);
-                    return stream; 
-                }
-                
-                string localPath = null;
-                bool cacheLocal = false;
-                localPath = getLocalCachePath(filename);
-
-                if (File.Exists(localPath) &&
-                        (
-                            cacheMode == CacheMode.Permanent ||
-                            (cacheMode == CacheMode.IfDifferent && !this.IsLocalCacheDifferent(filename) && getLocalHostedFilesPath() == null) ||
-                            (cacheMode == CacheMode.PerInstance && this._filesFetched.ContainsKey(filename))
-                        )
-                    )
-                {
-                    _logger.InfoFormat("Loading hosted file '{0}' from local path '{1}'", filename, localPath);
-                    stream = File.OpenRead(localPath);
-                    cacheLocal = false;
-                }
-                else
-                {
-                    string localHostedPath = getLocalHostedFilesPath();
-                    if (localHostedPath != null)
-                    {
-                        string fullPath = Path.Combine(localHostedPath, filename);
-                        if (File.Exists(fullPath))
-                        {
-                            _logger.InfoFormat("Loading hosted file '{0}' from path '{1}'", filename, fullPath);
-                            return new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                        }
-                    }
-
-                    try
-                    {
-                        try
-                        {
-                            string prefix = null;
-                            try
-                            {
-                                var locationUri = Instance.HostedFilesLocation;
-                                if (locationUri != null && 
-                                    locationUri.Scheme.StartsWith("http", StringComparison.OrdinalIgnoreCase))
-                                {
-                                    prefix = locationUri.ToString();
-                                    if (!prefix.EndsWith("/"))
-                                        prefix = prefix + "/";
-
-                                    _logger.InfoFormat("Probing for hosted file '{0}' at url prefix '{1}'", filename, prefix);
-
-                                    HttpWebRequest httpRequest = WebRequest.Create(prefix + filename) as HttpWebRequest;
-                                    HttpWebResponse response = httpRequest.GetResponse() as HttpWebResponse;
-                                    stream = response.GetResponseStream();
-                                    cacheLocal = true;
-                                }
-                            }
-                            catch (Exception e1)
-                            {
-                                _logger.Error("Failed to find config file " + filename + " under configured url prefix " + prefix, e1);
-                            }
-
-                            if (null == stream)
-                            {
-                                _logger.InfoFormat("Probing for hosted file '{0}' at url prefix '{1}'", filename, CLOUDFRONT_CONFIG_FILES_LOCATION);
-
-                                HttpWebRequest httpRequest = WebRequest.Create(CLOUDFRONT_CONFIG_FILES_LOCATION + filename) as HttpWebRequest;
-                                HttpWebResponse response = httpRequest.GetResponse() as HttpWebResponse;
-                                stream = response.GetResponseStream();
-                                cacheLocal = true;
-                            }
-                        }
-                        catch (Exception e2)
-                        {
-                            _logger.Error("Failed to find config file " + filename + " from cloudfront.", e2);
-
-                            HttpWebRequest httpRequest = WebRequest.Create(S3_FALLBACK_LOCATION + filename) as HttpWebRequest;
-                            HttpWebResponse response = httpRequest.GetResponse() as HttpWebResponse;
-                            stream = response.GetResponseStream();
-                            cacheLocal = true;
-                        }
-                    }
-                    catch
-                    {
-                        // If we failed to get the file from S3 then
-                        // try and fallback to a local copy.
-                        cacheLocal = false;
-                        string cacheLocation = getLocalCachePath(filename);
-                        if (File.Exists(cacheLocation))
-                        {
-                            _logger.InfoFormat("Probes for hosted file '{0}' failed, attempting local cache '{1}'", filename, cacheLocation);
-                            stream = File.OpenRead(cacheLocation);
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
+                    location = key.GetValue(KeyName) as string;
+                    if (!Directory.Exists(location))
+                        location = null;
                 }
 
-                if (CacheMode.Never != cacheMode && cacheLocal)
-                {
-                    byte[] cacheData;
-                    if (cache(filename, stream, out cacheData))
-                    {
-                        // Now that the file is cached we can recall this method to have it 
-                        // return the cached version.
-                        return new MemoryStream(cacheData);
-                    }
-                    else
-                    {
-                        // Something bad happen trying to cache the data.  The state of the stream is unknown so
-                        // we will attempt to get the object again with caching turned off.
-                        return OpenFileStream(filename, CacheMode.Never);
-                    }
-                }
+                var locationUri = HostedFilesLocation;
+                if (locationUri != null && locationUri.IsFile)
+                    location = locationUri.LocalPath;
 
-
-                return stream;
+                if (location != null && !location.EndsWith("\\"))
+                    location += "\\";
             }
             catch (Exception e)
             {
-                this._logger.Error("Error getting " + filename + ".", e);
-                return null;
+                _logger.Error("Error attempting to read value for " + KeyName + " from registry subkey " + SubKeyName, e);
+                throw;
             }
+
+            return location;
+        }
+
+        public Uri ResolveRegionLocation(string location)
+        {
+            if (!location.StartsWith(S3FileFetcher.REGIONALENDPOINTSCHEME, StringComparison.OrdinalIgnoreCase))
+                return new Uri(location);
+
+            var region = location.Substring(9);
+            try
+            {
+                var endpoint = RegionEndpoint.GetBySystemName(region).GetEndpointForService("s3");
+                return new Uri(string.Format("https://{0}-{1}.{2}/", S3FileFetcher.AWSVSTOOLKIT_BUCKETPREFIX, region, endpoint));
+            }
+            catch
+            {
+                _logger.ErrorFormat("Failed to construct regional hosted files endpoint for location {0}", location);
+            }
+
+            return null;
+        }
+
+        public HttpWebRequest ConstructWebRequest(string url)
+        {
+            return WebRequest.Create(url) as HttpWebRequest;
+        }
+
+    }
+
+    public class S3FileFetcher
+    {
+        public enum CacheMode { Never, PerInstance, Permanent, IfDifferent };
+
+        /// <summary>
+        /// This is used for testing so we can verify the search pipeline resolves
+        /// to what we expect given a test setup
+        /// </summary>
+        public enum ResolvedLocation
+        {
+            Failed,
+            Cache,
+            ConfiguredFolder,
+            CloudFront,
+            S3,
+            Resources
+        }
+
+        public ResolvedLocation ResolvedContentLocation { get; private set; }
+
+        public const string CLOUDFRONT_CONFIG_FILES_LOCATION = @"https://d3rrggjwfhwld2.cloudfront.net/";
+        public const string S3_FALLBACK_LOCATION = @"https://aws-vs-toolkit.s3.amazonaws.com/";
+
+        public const string AWSVSTOOLKIT_BUCKETPREFIX = "aws-vs-toolkit";
+        public const string REGIONALENDPOINTSCHEME = "region://";
+
+        private readonly ILog _logger = LogManager.GetLogger(typeof(S3FileFetcher));
+        private readonly Dictionary<string, string> _filesFetched = new Dictionary<string, string>();
+
+        private readonly IS3FileFetcherContentResolver _contentResolver;
+
+        // ReSharper disable once InconsistentNaming
+        private static readonly S3FileFetcher _Instance = new S3FileFetcher();
+
+        private S3FileFetcher()
+        {
+            _contentResolver = new DefaultS3FileFetcherContentResolver(_logger);
+        }
+
+        public S3FileFetcher(IS3FileFetcherContentResolver testResolver)
+        {
+            _contentResolver = testResolver;
+        }
+
+        public static S3FileFetcher Instance
+        {
+            get { return _Instance; }
+        }
+
+        public string GetFileContent(string filename)
+        {
+            return GetFileContent(filename, CacheMode.PerInstance);
         }
 
         public string GetFileContent(string filename, CacheMode cacheMode)
@@ -211,11 +201,11 @@ namespace Amazon.AWSToolkit
             try
             {
                 filename = filename.Replace(@"\", "/");
-                Stream stream = OpenFileStream(filename, cacheMode);
+                var stream = OpenFileStream(filename, cacheMode);
 
-                using (StreamReader reader = new StreamReader(stream))
+                using (var reader = new StreamReader(stream))
                 {
-                    string content = reader.ReadToEnd();
+                    var content = reader.ReadToEnd();
                     return content;
                 }
             }
@@ -226,20 +216,252 @@ namespace Amazon.AWSToolkit
             }
         }
 
-        bool cache(string filename, Stream stream, out byte[] cachedData)
+        public Stream OpenFileStream(string filename, CacheMode cacheMode)
         {
-            lock (INSTANCE)
+            filename = filename.Replace(@"\", "/");
+            var canCacheLocal = false;
+
+            var fileStream = LoadFromConfiguredHostedFilesFolder(filename)
+                             ?? LoadFromUserProfileCache(filename, cacheMode)
+                             ?? LoadFromConfiguredHostedFilesUri(filename, out canCacheLocal)
+                             ?? LoadFromUrl(CLOUDFRONT_CONFIG_FILES_LOCATION + filename, out canCacheLocal)
+                             ?? LoadFromUrl(S3_FALLBACK_LOCATION + filename, out canCacheLocal)
+                             ?? LoadFromUserProfileCache(filename); // try again from cache but ignore cache mode
+
+            // if we got content from an online source, then consider caching it in the user profile
+            if (fileStream != null && CacheMode.Never != cacheMode && canCacheLocal)
+            {
+                byte[] cacheData;
+                if (CacheFileContent(filename, fileStream, out cacheData))
+                {
+                    // Now that the file is cached we can recall this method to have it 
+                    // return the cached version.
+                    fileStream = new MemoryStream(cacheData);
+                }
+                else
+                {
+                    // Something bad happen trying to cache the data.  The state of the stream is unknown so
+                    // we will attempt to get the object again with caching turned off.
+                    fileStream = OpenFileStream(filename, CacheMode.Never);
+                }
+            }
+
+            // last gasp attempt to get content if we could not get it from configured, cached or online source
+            // (we of course don't need to put this into the cache)
+            return fileStream ?? LoadFromToolkitResources(filename);
+        }
+
+        private Stream LoadFromUserProfileCache(string filename, CacheMode cacheMode)
+        {
+            var localPath = _contentResolver.GetLocalCachePath(filename);
+            if (string.IsNullOrEmpty(localPath))
+                return null;
+
+            Stream fileStream = null;
+            try
+            {
+                // note a configured local folder (getLocalHostedFilesPath) for hosted files should override any cache setting
+                if (File.Exists(localPath) &&
+                    (
+                        cacheMode == CacheMode.Permanent
+                        || cacheMode == CacheMode.IfDifferent &&
+                        _contentResolver.GetUserConfiguredLocalHostedFilesPath() == null &&
+                        !this.IsLocalCacheDifferent(filename)
+                        || cacheMode == CacheMode.PerInstance && this._filesFetched.ContainsKey(filename)
+                    )
+                )
+                {
+                    _logger.InfoFormat("Loading hosted file '{0}' from local path '{1}'", filename, localPath);
+                    fileStream = File.OpenRead(localPath);
+                }
+            }
+            catch (Exception e)
+            {
+                var logMsg = string.Format("Failed to access hosted file {0} from userprofile cache location", filename);
+                _logger.Error(logMsg, e);
+            }
+            finally
+            {
+                if (fileStream != null)
+                {
+                    ResolvedContentLocation = ResolvedLocation.Cache;
+                }
+            }
+
+            return fileStream;
+        }
+
+        private Stream LoadFromUserProfileCache(string filename)
+        {
+            var localPath = _contentResolver.GetLocalCachePath(filename);
+            if (string.IsNullOrEmpty(localPath))
+                return null;
+
+            Stream fileStream = null;
+            try
+            {
+                if (File.Exists(localPath))
+                {
+                    _logger.InfoFormat("Loading hosted file '{0}' from local path '{1}'", filename, localPath);
+                    fileStream = File.OpenRead(localPath);
+                }
+            }
+            catch (Exception e)
+            {
+                var logMsg = string.Format("Failed to access hosted file {0} from userprofile cache location",
+                    filename);
+                _logger.Error(logMsg, e);
+            }
+            finally
+            {
+                if (fileStream != null)
+                {
+                    ResolvedContentLocation = ResolvedLocation.Cache;
+                }
+            }
+
+            return fileStream;
+        }
+
+        private Stream LoadFromConfiguredHostedFilesFolder(string filename)
+        {
+            var localHostedPath = _contentResolver.GetUserConfiguredLocalHostedFilesPath();
+            if (string.IsNullOrEmpty(localHostedPath))
+                return null;
+
+            Stream fileStream = null;
+            try
+            {
+                var fullPath = Path.Combine(localHostedPath, filename);
+                if (File.Exists(fullPath))
+                {
+                    _logger.InfoFormat("Loading hosted file '{0}' from path '{1}'", filename, fullPath);
+                    fileStream = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.Read);
+                }
+            }
+            catch (Exception e)
+            {
+                var logMsg =
+                    string.Format("Failed to access hosted file {0} from configured hosted files location {1}",
+                        filename, localHostedPath);
+                _logger.Error(logMsg, e);
+            }
+            finally
+            {
+                if (fileStream != null)
+                {
+                    ResolvedContentLocation = ResolvedLocation.ConfiguredFolder;
+                }
+            }
+
+            return fileStream;
+        }
+
+        private Stream LoadFromConfiguredHostedFilesUri(string filename, out bool cacheLocal)
+        {
+            var prefix = string.Empty;
+            Stream fileStream = null;
+            cacheLocal = false;
+
+            try
+            {
+                var locationUri = _contentResolver.HostedFilesLocation;
+                if (locationUri != null &&
+                    locationUri.Scheme.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                {
+                    prefix = locationUri.ToString();
+                    if (!prefix.EndsWith("/"))
+                        prefix = prefix + "/";
+
+                    _logger.InfoFormat("Probing for hosted file '{0}' at url prefix '{1}'", filename, prefix);
+
+                    var httpRequest = _contentResolver.ConstructWebRequest(prefix + filename);
+                    var response = httpRequest.GetResponse() as HttpWebResponse;
+                    fileStream = response.GetResponseStream();
+                }
+            }
+            catch (Exception e)
+            {
+                var logMsg = string.Format("Failed to load hosted file {0} under configured url prefix {1}", filename, prefix);
+                _logger.Error(logMsg, e);
+            }
+            finally
+            {
+                if (fileStream != null)
+                {
+                    cacheLocal = true;
+                    ResolvedContentLocation = ResolvedLocation.ConfiguredFolder;
+                }
+            }
+
+            return fileStream;
+        }
+
+        private Stream LoadFromUrl(string targetUrl, out bool cacheLocal)
+        {
+            Stream fileStream = null;
+            cacheLocal = false;
+
+            try
+            {
+                _logger.InfoFormat("Probing for hosted file at url '{0}'", targetUrl);
+
+                var httpRequest = _contentResolver.ConstructWebRequest(targetUrl);
+                var response = httpRequest.GetResponse() as HttpWebResponse;
+                fileStream = response.GetResponseStream();
+            }
+            catch (Exception e)
+            {
+                var logMsg = string.Format("Failed to load hosted file {0}", targetUrl);
+                _logger.Error(logMsg, e);
+            }
+            finally
+            {
+                if (fileStream != null)
+                {
+                    cacheLocal = true;
+                    ResolvedContentLocation = ResolvedLocation.CloudFront;
+                }
+            }
+
+            return fileStream;
+        }
+
+        private Stream LoadFromToolkitResources(string filename)
+        {
+            Stream fileStream = null;
+            try
+            {
+                fileStream = this.GetType().Assembly.GetManifestResourceStream("Amazon.AWSToolkit.HostedFiles." + filename.Replace('/', '.'));
+                if (fileStream != null)
+                {
+                    _logger.InfoFormat("Loaded hosted file '{0}' from assembly resources", filename);
+                    ResolvedContentLocation = ResolvedLocation.Resources;
+                }
+            }
+            catch (Exception e)
+            {
+                var logMsg = string.Format("Failed to load hosted file {0} from toolkit resources", filename);
+                _logger.Error(logMsg, e);
+            }
+
+            return fileStream;
+        }
+
+        private bool CacheFileContent(string filename, Stream stream, out byte[] cachedData)
+        {
+            lock (_Instance)
             {
                 try
                 {
-                    string path = getLocalCachePath(filename);
-                    string rootDirectory = Path.GetDirectoryName(path);
+                    var path = _contentResolver.GetLocalCachePath(filename);
+                    var rootDirectory = Path.GetDirectoryName(path);
                     Directory.CreateDirectory(rootDirectory);
 
-                    using (FileStream outStream = File.Open(path, FileMode.Create, FileAccess.Write))
+                    using (var outStream = File.Open(path, FileMode.Create, FileAccess.Write))
                     {
-                        byte[] buffer = new byte[8192];
-                        int read = 0;
+                        var buffer = new byte[8192];
+                        var read = 0;
                         while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
                         {
                             outStream.Write(buffer, 0, read);
@@ -260,90 +482,40 @@ namespace Amazon.AWSToolkit
             }
         }
 
-        bool IsLocalCacheDifferent(string filename)
+        private bool IsLocalCacheDifferent(string filename)
         {
-            if (!string.IsNullOrEmpty(getLocalHostedFilesPath()))
+            if (!string.IsNullOrEmpty(_contentResolver.GetUserConfiguredLocalHostedFilesPath()))
                 return false;
 
-            var localPath = getLocalCachePath(filename);
+            var localPath = _contentResolver.GetLocalCachePath(filename);
 
             string localContent;
-            using (StreamReader reader = new StreamReader(localPath))
+            using (var reader = new StreamReader(localPath))
+            {
                 localContent = reader.ReadToEnd();
+            }
 
             var localMD5 = "\"" + Amazon.S3.Util.AmazonS3Util.GenerateChecksumForContent(localContent, false) + "\"";
 
-            string remoteMD5 = null;
+            string remoteMD5;
             try
             {
-                HttpWebRequest httpRequest = WebRequest.Create(CLOUDFRONT_CONFIG_FILES_LOCATION + filename) as HttpWebRequest;
+                var httpRequest = _contentResolver.ConstructWebRequest(CLOUDFRONT_CONFIG_FILES_LOCATION + filename);
                 httpRequest.Method = "HEAD";
 
-                using (HttpWebResponse response = httpRequest.GetResponse() as HttpWebResponse)
+                using (var response = httpRequest.GetResponse() as HttpWebResponse)
+                {
                     remoteMD5 = response.Headers["ETag"];
+                }
+                return !string.Equals(localMD5, remoteMD5, StringComparison.InvariantCultureIgnoreCase);
             }
             catch (Exception e)
             {
                 _logger.Info("Error checking etag to see if config file (" + filename + ") is different then local cache.", e);
-                return false;
+                return false; // return false so we simply use the cache version as if it were up to date
             }
-
-            return !string.Equals(localMD5, remoteMD5, StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        string getLocalCachePath(string filename)
-        {
-            string path = getLocalRepositoryDirectory() + filename;
-            return path;
-        }
-
-        string getLocalRepositoryDirectory()
-        {
-            string folder = PersistenceManager.GetSettingsStoreFolder() + "/downloadedfiles";
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
-            return folder + "/";
-        }
-
-        static string getLocalHostedFilesPath()
-        {
-            string location = null;
-            RegistryKey key = Registry.LocalMachine.OpenSubKey(@"Software\AWSToolkit");
-            if (key != null && key.GetValue("LocalHostedFilesPath") != null)
-            {
-                location = key.GetValue("LocalHostedFilesPath") as string;
-                if (!Directory.Exists(location))
-                    location = null;
-            }
-
-            var locationUri = Instance.HostedFilesLocation;
-            if (locationUri != null && locationUri.IsFile)
-                location = locationUri.LocalPath;
-
-            if (location != null && !location.EndsWith("\\"))
-                location += "\\";
-
-            return location;
-        }
-
-        Uri ResolveRegionLocation(string location)
-        {
-            if (!location.StartsWith(REGIONALENDPOINTSCHEME, StringComparison.OrdinalIgnoreCase))
-                return new Uri(location);
-
-            var region = location.Substring(9);
-            try
-            {
-                var endpoint = RegionEndpoint.GetBySystemName(region).GetEndpointForService("s3");
-                return new Uri(string.Format("https://{0}-{1}.{2}/", AWSVSTOOLKIT_BUCKETPREFIX, region, endpoint));
-            }
-            catch
-            {
-                _logger.ErrorFormat("Failed to construct regional hosted files endpoint for location {0}", location);
-            }
-
-            return null;
         }
 
     }
+
 }

@@ -297,6 +297,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\basic-serverless.template" />
+    <Resource Include="..\..\hostedfiles\ServiceEndPoints.xml">
+      <Link>HostedFiles\ServiceEndPoints.xml</Link>
+    </Resource>
+    <Resource Include="..\..\hostedfiles\AccountTypes.xml">
+      <Link>HostedFiles\AccountTypes.xml</Link>
+    </Resource>
     <Content Include="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

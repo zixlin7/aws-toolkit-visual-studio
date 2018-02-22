@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<account-types>
+	<account-type>
+		<displayname>Standard AWS Account</displayname>
+		<systemname></systemname>		
+	</account-type>
+	<account-type>
+		<displayname>AWS GovCloud (US) Account</displayname>
+		<systemname>IsGovCloudAccount</systemname>		
+	</account-type>
+	<account-type>
+		<displayname>Amazon AWS Account – China (Beijing) Region</displayname>
+		<systemname>IsChinaAccount</systemname>		
+	</account-type>
+</account-types>

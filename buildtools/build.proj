@@ -34,10 +34,15 @@
         
     </PropertyGroup>
 
-	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;update-version;build-awsdeploy;build-vstoolkit;keyscan;copy-artifacts;sign-packages;save-build">
+	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;get-latest-endpoint-data;restore-nuget;update-version;build-awsdeploy;build-vstoolkit;run-tests;keyscan;copy-artifacts;sign-packages;save-build">
 		<Message Text="Builds all components of the AWS Toolkit for Visual Studio"/>
 	</Target>
 
+    <Target Name="restore-nuget">
+        <Message Text="Restoring nuget packages"/>
+        <Exec Command="$(RootPath)\solutions\.nuget\NuGet.exe restore $(RootPath)\solutions\AWSVisualStudioToolkit.sln" />
+    </Target>
+    
     <Target Name="build-awsdeploy">
 		<Message Text="$(Configuration) - building host components for AWSDeploy."/>
 		
@@ -60,6 +65,22 @@
               />
     </Target>
     
+    <Target Name="run-tests" DependsOnTargets="build-vstoolkit">
+        <Message Text="$(Configuration) - running unit tests."/>
+        
+        <ItemGroup>
+            <TestAssemblies Include="..\tests\AWSToolkit.Util.Tests\bin\$(Configuration)\AWSToolkit.Util.Tests.dll" />
+        </ItemGroup>        
+        
+        <!-- need to find how to reference this after we've done a nuget restore, at project level, 
+             then we can enable unit tests
+        <UsingTask AssemblyFile="path\to\xunit.runner.msbuild.net452.dll"
+                   TaskName="Xunit.Runner.MSBuild.xunit"/>
+                   
+        <xunit Assemblies="@(TestAssemblies)" /> 
+        -->
+    </Target>
+    
 	<Target Name="patch-vsixmanifest" Condition="$(UpdateVersions)">
 		<!-- patch vsixmanifest with release package id if running on Jenkins (likely indicated by update version flag set) -->
         <!-- DISABLE while setting up new project layouts
@@ -71,7 +92,7 @@
         -->
 	</Target>
 
-    <Target Name="copy-artifacts" DependsOnTargets="build-vstoolkit;copy-awsdeploy;copy-icons;copy-awsdeploy;copy-cf-msbuild-targets;copy-templates;build-vs2017-toolkit" />
+    <Target Name="copy-artifacts" DependsOnTargets="build-vstoolkit;copy-awsdeploy;copy-icons;copy-awsdeploy;copy-cf-msbuild-targets;copy-templates;copy-hostedfiles;build-vs2017-toolkit" />
 
     <Target Name="copy-icons" DependsOnTargets="build-vstoolkit">
 		<Message Text="Consolidating icons to deployment folder"/>
@@ -119,7 +140,25 @@
             DestinationFolder="$(ProjectTemplatesDest)\AWS_Web\%(RecursiveDir)" />
             
     </Target>
-    
+
+    <Target Name="copy-hostedfiles" DependsOnTargets="get-latest-endpoint-data">
+		<Message Text="Copying hosted files to deployment folder"/>
+
+        <PropertyGroup>
+            <HostedFilesDest>$(Deployment)\hostedfiles</HostedFilesDest>
+        </PropertyGroup>
+
+		<MakeDir Directories="$(HostedFilesDest)" />
+
+        <ItemGroup>
+            <HostedFiles Include="$(RootPath)\hostedfiles\**\*" />
+        </ItemGroup>
+        
+		<Copy
+			SourceFiles="@(HostedFiles)"
+			DestinationFolder="$(HostedFilesDest)\%(RecursiveDir)" />
+    </Target>
+
 	<Target Name="copy-awsdeploy" DependsOnTargets="build-vstoolkit">
         <PropertyGroup>
             <AwsDeployDest>$(Deployment)\awsdeploy</AwsDeployDest>
@@ -271,8 +310,32 @@
 			/>
 	</Target>
 
+    <!-- only care about packaging updated endpoints and flags for release builds -->
+    <Target Name="get-latest-endpoint-data" DependsOnTargets="build-tools" Condition="'$(Configuration)' == 'Release' ">
+        
+        <Message Text="Fetching latest endpoints and flags from S3" />
+        
+        <PropertyGroup>
+            <HostedFilesFolder>$(RootPath)\hostedfiles</HostedFilesFolder>
+            <HostedFilesBucket>aws-vs-toolkit</HostedFilesBucket>
+        </PropertyGroup>
+        
+        <DownloadFromS3Task
+            S3ObjectKey="ServiceEndPoints.xml"
+            LocalPath="$(HostedFilesFolder)"
+            Bucket="$(HostedFilesBucket)"
+            />
+            
+        <DownloadFromS3Task
+            S3Path="flags"
+            LocalPath="$(HostedFilesFolder)"
+            Bucket="$(HostedFilesBucket)"
+            />
+        
+    </Target>
+    
 	<Target Name="get-references"  DependsOnTargets="build-tools"  Condition="$(EnableGetReferences)">
 		<MSBuild Projects ="$(MSBuildProjectFullPath)" Targets="get-reference-sdk" Properties="TargetRepository=$(MSBuildProjectDirectory)\.."/>
 	</Target>
-
+    
 </Project>

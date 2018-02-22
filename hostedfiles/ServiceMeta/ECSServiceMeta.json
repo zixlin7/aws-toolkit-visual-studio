@@ -1,0 +1,238 @@
+{
+	"FargateSupportedRegions" : [
+		"us-east-1"
+	],
+	"FargateAllowedCPUSettings" : [
+		{
+			"DisplayName" : "0.25 vCPU (256)",
+			"SystemName" : "256",
+			"MemoryValues" : [
+				{
+					"DisplayName" : "512MB",
+					"SystemName" : "512"
+				},
+				{
+					"DisplayName" : "1GB",
+					"SystemName" : "1024"
+				},
+				{
+					"DisplayName" : "2GB",
+					"SystemName" : "2048"
+				}
+			]
+		},
+		{
+			"DisplayName" : "0.50 vCPU (512)",
+			"SystemName" : "512",
+			"MemoryValues" : [
+				{
+					"DisplayName" : "1GB",
+					"SystemName" : "1024"
+				},
+				{
+					"DisplayName" : "2GB",
+					"SystemName" : "2048"
+				},
+				{
+					"DisplayName" : "3GB",
+					"SystemName" : "3072"
+				},
+				{
+					"DisplayName" : "4GB",
+					"SystemName" : "4096"
+				}
+			]
+		},
+		{
+			"DisplayName" : "1.00 vCPU (1024)",
+			"SystemName" : "1024",
+			"MemoryValues" : [
+				{
+					"DisplayName" : "2GB",
+					"SystemName" : "2048"
+				},
+				{
+					"DisplayName" : "3GB",
+					"SystemName" : "3072"
+				},
+				{
+					"DisplayName" : "4GB",
+					"SystemName" : "4096"
+				},
+				{
+					"DisplayName" : "5GB",
+					"SystemName" : "5120"
+				},
+				{
+					"DisplayName" : "6GB",
+					"SystemName" : "6144"
+				},
+				{
+					"DisplayName" : "7GB",
+					"SystemName" : "7168"
+				},
+				{
+					"DisplayName" : "8GB",
+					"SystemName" : "8192"
+				}				
+			]
+		},
+		{
+			"DisplayName" : "2.00 vCPU (2048)",
+			"SystemName" : "2048",
+			"MemoryValues" : [
+				{
+					"DisplayName" : "4GB",
+					"SystemName" : "4096"
+				},
+				{
+					"DisplayName" : "5GB",
+					"SystemName" : "5120"
+				},
+				{
+					"DisplayName" : "6GB",
+					"SystemName" : "6144"
+				},
+				{
+					"DisplayName" : "7GB",
+					"SystemName" : "7168"
+				},
+				{
+					"DisplayName" : "8GB",
+					"SystemName" : "8192"
+				},
+				{
+					"DisplayName" : "9GB",
+					"SystemName" : "9216"
+				},
+				{
+					"DisplayName" : "10GB",
+					"SystemName" : "10240"
+				},
+				{
+					"DisplayName" : "11GB",
+					"SystemName" : "11264"
+				},
+				{
+					"DisplayName" : "12GB",
+					"SystemName" : "12288"
+				},
+				{
+					"DisplayName" : "13GB",
+					"SystemName" : "13312"
+				},
+				{
+					"DisplayName" : "14GB",
+					"SystemName" : "14336"
+				},
+				{
+					"DisplayName" : "15GB",
+					"SystemName" : "15360"
+				},
+				{
+					"DisplayName" : "16GB",
+					"SystemName" : "16384"
+				}				
+			]
+		},
+		{
+			"DisplayName" : "4.00 vCPU (4096)",
+			"SystemName" : "4096",
+			"MemoryValues" : [
+				{
+					"DisplayName" : "8GB",
+					"SystemName" : "8192"
+				},
+				{
+					"DisplayName" : "9GB",
+					"SystemName" : "9216"
+				},
+				{
+					"DisplayName" : "10GB",
+					"SystemName" : "10240"
+				},
+				{
+					"DisplayName" : "11GB",
+					"SystemName" : "11264"
+				},
+				{
+					"DisplayName" : "12GB",
+					"SystemName" : "12288"
+				},
+				{
+					"DisplayName" : "13GB",
+					"SystemName" : "13312"
+				},
+				{
+					"DisplayName" : "14GB",
+					"SystemName" : "14336"
+				},
+				{
+					"DisplayName" : "15GB",
+					"SystemName" : "15360"
+				},
+				{
+					"DisplayName" : "16GB",
+					"SystemName" : "16384"
+				},
+				{
+					"DisplayName" : "17GB",
+					"SystemName" : "17408"
+				},
+				{
+					"DisplayName" : "18GB",
+					"SystemName" : "18432"
+				},
+				{
+					"DisplayName" : "19GB",
+					"SystemName" : "19456"
+				},
+				{
+					"DisplayName" : "20GB",
+					"SystemName" : "20480"
+				},
+				{
+					"DisplayName" : "21GB",
+					"SystemName" : "21504"
+				},
+				{
+					"DisplayName" : "22GB",
+					"SystemName" : "22528"
+				},
+				{
+					"DisplayName" : "23GB",
+					"SystemName" : "23522"
+				},
+				{
+					"DisplayName" : "24GB",
+					"SystemName" : "24576"
+				},
+				{
+					"DisplayName" : "25GB",
+					"SystemName" : "25600"
+				},
+				{
+					"DisplayName" : "26GB",
+					"SystemName" : "26624"
+				},
+				{
+					"DisplayName" : "27GB",
+					"SystemName" : "27648"
+				},
+				{
+					"DisplayName" : "28GB",
+					"SystemName" : "28672"
+				},
+				{
+					"DisplayName" : "29GB",
+					"SystemName" : "29696"
+				},
+				{
+					"DisplayName" : "30GB",
+					"SystemName" : "30720"
+				}				
+			]
+		}
+	
+	]
+}

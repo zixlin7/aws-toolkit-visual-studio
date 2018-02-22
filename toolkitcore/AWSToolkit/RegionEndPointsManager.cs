@@ -170,7 +170,7 @@ namespace Amazon.AWSToolkit
 
             if (string.Equals(location, Constants.SERVICE_ENDPOINT_FILE))
             {
-                return new StringReader(S3FileFetcher.Instance.GetFileContent(location, S3FileFetcher.CacheMode.Never));
+                return new StringReader(S3FileFetcher.Instance.GetFileContent(location, S3FileFetcher.CacheMode.IfDifferent));
             }
             else
             {
