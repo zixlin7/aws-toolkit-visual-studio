@@ -52,9 +52,6 @@ namespace $safeprojectname$
                     using (StreamWriter writer = new StreamWriter(readme.OpenWrite()))
                         writer.WriteLine("This is my readme file.");
 
-                    DirectoryInfo localRoot = new DirectoryInfo(@"C:\");
-                    DirectoryInfo localCode = localRoot.CreateSubdirectory("code");
-
                     // Create a directory called code and write a file to it.
                     S3DirectoryInfo codeDir = rootDirectory.CreateSubdirectory("code");
                     S3FileInfo codeFile = codeDir.GetFile("Program.cs");
