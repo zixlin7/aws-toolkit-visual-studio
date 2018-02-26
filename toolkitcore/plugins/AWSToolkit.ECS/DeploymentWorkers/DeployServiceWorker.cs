@@ -308,6 +308,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     }
                 };
 
+                var targetType = state.HostingWizard.IsFargateLaunch() ? TargetTypeEnum.Ip : TargetTypeEnum.Instance;
 
                 string listenerArn = state.HostingWizard[PublishContainerToAWSWizardProperties.ListenerArn] as string;
                 if (state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewListenerPort] is bool &&
@@ -318,8 +319,6 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                         string.Equals(state.HostingWizard[PublishContainerToAWSWizardProperties.NewPathPattern].ToString(), "/"))
                     {
                         this.Helper.AppendUploadStatus("Creating TargetGroup for ELB Listener");
-
-                        var targetType = state.HostingWizard.IsFargateLaunch() ? TargetTypeEnum.Ip : TargetTypeEnum.Instance;
 
                         targetArn = this._elbClient.CreateTargetGroup(new CreateTargetGroupRequest
                         {
@@ -343,7 +342,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                             Name = makeTargetGroupNameUnique("Default-ECS-" + state.HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] as string),
                             Port = 80,
                             Protocol = ProtocolEnum.HTTP,
-                            TargetType = TargetTypeEnum.Instance,
+                            TargetType = targetType,
                             HealthCheckPath = "/",
                             VpcId = state.HostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string
                         }).TargetGroups[0].TargetGroupArn;
@@ -387,7 +386,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                         Name = makeTargetGroupNameUnique(state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] as string),
                         Port = 80,
                         Protocol = ProtocolEnum.HTTP,
-                        TargetType = TargetTypeEnum.Instance,
+                        TargetType = targetType,
                         HealthCheckPath = state.HostingWizard[PublishContainerToAWSWizardProperties.HealthCheckPath] as string,
                         VpcId = state.HostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string
                     }).TargetGroups[0].TargetGroupArn;
