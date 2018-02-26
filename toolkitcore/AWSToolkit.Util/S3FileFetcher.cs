@@ -221,12 +221,12 @@ namespace Amazon.AWSToolkit
             filename = filename.Replace(@"\", "/");
             var canCacheLocal = false;
 
-            var fileStream = LoadFromConfiguredHostedFilesFolder(filename)
-                             ?? LoadFromUserProfileCache(filename, cacheMode)
-                             ?? LoadFromConfiguredHostedFilesUri(filename, out canCacheLocal)
-                             ?? LoadFromUrl(CLOUDFRONT_CONFIG_FILES_LOCATION + filename, out canCacheLocal)
-                             ?? LoadFromUrl(S3_FALLBACK_LOCATION + filename, out canCacheLocal)
-                             ?? LoadFromUserProfileCache(filename); // try again from cache but ignore cache mode
+            var fileStream = LoadFromConfiguredHostedFilesFolder(filename)                      // registry or folder path set in options dialog
+                             ?? LoadFromUserProfileCache(filename, cacheMode)                   // appdata cache folder
+                             ?? LoadFromConfiguredHostedFilesUri(filename, out canCacheLocal)   // region: or uri configured location in options dialog
+                             ?? LoadFromUrl(CLOUDFRONT_CONFIG_FILES_LOCATION + filename, out canCacheLocal) // preferred
+                             ?? LoadFromUrl(S3_FALLBACK_LOCATION + filename, out canCacheLocal) // backup preference
+                             ?? LoadFromUserProfileCache(filename); // everything failed but we have cached so use it anyway as last-but-one resort
 
             // if we got content from an online source, then consider caching it in the user profile
             if (fileStream != null && CacheMode.Never != cacheMode && canCacheLocal)
@@ -251,6 +251,13 @@ namespace Amazon.AWSToolkit
             return fileStream ?? LoadFromToolkitResources(filename);
         }
 
+        /// <summary>
+        /// Tests for content in user's appdata cache, downloaded from a previous run,
+        /// if compatible with preferred cache setting
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="cacheMode"></param>
+        /// <returns></returns>
         private Stream LoadFromUserProfileCache(string filename, CacheMode cacheMode)
         {
             var localPath = _contentResolver.GetLocalCachePath(filename);
@@ -291,6 +298,12 @@ namespace Amazon.AWSToolkit
             return fileStream;
         }
 
+        /// <summary>
+        /// Last-gasp attempt, bar loading from resources - if the file exists in the cache by virtue of
+        /// previous run, irrespective of cache mode, try and use it
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         private Stream LoadFromUserProfileCache(string filename)
         {
             var localPath = _contentResolver.GetLocalCachePath(filename);
@@ -323,6 +336,12 @@ namespace Amazon.AWSToolkit
             return fileStream;
         }
 
+        /// <summary>
+        /// Checks location specified by user in registry or toolkit's miscsettings file. Can be
+        /// folder, regional (eg cn-north-1) or uri setting to the content.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         private Stream LoadFromConfiguredHostedFilesFolder(string filename)
         {
             var localHostedPath = _contentResolver.GetUserConfiguredLocalHostedFilesPath();
@@ -357,6 +376,13 @@ namespace Amazon.AWSToolkit
             return fileStream;
         }
 
+        /// <summary>
+        /// Handles custom locations configured by the user as a uri or region://
+        /// designation.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="cacheLocal"></param>
+        /// <returns></returns>
         private Stream LoadFromConfiguredHostedFilesUri(string filename, out bool cacheLocal)
         {
             var prefix = string.Empty;
@@ -397,6 +423,12 @@ namespace Amazon.AWSToolkit
             return fileStream;
         }
 
+        /// <summary>
+        /// Used to probe for content in CloudFront or S3 locations.
+        /// </summary>
+        /// <param name="targetUrl"></param>
+        /// <param name="cacheLocal"></param>
+        /// <returns></returns>
         private Stream LoadFromUrl(string targetUrl, out bool cacheLocal)
         {
             Stream fileStream = null;
@@ -427,6 +459,11 @@ namespace Amazon.AWSToolkit
             return fileStream;
         }
 
+        /// <summary>
+        /// Handles final attempt to get content by checking in application resources.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         private Stream LoadFromToolkitResources(string filename)
         {
             Stream fileStream = null;
