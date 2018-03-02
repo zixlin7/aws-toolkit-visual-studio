@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <versions location="http://aws.amazon.com/visualstudio">
+  <version number="1.14.1.6" release-date="2018-03-02" prompt="false">
+    <change>Updated Elastic Beanstalk deployments to work around issue with including Roslyn folder in the deployment package for projects dependent on an v1.0.7 of the Microsoft.CodeDom.Providers.DotNetCompilerPlatform
+ NuGet package.</change>
+    <change>Updated toolkit to use embedded resources for various metadata files if it cannot reach the online versions.</change>
+    <change>Updated ECS support to better detect when the Docker build needs to be run from the solution.</change>
+    <change>Fixed ECS tools to not report deployment error when deploying to a new cluster that has the same name as one recently deleted.</change>
+    <change>Fixed ECS tools to not persist the full URL of the image when saving the deployment settings.</change>
+    <change>Fixed ECS tools to set target type to 'Ip' on the ELB target group for Fargate deployments.</change>
+    <change>Fixed 'must reference a valid S3 object' error in CloudFormation deployment.</change>
+  </version>
   <version number="1.14.1.3" release-date="2018-02-14" prompt="false">
     <change>Updated deployment to AWS Elastic Beanstalk to test if the target environment or solution stack supports the AWS X-Ray configuration options before adding them to the deployment request. This fixes issues with re-deployment using the latest wizard to environments running in older solution stacks. The wizard will show the X-Ray tracing option (if the region being deployed to supports X-Ray) but will ignore the option setting if the stack cannot support it.</change>
   </version>
