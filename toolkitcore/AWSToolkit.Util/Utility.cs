@@ -23,20 +23,8 @@ namespace Amazon.AWSToolkit
             {
                 var assemblyName = args.Name.Substring(0, pos);
                 var extensionRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                string testPath;
+                string testPath = Path.Combine(extensionRoot, assemblyName + ".dll");
 
-                // all sdk assemblies should be in .\sdk subfolder
-                if (assemblyName.StartsWith("AWSSDK.", StringComparison.OrdinalIgnoreCase))
-                {
-                    testPath = Path.Combine(extensionRoot, "SDK", assemblyName + ".dll");
-                    if (File.Exists(testPath))
-                    {
-                        LOGGER.InfoFormat("...resolved for {0}", testPath);
-                        return Assembly.LoadFile(testPath);
-                    }
-                }
-
-                testPath = Path.Combine(extensionRoot, assemblyName + ".dll");
                 if (File.Exists(testPath))
                     return Assembly.LoadFile(testPath);
             }
