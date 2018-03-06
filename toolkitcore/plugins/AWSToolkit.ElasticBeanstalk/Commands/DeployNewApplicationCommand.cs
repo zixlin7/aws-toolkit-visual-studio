@@ -146,9 +146,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 {
                     Deployment.EnableXRayDaemon = Convert.ToBoolean(enableXRayDaemon);
 
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.XRayEnabled, "Beanstalk");
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                    if(Deployment.EnableXRayDaemon.GetValueOrDefault())
+                    {
+                        ToolkitEvent evnt = new ToolkitEvent();
+                        evnt.AddProperty(AttributeKeys.XRayEnabled, "Beanstalk");
+                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                    }
                 }
 
                 Deployment.VPCSecurityGroupId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_VPCSecurityGroup);
