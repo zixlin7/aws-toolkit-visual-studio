@@ -111,13 +111,6 @@ namespace Amazon.AWSToolkit.S3.Controller
 
                 putRequest.LambdaFunctionConfigurations.Add(item);
             }
-            foreach (var item in getResponse.LambdaFunctionConfigurations)
-            {
-                if (configuration.TargetService == EventConfigurationModel.Service.Lambda && item.Id == configuration.Id)
-                    continue;
-
-                putRequest.LambdaFunctionConfigurations.Add(item);
-            }
             foreach (var item in getResponse.QueueConfigurations)
             {
                 if (configuration.TargetService == EventConfigurationModel.Service.SQS && item.Id == configuration.Id)
