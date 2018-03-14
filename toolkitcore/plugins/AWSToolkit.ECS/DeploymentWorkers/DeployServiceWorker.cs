@@ -581,11 +581,28 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 Description = "Load Balancer created for the ECS Cluster " + state.HostingWizard[PublishContainerToAWSWizardProperties.ClusterName]
             }).GroupId;
 
-            this._ec2Client.CreateTags(new CreateTagsRequest
+            this.Helper.AppendUploadStatus("Tagging new security group");
+            for (int i = 0; ; i++)
             {
-                Resources = new List<string> { groupId },
-                Tags = new List<Amazon.EC2.Model.Tag> { new Amazon.EC2.Model.Tag { Key = Constants.WIZARD_CREATE_TAG_KEY, Value = Constants.WIZARD_CREATE_TAG_VALUE } }
-            });
+                try
+                {
+                    this._ec2Client.CreateTags(new CreateTagsRequest
+                    {
+                        Resources = new List<string> { groupId },
+                        Tags = new List<Amazon.EC2.Model.Tag> { new Amazon.EC2.Model.Tag { Key = Constants.WIZARD_CREATE_TAG_KEY, Value = Constants.WIZARD_CREATE_TAG_VALUE } }
+                    });
+                    break;
+                }
+                catch
+                {
+                    if(i >= 5)
+                    {
+                        throw;
+                    }
+
+                    Thread.Sleep(TimeSpan.FromSeconds(i));
+                }
+            }
 
             this.Helper.AppendUploadStatus("Authorizing access to port " + state.HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort] + " for CidrIp 0.0.0.0/0");
             this._ec2Client.AuthorizeSecurityGroupIngress(new AuthorizeSecurityGroupIngressRequest
