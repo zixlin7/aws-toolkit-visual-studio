@@ -346,7 +346,6 @@
         <ItemGroup>
             <!-- <FileException Include="$(HostedFilesFolder)\ServiceEndPoints.xml" /> -->
             <FileException Include="$(HostedFilesFolder)\flags\**\*.png" />
-            <FileException Include="$(HostedFilesFolder)\ping-check" />
         </ItemGroup>
         
         <CompareToS3Task
