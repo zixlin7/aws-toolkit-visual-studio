@@ -41,6 +41,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AWSSDK.Core">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Include\sdk\assemblies\net45\AWSSDK.Core.dll</HintPath>
+    </Reference>  
     <Reference Include="log4net">
       <HintPath>..\..\thirdparty\log4net.dll</HintPath>
     </Reference>
@@ -73,6 +77,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LambdaIAMRoleFixUpTests.cs" />
     <Compile Include="S3FileFetcherTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -83,6 +88,10 @@
     <ProjectReference Include="..\..\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
       <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
       <Name>AWSToolkit.Util</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj">
+      <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>
+      <Name>AWSToolkit.Lambda.Interface</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

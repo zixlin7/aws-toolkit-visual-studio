@@ -70,6 +70,10 @@
     <Compile Include="UploadFunctionWizardProperties.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\AWSToolkit.Util\AWSToolkit.Util.csproj">
+      <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
+      <Name>AWSToolkit.Util</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\AWSToolkit\AWSToolkit.csproj">
       <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
       <Name>AWSToolkit</Name>

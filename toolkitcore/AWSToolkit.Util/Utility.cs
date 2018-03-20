@@ -252,5 +252,21 @@ namespace Amazon.AWSToolkit
             var url = isDotNet ? "https://github.com/aws/aws-xray-sdk-dotnet" : "https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html";
             Process.Start(new ProcessStartInfo(url));
         }
+
+        public static string PrettyPrintJson(string json)
+        {
+            var data = JsonMapper.ToObject(json);
+            return PrettyPrintJson(data);
+        }
+
+        public static string PrettyPrintJson(JsonData data)
+        {
+            using (var writer = new StringWriter())
+            {
+                var jsonWriter = new JsonWriter(writer) { PrettyPrint = true };
+                data.ToJson(jsonWriter);
+                return writer.ToString().Trim();
+            }
+        }
     }
 }

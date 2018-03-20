@@ -221,6 +221,9 @@
     <Compile Include="View\Components\XRaySetting.xaml.cs">
       <DependentUpon>XRaySetting.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\ConfirmRoleCleanupControl.xaml.cs">
+      <DependentUpon>ConfirmRoleCleanupControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\DesignData\LambdaDesignTimeData.cs" />
     <Compile Include="View\ViewFunctionControl.xaml.cs">
       <DependentUpon>ViewFunctionControl.xaml</DependentUpon>
@@ -324,6 +327,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Components\XRaySetting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ConfirmRoleCleanupControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

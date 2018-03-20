@@ -33,6 +33,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         LambdaFunctionDeploymentError,
         LambdaFunctionDeploymentErrorDetail,
 
+        LambdaFunctionIAMRoleCleanup,
+
         LambdaFunctionUsesAspNetCore,
         LambdaFunctionUsesRazorPages,
         LambdaFunctionUsesXRay,

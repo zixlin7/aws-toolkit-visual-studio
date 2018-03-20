@@ -17,8 +17,13 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Threading.Tasks;
 
+using Amazon.IdentityManagement.Model;
 using Amazon.Lambda.Tools;
 using Amazon.AWSToolkit.Lambda.Model;
+using System.Net;
+using Amazon.AWSToolkit.Lambda.View;
+using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 {
@@ -54,6 +59,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 this._ctlMemory.Items.Add(value);
             }
 
+            IAMPicker.PropertyChanged += AttemptTrustedPolicyCleanup;
             IAMPicker.PropertyChanged += ForwardEmbeddedControlPropertyChanged;
             IAMPicker.RoleFilter = RolePolicyFilter.AssumeRoleServicePrincipalSelector;
 
@@ -185,6 +191,78 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         private void ForwardEmbeddedControlPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             NotifyPropertyChanged(e.PropertyName);
+        }
+
+        private void AttemptTrustedPolicyCleanup(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            string metricEventState = null;
+            Role selectedRole = null;
+            try
+            {
+                selectedRole = this.IAMPicker.SelectedRole;
+                if (selectedRole == null)
+                    return;
+
+                var assumeRolePolicy = WebUtility.UrlDecode(selectedRole.AssumeRolePolicyDocument);
+                if (!LambdaUtilities.DoesAssumeRolePolicyDocumentContainsInvalidAccounts(assumeRolePolicy))
+                    return;
+
+
+                var cleanTrustPolicy = LambdaUtilities.RemoveInvalidAccountsFromAssumeRolePolicyDocument(assumeRolePolicy);
+
+                var confirmControl = new ConfirmRoleCleanupControl(selectedRole.RoleName, assumeRolePolicy, cleanTrustPolicy);
+                if (!ToolkitFactory.Instance.ShellProvider.ShowModal(confirmControl, MessageBoxButton.YesNo))
+                {
+                    metricEventState = "Skipped";
+                    return;
+                }
+
+                var account = PageController.HostingWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
+                var region = PageController.HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+
+                if (account == null || region == null)
+                    return;
+
+                using (var iamClient = account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(region))
+                {
+                    iamClient.UpdateAssumeRolePolicy(new IdentityManagement.Model.UpdateAssumeRolePolicyRequest
+                    {
+                        RoleName = selectedRole.RoleName,
+                        PolicyDocument = cleanTrustPolicy
+                    });
+
+                    selectedRole.AssumeRolePolicyDocument = WebUtility.UrlEncode(cleanTrustPolicy);
+                    metricEventState = "Success";
+                }
+            }
+            catch (Exception ex)
+            {
+                metricEventState = "Error-";
+                if (ex is AmazonServiceException)
+                    metricEventState += ((AmazonServiceException)ex).StatusCode + "-" + ((AmazonServiceException)ex).ErrorCode;
+                else
+                    metricEventState += ex.GetType().FullName;
+
+                if (selectedRole != null)
+                {
+                    ToolkitFactory.Instance.ShellProvider.ShowError(
+                        "Error attempting to fix the trust policy for IAM Role " + selectedRole.RoleName + ". To manually fix the trust policy log on to " +
+                        "the AWS Web Console and navigate to the IAM role. In the \"Trust Relationships\" tab remove all " +
+                        "trust entities except for the principal \"lambda.amazonaws.com\".");
+                }
+
+                
+                LOGGER.Error("Error attempting to clean up IAM Role trusted policy", ex);
+            }
+            finally
+            {
+                if (!string.IsNullOrEmpty(metricEventState))
+                {
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.LambdaFunctionIAMRoleCleanup, metricEventState);
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                }
+            }
         }
 
         public void RefreshPageContent()
