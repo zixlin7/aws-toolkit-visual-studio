@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"                      
     xmlns:commoncomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components"
-    xmlns:localnode="clr-namespace:Amazon.AWSToolkit.Navigator.Node"             
+    xmlns:localnode="clr-namespace:Amazon.AWSToolkit.Navigator.Node"  
+    AutomationProperties.AutomationId="AWSExplorer"
     >
 
     <DockPanel>
@@ -66,24 +67,28 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock
+            <Label
                 Grid.Row="0"
                 Grid.Column="0"
                 Margin="5,3,5,3"
                 Foreground="{DynamicResource awsToolWindowTextBrushKey}"
-                Style="{DynamicResource awsTextBlockBoldStyle}"
-                Text="Profile:" />
+                Style="{DynamicResource awsLabelBoldStyle}"
+                Content="Profile:" />
 
-            <commoncomponents:RegisteredProfilesPicker Margin="5,3,5,3" Grid.Row="0" Grid.Column="1"
-                     x:Name="_ctlAccounts"
-                     />
+            <commoncomponents:RegisteredProfilesPicker 
+                Margin="5,3" 
+                Grid.Row="0" Grid.Column="1"
+                x:Name="_ctlAccounts"
+                AutomationProperties.AutomationId="RegisteredProfilesPicker"                                       
+                />
 
             <Button
                 Grid.Row="0"
                 Grid.Column="2"
                 Margin="0,3,0,3"
                 Click="addAccount"
-                ToolTip="New Account Profile">
+                ToolTip="New Account Profile"
+                AutomationProperties.AutomationId="AddProfileButton">
                 <Image
                     Width="16"
                     Height="16"
@@ -96,7 +101,8 @@
                 Grid.Column="3"
                 Margin="0,3,0,3"
                 Click="editAccount"
-                ToolTip="Edit Profile">
+                ToolTip="Edit Profile"
+                AutomationProperties.AutomationId="EditProfileButton">
                 <Image
                     Width="16"
                     Height="16"
@@ -110,7 +116,8 @@
                 Margin="0,3,0,3"
                 Click="deleteAccount"
                 DockPanel.Dock="Right"
-                ToolTip="Delete Profile">
+                ToolTip="Delete Profile"
+                AutomationProperties.AutomationId="DeleteProfileButton">
                 <Image
                     Width="16"
                     Height="16"
@@ -118,14 +125,14 @@
                     Source="{Binding DeleteAccountIcon}" />
             </Button>
 
-            <TextBlock
+            <Label
                 Grid.Row="1"
                 Grid.Column="0"
                 Margin="5,3,5,3"
                 Foreground="{DynamicResource awsToolWindowTextBrushKey}"
-                Style="{DynamicResource awsTextBlockBoldStyle}">
-                Region:
-            </TextBlock>
+                Style="{DynamicResource awsLabelBoldStyle}"
+                Content="Region:"/>
+            
             <ComboBox
                 Name="_ctlRegions"
                 Grid.Row="1"
@@ -133,16 +140,28 @@
                 Grid.ColumnSpan="3"
                 Margin="5,3,5,3"
                 SelectionChanged="onRegionChanged"
-                Style="{DynamicResource awsComboBoxStyle}">
+                Style="{DynamicResource awsComboBoxStyle}"
+                AutomationProperties.AutomationId="RegionsPicker">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
+                            <AutomationProperties.AutomationId>
+                                <Binding StringFormat="Region_{0}" Path="SystemName" />
+                            </AutomationProperties.AutomationId>
                             <Image
                                 Width="13"
                                 Height="12"
                                 Margin="5,0,0,0"
-                                Source="{Binding FlagIcon}" />
-                            <TextBlock Margin="5,0,0,0" Text="{Binding DisplayName}" />
+                                Source="{Binding FlagIcon}">
+                                <AutomationProperties.AutomationId>
+                                    <Binding StringFormat="Region_Flag_{0}" Path="SystemName" />
+                                </AutomationProperties.AutomationId>
+                            </Image>
+                            <TextBlock Margin="5,0,0,0" Text="{Binding DisplayName}">
+                                <AutomationProperties.AutomationId>
+                                    <Binding StringFormat="Region_Label_{0}" Path="DisplayName" />
+                                </AutomationProperties.AutomationId>
+                            </TextBlock>
                         </StackPanel>
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
@@ -152,7 +171,8 @@
                 Grid.Column="4"
                 Margin="0,3,0,3"
                 Click="onNavigatorRefreshClick"
-                ToolTip="Refresh">
+                ToolTip="Refresh"
+                AutomationProperties.AutomationId="RefreshButton">
                 <Image
                     Width="16"
                     Height="16"
@@ -168,7 +188,8 @@
                 Margin="5,3,5,3"
                 HorizontalAlignment="Center"
                 FontWeight="Bold"
-                Foreground="Red" />
+                Foreground="Red" 
+                AutomationProperties.AutomationId="AWSExplorer.ErrorMessage"/>
         </Grid>
 
         <TreeView
@@ -181,23 +202,35 @@
             ItemsSource="{Binding Children}"
             MouseDown="resourceTree_MouseDown"
             MouseMove="resourceTree_MouseMove"
-            ScrollViewer.HorizontalScrollBarVisibility="Auto">
+            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+            AutomationProperties.AutomationId="ResourceTree">
 
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                     <StackPanel x:Name="_tviPanel" Orientation="Horizontal">
+                        <AutomationProperties.AutomationId>
+                            <Binding StringFormat="ResourceTree_{0}" Path="Name" />
+                        </AutomationProperties.AutomationId>
                         <Image
                             Width="16"
                             Height="16"
                             Source="{Binding Icon}"
-                            Stretch="Fill" />
+                            Stretch="Fill">
+                            <AutomationProperties.AutomationId>
+                                <Binding StringFormat="ResourceTree_{0}_Image" Path="Name" />
+                            </AutomationProperties.AutomationId>
+                        </Image>
                         <TextBlock
                             Margin="5,0,5,0"
                             Foreground="{DynamicResource awsToolWindowTextBrushKey}"
                             Style="{DynamicResource awsTextBlockBaseStyle}"
                             Text="{Binding Name}"
                             TextDecorations="{Binding Path=(localnode:ITreeNodeProperties.TextDecoration)}"
-                            ToolTip="{Binding ToolTip}" />
+                            ToolTip="{Binding ToolTip}">
+                            <AutomationProperties.AutomationId>
+                                <Binding StringFormat="ResourceTree_{0}_Label" Path="Name" />
+                            </AutomationProperties.AutomationId>
+                        </TextBlock>
                     </StackPanel>
                     <HierarchicalDataTemplate.Triggers>
                         <MultiDataTrigger>
