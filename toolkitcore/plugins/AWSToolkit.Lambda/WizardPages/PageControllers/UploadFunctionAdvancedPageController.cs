@@ -183,7 +183,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                     if (kmsKey == KeyAndAliasWrapper.LambdaDefaultKMSKey.Key)
                         HostingWizard[UploadFunctionWizardProperties.KMSKey] = null;
                     else
-                        HostingWizard[UploadFunctionWizardProperties.KMSKey] = kmsKey;
+                        HostingWizard[UploadFunctionWizardProperties.KMSKey] = kmsKey.KeyArn;
                 }
                 else
                     shouldProgress = false;

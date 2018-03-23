@@ -47,6 +47,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 command.TargetFramework = uploadState.Framework;
                 command.Runtime = uploadState.Request.Runtime;
                 command.EnvironmentVariables = uploadState.Request?.Environment?.Variables;
+                command.KMSKeyArn = uploadState.Request?.KMSKeyArn;
                 command.TracingMode = uploadState.Request?.TracingConfig?.Mode;
                 command.DeadLetterTargetArn = uploadState.Request?.DeadLetterConfig?.TargetArn;
 

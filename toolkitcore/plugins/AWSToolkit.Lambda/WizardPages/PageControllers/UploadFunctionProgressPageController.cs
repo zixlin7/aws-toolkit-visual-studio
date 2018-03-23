@@ -210,6 +210,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             var configuration = HostingWizard[UploadFunctionWizardProperties.Configuration] as string;
             var framework = HostingWizard[UploadFunctionWizardProperties.Framework] as string;
 
+            var kmsArn = HostingWizard[UploadFunctionWizardProperties.KMSKey] as string;
+
             var memorySize = (int)HostingWizard[UploadFunctionWizardProperties.MemorySize];
             var timeout = (int)HostingWizard[UploadFunctionWizardProperties.Timeout];
             var handler = HostingWizard[UploadFunctionWizardProperties.Handler] as string;
@@ -240,7 +242,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 Description = description,
                 MemorySize = memorySize,
                 Timeout = timeout,
-                Handler = handler
+                Handler = handler,
+                KMSKeyArn = kmsArn
             };
 
             if(selectedDeadLetterTargetArn != null)
@@ -265,6 +268,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                     request.Environment.Variables[env.Variable] = env.Value;
                 }
             }
+
+
 
             if (subnets != null && subnets.Any())
             {
