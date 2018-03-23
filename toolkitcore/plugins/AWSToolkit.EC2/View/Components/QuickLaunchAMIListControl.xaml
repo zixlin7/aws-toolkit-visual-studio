@@ -125,30 +125,31 @@
                         Grid.Column="1"
                         Margin="4,0,0,0">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="29*" />
-                            <ColumnDefinition Width="70*" />
-                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="20" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <TextBlock
-                            Grid.ColumnSpan="2"
-                            Margin="0,4,0,0"
-                            Foreground="{TemplateBinding TextBlock.Foreground}"
-                            Text="{Binding Description}"
-                            TextWrapping="Wrap" />
                         <Image
-                            Grid.Column="1"
+                            HorizontalAlignment="Left"
+                            Grid.Column="0"
                             Width="16"
                             Height="16"
                             Margin="0,2"
-                            HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Source="..\..\Resources\Images\free_tier_eligible_sml.png"
                             ToolTip="Free tier eligible if used with a micro instance."
                             Visibility="{Binding FreeTier, Converter={StaticResource Bool2VisConverter}}" />
+                        
+                        <TextBlock
+                            Grid.Column="1"
+                            Margin="0,4,0,0"
+                            Foreground="{TemplateBinding TextBlock.Foreground}"
+                            Text="{Binding Description}"
+                            TextWrapping="Wrap" />
+
                     </Grid>
                 </Grid>
             </DataTemplate>
