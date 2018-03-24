@@ -374,7 +374,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
             // must check that all amis for the region we're going to use are available before
             // declaring page usable
             var ec2FVM = HostingWizard[LaunchWizardProperties.Global.propkey_EC2RootModel] as FeatureViewModel;
-            IEnumerable<EC2QuickLaunchImage> regionImages = _quickLaunchByRegion[ec2FVM.RegionSystemName];
+            var regionImages = _quickLaunchByRegion[ec2FVM.RegionSystemName];
             if (regionImages == null || !regionImages.Any())
                 return false;
 
@@ -391,7 +391,22 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
             try
             {
                 var response = ec2FVM.EC2Client.DescribeImages(new DescribeImagesRequest { ImageIds = imageIDs.ToList() });
-                if (response.Images.Count < regionImages.Count())
+
+                var validAmiIds = new HashSet<string>();
+                foreach(var img in response.Images)
+                {
+                    validAmiIds.Add(img.ImageId);
+                }
+
+                for(int index = regionImages.Count - 1; index >= 0; index--)
+                {
+                    if(!validAmiIds.Contains(regionImages[index].ImageId32) && !validAmiIds.Contains(regionImages[index].ImageId64))
+                    {
+                        regionImages.RemoveAt(index);
+                    }
+                }
+
+                if (regionImages.Count == 0)
                 {
                     LOGGER.ErrorFormat("Quick launch file declares {0} amis for region {1}, service returned {2}",
                                         regionImages.Count<EC2QuickLaunchImage>(),
