@@ -197,6 +197,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
         public void TestForwardTransitionEnablement()
         {
             HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Forward, IsForwardsNavigationAllowed);
+            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Finish, CanQuickLaunch);
         }
 
         public bool AllowShortCircuit()
@@ -301,6 +302,9 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
                     return false;
 
                 if (_pageUI.SelectedInstanceType.RequiresVPC && _pageUI.SelectedSubnet == null)
+                    return false;
+
+                if (_pageUI.SelectedSecurityGroup == null)
                     return false;
 
                 return true;
