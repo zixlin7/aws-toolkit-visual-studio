@@ -138,6 +138,7 @@ namespace Amazon.AWSToolkit.EC2.View.Components
                 if (_platformType == PlatformType.All || !this.AllowFiltering)
                     _displayedImages.Add(img);
                 else
+                {
                     if (_platformType == PlatformType.Windows)
                     {
                         if (img.IsWindowsPlatform)
@@ -146,8 +147,18 @@ namespace Amazon.AWSToolkit.EC2.View.Components
                     else
                     {
                         if (!img.IsWindowsPlatform)
-                            _displayedImages.Add(img);
+                        {
+                            if (img.Title.StartsWith(".NET Core", StringComparison.OrdinalIgnoreCase))
+                            {
+                                _displayedImages.Insert(0, img);
+                            }
+                            else
+                            {
+                                _displayedImages.Add(img);
+                            }
+                        }
                     }
+                }
             }
         }
 
