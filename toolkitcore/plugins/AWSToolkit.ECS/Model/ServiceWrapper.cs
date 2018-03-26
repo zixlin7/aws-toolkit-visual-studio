@@ -470,6 +470,12 @@ namespace Amazon.AWSToolkit.ECS.Model
         {
             get
             {
+                if (this._loadBalancer == null)
+                    return null;
+
+                if (this._loadBalancer.State.Code == LoadBalancerStateEnum.Provisioning || this._loadBalancer.State.Code == LoadBalancerStateEnum.Failed)
+                    return null;
+
                 return _loadBalancerUrl;
             }
         }
@@ -480,6 +486,12 @@ namespace Amazon.AWSToolkit.ECS.Model
         {
             get
             {
+                if (this._loadBalancer == null)
+                    return null;
+
+                if (this._loadBalancer.State.Code == LoadBalancerStateEnum.Provisioning || this._loadBalancer.State.Code == LoadBalancerStateEnum.Failed)
+                    return null;
+
                 return _healthCheckUrl;
             }
         }
