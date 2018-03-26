@@ -482,6 +482,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="$(OutputRoot)\AmazonCLIExtensions.dll">
+      <Link>AmazonCLIExtensions.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CloudFormation.dll">
       <Link>Plugins\AWSToolkit.CloudFormation.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>

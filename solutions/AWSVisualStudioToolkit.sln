@@ -148,6 +148,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{73718FA9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.Util.Tests", "..\tests\AWSToolkit.Util.Tests\AWSToolkit.Util.Tests.csproj", "{B38E2797-FE83-4EB5-8D70-FEBDEDCA32BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmazonCLIExtensions", "..\toolkitcore\AmazonCLIExtensions\AmazonCLIExtensions.csproj", "{B4771F7A-A835-4B86-8B52-0E2FD560A48C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -378,6 +380,10 @@ Global
 		{B38E2797-FE83-4EB5-8D70-FEBDEDCA32BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B38E2797-FE83-4EB5-8D70-FEBDEDCA32BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B38E2797-FE83-4EB5-8D70-FEBDEDCA32BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4771F7A-A835-4B86-8B52-0E2FD560A48C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4771F7A-A835-4B86-8B52-0E2FD560A48C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4771F7A-A835-4B86-8B52-0E2FD560A48C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4771F7A-A835-4B86-8B52-0E2FD560A48C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -447,6 +453,7 @@ Global
 		{A09C427C-DBF7-49C8-9590-E99AD60DECE2} = {C261BDE7-0557-4579-A31E-EB2D5C5503B4}
 		{E3D3DFFD-6668-44BE-9D8E-823F53B58F29} = {62237430-5212-4823-924E-344007109D14}
 		{B38E2797-FE83-4EB5-8D70-FEBDEDCA32BF} = {73718FA9-C78C-4459-A1C0-E5964EE5F420}
+		{B4771F7A-A835-4B86-8B52-0E2FD560A48C} = {DBFC3933-83C8-4F77-8937-EDA0AA0FE7BE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50B40085-A3FF-4E79-90F0-ECAA786ECF93}

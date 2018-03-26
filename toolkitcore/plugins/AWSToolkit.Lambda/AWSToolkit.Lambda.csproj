@@ -151,33 +151,6 @@
     <Compile Include="DeploymentWorkers\UploadGenericWorker.cs" />
     <Compile Include="Controller\ViewFunctionController.cs" />
     <Compile Include="LambdaActivator.cs" />
-    <Compile Include="LambdaTools\Commands\BaseCommand.cs" />
-    <Compile Include="LambdaTools\Commands\DeleteFunctionCommand.cs" />
-    <Compile Include="LambdaTools\Commands\DeleteServerlessCommand.cs" />
-    <Compile Include="LambdaTools\Commands\DeployFunctionCommand.cs" />
-    <Compile Include="LambdaTools\Commands\DeployServerlessCommand.cs" />
-    <Compile Include="LambdaTools\Commands\GetFunctionConfigCommand.cs" />
-    <Compile Include="LambdaTools\Commands\ICommand.cs" />
-    <Compile Include="LambdaTools\Commands\InvokeFunctionCommand.cs" />
-    <Compile Include="LambdaTools\Commands\ListFunctionCommand.cs" />
-    <Compile Include="LambdaTools\Commands\ListServerlessCommand.cs" />
-    <Compile Include="LambdaTools\Commands\PackageCommand.cs" />
-    <Compile Include="LambdaTools\Commands\UpdateFunctionConfigCommand.cs" />
-    <Compile Include="LambdaTools\Constants.cs" />
-    <Compile Include="LambdaTools\DotNetCLIWrapper.cs" />
-    <Compile Include="LambdaTools\Exceptions.cs" />
-    <Compile Include="LambdaTools\ExtensionMethods.cs" />
-    <Compile Include="LambdaTools\IToolLogger.cs" />
-    <Compile Include="LambdaTools\LambdaPackager.cs" />
-    <Compile Include="LambdaTools\LambdaToolsDefaults.cs" />
-    <Compile Include="LambdaTools\Options\CommandLineParser.cs" />
-    <Compile Include="LambdaTools\Options\CommandOption.cs" />
-    <Compile Include="LambdaTools\Options\CommandOptions.cs" />
-    <Compile Include="LambdaTools\Options\CommandOptionValue.cs" />
-    <Compile Include="LambdaTools\Options\DefinedCommandOptions.cs" />
-    <Compile Include="LambdaTools\RoleHelper.cs" />
-    <Compile Include="LambdaTools\ToolkitConfigFileFetcher.cs" />
-    <Compile Include="LambdaTools\Utilities.cs" />
     <Compile Include="Model\EventSourceWrapper.cs" />
     <Compile Include="Model\KeyAndAliasWrapper.cs" />
     <Compile Include="Model\LogStreamWrapper.cs" />
@@ -247,6 +220,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\AmazonCLIExtensions\AmazonCLIExtensions.csproj">
+      <Project>{b4771f7a-a835-4b86-8b52-0e2fd560a48c}</Project>
+      <Name>AmazonCLIExtensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\AWSToolkit.Util\AWSToolkit.Util.csproj">
       <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
       <Name>AWSToolkit.Util</Name>
@@ -373,9 +350,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\new-bucket.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="LambdaTools\Resources\netcore.runtime.hierarchy.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EmbeddedImages\trace-timeline.png" />

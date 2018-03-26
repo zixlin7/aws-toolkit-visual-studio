@@ -24,6 +24,7 @@ using System.Net;
 using Amazon.AWSToolkit.Lambda.View;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.Runtime;
+using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 {
@@ -372,8 +373,15 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
             using (var iamClient = account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(region))
             {
-                var taskRole = RoleHelper.FindExistingLambdaRolesAsync(iamClient, int.MaxValue);
-                var taskPolicies = RoleHelper.FindLambdaManagedPoliciesAsync(iamClient, RoleHelper.DEFAULT_ITEM_MAX);
+                var promptInfo = new RoleHelper.PromptRoleInfo
+                {
+                    AssumeRolePrincipal = Amazon.Common.DotNetCli.Tools.Constants.LAMBDA_PRINCIPAL,
+                    AWSManagedPolicyNamePrefix = Amazon.Lambda.Tools.LambdaConstants.AWS_LAMBDA_MANAGED_POLICY_PREFIX,
+                    KnownManagedPolicyDescription = Amazon.Lambda.Tools.LambdaConstants.KNOWN_MANAGED_POLICY_DESCRIPTIONS
+                };
+
+                var taskRole = RoleHelper.FindExistingRolesAsync(iamClient, promptInfo.AssumeRolePrincipal, int.MaxValue);
+                var taskPolicies = RoleHelper.FindManagedPoliciesAsync(iamClient, promptInfo, RoleHelper.DEFAULT_ITEM_MAX);
                 IList<Amazon.IdentityManagement.Model.Role> roles = null;
                 IList<Amazon.IdentityManagement.Model.ManagedPolicy> policies = null;
 

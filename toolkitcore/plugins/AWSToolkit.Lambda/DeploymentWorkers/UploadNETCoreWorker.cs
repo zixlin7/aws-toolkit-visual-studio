@@ -11,6 +11,7 @@ using System;
 using System.Threading;
 using Amazon.AWSToolkit.Lambda.Controller;
 using System.IO;
+using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 {
@@ -133,6 +134,11 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             public void WriteLine(string message)
             {
                 this.FunctionHandler.AppendUploadStatus(message);
+            }
+
+            public void WriteLine(string message, params object[] args)
+            {
+                WriteLine(string.Format(message, args));
             }
         }
     }

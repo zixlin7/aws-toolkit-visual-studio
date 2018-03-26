@@ -154,8 +154,16 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             using (var iamClient = account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(region))
             {
-                var taskRole = RoleHelper.FindExistingRolesAsync(iamClient, RoleHelper.ECS_TASK_ASSUME_ROLE_PRINCIPAL, int.MaxValue);
-                var taskPolicies = RoleHelper.FindManagedPoliciesAsync(iamClient, RoleHelper.DEFAULT_ITEM_MAX);
+                var promptInfo = new RoleHelper.PromptRoleInfo
+                {
+                    AssumeRolePrincipal = RoleHelper.ECS_TASK_ASSUME_ROLE_PRINCIPAL,
+                    AWSManagedPolicyNamePrefix = Amazon.Common.DotNetCli.Tools.Constants.ECS_TASKS_ASSUME_ROLE_POLICY,
+                    KnownManagedPolicyDescription = Amazon.Common.DotNetCli.Tools.Constants.COMMON_KNOWN_MANAGED_POLICY_DESCRIPTIONS
+                };
+
+                var taskRole = RoleHelper.FindExistingRolesAsync(iamClient, promptInfo.AssumeRolePrincipal, int.MaxValue);
+                var taskPolicies = RoleHelper.FindManagedPoliciesAsync(iamClient, promptInfo, RoleHelper.DEFAULT_ITEM_MAX);
+
                 IList<Amazon.IdentityManagement.Model.Role> roles = null;
                 IList<Amazon.IdentityManagement.Model.ManagedPolicy> policies = null;
 

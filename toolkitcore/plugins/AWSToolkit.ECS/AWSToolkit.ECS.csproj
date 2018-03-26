@@ -138,36 +138,6 @@
     <Compile Include="DeploymentWorkers\IDockerDeploymentHelper.cs" />
     <Compile Include="DeploymentWorkers\PushImageToECRWorker.cs" />
     <Compile Include="ECSActivator.cs" />
-    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\AbstractCLIWrapper.cs" />
-    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Commands\BaseCommand.cs" />
-    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Commands\CommandInfo.cs" />
-    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Commands\ICommand.cs" />
-    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Constants.cs" />
-    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\DefaultConfigFile.cs" />
-    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\DotNetCLIWrapper.cs" />
-    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\ExtensionMethods.cs" />
-    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\IToolLogger.cs" />
-    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Options\CommandLineParser.cs" />
-    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Options\CommandOption.cs" />
-    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Options\CommandOptions.cs" />
-    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Options\CommandOptionValue.cs" />
-    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Options\CommonDefinedCommandOptions.cs" />
-    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\RoleHelper.cs" />
-    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\ToolsException.cs" />
-    <Compile Include="ECSTools\Amazon.Common.DotNetCli.Tools\Utilities.cs" />
-    <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\CommandProperties.cs" />
-    <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\DeployScheduledTaskCommand.cs" />
-    <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\DeployServiceCommand.cs" />
-    <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\DeployTaskCommand.cs" />
-    <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\ECSBaseCommand.cs" />
-    <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\ECSBaseDeployCommand.cs" />
-    <Compile Include="ECSTools\Amazon.ECS.Tools\Commands\PushDockerImageCommand.cs" />
-    <Compile Include="ECSTools\Amazon.ECS.Tools\Constants.cs" />
-    <Compile Include="ECSTools\Amazon.ECS.Tools\DockerCLIWrapper.cs" />
-    <Compile Include="ECSTools\Amazon.ECS.Tools\ECSDefinedCommandOptions.cs" />
-    <Compile Include="ECSTools\Amazon.ECS.Tools\ECSToolsDefaults.cs" />
-    <Compile Include="ECSTools\Amazon.ECS.Tools\ECSUtilities.cs" />
-    <Compile Include="ECSTools\Amazon.ECS.Tools\Exceptions.cs" />
     <Compile Include="Model\ClusterWrapper.cs" />
     <Compile Include="Model\CreateRepositoryModel.cs" />
     <Compile Include="Model\ImageDetailWrapper.cs" />
@@ -271,6 +241,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\AmazonCLIExtensions\AmazonCLIExtensions.csproj">
+      <Project>{b4771f7a-a835-4b86-8b52-0e2fd560a48c}</Project>
+      <Name>AmazonCLIExtensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\AWSToolkit.Util\AWSToolkit.Util.csproj">
       <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
       <Name>AWSToolkit.Util</Name>
@@ -405,9 +379,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\new-taskdef.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ECSTools\Amazon.ECS.Tools\Properties\launchSettings.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EmbeddedImages\delete-cluster.png" />
