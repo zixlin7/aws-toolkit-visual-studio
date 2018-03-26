@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <versions location="http://aws.amazon.com/visualstudio">
+  <version number="1.14.2.0" release-date="2018-03-26" prompt="false">
+	<change>Earlier versions of the AWS Toolkit with Visual Studio added additional AWS Lambda service accounts to the trust policy that are no longer used 
+	for IAM roles created as part of a Lambda deployment. A new prompt has been added when the role is selected in the Lambda deployment wizard to offer removing those accounts.</change>
+	<change>Sorted Linux AMIs in quick launch EC2 launch wizard to put the new .NET Core based AMI on top.</change>
+	<change>Fixed issue of showing ECS Service load balancer URL before the load balancer was active. If the link was clicked before it was active it could cause a bad DNS entry to be cached on the local system.</change>
+	<change>Fixed issue with Launch button being enabled before security group was selected in EC2 Launch wizard.</change>
+  </version>
   <version number="1.14.1.6" release-date="2018-03-02" prompt="false">
     <change>Updated Elastic Beanstalk deployments to work around issue with including Roslyn folder in the deployment package for projects dependent on an v1.0.7 of the Microsoft.CodeDom.Providers.DotNetCompilerPlatform
  NuGet package.</change>
