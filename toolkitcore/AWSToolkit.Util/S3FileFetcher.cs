@@ -176,7 +176,7 @@ namespace Amazon.AWSToolkit
         // ReSharper disable once InconsistentNaming
         private static readonly S3FileFetcher _Instance = new S3FileFetcher();
 
-        private S3FileFetcher()
+        public S3FileFetcher()
         {
             _contentResolver = new DefaultS3FileFetcherContentResolver(_logger);
         }
@@ -216,7 +216,20 @@ namespace Amazon.AWSToolkit
             }
         }
 
-        public Stream OpenFileStream(string filename, CacheMode cacheMode)
+        /// <summary>
+        /// Used to enable us to force-load from resource in the face of a bad
+        /// download or other corrupted file
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public Stream GetFileContentFromResources(string filename)
+        {
+            filename = filename.Replace(@"\", "/");
+            return LoadFromToolkitResources(filename);
+        }
+
+        // virtual to allow mock in testing
+        public virtual Stream OpenFileStream(string filename, CacheMode cacheMode)
         {
             filename = filename.Replace(@"\", "/");
             var canCacheLocal = false;

@@ -167,7 +167,7 @@ namespace AWSDeployment
             {
                 if (_regionEndPoints == null)
                 {
-                    _regionEndPoints = RegionEndPointsManager.Instance.GetRegion(Region);
+                    _regionEndPoints = RegionEndPointsManager.GetInstance().GetRegion(Region);
                 }
 
                 return _regionEndPoints;

@@ -44,7 +44,7 @@
     <Reference Include="AWSSDK.Core">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Include\sdk\assemblies\net45\AWSSDK.Core.dll</HintPath>
-    </Reference>  
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\thirdparty\log4net.dll</HintPath>
     </Reference>
@@ -78,8 +78,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LambdaIAMRoleFixUpTests.cs" />
+    <Compile Include="RegionEndPointsManagerTests.cs" />
     <Compile Include="S3FileFetcherTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -89,6 +91,10 @@
       <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
       <Name>AWSToolkit.Util</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\AWSToolkit\AWSToolkit.csproj">
+      <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
+      <Name>AWSToolkit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj">
       <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>
       <Name>AWSToolkit.Lambda.Interface</Name>
@@ -96,6 +102,9 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\solutions\packages\xunit.analyzers.0.7.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\InvalidXmlEndpointsFile.xml" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

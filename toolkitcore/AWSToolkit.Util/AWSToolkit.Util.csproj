@@ -75,6 +75,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HostedFileContentLoader.cs" />
     <Compile Include="IAMUtilities.cs" />
     <Compile Include="ToolkitSettingsConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

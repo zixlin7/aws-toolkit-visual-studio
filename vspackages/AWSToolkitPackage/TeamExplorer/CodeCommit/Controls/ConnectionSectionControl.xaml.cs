@@ -75,7 +75,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
         private void OnClickUpdateCredentials(object sender, RoutedEventArgs routedEventArgs)
         {
             var regionName = TeamExplorerConnection.CodeCommitPlugin.GetRepositoryRegion(ViewModel.SelectedRepository.LocalFolder);
-            var region = RegionEndPointsManager.Instance.GetRegion(regionName);
+            var region = RegionEndPointsManager.GetInstance().GetRegion(regionName);
             TeamExplorerConnection.CodeCommitPlugin.ObtainGitCredentials(ViewModel.Account, region, true);
         }
     }

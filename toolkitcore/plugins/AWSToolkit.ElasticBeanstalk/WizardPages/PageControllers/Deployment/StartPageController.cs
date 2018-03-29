@@ -149,7 +149,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                     lastRegionDeployedTo = HostingWizard[DeploymentWizardProperties.SeedData.propkey_LastRegionDeployedTo] as string;
 
                 if (!string.IsNullOrEmpty(lastRegionDeployedTo))
-                    _pageUI.SelectedRegion = RegionEndPointsManager.Instance.GetRegion(lastRegionDeployedTo);
+                    _pageUI.SelectedRegion = RegionEndPointsManager.GetInstance().GetRegion(lastRegionDeployedTo);
 
                 // If we are running in vs2017 or higher, disable the legacy deployment wizard.
                 // If we're running in vs2013 or vs2015, disable the legacy wizard if we've been 
@@ -356,7 +356,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
         void ParseTemplatesFromManifest(XElement templateManifest)
         {
-            foreach (var region in RegionEndPointsManager.Instance.Regions)
+            foreach (var region in RegionEndPointsManager.GetInstance().Regions)
             {
                 RegionEndPointsManager.RegionEndPoints rep = region;
 

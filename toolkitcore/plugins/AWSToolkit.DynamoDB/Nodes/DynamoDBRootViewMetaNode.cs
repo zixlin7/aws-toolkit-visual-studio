@@ -55,7 +55,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
         {
             DynamoDBRootViewModel rootModel = focus as DynamoDBRootViewModel;
             string url = string.Format("http://localhost:{0}", DynamoDBLocalManager.Instance.LastConfiguredPort);
-            RegionEndPointsManager.Instance.LocalRegion.RegisterEndPoint(DynamoDBRootViewMetaNode.DYNAMODB_ENDPOINT_LOOKUP, url);
+            RegionEndPointsManager.GetInstance().LocalRegion.RegisterEndPoint(DynamoDBRootViewMetaNode.DYNAMODB_ENDPOINT_LOOKUP, url);
             rootModel.UpdateDynamoDBLocalState();
         }
 

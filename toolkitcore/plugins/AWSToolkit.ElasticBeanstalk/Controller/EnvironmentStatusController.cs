@@ -58,7 +58,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
                 return new ActionResults().WithSuccess(false);
 
             String region = this._environmentModel.ApplicationViewModel.ElasticBeanstalkRootViewModel.CurrentEndPoint.RegionSystemName;
-            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.Instance.GetRegion(region);
+            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.GetInstance().GetRegion(region);
             
             this._beanstalkClient = this._environmentModel.BeanstalkClient;
 

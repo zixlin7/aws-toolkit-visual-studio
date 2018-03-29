@@ -45,7 +45,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
                 return new ActionResults().WithSuccess(false);
 
             var region = this._rootModel.CurrentEndPoint.RegionSystemName;
-            var endPoints = RegionEndPointsManager.Instance.GetRegion(region);
+            var endPoints = RegionEndPointsManager.GetInstance().GetRegion(region);
 
             if (endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME) != null)
             {

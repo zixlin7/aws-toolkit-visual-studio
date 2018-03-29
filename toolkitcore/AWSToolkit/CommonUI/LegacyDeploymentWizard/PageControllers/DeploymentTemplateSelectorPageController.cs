@@ -164,7 +164,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
                     lastRegionDeployedTo = HostingWizard[DeploymentWizardProperties.SeedData.propkey_LastRegionDeployedTo] as string;
 
                 if (!string.IsNullOrEmpty(lastRegionDeployedTo))
-                    _pageUI.SelectedRegion = RegionEndPointsManager.Instance.GetRegion(lastRegionDeployedTo);
+                    _pageUI.SelectedRegion = RegionEndPointsManager.GetInstance().GetRegion(lastRegionDeployedTo);
             }
         }
 
@@ -553,7 +553,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
                 {
                     accounts,
                     // may arrive on page in different region, so force us-east for this
-                    RegionEndPointsManager.Instance.GetRegion("us-east-1")
+                    RegionEndPointsManager.GetInstance().GetRegion("us-east-1")
                 });
 
                 return;
@@ -569,7 +569,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
                 {
                     accounts,
                     // may arrive on page in different region, so force us-east for this
-                    RegionEndPointsManager.Instance.GetRegion("us-east-1")
+                    RegionEndPointsManager.GetInstance().GetRegion("us-east-1")
                 });
                 return;
             }

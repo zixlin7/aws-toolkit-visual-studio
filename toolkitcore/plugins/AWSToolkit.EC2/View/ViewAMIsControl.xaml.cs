@@ -134,7 +134,7 @@ namespace Amazon.AWSToolkit.EC2.View
                 deregisterImage.Icon = IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.deregisterami.png");
 
                 MenuItem copyAmi = new MenuItem() { Header = "Copy to Region" };                
-                foreach (var item in RegionEndPointsManager.Instance.Regions)
+                foreach (var item in RegionEndPointsManager.GetInstance().Regions)
                 {                    
                     if (_controller.RegionSystemName.Equals(item.SystemName) || item.HasRestrictions)
                     {

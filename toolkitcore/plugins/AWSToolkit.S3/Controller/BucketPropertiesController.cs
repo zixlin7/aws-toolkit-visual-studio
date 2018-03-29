@@ -378,7 +378,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             else
                 this._model.RegionSystemName = locationResponse.Location;
 
-            var region = RegionEndPointsManager.Instance.GetRegion(this._model.RegionSystemName);
+            var region = RegionEndPointsManager.GetInstance().GetRegion(this._model.RegionSystemName);
             if (region != null)
             {
                 this._model.RegionDisplayName = region.DisplayName;

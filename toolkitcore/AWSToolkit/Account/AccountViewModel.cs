@@ -280,9 +280,9 @@ namespace Amazon.AWSToolkit.Account
 
         public override void Refresh(bool async)
         {
-            if (RegionEndPointsManager.Instance.FailedToLoad)
+            if (RegionEndPointsManager.GetInstance().FailedToLoad)
             {
-                RegionEndPointsManager.Instance.Refresh();
+                RegionEndPointsManager.GetInstance().Refresh();
             }
 
             foreach (IViewModel child in this.Children)

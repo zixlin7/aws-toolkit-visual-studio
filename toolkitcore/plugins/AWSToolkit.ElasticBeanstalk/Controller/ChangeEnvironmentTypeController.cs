@@ -50,7 +50,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             }
             else
             {
-                var region = RegionEndPointsManager.Instance.GetRegion(environmentModel.ApplicationViewModel.RegionSystemName);
+                var region = RegionEndPointsManager.GetInstance().GetRegion(environmentModel.ApplicationViewModel.RegionSystemName);
                 vpcPropertyData = QueryVPCPropertiesWorker.QueryVPCProperties(environmentModel.AccountViewModel,
                                                                               region,
                                                                               VPCId,

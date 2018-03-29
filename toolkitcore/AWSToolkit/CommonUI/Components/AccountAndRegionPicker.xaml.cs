@@ -81,7 +81,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
         private void UpdateRegions(RegionEndPointsManager.RegionEndPoints selectedRegion)
         {
             var regions = new List<RegionEndPointsManager.RegionEndPoints>();
-            foreach (RegionEndPointsManager.RegionEndPoints rep in RegionEndPointsManager.Instance.Regions)
+            foreach (RegionEndPointsManager.RegionEndPoints rep in RegionEndPointsManager.GetInstance().Regions)
             {
                 if (this.SelectedAccount == null)
                     continue;
@@ -134,7 +134,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
                 }
                 else
                 {
-                    region = RegionEndPointsManager.Instance.GetDefaultRegionEndPoints();
+                    region = RegionEndPointsManager.GetInstance().GetDefaultRegionEndPoints();
                 }
 
                 this._regionSelector.SelectedItem = region;

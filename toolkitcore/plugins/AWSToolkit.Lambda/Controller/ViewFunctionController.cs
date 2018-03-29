@@ -200,7 +200,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         void ConstructClients()
         {
-            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.Instance.GetRegion(this._region);
+            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.GetInstance().GetRegion(this._region);
             var endpointURL = endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_LOGS_NAME).Url;
             if (endpointURL != null)
             {

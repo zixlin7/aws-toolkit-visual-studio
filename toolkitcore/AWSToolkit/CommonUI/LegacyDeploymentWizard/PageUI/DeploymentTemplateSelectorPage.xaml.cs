@@ -297,7 +297,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
                 this._accountSelector.SelectedItem = account;
 
             List<RegionEndPointsManager.RegionEndPoints> regions = new List<RegionEndPointsManager.RegionEndPoints>();
-            foreach (RegionEndPointsManager.RegionEndPoints rep in RegionEndPointsManager.Instance.Regions)
+            foreach (RegionEndPointsManager.RegionEndPoints rep in RegionEndPointsManager.GetInstance().Regions)
             {
                 if (rep.GetEndpoint(DeploymentServiceIdentifiers.CloudFormationServiceName) != null
                         || rep.GetEndpoint(DeploymentServiceIdentifiers.BeanstalkServiceName) != null)
@@ -307,7 +307,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
             this._regionSelector.ItemsSource = regions;
             if (this._regionSelector.Items.Count != 0)
             {
-                var region = RegionEndPointsManager.Instance.GetDefaultRegionEndPoints();
+                var region = RegionEndPointsManager.GetInstance().GetDefaultRegionEndPoints();
                 this._regionSelector.SelectedItem = region;
             }
         }

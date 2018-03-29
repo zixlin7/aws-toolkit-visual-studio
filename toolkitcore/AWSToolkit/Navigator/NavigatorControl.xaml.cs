@@ -192,9 +192,9 @@ namespace Amazon.AWSToolkit.Navigator
             if (this.SelectedAccount == null)
                 return;
 
-            if (RegionEndPointsManager.Instance.FailedToLoad)
+            if (RegionEndPointsManager.GetInstance().FailedToLoad)
             {
-                if (RegionEndPointsManager.Instance.ErrorLoading != null)
+                if (RegionEndPointsManager.GetInstance().ErrorLoading != null)
                 {
                     this._ctlErrorMessage.Text = "Failed to connect to AWS";
                     this._ctlErrorMessage.Height = double.NaN;
@@ -211,7 +211,7 @@ namespace Amazon.AWSToolkit.Navigator
             if (this.SelectedAccount.HasRestrictions)
             {
                 List<RegionEndPointsManager.RegionEndPoints> regions = new List<RegionEndPointsManager.RegionEndPoints>();
-                foreach (var region in RegionEndPointsManager.Instance.Regions)
+                foreach (var region in RegionEndPointsManager.GetInstance().Regions)
                 {
                     if (region.ContainAnyRestrictions(this.SelectedAccount.Restrictions))
                     {
@@ -224,7 +224,7 @@ namespace Amazon.AWSToolkit.Navigator
             else
             {
                 List<RegionEndPointsManager.RegionEndPoints> regions = new List<RegionEndPointsManager.RegionEndPoints>();
-                foreach (var region in RegionEndPointsManager.Instance.Regions)
+                foreach (var region in RegionEndPointsManager.GetInstance().Regions)
                 {
                     if (!region.HasRestrictions)
                         regions.Add(region);
@@ -237,7 +237,7 @@ namespace Amazon.AWSToolkit.Navigator
                 return;
 
             bool foundInList = false;
-            var defaultRegion = RegionEndPointsManager.Instance.GetDefaultRegionEndPoints();
+            var defaultRegion = RegionEndPointsManager.GetInstance().GetDefaultRegionEndPoints();
             foreach (RegionEndPointsManager.RegionEndPoints r in this._ctlRegions.ItemsSource)
             {
                 if (r == defaultRegion)
@@ -258,7 +258,7 @@ namespace Amazon.AWSToolkit.Navigator
         {
             RefreshAccounts();
 
-            RegionEndPointsManager.Instance.Refresh();
+            RegionEndPointsManager.GetInstance().Refresh();
             setInitialRegionSelection();
             updateActiveRegion();
             _ctlAccounts_PropertyChanged(this, null);
@@ -281,7 +281,7 @@ namespace Amazon.AWSToolkit.Navigator
             }
 
 
-            RegionEndPointsManager.Instance.SetDefaultRegionEndPoints(region);
+            RegionEndPointsManager.GetInstance().SetDefaultRegionEndPoints(region);
 
             foreach (AccountViewModel account in ToolkitFactory.Instance.RootViewModel.RegisteredAccounts)
             {
@@ -332,7 +332,7 @@ namespace Amazon.AWSToolkit.Navigator
 
         public void UpdateRegionSelection(string regionSystemName)
         {
-            var region = RegionEndPointsManager.Instance.GetRegion(regionSystemName);
+            var region = RegionEndPointsManager.GetInstance().GetRegion(regionSystemName);
             UpdateRegionSelection(region);
         }
 

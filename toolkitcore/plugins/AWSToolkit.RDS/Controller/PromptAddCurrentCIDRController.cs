@@ -33,7 +33,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
             this._rdsClient = rdsInstanceViewModel.RDSClient;
 
             string region = rdsInstanceViewModel.InstanceRootViewModel.CurrentEndPoint.RegionSystemName;
-            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.Instance.GetRegion(region);
+            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.GetInstance().GetRegion(region);
 
             var ec2Config = new AmazonEC2Config { ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).Url };
             this._ec2Client = new AmazonEC2Client(rdsInstanceViewModel.AccountViewModel.Credentials, ec2Config);

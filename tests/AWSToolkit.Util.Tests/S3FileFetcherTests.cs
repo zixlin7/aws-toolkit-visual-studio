@@ -12,7 +12,7 @@ namespace AWSToolkit.Util.Tests
         private const string DummyContentFromUserFolderLocation = "Dummy content found in user-configured location";
         private const string DummyContentFromCacheLocation = "Dummy content found in cache location";
         private const string EndpointsFilename = "ServiceEndPoints.xml"; // use real name so we detect accidental cache hits from probing
-        private const string ContentFolder = "S3FileFetcherTesting";
+        private const string ContentFolder = "HostedFileTesting";
 
         /// <summary>
         /// Tests that if a user-configured location is set for hosted files, the endpoints 

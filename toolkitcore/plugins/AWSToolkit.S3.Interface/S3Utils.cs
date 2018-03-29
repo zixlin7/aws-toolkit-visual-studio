@@ -35,7 +35,7 @@ namespace Amazon.AWSToolkit.S3
 
                 }
 
-                var region = RegionEndPointsManager.Instance.GetRegion(overrideRegion);
+                var region = RegionEndPointsManager.GetInstance().GetRegion(overrideRegion);
                 if (region == null || region.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME) == null)
                 {
                     regionSpecificClient = startingClient;

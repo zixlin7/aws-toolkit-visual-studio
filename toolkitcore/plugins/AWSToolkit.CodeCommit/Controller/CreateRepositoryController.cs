@@ -21,7 +21,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Controller
             Model = new CreateRepositoryModel
             {
                 Account = account,
-                SelectedRegion = initialRegion ?? RegionEndPointsManager.Instance.GetRegion("us-east-1"),
+                SelectedRegion = initialRegion ?? RegionEndPointsManager.GetInstance().GetRegion("us-east-1"),
                 BaseFolder = defaultCloneFolderRoot
             };
         }

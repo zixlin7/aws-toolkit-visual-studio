@@ -43,7 +43,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Util
             _viewModel = model;
             
             var region = this._viewModel.CurrentEndPoint.RegionSystemName;
-            var endPoints = RegionEndPointsManager.Instance.GetRegion(region);
+            var endPoints = RegionEndPointsManager.GetInstance().GetRegion(region);
 
             this._cfClient = this._viewModel.CloudFormationClient;
 

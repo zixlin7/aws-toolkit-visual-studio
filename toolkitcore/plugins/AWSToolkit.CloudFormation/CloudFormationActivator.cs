@@ -158,7 +158,7 @@ namespace Amazon.AWSToolkit.CloudFormation
 
             var config = new AmazonCloudFormationConfig();
             config.ServiceURL 
-                = RegionEndPointsManager.Instance.GetRegion(region)
+                = RegionEndPointsManager.GetInstance().GetRegion(region)
                             .GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME).Url;
             IAmazonCloudFormation client = new AmazonCloudFormationClient(account.Credentials, config);
             bool isValid = false;
@@ -191,7 +191,7 @@ namespace Amazon.AWSToolkit.CloudFormation
             var deployments = new List<ExistingServiceDeployment>();
 
             // test for endpoint support, just in case
-            var endpoint = RegionEndPointsManager.Instance.GetRegion(region).GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME);
+            var endpoint = RegionEndPointsManager.GetInstance().GetRegion(region).GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME);
             if (endpoint == null)
                 return deployments;
 

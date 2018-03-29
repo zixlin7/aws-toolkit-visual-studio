@@ -46,7 +46,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         {
             _availableRegions.Clear();
 
-            foreach (RegionEndPointsManager.RegionEndPoints rep in RegionEndPointsManager.Instance.Regions)
+            foreach (RegionEndPointsManager.RegionEndPoints rep in RegionEndPointsManager.GetInstance().Regions)
             {
                 if (this.Account.HasRestrictions || rep.HasRestrictions)
                 {

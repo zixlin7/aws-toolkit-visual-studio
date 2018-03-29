@@ -49,7 +49,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             this._s3Client = s3Client;
             this._bucketName = bucketName;
             this._region = region;
-            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.Instance.GetRegion(region);
+            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.GetInstance().GetRegion(region);
 
             var iamConfig = new AmazonIdentityManagementServiceConfig();
             iamConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).Url;
