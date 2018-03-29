@@ -198,6 +198,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         {
             string metricEventState = null;
             Role selectedRole = null;
+            string stepName = "start";
             try
             {
                 selectedRole = this.IAMPicker.SelectedRole;
@@ -208,8 +209,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 if (!LambdaUtilities.DoesAssumeRolePolicyDocumentContainsInvalidAccounts(assumeRolePolicy))
                     return;
 
-
+                stepName = "hasInvalidAccount";
                 var cleanTrustPolicy = LambdaUtilities.RemoveInvalidAccountsFromAssumeRolePolicyDocument(assumeRolePolicy);
+                stepName = "cleanedPolicy";
 
                 var confirmControl = new ConfirmRoleCleanupControl(selectedRole.RoleName, assumeRolePolicy, cleanTrustPolicy);
                 if (!ToolkitFactory.Instance.ShellProvider.ShowModal(confirmControl, MessageBoxButton.YesNo))
@@ -217,6 +219,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                     metricEventState = "Skipped";
                     return;
                 }
+                stepName = "userConfirmed";
 
                 var account = PageController.HostingWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
                 var region = PageController.HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
@@ -226,23 +229,28 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
                 using (var iamClient = account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(region))
                 {
+                    stepName = "createdClient";
+
                     iamClient.UpdateAssumeRolePolicy(new IdentityManagement.Model.UpdateAssumeRolePolicyRequest
                     {
                         RoleName = selectedRole.RoleName,
                         PolicyDocument = cleanTrustPolicy
                     });
+                    stepName = "calledIam";
 
                     selectedRole.AssumeRolePolicyDocument = WebUtility.UrlEncode(cleanTrustPolicy);
+
                     metricEventState = "Success";
                 }
+                stepName = "completed";
             }
             catch (Exception ex)
             {
                 metricEventState = "Error-";
                 if (ex is AmazonServiceException)
-                    metricEventState += ((AmazonServiceException)ex).StatusCode + "-" + ((AmazonServiceException)ex).ErrorCode;
+                    metricEventState += ((AmazonServiceException)ex).StatusCode + "-" + ((AmazonServiceException)ex).ErrorCode + "-" + stepName;
                 else
-                    metricEventState += ex.GetType().FullName;
+                    metricEventState += ex.GetType().FullName + "-" + stepName;
 
                 if (selectedRole != null)
                 {
