@@ -5,6 +5,7 @@ using System.Windows.Input;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
+using log4net;
 
 namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
 {
@@ -64,8 +65,15 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
 
         private void OnClickBrowseRepositoryMenuItem(object sender, RoutedEventArgs e)
         {
-            var url = TeamExplorerConnection.CodeCommitPlugin.GetConsoleBrowsingUrl(ViewModel.SelectedRepository.LocalFolder);
-            ToolkitFactory.Instance.ShellProvider.OpenInBrowser(url, false);
+            try
+            {
+                var url = TeamExplorerConnection.CodeCommitPlugin.GetConsoleBrowsingUrl(ViewModel.SelectedRepository.LocalFolder);
+                ToolkitFactory.Instance.ShellProvider.OpenInBrowser(url, false);
+            }
+            catch (Exception ex)
+            {
+                LogManager.GetLogger(typeof(ConnectionSectionControl)).Error("Error browsing Git repositories", ex);
+            }
         }
 
         // we've found a repo on disk that does not have service credentials available, likely
@@ -74,9 +82,16 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
         // any subsequent use.
         private void OnClickUpdateCredentials(object sender, RoutedEventArgs routedEventArgs)
         {
-            var regionName = TeamExplorerConnection.CodeCommitPlugin.GetRepositoryRegion(ViewModel.SelectedRepository.LocalFolder);
-            var region = RegionEndPointsManager.GetInstance().GetRegion(regionName);
-            TeamExplorerConnection.CodeCommitPlugin.ObtainGitCredentials(ViewModel.Account, region, true);
+            try
+            {
+                var regionName = TeamExplorerConnection.CodeCommitPlugin.GetRepositoryRegion(ViewModel.SelectedRepository.LocalFolder);
+                var region = RegionEndPointsManager.GetInstance().GetRegion(regionName);
+                TeamExplorerConnection.CodeCommitPlugin.ObtainGitCredentials(ViewModel.Account, region, true);
+            }
+            catch(Exception ex)
+            {
+                LogManager.GetLogger(typeof(ConnectionSectionControl)).Error("Error updating Git credentals", ex);
+            }
         }
     }
 }

@@ -75,34 +75,41 @@ namespace Amazon.AWSToolkit.Navigator
             this._viewModel.PropertyChanged += _viewModel_PropertyChanged;
             this._ctlResourceTree.DataContext = this._viewModel;
 
-            this.PopulateAccounts();
-
-            this._ctlResourceTree.MouseRightButtonDown += new MouseButtonEventHandler(OnContextMenuOpening);
-            this._ctlResourceTree.MouseDoubleClick += new MouseButtonEventHandler(OnDoubleClick);
-
-            var lastAccountId = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.LastAcountSelectedKey);
-            AccountViewModel accountViewModel = null;
-            if (!string.IsNullOrEmpty(lastAccountId))
+            try
             {
-                foreach (var account in this._viewModel.RegisteredAccounts)
+                this.PopulateAccounts();
+
+                this._ctlResourceTree.MouseRightButtonDown += new MouseButtonEventHandler(OnContextMenuOpening);
+                this._ctlResourceTree.MouseDoubleClick += new MouseButtonEventHandler(OnDoubleClick);
+
+                var lastAccountId = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.LastAcountSelectedKey);
+                AccountViewModel accountViewModel = null;
+                if (!string.IsNullOrEmpty(lastAccountId))
                 {
-                    if (account.SettingsUniqueKey == lastAccountId)
+                    foreach (var account in this._viewModel.RegisteredAccounts)
                     {
-                        accountViewModel = account;
-                        break;
+                        if (account.SettingsUniqueKey == lastAccountId)
+                        {
+                            accountViewModel = account;
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (accountViewModel == null && this._viewModel.RegisteredAccounts.Count > 0)
-            {
-                accountViewModel = this._viewModel.RegisteredAccounts[0];
-            }
+                if (accountViewModel == null && this._viewModel.RegisteredAccounts.Count > 0)
+                {
+                    accountViewModel = this._viewModel.RegisteredAccounts[0];
+                }
 
-            this._ctlAccounts.SelectedAccount = accountViewModel;
-            if (accountViewModel == null)
+                this._ctlAccounts.SelectedAccount = accountViewModel;
+                if (accountViewModel == null)
+                {
+                    setToolbarState(false);
+                }
+            }
+            catch(Exception ex)
             {
-                setToolbarState(false);
+                _logger.Error("Error initializing AWS Explorer.", ex);
             }
         }
 
@@ -256,17 +263,31 @@ namespace Amazon.AWSToolkit.Navigator
 
         void onNavigatorRefreshClick(object sender, RoutedEventArgs e)
         {
-            RefreshAccounts();
+            try
+            {
+                RefreshAccounts();
 
-            RegionEndPointsManager.GetInstance().Refresh();
-            setInitialRegionSelection();
-            updateActiveRegion();
-            _ctlAccounts_PropertyChanged(this, null);
+                RegionEndPointsManager.GetInstance().Refresh();
+                setInitialRegionSelection();
+                updateActiveRegion();
+                _ctlAccounts_PropertyChanged(this, null);
+            }
+            catch(Exception ex)
+            {
+                _logger.Error("Error refreshing navigator", ex);
+            }
         }
 
         void onRegionChanged(object sender, SelectionChangedEventArgs e)
         {
-            updateActiveRegion();
+            try
+            {
+                updateActiveRegion();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error handling region change", ex);
+            }
         }
 
         void updateActiveRegion()
@@ -299,26 +320,33 @@ namespace Amazon.AWSToolkit.Navigator
             AccountViewModel viewModel = null;
             this.Dispatcher.Invoke((Action)(() =>
                 {
-                    if (refreshAccounts)
+                    try
                     {
-                        RefreshAccounts();
-                    }
-
-                    foreach (var vm in this._viewModel.RegisteredAccounts)
-                    {
-                        if (new Guid(vm.SettingsUniqueKey).Equals(uniqueKey))
+                        if (refreshAccounts)
                         {
-                            this.Dispatcher.Invoke((Action)(() =>
-                                {
-                                    this._ctlAccounts.SelectedAccount = vm;
-                                }));
-                            viewModel = vm;
-                            break;
+                            RefreshAccounts();
                         }
-                    }
 
-                    setToolbarState(true);
-                    setInitialRegionSelection();
+                        foreach (var vm in this._viewModel.RegisteredAccounts)
+                        {
+                            if (new Guid(vm.SettingsUniqueKey).Equals(uniqueKey))
+                            {
+                                this.Dispatcher.Invoke((Action)(() =>
+                                    {
+                                        this._ctlAccounts.SelectedAccount = vm;
+                                    }));
+                                viewModel = vm;
+                                break;
+                            }
+                        }
+
+                        setToolbarState(true);
+                        setInitialRegionSelection();
+                    }
+                    catch(Exception ex)
+                    {
+                        _logger.Error("Error updating account selection.", ex);
+                    }
                 }));
 
             return viewModel;

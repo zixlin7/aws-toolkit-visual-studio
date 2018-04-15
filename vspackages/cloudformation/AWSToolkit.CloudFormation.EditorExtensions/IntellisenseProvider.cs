@@ -14,7 +14,7 @@ using System.Windows.Media;
 using Amazon.AWSToolkit.CloudFormation.Parser;
 using Amazon.AWSToolkit.CloudFormation.Parser.Schema;
 using Amazon.AWSToolkit.CommonUI;
-
+using log4net;
 
 namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
 {
@@ -58,43 +58,50 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
                 if (_disposed)
                     throw new ObjectDisposedException("CompletionSource");
 
-
-                ITextSnapshot snapshot = _buffer.CurrentSnapshot;
-                var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
-
-                if (triggerPoint == null)
-                    return;
-
-                var line = triggerPoint.GetContainingLine();
-                SnapshotPoint start = triggerPoint;
-
-                while (start > line.Start && !char.IsWhiteSpace((start - 1).GetChar()))
+                try
                 {
-                    start -= 1;
+
+                    ITextSnapshot snapshot = _buffer.CurrentSnapshot;
+                    var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
+
+                    if (triggerPoint == null)
+                        return;
+
+                    var line = triggerPoint.GetContainingLine();
+                    SnapshotPoint start = triggerPoint;
+
+                    while (start > line.Start && !char.IsWhiteSpace((start - 1).GetChar()))
+                    {
+                        start -= 1;
+                    }
+
+                    var parser = new TemplateParser();
+                    var parserResults = parser.Parse(snapshot.GetText(), triggerPoint.Position);
+
+                    List<Completion> completions = new List<Completion>();
+                    foreach (var token in parserResults.IntellisenseTokens.OrderBy(x => x.Type.ToString() + x.DisplayName))
+                    {
+                        ImageSource source = null;
+                        ImageMap.TryGetValue(token.Type, out source);
+                        completions.Add(new TemplateCompletion(token.DisplayName, token.Code, token.Description, source, token.Schema));
+                    }
+
+                    SnapshotPoint startPoint = triggerPoint;
+                    SnapshotPoint endPoint = triggerPoint;
+
+                    if (parserResults.IntellisenseStartingPosition != -1)
+                        startPoint = new SnapshotPoint(snapshot, parserResults.IntellisenseStartingPosition);
+                    if (parserResults.IntellisenseEndingPosition != -1)
+                        endPoint = new SnapshotPoint(snapshot, parserResults.IntellisenseEndingPosition);
+
+                    SnapshotSpan replacementSpan = new SnapshotSpan(startPoint, endPoint);
+                    var applicableTo = snapshot.CreateTrackingSpan(replacementSpan, SpanTrackingMode.EdgeInclusive);
+                    completionSets.Add(new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>()));
                 }
-
-                var parser = new TemplateParser();
-                var parserResults = parser.Parse(snapshot.GetText(), triggerPoint.Position);
-
-                List<Completion> completions = new List<Completion>();
-                foreach (var token in parserResults.IntellisenseTokens.OrderBy(x => x.Type.ToString() + x.DisplayName))
+                catch (Exception ex)
                 {
-                    ImageSource source = null;
-                    ImageMap.TryGetValue(token.Type, out source);
-                    completions.Add(new TemplateCompletion(token.DisplayName, token.Code, token.Description, source, token.Schema));
+                    LogManager.GetLogger(typeof(IntellisenseProvider)).Error("Error in intellisense provider.", ex);
                 }
-
-                SnapshotPoint startPoint = triggerPoint;
-                SnapshotPoint endPoint = triggerPoint;
-
-                if (parserResults.IntellisenseStartingPosition != -1)
-                    startPoint = new SnapshotPoint(snapshot, parserResults.IntellisenseStartingPosition);
-                if (parserResults.IntellisenseEndingPosition != -1)
-                    endPoint = new SnapshotPoint(snapshot, parserResults.IntellisenseEndingPosition);
-
-                SnapshotSpan replacementSpan = new SnapshotSpan(startPoint, endPoint);
-                var applicableTo = snapshot.CreateTrackingSpan(replacementSpan, SpanTrackingMode.EdgeInclusive);
-                completionSets.Add(new CompletionSet("All", "All", applicableTo, completions, Enumerable.Empty<Completion>()));
             }
 
             public void Dispose()

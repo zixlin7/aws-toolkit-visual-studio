@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using log4net;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -47,22 +48,29 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
             // Now that opening character has been committed insert the closing character
             void TextBuffer_PostChanged(object sender, System.EventArgs e)
             {
-                ITextChange changeMade = this._lastTextChange;
-                this._lastTextChange = null;
-
-                if (changeMade != null)
+                try
                 {
-                    // Disable change listener so we don't get stuck in an infinite loop.
-                    _textView.TextBuffer.Changed -= _textChangeHandler;
-                    try
+                    ITextChange changeMade = this._lastTextChange;
+                    this._lastTextChange = null;
+
+                    if (changeMade != null)
                     {
-                        this._textView.TextBuffer.Insert(changeMade.NewSpan.End, this._closingChar);
-                        this._textView.Caret.MoveTo(new SnapshotPoint(this._textView.TextSnapshot, changeMade.NewSpan.End));
+                        // Disable change listener so we don't get stuck in an infinite loop.
+                        _textView.TextBuffer.Changed -= _textChangeHandler;
+                        try
+                        {
+                            this._textView.TextBuffer.Insert(changeMade.NewSpan.End, this._closingChar);
+                            this._textView.Caret.MoveTo(new SnapshotPoint(this._textView.TextSnapshot, changeMade.NewSpan.End));
+                        }
+                        finally
+                        {
+                            _textView.TextBuffer.Changed += _textChangeHandler;
+                        }
                     }
-                    finally
-                    {
-                        _textView.TextBuffer.Changed += _textChangeHandler;
-                    }
+                }
+                catch (Exception ex)
+                {
+                    LogManager.GetLogger(typeof(BracketCloserController)).Error("Error computing closing bracket.", ex);
                 }
             }
 

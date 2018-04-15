@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.Text.Adornments;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
-
+using log4net;
 
 namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
 {
@@ -51,9 +51,16 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
 
         private void Caret_PositionChanged(object source, CaretPositionChangedEventArgs e)
         {
-            // update all adornments when caret position is changed
-            RemoveAllAdornments(e.TextView.TextBuffer);
-            AddAdornments(e);
+            try
+            {
+                // update all adornments when caret position is changed
+                RemoveAllAdornments(e.TextView.TextBuffer);
+                AddAdornments(e);
+            }
+            catch(Exception ex)
+            {
+                LogManager.GetLogger(typeof(BraceMatchingPresenter)).Error("Error computing bracket matches.", ex);
+            }
         }
 
         private void AddAdornments(CaretPositionChangedEventArgs e)
