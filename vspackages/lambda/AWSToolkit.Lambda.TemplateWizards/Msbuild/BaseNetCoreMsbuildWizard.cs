@@ -88,9 +88,10 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
                 try
                 {
                     var originalContent = File.ReadAllText(file);
-                    var replacedContent = originalContent.Replace("BlueprintBaseName", _replacementsDictionary["$safeprojectname$"]);
+                    var replacedContent = originalContent.Replace("BlueprintBaseName.1", _replacementsDictionary["$safeprojectname$"]).
+                                            Replace("BlueprintBaseName._1", _replacementsDictionary["$safeprojectname$"].Replace('-', '_'));
 
-                    if(file.EndsWith("aws-lambda-tools-defaults.json"))
+                    if (file.EndsWith("aws-lambda-tools-defaults.json"))
                     {
                         replacedContent = replacedContent.Replace("DefaultProfile", ToolkitFactory.Instance.Navigator.SelectedAccount?.DisplayName);
                         replacedContent = replacedContent.Replace("DefaultRegion", ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints?.SystemName);
@@ -119,7 +120,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
                 var srcDirInfo = new DirectoryInfo(Path.GetDirectoryName(project.FullName));
 
                 var localZipFile = Path.GetTempFileName() + ".zip";
-                using (var stream = S3FileFetcher.Instance.OpenFileStream(Path.Combine(BlueprintsManifest.BlueprintsManifestPathMsbuildV2, this._blueprint.File), S3FileFetcher.CacheMode.PerInstance))
+                using (var stream = S3FileFetcher.Instance.OpenFileStream(Path.Combine(BlueprintsManifest.BlueprintsManifestPathMsbuildV3, this._blueprint.File), S3FileFetcher.CacheMode.PerInstance))
                 {
                     
                     using (Stream output = File.OpenWrite(localZipFile))
@@ -129,7 +130,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
                 using (var stream = File.OpenRead(localZipFile))
                 using (var zipArchive = new ZipArchive(stream))
                 {
-                    var srcProjectFile = ProcessProject(zipArchive, srcDirInfo, "src/BlueprintBaseName/");
+                    var srcProjectFile = ProcessProject(zipArchive, srcDirInfo, "src/BlueprintBaseName.1/");
 
                     // Visual Studio will not pickup the new project file changes done by pushing in the blueprint.
                     // To get VS to refresh remove and re add the project.
@@ -145,7 +146,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
 
                         targetDirInfo.Create();
 
-                        var testProjectFile = ProcessProject(zipArchive, targetDirInfo, "test/BlueprintBaseName.Tests/");
+                        var testProjectFile = ProcessProject(zipArchive, targetDirInfo, "test/BlueprintBaseName.1.Tests/");
                         if (!string.IsNullOrEmpty(testProjectFile))
                         {
                             this._dte.Solution.AddFromFile(testProjectFile);
@@ -202,7 +203,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
 
                 IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
                 {
-                    new CSharpProjectTypeController("Select Blueprint", this.Description, this.RequiredTags, BlueprintsManifest.BlueprintsManifestPathMsbuildV2)
+                    new CSharpProjectTypeController("Select Blueprint", this.Description, this.RequiredTags, BlueprintsManifest.BlueprintsManifestPathMsbuildV3)
                 };
 
                 wizard.RegisterPageControllers(defaultPages, 0);
