@@ -110,7 +110,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             if (account == null)
                 return securityGroups;
 
-            var endPoints = RegionEndPointsManager.Instance.GetRegion(this._viewModel.RegionSystemName);
+            var endPoints = RegionEndPointsManager.GetInstance().GetRegion(this._viewModel.RegionSystemName);
             var endPoint = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
 
             var config = new AmazonEC2Config() { ServiceURL = endPoint.Url };

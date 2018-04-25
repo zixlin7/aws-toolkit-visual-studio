@@ -40,7 +40,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
                 //{DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy, true},
                 {DeploymentWizardProperties.DeploymentTemplate.propkey_RedeployVersion, true},
                 {DeploymentWizardProperties.SeedData.propkey_SeedAccountGuid, applicationViewModel.AccountViewModel.SettingsUniqueKey},
-                {CommonWizardProperties.AccountSelection.propkey_SelectedRegion, RegionEndPointsManager.Instance.GetRegion(applicationViewModel.ElasticBeanstalkRootViewModel.CurrentEndPoint.RegionSystemName)},
+                {CommonWizardProperties.AccountSelection.propkey_SelectedRegion, RegionEndPointsManager.GetInstance().GetRegion(applicationViewModel.ElasticBeanstalkRootViewModel.CurrentEndPoint.RegionSystemName)},
                 {DeploymentWizardProperties.SeedData.propkey_SeedName, applicationViewModel.Application.ApplicationName},
                 {DeploymentWizardProperties.AppOptions.propkey_TargetRuntime, "4.0"},
                 {BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_VersionLabel, versionLabel}

@@ -1,0 +1,86 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+
+  "Description" : "This will launch a single EC2 instance and deploy your application to it. **WARNING** This template creates one or more Amazon EC2 instances. You will be billed for the AWS resources used if you create a stack from this template.",
+
+  "Parameters" : {
+    "InstanceType" : {
+      "Type" : "String", 
+      "Default" : "t1.micro", 
+      "Description" : "EC2 instance type."
+    },
+    "KeyPair" : {
+      "Type" : "String", 
+      "Description" : "EC2 Key Pair."
+    },
+    "SecurityGroup" : {
+      "Type" : "String",
+      "Description" : "EC2 Security Group"
+    },
+    "BucketName" : {
+      "Type" : "String",
+      "Description" : "[Hidden]S3 Bucket for deployment."
+    },
+    "ConfigFile" : {
+      "Type" : "String",
+      "Description" : "[Hidden]Deployment Configuration File."
+    },
+    "AmazonMachineImage" : {
+      "Type" : "String",
+      "Default" : "ami-32d6f477",
+      "Description" : "AMI to launch."
+    },
+    "UserData" : {
+      "Type" : "String",
+      "Description" : "[Hidden]Base64-Encoded user data."
+    }
+  },
+
+  "Resources" : {
+  
+	"DeployedApplicationWaitHandle" : {
+		"Type" : "AWS::CloudFormation::WaitConditionHandle",		
+		"Properties" : {
+		}
+	},
+	
+	"DeployedApplicationWaitCondition" : {
+		"Type" : "AWS::CloudFormation::WaitCondition",
+		"DependsOn" : "Ec2Instance",
+		"Properties" : {
+			"Handle" : { "Ref" : "DeployedApplicationWaitHandle" },
+			"Timeout" : "900"
+		}
+	},
+  
+    "Ec2Instance" : {
+		"Type" : "AWS::EC2::Instance",		
+		"Properties" : {
+			"ImageId" : { "Ref" : "AmazonMachineImage" },
+			"KeyName" : { "Ref" : "KeyPair" },
+			"InstanceType" : { "Ref" : "InstanceType" },
+			"SecurityGroups" : [{ "Ref" : "SecurityGroup" }],
+			"UserData" : { "Fn::Base64" : {"Fn::Join" : [ "", ["[", { "Ref" : "UserData" }, "]", "[", { "Ref" : "DeployedApplicationWaitHandle" }, "]"] ]}}
+      }
+    }
+  },
+
+  "Outputs" : {
+    "URL" : {
+	  "Description": "URL of the deployed application",
+      "Value" : { "Fn::Join" : [ "", [ "http://", { "Fn::GetAtt" : [ "Ec2Instance", "PublicDnsName" ] }]]}
+    },
+    "Bucket" : {
+	  "Description" : "The S3 Bucket where the Web Deploy archive and configuration file are uploaded",
+      "Value" : { "Ref" : "BucketName" }
+    },
+    "ConfigFile" : {
+	  "Description" : "The deployment configuration for the application",
+      "Value" : { "Ref" : "ConfigFile" }
+    },
+    "VSToolkitDeployed" : {
+	  "Description" : "A flag indicating that the stack was created via VSToolkit Deploy wizard",
+      "Value" : "True"
+    }
+  }
+}

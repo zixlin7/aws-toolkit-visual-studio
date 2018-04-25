@@ -1,0 +1,58 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>AWS Toolkit for Visual Studio Release Notes</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <style media="screen" type="text/css">
+        body {
+            font-family: 'Segoe UI', verdana, Arial, Helvetica, sans-serif;
+        }
+
+        #title {
+            font-size:1.2em;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .release {
+            color: darkcyan;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div id="title">AWS Toolkit for Visual Studio Release Notes</div>
+    <div id="versions" />
+
+    <script type="text/javascript">
+        jQuery(function ($) {
+            var baseurl = window.location.href.lastIndexOf('/');
+            var versionxmlurl = window.location.href.substr(0, baseurl) + '/VersionInfo.xml'            
+            $.get(versionxmlurl)
+                .done(function(data){
+                    var versionsSection = $('#versions');
+                    $(data)
+                        .find('version')
+                        .each(function(index, element){
+                            var field = $(element)
+                            var version = field.attr('number')
+                            var released = field.attr('release-date')
+
+                            var changeList = ""
+                            var changes = field.find('change')
+                            for (var i = 0; i < changes.length; i++) {
+                                var description = $(changes[i]).text()
+                                changeList += "<li>"+description+"</li>"
+                            }
+                            
+                            $(versionsSection).append("<div id='#"+version+"'><div class='release'>Version "+version+", released "+released+"</div><ul>"+changeList+"</ul></div>")
+                    });
+                })
+                .fail(function(){
+                    $('#versions').append("<div>Failed to obtain version data for release notes.</div>");
+                });
+        });
+    </script>
+</body>
+</html>

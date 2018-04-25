@@ -31,7 +31,7 @@ namespace Amazon.AWSToolkit.DynamoDB
             var accountMetaNode = ToolkitFactory.Instance.RootViewMetaNode.FindChild<AccountViewMetaNode>();
             accountMetaNode.Children.Add(rootMetaNode);
 
-            RegionEndPointsManager.Instance.LocalRegion.RegisterEndPoint(DynamoDBRootViewMetaNode.DYNAMODB_ENDPOINT_LOOKUP, "http://localhost:8000");
+            RegionEndPointsManager.GetInstance().LocalRegion.RegisterEndPoint(DynamoDBRootViewMetaNode.DYNAMODB_ENDPOINT_LOOKUP, "http://localhost:8000");
         }
 
         void setupContextMenuHooks(DynamoDBRootViewMetaNode rootNode)

@@ -179,6 +179,9 @@
             <TabItem Header="Resources" Name="_ctlResourcesTab">
                 <components:EnvironmentResources x:Name="_ctlResourcesComponent"/>
             </TabItem>
+            <TabItem Header="AWS X-Ray" Name="_ctlXRayTab">
+                <components:XRaySetting x:Name="_ctlXRayComponent"/>
+            </TabItem>
             <TabItem Header="Server" Name="_ctlServerTab">
                 <components:ServerSettings x:Name="_ctlServerComponent"/>
             </TabItem>

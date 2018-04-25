@@ -27,6 +27,9 @@ using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.SimpleWorkers;
 using Amazon.KeyManagementService.Model;
 using Amazon.KeyManagementService;
+using Amazon.SimpleNotificationService;
+using Amazon.SQS;
+using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.Lambda.Controller
 {
@@ -40,6 +43,8 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         LambdaFunctionViewModel _viewModel;
         IAmazonEC2 _ec2Client;
         IAmazonKeyManagementService _kmsClient;
+        IAmazonSimpleNotificationService _snsClient;
+        IAmazonSQS _sqsClient;
 
         AccountViewModel _account;
         string _region;
@@ -118,6 +123,15 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                 }
             }
 
+            if (e.PropertyName.Equals("DLQTargets", StringComparison.OrdinalIgnoreCase) && !this._model.IsDirty)
+            {
+                var selectedArn = this._control.SelectedDLQTargetArn;
+                if(!string.Equals(selectedArn, this.Model.DLQTargetArn, StringComparison.Ordinal))
+                {
+                    this._model.IsDirty = true;
+                }
+            }
+
             // envvars is a complex control collection, so easiest to just flag as dirty for now
             if (e.PropertyName.Equals("EnvironmentVariables"))
             {
@@ -186,7 +200,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         void ConstructClients()
         {
-            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.Instance.GetRegion(this._region);
+            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.GetInstance().GetRegion(this._region);
             var endpointURL = endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_LOGS_NAME).Url;
             if (endpointURL != null)
             {
@@ -215,6 +229,27 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                     ServiceURL = endpointURL
                 };
                 this._kmsClient = new AmazonKeyManagementServiceClient(this._account.Credentials, kmsConfig);
+            }
+
+
+            endpointURL = endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME).Url;
+            if (endpointURL != null)
+            {
+                var config = new AmazonSimpleNotificationServiceConfig
+                {
+                    ServiceURL = endpointURL
+                };
+                this._snsClient = new AmazonSimpleNotificationServiceClient(this._account.Credentials, config);
+            }
+
+            endpointURL = endPoints.GetEndpoint(RegionEndPointsManager.SQS_SERVICE_NAME).Url;
+            if (endpointURL != null)
+            {
+                var config = new AmazonSQSConfig
+                {
+                    ServiceURL = endpointURL
+                };
+                this._sqsClient = new AmazonSQSClient(this._account.Credentials, config);
             }
         }
 
@@ -252,6 +287,9 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             this._model.VpcConfig = response.VpcConfig;
             this._model.KMSKeyArn = response.KMSKeyArn;
 
+            this._model.IsEnabledActiveTracing = response.TracingConfig?.Mode == TracingMode.Active;
+            this._model.DLQTargetArn = response.DeadLetterConfig?.TargetArn;
+
             this._model.EnvironmentVariables.Clear();
             if (response.Environment != null && response.Environment.Variables != null)
             {
@@ -274,6 +312,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         {
             RefreshVpcSubnets();
             RefreshSecurityGroupsForVpc(this._model.VpcConfig?.VpcId);
+            RefreshDLQTargetArns();
             RefreshKMSKeys();
         }
 
@@ -350,6 +389,26 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                     }));
                 });
             }
+        }
+
+        void RefreshDLQTargetArns()
+        {
+            if (_snsClient != null && this._sqsClient != null)
+            {
+                new QueryDLQTargetsWorker(
+                                    this._snsClient,
+                                    this._sqsClient,
+                                    LOGGER,
+                                    OnDLQTargetsAvailable);
+            }
+        }
+
+        void OnDLQTargetsAvailable(QueryDLQTargetsWorker.QueryResults results)
+        {
+            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            {
+                this._control.SetAvailableDLQTargets(results.TopicArns, results.QueueArns, this.Model.DLQTargetArn);
+            }));
         }
 
 
@@ -524,11 +583,14 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                 Handler = this._model.Handler,
                 MemorySize = this._model.MemorySize,
                 Timeout = this._model.Timeout,
+                TracingConfig = new TracingConfig { Mode = this._model.IsEnabledActiveTracing ? TracingMode.Active : TracingMode.PassThrough },
                 Environment = new Amazon.Lambda.Model.Environment
                 {
                     Variables = new Dictionary<string, string>()
                 }
             };
+
+            request.DeadLetterConfig = new DeadLetterConfig {TargetArn = this._control.SelectedDLQTargetArn ?? string.Empty };
 
             if (this._model.EnvironmentVariables.Any())
             {
@@ -572,6 +634,13 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
             this._model.LastModified = DateTime.Parse(response.LastModified);
             this._model.IsDirty = false;
+
+            if(this._model.IsEnabledActiveTracing)
+            {
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.XRayEnabled, "Lambda");
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+            }
         }
 
         public bool UploadNewFunctionSource()

@@ -38,10 +38,17 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
 
         void BufferChanged(object sender, TextContentChangedEventArgs e)
         {
-            // If this isn't the most up-to-date version of the buffer, then ignore it for now (we'll eventually get another change event). 
-            if (e.After != buffer.CurrentSnapshot || !determineIfReParseNeeded(e.After, e.Changes))
-                return;
-            this.Reparse();
+            try
+            {
+                // If this isn't the most up-to-date version of the buffer, then ignore it for now (we'll eventually get another change event). 
+                if (e.After != buffer.CurrentSnapshot || !determineIfReParseNeeded(e.After, e.Changes))
+                    return;
+                this.Reparse();
+            }
+            catch (Exception ex)
+            {
+                LogManager.GetLogger(typeof(OutliningTagger)).Error("Error with outline tagger.", ex);
+            }
         }
 
         /// <summary>

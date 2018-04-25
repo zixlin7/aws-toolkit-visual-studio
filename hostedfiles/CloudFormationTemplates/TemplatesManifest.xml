@@ -1,0 +1,207 @@
+﻿<!-- Notes
+  1. The frameworks element is retained for legacy toolkit installations.
+-->
+<templates>
+  <region systemname="us-east-1">
+    <template serviceOwner="ElasticBeanstalk">
+      <min-toolkit-version>1.1.2.0</min-toolkit-version>
+      <header>AWS Elastic Beanstalk</header>
+      <description>This will deploy your application to an Elastic Beanstalk environment.</description>
+      <templatefile></templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+    <template>
+      <min-toolkit-version>0.5.0.0</min-toolkit-version>
+      <header>Load Balanced Template</header>
+      <description>This will create a Load Balancer and Auto Scaling Group and deploy your application to it.</description>
+      <templatefile>CloudFormationTemplates/LoadBalanced.template</templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+    <template>
+      <min-toolkit-version>0.5.0.0</min-toolkit-version>
+      <header>Single Instance Template</header>
+      <description>This will launch a single EC2 instance and deploy your application to it.</description>
+      <templatefile>CloudFormationTemplates/SingleInstance.template</templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+  </region>
+  <region systemname="us-east-2">
+    <template serviceOwner="ElasticBeanstalk">
+      <min-toolkit-version>1.1.2.0</min-toolkit-version>
+      <header>AWS Elastic Beanstalk</header>
+      <description>This will deploy your application to an Elastic Beanstalk environment.</description>
+      <templatefile></templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+  </region>
+  <region systemname="us-west-1">
+    <template serviceOwner="ElasticBeanstalk">
+      <min-toolkit-version>1.1.2.0</min-toolkit-version>
+      <header>AWS Elastic Beanstalk</header>
+      <description>This will deploy your application to an Elastic Beanstalk environment.</description>
+      <templatefile></templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+    <template>
+      <min-toolkit-version>0.5.0.0</min-toolkit-version>
+      <header>Load Balanced Template</header>
+      <description>This will create a Load Balancer and Auto Scaling Group and deploy your application to it.</description>
+      <templatefile>CloudFormationTemplates/LoadBalanced-us-west-1.template</templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+    <template>
+      <min-toolkit-version>0.5.0.0</min-toolkit-version>
+      <header>Single Instance Template</header>
+      <description>This will launch a single EC2 instance and deploy your application to it.</description>
+      <templatefile>CloudFormationTemplates/SingleInstance-us-west-1.template</templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+  </region>
+  <region systemname="us-west-2">
+    <template serviceOwner="ElasticBeanstalk">
+      <min-toolkit-version>1.1.2.0</min-toolkit-version>
+      <header>AWS Elastic Beanstalk</header>
+      <description>This will deploy your application to an Elastic Beanstalk environment.</description>
+      <templatefile></templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+    <template>
+      <min-toolkit-version>0.5.0.0</min-toolkit-version>
+      <header>Load Balanced Template</header>
+      <description>This will create a Load Balancer and Auto Scaling Group and deploy your application to it.</description>
+      <templatefile>CloudFormationTemplates/LoadBalanced-us-west-2.template</templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+    <template>
+      <min-toolkit-version>0.5.0.0</min-toolkit-version>
+      <header>Single Instance Template</header>
+      <description>This will launch a single EC2 instance and deploy your application to it.</description>
+      <templatefile>CloudFormationTemplates/SingleInstance-us-west-2.template</templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+  </region>
+  <region systemname="eu-west-1">
+    <template serviceOwner="ElasticBeanstalk">
+      <min-toolkit-version>1.1.2.0</min-toolkit-version>
+      <header>AWS Elastic Beanstalk</header>
+      <description>This will deploy your application to an Elastic Beanstalk environment.</description>
+      <templatefile></templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+    <template>
+      <min-toolkit-version>0.5.0.0</min-toolkit-version>
+      <header>Load Balanced Template</header>
+      <description>This will create a Load Balancer and Auto Scaling Group and deploy your application to it.</description>
+      <templatefile>CloudFormationTemplates/LoadBalanced-eu-west-1.template</templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+    <template>
+      <min-toolkit-version>0.5.0.0</min-toolkit-version>
+      <header>Single Instance Template</header>
+      <description>This will launch a single EC2 instance and deploy your application to it.</description>
+      <templatefile>CloudFormationTemplates/SingleInstance-eu-west-1.template</templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+  </region>
+  <region systemname="ap-southeast-1">
+    <template serviceOwner="ElasticBeanstalk">
+      <min-toolkit-version>1.1.2.0</min-toolkit-version>
+      <header>AWS Elastic Beanstalk</header>
+      <description>This will deploy your application to an Elastic Beanstalk environment.</description>
+      <templatefile></templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+    <template>
+      <min-toolkit-version>0.5.0.0</min-toolkit-version>
+      <header>Load Balanced Template</header>
+      <description>This will create a Load Balancer and Auto Scaling Group and deploy your application to it.</description>
+      <templatefile>CloudFormationTemplates/LoadBalanced-ap-southeast-1.template</templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+    <template>
+      <min-toolkit-version>0.5.0.0</min-toolkit-version>
+      <header>Single Instance Template</header>
+      <description>This will launch a single EC2 instance and deploy your application to it.</description>
+      <templatefile>CloudFormationTemplates/SingleInstance-ap-southeast-1.template</templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+  </region>
+  <region systemname="ap-northeast-1">
+    <template serviceOwner="ElasticBeanstalk">
+      <min-toolkit-version>1.1.2.0</min-toolkit-version>
+      <header>AWS Elastic Beanstalk</header>
+      <description>This will deploy your application to an Elastic Beanstalk environment.</description>
+      <templatefile></templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+    <template>
+      <min-toolkit-version>0.5.0.0</min-toolkit-version>
+      <header>Load Balanced Template</header>
+      <description>This will create a Load Balancer and Auto Scaling Group and deploy your application to it.</description>
+      <templatefile>CloudFormationTemplates/LoadBalanced-ap-northeast-1.template</templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+    <template>
+      <min-toolkit-version>0.5.0.0</min-toolkit-version>
+      <header>Single Instance Template</header>
+      <description>This will launch a single EC2 instance and deploy your application to it.</description>
+      <templatefile>CloudFormationTemplates/SingleInstance-ap-northeast-1.template</templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+  </region>
+  <region systemname="ap-southeast-2">
+    <template serviceOwner="ElasticBeanstalk">
+      <min-toolkit-version>1.1.2.0</min-toolkit-version>
+      <header>AWS Elastic Beanstalk</header>
+      <description>This will deploy your application to an Elastic Beanstalk environment.</description>
+      <templatefile></templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+    <template>
+      <min-toolkit-version>0.5.0.0</min-toolkit-version>
+      <header>Load Balanced Template</header>
+      <description>This will create a Load Balancer and Auto Scaling Group and deploy your application to it.</description>
+      <templatefile>CloudFormationTemplates/LoadBalanced-ap-southeast-2.template</templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+    <template>
+      <min-toolkit-version>0.5.0.0</min-toolkit-version>
+      <header>Single Instance Template</header>
+      <description>This will launch a single EC2 instance and deploy your application to it.</description>
+      <templatefile>CloudFormationTemplates/SingleInstance-ap-southeast-2.template</templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+  </region>
+  <region systemname="sa-east-1">
+    <template serviceOwner="ElasticBeanstalk">
+      <min-toolkit-version>1.1.2.0</min-toolkit-version>
+      <header>AWS Elastic Beanstalk</header>
+      <description>This will deploy your application to an Elastic Beanstalk environment.</description>
+      <templatefile></templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+    <template>
+      <min-toolkit-version>0.5.0.0</min-toolkit-version>
+      <header>Load Balanced Template</header>
+      <description>This will create a Load Balancer and Auto Scaling Group and deploy your application to it.</description>
+      <templatefile>CloudFormationTemplates/LoadBalanced-sa-east-1.template</templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+    <template>
+      <min-toolkit-version>0.5.0.0</min-toolkit-version>
+      <header>Single Instance Template</header>
+      <description>This will launch a single EC2 instance and deploy your application to it.</description>
+      <templatefile>CloudFormationTemplates/SingleInstance-sa-east-1.template</templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+  </region>
+  <region systemname="eu-central-1">
+    <template serviceOwner="ElasticBeanstalk">
+      <min-toolkit-version>1.6.9.0</min-toolkit-version>
+      <header>AWS Elastic Beanstalk</header>
+      <description>This will deploy your application to an Elastic Beanstalk environment.</description>
+      <templatefile></templatefile>
+      <frameworks supportedVersions="2.0|3.0|3.5|4.0|4.5"/>
+    </template>
+  </region>
+</templates>

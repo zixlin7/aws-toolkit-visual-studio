@@ -30,7 +30,7 @@
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,5,5,20" Grid.ColumnSpan="2" TextWrapping="Wrap" Style="{DynamicResource SectionDescription}">These settings allow you to control your environment's servers and enable login.</TextBlock>
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,5,5,20" Grid.ColumnSpan="2" TextWrapping="Wrap" Style="{DynamicResource awsTextBlockBaseStyle}">These settings allow you to control your environment's servers and enable login.</TextBlock>
 
                 <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,5,5,5" Style="{DynamicResource awsTextBlockBaseStyle}">*EC2 Instance Type</TextBlock>
                 <components:ConfigurationOptionControl

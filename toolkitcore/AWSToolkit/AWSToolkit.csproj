@@ -86,6 +86,10 @@
       <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.SimpleNotificationService.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="AWSSDK.SQS">
+      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.SQS.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(BuildRoot)\thirdparty\log4net.dll</HintPath>
@@ -350,6 +354,7 @@
     <Compile Include="SimpleWorkers\QueryAMIInstancesWorker.cs" />
     <Compile Include="SimpleWorkers\QueryAvailabilityZonesWorker.cs" />
     <Compile Include="SimpleWorkers\QueryCloudFormationSamplesWorker.cs" />
+    <Compile Include="SimpleWorkers\QueryDLQTargetsWorker.cs" />
     <Compile Include="SimpleWorkers\QueryKMSKeysWorker.cs" />
     <Compile Include="SimpleWorkers\QueryLambdaFunctionsWorker.cs" />
     <Compile Include="SimpleWorkers\QueryKeyPairNamesWorker.cs" />

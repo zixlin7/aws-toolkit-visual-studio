@@ -1,0 +1,200 @@
+{
+	"FormatVersion" : "1",
+	"WindowsImages" : 
+	[
+		{ 
+			"key" : "WINDOWS_2016_BASE", 
+			"prefix" : "Windows_Server-2016-English-Full-Base*" 
+		},
+		{ 
+			"key" : "WINDOWS_2016_NANO", 
+			"prefix" : "Windows_Server-2016-English-Nano-Base*" 
+		},
+		{ 
+			"key" : "WINDOWS_2016_CORE", 
+			"prefix" : "Windows_Server-2016-English-Core-Base*" 
+		},
+		{ 
+			"key" : "WINDOWS_2016_CONTAINER", 
+			"prefix" : "Windows_Server-2016-English-Full-Containers*" 
+		},
+		{ 
+			"key" : "WINDOWS_2016_SQL_SERVER_ENTERPRISE_2016", 
+			"prefix" : "Windows_Server-2016-English-Full-SQL_2016_Enterprise*" 
+		},
+		{ 
+			"key" : "WINDOWS_2016_SQL_SERVER_STANDARD_2016", 
+			"prefix" : "Windows_Server-2016-English-Full-SQL_2016_Standard*" 
+		},
+		{ 
+			"key" : "WINDOWS_2016_SQL_SERVER_WEB_2016", 
+			"prefix" : "Windows_Server-2016-English-Full-SQL_2016_Web*" 
+		},
+		{ 
+			"key" : "WINDOWS_2016_SQL_SERVER_EXPRESS_2016", 
+			"prefix" : "Windows_Server-2016-English-Full-SQL_2016_Express*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012R2_BASE", 
+			"prefix" : "Windows_Server-2012-R2_RTM-English-64Bit-Base*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012R2_CORE", 
+			"prefix" : "Windows_Server-2012-R2_RTM-English-64Bit-Core*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012R2_SQL_SERVER_EXPRESS_2016", 
+			"prefix" : "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_Express*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012R2_SQL_SERVER_STANDARD_2016", 
+			"prefix" : "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_Standard*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012R2_SQL_SERVER_WEB_2016", 
+			"prefix" : "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_Web*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012R2_SQL_SERVER_EXPRESS_2014", 
+			"prefix" : "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP1_Express*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012R2_SQL_SERVER_STANDARD_2014", 
+			"prefix" : "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP1_Standard*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012R2_SQL_SERVER_WEB_2014", 
+			"prefix" : "Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP1_Web*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012_BASE", 
+			"prefix" : "Windows_Server-2012-RTM-English-64Bit-Base*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012_SQL_SERVER_EXPRESS_2014", 
+			"prefix" : "Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP1_Express*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012_SQL_SERVER_STANDARD_2014", 
+			"prefix" : "Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP1_Standard*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012_SQL_SERVER_WEB_2014", 
+			"prefix" : "Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP1_Web*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012_SQL_SERVER_EXPRESS_2012", 
+			"prefix" : "Windows_Server-2012-RTM-English-64Bit-SQL_2012_SP2_Express*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012_SQL_SERVER_STANDARD_2012", 
+			"prefix" : "Windows_Server-2012-RTM-English-64Bit-SQL_2012_SP2_Standard*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012_SQL_SERVER_WEB_2012", 
+			"prefix" : "Windows_Server-2012-RTM-English-64Bit-SQL_2012_SP2_Web*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012_SQL_SERVER_EXPRESS_2008", 
+			"prefix" : "Windows_Server-2012-RTM-English-64Bit-SQL_2008_R2_SP3_Express*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012_SQL_SERVER_STANDARD_2008", 
+			"prefix" : "Windows_Server-2012-RTM-English-64Bit-SQL_2008_R2_SP3_Standard*" 
+		},
+		{ 
+			"key" : "WINDOWS_2012_SQL_SERVER_WEB_2008", 
+			"prefix" : "Windows_Server-2012-RTM-English-64Bit-SQL_2008_R2_SP3_Web*" 
+		},
+		{ 
+			"key" : "WINDOWS_2008_BASE", 
+			"prefix" : "Windows_Server-2008-R2_SP1-English-64Bit-Base*", 
+			"comment": "Legacy key kept for backwards compatibility with user-code; must return R2-based image"
+		},
+		{ 
+			"key" : "WINDOWS_2008_SQL_SERVER_EXPRESS_2012", 
+			"prefix" : "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP2_Express*", 
+			"comment": "Legacy key kept for backwards compatibility with user-code; must return R2-based image"
+		},
+		{ 
+			"key" : "WINDOWS_2008_SQL_SERVER_STANDARD_2012", 
+			"prefix" : "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP2_Standard*", 
+			"comment": "Legacy key kept for backwards compatibility with user-code; must return R2-based image"
+		},
+		{ 
+			"key" : "WINDOWS_2008_SQL_SERVER_WEB_2012", 
+			"prefix" : "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP2_Web*", 
+			"comment": "Legacy key kept for backwards compatibility with user-code; must return R2-based image"
+		},
+		{ 
+			"key" : "WINDOWS_2008_SQL_SERVER_EXPRESS_2008", 
+			"prefix" : "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2008_R2_SP1_Express*", 
+			"comment": "Legacy key kept for backwards compatibility with user-code; must return R2-based image"
+		},
+		{ 
+			"key" : "WINDOWS_2008_SQL_SERVER_STANDARD_2008", 
+			"prefix" : "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2008_R2_SP2_Standard*", 
+			"comment": "Legacy key kept for backwards compatibility with user-code; must return R2-based image"
+		},
+		{ 
+			"key" : "WINDOWS_2008_SQL_SERVER_WEB_2008", 
+			"prefix" : "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2008_R2_SP2_Web*", 
+			"comment": "Legacy key kept for backwards compatibility with user-code; must return R2-based image"
+		},
+		{ 
+			"key" : "WINDOWS_2008R2_BASE", 
+			"prefix" : "Windows_Server-2008-R2_SP1-English-64Bit-Base*" 
+		},
+		{ 
+			"key" : "WINDOWS_2008R2_SQL_SERVER_EXPRESS_2012", 
+			"prefix" : "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP2_Express*" 
+		},
+		{ 
+			"key" : "WINDOWS_2008R2_SQL_SERVER_STANDARD_2012", 
+			"prefix" : "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP2_Standard*" 
+		},
+		{ 
+			"key" : "WINDOWS_2008R2_SQL_SERVER_WEB_2012", 
+			"prefix" : "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP2_Web*" 
+		},
+		{ 
+			"key" : "WINDOWS_2008R2_SQL_SERVER_EXPRESS_2008", 
+			"prefix" : "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2008_R2_SP3_Express*" 
+		},
+		{ 
+			"key" : "WINDOWS_2008R2_SQL_SERVER_STANDARD_2008", 
+			"prefix" : "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2008_R2_SP3_Standard*" 
+		},
+		{ 
+			"key" : "WINDOWS_2008R2_SQL_SERVER_WEB_2008", 
+			"prefix" : "Windows_Server-2008-R2_SP1-English-64Bit-SQL_2008_R2_SP3_Web*" 
+		},
+		{ 
+			"key" : "WINDOWS_2008RTM_BASE", 
+			"prefix" : "Windows_Server-2008-SP2-English-64Bit-Base*" 
+		},
+		{ 
+			"key" : "WINDOWS_2008RTM_SQL_SERVER_EXPRESS_2008", 
+			"prefix" : "Windows_Server-2008-SP2-English-64Bit-SQL_2008_SP4_Express*" 
+		},
+		{ 
+			"key" : "WINDOWS_2008RTM_SQL_SERVER_STANDARD_2008", 
+			"prefix" : "Windows_Server-2008-SP2-English-64Bit-SQL_2008_SP4_Standard*" 
+		},
+		{ 
+			"key" : "WINDOWS_2008_BEANSTALK_IIS75", 
+			"prefix" : ".NET Beanstalk Cfn Container * on Windows 2008" 
+		},
+		{ 
+			"key" : "WINDOWS_2012_BEANSTALK_IIS8", 
+			"prefix" : ".NET Beanstalk Cfn Container * on Windows 2012" 
+		}
+	],
+	"LinuxImages" : 
+	[
+		{ 
+			"key" : "VPC_NAT", 
+			"prefix" : "ami-vpc-nat-*.x86_64-ebs"
+		}
+	]
+}

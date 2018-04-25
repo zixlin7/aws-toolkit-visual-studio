@@ -1,4 +1,4 @@
-<Project ToolsVersion="12.0" DefaultTargets="full-build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="full-build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <PropertyGroup>
         <InternalBuildTools Condition="'$(InternalBuildTools)'==''">..\..\AWSDotNetBuildTools</InternalBuildTools>
@@ -30,14 +30,29 @@
         <Build2017Package Condition="'$(Build2017Package)' == '' And '$(Configuration)' == 'Debug'">true</Build2017Package>
         <Build2017Package Condition="'$(Build2017Package)' == '' And '$(Configuration)' == 'Release'">false</Build2017Package>
         
+		<PushHostedFiles Condition="'$(PushHostedFiles)'==''">true</PushHostedFiles>
+        <HostedFilesBucket Condition="'$(HostedFilesBucket)'==''">aws-vs-toolkit</HostedFilesBucket>
+        <HostedFilesFolder Condition="'$(HostedFilesFolder)'==''">$(RootPath)\hostedfiles</HostedFilesFolder>
+
+		<!-- cn-north-1 artifact properties -->
+        <BJSHostedFilesBucket Condition="'$(BJSHostedFilesBucket)'==''">aws-vs-toolkit-cn-north-1</BJSHostedFilesBucket>
+        <BJSCredentials Condition="'$(BJSCredentials)'==''">BJS.SDKUpload</BJSCredentials>
+         
+        <VSToolkitDistribution>E38QEBQWXHC945</VSToolkitDistribution>
+         
 		<SignVsixPackages Condition="'$(SignVsixPackages)'==''">false</SignVsixPackages>
         
     </PropertyGroup>
 
-	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;update-version;build-awsdeploy;build-vstoolkit;keyscan;copy-artifacts;sign-packages;save-build">
+	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;get-latest-endpoint-data;restore-nuget;update-version;build-awsdeploy;build-vstoolkit;run-tests;keyscan;copy-artifacts;sign-packages;save-build">
 		<Message Text="Builds all components of the AWS Toolkit for Visual Studio"/>
 	</Target>
 
+    <Target Name="restore-nuget">
+        <Message Text="Restoring nuget packages"/>
+        <Exec Command="$(RootPath)\solutions\.nuget\NuGet.exe restore $(RootPath)\solutions\AWSVisualStudioToolkit.sln" />
+    </Target>
+    
     <Target Name="build-awsdeploy">
 		<Message Text="$(Configuration) - building host components for AWSDeploy."/>
 		
@@ -60,6 +75,22 @@
               />
     </Target>
     
+    <Target Name="run-tests" DependsOnTargets="build-vstoolkit">
+        <Message Text="$(Configuration) - running unit tests."/>
+        
+        <ItemGroup>
+            <TestAssemblies Include="..\tests\AWSToolkit.Util.Tests\bin\$(Configuration)\AWSToolkit.Util.Tests.dll" />
+        </ItemGroup>        
+        
+        <!-- need to find how to reference this after we've done a nuget restore, at project level, 
+             then we can enable unit tests
+        <UsingTask AssemblyFile="path\to\xunit.runner.msbuild.net452.dll"
+                   TaskName="Xunit.Runner.MSBuild.xunit"/>
+                   
+        <xunit Assemblies="@(TestAssemblies)" /> 
+        -->
+    </Target>
+    
 	<Target Name="patch-vsixmanifest" Condition="$(UpdateVersions)">
 		<!-- patch vsixmanifest with release package id if running on Jenkins (likely indicated by update version flag set) -->
         <!-- DISABLE while setting up new project layouts
@@ -71,7 +102,7 @@
         -->
 	</Target>
 
-    <Target Name="copy-artifacts" DependsOnTargets="build-vstoolkit;copy-awsdeploy;copy-icons;copy-awsdeploy;copy-cf-msbuild-targets;copy-templates;build-vs2017-toolkit" />
+    <Target Name="copy-artifacts" DependsOnTargets="build-vstoolkit;copy-awsdeploy;copy-icons;copy-awsdeploy;copy-cf-msbuild-targets;copy-templates;copy-hostedfiles;build-vs2017-toolkit" />
 
     <Target Name="copy-icons" DependsOnTargets="build-vstoolkit">
 		<Message Text="Consolidating icons to deployment folder"/>
@@ -119,7 +150,25 @@
             DestinationFolder="$(ProjectTemplatesDest)\AWS_Web\%(RecursiveDir)" />
             
     </Target>
-    
+
+    <Target Name="copy-hostedfiles" DependsOnTargets="get-latest-endpoint-data">
+		<Message Text="Copying hosted files to deployment folder"/>
+
+        <PropertyGroup>
+            <HostedFilesDest>$(Deployment)\hostedfiles</HostedFilesDest>
+        </PropertyGroup>
+
+		<MakeDir Directories="$(HostedFilesDest)" />
+
+        <ItemGroup>
+            <HostedFiles Include="$(HostedFilesFolder)\**\*" />
+        </ItemGroup>
+        
+		<Copy
+			SourceFiles="@(HostedFiles)"
+			DestinationFolder="$(HostedFilesDest)\%(RecursiveDir)" />
+    </Target>
+
 	<Target Name="copy-awsdeploy" DependsOnTargets="build-vstoolkit">
         <PropertyGroup>
             <AwsDeployDest>$(Deployment)\awsdeploy</AwsDeployDest>
@@ -224,9 +273,9 @@
             <PrivateKeyException Include="thirdparty\PemToPPKConverter\openssh.c" />
             <PrivateKeyException Include="thirdparty\PemToPPKConverter\Release\openssh.obj" />
 			
-		    <PrivateKeyException Include="Include\sdk\Models\acm-2015-12-08.normal.json" />
-            <PrivateKeyException Include="Include\sdk\Models\ec2-2014-02-01.normal.json" />
-            <PrivateKeyException Include="Include\sdk\Models\iam-2010-05-08.normal.json" />
+		    <PrivateKeyException Include="Include\sdk\Models\acm\acm-2015-12-08.normal.json" />
+            <PrivateKeyException Include="Include\sdk\Models\ec2\ec2-2014-02-01.normal.json" />
+            <PrivateKeyException Include="Include\sdk\Models\iam\iam-2010-05-08.normal.json" />
 			
         </ItemGroup>
 
@@ -271,8 +320,92 @@
 			/>
 	</Target>
 
+    <!-- only care about packaging updated endpoints and flags for release builds -->
+    <Target Name="get-latest-endpoint-data" DependsOnTargets="build-tools" Condition="'$(Configuration)' == 'Release' ">
+        
+        <Message Text="Fetching latest endpoints and flags from S3" />
+        
+        <DownloadFromS3Task
+            S3ObjectKey="ServiceEndPoints.xml"
+            LocalPath="$(HostedFilesFolder)"
+            Bucket="$(HostedFilesBucket)"
+            />
+            
+        <DownloadFromS3Task
+            S3Path="flags"
+            LocalPath="$(HostedFilesFolder)"
+            Bucket="$(HostedFilesBucket)"
+            />
+        
+    </Target>
+    
+	<Target Name="compare-hostedfiles-all" DependsOnTargets="compare-hostedfiles;compare-hostedfiles-bjs" />
+
+	<Target Name="compare-hostedfiles" DependsOnTargets="build-tools">
+        
+        <ItemGroup>
+            <!-- <FileException Include="$(HostedFilesFolder)\ServiceEndPoints.xml" /> -->
+            <FileException Include="$(HostedFilesFolder)\flags\**\*.png" />
+        </ItemGroup>
+        
+        <CompareToS3Task
+            Bucket="$(HostedFilesBucket)"
+            S3Path=""
+            LocalPath="$(HostedFilesFolder)"
+            FileExceptions="@(FileException)"
+            KeyExceptions="@(FileException)"
+        />
+	</Target>
+
+	<Target Name="compare-hostedfiles-bjs" DependsOnTargets="build-tools">
+        <CompareToS3Task
+            Bucket="$(BJSHostedFilesBucket)"
+            S3Path=""
+            LocalPath="$(HostedFilesFolder)"
+            CredentialSet="$(BJSCredentials)"
+            RegionValue="cn-north-1"
+            FileExceptions="@(FileException)"
+            KeyExceptions="@(FileException)"
+        />
+	</Target>
+
+    <Target Name="upload-hostedfiles-all" DependsOnTargets="upload-hostedfiles;upload-hostedfiles-bjs" />
+
+    <Target Name="upload-hostedfiles" DependsOnTargets="build-tools" Condition="$(PushHostedFiles)">
+
+        <UploadHostedFilesTask
+				Bucket="$(HostedFilesBucket)"
+				S3Path=""
+				LocalPath="$(HostedFilesFolder)">
+			<Output TaskParameter="KeysToInvalidate" PropertyName="HostedFilesInvalidationKeys" />
+		</UploadHostedFilesTask>
+
+		<CFInvalidateTask
+			Condition="!('$(HostedFilesInvalidationKeys)'=='')"
+			Distribution="$(VSToolkitDistribution)"
+			Keys="$(HostedFilesInvalidationKeys)"
+		/>
+    </Target>
+
+    <Target Name="upload-hostedfiles-bjs" DependsOnTargets="build-tools" Condition="$(PushHostedFiles)">
+
+		<!-- we don't seem to do invalidation on bjs, but gather the keys anyway -->
+        <UploadHostedFilesTask
+				Bucket="$(BJSHostedFilesBucket)"
+				S3Path=""
+				LocalPath="$(HostedFilesFolder)"
+				CredentialSet="$(BJSCredentials)"
+				RegionValue="cn-north-1">
+			<Output TaskParameter="KeysToInvalidate" PropertyName="HostedFilesInvalidationKeysBJS" />
+		</UploadHostedFilesTask>
+    </Target>
+
+	<Target Name="validate-ec2-quicklaunch" DependsOnTargets="build-tools">
+		<EC2QuickLaunchGeneratorTask />
+	</Target>
+
 	<Target Name="get-references"  DependsOnTargets="build-tools"  Condition="$(EnableGetReferences)">
 		<MSBuild Projects ="$(MSBuildProjectFullPath)" Targets="get-reference-sdk" Properties="TargetRepository=$(MSBuildProjectDirectory)\.."/>
 	</Target>
-
+    
 </Project>

@@ -17,8 +17,14 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Threading.Tasks;
 
+using Amazon.IdentityManagement.Model;
 using Amazon.Lambda.Tools;
 using Amazon.AWSToolkit.Lambda.Model;
+using System.Net;
+using Amazon.AWSToolkit.Lambda.View;
+using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.Runtime;
+using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 {
@@ -54,6 +60,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 this._ctlMemory.Items.Add(value);
             }
 
+            IAMPicker.PropertyChanged += AttemptTrustedPolicyCleanup;
             IAMPicker.PropertyChanged += ForwardEmbeddedControlPropertyChanged;
             IAMPicker.RoleFilter = RolePolicyFilter.AssumeRoleServicePrincipalSelector;
 
@@ -70,6 +77,13 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             _ctlSecurityGroups.PropertyChanged += ForwardEmbeddedControlPropertyChanged;
             _ctlVpcSubnets.PropertyChanged += ForwardEmbeddedControlPropertyChanged;
             _ctlKMSKey.PropertyChanged += ForwardEmbeddedControlPropertyChanged;
+            _ctlDLQ.PropertyChanged += ForwardEmbeddedControlPropertyChanged;
+
+            if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.TracingMode))
+            {
+                var defaultValue = _ctlTimeout.Text = hostWizard[UploadFunctionWizardProperties.TracingMode] as string;
+                this._ctlEnableActiveTracing.IsChecked = string.Equals(defaultValue, Amazon.Lambda.TracingMode.Active, StringComparison.OrdinalIgnoreCase);
+            }
         }
 
         public ObservableCollection<EnvironmentVariable> EnvironmentVariables { get; private set; }
@@ -120,6 +134,31 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                                         defaultSelection);
         }
 
+        public void SetAvailableDLQTargets(IList<string> topicArns, IList<string> queueArns)
+        {
+            string defaultSelection = null;
+            if (PageController.HostingWizard.IsPropertySet(UploadFunctionWizardProperties.DeadLetterTargetArn))
+                defaultSelection = PageController.HostingWizard[UploadFunctionWizardProperties.DeadLetterTargetArn] as string;
+
+            _ctlDLQ.SetAvailableDLQTargets(topicArns, queueArns, defaultSelection);
+        }
+
+        public string SelectedDLQTargetArn
+        {
+            get
+            {
+                return this._ctlDLQ.SelectedArn;
+            }
+        }
+
+        public bool IsEnableActiveTracing
+        {
+            get
+            {
+                return this._ctlEnableActiveTracing.IsChecked.GetValueOrDefault();
+            }
+        }
+
         public IEnumerable<SubnetWrapper> SelectedSubnets
         {
             get
@@ -144,9 +183,95 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
         }
 
+        public void SetXRayAvailability(bool xrayIsAvailable)
+        {
+            // hide rather than collapse to avoid disturbing layout
+            _ctlXRayOptionsPanel.Visibility = xrayIsAvailable ? Visibility.Visible : Visibility.Hidden;
+        }
+
         private void ForwardEmbeddedControlPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             NotifyPropertyChanged(e.PropertyName);
+        }
+
+        private void AttemptTrustedPolicyCleanup(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            string metricEventState = null;
+            Role selectedRole = null;
+            string stepName = "start";
+            try
+            {
+                selectedRole = this.IAMPicker.SelectedRole;
+                if (selectedRole == null)
+                    return;
+
+                var assumeRolePolicy = WebUtility.UrlDecode(selectedRole.AssumeRolePolicyDocument);
+                if (!LambdaUtilities.DoesAssumeRolePolicyDocumentContainsInvalidAccounts(assumeRolePolicy))
+                    return;
+
+                stepName = "hasInvalidAccount";
+                var cleanTrustPolicy = LambdaUtilities.RemoveInvalidAccountsFromAssumeRolePolicyDocument(assumeRolePolicy);
+                stepName = "cleanedPolicy";
+
+                var confirmControl = new ConfirmRoleCleanupControl(selectedRole.RoleName, assumeRolePolicy, cleanTrustPolicy);
+                if (!ToolkitFactory.Instance.ShellProvider.ShowModal(confirmControl, MessageBoxButton.YesNo))
+                {
+                    metricEventState = "Skipped";
+                    return;
+                }
+                stepName = "userConfirmed";
+
+                var account = PageController.HostingWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
+                var region = PageController.HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+
+                if (account == null || region == null)
+                    return;
+
+                using (var iamClient = account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(region))
+                {
+                    stepName = "createdClient";
+
+                    iamClient.UpdateAssumeRolePolicy(new IdentityManagement.Model.UpdateAssumeRolePolicyRequest
+                    {
+                        RoleName = selectedRole.RoleName,
+                        PolicyDocument = cleanTrustPolicy
+                    });
+                    stepName = "calledIam";
+
+                    selectedRole.AssumeRolePolicyDocument = WebUtility.UrlEncode(cleanTrustPolicy);
+
+                    metricEventState = "Success";
+                }
+                stepName = "completed";
+            }
+            catch (Exception ex)
+            {
+                metricEventState = "Error-";
+                if (ex is AmazonServiceException)
+                    metricEventState += ((AmazonServiceException)ex).StatusCode + "-" + ((AmazonServiceException)ex).ErrorCode + "-" + stepName;
+                else
+                    metricEventState += ex.GetType().FullName + "-" + stepName;
+
+                if (selectedRole != null)
+                {
+                    ToolkitFactory.Instance.ShellProvider.ShowError(
+                        "Error attempting to fix the trust policy for IAM Role " + selectedRole.RoleName + ". To manually fix the trust policy log on to " +
+                        "the AWS Web Console and navigate to the IAM role. In the \"Trust Relationships\" tab remove all " +
+                        "trust entities except for the principal \"lambda.amazonaws.com\".");
+                }
+
+                
+                LOGGER.Error("Error attempting to clean up IAM Role trusted policy", ex);
+            }
+            finally
+            {
+                if (!string.IsNullOrEmpty(metricEventState))
+                {
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.LambdaFunctionIAMRoleCleanup, metricEventState);
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                }
+            }
         }
 
         public void RefreshPageContent()
@@ -256,8 +381,15 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
             using (var iamClient = account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(region))
             {
-                var taskRole = RoleHelper.FindExistingLambdaRolesAsync(iamClient, int.MaxValue);
-                var taskPolicies = RoleHelper.FindLambdaManagedPoliciesAsync(iamClient, RoleHelper.DEFAULT_ITEM_MAX);
+                var promptInfo = new RoleHelper.PromptRoleInfo
+                {
+                    AssumeRolePrincipal = Amazon.Common.DotNetCli.Tools.Constants.LAMBDA_PRINCIPAL,
+                    AWSManagedPolicyNamePrefix = Amazon.Lambda.Tools.LambdaConstants.AWS_LAMBDA_MANAGED_POLICY_PREFIX,
+                    KnownManagedPolicyDescription = Amazon.Lambda.Tools.LambdaConstants.KNOWN_MANAGED_POLICY_DESCRIPTIONS
+                };
+
+                var taskRole = RoleHelper.FindExistingRolesAsync(iamClient, promptInfo.AssumeRolePrincipal, int.MaxValue);
+                var taskPolicies = RoleHelper.FindManagedPoliciesAsync(iamClient, promptInfo, RoleHelper.DEFAULT_ITEM_MAX);
                 IList<Amazon.IdentityManagement.Model.Role> roles = null;
                 IList<Amazon.IdentityManagement.Model.ManagedPolicy> policies = null;
 
@@ -420,6 +552,16 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
 
             NotifyPropertyChanged("EnvironmentVariables");
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            var runtime = PageController.HostingWizard[UploadFunctionWizardProperties.Runtime] as string;
+
+            if (runtime != null && runtime.StartsWith("dotnetcore", StringComparison.OrdinalIgnoreCase))
+                Amazon.AWSToolkit.Utility.LaunchXRayHelp(true);
+            else
+                Amazon.AWSToolkit.Utility.LaunchXRayHelp(false);
         }
     }
 

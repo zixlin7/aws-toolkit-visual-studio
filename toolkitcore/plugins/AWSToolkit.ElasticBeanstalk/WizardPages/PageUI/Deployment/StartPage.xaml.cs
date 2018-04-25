@@ -50,7 +50,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         public void Initialize(AccountViewModel account)
         {
-            this._accountSelector.Initialize(account, RegionEndPointsManager.Instance.GetDefaultRegionEndPoints(), new string[] { RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME });
+            this._accountSelector.Initialize(account, RegionEndPointsManager.GetInstance().GetDefaultRegionEndPoints(), new string[] { RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME });
             this._accountSelector.IsEnabled = true;
         }
 

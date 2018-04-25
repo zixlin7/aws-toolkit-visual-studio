@@ -40,7 +40,7 @@ namespace Amazon.AWSToolkit.RDS.Nodes
         {
             get
             {
-                var region = RegionEndPointsManager.Instance.GetRegion(this.RegionSystemName);
+                var region = RegionEndPointsManager.GetInstance().GetRegion(this.RegionSystemName);
                 if (region == null)
                     return string.Empty;
 

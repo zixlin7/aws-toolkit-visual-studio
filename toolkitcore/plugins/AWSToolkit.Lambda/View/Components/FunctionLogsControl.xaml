@@ -182,7 +182,6 @@
                          HorizontalContentAlignment="Stretch"
                          VerticalAlignment="Stretch"
                          ItemsSource="{Binding Logs}"
-                         SelectedItem="{Binding SelectedLog, Mode=TwoWay}"
                          IsSynchronizedWithCurrentItem="True"
                          />
         </Border>

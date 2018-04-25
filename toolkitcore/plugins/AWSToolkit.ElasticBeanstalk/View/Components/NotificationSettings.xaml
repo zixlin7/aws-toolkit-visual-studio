@@ -23,7 +23,7 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,5,5,20" Grid.ColumnSpan="2" TextWrapping="Wrap" Style="{DynamicResource SectionDescription}">Enter an e-mail address which will be sent notifications regarding important events using the Amazon Simple Notification Service. If you wish to stop receiving notifications, simply remove your e-mail address.</TextBlock>
+        <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,5,5,20" Grid.ColumnSpan="2" TextWrapping="Wrap" Style="{DynamicResource awsTextBlockBaseStyle}">Enter an e-mail address which will be sent notifications regarding important events using the Amazon Simple Notification Service. If you wish to stop receiving notifications, simply remove your e-mail address.</TextBlock>
 
         <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,5,5,0" Style="{DynamicResource awsTextBlockBaseStyle}">Email Adress:</TextBlock>
         <components:ConfigurationOptionControl

@@ -42,7 +42,7 @@ namespace Amazon.AWSToolkit.S3.Controller
         {
             this._model = new InvokeLambdaFunctionModel();
 
-            foreach(var region in RegionEndPointsManager.Instance.Regions)
+            foreach(var region in RegionEndPointsManager.GetInstance().Regions)
             {
                 if (region.GetEndpoint(RegionEndPointsManager.LAMBDA_SERVICE_NAME) == null)
                     continue;

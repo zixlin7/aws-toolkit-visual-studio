@@ -85,8 +85,11 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                 try
                 {
                     var serverlessTemplatePath = Path.Combine(sourcePath, Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME);
-                    var defaults = LambdaToolsDefaultsReader.LoadDefaults(sourcePath, LambdaToolsDefaultsReader.DEFAULT_FILE_NAME);
-                    if(File.Exists(serverlessTemplatePath) || !string.IsNullOrEmpty(defaults.CloudFormationTemplate))
+
+                    var defaults = new LambdaToolsDefaults();
+                    defaults.LoadDefaults(sourcePath, LambdaToolsDefaults.DEFAULT_FILE_NAME);
+
+                    if (File.Exists(serverlessTemplatePath) || !string.IsNullOrEmpty(defaults.CloudFormationTemplate))
                     {
                         string templateFile;
                         // If there is a template specified in the defaults then use that as way for a customer to use a template besides the hard coded serverless.template
@@ -164,6 +167,10 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                             seedValues[UploadFunctionWizardProperties.Configuration] = defaults.Configuration;
                         if (!string.IsNullOrEmpty(defaults.Framework))
                             seedValues[UploadFunctionWizardProperties.Framework] = defaults.Framework;
+                        if (!string.IsNullOrEmpty(defaults.DeadLetterTargetArn))
+                            seedValues[UploadFunctionWizardProperties.DeadLetterTargetArn] = defaults.DeadLetterTargetArn;
+                        if (!string.IsNullOrEmpty(defaults.TracingMode))
+                            seedValues[UploadFunctionWizardProperties.TracingMode] = defaults.TracingMode;
 
                         if (defaults.EnvironmentVariables != null)
                         {

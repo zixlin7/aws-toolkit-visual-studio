@@ -2,18 +2,33 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Reflection;
 using System.Xml.Linq;
 
 using Amazon.AWSToolkit.VersionInfo;
 using Amazon.Runtime.Internal.Settings;
+using log4net;
 
 namespace Amazon.AWSToolkit
 {
-    public class RegionEndPointsManager
+    // interface enables unit testing
+    public interface IRegionEndPointsManager
     {
+        void Refresh();
+        RegionEndPointsManager.RegionEndPoints GetRegion(string systemName);
+        IEnumerable<RegionEndPointsManager.RegionEndPoints> Regions { get; }
+        RegionEndPointsManager.LocalRegionEndPoints LocalRegion { get; }
+        RegionEndPointsManager.RegionEndPoints GetDefaultRegionEndPoints();
+        void SetDefaultRegionEndPoints(RegionEndPointsManager.RegionEndPoints region);
+        bool FailedToLoad { get; }
+        bool LoadedFromResources { get; }
+        Exception ErrorLoading { get; }
+        XDocument OpenEndPointConfigurationFile();
+    }
+
+    public class RegionEndPointsManager : IRegionEndPointsManager
+    {
+        static readonly ILog LOGGER = LogManager.GetLogger(typeof(RegionEndPointsManager));
+
         public const string EC2_SERVICE_NAME = "EC2";
         public const string ECS_SERVICE_NAME = "ECS";
         public const string ECR_SERVICE_NAME = "ECR";
@@ -37,37 +52,62 @@ namespace Amazon.AWSToolkit
         public const string CODECOMMIT_SERVICE_NAME = "CodeCommit";
         public const string ECR_ENDPOINT_LOOKUP = "ECR";
         public const string ECS_ENDPOINT_LOOKUP = "ECS";
-
+        public const string XRAY_ENDPOINT_LOOKUP = "XRay";
 
         public const string US_EAST_1 = "us-east-1";
         const string DEFAULT_REGION = "us-west-2";
         const string SETTINGS_KEY = "lastselectedregion";
+
+        static readonly object _lock = new object();
+
         static RegionEndPointsManager _instance;
 
-        Dictionary<string, RegionEndPoints> _regions;
-        Exception _errorLoading;
-        LocalRegionEndPoints _localRegions = new LocalRegionEndPoints();
+        private Dictionary<string, RegionEndPoints> _regions;
+        private Exception _errorLoading;
 
-        static RegionEndPointsManager()
+        // mainly used to verify behavior in unit testing
+        private bool _loadedFromResourceContent;
+
+        readonly LocalRegionEndPoints _localRegions = new LocalRegionEndPoints();
+
+        // Returns the singleton manager instance.
+        /// <summary>
+        /// Returns the singeton manager instance. For production, no file fetcher
+        /// should be supplied (the default fetcher will be used automatically). 
+        /// Unit tests can supply custom fetchers to validate endpoint scenarios.
+        /// </summary>
+        /// <param name="fileFetcher">Custom file fetcher instance; set only for unit test purposes.</param>
+        /// <returns>Endpoint manager instance, initialized with endpoints.</returns>
+        public static IRegionEndPointsManager GetInstance(S3FileFetcher fileFetcher = null)
         {
-            _instance = new RegionEndPointsManager();
-            _instance.loadEndPoints();
+            lock (_lock)
+            {
+                if (_instance == null)
+                {
+                    var s3FileFetcher = fileFetcher ?? S3FileFetcher.Instance;
+                    _instance = new RegionEndPointsManager
+                    {
+                        FileFetcher = s3FileFetcher
+                    };
+
+                    _instance.LoadEndPoints();
+                }
+            }
+
+            return _instance;
         }
 
-        public static RegionEndPointsManager Instance
-        {
-            get { return _instance; }
-        }
+        public S3FileFetcher FileFetcher { get; private set; }
 
         public void Refresh()
         {
             this._errorLoading = null;
-            loadEndPoints();
+            LoadEndPoints();
         }
 
         public RegionEndPoints GetRegion(string systemName)
         {
-            RegionEndPoints region = null;
+            RegionEndPoints region;
             this._regions.TryGetValue(systemName, out region);
             return region;
         }
@@ -88,7 +128,7 @@ namespace Amazon.AWSToolkit
             if (string.IsNullOrEmpty(regionSystemName))
                 regionSystemName = DEFAULT_REGION;
 
-            var region = Instance.GetRegion(regionSystemName);
+            var region = GetRegion(regionSystemName);
             return region;
         }
 
@@ -102,52 +142,70 @@ namespace Amazon.AWSToolkit
             get { return ErrorLoading != null; }
         }
 
+        public bool LoadedFromResources
+        {
+            get { return _loadedFromResourceContent; }
+        }
+
         public Exception ErrorLoading
         {
             get { return this._errorLoading; }
         }
 
-        private void loadEndPoints()
+        public XDocument OpenEndPointConfigurationFile()
+        {
+            // if the load of the downloaded or referenced file fails, fallback to the known-good resource version
+            var reader = new StringReader(FileFetcher.GetFileContent(Constants.SERVICE_ENDPOINT_FILE, S3FileFetcher.CacheMode.IfDifferent));
+
+            XDocument xdoc;
+            _loadedFromResourceContent =
+                HostedFileContentLoader.Instance.LoadXmlContent(reader, Constants.SERVICE_ENDPOINT_FILE, FileFetcher, out xdoc) 
+                    == HostedFileContentLoadResult.ResourceFallback;
+
+            return xdoc;
+        }
+
+        private void LoadEndPoints()
         {
             try
             {
                 this._regions = new Dictionary<string, RegionEndPoints>();
-                using (TextReader reader = openEndPointConfigurationFile())
+                var xdoc = OpenEndPointConfigurationFile();
+                var query = from p in xdoc.Elements("regions").Elements("region")
+                            select new
+                            {
+                                SystemName = p.Element("systemname").Value,
+                                DisplayName = p.Element("displayname").Value,
+                                FlagIcon = p.Element("flag-icon").Value,
+                                MinToolkitVersion = p.Element("min-toolkit-version") != null ? p.Element("min-toolkit-version").Value : null,
+                                Restrictions = p.Element("restrictions") != null ? p.Element("restrictions").Value.Split(',') : null
+                            };
+
+                foreach (var regionName in query)
                 {
-                    XDocument xdoc = XDocument.Load(reader);
-                    var query = from p in xdoc.Elements("regions").Elements("region")
-                                select new
-                                {
-                                    SystemName = p.Element("systemname").Value,
-                                    DisplayName = p.Element("displayname").Value,
-                                    FlagIcon = p.Element("flag-icon").Value,
-                                    MinToolkitVersion = p.Element("min-toolkit-version") != null ? p.Element("min-toolkit-version").Value : null,
-                                    Restrictions = p.Element("restrictions") != null ? p.Element("restrictions").Value.Split(',') : null
-                                };
+                    var subQuery = from s in xdoc.Elements("regions").Elements("region").Elements("services").Elements("service")
+                                    where s.Parent.Parent.Element("systemname").Value == regionName.SystemName
+                                    select new
+                                        {
+                                            Name = (string)s.Attribute("name"),
+                                            URL = s.Value,
+                                            Signer = (string)s.Attribute("signer"),
+                                            AuthRegion = (string)s.Attribute("authregion")
+                                        };
 
-                    foreach (var regionName in query)
+                    IDictionary<string, EndPoint> endpoints = new Dictionary<string, EndPoint>();
+                    foreach (var endpoint in subQuery)
                     {
-                        var subQuery = from s in xdoc.Elements("regions").Elements("region").Elements("services").Elements("service")
-                                       where s.Parent.Parent.Element("systemname").Value == regionName.SystemName
-                                       select new
-                                           {
-                                               Name = (string)s.Attribute("name"),
-                                               URL = s.Value,
-                                               Signer = (string)s.Attribute("signer"),
-                                               AuthRegion = (string)s.Attribute("authregion")
-                                           };
+                        endpoints[endpoint.Name] = new EndPoint(regionName.SystemName, endpoint.URL, endpoint.Signer, endpoint.AuthRegion);
+                    }
 
-                        IDictionary<string, EndPoint> endpoints = new Dictionary<string, EndPoint>();
-                        foreach (var endpoint in subQuery)
+                    if (string.IsNullOrEmpty(regionName.MinToolkitVersion) || !VersionManager.IsVersionGreaterThanToolkit(regionName.MinToolkitVersion))
+                    {
+                        var region = new RegionEndPoints(regionName.SystemName, regionName.DisplayName, regionName.FlagIcon, endpoints, regionName.Restrictions)
                         {
-                            endpoints[endpoint.Name] = new EndPoint(regionName.SystemName, endpoint.URL, endpoint.Signer, endpoint.AuthRegion);
-                        }
-
-                        if (string.IsNullOrEmpty(regionName.MinToolkitVersion) || !VersionManager.IsVersionGreaterThanToolkit(regionName.MinToolkitVersion))
-                        {
-                            var region = new RegionEndPoints(regionName.SystemName, regionName.DisplayName, regionName.FlagIcon, endpoints, regionName.Restrictions);
-                            this._regions.Add(region.SystemName, region);
-                        }
+                            FileFetcher = this.FileFetcher
+                        };
+                        this._regions.Add(region.SystemName, region);
                     }
                 }
                 
@@ -157,31 +215,12 @@ namespace Amazon.AWSToolkit
             {
                 this._errorLoading = e;
             }
-        }        
-
-        private TextReader openEndPointConfigurationFile()
-        {
-            string location = null;
-            if (location == null)
-            {
-                location = Constants.SERVICE_ENDPOINT_FILE;
-            }
-
-            if (string.Equals(location, Constants.SERVICE_ENDPOINT_FILE))
-            {
-                return new StringReader(S3FileFetcher.Instance.GetFileContent(location, S3FileFetcher.CacheMode.Never));
-            }
-            else
-            {
-                return new StreamReader(location);
-            }
         }
-
 
         public class RegionEndPoints
         {
             protected IDictionary<string, EndPoint> _endpoints;
-            HashSet<string> _restrictions;
+            readonly HashSet<string> _restrictions;
 
             internal RegionEndPoints(string systemName, string displayName, string flagIconName, IDictionary<string, EndPoint> endpoints, string[] restrictions)
             {
@@ -200,6 +239,11 @@ namespace Amazon.AWSToolkit
                     }
                 }
             }
+
+            /// <summary>
+            /// Used for unit testing, to allow mocked implementation to be passed down.
+            /// </summary>
+            public S3FileFetcher FileFetcher { get; internal set; }
 
             public bool HasRestrictions
             {
@@ -245,7 +289,7 @@ namespace Amazon.AWSToolkit
             {
                 get
                 {
-                    Stream stream = S3FileFetcher.Instance.OpenFileStream(FlagIconName, S3FileFetcher.CacheMode.Permanent);
+                    Stream stream = FileFetcher.OpenFileStream(FlagIconName, S3FileFetcher.CacheMode.Permanent);
                     return stream;
                 }
             }

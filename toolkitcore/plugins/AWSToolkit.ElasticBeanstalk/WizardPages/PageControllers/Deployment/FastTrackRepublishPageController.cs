@@ -83,7 +83,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                 _account = viewModel.AccountFromIdentityKey(accountGuid);
                 
                 var regionName = HostingWizard[DeploymentWizardProperties.SeedData.propkey_LastRegionDeployedTo] as string;
-                _region = RegionEndPointsManager.Instance.GetRegion(regionName);
+                _region = RegionEndPointsManager.GetInstance().GetRegion(regionName);
 
                 var projectType = HostingWizard[DeploymentWizardProperties.SeedData.propkey_ProjectType] as string;
                 if(projectType == DeploymentWizardProperties.NetCoreWebProject)

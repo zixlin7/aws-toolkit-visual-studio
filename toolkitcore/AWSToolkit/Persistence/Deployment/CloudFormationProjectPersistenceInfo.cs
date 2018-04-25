@@ -142,7 +142,7 @@ namespace Amazon.AWSToolkit.Persistence.Deployment
                     if (data[REGION] != null)
                         region = (string)data[REGION];
                     else
-                        region = RegionEndPointsManager.Instance.GetDefaultRegionEndPoints().SystemName;
+                        region = RegionEndPointsManager.GetInstance().GetDefaultRegionEndPoints().SystemName;
 
                     if (!string.IsNullOrEmpty(stackName))
                     {

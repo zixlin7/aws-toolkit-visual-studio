@@ -361,6 +361,18 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                     sb.AppendLine(string.Format("Use '{0}' as the URL for health-checks.", healthUrl));
             }
 
+            if ((bool) HostingWizard.GetProperty(BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_XRayAvailable))
+            {
+                if (HostingWizard.IsPropertySet(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon))
+                {
+                    var enableXRay = (bool)HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon];
+                    if (enableXRay)
+                    {
+                        sb.Append("Enable AWS X-Ray Daemon.");
+                    }
+                }
+            }
+
             if (!isCoreCLRDeployment)
             {
                 IDictionary<string, string> appSettings = null;

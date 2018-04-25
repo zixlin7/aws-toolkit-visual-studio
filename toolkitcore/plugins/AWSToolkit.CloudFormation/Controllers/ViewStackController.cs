@@ -58,7 +58,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                 return new ActionResults().WithSuccess(false);
 
             String region = this._stackModel.CloudFormationRootViewModel.CurrentEndPoint.RegionSystemName;
-            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.Instance.GetRegion(region);
+            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.GetInstance().GetRegion(region);
 
             this._cloudFormationClient = this._stackModel.CloudFormationClient;
 

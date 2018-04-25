@@ -139,7 +139,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
                 _account = viewModel.AccountFromIdentityKey(accountGuid);
 
                 string regionName = HostingWizard[DeploymentWizardProperties.SeedData.propkey_LastRegionDeployedTo] as string;
-                _region = RegionEndPointsManager.Instance.GetRegion(regionName);
+                _region = RegionEndPointsManager.GetInstance().GetRegion(regionName);
 
                 CloudFormationDeploymentHistory cfdh = DeploymentHistoryForAccountAndRegion(_account, _region);
 

@@ -11,6 +11,7 @@ using System;
 using System.Threading;
 using Amazon.AWSToolkit.Lambda.Controller;
 using System.IO;
+using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 {
@@ -47,6 +48,9 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 command.TargetFramework = uploadState.Framework;
                 command.Runtime = uploadState.Request.Runtime;
                 command.EnvironmentVariables = uploadState.Request?.Environment?.Variables;
+                command.KMSKeyArn = uploadState.Request?.KMSKeyArn;
+                command.TracingMode = uploadState.Request?.TracingConfig?.Mode;
+                command.DeadLetterTargetArn = uploadState.Request?.DeadLetterConfig?.TargetArn;
 
                 if (uploadState.Request.VpcConfig != null)
                 {
@@ -73,6 +77,11 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                     evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentSuccess, uploadState.Request.Runtime);
                     evnt.AddProperty(AttributeKeys.LambdaFunctionTargetFramework, command.TargetFramework);
                     evnt.AddProperty(AttributeKeys.LambdaFunctionMemorySize, command.MemorySize.GetValueOrDefault().ToString());
+
+                    if(string.Equals(command.TracingMode, TracingMode.Active, StringComparison.OrdinalIgnoreCase))
+                    {
+                        evnt.AddProperty(AttributeKeys.XRayEnabled, "Lambda");
+                    }
 
                     var zipArchivePath = Path.Combine(uploadState.SourcePath, "bin", uploadState.Configuration, uploadState.Framework, new DirectoryInfo(uploadState.SourcePath).Name + ".zip");
                     if(File.Exists(zipArchivePath))
@@ -125,6 +134,11 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             public void WriteLine(string message)
             {
                 this.FunctionHandler.AppendUploadStatus(message);
+            }
+
+            public void WriteLine(string message, params object[] args)
+            {
+                WriteLine(string.Format(message, args));
             }
         }
     }

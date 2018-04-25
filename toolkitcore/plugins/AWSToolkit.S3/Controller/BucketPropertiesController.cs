@@ -111,13 +111,6 @@ namespace Amazon.AWSToolkit.S3.Controller
 
                 putRequest.LambdaFunctionConfigurations.Add(item);
             }
-            foreach (var item in getResponse.LambdaFunctionConfigurations)
-            {
-                if (configuration.TargetService == EventConfigurationModel.Service.Lambda && item.Id == configuration.Id)
-                    continue;
-
-                putRequest.LambdaFunctionConfigurations.Add(item);
-            }
             foreach (var item in getResponse.QueueConfigurations)
             {
                 if (configuration.TargetService == EventConfigurationModel.Service.SQS && item.Id == configuration.Id)
@@ -385,7 +378,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             else
                 this._model.RegionSystemName = locationResponse.Location;
 
-            var region = RegionEndPointsManager.Instance.GetRegion(this._model.RegionSystemName);
+            var region = RegionEndPointsManager.GetInstance().GetRegion(this._model.RegionSystemName);
             if (region != null)
             {
                 this._model.RegionDisplayName = region.DisplayName;

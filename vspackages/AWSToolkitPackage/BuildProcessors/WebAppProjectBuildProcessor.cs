@@ -149,7 +149,7 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
                     }
 
                     var msbuildLogger = new Loggers.MSBuildLogger(taskInfo.Logger, "....packaging -");
-                    var result = packageBuildInstance.Build(new[] {"Package"}, new ILogger[] {msbuildLogger});
+                    var result = packageBuildInstance.Build(new[] {"Build", "Package" }, new ILogger[] {msbuildLogger});
 
                     if (result)
                     {

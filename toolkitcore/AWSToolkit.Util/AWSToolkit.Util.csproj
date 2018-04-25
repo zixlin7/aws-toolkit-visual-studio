@@ -75,6 +75,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HostedFileContentLoader.cs" />
     <Compile Include="IAMUtilities.cs" />
     <Compile Include="ToolkitSettingsConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -90,6 +91,221 @@
     <Compile Include="Util\SpecialFolderPatternConverter.cs" />
     <Compile Include="Util\CloudFormationUtil.cs" />
     <Compile Include="Util\StringUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\hostedfiles\EC2QuickLaunch.json">
+      <Link>HostedFiles\EC2QuickLaunch.json</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\nuget-versions.json">
+      <Link>HostedFiles\nuget-versions.json</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\hostedfiles\AccountTypes.xml">
+      <Link>HostedFiles\AccountTypes.xml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\ServiceEndPoints.xml">
+      <Link>HostedFiles\ServiceEndPoints.xml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\ToolkitAMIs.xml">
+      <Link>HostedFiles\ToolkitAMIs.xml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationSchema\CloudFormationV1.schema">
+      <Link>HostedFiles\CloudFormationSchema\CloudFormationV1.schema</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\LoadBalanced.template">
+      <Link>HostedFiles\CloudFormationTemplates\LoadBalanced.template</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CodeCommit\vsdefault.gitignore.txt">
+      <Link>HostedFiles\CodeCommit\vsdefault.gitignore.txt</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\ap-northeast-1.png">
+      <Link>HostedFiles\flags\ap-northeast-1.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\JSONSchemas\catalog.json">
+      <Link>HostedFiles\JSONSchemas\catalog.json</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\ServiceMeta\EC2ServiceMeta.xml">
+      <Link>HostedFiles\ServiceMeta\EC2ServiceMeta.xml</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\hostedfiles\IAMConfiguration.xml">
+      <Link>HostedFiles\IAMConfiguration.xml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\IAMPolicyTemplates.xml">
+      <Link>HostedFiles\IAMPolicyTemplates.xml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\LambdaPackageStoreManifest.xml">
+      <Link>HostedFiles\LambdaPackageStoreManifest.xml</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\LoadBalanced-ap-northeast-1.template">
+      <Link>HostedFiles\CloudFormationTemplates\LoadBalanced-ap-northeast-1.template</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\LoadBalanced-ap-southeast-1.template">
+      <Link>HostedFiles\CloudFormationTemplates\LoadBalanced-ap-southeast-1.template</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\LoadBalanced-ap-southeast-2.template">
+      <Link>HostedFiles\CloudFormationTemplates\LoadBalanced-ap-southeast-2.template</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\LoadBalanced-eu-west-1.template">
+      <Link>HostedFiles\CloudFormationTemplates\LoadBalanced-eu-west-1.template</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\LoadBalanced-sa-east-1.template">
+      <Link>HostedFiles\CloudFormationTemplates\LoadBalanced-sa-east-1.template</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\LoadBalanced-us-west-1.template">
+      <Link>HostedFiles\CloudFormationTemplates\LoadBalanced-us-west-1.template</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\LoadBalanced-us-west-2.template">
+      <Link>HostedFiles\CloudFormationTemplates\LoadBalanced-us-west-2.template</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\SingleInstance-ap-northeast-1.template">
+      <Link>HostedFiles\CloudFormationTemplates\SingleInstance-ap-northeast-1.template</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\SingleInstance-ap-southeast-1.template">
+      <Link>HostedFiles\CloudFormationTemplates\SingleInstance-ap-southeast-1.template</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\SingleInstance-ap-southeast-2.template">
+      <Link>HostedFiles\CloudFormationTemplates\SingleInstance-ap-southeast-2.template</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\SingleInstance-eu-west-1.template">
+      <Link>HostedFiles\CloudFormationTemplates\SingleInstance-eu-west-1.template</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\SingleInstance-sa-east-1.template">
+      <Link>HostedFiles\CloudFormationTemplates\SingleInstance-sa-east-1.template</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\SingleInstance-us-west-1.template">
+      <Link>HostedFiles\CloudFormationTemplates\SingleInstance-us-west-1.template</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\SingleInstance-us-west-2.template">
+      <Link>HostedFiles\CloudFormationTemplates\SingleInstance-us-west-2.template</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\SingleInstance.template">
+      <Link>HostedFiles\CloudFormationTemplates\SingleInstance.template</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\SampleTemplateManifest.xml">
+      <Link>HostedFiles\CloudFormationTemplates\SampleTemplateManifest.xml</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\CloudFormationTemplates\TemplatesManifest.xml">
+      <Link>HostedFiles\CloudFormationTemplates\TemplatesManifest.xml</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\ap-northeast-2.png">
+      <Link>HostedFiles\flags\ap-northeast-2.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\ap-south-1.png">
+      <Link>HostedFiles\flags\ap-south-1.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\ap-southeast-1.png">
+      <Link>HostedFiles\flags\ap-southeast-1.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\ap-southeast-2.png">
+      <Link>HostedFiles\flags\ap-southeast-2.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\asia_pacific.png">
+      <Link>HostedFiles\flags\asia_pacific.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\australia.png">
+      <Link>HostedFiles\flags\australia.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\aws.png">
+      <Link>HostedFiles\flags\aws.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\brazil.png">
+      <Link>HostedFiles\flags\brazil.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\ca.png">
+      <Link>HostedFiles\flags\ca.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\canada.png">
+      <Link>HostedFiles\flags\canada.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\china.png">
+      <Link>HostedFiles\flags\china.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\cn.png">
+      <Link>HostedFiles\flags\cn.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\eu-central-1.png">
+      <Link>HostedFiles\flags\eu-central-1.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\eu-west-1.png">
+      <Link>HostedFiles\flags\eu-west-1.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\eu-west-2.png">
+      <Link>HostedFiles\flags\eu-west-2.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\eu-west-3.png">
+      <Link>HostedFiles\flags\eu-west-3.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\eu.png">
+      <Link>HostedFiles\flags\eu.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\europe.png">
+      <Link>HostedFiles\flags\europe.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\flag_india.png">
+      <Link>HostedFiles\flags\flag_india.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\france.png">
+      <Link>HostedFiles\flags\france.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\germany.png">
+      <Link>HostedFiles\flags\germany.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\ireland.png">
+      <Link>HostedFiles\flags\ireland.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\japan.png">
+      <Link>HostedFiles\flags\japan.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\local.png">
+      <Link>HostedFiles\flags\local.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\sa-east-1.png">
+      <Link>HostedFiles\flags\sa-east-1.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\south_korea.png">
+      <Link>HostedFiles\flags\south_korea.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\uk.png">
+      <Link>HostedFiles\flags\uk.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\us.png">
+      <Link>HostedFiles\flags\us.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\flags\usa.png">
+      <Link>HostedFiles\flags\usa.png</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\hostedfiles\JSONSchemas\aws-windows-deployment-manifest-schema.json">
+      <Link>HostedFiles\JSONSchemas\aws-windows-deployment-manifest-schema.json</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\hostedfiles\JSONSchemas\aws-windows-deployment-manifest-schema.v1.json">
+      <Link>HostedFiles\JSONSchemas\aws-windows-deployment-manifest-schema.v1.json</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\hostedfiles\ServiceMeta\ECSServiceMeta.json">
+      <Link>HostedFiles\ServiceMeta\ECSServiceMeta.json</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\hostedfiles\ServiceMeta\RDSServiceMeta.xml">
+      <Link>HostedFiles\ServiceMeta\RDSServiceMeta.xml</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\hostedfiles\stockamis.json">
+      <Link>HostedFiles\stockamis.json</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

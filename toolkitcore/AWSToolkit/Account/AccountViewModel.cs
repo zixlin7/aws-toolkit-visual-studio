@@ -72,13 +72,12 @@ namespace Amazon.AWSToolkit.Account
             IList<ServiceRootViewModel> services = new List<ServiceRootViewModel>();
             foreach (var child in this._metaNode.Children)
             {
-                var endPoint = region.GetEndpoint(child.EndPointSystemName);
                 var serviceRootMetaNode = child as ServiceRootViewMetaNode;
-                if (serviceRootMetaNode == null || endPoint == null)
-                    continue;
-                
-                var model = serviceRootMetaNode.CreateServiceRootModel(this);
-                services.Add(model);
+                if (serviceRootMetaNode != null && serviceRootMetaNode.CanSupportRegion(region))
+                {
+                    var model = serviceRootMetaNode.CreateServiceRootModel(this);
+                    services.Add(model);
+                }
             }
 
             if (this._serviceViewModels == null)
@@ -281,9 +280,9 @@ namespace Amazon.AWSToolkit.Account
 
         public override void Refresh(bool async)
         {
-            if (RegionEndPointsManager.Instance.FailedToLoad)
+            if (RegionEndPointsManager.GetInstance().FailedToLoad)
             {
-                RegionEndPointsManager.Instance.Refresh();
+                RegionEndPointsManager.GetInstance().Refresh();
             }
 
             foreach (IViewModel child in this.Children)

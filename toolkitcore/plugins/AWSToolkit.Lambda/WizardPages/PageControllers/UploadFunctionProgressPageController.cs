@@ -24,6 +24,8 @@ using Amazon.AWSToolkit.CloudFormation.Nodes;
 using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
 using Amazon.AWSToolkit.Lambda.DeploymentWorkers;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
+using System.IO;
+using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 {
@@ -208,12 +210,17 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             var configuration = HostingWizard[UploadFunctionWizardProperties.Configuration] as string;
             var framework = HostingWizard[UploadFunctionWizardProperties.Framework] as string;
 
+            var kmsArn = HostingWizard[UploadFunctionWizardProperties.KMSKey] as string;
+
             var memorySize = (int)HostingWizard[UploadFunctionWizardProperties.MemorySize];
             var timeout = (int)HostingWizard[UploadFunctionWizardProperties.Timeout];
             var handler = HostingWizard[UploadFunctionWizardProperties.Handler] as string;
             var sourcePath = HostingWizard[UploadFunctionWizardProperties.SourcePath] as string;
             var selectedRole = HostingWizard[UploadFunctionWizardProperties.Role] as Role;
             var selectedManagedPolicy = HostingWizard[UploadFunctionWizardProperties.ManagedPolicy] as ManagedPolicy;
+
+            var selectedDeadLetterTargetArn = HostingWizard[UploadFunctionWizardProperties.DeadLetterTargetArn] as string;
+            var selectedTracingMode = HostingWizard[UploadFunctionWizardProperties.TracingMode] as string;
 
             var subnets = HostingWizard[UploadFunctionWizardProperties.Subnets] as IEnumerable<SubnetWrapper>;
             var securityGroups = HostingWizard[UploadFunctionWizardProperties.SecurityGroups] as IEnumerable<SecurityGroupWrapper>;
@@ -235,8 +242,19 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 Description = description,
                 MemorySize = memorySize,
                 Timeout = timeout,
-                Handler = handler
+                Handler = handler,
+                KMSKeyArn = kmsArn
             };
+
+            if(selectedDeadLetterTargetArn != null)
+            {
+                request.DeadLetterConfig = new DeadLetterConfig { TargetArn = selectedDeadLetterTargetArn };
+            }
+
+            if(selectedTracingMode != null)
+            {
+                request.TracingConfig = new TracingConfig { Mode = selectedTracingMode };
+            }
 
             if(environmentVariables != null)
             {
@@ -250,6 +268,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                     request.Environment.Variables[env.Variable] = env.Value;
                 }
             }
+
+
 
             if (subnets != null && subnets.Any())
             {
@@ -330,7 +350,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         void ILambdaFunctionUploadHelpers.PublishServerlessAsyncCompleteSuccess(PublishServerlessApplicationWorkerSettings settings)
         {
-            UpdateLambdaTools(settings.SaveSettings);
+            PostDeploymentAnalysis(settings.SaveSettings);
             ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
             {
                 (this as UploadFunctionProgressPageController)._pageUI.StopProgressBar();
@@ -362,7 +382,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         void ILambdaFunctionUploadHelpers.UploadFunctionAsyncCompleteSuccess(UploadFunctionState uploadState)
         {
-            UpdateLambdaTools(uploadState.SaveSettings);
+            PostDeploymentAnalysis(uploadState.SaveSettings);
             ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
             {
                 (this as UploadFunctionProgressPageController)._pageUI.StopProgressBar();
@@ -393,15 +413,39 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             }));
         }
 
-        private void UpdateLambdaTools(bool persist)
+        private void PostDeploymentAnalysis(bool persist)
         {
-            if (!persist)
-                return;
-
             if (HostingWizard[UploadFunctionWizardProperties.SelectedProjectFile] is string)
             {
                 var projectFile = HostingWizard[UploadFunctionWizardProperties.SelectedProjectFile] as string;
-                Utility.AddDotnetCliToolReference(projectFile, "Amazon.Lambda.Tools");
+
+                int razorPages = Directory.GetFiles(Path.GetDirectoryName(projectFile), "*.cshtml", SearchOption.AllDirectories).Length;
+                if (razorPages > 0)
+                {
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.LambdaFunctionUsesRazorPages, razorPages.ToString());
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                }
+
+                var projectContent = File.ReadAllText(projectFile);
+                if(projectContent.Contains("Microsoft.AspNetCore"))
+                {
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.LambdaFunctionUsesAspNetCore, "true");
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                }
+                if (projectContent.Contains("AWSXRayRecorder"))
+                {
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.LambdaFunctionUsesXRay, "true");
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                }
+                
+
+                if (persist)
+                {
+                    Utility.AddDotnetCliToolReference(projectFile, "Amazon.Lambda.Tools");
+                }
             }
         }
 

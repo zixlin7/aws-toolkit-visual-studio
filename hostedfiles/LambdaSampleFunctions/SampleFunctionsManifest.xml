@@ -1,0 +1,10 @@
+<functions>
+	<function>
+		<name>Basic Kinesis Sample</name>
+		<file>LambdaSampleFunctions/KinesisBasicSample.zip</file>
+	</function>
+	<function>
+		<name>Thumbnail Creator</name>
+		<file>LambdaSampleFunctions/ImageResizerSample.zip</file>
+	</function>
+</functions>

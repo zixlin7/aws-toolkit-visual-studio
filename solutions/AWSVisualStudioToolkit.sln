@@ -152,6 +152,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbuildServerlessTemplateFS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsbuildServerlessWithTestsTemplateFSharp", "..\vspackages\lambda\MsbuildServerlessWithTestsTemplateFSharp\MsbuildServerlessWithTestsTemplateFSharp.csproj", "{D14A5D26-391E-4327-A1DC-29572D4521FF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{73718FA9-C78C-4459-A1C0-E5964EE5F420}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.Util.Tests", "..\tests\AWSToolkit.Util.Tests\AWSToolkit.Util.Tests.csproj", "{B38E2797-FE83-4EB5-8D70-FEBDEDCA32BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmazonCLIExtensions", "..\toolkitcore\AmazonCLIExtensions\AmazonCLIExtensions.csproj", "{B4771F7A-A835-4B86-8B52-0E2FD560A48C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -466,6 +472,8 @@ Global
 		{ED2385B8-E0E7-479F-BFCC-50B646E2AC35} = {60D866A4-6F20-4C7D-876B-3014884AE2FF}
 		{D1833CEF-ABAB-472C-A9A0-5CF39C45A36B} = {60D866A4-6F20-4C7D-876B-3014884AE2FF}
 		{D14A5D26-391E-4327-A1DC-29572D4521FF} = {60D866A4-6F20-4C7D-876B-3014884AE2FF}
+		{B38E2797-FE83-4EB5-8D70-FEBDEDCA32BF} = {73718FA9-C78C-4459-A1C0-E5964EE5F420}
+		{B4771F7A-A835-4B86-8B52-0E2FD560A48C} = {DBFC3933-83C8-4F77-8937-EDA0AA0FE7BE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50B40085-A3FF-4E79-90F0-ECAA786ECF93}

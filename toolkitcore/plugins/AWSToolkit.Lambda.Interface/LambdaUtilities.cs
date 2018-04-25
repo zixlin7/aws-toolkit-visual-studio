@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 
 using ICSharpCode.SharpZipLib.Zip;
+using ThirdParty.Json.LitJson;
 
 namespace Amazon.AWSToolkit.Lambda
 {
@@ -118,5 +120,65 @@ namespace Amazon.AWSToolkit.Lambda
                 PolicyName = policyName
             });
         }
+
+
+        #region Code to remove invalid accounts that were added IAM Roles created by the toolkit for Lambda deployment.
+
+        static readonly string[] invalidAccounts = new string[] { "arn:aws:iam::571267556732:root", "arn:aws:iam::147242972042:root" };
+        public static bool DoesAssumeRolePolicyDocumentContainsInvalidAccounts(string assumeRolePolicy)
+        {
+            foreach (var invalidAccount in invalidAccounts)
+            {
+                if (assumeRolePolicy.Contains(invalidAccount))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public static string RemoveInvalidAccountsFromAssumeRolePolicyDocument(string assumeRolePolicy)
+        {
+            const string STATEMENT_KEY = "Statement";
+            const string PRINCIPAL_KEY = "Principal";
+            const string AWS_KEY = "AWS";
+
+            var rootData = JsonMapper.ToObject(assumeRolePolicy) as JsonData;
+            var statements = rootData[STATEMENT_KEY] as JsonData;
+
+            // Collect the valid statements in the policy
+            var validStatements = new List<JsonData>();
+            foreach (JsonData statement in statements)
+            {
+                // If it is not an AWS principal like a service then assume it is valid.
+                var principal = statement[PRINCIPAL_KEY] as JsonData;
+                if (principal == null || principal[AWS_KEY] == null)
+                {
+                    validStatements.Add(statement);
+                    continue;
+                }
+
+                // If it is an AWS principal make sure the principal isn't one of our known bad principal accounts. If it is not
+                // then assume it is a valid statement.
+                var account = principal[AWS_KEY].ToString();
+                if(!invalidAccounts.Contains(account))
+                {
+                    validStatements.Add(statement);
+                    continue;
+                }
+            }
+
+            // Replace the existing statements with the now determined good statements.
+            rootData[STATEMENT_KEY].Clear();
+            foreach(var statement in validStatements)
+            {
+                rootData[STATEMENT_KEY].Add(statement);
+            }
+
+            return Utility.PrettyPrintJson(rootData);
+        }
+        #endregion
+
     }
 }

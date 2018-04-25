@@ -61,7 +61,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 {LaunchWizardProperties.AMIOptions.propkey_SeedAMI, image},
                 {
                     CommonWizardProperties.AccountSelection.propkey_SelectedRegion,
-                    RegionEndPointsManager.Instance.GetRegion(this._rootModel.RegionSystemName)
+                    RegionEndPointsManager.GetInstance().GetRegion(this._rootModel.RegionSystemName)
                 }
             };
 

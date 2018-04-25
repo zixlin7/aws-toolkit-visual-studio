@@ -63,7 +63,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
             if (rdsClient == null || account == null)
                 return new ActionResults().WithSuccess(false);
 
-            var endPoints = RegionEndPointsManager.Instance.GetRegion(instanceRootViewModel.CurrentEndPoint.RegionSystemName);
+            var endPoints = RegionEndPointsManager.GetInstance().GetRegion(instanceRootViewModel.CurrentEndPoint.RegionSystemName);
             var endPoint = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
             var config = new AmazonEC2Config() { ServiceURL = endPoint.Url };
             ec2Client = new AmazonEC2Client(account.Credentials, config);

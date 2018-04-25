@@ -33,6 +33,7 @@ namespace Amazon.AWSToolkit.Lambda.View
             this._ctlFunctionInvokeComponent.Initialize(this._controller);
             this._ctlAdvancedSettingsComponent.Initialize(this._controller);
             this._ctlEventSourcesComponent.Initialize(this._controller);
+            this._ctlXRayComponent.Initialize(this._controller);
             this._ctlLogsComponent.Initialize(this._controller);
 
             this._ctlAdvancedSettingsComponent.PropertyChanged += _ctlAdvancedSettingsComponent_PropertyChanged;
@@ -77,6 +78,11 @@ namespace Amazon.AWSToolkit.Lambda.View
             this._ctlAdvancedSettingsComponent.SetAvailableSecurityGroups(existingGroups, autoSelectGroup, selectedSecurityGroupIds);
         }
 
+        public void SetAvailableDLQTargets(IList<string> topicArns, IList<string> queueArns, string selectedTargetArn)
+        {
+            this._ctlAdvancedSettingsComponent.SetAvailableDLQTargets(topicArns, queueArns, selectedTargetArn);
+        }
+
         public IEnumerable<SubnetWrapper> SelectedSubnets
         {
             get
@@ -111,6 +117,14 @@ namespace Amazon.AWSToolkit.Lambda.View
             get
             {
                 return _ctlAdvancedSettingsComponent.SelectedKMSKey;
+            }
+        }
+
+        public string SelectedDLQTargetArn
+        {
+            get
+            {
+                return _ctlAdvancedSettingsComponent.SelectedDLQTargetArn;
             }
         }
 

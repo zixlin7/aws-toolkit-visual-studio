@@ -127,7 +127,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
         {
             get
             {
-                var region = RegionEndPointsManager.Instance.GetRegion(this._securityRootViewModel.CurrentEndPoint.RegionSystemName);
+                var region = RegionEndPointsManager.GetInstance().GetRegion(this._securityRootViewModel.CurrentEndPoint.RegionSystemName);
                 if (region == null)
                     return string.Empty;
 

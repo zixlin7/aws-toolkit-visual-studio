@@ -30,7 +30,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
 
         void DyanmoDBLocalProcessExited(object sender, EventArgs e)
         {
-            if (this.CurrentEndPoint.RegionSystemName == RegionEndPointsManager.Instance.LocalRegion.SystemName)
+            if (this.CurrentEndPoint.RegionSystemName == RegionEndPointsManager.GetInstance().LocalRegion.SystemName)
             {
                 ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke(
                     (Action)(() => UpdateDynamoDBLocalState()));
@@ -58,7 +58,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
             get
             {
                 var name = base.Name;
-                bool isLocal = this.CurrentEndPoint.RegionSystemName == RegionEndPointsManager.Instance.LocalRegion.SystemName;
+                bool isLocal = this.CurrentEndPoint.RegionSystemName == RegionEndPointsManager.GetInstance().LocalRegion.SystemName;
                 if (isLocal)
                 {
                     if (DynamoDBLocalManager.Instance.State == DynamoDBLocalManager.CurrentState.Started)
@@ -75,7 +75,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
 
         public void UpdateDynamoDBLocalState()
         {
-            this.UpdateEndPoint(RegionEndPointsManager.Instance.LocalRegion.SystemName);
+            this.UpdateEndPoint(RegionEndPointsManager.GetInstance().LocalRegion.SystemName);
             base.NotifyPropertyChanged("Name");
         }
 
@@ -93,7 +93,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
         public override IList<ActionHandlerWrapper> GetVisibleActions()
         {
             var dynamoDBMetaNode = this.MetaNode as DynamoDBRootViewMetaNode;
-            bool isLocal = this.CurrentEndPoint.RegionSystemName == RegionEndPointsManager.Instance.LocalRegion.SystemName;
+            bool isLocal = this.CurrentEndPoint.RegionSystemName == RegionEndPointsManager.GetInstance().LocalRegion.SystemName;
             bool isConnected = DynamoDBLocalManager.Instance.State == DynamoDBLocalManager.CurrentState.Connected || DynamoDBLocalManager.Instance.State == DynamoDBLocalManager.CurrentState.Started;
             IList<ActionHandlerWrapper> actions = new List<ActionHandlerWrapper>();
             foreach (var action in this.MetaNode.Actions)
@@ -134,7 +134,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
 
         protected override void LoadChildren()
         {
-            bool isLocal = this.CurrentEndPoint.RegionSystemName == RegionEndPointsManager.Instance.LocalRegion.SystemName;
+            bool isLocal = this.CurrentEndPoint.RegionSystemName == RegionEndPointsManager.GetInstance().LocalRegion.SystemName;
             if (isLocal && DynamoDBLocalManager.Instance.State == DynamoDBLocalManager.CurrentState.Stopped)
             {
                 BeginCopingChildren(new List<IViewModel>());

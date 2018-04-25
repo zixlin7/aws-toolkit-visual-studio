@@ -33,6 +33,12 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         LambdaFunctionDeploymentError,
         LambdaFunctionDeploymentErrorDetail,
 
+        LambdaFunctionIAMRoleCleanup,
+
+        LambdaFunctionUsesAspNetCore,
+        LambdaFunctionUsesRazorPages,
+        LambdaFunctionUsesXRay,
+
         LambdaTestInvoke,
         LambdaEventSourceSetupSuccess,
         LambdaEventSourceSetupError,
@@ -59,7 +65,9 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         ECSLaunchType,
 
         ECSConfiguredELB,
-        ECSDeleteService
+        ECSDeleteService,
+
+        XRayEnabled
     };
 
     public enum MetricKeys

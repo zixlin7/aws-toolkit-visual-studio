@@ -1,0 +1,149 @@
+<iam-policy-templates>
+  <templates>
+    <template>
+      <name>Power User Access</name>
+      <description>Administrator access but does not allow management of Users and groups.</description>
+      <body>
+<![CDATA[ 
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "NotAction": "iam:*",
+      "Resource": "*"
+    }
+  ]
+}
+]]>
+    </body>
+    </template>
+    <template>
+      <name>CloudWatch Full Access</name>
+      <description>Provides full access to CloudWatch.</description>
+      <body>
+<![CDATA[ 
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "autoscaling:Describe*",
+        "cloudwatch:*",
+        "logs:*",
+        "sns:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+]]>
+      </body>
+    </template>	
+    <template>
+      <name>Amazon DynamoDB Full Access</name>
+      <description>Provides full access to Amazon DynamoDB.</description>
+      <body>
+<![CDATA[ 
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "dynamodb:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+]]>
+      </body>
+    </template>
+    <template>
+      <name>Amazon S3 Full Access</name>
+      <description>Provides full access to all buckets.</description>
+      <body>
+        <![CDATA[ 
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": "*"
+    }
+  ]
+}
+]]>
+      </body>
+    </template>
+    <template>
+      <name>Amazon SNS Full Access</name>
+      <description>Provides full access to Amazon SNS.</description>
+      <body>
+        <![CDATA[ 
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "sns:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+]]>
+      </body>
+    </template>
+    <template>
+      <name>Amazon SQS Full Access</name>
+      <description>Provides full access to Amazon SQS.</description>
+      <body>
+        <![CDATA[ 
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "sqs:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+]]>
+      </body>
+    </template>
+    <template>
+      <name>Amazon Kinesis Access for Lambda Function.</name>
+      <description>Read access for Lambda functions.</description>
+      <body>
+        <![CDATA[ 
+{
+    "Version":"2012-10-17",
+    "Statement":[
+        {
+            "Effect":"Allow",
+            "Action":[
+                "lambda:InvokeFunction",
+                "kinesis:GetRecords",
+                "kinesis:GetShardIterator",
+                "kinesis:DescribeStream",
+                "kinesis:ListStreams"
+            ],
+            "Resource":[
+                "*"
+            ]
+        }
+    ]
+}
+]]>
+      </body>
+    </template>
+  </templates>
+</iam-policy-templates>

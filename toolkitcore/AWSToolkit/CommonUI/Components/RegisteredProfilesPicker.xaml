@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:Amazon.AWSToolkit.CommonUI.Components"
              xmlns:mwt="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
              mc:Ignorable="d" 
-             d:DesignHeight="100" d:DesignWidth="300">
+             d:DesignHeight="100" d:DesignWidth="300"
+             AutomationProperties.AutomationId="RegisteredProfilesPickerControl">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -14,10 +15,18 @@
             </ResourceDictionary.MergedDictionaries>
 
             <DataTemplate x:Key="Category">
-                <TextBlock FontWeight="SemiBold" Text="{Binding DisplayName}"/>
+                <TextBlock FontWeight="SemiBold" Text="{Binding DisplayName}">
+                    <AutomationProperties.AutomationId>
+                        <Binding StringFormat="Category_{0}" Path="DisplayName" />
+                    </AutomationProperties.AutomationId>
+                </TextBlock>
             </DataTemplate>
             <DataTemplate x:Key="Profile">
-                <TextBlock Margin="15,0,0,0" Text="{Binding DisplayName}"/>
+                <TextBlock Margin="15,0,0,0" Text="{Binding DisplayName}">
+                    <AutomationProperties.AutomationId>
+                        <Binding StringFormat="Profile{0}" Path="DisplayName" />
+                    </AutomationProperties.AutomationId>
+                </TextBlock>
             </DataTemplate>
 
             <Style x:Key="awsRegisteredProfilePicker" BasedOn="{StaticResource awsComboBoxStyle}" TargetType="ComboBox">

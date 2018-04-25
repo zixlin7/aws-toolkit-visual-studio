@@ -75,34 +75,41 @@ namespace Amazon.AWSToolkit.Navigator
             this._viewModel.PropertyChanged += _viewModel_PropertyChanged;
             this._ctlResourceTree.DataContext = this._viewModel;
 
-            this.PopulateAccounts();
-
-            this._ctlResourceTree.MouseRightButtonDown += new MouseButtonEventHandler(OnContextMenuOpening);
-            this._ctlResourceTree.MouseDoubleClick += new MouseButtonEventHandler(OnDoubleClick);
-
-            var lastAccountId = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.LastAcountSelectedKey);
-            AccountViewModel accountViewModel = null;
-            if (!string.IsNullOrEmpty(lastAccountId))
+            try
             {
-                foreach (var account in this._viewModel.RegisteredAccounts)
+                this.PopulateAccounts();
+
+                this._ctlResourceTree.MouseRightButtonDown += new MouseButtonEventHandler(OnContextMenuOpening);
+                this._ctlResourceTree.MouseDoubleClick += new MouseButtonEventHandler(OnDoubleClick);
+
+                var lastAccountId = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.LastAcountSelectedKey);
+                AccountViewModel accountViewModel = null;
+                if (!string.IsNullOrEmpty(lastAccountId))
                 {
-                    if (account.SettingsUniqueKey == lastAccountId)
+                    foreach (var account in this._viewModel.RegisteredAccounts)
                     {
-                        accountViewModel = account;
-                        break;
+                        if (account.SettingsUniqueKey == lastAccountId)
+                        {
+                            accountViewModel = account;
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (accountViewModel == null && this._viewModel.RegisteredAccounts.Count > 0)
-            {
-                accountViewModel = this._viewModel.RegisteredAccounts[0];
-            }
+                if (accountViewModel == null && this._viewModel.RegisteredAccounts.Count > 0)
+                {
+                    accountViewModel = this._viewModel.RegisteredAccounts[0];
+                }
 
-            this._ctlAccounts.SelectedAccount = accountViewModel;
-            if (accountViewModel == null)
+                this._ctlAccounts.SelectedAccount = accountViewModel;
+                if (accountViewModel == null)
+                {
+                    setToolbarState(false);
+                }
+            }
+            catch(Exception ex)
             {
-                setToolbarState(false);
+                _logger.Error("Error initializing AWS Explorer.", ex);
             }
         }
 
@@ -192,9 +199,9 @@ namespace Amazon.AWSToolkit.Navigator
             if (this.SelectedAccount == null)
                 return;
 
-            if (RegionEndPointsManager.Instance.FailedToLoad)
+            if (RegionEndPointsManager.GetInstance().FailedToLoad)
             {
-                if (RegionEndPointsManager.Instance.ErrorLoading != null)
+                if (RegionEndPointsManager.GetInstance().ErrorLoading != null)
                 {
                     this._ctlErrorMessage.Text = "Failed to connect to AWS";
                     this._ctlErrorMessage.Height = double.NaN;
@@ -211,7 +218,7 @@ namespace Amazon.AWSToolkit.Navigator
             if (this.SelectedAccount.HasRestrictions)
             {
                 List<RegionEndPointsManager.RegionEndPoints> regions = new List<RegionEndPointsManager.RegionEndPoints>();
-                foreach (var region in RegionEndPointsManager.Instance.Regions)
+                foreach (var region in RegionEndPointsManager.GetInstance().Regions)
                 {
                     if (region.ContainAnyRestrictions(this.SelectedAccount.Restrictions))
                     {
@@ -224,7 +231,7 @@ namespace Amazon.AWSToolkit.Navigator
             else
             {
                 List<RegionEndPointsManager.RegionEndPoints> regions = new List<RegionEndPointsManager.RegionEndPoints>();
-                foreach (var region in RegionEndPointsManager.Instance.Regions)
+                foreach (var region in RegionEndPointsManager.GetInstance().Regions)
                 {
                     if (!region.HasRestrictions)
                         regions.Add(region);
@@ -237,7 +244,7 @@ namespace Amazon.AWSToolkit.Navigator
                 return;
 
             bool foundInList = false;
-            var defaultRegion = RegionEndPointsManager.Instance.GetDefaultRegionEndPoints();
+            var defaultRegion = RegionEndPointsManager.GetInstance().GetDefaultRegionEndPoints();
             foreach (RegionEndPointsManager.RegionEndPoints r in this._ctlRegions.ItemsSource)
             {
                 if (r == defaultRegion)
@@ -256,17 +263,31 @@ namespace Amazon.AWSToolkit.Navigator
 
         void onNavigatorRefreshClick(object sender, RoutedEventArgs e)
         {
-            RefreshAccounts();
+            try
+            {
+                RefreshAccounts();
 
-            RegionEndPointsManager.Instance.Refresh();
-            setInitialRegionSelection();
-            updateActiveRegion();
-            _ctlAccounts_PropertyChanged(this, null);
+                RegionEndPointsManager.GetInstance().Refresh();
+                setInitialRegionSelection();
+                updateActiveRegion();
+                _ctlAccounts_PropertyChanged(this, null);
+            }
+            catch(Exception ex)
+            {
+                _logger.Error("Error refreshing navigator", ex);
+            }
         }
 
         void onRegionChanged(object sender, SelectionChangedEventArgs e)
         {
-            updateActiveRegion();
+            try
+            {
+                updateActiveRegion();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error("Error handling region change", ex);
+            }
         }
 
         void updateActiveRegion()
@@ -281,7 +302,7 @@ namespace Amazon.AWSToolkit.Navigator
             }
 
 
-            RegionEndPointsManager.Instance.SetDefaultRegionEndPoints(region);
+            RegionEndPointsManager.GetInstance().SetDefaultRegionEndPoints(region);
 
             foreach (AccountViewModel account in ToolkitFactory.Instance.RootViewModel.RegisteredAccounts)
             {
@@ -299,26 +320,33 @@ namespace Amazon.AWSToolkit.Navigator
             AccountViewModel viewModel = null;
             this.Dispatcher.Invoke((Action)(() =>
                 {
-                    if (refreshAccounts)
+                    try
                     {
-                        RefreshAccounts();
-                    }
-
-                    foreach (var vm in this._viewModel.RegisteredAccounts)
-                    {
-                        if (new Guid(vm.SettingsUniqueKey).Equals(uniqueKey))
+                        if (refreshAccounts)
                         {
-                            this.Dispatcher.Invoke((Action)(() =>
-                                {
-                                    this._ctlAccounts.SelectedAccount = vm;
-                                }));
-                            viewModel = vm;
-                            break;
+                            RefreshAccounts();
                         }
-                    }
 
-                    setToolbarState(true);
-                    setInitialRegionSelection();
+                        foreach (var vm in this._viewModel.RegisteredAccounts)
+                        {
+                            if (new Guid(vm.SettingsUniqueKey).Equals(uniqueKey))
+                            {
+                                this.Dispatcher.Invoke((Action)(() =>
+                                    {
+                                        this._ctlAccounts.SelectedAccount = vm;
+                                    }));
+                                viewModel = vm;
+                                break;
+                            }
+                        }
+
+                        setToolbarState(true);
+                        setInitialRegionSelection();
+                    }
+                    catch(Exception ex)
+                    {
+                        _logger.Error("Error updating account selection.", ex);
+                    }
                 }));
 
             return viewModel;
@@ -332,7 +360,7 @@ namespace Amazon.AWSToolkit.Navigator
 
         public void UpdateRegionSelection(string regionSystemName)
         {
-            var region = RegionEndPointsManager.Instance.GetRegion(regionSystemName);
+            var region = RegionEndPointsManager.GetInstance().GetRegion(regionSystemName);
             UpdateRegionSelection(region);
         }
 

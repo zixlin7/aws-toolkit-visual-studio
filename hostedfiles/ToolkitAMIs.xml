@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<toolkitamis>
+  <webdeployment service="elasticbeanstalk">
+    <container name="64bit Windows Server 2016 v1.2.0 running IIS 10.0" isDefault="true">
+    </container>
+  </webdeployment>
+  <webdeployment service="cloudformation">
+    <container name="64bit Windows Server 2008 R2 running IIS 7.5">
+      <region systemname="us-east-1">ami-7e58c517</region>
+      <region systemname="us-west-1">ami-82d7f5c7</region>
+      <region systemname="us-west-2">ami-a2851092</region>
+      <region systemname="eu-west-1">ami-1e9a926a</region>
+      <region systemname="ap-northeast-1">ami-fb63e5fa</region>
+      <region systemname="ap-southeast-1">ami-9eb9f4cc</region>
+      <region systemname="ap-southeast-2">ami-4481107e</region>
+      <region systemname="sa-east-1">ami-33e63d2e</region>
+    </container>
+    <container name="64bit Windows Server 2012 running IIS 8" isDefault="true">
+      <region systemname="us-east-1">ami-62a03d0b</region>
+      <region systemname="us-west-1">ami-32d6f477</region>
+      <region systemname="us-west-2">ami-569a0f66</region>
+      <region systemname="eu-west-1">ami-fa878f8e</region>
+      <region systemname="ap-northeast-1">ami-7d62e47c</region>
+      <region systemname="ap-southeast-1">ami-fcbef3ae</region>
+	  <region systemname="ap-southeast-2">ami-8e9e0fb4</region>
+      <region systemname="sa-east-1">ami-53e73c4e</region>
+    </container>
+  </webdeployment>
+</toolkitamis>

@@ -43,7 +43,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Util
             _viewModel = model;
             
             var region = this._viewModel.CurrentEndPoint.RegionSystemName;
-            var endPoints = RegionEndPointsManager.Instance.GetRegion(region);
+            var endPoints = RegionEndPointsManager.GetInstance().GetRegion(region);
 
             this._cfClient = this._viewModel.CloudFormationClient;
 
@@ -194,8 +194,12 @@ namespace Amazon.AWSToolkit.CloudFormation.Util
 
             string url = null;
 
-            var s3Host = region.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME);            
-            url = String.Format("{0}{1}/{2}", s3Host.Url, bucketName, s3Key);
+            var s3Host = region.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME);
+            var s3HostUrl = s3Host.Url;
+            if (!s3HostUrl.EndsWith("/"))
+                s3HostUrl += "/";
+
+            url = String.Format("{0}{1}/{2}", s3HostUrl, bucketName, s3Key);
             
             return url;
         }

@@ -113,6 +113,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
         readonly Dictionary<string, string> _originalAppSettings = new Dictionary<string, string>();
         string _originalHealthCheckUri = "/";
         bool _originalEnable32bitAppPool = false;
+        bool _originalEnableXRayDaemon = false;
 
         bool _needToFetchData;
 
@@ -150,6 +151,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                     // yield an empty version collection for as-yet-unknown apps
                     _pageUI.LoadExistingVersions();                    
                 }
+
+                var xrayAvailable = (bool)HostingWizard.GetProperty(BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_XRayAvailable);
+                _pageUI.SetXRayAvailability(xrayAvailable);
+                if (xrayAvailable)
+                {
+                    var enableXRayDaemon = false;
+                    if (HostingWizard.IsPropertySet(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon))
+                        enableXRayDaemon = (bool)HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon];
+
+                    _pageUI.EnableXRayDaemon = enableXRayDaemon;
+                }
             }
 
             TestForwardTransitionEnablement();
@@ -186,6 +198,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                 {
                     var healthCheckUri = "/";
                     var enable32Bit = false;
+                    var enableXRayDaemon = false;
                     var isSingleInstanceEnvironment = false;
                     var appSettings = new Dictionary<string, string>();
                     this._originalAppSettings.Clear();
@@ -231,6 +244,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
                                         continue;
                                     }
+
+                                    if (optionSetting.Namespace == "aws:elasticbeanstalk:xray")
+                                    {
+                                        if (optionSetting.OptionName == "XRayEnabled")
+                                            bool.TryParse(optionSetting.Value, out enableXRayDaemon);
+
+                                        continue;
+                                    }
                                 }
                             }
                         }
@@ -242,6 +263,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
                             this._originalHealthCheckUri = healthCheckUri;
                             this._pageUI.HealthCheckUri = healthCheckUri;
+
+                            this._originalEnableXRayDaemon = enableXRayDaemon;
+                            this._pageUI.EnableXRayDaemon = enableXRayDaemon;
 
                             this._pageUI.ConfigureForEnvironmentType(isSingleInstanceEnvironment);
 
@@ -318,6 +342,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
             HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_VersionLabel] = _pageUI.DeploymentVersionLabel;
             HostingWizard[BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_AppOptionsUpdated] = this.HasEnvironmentSettingsChanged;
+
+            HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon] = this._pageUI.EnableXRayDaemon;
         }
 
         private bool HasEnvironmentSettingsChanged
@@ -341,6 +367,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                     return true;
 
                 if (this._pageUI.HealthCheckUri != this._originalHealthCheckUri)
+                    return true;
+
+                if (this._pageUI.EnableXRayDaemon != this._originalEnableXRayDaemon)
                     return true;
 
                 return false;

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using log4net;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -61,20 +63,27 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
 
         private void OnTextViewMouseHover(object sender, MouseHoverEventArgs e)
         {
-            SnapshotPoint? point = this.GetMousePosition(new SnapshotPoint(_textView.TextSnapshot, e.Position));
-
-            if (point != null)
+            try
             {
-                ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(point.Value.Position,
-                    PointTrackingMode.Positive);
+                SnapshotPoint? point = this.GetMousePosition(new SnapshotPoint(_textView.TextSnapshot, e.Position));
 
-                // Find the broker for this buffer
-
-                if (!_componentContext.QuickInfoBroker.IsQuickInfoActive(_textView))
+                if (point != null)
                 {
-                    _session = _componentContext.QuickInfoBroker.CreateQuickInfoSession(_textView, triggerPoint, true);
-                    _session.Start();
+                    ITrackingPoint triggerPoint = point.Value.Snapshot.CreateTrackingPoint(point.Value.Position,
+                        PointTrackingMode.Positive);
+
+                    // Find the broker for this buffer
+
+                    if (!_componentContext.QuickInfoBroker.IsQuickInfoActive(_textView))
+                    {
+                        _session = _componentContext.QuickInfoBroker.CreateQuickInfoSession(_textView, triggerPoint, true);
+                        _session.Start();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                LogManager.GetLogger(typeof(QuickInfoListener)).Error("Error with quick info.", ex);
             }
         }
 

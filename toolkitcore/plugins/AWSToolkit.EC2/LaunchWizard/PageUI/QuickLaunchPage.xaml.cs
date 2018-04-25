@@ -111,6 +111,9 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
             }
 
             _securityGroups.Cursor = Cursors.Arrow;
+
+            NotifyPropertyChanged("HasSelectedAMI");
+            NotifyPropertyChanged("HasSecurityGroupsAndAMI");
         }
 
         public ObservableCollection<VpcAndSubnetWrapper> AvailableVpcSubnets { get; private set; }

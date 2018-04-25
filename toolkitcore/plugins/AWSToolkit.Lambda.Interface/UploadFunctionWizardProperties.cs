@@ -162,6 +162,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages
         /// </summary>
         public static readonly string WizardResult = "wizardResult";
 
+
+        public const string DeadLetterTargetArn = "DLQTargetArn";
+        public const string TracingMode = "TracingMode";
         public const string CloudFormationTemplate = "cloudformationTemplate";
         public const string CloudFormationParameters = "cloudFormationTemplateParameters";
         public const string StackName = "stackName";
@@ -175,6 +178,10 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages
 
         public const string SelectedProjectFile = "SelectedProjectFile";
 
-
+        /// <summary>
+        /// Bool, indicates if xray is available in the region the app is being deployed to
+        /// and therefore we can offer to enable.
+        /// </summary>
+        public static readonly string XRayAvailable = "xrayAvailableInRegion";
     }
 }

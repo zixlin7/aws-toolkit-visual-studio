@@ -214,6 +214,9 @@
                 <TabItem Header="Event Sources">
                     <components:EventSourcesControl x:Name="_ctlEventSourcesComponent" />
                 </TabItem>
+                <TabItem Header="AWS X-Ray">
+                    <components:XRaySetting x:Name="_ctlXRayComponent" />
+                </TabItem>
                 <TabItem Header="Logs">
                     <components:FunctionLogsControl x:Name="_ctlLogsComponent" />
                 </TabItem>

@@ -308,6 +308,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                     }
                 };
 
+                var targetType = state.HostingWizard.IsFargateLaunch() ? TargetTypeEnum.Ip : TargetTypeEnum.Instance;
 
                 string listenerArn = state.HostingWizard[PublishContainerToAWSWizardProperties.ListenerArn] as string;
                 if (state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewListenerPort] is bool &&
@@ -318,8 +319,6 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                         string.Equals(state.HostingWizard[PublishContainerToAWSWizardProperties.NewPathPattern].ToString(), "/"))
                     {
                         this.Helper.AppendUploadStatus("Creating TargetGroup for ELB Listener");
-
-                        var targetType = state.HostingWizard.IsFargateLaunch() ? TargetTypeEnum.Ip : TargetTypeEnum.Instance;
 
                         targetArn = this._elbClient.CreateTargetGroup(new CreateTargetGroupRequest
                         {
@@ -343,7 +342,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                             Name = makeTargetGroupNameUnique("Default-ECS-" + state.HostingWizard[PublishContainerToAWSWizardProperties.ClusterName] as string),
                             Port = 80,
                             Protocol = ProtocolEnum.HTTP,
-                            TargetType = TargetTypeEnum.Instance,
+                            TargetType = targetType,
                             HealthCheckPath = "/",
                             VpcId = state.HostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string
                         }).TargetGroups[0].TargetGroupArn;
@@ -387,7 +386,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                         Name = makeTargetGroupNameUnique(state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] as string),
                         Port = 80,
                         Protocol = ProtocolEnum.HTTP,
-                        TargetType = TargetTypeEnum.Instance,
+                        TargetType = targetType,
                         HealthCheckPath = state.HostingWizard[PublishContainerToAWSWizardProperties.HealthCheckPath] as string,
                         VpcId = state.HostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string
                     }).TargetGroups[0].TargetGroupArn;
@@ -582,11 +581,28 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 Description = "Load Balancer created for the ECS Cluster " + state.HostingWizard[PublishContainerToAWSWizardProperties.ClusterName]
             }).GroupId;
 
-            this._ec2Client.CreateTags(new CreateTagsRequest
+            this.Helper.AppendUploadStatus("Tagging new security group");
+            for (int i = 0; ; i++)
             {
-                Resources = new List<string> { groupId },
-                Tags = new List<Amazon.EC2.Model.Tag> { new Amazon.EC2.Model.Tag { Key = Constants.WIZARD_CREATE_TAG_KEY, Value = Constants.WIZARD_CREATE_TAG_VALUE } }
-            });
+                try
+                {
+                    this._ec2Client.CreateTags(new CreateTagsRequest
+                    {
+                        Resources = new List<string> { groupId },
+                        Tags = new List<Amazon.EC2.Model.Tag> { new Amazon.EC2.Model.Tag { Key = Constants.WIZARD_CREATE_TAG_KEY, Value = Constants.WIZARD_CREATE_TAG_VALUE } }
+                    });
+                    break;
+                }
+                catch
+                {
+                    if(i >= 5)
+                    {
+                        throw;
+                    }
+
+                    Thread.Sleep(TimeSpan.FromSeconds(i));
+                }
+            }
 
             this.Helper.AppendUploadStatus("Authorizing access to port " + state.HostingWizard[PublishContainerToAWSWizardProperties.NewListenerPort] + " for CidrIp 0.0.0.0/0");
             this._ec2Client.AuthorizeSecurityGroupIngress(new AuthorizeSecurityGroupIngressRequest

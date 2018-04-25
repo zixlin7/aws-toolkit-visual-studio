@@ -72,7 +72,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
             this._lambdaClient = lambdaClient;
 
-            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.Instance.GetRegion(region);
+            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.GetInstance().GetRegion(region);
 
             var dynamoDBConfig = new AmazonDynamoDBConfig();
             dynamoDBConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.DYNAMODB_SERVICE_NAME).Url;

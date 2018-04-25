@@ -76,7 +76,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             EnvironmentViewModel environmentModel = state as EnvironmentViewModel;
             try
             {
-                var endpoints = RegionEndPointsManager.Instance.GetRegion(environmentModel.ApplicationViewModel.RegionSystemName);
+                var endpoints = RegionEndPointsManager.GetInstance().GetRegion(environmentModel.ApplicationViewModel.RegionSystemName);
                 var ec2Client = environmentModel.AccountViewModel.CreateServiceClient<AmazonEC2Client>(endpoints);
                 var securityGroupName = environmentModel.Name + Amazon.AWSToolkit.Constants.BEANSTALK_RDS_SECURITY_GROUP_POSTFIX;
 

@@ -59,7 +59,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
                 seedProperties[CommonWizardProperties.propkey_NavigatorRootViewModel] = _rootModel;
                 seedProperties[RDSWizardProperties.SeedData.propkey_RDSClient] = _rootModel.RDSClient;
 
-                var endPoints = RegionEndPointsManager.Instance.GetRegion(_rootModel.CurrentEndPoint.RegionSystemName);
+                var endPoints = RegionEndPointsManager.GetInstance().GetRegion(_rootModel.CurrentEndPoint.RegionSystemName);
                 var endPoint = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
 
                 var config = new AmazonEC2Config() { ServiceURL = endPoint.Url };

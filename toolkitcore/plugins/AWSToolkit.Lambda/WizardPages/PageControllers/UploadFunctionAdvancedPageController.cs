@@ -14,6 +14,9 @@ using Amazon.KeyManagementService;
 using Amazon.KeyManagementService.Model;
 using Amazon.AWSToolkit.Lambda.Model;
 
+using Amazon.SimpleNotificationService;
+using Amazon.SQS;
+
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 {
     /// <summary>
@@ -88,6 +91,10 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             LoadExistingVpcSubnets();
             LoadExistingKMSKeys();
 
+            LoadDLQTargets();
+
+            _pageUI.SetXRayAvailability((bool)HostingWizard.GetProperty(UploadFunctionWizardProperties.XRayAvailable));
+
             TestForwardTransitionEnablement();
         }
 
@@ -161,12 +168,22 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                     HostingWizard[UploadFunctionWizardProperties.SecurityGroups] = _pageUI.SelectedSecurityGroups;
 
                     HostingWizard[UploadFunctionWizardProperties.EnvironmentVariables] = _pageUI.SelectedEnvironmentVariables;
+
+                    HostingWizard[UploadFunctionWizardProperties.DeadLetterTargetArn] = _pageUI.SelectedDLQTargetArn ?? "";
+
+                    if ((bool) HostingWizard[UploadFunctionWizardProperties.XRayAvailable])
+                        HostingWizard[UploadFunctionWizardProperties.TracingMode] = _pageUI.IsEnableActiveTracing
+                            ? Amazon.Lambda.TracingMode.Active.ToString()
+                            : Amazon.Lambda.TracingMode.PassThrough.ToString();
+                    else
+                        HostingWizard[UploadFunctionWizardProperties.TracingMode] = Amazon.Lambda.TracingMode.PassThrough.ToString();
+
                     // Lambda's api treats 'no key specified' as 'use service default key'
                     var kmsKey = _pageUI.SelectedKMSKey;
                     if (kmsKey == KeyAndAliasWrapper.LambdaDefaultKMSKey.Key)
                         HostingWizard[UploadFunctionWizardProperties.KMSKey] = null;
                     else
-                        HostingWizard[UploadFunctionWizardProperties.KMSKey] = kmsKey;
+                        HostingWizard[UploadFunctionWizardProperties.KMSKey] = kmsKey.KeyArn;
                 }
                 else
                     shouldProgress = false;
@@ -257,6 +274,28 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             TestForwardTransitionEnablement();
         }
 
+        void LoadDLQTargets()
+        {
+            Interlocked.Increment(ref _backgroundWorkersActive);
+            new QueryDLQTargetsWorker(
+                                SNSClient,
+                                SQSClient,
+                                HostingWizard.Logger,
+                                OnDLQTargetsAvailable);
+        }
+
+        void OnDLQTargetsAvailable(QueryDLQTargetsWorker.QueryResults results)
+        {
+            Interlocked.Decrement(ref _backgroundWorkersActive);
+
+            if (!string.IsNullOrEmpty(results.TopicsErrorMessage))
+                this.HostingWizard.SetPageError(results.TopicsErrorMessage);
+            if (!string.IsNullOrEmpty(results.QueuesErrorMessage))
+                this.HostingWizard.SetPageError(results.QueuesErrorMessage);
+
+            this._pageUI.SetAvailableDLQTargets(results.TopicArns, results.QueueArns);
+        }
+
         private IAmazonEC2 EC2Client
         {
             get
@@ -276,6 +315,28 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 var region = HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
 
                 return account.CreateServiceClient<AmazonKeyManagementServiceClient>(region);
+            }
+        }
+
+        private IAmazonSimpleNotificationService SNSClient
+        {
+            get
+            {
+                var account = HostingWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
+                var region = HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+
+                return account.CreateServiceClient<AmazonSimpleNotificationServiceClient>(region);
+            }
+        }
+
+        private IAmazonSQS SQSClient
+        {
+            get
+            {
+                var account = HostingWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
+                var region = HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+
+                return account.CreateServiceClient<AmazonSQSClient>(region);
             }
         }
     }

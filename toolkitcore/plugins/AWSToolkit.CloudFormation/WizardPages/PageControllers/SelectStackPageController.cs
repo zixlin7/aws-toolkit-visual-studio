@@ -95,7 +95,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
                 {
                     lastRegionDeployedTo = HostingWizard[DeploymentWizardProperties.SeedData.propkey_LastRegionDeployedTo] as string;
                     if (!string.IsNullOrEmpty(lastRegionDeployedTo))
-                        region = RegionEndPointsManager.Instance.GetRegion(lastRegionDeployedTo);
+                        region = RegionEndPointsManager.GetInstance().GetRegion(lastRegionDeployedTo);
                 }
 
                 if (account == null)

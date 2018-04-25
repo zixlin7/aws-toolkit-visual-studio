@@ -170,7 +170,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
                                                             BeanstalkConstants.DeploymentTargetQueryParam_ApplicationName,
                                                             BeanstalkConstants.DeploymentTargetQueryParam_EnvironmentName));
 
-            var endpoint = RegionEndPointsManager.Instance.GetRegion(region)
+            var endpoint = RegionEndPointsManager.GetInstance().GetRegion(region)
                             .GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME);
             var config = new AmazonElasticBeanstalkConfig();
             config.ServiceURL = endpoint.Url;
@@ -210,7 +210,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
         IEnumerable<ExistingServiceDeployment> IAWSToolkitDeploymentService.QueryToolkitDeployments(AccountViewModel account, string region, ILog logger)
         {
             var deployments = new List<ExistingServiceDeployment>();
-            var endpoint = RegionEndPointsManager.Instance.GetRegion(region).GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME);
+            var endpoint = RegionEndPointsManager.GetInstance().GetRegion(region).GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME);
             if (endpoint == null)
                 return deployments;
 

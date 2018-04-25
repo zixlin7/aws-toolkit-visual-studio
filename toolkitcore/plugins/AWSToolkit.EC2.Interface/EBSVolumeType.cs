@@ -17,7 +17,7 @@ namespace Amazon.AWSToolkit.EC2
             if (MinimumSize.HasValue)
                 return MinimumSize.Value;
 
-            if (platform.Equals("windows", StringComparison.OrdinalIgnoreCase))
+            if (platform != null && platform.Equals("windows", StringComparison.OrdinalIgnoreCase))
                 return EC2ServiceMeta.Instance.DefaultWindowsRootVolumeSize;
 
             return EC2ServiceMeta.Instance.DefaultLinuxRootVolumeSize;

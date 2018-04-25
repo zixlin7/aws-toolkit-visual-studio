@@ -20,7 +20,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
             : base(metaNode, parent, name)
         {
             this._baseName = name;
-            this._region = RegionEndPointsManager.Instance.GetDefaultRegionEndPoints();
+            this._region = RegionEndPointsManager.GetInstance().GetDefaultRegionEndPoints();
             this._endPoint = this._region.GetEndpoint(this.MetaNode.EndPointSystemName);
             BuildClient(this.AccountViewModel.Credentials);
         }
@@ -39,7 +39,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
 
         public void UpdateEndPoint(string regionName)
         {
-            this._region = RegionEndPointsManager.Instance.GetRegion(regionName);
+            this._region = RegionEndPointsManager.GetInstance().GetRegion(regionName);
             this._endPoint = this._region.GetEndpoint(this.MetaNode.EndPointSystemName);
             this.BuildClient(this.AccountViewModel.Credentials);
             this.Refresh(true);

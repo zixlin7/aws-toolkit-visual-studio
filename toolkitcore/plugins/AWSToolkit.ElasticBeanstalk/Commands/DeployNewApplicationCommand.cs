@@ -40,7 +40,7 @@ using Amazon.IdentityManagement.Model;
 using AWSDeployment;
 
 using log4net;
-
+using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 {
@@ -140,7 +140,20 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                         Deployment.LaunchIntoVPC = !string.IsNullOrEmpty(Deployment.VPCId);
                     }
                 }
-                
+
+                string enableXRayDaemon = getValue<string>(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon);
+                if (!string.IsNullOrEmpty(enableXRayDaemon))
+                {
+                    Deployment.EnableXRayDaemon = Convert.ToBoolean(enableXRayDaemon);
+
+                    if(Deployment.EnableXRayDaemon.GetValueOrDefault())
+                    {
+                        ToolkitEvent evnt = new ToolkitEvent();
+                        evnt.AddProperty(AttributeKeys.XRayEnabled, "Beanstalk");
+                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                    }
+                }
+
                 Deployment.VPCSecurityGroupId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_VPCSecurityGroup);
                 Deployment.InstanceSubnetId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_InstanceSubnet);
                 Deployment.ELBSubnetId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ELBSubnet);

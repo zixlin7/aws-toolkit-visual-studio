@@ -1,0 +1,5 @@
+{
+	"Amazon.ECS.Tools" : "1.1.4",
+	"Amazon.ElasticBeanstalk.Tools" : "1.1.3",
+	"Amazon.Lambda.Tools" : "2.1.2"
+}

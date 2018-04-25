@@ -8,6 +8,7 @@ using log4net;
 using log4net.Config;
 using ThirdParty.Json.LitJson;
 using System.Text;
+using System.Diagnostics;
 
 namespace Amazon.AWSToolkit
 {
@@ -22,20 +23,8 @@ namespace Amazon.AWSToolkit
             {
                 var assemblyName = args.Name.Substring(0, pos);
                 var extensionRoot = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                string testPath;
+                string testPath = Path.Combine(extensionRoot, assemblyName + ".dll");
 
-                // all sdk assemblies should be in .\sdk subfolder
-                if (assemblyName.StartsWith("AWSSDK.", StringComparison.OrdinalIgnoreCase))
-                {
-                    testPath = Path.Combine(extensionRoot, "SDK", assemblyName + ".dll");
-                    if (File.Exists(testPath))
-                    {
-                        LOGGER.InfoFormat("...resolved for {0}", testPath);
-                        return Assembly.LoadFile(testPath);
-                    }
-                }
-
-                testPath = Path.Combine(extensionRoot, assemblyName + ".dll");
                 if (File.Exists(testPath))
                     return Assembly.LoadFile(testPath);
             }
@@ -243,6 +232,28 @@ namespace Amazon.AWSToolkit
                 {
                     File.WriteAllText(projectFilePath, content);
                 }
+            }
+        }
+
+        public static void LaunchXRayHelp(bool isDotNet)
+        {
+            var url = isDotNet ? "https://github.com/aws/aws-xray-sdk-dotnet" : "https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html";
+            Process.Start(new ProcessStartInfo(url));
+        }
+
+        public static string PrettyPrintJson(string json)
+        {
+            var data = JsonMapper.ToObject(json);
+            return PrettyPrintJson(data);
+        }
+
+        public static string PrettyPrintJson(JsonData data)
+        {
+            using (var writer = new StringWriter())
+            {
+                var jsonWriter = new JsonWriter(writer) { PrettyPrint = true };
+                data.ToJson(jsonWriter);
+                return writer.ToString().Trim();
             }
         }
     }

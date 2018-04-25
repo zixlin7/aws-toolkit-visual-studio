@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json.schemastore.org/schema-catalog",
+
+  "version": 1.0,
+  "schemas": [
+    {
+      "name": "aws-windows-deployment-manifest-schema.json",
+      "description": "Manifest file for .NET deployment with AWS Elastic Beanstalk",
+      "fileMatch": [ "aws-windows-deployment-manifest.json" ],
+      "url": "https://aws-vs-toolkit.s3.amazonaws.com/JSONSchemas/aws-windows-deployment-manifest-schema.json",
+      "versions": {
+        "1": "https://aws-vs-toolkit.s3.amazonaws.com/JSONSchemas/aws-windows-deployment-manifest-schema.v1.json"
+      }
+    }
+  ]
+}
