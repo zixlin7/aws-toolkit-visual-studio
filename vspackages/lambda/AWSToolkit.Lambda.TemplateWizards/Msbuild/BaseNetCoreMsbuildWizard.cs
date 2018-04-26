@@ -98,8 +98,9 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
                 try
                 {
                     var originalContent = File.ReadAllText(file);
-                    var replacedContent = originalContent.Replace("BlueprintBaseName.1", _replacementsDictionary["$safeprojectname$"]).
-                                            Replace("BlueprintBaseName._1", _replacementsDictionary["$safeprojectname$"].Replace('-', '_'));
+                    var replacedContent = originalContent.Replace("BlueprintBaseName.1", _replacementsDictionary["$safeprojectname$"])
+                                            .Replace("BlueprintBaseName._1", _replacementsDictionary["$safeprojectname$"].Replace('-', '_'))
+                                            .Replace("BlueprintBaseName", _replacementsDictionary["$safeprojectname$"]);
 
                     if (file.EndsWith("aws-lambda-tools-defaults.json"))
                     {
