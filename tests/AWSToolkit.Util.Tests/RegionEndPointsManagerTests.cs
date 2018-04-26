@@ -63,7 +63,8 @@ namespace AWSToolkit.Util.Tests
                 badEndpointsXml = reader.ReadToEnd();
             }
 
-            var tempLocation = Path.Combine(Path.GetTempPath(), TestUtil.TestFileFolder);
+            // use a random subfolder so tests can run in parallel
+            var tempLocation = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Directory.CreateDirectory(tempLocation);
             var dummyEndpointsPath = Path.Combine(tempLocation, Constants.SERVICE_ENDPOINT_FILE);
             File.WriteAllText(dummyEndpointsPath, badEndpointsXml);
