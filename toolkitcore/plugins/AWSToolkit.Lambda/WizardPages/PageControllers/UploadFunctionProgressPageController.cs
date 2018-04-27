@@ -440,7 +440,21 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                     evnt.AddProperty(AttributeKeys.LambdaFunctionUsesXRay, "true");
                     SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
                 }
-                
+
+                var projectExtension = Path.GetExtension(projectFile);
+                if (string.Equals(projectExtension, ".csproj", StringComparison.OrdinalIgnoreCase))
+                {
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.LambdaDeployedFunctionLanguage, "C#");
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                }
+                else if (string.Equals(projectExtension, ".fsproj", StringComparison.OrdinalIgnoreCase))
+                {
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.LambdaDeployedFunctionLanguage, "F#");
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                }
+
 
                 if (persist)
                 {

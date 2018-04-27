@@ -25,6 +25,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         LambdaNodeJsNewProject,
         LambdaNETCoreNewProject,
         LambdaNETCoreNewProjectType,
+        LambdaNETCoreNewProjectLanguage,
 
         LambdaFunctionTargetFramework,
         LambdaFunctionMemorySize,
@@ -38,6 +39,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         LambdaFunctionUsesAspNetCore,
         LambdaFunctionUsesRazorPages,
         LambdaFunctionUsesXRay,
+        LambdaDeployedFunctionLanguage,
 
         LambdaTestInvoke,
         LambdaEventSourceSetupSuccess,

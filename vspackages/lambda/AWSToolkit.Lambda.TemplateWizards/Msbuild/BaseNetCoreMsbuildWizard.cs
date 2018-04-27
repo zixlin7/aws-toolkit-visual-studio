@@ -187,6 +187,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
         public abstract string Description { get; }
         public abstract string[] RequiredTags { get; }
         public abstract string ProjectType { get; }
+        public abstract string ProjectLanguage { get; }
         public abstract bool CreateTestProject { get; }
 
         // This method is only called for item templates,
@@ -227,6 +228,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
 
                 ToolkitEvent evnt = new ToolkitEvent();
                 evnt.AddProperty(AttributeKeys.LambdaNETCoreNewProjectType, this.ProjectType);
+                evnt.AddProperty(AttributeKeys.LambdaNETCoreNewProjectLanguage, this.ProjectLanguage);
                 evnt.AddProperty(AttributeKeys.LambdaNETCoreNewProject, this._blueprint.Name);
                 SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }

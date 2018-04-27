@@ -38,6 +38,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Msbuild
         public override string Title => TITLE;
 
         public override string ProjectType => "LambdaProject-Msbuild";
+        public override string ProjectLanguage => "C#";
 
         public override string Description => DESCRIPTION;
 
