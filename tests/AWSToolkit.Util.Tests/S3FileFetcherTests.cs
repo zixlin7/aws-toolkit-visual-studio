@@ -12,7 +12,6 @@ namespace AWSToolkit.Util.Tests
         private const string DummyContentFromUserFolderLocation = "Dummy content found in user-configured location";
         private const string DummyContentFromCacheLocation = "Dummy content found in cache location";
         private const string EndpointsFilename = "ServiceEndPoints.xml"; // use real name so we detect accidental cache hits from probing
-        private const string ContentFolder = "HostedFileTesting";
 
         /// <summary>
         /// Tests that if a user-configured location is set for hosted files, the endpoints 
@@ -21,7 +20,8 @@ namespace AWSToolkit.Util.Tests
         [Fact]
         public void TestLoadFromConfiguredFolder()
         {
-            var tempLocation = Path.Combine(Path.GetTempPath(), ContentFolder);
+            // use a random subfolder so tests can run in parallel
+            var tempLocation = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Directory.CreateDirectory(tempLocation);
             var dummyEndpointsPath = Path.Combine(tempLocation, EndpointsFilename);
             File.WriteAllText(dummyEndpointsPath, DummyContentFromUserFolderLocation);
@@ -60,7 +60,8 @@ namespace AWSToolkit.Util.Tests
         [Fact]
         public void TestLoadFromUserProfileCache()
         {
-            var tempLocation = Path.Combine(Path.GetTempPath(), ContentFolder);
+            // use a random subfolder so tests can run in parallel
+            var tempLocation = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Directory.CreateDirectory(tempLocation);
             var dummyEndpointsPath = Path.Combine(tempLocation, EndpointsFilename);
             File.WriteAllText(dummyEndpointsPath, DummyContentFromCacheLocation);

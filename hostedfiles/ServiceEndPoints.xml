@@ -8,7 +8,7 @@
         <services>
             <service name="AutoScaling">https://autoscaling.ap-northeast-1.amazonaws.com</service>
             <service name="CloudFormation">https://cloudformation.ap-northeast-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="CloudFront">https://cloudfront.amazonaws.com</service>
+            <service name="CloudFront" authregion="us-east-1">https://cloudfront.amazonaws.com</service>
             <service name="CloudWatch">https://monitoring.ap-northeast-1.amazonaws.com</service>
             <service name="CloudWatchEvents">https://events.ap-northeast-1.amazonaws.com</service>
             <service name="CodeCommit">https://codecommit.ap-northeast-1.amazonaws.com</service>
@@ -21,7 +21,7 @@
             <service name="ECS">https://ecs.ap-northeast-1.amazonaws.com</service>
             <service name="ELB">https://elasticloadbalancing.ap-northeast-1.amazonaws.com</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.ap-northeast-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="IAM">https://iam.amazonaws.com</service>
+            <service name="IAM" authregion="us-east-1">https://iam.amazonaws.com</service>
             <service name="KMS">https://kms.ap-northeast-1.amazonaws.com</service>
             <service name="Kinesis">https://kinesis.ap-northeast-1.amazonaws.com</service>
             <service name="Lambda">https://lambda.ap-northeast-1.amazonaws.com</service>
@@ -43,11 +43,12 @@
         <services>
             <service name="AutoScaling">https://autoscaling.ap-northeast-2.amazonaws.com</service>
             <service name="CloudFormation">https://cloudformation.ap-northeast-2.amazonaws.com</service>
-            <service authregion="us-east-1" name="CloudFront">https://cloudfront.amazonaws.com</service>
+            <service name="CloudFront" authregion="us-east-1">https://cloudfront.amazonaws.com</service>
             <service name="CloudWatch">https://monitoring.ap-northeast-2.amazonaws.com</service>
             <service name="CloudWatchEvents">https://events.ap-northeast-2.amazonaws.com</service>
             <service name="CodeCommit">https://codecommit.ap-northeast-2.amazonaws.com</service>
             <service name="CodeDeploy">https://codedeploy.ap-northeast-2.amazonaws.com</service>
+            <service name="CodeStar">https://codestar.ap-northeast-2.amazonaws.com</service>
             <service name="DynamoDB">https://dynamodb.ap-northeast-2.amazonaws.com</service>
             <service name="DynamoDBStream">https://streams.dynamodb.ap-northeast-2.amazonaws.com</service>
             <service name="EC2">https://ec2.ap-northeast-2.amazonaws.com</service>
@@ -55,7 +56,7 @@
             <service name="ECS">https://ecs.ap-northeast-2.amazonaws.com</service>
             <service name="ELB">https://elasticloadbalancing.ap-northeast-2.amazonaws.com</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.ap-northeast-2.amazonaws.com</service>
-            <service authregion="us-east-1" name="IAM">https://iam.amazonaws.com</service>
+            <service name="IAM" authregion="us-east-1">https://iam.amazonaws.com</service>
             <service name="KMS">https://kms.ap-northeast-2.amazonaws.com</service>
             <service name="Kinesis">https://kinesis.ap-northeast-2.amazonaws.com</service>
             <service name="Lambda">https://lambda.ap-northeast-2.amazonaws.com</service>
@@ -76,7 +77,7 @@
         <services>
             <service name="AutoScaling">https://autoscaling.ap-south-1.amazonaws.com</service>
             <service name="CloudFormation">https://cloudformation.ap-south-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="CloudFront">https://cloudfront.amazonaws.com</service>
+            <service name="CloudFront" authregion="us-east-1">https://cloudfront.amazonaws.com</service>
             <service name="CloudWatch">https://monitoring.ap-south-1.amazonaws.com</service>
             <service name="CloudWatchEvents">https://events.ap-south-1.amazonaws.com</service>
             <service name="CodeCommit">https://codecommit.ap-south-1.amazonaws.com</service>
@@ -88,7 +89,7 @@
             <service name="ECS">https://ecs.ap-south-1.amazonaws.com</service>
             <service name="ELB">https://elasticloadbalancing.ap-south-1.amazonaws.com</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.ap-south-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="IAM">https://iam.amazonaws.com</service>
+            <service name="IAM" authregion="us-east-1">https://iam.amazonaws.com</service>
             <service name="KMS">https://kms.ap-south-1.amazonaws.com</service>
             <service name="Kinesis">https://kinesis.ap-south-1.amazonaws.com</service>
             <service name="Lambda">https://lambda.ap-south-1.amazonaws.com</service>
@@ -109,7 +110,7 @@
         <services>
             <service name="AutoScaling">https://autoscaling.ap-southeast-1.amazonaws.com</service>
             <service name="CloudFormation">https://cloudformation.ap-southeast-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="CloudFront">https://cloudfront.amazonaws.com</service>
+            <service name="CloudFront" authregion="us-east-1">https://cloudfront.amazonaws.com</service>
             <service name="CloudWatch">https://monitoring.ap-southeast-1.amazonaws.com</service>
             <service name="CloudWatchEvents">https://events.ap-southeast-1.amazonaws.com</service>
             <service name="CodeCommit">https://codecommit.ap-southeast-1.amazonaws.com</service>
@@ -122,7 +123,7 @@
             <service name="ECS">https://ecs.ap-southeast-1.amazonaws.com</service>
             <service name="ELB">https://elasticloadbalancing.ap-southeast-1.amazonaws.com</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.ap-southeast-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="IAM">https://iam.amazonaws.com</service>
+            <service name="IAM" authregion="us-east-1">https://iam.amazonaws.com</service>
             <service name="KMS">https://kms.ap-southeast-1.amazonaws.com</service>
             <service name="Kinesis">https://kinesis.ap-southeast-1.amazonaws.com</service>
             <service name="Lambda">https://lambda.ap-southeast-1.amazonaws.com</service>
@@ -144,7 +145,7 @@
         <services>
             <service name="AutoScaling">https://autoscaling.ap-southeast-2.amazonaws.com</service>
             <service name="CloudFormation">https://cloudformation.ap-southeast-2.amazonaws.com</service>
-            <service authregion="us-east-1" name="CloudFront">https://cloudfront.amazonaws.com</service>
+            <service name="CloudFront" authregion="us-east-1">https://cloudfront.amazonaws.com</service>
             <service name="CloudWatch">https://monitoring.ap-southeast-2.amazonaws.com</service>
             <service name="CloudWatchEvents">https://events.ap-southeast-2.amazonaws.com</service>
             <service name="CodeCommit">https://codecommit.ap-southeast-2.amazonaws.com</service>
@@ -157,7 +158,7 @@
             <service name="ECS">https://ecs.ap-southeast-2.amazonaws.com</service>
             <service name="ELB">https://elasticloadbalancing.ap-southeast-2.amazonaws.com</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.ap-southeast-2.amazonaws.com</service>
-            <service authregion="us-east-1" name="IAM">https://iam.amazonaws.com</service>
+            <service name="IAM" authregion="us-east-1">https://iam.amazonaws.com</service>
             <service name="KMS">https://kms.ap-southeast-2.amazonaws.com</service>
             <service name="Kinesis">https://kinesis.ap-southeast-2.amazonaws.com</service>
             <service name="Lambda">https://lambda.ap-southeast-2.amazonaws.com</service>
@@ -179,7 +180,7 @@
         <services>
             <service name="AutoScaling">https://autoscaling.ca-central-1.amazonaws.com</service>
             <service name="CloudFormation">https://cloudformation.ca-central-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="CloudFront">https://cloudfront.amazonaws.com</service>
+            <service name="CloudFront" authregion="us-east-1">https://cloudfront.amazonaws.com</service>
             <service name="CloudWatch">https://monitoring.ca-central-1.amazonaws.com</service>
             <service name="CloudWatchEvents">https://events.ca-central-1.amazonaws.com</service>
             <service name="CodeCommit">https://codecommit.ca-central-1.amazonaws.com</service>
@@ -192,11 +193,12 @@
             <service name="ECS">https://ecs.ca-central-1.amazonaws.com</service>
             <service name="ELB">https://elasticloadbalancing.ca-central-1.amazonaws.com</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.ca-central-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="IAM">https://iam.amazonaws.com</service>
+            <service name="IAM" authregion="us-east-1">https://iam.amazonaws.com</service>
             <service name="KMS">https://kms.ca-central-1.amazonaws.com</service>
             <service name="Kinesis">https://kinesis.ca-central-1.amazonaws.com</service>
             <service name="Lambda">https://lambda.ca-central-1.amazonaws.com</service>
             <service name="Logs">https://logs.ca-central-1.amazonaws.com</service>
+            <service name="OpsWorks">https://opsworks.ca-central-1.amazonaws.com</service>
             <service name="RDS">https://rds.ca-central-1.amazonaws.com</service>
             <service name="S3">https://s3.ca-central-1.amazonaws.com</service>
             <service name="SNS">https://sns.ca-central-1.amazonaws.com</service>
@@ -223,7 +225,7 @@
             <service name="ECS">https://ecs.cn-north-1.amazonaws.com.cn</service>
             <service name="ELB">https://elasticloadbalancing.cn-north-1.amazonaws.com.cn</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.cn-north-1.amazonaws.com.cn</service>
-            <service authregion="cn-north-1" name="IAM">https://iam.cn-north-1.amazonaws.com.cn</service>
+            <service name="IAM" authregion="cn-north-1">https://iam.cn-north-1.amazonaws.com.cn</service>
             <service name="Kinesis">https://kinesis.cn-north-1.amazonaws.com.cn</service>
             <service name="Lambda">https://lambda.cn-north-1.amazonaws.com.cn</service>
             <service name="Logs">https://logs.cn-north-1.amazonaws.com.cn</service>
@@ -250,7 +252,7 @@
             <service name="EC2">https://ec2.cn-northwest-1.amazonaws.com.cn</service>
             <service name="ELB">https://elasticloadbalancing.cn-northwest-1.amazonaws.com.cn</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.cn-northwest-1.amazonaws.com.cn</service>
-            <service authregion="cn-north-1" name="IAM">https://iam.cn-north-1.amazonaws.com.cn</service>
+            <service name="IAM" authregion="cn-north-1">https://iam.cn-north-1.amazonaws.com.cn</service>
             <service name="Kinesis">https://kinesis.cn-northwest-1.amazonaws.com.cn</service>
             <service name="Logs">https://logs.cn-northwest-1.amazonaws.com.cn</service>
             <service name="RDS">https://rds.cn-northwest-1.amazonaws.com.cn</service>
@@ -267,7 +269,7 @@
         <services>
             <service name="AutoScaling">https://autoscaling.eu-central-1.amazonaws.com</service>
             <service name="CloudFormation">https://cloudformation.eu-central-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="CloudFront">https://cloudfront.amazonaws.com</service>
+            <service name="CloudFront" authregion="us-east-1">https://cloudfront.amazonaws.com</service>
             <service name="CloudWatch">https://monitoring.eu-central-1.amazonaws.com</service>
             <service name="CloudWatchEvents">https://events.eu-central-1.amazonaws.com</service>
             <service name="CodeCommit">https://codecommit.eu-central-1.amazonaws.com</service>
@@ -280,7 +282,7 @@
             <service name="ECS">https://ecs.eu-central-1.amazonaws.com</service>
             <service name="ELB">https://elasticloadbalancing.eu-central-1.amazonaws.com</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.eu-central-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="IAM">https://iam.amazonaws.com</service>
+            <service name="IAM" authregion="us-east-1">https://iam.amazonaws.com</service>
             <service name="KMS">https://kms.eu-central-1.amazonaws.com</service>
             <service name="Kinesis">https://kinesis.eu-central-1.amazonaws.com</service>
             <service name="Lambda">https://lambda.eu-central-1.amazonaws.com</service>
@@ -301,7 +303,7 @@
         <services>
             <service name="AutoScaling">https://autoscaling.eu-west-1.amazonaws.com</service>
             <service name="CloudFormation">https://cloudformation.eu-west-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="CloudFront">https://cloudfront.amazonaws.com</service>
+            <service name="CloudFront" authregion="us-east-1">https://cloudfront.amazonaws.com</service>
             <service name="CloudWatch">https://monitoring.eu-west-1.amazonaws.com</service>
             <service name="CloudWatchEvents">https://events.eu-west-1.amazonaws.com</service>
             <service name="CodeCommit">https://codecommit.eu-west-1.amazonaws.com</service>
@@ -314,7 +316,7 @@
             <service name="ECS">https://ecs.eu-west-1.amazonaws.com</service>
             <service name="ELB">https://elasticloadbalancing.eu-west-1.amazonaws.com</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.eu-west-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="IAM">https://iam.amazonaws.com</service>
+            <service name="IAM" authregion="us-east-1">https://iam.amazonaws.com</service>
             <service name="KMS">https://kms.eu-west-1.amazonaws.com</service>
             <service name="Kinesis">https://kinesis.eu-west-1.amazonaws.com</service>
             <service name="Lambda">https://lambda.eu-west-1.amazonaws.com</service>
@@ -336,7 +338,7 @@
         <services>
             <service name="AutoScaling">https://autoscaling.eu-west-2.amazonaws.com</service>
             <service name="CloudFormation">https://cloudformation.eu-west-2.amazonaws.com</service>
-            <service authregion="us-east-1" name="CloudFront">https://cloudfront.amazonaws.com</service>
+            <service name="CloudFront" authregion="us-east-1">https://cloudfront.amazonaws.com</service>
             <service name="CloudWatch">https://monitoring.eu-west-2.amazonaws.com</service>
             <service name="CloudWatchEvents">https://events.eu-west-2.amazonaws.com</service>
             <service name="CodeCommit">https://codecommit.eu-west-2.amazonaws.com</service>
@@ -349,7 +351,7 @@
             <service name="ECS">https://ecs.eu-west-2.amazonaws.com</service>
             <service name="ELB">https://elasticloadbalancing.eu-west-2.amazonaws.com</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.eu-west-2.amazonaws.com</service>
-            <service authregion="us-east-1" name="IAM">https://iam.amazonaws.com</service>
+            <service name="IAM" authregion="us-east-1">https://iam.amazonaws.com</service>
             <service name="KMS">https://kms.eu-west-2.amazonaws.com</service>
             <service name="Kinesis">https://kinesis.eu-west-2.amazonaws.com</service>
             <service name="Lambda">https://lambda.eu-west-2.amazonaws.com</service>
@@ -370,9 +372,10 @@
         <services>
             <service name="AutoScaling">https://autoscaling.eu-west-3.amazonaws.com</service>
             <service name="CloudFormation">https://cloudformation.eu-west-3.amazonaws.com</service>
-            <service authregion="us-east-1" name="CloudFront">https://cloudfront.amazonaws.com</service>
+            <service name="CloudFront" authregion="us-east-1">https://cloudfront.amazonaws.com</service>
             <service name="CloudWatch">https://monitoring.eu-west-3.amazonaws.com</service>
             <service name="CloudWatchEvents">https://events.eu-west-3.amazonaws.com</service>
+            <service name="CodeCommit">https://codecommit.eu-west-3.amazonaws.com</service>
             <service name="CodeDeploy">https://codedeploy.eu-west-3.amazonaws.com</service>
             <service name="DynamoDB">https://dynamodb.eu-west-3.amazonaws.com</service>
             <service name="DynamoDBStream">https://streams.dynamodb.eu-west-3.amazonaws.com</service>
@@ -381,7 +384,7 @@
             <service name="ECS">https://ecs.eu-west-3.amazonaws.com</service>
             <service name="ELB">https://elasticloadbalancing.eu-west-3.amazonaws.com</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.eu-west-3.amazonaws.com</service>
-            <service authregion="us-east-1" name="IAM">https://iam.amazonaws.com</service>
+            <service name="IAM" authregion="us-east-1">https://iam.amazonaws.com</service>
             <service name="KMS">https://kms.eu-west-3.amazonaws.com</service>
             <service name="Kinesis">https://kinesis.eu-west-3.amazonaws.com</service>
             <service name="Lambda">https://lambda.eu-west-3.amazonaws.com</service>
@@ -401,7 +404,7 @@
         <services>
             <service name="AutoScaling">https://autoscaling.sa-east-1.amazonaws.com</service>
             <service name="CloudFormation">https://cloudformation.sa-east-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="CloudFront">https://cloudfront.amazonaws.com</service>
+            <service name="CloudFront" authregion="us-east-1">https://cloudfront.amazonaws.com</service>
             <service name="CloudWatch">https://monitoring.sa-east-1.amazonaws.com</service>
             <service name="CloudWatchEvents">https://events.sa-east-1.amazonaws.com</service>
             <service name="CodeCommit">https://codecommit.sa-east-1.amazonaws.com</service>
@@ -413,7 +416,7 @@
             <service name="ECS">https://ecs.sa-east-1.amazonaws.com</service>
             <service name="ELB">https://elasticloadbalancing.sa-east-1.amazonaws.com</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.sa-east-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="IAM">https://iam.amazonaws.com</service>
+            <service name="IAM" authregion="us-east-1">https://iam.amazonaws.com</service>
             <service name="KMS">https://kms.sa-east-1.amazonaws.com</service>
             <service name="Kinesis">https://kinesis.sa-east-1.amazonaws.com</service>
             <service name="Lambda">https://lambda.sa-east-1.amazonaws.com</service>
@@ -435,7 +438,7 @@
         <services>
             <service name="AutoScaling">https://autoscaling.us-east-1.amazonaws.com</service>
             <service name="CloudFormation">https://cloudformation.us-east-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="CloudFront">https://cloudfront.amazonaws.com</service>
+            <service name="CloudFront" authregion="us-east-1">https://cloudfront.amazonaws.com</service>
             <service name="CloudWatch">https://monitoring.us-east-1.amazonaws.com</service>
             <service name="CloudWatchEvents">https://events.us-east-1.amazonaws.com</service>
             <service name="CodeCommit">https://codecommit.us-east-1.amazonaws.com</service>
@@ -448,7 +451,7 @@
             <service name="ECS">https://ecs.us-east-1.amazonaws.com</service>
             <service name="ELB">https://elasticloadbalancing.us-east-1.amazonaws.com</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.us-east-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="IAM">https://iam.amazonaws.com</service>
+            <service name="IAM" authregion="us-east-1">https://iam.amazonaws.com</service>
             <service name="KMS">https://kms.us-east-1.amazonaws.com</service>
             <service name="Kinesis">https://kinesis.us-east-1.amazonaws.com</service>
             <service name="Lambda">https://lambda.us-east-1.amazonaws.com</service>
@@ -470,7 +473,7 @@
         <services>
             <service name="AutoScaling">https://autoscaling.us-east-2.amazonaws.com</service>
             <service name="CloudFormation">https://cloudformation.us-east-2.amazonaws.com</service>
-            <service authregion="us-east-1" name="CloudFront">https://cloudfront.amazonaws.com</service>
+            <service name="CloudFront" authregion="us-east-1">https://cloudfront.amazonaws.com</service>
             <service name="CloudWatch">https://monitoring.us-east-2.amazonaws.com</service>
             <service name="CloudWatchEvents">https://events.us-east-2.amazonaws.com</service>
             <service name="CodeCommit">https://codecommit.us-east-2.amazonaws.com</service>
@@ -483,7 +486,7 @@
             <service name="ECS">https://ecs.us-east-2.amazonaws.com</service>
             <service name="ELB">https://elasticloadbalancing.us-east-2.amazonaws.com</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.us-east-2.amazonaws.com</service>
-            <service authregion="us-east-1" name="IAM">https://iam.amazonaws.com</service>
+            <service name="IAM" authregion="us-east-1">https://iam.amazonaws.com</service>
             <service name="KMS">https://kms.us-east-2.amazonaws.com</service>
             <service name="Kinesis">https://kinesis.us-east-2.amazonaws.com</service>
             <service name="Lambda">https://lambda.us-east-2.amazonaws.com</service>
@@ -511,9 +514,11 @@
             <service name="DynamoDB">https://dynamodb.us-gov-west-1.amazonaws.com</service>
             <service name="DynamoDBStream">https://streams.dynamodb.us-gov-west-1.amazonaws.com</service>
             <service name="EC2">https://ec2.us-gov-west-1.amazonaws.com</service>
+            <service name="ECR">https://ecr.us-gov-west-1.amazonaws.com</service>
+            <service name="ECS">https://ecs.us-gov-west-1.amazonaws.com</service>
             <service name="ELB">https://elasticloadbalancing.us-gov-west-1.amazonaws.com</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.us-gov-west-1.amazonaws.com</service>
-            <service authregion="us-gov-west-1" name="IAM">https://iam.us-gov.amazonaws.com</service>
+            <service name="IAM" authregion="us-gov-west-1">https://iam.us-gov.amazonaws.com</service>
             <service name="KMS">https://kms.us-gov-west-1.amazonaws.com</service>
             <service name="Kinesis">https://kinesis.us-gov-west-1.amazonaws.com</service>
             <service name="Lambda">https://lambda.us-gov-west-1.amazonaws.com</service>
@@ -532,7 +537,7 @@
         <services>
             <service name="AutoScaling">https://autoscaling.us-west-1.amazonaws.com</service>
             <service name="CloudFormation">https://cloudformation.us-west-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="CloudFront">https://cloudfront.amazonaws.com</service>
+            <service name="CloudFront" authregion="us-east-1">https://cloudfront.amazonaws.com</service>
             <service name="CloudWatch">https://monitoring.us-west-1.amazonaws.com</service>
             <service name="CloudWatchEvents">https://events.us-west-1.amazonaws.com</service>
             <service name="CodeCommit">https://codecommit.us-west-1.amazonaws.com</service>
@@ -545,7 +550,7 @@
             <service name="ECS">https://ecs.us-west-1.amazonaws.com</service>
             <service name="ELB">https://elasticloadbalancing.us-west-1.amazonaws.com</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.us-west-1.amazonaws.com</service>
-            <service authregion="us-east-1" name="IAM">https://iam.amazonaws.com</service>
+            <service name="IAM" authregion="us-east-1">https://iam.amazonaws.com</service>
             <service name="KMS">https://kms.us-west-1.amazonaws.com</service>
             <service name="Kinesis">https://kinesis.us-west-1.amazonaws.com</service>
             <service name="Lambda">https://lambda.us-west-1.amazonaws.com</service>
@@ -567,7 +572,7 @@
         <services>
             <service name="AutoScaling">https://autoscaling.us-west-2.amazonaws.com</service>
             <service name="CloudFormation">https://cloudformation.us-west-2.amazonaws.com</service>
-            <service authregion="us-east-1" name="CloudFront">https://cloudfront.amazonaws.com</service>
+            <service name="CloudFront" authregion="us-east-1">https://cloudfront.amazonaws.com</service>
             <service name="CloudWatch">https://monitoring.us-west-2.amazonaws.com</service>
             <service name="CloudWatchEvents">https://events.us-west-2.amazonaws.com</service>
             <service name="CodeCommit">https://codecommit.us-west-2.amazonaws.com</service>
@@ -580,7 +585,7 @@
             <service name="ECS">https://ecs.us-west-2.amazonaws.com</service>
             <service name="ELB">https://elasticloadbalancing.us-west-2.amazonaws.com</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.us-west-2.amazonaws.com</service>
-            <service authregion="us-east-1" name="IAM">https://iam.amazonaws.com</service>
+            <service name="IAM" authregion="us-east-1">https://iam.amazonaws.com</service>
             <service name="KMS">https://kms.us-west-2.amazonaws.com</service>
             <service name="Kinesis">https://kinesis.us-west-2.amazonaws.com</service>
             <service name="Lambda">https://lambda.us-west-2.amazonaws.com</service>

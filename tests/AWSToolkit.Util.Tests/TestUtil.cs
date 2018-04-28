@@ -10,8 +10,6 @@ namespace AWSToolkit.Util.Tests
 {
     public static class TestUtil
     {
-        public const string TestFileFolder = "HostedFileTesting";
-
         public static Stream LoadInvalidXmlEndpointsFile(string fileName)
         {
             var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("AWSToolkit.Util.Tests.Resources." + fileName);
