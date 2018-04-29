@@ -87,6 +87,14 @@ namespace Amazon.AWSToolkit.CloudFormation.View.Components
                         case "AWS::RDS::DBInstance":
                             charts = new RDSInstanceCharts(this._controller.CloudWatchClient, resource.PhysicalResourceId);
                             break;
+                        case "AWS::Lambda::Function":
+                            charts = new LambdaCharts(this._controller.CloudWatchClient, resource.PhysicalResourceId);
+                            break;
+
+                        // TODO: We need to convert the API Gateway ID to the API Gateway Name
+                        //case "AWS::ApiGateway::RestApi":
+                        //    charts = new APIGatewayCharts(this._controller.CloudWatchClient, resource.PhysicalResourceId);
+                        //    break;
                     }
 
                     if (charts != null)

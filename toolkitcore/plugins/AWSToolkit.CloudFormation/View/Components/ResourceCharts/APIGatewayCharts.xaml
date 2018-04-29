@@ -1,0 +1,39 @@
+﻿<local:BaseResourceCharts x:Class="Amazon.AWSToolkit.CloudFormation.View.Components.ResourceCharts.APIGatewayCharts"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Amazon.AWSToolkit.CloudFormation.View.Components.ResourceCharts"
+             xmlns:charts="clr-namespace:Amazon.AWSToolkit.CommonUI.Charts;assembly=AWSToolkit"
+             mc:Ignorable="d" 
+             Height="auto" Width="auto">
+    
+    <local:BaseResourceCharts.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </local:BaseResourceCharts.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" Margin="5,5,5,5" Grid.ColumnSpan="2" Name="_ctlLabel" 
+                   Style="{DynamicResource awsTextBlock122PercentStyle}"/>
+
+        <charts:CloudWatchChart Name="_ctlAPICalls" Margin="5,5,5,5" Grid.Row="1" Grid.Column="0" Title="API Calls"/>
+        <charts:CloudWatchChart Name="_ctlLatency" Margin="5,5,5,5" Grid.Row="1" Grid.Column="1" Title="Latency"/>
+
+        <charts:CloudWatchChart Name="_ctl4xxErrors" Margin="5,5,5,5" Grid.Row="2" Grid.Column="0" Title="4xx Errors"/>
+        <charts:CloudWatchChart Name="_ctl5xxErrors" Margin="5,5,5,5" Grid.Row="2" Grid.Column="1" Title="5xx Errors"/>        
+    </Grid>
+</local:BaseResourceCharts>

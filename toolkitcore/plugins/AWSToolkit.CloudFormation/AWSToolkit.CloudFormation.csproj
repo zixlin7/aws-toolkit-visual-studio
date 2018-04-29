@@ -151,6 +151,12 @@
     <Compile Include="View\Components\DeploymentNotificationPanel.xaml.cs">
       <DependentUpon>DeploymentNotificationPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Components\ResourceCharts\APIGatewayCharts.xaml.cs">
+      <DependentUpon>APIGatewayCharts.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Components\ResourceCharts\LambdaCharts.xaml.cs">
+      <DependentUpon>LambdaCharts.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Components\StackConfigSavedControl.xaml.cs">
       <DependentUpon>StackConfigSavedControl.xaml</DependentUpon>
     </Compile>
@@ -299,6 +305,14 @@
       <Generator>MSBuild:Compile</Generator>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="View\Components\ResourceCharts\APIGatewayCharts.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\ResourceCharts\LambdaCharts.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Components\StackConfigSavedControl.xaml">
       <Generator>MSBuild:Compile</Generator>

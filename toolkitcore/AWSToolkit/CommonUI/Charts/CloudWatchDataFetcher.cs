@@ -45,6 +45,7 @@ namespace Amazon.AWSToolkit.CommonUI.Charts
             {
                 updateStatus("Loading");
 
+                var periodsInSeconds = determinePeriod(this._hoursToView);
                 DateTime now = DateTime.Now;
                 var response = this._cwClient.GetMetricStatistics(new GetMetricStatisticsRequest()
                 {
@@ -52,7 +53,7 @@ namespace Amazon.AWSToolkit.CommonUI.Charts
                     Namespace = this._metricNamespace,
                     Dimensions = this._dimensions,
                     Statistics = new List<string>(){ this._stats },
-                    Period = determinePeriod(this._hoursToView),
+                    Period = periodsInSeconds,
                     Unit = this._units,
                     EndTime = now.ToUniversalTime(),
                     StartTime = now.ToUniversalTime().AddHours(-this._hoursToView)
@@ -61,8 +62,15 @@ namespace Amazon.AWSToolkit.CommonUI.Charts
                 List<DataItem> dataPoints = new List<DataItem>();
                 double min = double.MaxValue;
                 double max = double.MinValue;
-                foreach (var item in response.Datapoints)
+
+                DateTime nextPeriod = DateTime.MinValue;
+                foreach (var item in response.Datapoints.OrderBy(x => x.Timestamp))
                 {
+                    if(nextPeriod != DateTime.MinValue && nextPeriod.AddSeconds(10) < item.Timestamp)
+                    {
+                        dataPoints.Add(new DataItem(nextPeriod, 0.0));
+                    }
+
                     double point;
                     switch (this._stats)
                     {
@@ -88,11 +96,13 @@ namespace Amazon.AWSToolkit.CommonUI.Charts
                         max = point;
                     if (point < min)
                         min = point;
+
+                    nextPeriod = item.Timestamp.AddSeconds(periodsInSeconds);
                 }
 
-                if (dataPoints.Count == 0)
+                if (dataPoints.Count < 2)
                 {
-                    updateStatus("No data found");
+                    updateStatus("Not enough data found to render chart");
                     return;
                 }
 
