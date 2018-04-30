@@ -84,6 +84,34 @@
       </HiddenTags>
     </Blueprint>
     <Blueprint>
+      <Name>Detect Image Labels</Name>
+      <Description>Use Amazon Rekognition service to tag image files in S3 with detected labels.</Description>
+      <SortOrder>101</SortOrder>
+      <File>DetectImageLabelsServerless.zip</File>
+      <Tags>
+        <Tag>S3</Tag>
+        <Tag>Rekognition</Tag>
+      </Tags>
+      <HiddenTags>
+        <HiddenTag>C#</HiddenTag>
+        <HiddenTag>ServerlessProject</HiddenTag>
+      </HiddenTags>
+    </Blueprint>
+    <Blueprint>
+      <Name>Detect Image Labels</Name>
+      <Description>Use Amazon Rekognition service to tag image files in S3 with detected labels.</Description>
+      <SortOrder>101</SortOrder>
+      <File>DetectImageLabelsServerless-FSharp.zip</File>
+      <Tags>
+        <Tag>S3</Tag>
+        <Tag>Rekognition</Tag>
+      </Tags>
+      <HiddenTags>
+        <HiddenTag>F#</HiddenTag>
+        <HiddenTag>ServerlessProject</HiddenTag>
+      </HiddenTags>
+    </Blueprint>
+    <Blueprint>
       <Name>Blog API using DynamoDB</Name>
       <Description>An AWS Serverless application example Blogging API using Amazon DynamoDB.</Description>
       <SortOrder>201</SortOrder>
@@ -272,6 +300,34 @@
       <HiddenTags>
         <HiddenTag>F#</HiddenTag>
         <HiddenTag>LambdaProject</HiddenTag>
+      </HiddenTags>
+    </Blueprint>
+    <Blueprint>
+      <Name>Simple S3 Function</Name>
+      <Description>A project for responding to S3 Event notifications</Description>
+      <SortOrder>101</SortOrder>
+      <File>SimpleS3FunctionServerless.zip</File>
+      <Tags>
+        <Tag>S3</Tag>
+        <Tag>Simple</Tag>
+      </Tags>
+      <HiddenTags>
+        <HiddenTag>C#</HiddenTag>
+        <HiddenTag>ServerlessProject</HiddenTag>
+      </HiddenTags>
+    </Blueprint>
+    <Blueprint>
+      <Name>Simple S3 Function</Name>
+      <Description>A project for responding to S3 Event notifications</Description>
+      <SortOrder>101</SortOrder>
+      <File>SimpleS3FunctionServerless-FSharp.zip</File>
+      <Tags>
+        <Tag>S3</Tag>
+        <Tag>Simple</Tag>
+      </Tags>
+      <HiddenTags>
+        <HiddenTag>F#</HiddenTag>
+        <HiddenTag>ServerlessProject</HiddenTag>
       </HiddenTags>
     </Blueprint>
     <Blueprint>
