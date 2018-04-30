@@ -128,8 +128,7 @@ namespace Amazon.Lambda.Tools.Commands
                 ValidateTargetFrameworkAndLambdaRuntime();
 
                 bool disableVersionCheck = this.GetBoolValueOrDefault(this.DisableVersionCheck, LambdaDefinedCommandOptions.ARGUMENT_DISABLE_VERSION_CHECK, false).GetValueOrDefault();
-                string publishLocation;
-                LambdaPackager.CreateApplicationBundle(this.DefaultConfig, this.Logger, this.WorkingDirectory, projectLocation, configuration, targetFramework, msbuildParameters, disableVersionCheck, out publishLocation, ref zipArchivePath);
+                LambdaPackager.CreateApplicationBundle(this.DefaultConfig, this.Logger, this.WorkingDirectory, projectLocation, configuration, targetFramework, msbuildParameters, disableVersionCheck, out _, ref zipArchivePath);
                 if (string.IsNullOrEmpty(zipArchivePath))
                     return false;
             }

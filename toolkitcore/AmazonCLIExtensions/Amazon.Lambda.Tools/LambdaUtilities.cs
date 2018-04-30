@@ -28,16 +28,14 @@ namespace Amazon.Lambda.Tools
                 return;
 
             string suffix = lambdaRuntime.Substring(lambdaRuntime.Length - 3);
-            Version runtimeVersion;
-            if (!Version.TryParse(suffix, out runtimeVersion))
+            if (!Version.TryParse(suffix, out var runtimeVersion))
                 return;
 
             if (targetFramework.Length < 3)
                 return;
 
             suffix = targetFramework.Substring(targetFramework.Length - 3);
-            Version frameworkVersion;
-            if (!Version.TryParse(suffix, out frameworkVersion))
+            if (!Version.TryParse(suffix, out var frameworkVersion))
                 return;
 
             if (runtimeVersion < frameworkVersion)
@@ -310,6 +308,9 @@ namespace Amazon.Lambda.Tools
             }
 
             var resources = root["Resources"];
+            if(resources == null)
+                throw new LambdaToolsException("CloudFormation template does not define any AWS resources", LambdaToolsException.LambdaErrorCode.ServerlessTemplateMissingResourceSection);
+            
 
             foreach (var field in resources.PropertyNames)
             {

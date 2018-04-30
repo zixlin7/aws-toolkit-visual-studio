@@ -41,9 +41,11 @@ namespace Amazon.Lambda.Tools
             out string publishLocation, ref string zipArchivePath)
         {
             string lambdaRuntimePackageStoreManifestContent = null;
+            var computedProjectLocation = Utilities.DetermineProjectLocation(workingDirectory, projectLocation);
+
             if (!disableVersionCheck)
             {
-                LambdaUtilities.ValidateMicrosoftAspNetCoreAllReference(logger, Utilities.DetermineProjectLocation(workingDirectory, projectLocation), out lambdaRuntimePackageStoreManifestContent);
+                LambdaUtilities.ValidateMicrosoftAspNetCoreAllReference(logger, computedProjectLocation, out lambdaRuntimePackageStoreManifestContent);
             }
 
             var cli = new LambdaDotNetCLIWrapper(logger, workingDirectory);
@@ -81,7 +83,7 @@ namespace Amazon.Lambda.Tools
             }
 
             if (zipArchivePath == null)
-                zipArchivePath = Path.Combine(Directory.GetParent(publishLocation).FullName, new DirectoryInfo(workingDirectory).Name + ".zip");
+                zipArchivePath = Path.Combine(Directory.GetParent(publishLocation).FullName, new DirectoryInfo(computedProjectLocation).Name + ".zip");
 
             zipArchivePath = Path.GetFullPath(zipArchivePath);
             logger?.WriteLine($"Zipping publish folder {publishLocation} to {zipArchivePath}");
@@ -332,12 +334,7 @@ namespace Amazon.Lambda.Tools
         {
             var runtimeHierarchy = new List<string>();
 
-            var lambdaAssembly = typeof(LambdaPackager).GetTypeInfo().Assembly;
-
-            // The full name for the embedded resource changes between the dotnet CLI and AWS Toolkit for VS so just look for the resource by is file name.
-            var manifestName = lambdaAssembly.GetManifestResourceNames().FirstOrDefault(x => x.EndsWith(LambdaConstants.RUNTIME_HIERARCHY));
-
-            using (var stream = lambdaAssembly.GetManifestResourceStream(manifestName))
+            using (var stream = typeof(LambdaPackager).GetTypeInfo().Assembly.GetManifestResourceStream(LambdaConstants.RUNTIME_HIERARCHY))
             using (var reader = new StreamReader(stream))
             {
                 var rootData = JsonMapper.ToObject(reader.ReadToEnd());

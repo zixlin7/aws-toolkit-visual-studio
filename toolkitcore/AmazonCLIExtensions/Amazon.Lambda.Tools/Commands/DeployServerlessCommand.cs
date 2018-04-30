@@ -153,8 +153,7 @@ namespace Amazon.Lambda.Tools.Commands
                 string msbuildParameters = this.GetStringValueOrDefault(this.MSBuildParameters, CommonDefinedCommandOptions.ARGUMENT_MSBUILD_PARAMETERS, false);
                 bool disableVersionCheck = this.GetBoolValueOrDefault(this.DisableVersionCheck, LambdaDefinedCommandOptions.ARGUMENT_DISABLE_VERSION_CHECK, false).GetValueOrDefault();
 
-                string publishLocation;
-                LambdaPackager.CreateApplicationBundle(this.DefaultConfig, this.Logger, this.WorkingDirectory, projectLocation, configuration, targetFramework, msbuildParameters, disableVersionCheck, out publishLocation, ref zipArchivePath);
+                LambdaPackager.CreateApplicationBundle(this.DefaultConfig, this.Logger, this.WorkingDirectory, projectLocation, configuration, targetFramework, msbuildParameters, disableVersionCheck, out _, ref zipArchivePath);
                 if (string.IsNullOrEmpty(zipArchivePath))
                     return false;
             }
@@ -254,7 +253,20 @@ namespace Amazon.Lambda.Tools.Commands
                         this.Logger.WriteLine("Template Parameters Applied:");
                         foreach (var parameter in setParameters)
                         {
-                            this.Logger.WriteLine($"\t{parameter.ParameterKey}: {parameter.ParameterValue}");
+                            Tuple<string, bool> dp = null;
+                            if (definedParameters != null)
+                            {
+                                dp = definedParameters.FirstOrDefault(x => string.Equals(x.Item1, parameter.ParameterKey));
+                            }
+
+                            if (dp != null && dp.Item2)
+                            {
+                                this.Logger.WriteLine($"\t{parameter.ParameterKey}: ****");
+                            }
+                            else
+                            {
+                                this.Logger.WriteLine($"\t{parameter.ParameterKey}: {parameter.ParameterValue}");
+                            }
                         }
                     }
                 }
@@ -361,7 +373,7 @@ namespace Amazon.Lambda.Tools.Commands
         /// </summary>
         /// <param name="templateBody"></param>
         /// <returns></returns>
-        private HashSet<string> GetTemplateDefinedParameters(string templateBody)
+        private List<Tuple<string, bool>> GetTemplateDefinedParameters(string templateBody)
         {
             try
             {
@@ -371,16 +383,23 @@ namespace Amazon.Lambda.Tools.Commands
                 
                 var parameters = root["Parameters"] as JObject;
 
-                var set = new HashSet<string>();
+                var parms = new List<Tuple<string, bool>>();
                 if (parameters == null) 
-                    return set;
+                    return parms;
                 
                 foreach (var property in parameters.Properties())
                 {
-                    set.Add(property.Name);
+                    var noEcho = false;
+                    var prop = parameters[property.Name] as JObject;
+                    if(prop != null && prop["NoEcho"] != null)
+                    {
+                        noEcho = Boolean.Parse(prop["NoEcho"].ToString());
+                    }
+
+                    parms.Add(new Tuple<string, bool>(property.Name, noEcho));
                 }
 
-                return set;
+                return parms;
             }
             catch
             {
@@ -577,7 +596,7 @@ namespace Amazon.Lambda.Tools.Commands
         }
 
 
-        private List<Parameter> GetTemplateParameters(Stack stack, HashSet<string> definedParameters)
+        private List<Parameter> GetTemplateParameters(Stack stack, List<Tuple<string, bool>> definedParameters)
         {
             var parameters = new List<Parameter>();
 
@@ -586,7 +605,13 @@ namespace Amazon.Lambda.Tools.Commands
             {
                 foreach (var kvp in map)
                 {
-                    if (definedParameters != null && !definedParameters.Contains(kvp.Key))
+                    Tuple<string, bool> dp = null;
+                    if(definedParameters != null)
+                    {
+                        dp = definedParameters.FirstOrDefault(x => string.Equals(x.Item1, kvp.Key));
+                    }
+
+                    if (dp == null)
                     {
                         this.Logger.WriteLine($"Skipping passed in template parameter {kvp.Key} because the template does not define that parameter");
                     }
@@ -635,7 +660,6 @@ namespace Amazon.Lambda.Tools.Commands
             data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_CLOUDFORMATION_TEMPLATE_PARAMETER.ConfigFileKey, LambdaToolsDefaults.FormatKeyValue(this.GetKeyValuePairOrDefault(this.TemplateParameters, LambdaDefinedCommandOptions.ARGUMENT_CLOUDFORMATION_TEMPLATE_PARAMETER, false)));
             data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_STACK_NAME.ConfigFileKey, this.GetStringValueOrDefault(this.StackName, LambdaDefinedCommandOptions.ARGUMENT_STACK_NAME, false));
             data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_CLOUDFORMATION_DISABLE_CAPABILITIES.ConfigFileKey, LambdaToolsDefaults.FormatCommaDelimitedList(this.GetStringValuesOrDefault(this.DisabledCapabilities, LambdaDefinedCommandOptions.ARGUMENT_CLOUDFORMATION_DISABLE_CAPABILITIES, false)));
-            data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_STACK_WAIT.ConfigFileKey, this.GetBoolValueOrDefault(this.WaitForStackToComplete, LambdaDefinedCommandOptions.ARGUMENT_STACK_WAIT, false));
 
         }
 
