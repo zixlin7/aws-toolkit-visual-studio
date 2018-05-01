@@ -76,6 +76,10 @@
 		<name>Lex Book Hotel</name>
 		<filename>LexBookHotel.json</filename>
 	</request>
+	<request category="Lex">
+		<name>Order Flowers</name>
+		<filename>OrderFlowers.json</filename>
+	</request>
 	
 	<request category="Alexa">
 		<name>Alexa Start Session</name>
