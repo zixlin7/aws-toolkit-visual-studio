@@ -3,7 +3,7 @@
   <version number="1.14.3.0" release-date="2018-05-03" prompt="false">
 	<change>Added F# AWS Lambda project templates.</change>
 	<change>Added Node.js 8.10 runtime enumeration when deploying Node.js AWS Lambda functions.</change>
-	<change>Added Lambda monitoring graphs to the CloudFormation stack view.<change>
+	<change>Added Lambda monitoring graphs to the CloudFormation stack view.</change>
 	<change>Fixed the serverless.template added to projects via "Add New Items -> Add Serverless Template" menu item to use dotnetcore2.0 runtime.</change>
   </version>
   <version number="1.14.2.0" release-date="2018-03-26" prompt="false">
