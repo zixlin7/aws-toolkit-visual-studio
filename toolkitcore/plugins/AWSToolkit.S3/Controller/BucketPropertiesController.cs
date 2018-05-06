@@ -528,8 +528,21 @@ namespace Amazon.AWSToolkit.S3.Controller
 
         private void loadWebSiteConfiguration()
         {
-            this._model.WebSiteEndPoint = string.Format("http://{0}.s3-website-{1}.amazonaws.com/", 
-                this._model.BucketName, this._model.RegionSystemName);
+            string regionSeparator = ".";
+            if(string.Equals("us-east-1", this._model.RegionSystemName) ||
+                string.Equals("us-west-1", this._model.RegionSystemName) ||
+                string.Equals("us-west-2", this._model.RegionSystemName) ||
+                string.Equals("ap-southeast-1", this._model.RegionSystemName) ||
+                string.Equals("ap-southeast-2", this._model.RegionSystemName) ||
+                string.Equals("ap-northeast-1", this._model.RegionSystemName) ||
+                string.Equals("eu-west-1", this._model.RegionSystemName) ||
+                string.Equals("sa-east-1", this._model.RegionSystemName))
+            {
+                regionSeparator = "-";
+            }
+
+            this._model.WebSiteEndPoint = string.Format("http://{0}.s3-website{1}{2}.amazonaws.com/", 
+                this._model.BucketName, regionSeparator, this._model.RegionSystemName);
 
             var response = this._s3Client.GetBucketWebsite(new GetBucketWebsiteRequest() { BucketName = this._model.BucketName });
 
