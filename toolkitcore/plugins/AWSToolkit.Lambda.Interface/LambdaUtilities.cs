@@ -124,7 +124,7 @@ namespace Amazon.AWSToolkit.Lambda
 
         #region Code to remove invalid accounts that were added IAM Roles created by the toolkit for Lambda deployment.
 
-        static readonly string[] invalidAccounts = new string[] { "arn:aws:iam::571267556732:root", "arn:aws:iam::147242972042:root" };
+        static readonly string[] invalidAccounts = new string[] { "arn:aws:iam::771762743097:root", "arn:aws:iam::571267556732:root", "arn:aws:iam::147242972042:root" };
         public static bool DoesAssumeRolePolicyDocumentContainsInvalidAccounts(string assumeRolePolicy)
         {
             foreach (var invalidAccount in invalidAccounts)
