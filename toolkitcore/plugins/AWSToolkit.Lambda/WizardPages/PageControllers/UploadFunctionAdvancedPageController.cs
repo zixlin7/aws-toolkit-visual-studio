@@ -1,4 +1,5 @@
-﻿using log4net;
+﻿using System;
+using log4net;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Controls;
@@ -233,9 +234,20 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         void OnVpcSubnetsAvailable(IEnumerable<Vpc> vpcs, IEnumerable<Subnet> subnets)
         {
-            this._pageUI.SetAvailableVpcSubnets(vpcs, subnets, HostingWizard[UploadFunctionWizardProperties.SeedSubnetIds] as string[]);
-            Interlocked.Decrement(ref _backgroundWorkersActive);
-            TestForwardTransitionEnablement();
+            try
+            {
+                this._pageUI.SetAvailableVpcSubnets(vpcs, subnets,
+                    HostingWizard[UploadFunctionWizardProperties.SeedSubnetIds] as string[]);
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Error adding vpc subnets onto the page", e);
+            }
+            finally
+            {
+                Interlocked.Decrement(ref _backgroundWorkersActive);
+                TestForwardTransitionEnablement();
+            }
         }
 
         void LoadExistingSecurityGroups(string vpcId)
@@ -249,9 +261,20 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         void OnSecurityGroupsAvailable(IEnumerable<SecurityGroup> securityGroups)
         {
-            this._pageUI.SetAvailableSecurityGroups(securityGroups, string.Empty, HostingWizard[UploadFunctionWizardProperties.SeedSecurityGroupIds] as string[]);
-            Interlocked.Decrement(ref _backgroundWorkersActive);
-            TestForwardTransitionEnablement();
+            try
+            {
+                this._pageUI.SetAvailableSecurityGroups(securityGroups, string.Empty,
+                    HostingWizard[UploadFunctionWizardProperties.SeedSecurityGroupIds] as string[]);
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Error adding security groups onto the page", e);
+            }
+            finally
+            {
+                Interlocked.Decrement(ref _backgroundWorkersActive);
+                TestForwardTransitionEnablement();
+            }
         }
 
         void LoadExistingKMSKeys()
@@ -264,14 +287,23 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         void OnKMSKeysAvailable(IEnumerable<KeyListEntry> keys, IEnumerable<AliasListEntry> aliases)
         {
-            string defaultKeyArn = null;
-            if (HostingWizard.IsPropertySet(UploadFunctionWizardProperties.KMSKey))
-                defaultKeyArn = HostingWizard[UploadFunctionWizardProperties.KMSKey] as string;
+            try
+            {
+                string defaultKeyArn = null;
+                if (HostingWizard.IsPropertySet(UploadFunctionWizardProperties.KMSKey))
+                    defaultKeyArn = HostingWizard[UploadFunctionWizardProperties.KMSKey] as string;
 
-            this._pageUI.SetAvailableKMSKeys(keys, aliases, defaultKeyArn);
-
-            Interlocked.Decrement(ref _backgroundWorkersActive);
-            TestForwardTransitionEnablement();
+                this._pageUI.SetAvailableKMSKeys(keys, aliases, defaultKeyArn);
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Error adding KMS keys onto the page", e);
+            }
+            finally
+            {
+                Interlocked.Decrement(ref _backgroundWorkersActive);
+                TestForwardTransitionEnablement();
+            }
         }
 
         void LoadDLQTargets()
@@ -286,14 +318,23 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         void OnDLQTargetsAvailable(QueryDLQTargetsWorker.QueryResults results)
         {
-            Interlocked.Decrement(ref _backgroundWorkersActive);
+            try
+            {
+                if (!string.IsNullOrEmpty(results.TopicsErrorMessage))
+                    this.HostingWizard.SetPageError(results.TopicsErrorMessage);
+                if (!string.IsNullOrEmpty(results.QueuesErrorMessage))
+                    this.HostingWizard.SetPageError(results.QueuesErrorMessage);
 
-            if (!string.IsNullOrEmpty(results.TopicsErrorMessage))
-                this.HostingWizard.SetPageError(results.TopicsErrorMessage);
-            if (!string.IsNullOrEmpty(results.QueuesErrorMessage))
-                this.HostingWizard.SetPageError(results.QueuesErrorMessage);
-
-            this._pageUI.SetAvailableDLQTargets(results.TopicArns, results.QueueArns);
+                this._pageUI.SetAvailableDLQTargets(results.TopicArns, results.QueueArns);
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Error adding DLQ targets onto the page", e);
+            }
+            finally
+            {
+                Interlocked.Decrement(ref _backgroundWorkersActive);
+            }
         }
 
         private IAmazonEC2 EC2Client

@@ -80,7 +80,7 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
             var aliasedKeys = new Dictionary<string, AliasListEntry>();
             foreach (var alias in aliases)
             {
-                if (!string.IsNullOrEmpty(alias.TargetKeyId))
+                if (!string.IsNullOrEmpty(alias.TargetKeyId) && !aliasedKeys.ContainsKey(alias.TargetKeyId))
                     aliasedKeys.Add(alias.TargetKeyId, alias);
             }
 
