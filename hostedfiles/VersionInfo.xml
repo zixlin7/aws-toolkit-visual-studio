@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <versions location="http://aws.amazon.com/visualstudio">
+  <version number="1.14.3.2" release-date="2018-05-09" prompt="false">
+    <change>Fixed issue deploying .NET Core 1.0 Lambda functions from within Visual Studio 2015 and 2017.</change>
+  </version>
   <version number="1.14.3.0" release-date="2018-05-03" prompt="false">
 	<change>Added F# AWS Lambda project templates.</change>
 	<change>Added Node.js 8.10 runtime enumeration when deploying Node.js AWS Lambda functions.</change>
