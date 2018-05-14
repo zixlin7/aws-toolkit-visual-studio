@@ -36,15 +36,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK.Core">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Core.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\AWSSDK.Core.3.3.22.5\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
-    <Reference Include="AWSSDK.IdentityManagement">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.IdentityManagement.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.IdentityManagement, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\AWSSDK.IdentityManagement.3.3.6.3\lib\net45\AWSSDK.IdentityManagement.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -158,6 +154,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -268,6 +265,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EmbeddedImages\user_add.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\..\solutions\packages\AWSSDK.IdentityManagement.3.3.6.3\analyzers\dotnet\cs\AWSSDK.IdentityManagement.CodeAnalysis.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

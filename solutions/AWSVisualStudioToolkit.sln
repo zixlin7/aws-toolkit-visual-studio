@@ -160,6 +160,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmazonCLIExtensions", "..\t
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AmazonCLIExtensions.Tests", "..\tests\AmazonCLIExtensions.Tests\AmazonCLIExtensions.Tests.csproj", "{3AD9F490-7725-41C8-8816-07966B3DE958}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSDeploymentCryptoUtility", "..\awsdeploy\host\AWSDeploymentCryptoUtility\AWSDeploymentCryptoUtility.csproj", "{4A43FDED-F828-4872-89DA-0FE738BCB93A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSDeploymentHostManagerClientLib", "..\awsdeploy\host\AWSDeploymentHostManagerClient\AWSDeploymentHostManagerClientLib.csproj", "{4CEA2748-E89E-4DB9-A75B-E47F59113920}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSDeploymentHostManagerClient", "..\awsdeploy\host\AWSDeploymentHostManagerClient\AWSDeploymentHostManagerClient.csproj", "{E5103B26-6ED2-42EB-A6BB-3BC920751D20}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -414,6 +420,18 @@ Global
 		{3AD9F490-7725-41C8-8816-07966B3DE958}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AD9F490-7725-41C8-8816-07966B3DE958}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AD9F490-7725-41C8-8816-07966B3DE958}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A43FDED-F828-4872-89DA-0FE738BCB93A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A43FDED-F828-4872-89DA-0FE738BCB93A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A43FDED-F828-4872-89DA-0FE738BCB93A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A43FDED-F828-4872-89DA-0FE738BCB93A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CEA2748-E89E-4DB9-A75B-E47F59113920}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CEA2748-E89E-4DB9-A75B-E47F59113920}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CEA2748-E89E-4DB9-A75B-E47F59113920}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CEA2748-E89E-4DB9-A75B-E47F59113920}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5103B26-6ED2-42EB-A6BB-3BC920751D20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5103B26-6ED2-42EB-A6BB-3BC920751D20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5103B26-6ED2-42EB-A6BB-3BC920751D20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5103B26-6ED2-42EB-A6BB-3BC920751D20}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -489,6 +507,9 @@ Global
 		{B38E2797-FE83-4EB5-8D70-FEBDEDCA32BF} = {73718FA9-C78C-4459-A1C0-E5964EE5F420}
 		{B4771F7A-A835-4B86-8B52-0E2FD560A48C} = {DBFC3933-83C8-4F77-8937-EDA0AA0FE7BE}
 		{3AD9F490-7725-41C8-8816-07966B3DE958} = {73718FA9-C78C-4459-A1C0-E5964EE5F420}
+		{4A43FDED-F828-4872-89DA-0FE738BCB93A} = {C74FEDAE-A2DD-4033-9CDD-9005681D6059}
+		{4CEA2748-E89E-4DB9-A75B-E47F59113920} = {C74FEDAE-A2DD-4033-9CDD-9005681D6059}
+		{E5103B26-6ED2-42EB-A6BB-3BC920751D20} = {C74FEDAE-A2DD-4033-9CDD-9005681D6059}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50B40085-A3FF-4E79-90F0-ECAA786ECF93}

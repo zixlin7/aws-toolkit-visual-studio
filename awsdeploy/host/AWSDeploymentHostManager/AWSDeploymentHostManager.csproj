@@ -15,6 +15,7 @@
     <TargetFrameworkProfile />
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\buildtools\awstoolkit.snk</AssemblyOriginatorKeyFile>
+	<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,18 +44,14 @@
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK.CloudFormation">
-      <HintPath>..\..\..\Include\sdk\assemblies\net45\AWSSDK.CloudFormation.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.CloudFormation, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\AWSSDK.CloudFormation.3.3.10.2\lib\net45\AWSSDK.CloudFormation.dll</HintPath>
     </Reference>
-    <Reference Include="AWSSDK.Core">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Include\sdk\assemblies\net45\AWSSDK.Core.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\AWSSDK.Core.3.3.22.5\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
-    <Reference Include="AWSSDK.S3">
-      <HintPath>..\..\..\Include\sdk\assemblies\net45\AWSSDK.S3.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.S3, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\AWSSDK.S3.3.3.18.2\lib\net45\AWSSDK.S3.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -135,6 +132,7 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AWSDeploymentCryptoUtility\AWSDeploymentCryptoUtility.csproj">
@@ -142,6 +140,10 @@
       <Name>AWSDeploymentCryptoUtility</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\..\solutions\packages\AWSSDK.CloudFormation.3.3.10.2\analyzers\dotnet\cs\AWSSDK.CloudFormation.CodeAnalysis.dll" />
+    <Analyzer Include="..\..\..\solutions\packages\AWSSDK.S3.3.3.18.2\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -14,6 +14,7 @@
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\buildtools\awstoolkit.snk</AssemblyOriginatorKeyFile>
+	<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -38,10 +39,8 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK.Core">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Include\sdk\assemblies\net45\AWSSDK.Core.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\AWSSDK.Core.3.3.22.5\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -57,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AWSDeploymentCryptoUtility\AWSDeploymentCryptoUtility.csproj">

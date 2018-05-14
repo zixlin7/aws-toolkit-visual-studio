@@ -31,19 +31,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK.Core">
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Core.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.CodeCommit, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\AWSSDK.CodeCommit.3.3.4.5\lib\net45\AWSSDK.CodeCommit.dll</HintPath>
     </Reference>
-    <Reference Include="AWSSDK.CodeCommit">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CodeCommit.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\AWSSDK.Core.3.3.22.5\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
-    <Reference Include="AWSSDK.IdentityManagement">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.IdentityManagement.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.IdentityManagement, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\AWSSDK.IdentityManagement.3.3.6.3\lib\net45\AWSSDK.IdentityManagement.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -77,6 +72,13 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controls\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\..\solutions\packages\AWSSDK.CodeCommit.3.3.4.5\analyzers\dotnet\cs\AWSSDK.CodeCommit.CodeAnalysis.dll" />
+    <Analyzer Include="..\..\..\solutions\packages\AWSSDK.IdentityManagement.3.3.6.3\analyzers\dotnet\cs\AWSSDK.IdentityManagement.CodeAnalysis.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

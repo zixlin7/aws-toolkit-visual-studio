@@ -1,4 +1,4 @@
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- Ensures that if this file changes it forces a rebuild -->
   <PropertyGroup>
@@ -20,7 +20,7 @@
 
     <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == '' And '$(VSTarget)' != '15.0'">v4.5</TargetFrameworkVersion>
     <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == '' And '$(VSTarget)' == '15.0'">v4.6</TargetFrameworkVersion>
-
+	
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VSTarget)</VSToolsPath>
 
     <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>

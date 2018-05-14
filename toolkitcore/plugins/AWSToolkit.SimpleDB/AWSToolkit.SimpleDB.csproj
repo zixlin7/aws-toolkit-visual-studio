@@ -37,15 +37,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK.Core">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Core.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\AWSSDK.Core.3.3.22.5\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
-    <Reference Include="AWSSDK.SimpleDB">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.SimpleDB.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.SimpleDB, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\AWSSDK.SimpleDB.3.3.0.28\lib\net45\AWSSDK.SimpleDB.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -117,6 +113,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -194,6 +191,9 @@
     <Resource Include="Resources\Images\fetch_few_pages.png" />
     <Resource Include="Resources\Images\fetch_one_page.png" />
     <Resource Include="Resources\Images\fetch_till_end.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\..\solutions\packages\AWSSDK.SimpleDB.3.3.0.28\analyzers\dotnet\cs\AWSSDK.SimpleDB.CodeAnalysis.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

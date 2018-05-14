@@ -12,6 +12,8 @@
     <RootNamespace>Amazon.AWSToolkit.VisualStudio</RootNamespace>
     <AssemblyName>AWSToolkitPackage</AssemblyName>
     <VsixType>v3</VsixType>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -57,30 +59,20 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK.Core">
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Core.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\solutions\packages\AWSSDK.Core.3.3.22.5\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
-    <Reference Include="AWSSDK.ElasticBeanstalk">
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ElasticBeanstalk.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.ElasticBeanstalk, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\solutions\packages\AWSSDK.ElasticBeanstalk.3.3.8.1\lib\net45\AWSSDK.ElasticBeanstalk.dll</HintPath>
     </Reference>
-    <Reference Include="AWSSDK.IdentityManagement">
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.IdentityManagement.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.IdentityManagement, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\solutions\packages\AWSSDK.IdentityManagement.3.3.6.3\lib\net45\AWSSDK.IdentityManagement.dll</HintPath>
     </Reference>
-    <Reference Include="AWSSDK.Lambda">
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Lambda.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.Lambda, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\solutions\packages\AWSSDK.Lambda.3.3.13.2\lib\net45\AWSSDK.Lambda.dll</HintPath>
     </Reference>
-    <Reference Include="AWSSDK.MobileAnalytics">
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.MobileAnalytics.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.MobileAnalytics, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\solutions\packages\AWSSDK.MobileAnalytics.3.3.1.28\lib\net45\AWSSDK.MobileAnalytics.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>$(BuildRoot)\thirdparty\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -669,338 +661,164 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.AutoScaling.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.AutoScaling.dll">
       <Link>AWSSDK.AutoScaling.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.AWSSupport.dll">
-      <Link>AWSSDK.AWSSupport.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudFormation.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.CloudFormation.dll">
       <Link>AWSSDK.CloudFormation.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudFront.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.CloudFront.dll">
       <Link>AWSSDK.CloudFront.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudHSM.dll">
-      <Link>AWSSDK.CloudHSM.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudSearch.dll">
-      <Link>AWSSDK.CloudSearch.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudSearchDomain.dll">
-      <Link>AWSSDK.CloudSearchDomain.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudTrail.dll">
-      <Link>AWSSDK.CloudTrail.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudWatch.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.CloudWatch.dll">
       <Link>AWSSDK.CloudWatch.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudWatchLogs.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.CloudWatchLogs.dll">
       <Link>AWSSDK.CloudWatchLogs.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudWatchEvents.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.CloudWatchEvents.dll">
       <Link>AWSSDK.CloudWatchEvents.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CodeCommit.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.CodeCommit.dll">
       <Link>AWSSDK.CodeCommit.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CodeDeploy.dll">
-      <Link>AWSSDK.CodeDeploy.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CodePipeline.dll">
-      <Link>AWSSDK.CodePipeline.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CognitoIdentity.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.CognitoIdentity.dll">
       <Link>AWSSDK.CognitoIdentity.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CognitoSync.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.CognitoSync.dll">
       <Link>AWSSDK.CognitoSync.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ConfigService.dll">
-      <Link>AWSSDK.ConfigService.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Core.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.Core.dll">
       <Link>AWSSDK.Core.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.DataPipeline.dll">
-      <Link>AWSSDK.DataPipeline.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.DeviceFarm.dll">
-      <Link>AWSSDK.DeviceFarm.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.DirectConnect.dll">
-      <Link>AWSSDK.DirectConnect.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.DirectoryService.dll">
-      <Link>AWSSDK.DirectoryService.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.DynamoDBv2.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.DynamoDBv2.dll">
       <Link>AWSSDK.DynamoDBv2.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.EC2.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.EC2.dll">
       <Link>AWSSDK.EC2.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ECR.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.ECR.dll">
       <Link>AWSSDK.ECR.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ECS.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.ECS.dll">
       <Link>AWSSDK.ECS.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ElastiCache.dll">
-      <Link>AWSSDK.ElastiCache.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ElasticBeanstalk.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.ElasticBeanstalk.dll">
       <Link>AWSSDK.ElasticBeanstalk.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ElasticFileSystem.dll">
-      <Link>AWSSDK.ElasticFileSystem.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ElasticLoadBalancing.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.ElasticLoadBalancing.dll">
       <Link>AWSSDK.ElasticLoadBalancing.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ElasticLoadBalancingV2.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.ElasticLoadBalancingV2.dll">
       <Link>AWSSDK.ElasticLoadBalancingV2.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ElasticMapReduce.dll">
-      <Link>AWSSDK.ElasticMapReduce.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ElasticTranscoder.dll">
-      <Link>AWSSDK.ElasticTranscoder.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Glacier.dll">
-      <Link>AWSSDK.Glacier.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.IdentityManagement.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.IdentityManagement.dll">
       <Link>AWSSDK.IdentityManagement.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.ImportExport.dll">
-      <Link>AWSSDK.ImportExport.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.KeyManagementService.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.KeyManagementService.dll">
       <Link>AWSSDK.KeyManagementService.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Kinesis.dll">
-      <Link>AWSSDK.Kinesis.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Lambda.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.Lambda.dll">
       <Link>AWSSDK.Lambda.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.MachineLearning.dll">
-      <Link>AWSSDK.MachineLearning.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.MobileAnalytics.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.MobileAnalytics.dll">
       <Link>AWSSDK.MobileAnalytics.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.OpsWorks.dll">
-      <Link>AWSSDK.OpsWorks.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.RDS.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.RDS.dll">
       <Link>AWSSDK.RDS.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Redshift.dll">
-      <Link>AWSSDK.Redshift.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Route53.dll">
-      <Link>AWSSDK.Route53.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Route53Domains.dll">
-      <Link>AWSSDK.Route53Domains.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.S3.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.S3.dll">
       <Link>AWSSDK.S3.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.SecurityToken.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.SecurityToken.dll">
       <Link>AWSSDK.SecurityToken.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.SimpleDB.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.SimpleDB.dll">
       <Link>AWSSDK.SimpleDB.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.SimpleEmail.dll">
-      <Link>AWSSDK.SimpleEmail.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.SimpleNotificationService.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.SimpleNotificationService.dll">
       <Link>AWSSDK.SimpleNotificationService.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.SimpleSystemsManagement.dll">
-      <Link>AWSSDK.SimpleSystemsManagement.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.SimpleWorkflow.dll">
-      <Link>AWSSDK.SimpleWorkflow.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.SQS.dll">
+    <Content Include="$(OutputRoot)\AWSSDK.SQS.dll">
       <Link>AWSSDK.SQS.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.StorageGateway.dll">
-      <Link>AWSSDK.StorageGateway.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>False</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.WorkSpaces.dll">
-      <Link>AWSSDK.WorkSpaces.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
@@ -1204,8 +1022,7 @@
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
-
-	<!-- FSharp Lambda -->
+    <!-- FSharp Lambda -->
     <ProjectReference Include="..\lambda\MsbuildFunctionTemplateFSharp\MsbuildFunctionTemplateFSharp.csproj">
       <Project>{ED237B5F-FD05-4994-86E0-CE4DD09B5BAC}</Project>
       <Name>MsbuildFunctionTemplateFSharp</Name>
@@ -1234,8 +1051,6 @@
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
-
-
   </ItemGroup>
   <ItemGroup Condition="'$(VSTarget)' == '14.0'">
     <ProjectReference Include="..\lambda\ProjectJsonFunctionTemplate\ProjectJsonFunctionTemplate.csproj">
@@ -1275,7 +1090,12 @@
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Analyzer Include="..\..\solutions\packages\AWSSDK.ElasticBeanstalk.3.3.8.1\analyzers\dotnet\cs\AWSSDK.ElasticBeanstalk.CodeAnalysis.dll" />
+    <Analyzer Include="..\..\solutions\packages\AWSSDK.IdentityManagement.3.3.6.3\analyzers\dotnet\cs\AWSSDK.IdentityManagement.CodeAnalysis.dll" />
+    <Analyzer Include="..\..\solutions\packages\AWSSDK.Lambda.3.3.13.2\analyzers\dotnet\cs\AWSSDK.Lambda.CodeAnalysis.dll" />
+    <Analyzer Include="..\..\solutions\packages\AWSSDK.MobileAnalytics.3.3.1.28\analyzers\dotnet\cs\AWSSDK.MobileAnalytics.CodeAnalysis.dll" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VSTarget)' == '12.0' Or '$(VSTarget)' == '14.0'">
       <ItemGroup>
@@ -1307,4 +1127,9 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(Language)' == 'C#' and '$(CreateVsixContainer)' != '' and $(CreateVsixContainer) and '$(VSToolsPath)' != ''" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" Condition="'$(Language)' == 'C++'" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+  </Target>
 </Project>

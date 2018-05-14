@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\solutions\packages\LibGit2Sharp.NativeBinaries.1.0.205\build\LibGit2Sharp.NativeBinaries.props" Condition="Exists('..\..\..\solutions\packages\LibGit2Sharp.NativeBinaries.1.0.205\build\LibGit2Sharp.NativeBinaries.props')" />
   <Import Project="..\..\..\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
   <PropertyGroup>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\solutions\</SolutionDir>
@@ -37,28 +38,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK.Core">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Core.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.CodeCommit, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\AWSSDK.CodeCommit.3.3.4.5\lib\net45\AWSSDK.CodeCommit.dll</HintPath>
     </Reference>
-    <Reference Include="AWSSDK.CodeCommit">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CodeCommit.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\AWSSDK.Core.3.3.22.5\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
-    <Reference Include="AWSSDK.IdentityManagement">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.IdentityManagement.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.IdentityManagement, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\AWSSDK.IdentityManagement.3.3.6.3\lib\net45\AWSSDK.IdentityManagement.dll</HintPath>
     </Reference>
-    <Reference Include="AWSSDK.MobileAnalytics">
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.MobileAnalytics.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.MobileAnalytics, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\AWSSDK.MobileAnalytics.3.3.1.28\lib\net45\AWSSDK.MobileAnalytics.dll</HintPath>
     </Reference>
-    <Reference Include="LibGit2Sharp, Version=0.23.1.0, Culture=neutral, PublicKeyToken=7cbde695407f0333, processorArchitecture=MSIL">
-      <HintPath>..\..\..\solutions\packages\LibGit2Sharp.0.23.1\lib\net40\LibGit2Sharp.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="LibGit2Sharp, Version=0.24.1.0, Culture=neutral, PublicKeyToken=7cbde695407f0333, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\LibGit2Sharp.0.24.1\lib\net40\LibGit2Sharp.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -172,13 +165,17 @@
     <EmbeddedResource Include="Resources\EmbeddedImages\repository-node.png" />
     <EmbeddedResource Include="Resources\EmbeddedImages\service-root-node.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\..\solutions\packages\AWSSDK.CodeCommit.3.3.4.5\analyzers\dotnet\cs\AWSSDK.CodeCommit.CodeAnalysis.dll" />
+    <Analyzer Include="..\..\..\solutions\packages\AWSSDK.IdentityManagement.3.3.6.3\analyzers\dotnet\cs\AWSSDK.IdentityManagement.CodeAnalysis.dll" />
+    <Analyzer Include="..\..\..\solutions\packages\AWSSDK.MobileAnalytics.3.3.1.28\analyzers\dotnet\cs\AWSSDK.MobileAnalytics.CodeAnalysis.dll" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Import Project="$(SolutionDir)packages\LibGit2Sharp.NativeBinaries.1.0.164\build\LibGit2Sharp.NativeBinaries.props" Condition="Exists('$(SolutionDir)\packages\LibGit2Sharp.NativeBinaries.1.0.164\build\LibGit2Sharp.NativeBinaries.props')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\solutions\packages\LibGit2Sharp.NativeBinaries.1.0.164\build\LibGit2Sharp.NativeBinaries.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\solutions\packages\LibGit2Sharp.NativeBinaries.1.0.164\build\LibGit2Sharp.NativeBinaries.props'))" />
+    <Error Condition="!Exists('..\..\..\solutions\packages\LibGit2Sharp.NativeBinaries.1.0.205\build\LibGit2Sharp.NativeBinaries.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\solutions\packages\LibGit2Sharp.NativeBinaries.1.0.205\build\LibGit2Sharp.NativeBinaries.props'))" />
   </Target>
 </Project>

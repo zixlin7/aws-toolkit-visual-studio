@@ -34,14 +34,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK.CloudFront">
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.CloudFront.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.CloudFront, Version=3.3.4.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\AWSSDK.CloudFront.3.3.7.2\lib\net45\AWSSDK.CloudFront.dll</HintPath>
     </Reference>
-    <Reference Include="AWSSDK.Core">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Core.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\..\solutions\packages\AWSSDK.Core.3.3.22.5\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -70,6 +67,13 @@
       <Name>AWSToolkit</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\..\solutions\packages\AWSSDK.CloudFront.3.3.7.2\analyzers\dotnet\cs\AWSSDK.CloudFront.CodeAnalysis.dll" />
+    <Analyzer Include="..\..\..\solutions\packages\AWSSDK.CodeCommit.3.3.4.5\analyzers\dotnet\cs\AWSSDK.CodeCommit.CodeAnalysis.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,4 +1,4 @@
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   
   <!-- VisualStudioVersion is set when the solution is opened in an IDE; the
        value is always the same as the corresponding VSTarget value (which is not
