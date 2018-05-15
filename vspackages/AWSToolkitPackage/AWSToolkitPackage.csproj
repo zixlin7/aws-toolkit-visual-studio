@@ -93,6 +93,7 @@
     </Reference>
     <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\..\solutions\packages\AWSSDK.Core.3.3.22.5\lib\net45\AWSSDK.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="AWSSDK.DynamoDBv2, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\..\solutions\packages\AWSSDK.DynamoDBv2.3.3.8\lib\net45\AWSSDK.DynamoDBv2.dll</HintPath>
@@ -561,187 +562,230 @@
     <Content Include="$(OutputRoot)\AmazonCLIExtensions.dll">
       <Link>AmazonCLIExtensions.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CloudFormation.dll">
       <Link>Plugins\AWSToolkit.CloudFormation.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CloudFormation.Interface.dll">
       <Link>Plugins\AWSToolkit.CloudFormation.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeCommit.dll">
       <Link>Plugins\AWSToolkit.CodeCommit.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeCommit.Interface.dll">
       <Link>Plugins\AWSToolkit.CodeCommit.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.DynamoDB.dll">
       <Link>Plugins\AWSToolkit.DynamoDB.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.DynamoDB.Interface.dll">
       <Link>Plugins\AWSToolkit.DynamoDB.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CloudFront.dll">
       <Link>Plugins\AWSToolkit.CloudFront.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CloudFront.Interface.dll">
       <Link>Plugins\AWSToolkit.CloudFront.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.EC2.dll">
       <Link>Plugins\AWSToolkit.EC2.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.EC2.Interface.dll">
       <Link>Plugins\AWSToolkit.EC2.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.ECS.dll">
       <Link>Plugins\AWSToolkit.ECS.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.ECS.Interface.dll">
       <Link>Plugins\AWSToolkit.ECS.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.ElasticBeanstalk.dll">
       <Link>Plugins\AWSToolkit.ElasticBeanstalk.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.ElasticBeanstalk.Interface.dll">
       <Link>Plugins\AWSToolkit.ElasticBeanstalk.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.IdentityManagement.dll">
       <Link>Plugins\AWSToolkit.IdentityManagement.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.IdentityManagement.Interface.dll">
       <Link>Plugins\AWSToolkit.IdentityManagement.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.Lambda.dll">
       <Link>Plugins\AWSToolkit.Lambda.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.Lambda.Interface.dll">
       <Link>Plugins\AWSToolkit.Lambda.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.PolicyEditor.dll">
       <Link>Plugins\AWSToolkit.PolicyEditor.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.RDS.dll">
       <Link>Plugins\AWSToolkit.RDS.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.RDS.Interface.dll">
       <Link>Plugins\AWSToolkit.RDS.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.S3.dll">
       <Link>Plugins\AWSToolkit.S3.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.S3.Interface.dll">
       <Link>Plugins\AWSToolkit.S3.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SimpleDB.dll">
       <Link>Plugins\AWSToolkit.SimpleDB.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SimpleDB.Interface.dll">
       <Link>Plugins\AWSToolkit.SimpleDB.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SNS.dll">
       <Link>Plugins\AWSToolkit.SNS.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SNS.Interface.dll">
       <Link>Plugins\AWSToolkit.SNS.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SQS.dll">
       <Link>Plugins\AWSToolkit.SQS.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SQS.Interface.dll">
       <Link>Plugins\AWSToolkit.SQS.Interface.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(BuildRoot)\thirdparty\Microsoft.WindowsAPICodePack.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Link>Microsoft.WindowsAPICodePack.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(BuildRoot)\thirdparty\Microsoft.WindowsAPICodePack.Shell.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Link>Microsoft.WindowsAPICodePack.Shell.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(BuildRoot)\thirdparty\Newtonsoft.Json.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Link>Newtonsoft.Json.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(BuildRoot)\thirdparty\PemToPPKConverter.exe">
       <Link>Plugins\PemToPPKConverter.exe</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(BuildRoot)\thirdparty\Mono.Security.dll">
       <Link>Plugins\Mono.Security.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(BuildRoot)\thirdparty\NGit.dll">
       <Link>Plugins\NGit.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(BuildRoot)\thirdparty\NSch.dll">
       <Link>Plugins\NSch.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(BuildRoot)\thirdparty\Sharpen.dll">
       <Link>Plugins\Sharpen.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(BuildRoot)\thirdparty\dotnet-lambda.dll">
       <Link>Plugins\dotnet-lambda.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(BuildRoot)\thirdparty\WPFTextBoxAutoComplete.dll">
       <Link>Plugins\WPFTextBoxAutoComplete.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(BuildRoot)\awsdeploy\client\AWSDeploymentLib\bin\$(Configuration)\AWSDeploymentLib.dll">
       <Link>Plugins\AWSDeploymentLib.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(BuildRoot)\awsdeploy\host\AWSDeploymentCryptoUtility\bin\$(Configuration)\AWSDeploymentCryptoUtility.dll">
       <Link>Plugins\AWSDeploymentCryptoUtility.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(BuildRoot)\awsdeploy\host\AWSDeploymentHostManagerClient\bin\$(Configuration)\AWSDeploymentHostManagerClientLib.dll">
       <Link>Plugins\AWSDeploymentHostManagerClientLib.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  <Visible>false</Visible>
     </Content>
   </ItemGroup>
   <ItemGroup>
@@ -923,6 +967,7 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <InstallRoot>MSBuild</InstallRoot>
       <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="Resources\AWSCloudFormationTemplate.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -930,6 +975,7 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <InstallRoot>MSBuild</InstallRoot>
       <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(BuildRoot)\Include\sdk\assemblies\net45\AWSSDK.Core.dll">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -937,6 +983,7 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <InstallRoot>MSBuild</InstallRoot>
       <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+	  <Visible>false</Visible>
     </Content>
     <Content Include="$(BuildRoot)\thirdparty\log4net.dll">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -944,6 +991,7 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <InstallRoot>MSBuild</InstallRoot>
       <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+	  <Visible>false</Visible>
     </Content>
   </ItemGroup>
   <ItemGroup>
@@ -951,6 +999,7 @@
       <Link>AWSSDK.Extensions.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  <Visible>false</Visible>
     </Content>
   </ItemGroup>
   <ItemGroup>
