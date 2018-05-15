@@ -15,7 +15,7 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\..\buildtools\awstoolkit.snk</AssemblyOriginatorKeyFile>
     <OldToolsVersion>3.5</OldToolsVersion>
-	<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -130,23 +130,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
-      <Project>{20c1f223-eef5-4eab-9e2d-8df31bb3ff45}</Project>
-      <Name>AWSSDK.Extensions</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
-      <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
-      <Name>AWSToolkit.Util</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\toolkitcore\AWSToolkit\AWSToolkit.csproj">
-      <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
-      <Name>AWSToolkit</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -158,6 +141,20 @@
     <Analyzer Include="..\..\..\solutions\packages\AWSSDK.IdentityManagement.3.3.6.3\analyzers\dotnet\cs\AWSSDK.IdentityManagement.CodeAnalysis.dll" />
     <Analyzer Include="..\..\..\solutions\packages\AWSSDK.RDS.3.3.23\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
     <Analyzer Include="..\..\..\solutions\packages\AWSSDK.S3.3.3.18.2\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
+      <Project>{20c1f223-eef5-4eab-9e2d-8df31bb3ff45}</Project>
+      <Name>AWSSDK.Extensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
+      <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
+      <Name>AWSToolkit.Util</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\toolkitcore\AWSToolkit\AWSToolkit.csproj">
+      <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
+      <Name>AWSToolkit</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

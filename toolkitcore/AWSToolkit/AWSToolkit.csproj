@@ -40,6 +40,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AWSSDK.AutoScaling, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\..\solutions\packages\AWSSDK.AutoScaling.3.3.4.5\lib\net45\AWSSDK.AutoScaling.dll</HintPath>
+    </Reference>
     <Reference Include="AWSSDK.CloudFormation, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>..\..\solutions\packages\AWSSDK.CloudFormation.3.3.10.2\lib\net45\AWSSDK.CloudFormation.dll</HintPath>
     </Reference>
@@ -805,6 +808,7 @@
     <EmbeddedResource Include="Resources\download.png" />
   </ItemGroup>
   <ItemGroup>
+    <Analyzer Include="..\..\solutions\packages\AWSSDK.AutoScaling.3.3.4.5\analyzers\dotnet\cs\AWSSDK.AutoScaling.CodeAnalysis.dll" />
     <Analyzer Include="..\..\solutions\packages\AWSSDK.CloudFormation.3.3.10.2\analyzers\dotnet\cs\AWSSDK.CloudFormation.CodeAnalysis.dll" />
     <Analyzer Include="..\..\solutions\packages\AWSSDK.CloudFront.3.3.7.2\analyzers\dotnet\cs\AWSSDK.CloudFront.CodeAnalysis.dll" />
     <Analyzer Include="..\..\solutions\packages\AWSSDK.CloudWatch.3.3.6.2\analyzers\dotnet\cs\AWSSDK.CloudWatch.CodeAnalysis.dll" />
