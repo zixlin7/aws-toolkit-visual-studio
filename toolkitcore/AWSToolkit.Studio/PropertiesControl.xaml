@@ -1,0 +1,10 @@
+﻿<commonui:BaseAWSControl x:Class="Amazon.AWSToolkit.Studio.PropertiesControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"          
+    Loaded="onLoaded"                         
+    Height="300" Width="300">
+
+    <Grid Name="_ctlMainPanel" />
+    
+</commonui:BaseAWSControl>

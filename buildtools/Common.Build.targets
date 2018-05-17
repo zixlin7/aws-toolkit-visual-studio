@@ -1,11 +1,19 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  
+
+  <PropertyGroup Condition="'$(TargetShell' == '' And '$(VSTarget)' != ''">
+    <TargetShell>$(VSTarget)</TargetShell>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetShell' == '' And '$(VisualStudioVersion)' != ''">
+    <TargetShell>$(VisualStudioVersion)</TargetShell>
+  </PropertyGroup>
+
   <!-- VisualStudioVersion is set when the solution is opened in an IDE; the
        value is always the same as the corresponding VSTarget value (which is not
        set when the IDE opens the solution)
   -->
   <Choose>
-    <When Condition=" '$(VisualStudioVersion)'=='12.0'  Or '$(VSTarget)'=='12.0' ">
+    <When Condition="'$(VisualStudioVersion)'=='12.0' Or '$(VSTarget)'=='12.0'">
       <PropertyGroup>
         <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
         <FileUpgradeFlags>
@@ -15,7 +23,7 @@
         <OldToolsVersion>4.0</OldToolsVersion>
       </PropertyGroup>
     </When>
-    <When Condition=" '$(VisualStudioVersion)'=='14.0'  Or '$(VSTarget)'=='14.0' ">
+    <When Condition="'$(VisualStudioVersion)'=='14.0'  Or '$(VSTarget)'=='14.0'">
       <PropertyGroup>
         <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
         <FileUpgradeFlags>
@@ -25,7 +33,7 @@
         <OldToolsVersion>4.0</OldToolsVersion>
       </PropertyGroup>
     </When>
-    <When Condition=" '$(VisualStudioVersion)'=='15.0'  Or '$(VSTarget)'=='15.0' ">
+    <When Condition="'$(VisualStudioVersion)'=='15.0'  Or '$(VSTarget)'=='15.0'">
       <PropertyGroup>
         <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
         <FileUpgradeFlags>
