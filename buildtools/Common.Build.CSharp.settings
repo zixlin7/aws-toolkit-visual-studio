@@ -26,15 +26,15 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetShell)' == '15.0' Or '$(TargetShell)' == 'awsstudio'">
-    <DefineConstants>$(DefineConstants);VS2017;VS2017_OR_LATER;VS2015_OR_LATER;VS2013_OR_LATER</DefineConstants>
+    <BuildConstants>$(BuildConstants);VS2017;VS2017_OR_LATER;VS2015_OR_LATER;VS2013_OR_LATER</BuildConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetShell)' == '14.0'">
-    <DefineConstants>$(DefineConstants);VS2015;VS2015_OR_LATER;VS2013_OR_LATER</DefineConstants>
+    <BuildConstants>$(BuildConstants);VS2015;VS2015_OR_LATER;VS2013_OR_LATER</BuildConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetShell)' == '12.0'">
-    <DefineConstants>$(DefineConstants);VS2013;VS2013_OR_LATER</DefineConstants>
+    <BuildConstants>$(BuildConstants);VS2013;VS2013_OR_LATER</BuildConstants>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -50,7 +50,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="$(SuppressCommonAssemblyMetadata)">
-    <DefineConstants>$(DefineConstants);SUPPRESS_COMMON_ASSEMBLY_METADATA</DefineConstants>
+    <BuildConstants>$(BuildConstants);SUPPRESS_COMMON_ASSEMBLY_METADATA</BuildConstants>
   </PropertyGroup>
 
   <PropertyGroup>

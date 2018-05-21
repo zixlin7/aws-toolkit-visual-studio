@@ -4,12 +4,12 @@
     <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
   </PropertyGroup>
   
-  <PropertyGroup Condition="'$(TargetShell' == '' And '$(VSTarget)' != ''">
-    <TargetShell>$(VSTarget)</TargetShell>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(TargetShell' == '' And '$(VisualStudioVersion)' != ''">
     <TargetShell>$(VisualStudioVersion)</TargetShell>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetShell' == '' And '$(VSTarget)' != ''">
+    <TargetShell>$(VSTarget)</TargetShell>
   </PropertyGroup>
 
   <!-- VisualStudioVersion is set when the solution is opened in an IDE; the
