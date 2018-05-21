@@ -3,7 +3,11 @@
   <PropertyGroup>
     <SuppressCommonAssemblyMetadata>true</SuppressCommonAssemblyMetadata>
   </PropertyGroup>
-  <Import Project="..\..\..\buildtools\Package.Build.targets" />
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
+  <Import Project="$(BuildRoot)\buildtools\Package.Build.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>

@@ -15,6 +15,11 @@
   <PropertyGroup>
     <TargetsPath>$(BuildRoot)\buildtools</TargetsPath>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <TargetFrameworkVersion Condition="'$(VisualStudioVersion)' != '15.0'">v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion Condition="'$(VisualStudioVersion)' == '15.0'">v4.6</TargetFrameworkVersion>
+  </PropertyGroup>
 
   <Choose>
     <When Condition="'$(TargetShell)' == '12.0'">
@@ -22,7 +27,6 @@
         <VisualStudioVersion>12.0</VisualStudioVersion>
         <VSTarget>12.0</VSTarget>
         <OutputTarget>12.0</OutputTarget>
-        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
         <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(TargetShell)</VSToolsPath>
         <DevEnvDir>$(VS120COMNTOOLS)..\IDE\</DevEnvDir>
         <VSSDKDir>$(VSSDK120Install)</VSSDKDir>
@@ -33,7 +37,6 @@
         <VisualStudioVersion>14.0</VisualStudioVersion>
         <VSTarget>14.0</VSTarget>
         <OutputTarget>14.0</OutputTarget>
-        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
         <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(TargetShell)</VSToolsPath>
         <DevEnvDir>$(VS140COMNTOOLS)..\IDE\</DevEnvDir>
         <VSSDKDir>$(VSSDK140Install)</VSSDKDir>
@@ -44,7 +47,6 @@
         <VisualStudioVersion>15.0</VisualStudioVersion>
         <VSTarget>15.0</VSTarget>
         <OutputTarget>15.0</OutputTarget>
-        <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
         <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(TargetShell)</VSToolsPath>
         <DevEnvDir>$(VS150COMNTOOLS)..\IDE\</DevEnvDir>
         <VSSDKDir>$(VSSDK150Install)</VSSDKDir>
@@ -54,7 +56,6 @@
       <PropertyGroup>
         <VSTarget>14.0</VSTarget>
         <OutputTarget>awsstudio</OutputTarget>
-        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
         <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(TargetShell)</VSToolsPath>
         <DevEnvDir>$(VS140COMNTOOLS)..\IDE\</DevEnvDir>
         <VSSDKDir>$(VSSDK140Install)</VSSDKDir>
@@ -65,7 +66,6 @@
         <VisualStudioVersion>14.0</VisualStudioVersion>
         <VSTarget>14.0</VSTarget>
         <OutputTarget>awsdeploy</OutputTarget>
-        <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
         <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(TargetShell)</VSToolsPath>
         <DevEnvDir>$(VS140COMNTOOLS)..\IDE\</DevEnvDir>
         <VSSDKDir>$(VSSDK140Install)</VSSDKDir>

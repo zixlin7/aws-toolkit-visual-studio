@@ -1,9 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
   <PropertyGroup>
-    <SuppressCommonAssemblyMetadata>true</SuppressCommonAssemblyMetadata>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
   </PropertyGroup>
-  <Import Project="..\..\..\buildtools\Package.Build.targets" />
+  <Import Project="$(BuildRoot)\buildtools\Package.Build.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
