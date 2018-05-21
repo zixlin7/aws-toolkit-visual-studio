@@ -1,4 +1,4 @@
-﻿<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <Import Project="$(MSBuildThisFileDirectory)\Common.Build.targets" />
 
@@ -13,33 +13,33 @@
 
   <PropertyGroup>
     <!-- Package Guids; These need to be the same as the GUIDs in Guids.cs and AWSVisualStudioToolkit.$(VSTarget).vsct -->
-    <VsixGuid Condition=" '$(VSTarget)' == '12.0' ">9510184f-8135-4f8a-ab8a-23be77c345e2</VsixGuid>
-    <VsixGuid Condition=" '$(VSTarget)' == '14.0' ">f2884b07-5122-4e23-acd7-4d93df18709e</VsixGuid>
-    <VsixGuid Condition=" '$(VSTarget)' == '15.0' ">12ed248b-6d4a-47eb-be9e-8eabea0ff119</VsixGuid>
+    <VsixGuid Condition=" '$(TargetShell)' == '12.0' ">9510184f-8135-4f8a-ab8a-23be77c345e2</VsixGuid>
+    <VsixGuid Condition=" '$(TargetShell)' == '14.0' ">f2884b07-5122-4e23-acd7-4d93df18709e</VsixGuid>
+    <VsixGuid Condition=" '$(TargetShell)' == '15.0' ">12ed248b-6d4a-47eb-be9e-8eabea0ff119</VsixGuid>
   </PropertyGroup>
 
   <PropertyGroup>
-    <VsixDisplayName Condition=" '$(VSTarget)' == '12.0' ">AWS Toolkit for Visual Studio 2013</VsixDisplayName>
-    <VsixDisplayName Condition=" '$(VSTarget)' == '14.0' ">AWS Toolkit for Visual Studio 2015</VsixDisplayName>
-    <VsixDisplayName Condition=" '$(VSTarget)' == '15.0' ">AWS Toolkit for Visual Studio 2017</VsixDisplayName>
+    <VsixDisplayName Condition=" '$(TargetShell)' == '12.0' ">AWS Toolkit for Visual Studio 2013</VsixDisplayName>
+    <VsixDisplayName Condition=" '$(TargetShell)' == '14.0' ">AWS Toolkit for Visual Studio 2015</VsixDisplayName>
+    <VsixDisplayName Condition=" '$(TargetShell)' == '15.0' ">AWS Toolkit for Visual Studio 2017</VsixDisplayName>
   </PropertyGroup>
 
   <PropertyGroup>
-    <VsixVsTarget Condition=" '$(VSTarget)' == '12.0' ">[$(VSTarget)]</VsixVsTarget>
-    <VsixVsTarget Condition=" '$(VSTarget)' == '14.0' ">[$(VSTarget),)</VsixVsTarget>
-    <VsixVsTarget Condition=" '$(VSTarget)' == '15.0' ">[$(VSTarget),)</VsixVsTarget>
+    <VsixVsTarget Condition=" '$(TargetShell)' == '12.0' ">[$(VSTarget)]</VsixVsTarget>
+    <VsixVsTarget Condition=" '$(TargetShell)' == '14.0' ">[$(VSTarget),)</VsixVsTarget>
+    <VsixVsTarget Condition=" '$(TargetShell)' == '15.0' ">[$(VSTarget),)</VsixVsTarget>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <ExperimentalBuild>true</ExperimentalBuild>
-    <InstalledByMsi Condition="'$(VSTarget)' != '15.0'">true</InstalledByMsi>
-    <InstalledByMsi Condition="'$(VSTarget)' == '15.0'">false</InstalledByMsi>
+    <InstalledByMsi Condition="'$(TargetShell)' != '15.0'">true</InstalledByMsi>
+    <InstalledByMsi Condition="'$(TargetShell)' == '15.0'">false</InstalledByMsi>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <ExperimentalBuild>false</ExperimentalBuild>
-    <InstalledByMsi Condition="'$(VSTarget)' != '15.0'">true</InstalledByMsi>
-    <InstalledByMsi Condition="'$(VSTarget)' == '15.0'">false</InstalledByMsi>
+    <InstalledByMsi Condition="'$(TargetShell)' != '15.0'">true</InstalledByMsi>
+    <InstalledByMsi Condition="'$(TargetShell)' == '15.0'">false</InstalledByMsi>
   </PropertyGroup>
   
   <!-- Returns the current build version metadata. Used in .vsixmanifests to substitute our build version

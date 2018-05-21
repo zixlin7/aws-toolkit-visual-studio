@@ -1,4 +1,4 @@
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- Ensures that if this file changes it forces a rebuild -->
   <PropertyGroup>
@@ -25,28 +25,28 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(VSTarget)' == '15.0'">
+  <PropertyGroup Condition="'$(TargetShell)' == '15.0' Or '$(TargetShell)' == 'awsstudio'">
     <DefineConstants>$(DefineConstants);VS2017;VS2017_OR_LATER;VS2015_OR_LATER;VS2013_OR_LATER</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(VSTarget)' == '14.0'">
+  <PropertyGroup Condition="'$(TargetShell)' == '14.0'">
     <DefineConstants>$(DefineConstants);VS2015;VS2015_OR_LATER;VS2013_OR_LATER</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(VSTarget)' == '12.0'">
+  <PropertyGroup Condition="'$(TargetShell)' == '12.0'">
     <DefineConstants>$(DefineConstants);VS2013;VS2013_OR_LATER</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>
-    <VSCTDefinitions Condition="'$(VSTarget)' == '15.0'">VS2017;VS2013_OR_LATER</VSCTDefinitions>
+    <VSCTDefinitions Condition="'$(TargetShell)' == '15.0'">VS2017;VS2013_OR_LATER</VSCTDefinitions>
   </PropertyGroup>
 
   <PropertyGroup>
-    <VSCTDefinitions Condition="'$(VSTarget)' == '14.0'">VS2015;VS2013_OR_LATER</VSCTDefinitions>
+    <VSCTDefinitions Condition="'$(TargetShell)' == '14.0'">VS2015;VS2013_OR_LATER</VSCTDefinitions>
   </PropertyGroup>
 
   <PropertyGroup>
-    <VSCTDefinitions Condition="'$(VSTarget)' == '12.0'">VS2013;VS2013_OR_LATER</VSCTDefinitions>
+    <VSCTDefinitions Condition="'$(TargetShell)' == '12.0'">VS2013;VS2013_OR_LATER</VSCTDefinitions>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(SuppressCommonAssemblyMetadata)">

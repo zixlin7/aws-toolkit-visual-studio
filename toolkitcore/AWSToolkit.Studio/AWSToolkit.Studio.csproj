@@ -1,9 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
 	<TargetShell>awsstudio</TargetShell>
   </PropertyGroup>
-  <Import Project="..\..\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
+  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -62,16 +66,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\..\solutions\packages\AWSSDK.Core.3.3.22.5\lib\net45\AWSSDK.Core.dll</HintPath>
+      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Core.3.3.22.5\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.MobileAnalytics, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\..\solutions\packages\AWSSDK.MobileAnalytics.3.3.1.28\lib\net45\AWSSDK.MobileAnalytics.dll</HintPath>
+      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.MobileAnalytics.3.3.1.28\lib\net45\AWSSDK.MobileAnalytics.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
-      <HintPath>..\..\thirdparty\log4net.dll</HintPath>
+      <HintPath>$(BuildRoot)\thirdparty\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack">
-      <HintPath>..\..\thirdparty\Microsoft.WindowsAPICodePack.dll</HintPath>
+      <HintPath>$(BuildRoot)\thirdparty\Microsoft.WindowsAPICodePack.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -210,19 +214,19 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
       <Project>{20c1f223-eef5-4eab-9e2d-8df31bb3ff45}</Project>
       <Name>AWSSDK.Extensions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\AWSToolkit.Util\AWSToolkit.Util.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
       <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
       <Name>AWSToolkit.Util</Name>
     </ProjectReference>
-    <ProjectReference Include="..\AWSToolkit\AWSToolkit.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
       <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
       <Name>AWSToolkit</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\vspackages\shared\AWSToolkit.VisualStudio.Shared\AWSToolkit.VisualStudio.Shared.csproj">
+    <ProjectReference Include="$(BuildRoot)\vspackages\shared\AWSToolkit.VisualStudio.Shared\AWSToolkit.VisualStudio.Shared.csproj">
       <Project>{81552efa-46b0-4ebe-bc29-5ba6a7628207}</Project>
       <Name>AWSToolkit.VisualStudio.Shared</Name>
     </ProjectReference>

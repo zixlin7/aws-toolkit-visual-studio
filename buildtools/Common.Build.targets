@@ -1,5 +1,9 @@
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <PropertyGroup>
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
+  
   <PropertyGroup Condition="'$(TargetShell' == '' And '$(VSTarget)' != ''">
     <TargetShell>$(VSTarget)</TargetShell>
   </PropertyGroup>
@@ -44,10 +48,6 @@
       </PropertyGroup>
     </When>
   </Choose>
-  
-  <PropertyGroup>
-    <BuildRoot>$(MSBuildThisFileDirectory)..\</BuildRoot>
-  </PropertyGroup>
   
   <Import Project="$(MSBuildThisFileDirectory)\Common.Build.settings" />
   

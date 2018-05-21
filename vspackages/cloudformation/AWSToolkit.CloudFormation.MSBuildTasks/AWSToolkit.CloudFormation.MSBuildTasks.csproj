@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\..\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
+  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
   <PropertyGroup>
     <CfMsBuildTargetsOutputPath>$(BuildRoot)\Deployment\cf-msbuild-targets</CfMsBuildTargetsOutputPath>
   </PropertyGroup>
@@ -64,7 +68,7 @@
        load errors due to multiple copies of awssdk.core. When we figure out output groups, 
        we should be able to do this bundling work here and have it be picked up automatically
        when the package builds.
-  <ItemGroup Condition="'$(VSTarget)' == '15.0'">
+  <ItemGroup Condition="'$(VisualStudioVersion)' == '15.0'">
     <Content Include="$(BuildRoot)\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationProject.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>AWSCloudFormationProject.ico</Link>
@@ -96,7 +100,7 @@
   </ItemGroup>
   -->
   <ItemGroup>
-    <ProjectReference Include="..\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
+    <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
       <Project>{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}</Project>
       <Name>AWSToolkit.CloudFormation.Parser</Name>
       <Private>True</Private>

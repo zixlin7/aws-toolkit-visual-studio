@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\..\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
+  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -35,10 +39,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\..\..\solutions\packages\AWSSDK.Core.3.3.22.5\lib\net45\AWSSDK.Core.dll</HintPath>
+      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Core.3.3.22.5\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.IdentityManagement, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>..\..\..\solutions\packages\AWSSDK.IdentityManagement.3.3.6.3\lib\net45\AWSSDK.IdentityManagement.dll</HintPath>
+      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.IdentityManagement.3.3.6.3\lib\net45\AWSSDK.IdentityManagement.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -160,27 +164,27 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
       <Project>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</Project>
       <Name>AWSSDK.Extensions</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\AWSToolkit.IdentityManagement.Interface\AWSToolkit.IdentityManagement.Interface.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.IdentityManagement.Interface\AWSToolkit.IdentityManagement.Interface.csproj">
       <Project>{49C00D37-5980-495F-80C6-43C5192C4A87}</Project>
       <Name>AWSToolkit.IdentityManagement.Interface</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\AWSToolkit.PolicyEditor\AWSToolkit.PolicyEditor.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.PolicyEditor\AWSToolkit.PolicyEditor.csproj">
       <Project>{12910BAF-29C4-48CA-B50D-4CCABDFB879A}</Project>
       <Name>AWSToolkit.PolicyEditor</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\AWSToolkit.Util\AWSToolkit.Util.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
       <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
       <Name>AWSToolkit.Util</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\AWSToolkit\AWSToolkit.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
       <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
       <Name>AWSToolkit</Name>
       <Private>False</Private>
@@ -265,7 +269,7 @@
     <EmbeddedResource Include="Resources\EmbeddedImages\user_add.png" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\..\..\solutions\packages\AWSSDK.IdentityManagement.3.3.6.3\analyzers\dotnet\cs\AWSSDK.IdentityManagement.CodeAnalysis.dll" />
+    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.IdentityManagement.3.3.6.3\analyzers\dotnet\cs\AWSSDK.IdentityManagement.CodeAnalysis.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

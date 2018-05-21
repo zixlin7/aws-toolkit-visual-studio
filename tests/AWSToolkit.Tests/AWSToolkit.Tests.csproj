@@ -1,5 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -35,9 +39,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK.Core">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Include\sdk\assemblies\net35\AWSSDK.Core.dll</HintPath>
+    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Core.3.3.22.5\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="PresentationCore">
@@ -86,55 +89,55 @@
     <Compile Include="TestShellProvider.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\awsdeploy\client\AWSDeploymentLib\AWSDeploymentLib.csproj">
+    <ProjectReference Include="$(BuildRoot)\awsdeploy\client\AWSDeploymentLib\AWSDeploymentLib.csproj">
       <Project>{DFFE75F2-61CC-4CEA-87A5-1C573436DE9E}</Project>
       <Name>AWSDeploymentLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
       <Project>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</Project>
       <Name>AWSSDK.Extensions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\plugins\AWSToolkit.CloudFormation.Interface\AWSToolkit.CloudFormation.Interface.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CloudFormation.Interface\AWSToolkit.CloudFormation.Interface.csproj">
       <Project>{5A78BF40-7D5B-467E-8CE4-9659F22669D0}</Project>
       <Name>AWSToolkit.CloudFormation.Interface</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\plugins\AWSToolkit.CloudFormation\AWSToolkit.CloudFormation.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CloudFormation\AWSToolkit.CloudFormation.csproj">
       <Project>{6AE302DB-2304-47C8-8E3C-96C85AC1D469}</Project>
       <Name>AWSToolkit.CloudFormation</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\plugins\AWSToolkit.EC2\AWSToolkit.EC2.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.EC2\AWSToolkit.EC2.csproj">
       <Project>{BD907681-AFE8-4008-97CD-11B138FDDCA7}</Project>
       <Name>AWSToolkit.EC2</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj">
       <Project>{D4D5C421-6265-4674-A1F9-DC11A56FC030}</Project>
       <Name>AWSToolkit.ElasticBeanstalk.Interface</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\plugins\AWSToolkit.ElasticBeanstalk\AWSToolkit.ElasticBeanstalk.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk\AWSToolkit.ElasticBeanstalk.csproj">
       <Project>{AA98EC2E-AC7C-4080-993B-F80592D31037}</Project>
       <Name>AWSToolkit.ElasticBeanstalk</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\plugins\AWSToolkit.S3.Interface\AWSToolkit.S3.Interface.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.S3.Interface\AWSToolkit.S3.Interface.csproj">
       <Project>{C2D616BD-C2AB-4130-93E5-2ADA2172A08A}</Project>
       <Name>AWSToolkit.S3.Interface</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\plugins\AWSToolkit.S3\AWSToolkit.S3.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.S3\AWSToolkit.S3.csproj">
       <Project>{A01EDD42-F7F5-4E20-8DEB-9F66F2980662}</Project>
       <Name>AWSToolkit.S3</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\plugins\AWSToolkit.SimpleDB\AWSToolkit.SimpleDB.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.SimpleDB\AWSToolkit.SimpleDB.csproj">
       <Project>{9DD9F407-F2C6-495A-9204-C9825C67E9B9}</Project>
       <Name>AWSToolkit.SimpleDB</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\plugins\AWSToolkit.SQS\AWSToolkit.SQS.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.SQS\AWSToolkit.SQS.csproj">
       <Project>{91DF5775-5635-4DF3-A26F-5CFE1136763E}</Project>
       <Name>AWSToolkit.SQS</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\AWSToolkit.Util\AWSToolkit.Util.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
       <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
       <Name>AWSToolkit.Util</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\core\AWSToolkit\AWSToolkit.csproj">
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit\AWSToolkit.csproj">
       <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
       <Name>AWSToolkit</Name>
     </ProjectReference>

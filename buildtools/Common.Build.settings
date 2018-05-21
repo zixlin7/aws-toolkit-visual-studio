@@ -1,4 +1,4 @@
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <!-- Ensures that if this file changes it forces a rebuild -->
   <PropertyGroup>
@@ -10,6 +10,9 @@
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
+  
+  <PropertyGroup>
     <TargetsPath>$(BuildRoot)\buildtools</TargetsPath>
   </PropertyGroup>
 
@@ -75,8 +78,10 @@
     <OutputRoot Condition="'$(OutputRoot)' == '' and '$(OutDir)' != '' and !$(OutDir.EndsWith(`\`))">$(OutDir)\</OutputRoot>
     <OutputRoot Condition="'$(OutputRoot)' == '' and '$(OutDir)' == ''">$(BuildRoot)\Deployment\$(OutputTarget)\$(Configuration)\</OutputRoot>
 
+	<!--
     <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">$(MSBuildProjectDirectory)\obj\$(OutputTarget)\$(Configuration)\</IntermediateOutputPath>
-
+	-->
+	
     <SuppressCommonAssemblyMetadata Condition="'$(SuppressCommonAssemblyMetadata)' == ''">False</SuppressCommonAssemblyMetadata>
 
     <ErrorReport>prompt</ErrorReport>
