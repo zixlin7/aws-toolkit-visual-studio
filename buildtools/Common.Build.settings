@@ -75,11 +75,7 @@
     <OutputRoot Condition="'$(OutputRoot)' == '' and '$(OutDir)' != '' and !$(OutDir.EndsWith(`\`))">$(OutDir)\</OutputRoot>
     <OutputRoot Condition="'$(OutputRoot)' == '' and '$(OutDir)' == ''">$(BuildRoot)\Deployment\$(OutputTarget)\$(Configuration)\</OutputRoot>
 
-    <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == '' and '$(IntDir)' != '' and $(IntDir.EndsWith(`\`))">$(IntDir)</IntermediateOutputPath>
-    <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == '' and '$(IntDir)' != '' and !$(IntDir.EndsWith(`\`))">$(IntDir)\</IntermediateOutputPath>
     <IntermediateOutputPath Condition="'$(IntermediateOutputPath)' == ''">$(MSBuildProjectDirectory)\obj\$(OutputTarget)\$(Configuration)\</IntermediateOutputPath>
-
-    <IntDir>$(IntermediateOutputPath)</IntDir>
 
     <SuppressCommonAssemblyMetadata Condition="'$(SuppressCommonAssemblyMetadata)' == ''">False</SuppressCommonAssemblyMetadata>
 
@@ -91,6 +87,10 @@
     <NoWarn>436</NoWarn>
 
     <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <IntDir>$(IntermediateOutputPath)</IntDir>
   </PropertyGroup>
 
   <Import Project="$(TargetsPath)\Common.Build.CSharp.settings" Condition="'$(MSBuildProjectExtension)' == '.csproj' or '$(MSBuildProjectExtension)' == '.tmp_proj'" />
