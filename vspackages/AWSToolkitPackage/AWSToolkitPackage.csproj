@@ -391,6 +391,26 @@
 			  <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Validation.14.1.111\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
 			  <Private>True</Private>
 			</Reference>
+			<Reference Include="Microsoft.TeamFoundation.Common">
+			  <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Common.dll</HintPath>
+			  <Private>False</Private>
+			</Reference>
+			<Reference Include="Microsoft.TeamFoundation.Client">
+			  <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Client.dll</HintPath>
+			  <Private>False</Private>
+			</Reference>
+			<Reference Include="Microsoft.TeamFoundation.Controls">
+			  <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Controls.dll</HintPath>
+			  <Private>False</Private>
+			</Reference>
+			<Reference Include="Microsoft.TeamFoundation.Git.Controls">
+			  <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Git.Controls.dll</HintPath>
+			  <Private>False</Private>
+			</Reference>
+			<Reference Include="Microsoft.TeamFoundation.Git.Provider">
+			  <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Git.Provider.dll</HintPath>
+			  <Private>False</Private>
+			</Reference>
 		</ItemGroup>
 	</When>
 	<When Condition="'$(VisualStudioVersion)' == '15.0'">
@@ -487,34 +507,32 @@
 			<Reference Include="Microsoft.VisualStudio.Validation, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
 			  <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Validation.15.0.82\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
 			</Reference>
+			<Reference Include="Microsoft.TeamFoundation.Common">
+			  <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Common.dll</HintPath>
+			  <Private>False</Private>
+			</Reference>
+			<Reference Include="Microsoft.TeamFoundation.Client">
+			  <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Client.dll</HintPath>
+			  <Private>False</Private>
+			</Reference>
+			<Reference Include="Microsoft.TeamFoundation.Controls">
+			  <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Controls.dll</HintPath>
+			  <Private>False</Private>
+			</Reference>
+			<Reference Include="Microsoft.TeamFoundation.Git.Controls">
+			  <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Git.Controls.dll</HintPath>
+			  <Private>False</Private>
+			</Reference>
+			<Reference Include="Microsoft.TeamFoundation.Git.Provider">
+			  <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Git.Provider.dll</HintPath>
+			  <Private>False</Private>
+			</Reference>
 		</ItemGroup>
 	</When>
   </Choose>
   <ItemGroup Condition="'$(VisualStudioVersion)' == '15.0'">
     <Analyzer Include="$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.SDK.Analyzers.15.7.7\analyzers\cs\Microsoft.VisualStudio.SDK.Analyzers.dll" />
     <Analyzer Include="$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Threading.Analyzers.15.7.18\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.dll" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(VisualStudioVersion)' != '12.0'">
-	<Reference Include="Microsoft.TeamFoundation.Common">
-	  <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Common.dll</HintPath>
-	  <Private>False</Private>
-	</Reference>
-	<Reference Include="Microsoft.TeamFoundation.Client">
-	  <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Client.dll</HintPath>
-	  <Private>False</Private>
-	</Reference>
-	<Reference Include="Microsoft.TeamFoundation.Controls">
-	  <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Controls.dll</HintPath>
-	  <Private>False</Private>
-	</Reference>
-	<Reference Include="Microsoft.TeamFoundation.Git.Controls">
-	  <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Git.Controls.dll</HintPath>
-	  <Private>False</Private>
-	</Reference>
-	<Reference Include="Microsoft.TeamFoundation.Git.Provider">
-	  <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Git.Provider.dll</HintPath>
-	  <Private>False</Private>
-	</Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(VisualStudioVersion)' != '12.0'">
 	<Compile Include="TeamExplorer\Base\TeamExplorerBase.cs" />
