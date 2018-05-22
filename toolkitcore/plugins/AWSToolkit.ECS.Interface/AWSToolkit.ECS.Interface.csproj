@@ -40,10 +40,9 @@
     <Reference Include="AWSSDK.ECS, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.ECS.3.3.13.3\lib\net45\AWSSDK.ECS.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\thirdparty\log4net.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>$(BuildRoot)\solutions\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>4.5</RequiredTargetFramework>
