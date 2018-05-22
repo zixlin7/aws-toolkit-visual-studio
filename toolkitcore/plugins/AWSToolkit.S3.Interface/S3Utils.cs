@@ -46,7 +46,7 @@ namespace Amazon.AWSToolkit.S3
                 var config = BuildS3Config(endPoint);
                 regionSpecificClient = new AmazonS3Client(account.Credentials, config);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 regionSpecificClient = startingClient;
                 return;

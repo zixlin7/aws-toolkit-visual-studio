@@ -190,11 +190,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             this.UpdateExistingResources();
         }
 
-        bool _loadingExistingResources = false;
-
         void UpdateExistingResources()
         {
-            this._loadingExistingResources = true;
             this._ctlStackPicker.Items.Clear();
             this._ctlBucketPicker.Items.Clear();
 
@@ -274,7 +271,6 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 });
 
                 Task.WaitAll(task1, task2);
-                this._loadingExistingResources = false;
                 cloudFormationClient.Dispose();
                 s3Client.Dispose();
 

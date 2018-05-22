@@ -25,7 +25,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
         private PermissionsPage _pageUI;
         private string _lastSeenAccount = string.Empty;
         private string _lastSeenRegion = string.Empty;
-        private IAmazonIdentityManagementService _iamClient;
 
         readonly object _syncLock = new object();
 

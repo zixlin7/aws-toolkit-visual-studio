@@ -29,8 +29,6 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
         ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionDetailsPageController));
         private readonly object _syncLock = new object();
 
-        private bool _firstTimeLoad = true;
-
         private int _backgroundWorkersActive = 0;
         private int BackgroundWorkerCount
         {

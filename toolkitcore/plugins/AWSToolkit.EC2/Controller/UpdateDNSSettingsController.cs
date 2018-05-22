@@ -38,7 +38,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                     return new ActionResults().WithSuccess(false);
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
             }
 

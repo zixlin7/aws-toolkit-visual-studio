@@ -37,7 +37,7 @@ namespace Amazon.AWSToolkit.CommonUI.ResourceTags
     /// <summary>
     /// Interaction logic for ResourceTagsControl.xaml
     /// </summary>
-    public partial class ResourceTagsControl : INotifyPropertyChanged
+    public partial class ResourceTagsControl
     {
         public ResourceTagsControl()
         {
@@ -58,7 +58,5 @@ namespace Amazon.AWSToolkit.CommonUI.ResourceTags
             else
                 _ctlErrMessages.Text = string.Empty;
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }
