@@ -142,7 +142,7 @@ namespace Amazon.AWSToolkit.VersionInfo
         {
 #if DEBUG
             return false;
-#endif
+#else
 
             string[] toolkitParts = Constants.VERSION_NUMBER.Split('.');
             string[] versionParts = versionString.Split('.');
@@ -169,6 +169,7 @@ namespace Amazon.AWSToolkit.VersionInfo
             }
 
             return false;
+#endif
         }
 
 
