@@ -18,8 +18,6 @@ namespace Amazon.AWSToolkit.Studio
     {
         readonly Dictionary<string, CloseableTabItem> _openTabs = new Dictionary<string, CloseableTabItem>();
 
-        private const string TempPluginBuildPath = @"C:\codebase\v3\AWSVisualStudioToolkit.orig\Deployment\15.0\Debug\Plugins";
-
         public AWSStudioWindow()
         {
             log4net.Config.XmlConfigurator.Configure();
@@ -27,7 +25,7 @@ namespace Amazon.AWSToolkit.Studio
             InitializeComponent();
             this.WindowState = WindowState.Maximized;
 
-            ToolkitFactory.InitializeToolkit(this._navigation, this, TempPluginBuildPath, () =>
+            ToolkitFactory.InitializeToolkit(this._navigation, this, null, () =>
             {
                 this.AddHandler(CloseableTabItem.CloseTabEvent, new RoutedEventHandler(this.CloseTab));
             });
