@@ -27,7 +27,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
 
         public IServiceProvider ServiceProvider { get; set; }
 
-        public async Task CloneAsync(ServiceSpecificCredentials credentials, 
+        public Task CloneAsync(ServiceSpecificCredentials credentials, 
                                      string repositoryUrl, 
                                      string localFolder)
         {
@@ -67,6 +67,8 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
                     e.Message);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Repository Clone Failed", msg);
             }
+
+            return Task.FromResult<object>(null);
         }
 
         public async Task CreateAsync(INewCodeCommitRepositoryInfo newRepositoryInfo, 
