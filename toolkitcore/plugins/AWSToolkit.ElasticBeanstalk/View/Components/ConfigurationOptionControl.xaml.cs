@@ -128,36 +128,36 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
 
         #region Event handlers
 
-        private void CheckInputChecked(object sender, RoutedEventArgs e)
+        private void CheckInputControlChecked(object sender, RoutedEventArgs e)
         {
             ConfigModel.SetValue(PropertyNamespaceName, PropertySystemName, true.ToString().ToLower());
         }
-        private void CheckInputUnchecked(object sender, RoutedEventArgs e)
+        private void CheckInputControlUnchecked(object sender, RoutedEventArgs e)
         {
             ConfigModel.SetValue(PropertyNamespaceName, PropertySystemName, false.ToString().ToLower());
         }
-        private void CheckInputIndeterminate(object sender, RoutedEventArgs e)
+        private void CheckInputControlIndeterminate(object sender, RoutedEventArgs e)
         {
         }
 
-        private void ComboInputSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ComboInputControlSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if(e.AddedItems.Count == 1)
                 ConfigModel.SetValue(PropertyNamespaceName, PropertySystemName, e.AddedItems[0]);
             else
-                ConfigModel.SetValue(PropertyNamespaceName, PropertySystemName, ComboInput.SelectedValue);
+                ConfigModel.SetValue(PropertyNamespaceName, PropertySystemName, ComboInputControl.SelectedValue);
         }
 
-        private void TextInputTextChanged(object sender, TextChangedEventArgs e)
+        private void TextInputControlTextChanged(object sender, TextChangedEventArgs e)
         {
-            ConfigModel.SetValue(PropertyNamespaceName, PropertySystemName, TextInput.Text);
+            ConfigModel.SetValue(PropertyNamespaceName, PropertySystemName, TextInputControl.Text);
         }
 
         private void ListInputChanged(object sender, RoutedEventArgs e)
         {
             StringBuilder sb = new StringBuilder();
 
-            foreach (CheckBox cb in ListValues.Children)
+            foreach (CheckBox cb in ListValuesControl.Children)
             {
                 if (!cb.IsChecked.GetValueOrDefault())
                     continue;
@@ -217,25 +217,25 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
                 {
                     bool.TryParse(OptionDescription.DefaultValue, out isChecked);
                 }
-                if(CheckInput.IsChecked != isChecked)
+                if(CheckInputControl.IsChecked != isChecked)
                 {
-                    CheckInput.IsChecked = isChecked;
+                    CheckInputControl.IsChecked = isChecked;
                 }
             }
             else if (ValueType == ConfigurationOptionDescriptionValueTypes.Scalar || ValueType == ConfigurationOptionDescriptionValueTypes.CommaSeparatedList)
             {
                 if (OptionDescription.ValueOptions != null && OptionDescription.ValueOptions.Count > 0)
                 {
-                    if (!object.Equals(ComboInput.SelectedValue, Value))
+                    if (!object.Equals(ComboInputControl.SelectedValue, Value))
                     {
-                        ComboInput.SelectedValue = Value;
+                        ComboInputControl.SelectedValue = Value;
                     }
                 }
                 else
                 {
-                    if (!object.Equals(TextInput.Text, Value))
+                    if (!object.Equals(TextInputControl.Text, Value))
                     {
-                        TextInput.Text = Value;
+                        TextInputControl.Text = Value;
                     }
                 }
             }
@@ -247,15 +247,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
                 else
                     selected = Value.Split(',');
 
-                foreach (CheckBox cb in this.ListValues.Children)
+                foreach (CheckBox cb in this.ListValuesControl.Children)
                 {
                     cb.IsChecked = selected.Contains(cb.Content.ToString());
                 }
             }
             else if (ValueType == ConfigurationOptionDescriptionValueTypes.Unknown)
             {
-                TextInput.Text = Value;
-                TextInput.IsReadOnly = true;
+                TextInputControl.Text = Value;
+                TextInputControl.IsReadOnly = true;
             }
         }
 
@@ -276,54 +276,54 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
 
             if (ValueType == ConfigurationOptionDescriptionValueTypes.Boolean)
             {
-                // CheckInput should be used
-                CheckInput.Visibility = Visibility.Visible;
+                // CheckInputControl should be used
+                CheckInputControl.Visibility = Visibility.Visible;
             }
             else if (ValueType == ConfigurationOptionDescriptionValueTypes.Scalar || ValueType == ConfigurationOptionDescriptionValueTypes.CommaSeparatedList)
             {
                 if (OptionDescription.ValueOptions != null && OptionDescription.ValueOptions.Count > 0)
                 {
-                    // ComboInput should be used
-                    ComboInput.Visibility = Visibility.Visible;
+                    // ComboInputControl should be used
+                    ComboInputControl.Visibility = Visibility.Visible;
 
                     // Populate choices
-                    ComboInput.Items.Clear();
-                    OptionDescription.ValueOptions.ForEach(x => ComboInput.Items.Add(x));
+                    ComboInputControl.Items.Clear();
+                    OptionDescription.ValueOptions.ForEach(x => ComboInputControl.Items.Add(x));
                 }
                 else
                 {
-                    // TextInput should be used
-                    TextInput.Visibility = Visibility.Visible;
+                    // TextInputControl should be used
+                    TextInputControl.Visibility = Visibility.Visible;
 
                     // Set validation (and required self-binding)
                     Binding binding = new Binding
                     {
-                        Source = TextInput,
+                        Source = TextInputControl,
                         Path = new PropertyPath("Tag"),
                         Mode = BindingMode.OneWayToSource,
                         UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
                     };
                     binding.ValidationRules.Add(new ConfigurationOptionDescriptionValidationRule(OptionDescription));
-                    TextInput.SetBinding(TextBox.TextProperty, binding);
+                    TextInputControl.SetBinding(TextBox.TextProperty, binding);
                 }
             }
             else if (ValueType == ConfigurationOptionDescriptionValueTypes.List)
             {
-                ListValues.Children.Clear();
-                ListValues.Visibility = Visibility.Visible;
+                ListValuesControl.Children.Clear();
+                ListValuesControl.Visibility = Visibility.Visible;
                 foreach (var item in OptionDescription.ValueOptions.OrderBy(x => x))
                 {
                     var cb = new CheckBox();
                     cb.Margin = new Thickness(2);
                     cb.Content = item;
-                    ListValues.Children.Add(cb);
+                    ListValuesControl.Children.Add(cb);
                 }
             }
             else
             {
-                TextInput.Visibility = Visibility.Visible;
-                TextInput.IsReadOnly = true;
-                TextInput.Text = Value;
+                TextInputControl.Visibility = Visibility.Visible;
+                TextInputControl.IsReadOnly = true;
+                TextInputControl.Text = Value;
             }
 
             this.Visibility = Visibility.Visible;
@@ -340,10 +340,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
         private void ResetControls()
         {
             this.Visibility = Visibility.Hidden;
-            TextInput.Visibility = Visibility.Hidden;
-            ComboInput.Visibility = Visibility.Hidden;
-            CheckInput.Visibility = Visibility.Hidden;
-            ListValues.Visibility = Visibility.Hidden;
+            TextInputControl.Visibility = Visibility.Hidden;
+            ComboInputControl.Visibility = Visibility.Hidden;
+            CheckInputControl.Visibility = Visibility.Hidden;
+            ListValuesControl.Visibility = Visibility.Hidden;
 
             AttachEventHandlers(false);
         }
@@ -353,13 +353,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
             if (attach)
             {
                 // Attach to events
-                TextInput.TextChanged += TextInputTextChanged;
-                ComboInput.SelectionChanged += ComboInputSelectionChanged;
-                CheckInput.Checked += CheckInputChecked;
-                CheckInput.Unchecked += CheckInputUnchecked;
-                CheckInput.Indeterminate += CheckInputIndeterminate;
+                TextInputControl.TextChanged += TextInputControlTextChanged;
+                ComboInputControl.SelectionChanged += ComboInputControlSelectionChanged;
+                CheckInputControl.Checked += CheckInputControlChecked;
+                CheckInputControl.Unchecked += CheckInputControlUnchecked;
+                CheckInputControl.Indeterminate += CheckInputControlIndeterminate;
 
-                foreach (CheckBox cb in this.ListValues.Children)
+                foreach (CheckBox cb in this.ListValuesControl.Children)
                 {
                     cb.Checked += ListInputChanged;
                 }
@@ -367,11 +367,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
             else
             {
                 // Detach
-                TextInput.TextChanged -= TextInputTextChanged;
-                ComboInput.SelectionChanged -= ComboInputSelectionChanged;
-                CheckInput.Checked -= CheckInputChecked;
-                CheckInput.Unchecked -= CheckInputUnchecked;
-                CheckInput.Indeterminate -= CheckInputIndeterminate;
+                TextInputControl.TextChanged -= TextInputControlTextChanged;
+                ComboInputControl.SelectionChanged -= ComboInputControlSelectionChanged;
+                CheckInputControl.Checked -= CheckInputControlChecked;
+                CheckInputControl.Unchecked -= CheckInputControlUnchecked;
+                CheckInputControl.Indeterminate -= CheckInputControlIndeterminate;
             }
         }
 

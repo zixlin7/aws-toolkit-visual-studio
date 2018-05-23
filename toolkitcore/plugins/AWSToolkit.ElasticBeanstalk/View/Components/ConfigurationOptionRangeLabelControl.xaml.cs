@@ -60,7 +60,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
             if (!IsDesignMode && this.OptionDescription != null && 
                 this.OptionDescription.MinValue != this.OptionDescription.MaxValue)
             {
-                TextInput.Text = string.Format("({0} - {1})", this.OptionDescription.MinValue, this.OptionDescription.MaxValue);
+                TextInputControl.Text = string.Format("({0} - {1})", this.OptionDescription.MinValue, this.OptionDescription.MaxValue);
             }
             base.OnRender(drawingContext);
         }
