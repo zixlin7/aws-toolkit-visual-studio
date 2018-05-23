@@ -16,6 +16,18 @@
     
     <DockPanel LastChildFill="True">
 
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Test" x:Name="_testMenu">
+                <MenuItem x:Name="_beanstalkAspNet" Header="Beanstalk ASP.NET Deployment" Click="_beanstalkAspNet_OnClick" />
+                <MenuItem x:Name="_beanstalkAspNetCore" Header="Beanstalk ASP.NET Core Deployment" Click="_beanstalkAspNetCore_OnClick" />
+                <Separator/>
+                <MenuItem x:Name="_lambdaNetCore10Function" Header="Lambda .NET Core 1.0 Function Deployment" Click="_lambdaNetCore10Function_OnClick"/>
+                <MenuItem x:Name="_lambdaNetCore10Serverless" Header="Lambda .NET Core 1.0 Serverless Deployment" Click="_lambdaNetCore10Serverless_OnClick"/>
+                <MenuItem x:Name="_lambdaNetCore20Function" Header="Lambda .NET Core 2.0 Function Deployment" Click="_lambdaNetCore20Function_OnClick"/>
+                <MenuItem x:Name="_lambdaNetCore20Serverless" Header="Lambda .NET Core 2.0 Serverless Deployment" Click="_lambdaNetCore20Serverless_OnClick"/>
+            </MenuItem>    
+        </Menu>
+
         <StatusBar VerticalAlignment="Bottom" DockPanel.Dock="Bottom">
             <TextBlock Name="_ctlStatusField" Style="{DynamicResource awsTextBlockBaseStyle}"></TextBlock>
         </StatusBar>

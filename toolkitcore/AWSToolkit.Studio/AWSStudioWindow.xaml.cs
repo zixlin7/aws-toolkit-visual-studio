@@ -271,5 +271,28 @@ namespace Amazon.AWSToolkit.Studio
             return this as T;
         }
 
+        private void _beanstalkAspNet_OnClick(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void _beanstalkAspNetCore_OnClick(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void _lambdaNetCore10Function_OnClick(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void _lambdaNetCore10Serverless_OnClick(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void _lambdaNetCore20Function_OnClick(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void _lambdaNetCore20Serverless_OnClick(object sender, RoutedEventArgs e)
+        {
+        }
     }
 }
