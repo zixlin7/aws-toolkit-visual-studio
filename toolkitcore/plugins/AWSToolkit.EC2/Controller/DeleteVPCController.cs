@@ -122,7 +122,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                     IpPermission spec = new IpPermission()
                     {
                         UserIdGroupPairs = new List<UserIdGroupPair>() { pair },
-                        IpRanges = permission.IpRanges,
+                        Ipv4Ranges = permission.Ipv4Ranges,
                         IpProtocol = permission.IpProtocol
                     };
 

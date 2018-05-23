@@ -108,7 +108,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
                         IpPermission permission = new IpPermission()
                         {
-                            IpRanges = new List<string>() { control.IPAddress },
+                            Ipv4Ranges = new List<IpRange> { new IpRange { CidrIp = control.IPAddress } },
                             IpProtocol = NetworkProtocol.SSH.UnderlyingProtocol.ToString().ToLower(),
                             FromPort = NetworkProtocol.SSH.DefaultPort.GetValueOrDefault(),
                             ToPort = NetworkProtocol.SSH.DefaultPort.GetValueOrDefault()

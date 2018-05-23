@@ -84,7 +84,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
                         ToPort = this._dbInstance.Port.Value,
                         IpProtocol = "tcp"
                     };
-                    ipPermission.IpRanges.Add(cidr);
+                    ipPermission.Ipv4Ranges.Add(new IpRange { CidrIp = cidr });
 
                     request.IpPermissions.Add(ipPermission);
                     this._ec2Client.AuthorizeSecurityGroupIngress(request);

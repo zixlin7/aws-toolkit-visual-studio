@@ -533,7 +533,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
                 FromPort = port,
                 ToPort = port,
                 IpProtocol = "tcp",
-                IpRanges = new List<string> {  cidr }
+                Ipv4Ranges = new List<IpRange> { new IpRange { CidrIp = cidr } }
             };
 
             foreach (var groupId in securityGroups)

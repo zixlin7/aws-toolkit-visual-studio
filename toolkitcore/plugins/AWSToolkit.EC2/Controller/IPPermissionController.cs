@@ -83,7 +83,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 else
                 {
                     if (!string.IsNullOrEmpty(ipPermission.Source))
-                        permission.IpRanges = new List<string>(){ipPermission.Source};
+                        permission.Ipv4Ranges = new List<IpRange> { new IpRange { CidrIp = ipPermission.Source } };
                 }
 
                 if (permisionType == EC2Constants.PermissionType.Ingress)
