@@ -64,7 +64,7 @@ namespace Amazon.AWSToolkit.CloudFormation.TemplateWizards
             if (property == null)
                 return;
 
-            var filepath = property.Value;
+            var filepath = (string)property.Value;
             File.WriteAllText(filepath, this._initialTemplate);
         }
     }
