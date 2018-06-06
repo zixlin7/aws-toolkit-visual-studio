@@ -56,24 +56,24 @@
 		<Message Text="------------------------------------------------------------------------------" />
 		<Message Text="| AWSDeploy - $(Configuration)"/>
 		<Message Text="------------------------------------------------------------------------------" />
-        <MSBuild Projects="..\solutions\AWSDeploymentHostManager.sln" Properties="TargetShell=awsdeploy;Configuration=$(Configuration)" />
+        <MSBuild Projects="..\solutions\AWSDeploymentHostManager.sln" Properties="Configuration=$(Configuration)" />
     </Target>
 
     <Target Name="build-vstoolkit" DependsOnTargets="patch-vsixmanifest">
 		<Message Text="------------------------------------------------------------------------------" />
         <Message Text="| Visual Studio 2013 Toolkit - $(Configuration)" />
 		<Message Text="------------------------------------------------------------------------------" />
-        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="TargetShell=12.0;Configuration=$(Configuration)" />
+        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=12.0;Configuration=$(Configuration)" />
 		
 		<Message Text="------------------------------------------------------------------------------" />
         <Message Text="| Visual Studio 2015 Toolkit - $(Configuration)" />
 		<Message Text="------------------------------------------------------------------------------" />
-        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="TargetShell=14.0;Configuration=$(Configuration)" />
+        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=14.0;Configuration=$(Configuration)" />
 		
 		<Message Text="------------------------------------------------------------------------------" />
         <Message Text="| AWS Studio - $(Configuration)" />
 		<Message Text="------------------------------------------------------------------------------" />
-        <MSBuild Projects="..\solutions\AWSStudioToolkit.sln" Properties="TargetShell=awsstudio;Configuration=$(Configuration)" />
+        <MSBuild Projects="..\solutions\AWSStudioToolkit.sln" Properties="Configuration=$(Configuration)" />
 	</Target>
 
     <Target Name="run-tests" DependsOnTargets="build-vstoolkit">

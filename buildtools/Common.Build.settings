@@ -1,12 +1,5 @@
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <!-- Ensures that if this file changes it forces a rebuild -->
-  <PropertyGroup>
-    <MSBuildAllProjects>
-        $(MSBuildAllProjects);$(MSBuildThisFileFullPath)
-    </MSBuildAllProjects>
-  </PropertyGroup>
-
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
@@ -17,58 +10,59 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <TargetFrameworkVersion Condition="'$(VisualStudioVersion)' != '15.0'">v4.5</TargetFrameworkVersion>
-    <TargetFrameworkVersion Condition="'$(VisualStudioVersion)' == '15.0'">v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
   </PropertyGroup>
 
   <Choose>
-    <When Condition="'$(TargetShell)' == '12.0'">
-      <PropertyGroup>
-        <VisualStudioVersion>12.0</VisualStudioVersion>
-        <VSTarget>12.0</VSTarget>
-        <OutputTarget>12.0</OutputTarget>
-        <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(TargetShell)</VSToolsPath>
-        <DevEnvDir>$(VS120COMNTOOLS)..\IDE\</DevEnvDir>
-        <VSSDKDir>$(VSSDK120Install)</VSSDKDir>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(TargetShell)' == '14.0'">
-      <PropertyGroup>
-        <VisualStudioVersion>14.0</VisualStudioVersion>
-        <VSTarget>14.0</VSTarget>
-        <OutputTarget>14.0</OutputTarget>
-        <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(TargetShell)</VSToolsPath>
-        <DevEnvDir>$(VS140COMNTOOLS)..\IDE\</DevEnvDir>
-        <VSSDKDir>$(VSSDK140Install)</VSSDKDir>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(TargetShell)' == '15.0'">
-      <PropertyGroup>
-        <VisualStudioVersion>15.0</VisualStudioVersion>
-        <VSTarget>15.0</VSTarget>
-        <OutputTarget>15.0</OutputTarget>
-        <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(TargetShell)</VSToolsPath>
-        <DevEnvDir>$(VS150COMNTOOLS)..\IDE\</DevEnvDir>
-        <VSSDKDir>$(VSSDK150Install)</VSSDKDir>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(TargetShell)' == 'awsstudio'">
-      <PropertyGroup>
-        <VSTarget>14.0</VSTarget>
-        <OutputTarget>awsstudio</OutputTarget>
-        <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(TargetShell)</VSToolsPath>
-        <DevEnvDir>$(VS140COMNTOOLS)..\IDE\</DevEnvDir>
-        <VSSDKDir>$(VSSDK140Install)</VSSDKDir>
-      </PropertyGroup>
-    </When>
-    <When Condition="'$(TargetShell)' == 'awsdeploy'">
+	<When Condition="'$(SolutionName)' == 'AWSDeploymentHostManager'">
       <PropertyGroup>
         <VisualStudioVersion>14.0</VisualStudioVersion>
         <VSTarget>14.0</VSTarget>
         <OutputTarget>awsdeploy</OutputTarget>
-        <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(TargetShell)</VSToolsPath>
+        <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
         <DevEnvDir>$(VS140COMNTOOLS)..\IDE\</DevEnvDir>
         <VSSDKDir>$(VSSDK140Install)</VSSDKDir>
+		<TargetFrameworkVersion>4.5</TargetFrameworkVersion>
+      </PropertyGroup>
+	</When>
+	<When Condition="'$(SolutionName)' == 'AWSStudioToolkit'">
+      <PropertyGroup>
+        <VisualStudioVersion>14.0</VisualStudioVersion>
+        <VSTarget>14.0</VSTarget>
+        <OutputTarget>awsstudio</OutputTarget>
+        <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+        <DevEnvDir>$(VS140COMNTOOLS)..\IDE\</DevEnvDir>
+        <VSSDKDir>$(VSSDK140Install)</VSSDKDir>
+      </PropertyGroup>
+	</When>
+    <When Condition="'$(VisualStudioVersion)' == '12.0'">
+      <PropertyGroup>
+        <VisualStudioVersion>12.0</VisualStudioVersion>
+        <VSTarget>12.0</VSTarget>
+        <OutputTarget>12.0</OutputTarget>
+        <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+        <DevEnvDir>$(VS120COMNTOOLS)..\IDE\</DevEnvDir>
+        <VSSDKDir>$(VSSDK120Install)</VSSDKDir>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(VisualStudioVersion)' == '14.0'">
+      <PropertyGroup>
+        <VisualStudioVersion>14.0</VisualStudioVersion>
+        <VSTarget>14.0</VSTarget>
+        <OutputTarget>14.0</OutputTarget>
+        <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+        <DevEnvDir>$(VS140COMNTOOLS)..\IDE\</DevEnvDir>
+        <VSSDKDir>$(VSSDK140Install)</VSSDKDir>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(VisualStudioVersion)' == '15.0'">
+      <PropertyGroup>
+        <VisualStudioVersion>15.0</VisualStudioVersion>
+        <VSTarget>15.0</VSTarget>
+        <OutputTarget>15.0</OutputTarget>
+        <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+        <DevEnvDir>$(VS150COMNTOOLS)..\IDE\</DevEnvDir>
+        <VSSDKDir>$(VSSDK150Install)</VSSDKDir>
       </PropertyGroup>
     </When>
   </Choose>
