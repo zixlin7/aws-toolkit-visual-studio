@@ -96,24 +96,24 @@
                            Style="{DynamicResource awsLabel122PercentStyle}">
                             ARN:
                         </Label>
-                        <TextBlock Grid.Row="0" Grid.Column="1"
-                               Style="{DynamicResource awsTextBlock122PercentStyle}"
+                        <TextBox Grid.Row="0" Grid.Column="1"
+                               Style="{DynamicResource awsSelectableTextBoxStyle}"
                                Text="{Binding Repository.RepositoryArn, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                         <Label Grid.Row="1" Grid.Column="0" 
                            Style="{DynamicResource awsLabel122PercentStyle}">
                             URI:
                         </Label>
-                        <TextBlock Grid.Row="1" Grid.Column="1"
-                               Style="{DynamicResource awsTextBlock122PercentStyle}"
+                        <TextBox Grid.Row="1" Grid.Column="1"
+                               Style="{DynamicResource awsSelectableTextBoxStyle}"
                                Text="{Binding Repository.RepositoryUri, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                         <Label Grid.Row="2" Grid.Column="0" 
                                Style="{DynamicResource awsLabel122PercentStyle}">
                             Created on:
                         </Label>
-                        <TextBlock Grid.Row="2" Grid.Column="1"
-                                   Style="{DynamicResource awsTextBlock122PercentStyle}"
+                        <TextBox Grid.Row="2" Grid.Column="1"
+                                   Style="{DynamicResource awsSelectableTextBoxStyle}"
                                    Text="{Binding Repository.CreationDate, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                     </Grid>

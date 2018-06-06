@@ -60,7 +60,7 @@ namespace Amazon.AWSToolkit.ECS.Model
 
         public string DockerPushCommand
         {
-            get { return string.Format("docker push {0}/{1}:latest", _repositoryWrapper.RepositoryUri, _repositoryWrapper.Name); }
+            get { return string.Format("docker push {0}:latest", _repositoryWrapper.RepositoryUri); }
         }
         #endregion
 
