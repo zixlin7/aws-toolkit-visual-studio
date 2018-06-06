@@ -52,7 +52,7 @@ namespace Amazon.AWSToolkit.ECS.Model
 
         public string DockerTagCommand
         {
-            get { return string.Format("docker tag {0}:latest {1}/{0}:latest", _repositoryWrapper.Name, _repositoryWrapper.RepositoryUri); }
+            get { return string.Format("docker tag {0}:latest {1}:latest", _repositoryWrapper.Name, _repositoryWrapper.RepositoryUri); }
         }
         #endregion
 
