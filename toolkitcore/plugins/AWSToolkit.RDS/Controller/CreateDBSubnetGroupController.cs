@@ -56,7 +56,8 @@ namespace Amazon.AWSToolkit.RDS.Controller
                 var endPoints = RegionEndPointsManager.GetInstance().GetRegion(this._subnetGroupsRootViewModel.CurrentEndPoint.RegionSystemName);
                 var endPoint = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
 
-                var config = new AmazonEC2Config {ServiceURL = endPoint.Url};
+                var config = new AmazonEC2Config ();
+                endPoint.ApplyToClientConfig(config);
                 _ec2Client = new AmazonEC2Client(account.Credentials, config);
 
                 _model = new CreateDBSubnetGroupModel();

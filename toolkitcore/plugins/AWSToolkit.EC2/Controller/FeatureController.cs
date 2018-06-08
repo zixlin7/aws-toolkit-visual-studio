@@ -21,7 +21,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
     {
         IAmazonEC2 _ec2Client;
         M _model;
-        string _endpoint;
+        string _endpointUniqueIdentifier;
         FeatureViewModel _featureViewModel;
 
         public override ActionResults Execute(IViewModel model)
@@ -30,7 +30,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             if (this._featureViewModel == null)
                 return new ActionResults().WithSuccess(false);
 
-            this._endpoint = ((IEndPointSupport)this._featureViewModel.Parent).CurrentEndPoint.Url;
+            this._endpointUniqueIdentifier = ((IEndPointSupport)this._featureViewModel.Parent).CurrentEndPoint.UniqueIdentifier;
             this._ec2Client = this._featureViewModel.EC2Client;
             this._model = new M();
 
@@ -56,11 +56,11 @@ namespace Amazon.AWSToolkit.EC2.Controller
             get { return this._model; }
         }
 
-        public string EndPoint
+        public string EndPointUniqueIdentifier
         {
             get
             {
-                return this._endpoint;
+                return this._endpointUniqueIdentifier;
             }
         }
 

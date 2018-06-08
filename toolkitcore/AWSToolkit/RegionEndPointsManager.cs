@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.Linq;
 
 using Amazon.AWSToolkit.VersionInfo;
+using Amazon.Runtime;
 using Amazon.Runtime.Internal.Settings;
 using log4net;
 
@@ -82,7 +83,7 @@ namespace Amazon.AWSToolkit
         {
             lock (_lock)
             {
-                if (_instance == null || fileFetcher != S3FileFetcher.Instance)
+                if (_instance == null || (fileFetcher != null && fileFetcher != S3FileFetcher.Instance))
                 {
                     var s3FileFetcher = fileFetcher ?? S3FileFetcher.Instance;
                     _instance = new RegionEndPointsManager
@@ -195,7 +196,7 @@ namespace Amazon.AWSToolkit
                                             URL = s.Value,
                                             Signer = (string)s.Attribute("signer"),
                                             AuthRegion = (string)s.Attribute("authregion")
-                                        };
+                                    };
 
                     IDictionary<string, EndPoint> endpoints = new Dictionary<string, EndPoint>();
                     foreach (var endpoint in subQuery)
@@ -360,19 +361,35 @@ namespace Amazon.AWSToolkit
                 get { return this._regionSystemName; }
             }
 
-            public string Url
+            public string UniqueIdentifier
+            {
+                get { return $"{this.RegionSystemName}/{this.Url}"; }
+            }
+
+            internal string Url
             {
                 get { return this._url; }
             }
 
-            public string Signer
+            internal string Signer
             {
                 get { return this._signer; }
             }
 
-            public string AuthRegion
+            internal string AuthRegion
             {
                 get { return this._authRegion; }
+            }
+
+
+            public void ApplyToClientConfig(ClientConfig config)
+            {
+                config.ServiceURL = this.Url;
+
+                if (!string.IsNullOrEmpty(this.Signer))
+                    config.SignatureVersion = this.Signer;
+                if (!string.IsNullOrEmpty(this.AuthRegion))
+                    config.AuthenticationRegion = this.AuthRegion;
             }
         }
     }

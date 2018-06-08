@@ -182,7 +182,8 @@ namespace AWSDeployment
             {
                 if (this._s3Client == null)
                 {
-                    var s3Config = new AmazonS3Config {ServiceURL = RegionEndPoints.GetEndpoint("S3").Url};
+                    var s3Config = new AmazonS3Config ();
+                    RegionEndPoints.GetEndpoint("S3").ApplyToClientConfig(s3Config);
                     this._s3Client = new AmazonS3Client(Credentials, s3Config);
                 }
 
@@ -197,7 +198,8 @@ namespace AWSDeployment
             {
                 if (this._ec2Client == null)
                 {
-                    var ec2Config = new AmazonEC2Config {ServiceURL = RegionEndPoints.GetEndpoint("EC2").Url};
+                    var ec2Config = new AmazonEC2Config ();
+                    RegionEndPoints.GetEndpoint("EC2").ApplyToClientConfig(ec2Config);
                     this._ec2Client = new AmazonEC2Client(Credentials, ec2Config);
                 }
 

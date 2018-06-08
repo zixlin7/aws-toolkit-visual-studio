@@ -683,13 +683,17 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
         IAmazonElasticBeanstalk GetBeanstalkClient(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
         {
             var endpoint = region.GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME);
-            var config = new AmazonElasticBeanstalkConfig {ServiceURL = endpoint.Url, AuthenticationRegion = endpoint.AuthRegion};
+            var config = new AmazonElasticBeanstalkConfig();
+            endpoint.ApplyToClientConfig(config);
+
             return new AmazonElasticBeanstalkClient(account.Credentials, config);
         }
 
         IAmazonCloudFormation GetCloudFormationClient(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
         {
-            var config = new AmazonCloudFormationConfig {ServiceURL = region.GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME).Url};
+            var config = new AmazonCloudFormationConfig();
+            var endpoint = region.GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME);
+            endpoint.ApplyToClientConfig(config);
             return new AmazonCloudFormationClient(account.Credentials, config);
         }
     }

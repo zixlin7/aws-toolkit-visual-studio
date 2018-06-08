@@ -56,11 +56,7 @@ namespace Amazon.AWSToolkit.CloudFront.Nodes
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
             var config = new AmazonCloudFrontConfig();
-            config.ServiceURL = this.CurrentEndPoint.Url;
-            if (this.CurrentEndPoint.Signer != null)
-                config.SignatureVersion = this.CurrentEndPoint.Signer;
-            if (this.CurrentEndPoint.AuthRegion != null)
-                config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
+            this.CurrentEndPoint.ApplyToClientConfig(config);
             this._cfClient = new Amazon.CloudFront.AmazonCloudFrontClient(awsCredentials, config);
         }
 

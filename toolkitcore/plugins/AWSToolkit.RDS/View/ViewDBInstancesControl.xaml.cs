@@ -110,7 +110,7 @@ namespace Amazon.AWSToolkit.RDS.View
         {
             get
             {
-                return "RDSDBInstances_" + this._controller.EndPoint + "_" + this._controller.Account.SettingsUniqueKey;
+                return "RDSDBInstances_" + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
             }
         }
 

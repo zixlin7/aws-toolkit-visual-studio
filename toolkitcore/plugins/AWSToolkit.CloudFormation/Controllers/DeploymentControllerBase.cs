@@ -73,7 +73,8 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             {
                 if (this._ec2Client == null)
                 {
-                    var ec2Config = new AmazonEC2Config {ServiceURL = RegionEndPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).Url};
+                    var ec2Config = new AmazonEC2Config();
+                    RegionEndPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).ApplyToClientConfig(ec2Config);
                     this._ec2Client = new AmazonEC2Client(_account.Credentials, ec2Config);
                 }
 
@@ -88,7 +89,8 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             {
                 if (this._cfClient == null)
                 {
-                    var cfConfig = new AmazonCloudFormationConfig {ServiceURL = RegionEndPoints.GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME).Url};
+                    var cfConfig = new AmazonCloudFormationConfig ();
+                    RegionEndPoints.GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME).ApplyToClientConfig(cfConfig);
                     this._cfClient = new AmazonCloudFormationClient(_account.Credentials, cfConfig);
                 }
 

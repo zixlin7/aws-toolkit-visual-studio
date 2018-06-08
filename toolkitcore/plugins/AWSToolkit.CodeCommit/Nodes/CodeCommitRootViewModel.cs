@@ -61,11 +61,8 @@ namespace Amazon.AWSToolkit.CodeCommit.Nodes
 
         protected override void BuildClient(AWSCredentials credentials)
         {
-            var config = new AmazonCodeCommitConfig { MaxErrorRetry = 6, ServiceURL = this.CurrentEndPoint.Url };
-            if (this.CurrentEndPoint.Signer != null)
-                config.SignatureVersion = this.CurrentEndPoint.Signer;
-            if (this.CurrentEndPoint.AuthRegion != null)
-                config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
+            var config = new AmazonCodeCommitConfig { MaxErrorRetry = 6 };
+            this.CurrentEndPoint.ApplyToClientConfig(config);
             CodeCommitClient = new AmazonCodeCommitClient(credentials, config);
         }
 

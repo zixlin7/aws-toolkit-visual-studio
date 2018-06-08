@@ -49,11 +49,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Nodes
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
             AmazonSimpleDBConfig config = new AmazonSimpleDBConfig();
-            config.ServiceURL = this.CurrentEndPoint.Url;
-            if (this.CurrentEndPoint.Signer != null)
-                config.SignatureVersion = this.CurrentEndPoint.Signer;
-            if (this.CurrentEndPoint.AuthRegion != null)
-                config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
+            this.CurrentEndPoint.ApplyToClientConfig(config);
             this._sdbClient = new AmazonSimpleDBClient(awsCredentials, config);
         }
 

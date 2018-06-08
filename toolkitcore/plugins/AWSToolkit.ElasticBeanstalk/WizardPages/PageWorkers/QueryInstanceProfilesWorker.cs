@@ -32,7 +32,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
         {
             _callback = callback;
 
-            var iamConfig = new AmazonIdentityManagementServiceConfig {ServiceURL = regionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).Url};
+            var iamConfig = new AmazonIdentityManagementServiceConfig ();
+            regionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).ApplyToClientConfig(iamConfig);
             var iamClient = new AmazonIdentityManagementServiceClient(accountViewModel.Credentials, iamConfig);
 
             var bw = new BackgroundWorker();

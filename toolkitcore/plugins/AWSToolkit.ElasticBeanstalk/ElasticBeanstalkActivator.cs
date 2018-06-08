@@ -173,8 +173,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
             var endpoint = RegionEndPointsManager.GetInstance().GetRegion(region)
                             .GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME);
             var config = new AmazonElasticBeanstalkConfig();
-            config.ServiceURL = endpoint.Url;
-            config.AuthenticationRegion = endpoint.AuthRegion;
+            endpoint.ApplyToClientConfig(config);
 
             var client = new AmazonElasticBeanstalkClient(account.Credentials, config);
             bool isValid = false;
@@ -217,7 +216,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
             try
             {
 
-                var config = new AmazonElasticBeanstalkConfig {ServiceURL = endpoint.Url, AuthenticationRegion = endpoint.AuthRegion};
+                var config = new AmazonElasticBeanstalkConfig();
+                endpoint.ApplyToClientConfig(config);
                 var client = new AmazonElasticBeanstalkClient(account.Credentials, config);
 
                 var response = client.DescribeApplications(new DescribeApplicationsRequest());
