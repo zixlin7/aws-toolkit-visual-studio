@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AWSToolkit.Util.Tests</RootNamespace>
-    <RootNamespace>AWSToolkit.Util.Tests</RootNamespace>
+    <RootNamespace>Amazon.AWSToolkit.Util.Tests</RootNamespace>
     <AssemblyName>AWSToolkit.Util.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LambdaIAMRoleFixUpTests.cs" />
+    <Compile Include="ProjectFileUtilitiesTests.cs" />
     <Compile Include="RegionEndPointsManagerTests.cs" />
     <Compile Include="S3FileFetcherTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

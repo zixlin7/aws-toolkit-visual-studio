@@ -5,7 +5,7 @@ using Amazon.AWSToolkit;
 using Xunit;
 using Moq;
 
-namespace AWSToolkit.Util.Tests
+namespace Amazon.AWSToolkit.Util.Tests
 {
     public class S3FileFetcherTests
     {

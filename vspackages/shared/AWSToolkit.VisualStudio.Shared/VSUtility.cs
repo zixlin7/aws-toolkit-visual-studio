@@ -18,9 +18,12 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
 {
     public static class VSUtility
     {
+
         // CoreCLR projects have no type guid (at present) so we'll probe for using
         // capability apis present in 2012+.
         private const string _dotNetCoreWebCapability = "DotNetCoreWeb";
+
+
 
         public static string QueryProjectIDGuid(IVsHierarchy projectHier)
         {
@@ -191,13 +194,9 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
                     if (projectContent.Contains("\"Amazon.Lambda.Tools\""))
                         return true;
 
-                    //using (var reader = new XmlTextReader(new StringReader(projectContent)))
-                    //{
-                    //    var evalProject = new MSBuildProject(reader);
-                    //    var value = evalProject.QueryPropertyValue("IsLambdaFunction");
-                    //    if (string.Equals("true", value, StringComparison.OrdinalIgnoreCase))
-                    //        return true;
-                    //}
+                    if (ProjectFileUtilities.IsProjectType(projectContent, ProjectFileUtilities.LAMBDA_PROJECT_TYPE_ID))
+                        return true;
+
 
                     var projectJsonPath = Path.Combine(new FileInfo(project.FileName).DirectoryName, "project.json");
                     if(File.Exists(projectJsonPath))
@@ -215,6 +214,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
                 }
             }
         }
+
 
         public static IList<string> GetSelectedNetCoreProjectFrameworks()
         {

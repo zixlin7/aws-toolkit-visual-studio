@@ -82,7 +82,7 @@ namespace Amazon.AWSToolkit
         {
             lock (_lock)
             {
-                if (_instance == null)
+                if (_instance == null || fileFetcher != S3FileFetcher.Instance)
                 {
                     var s3FileFetcher = fileFetcher ?? S3FileFetcher.Instance;
                     _instance = new RegionEndPointsManager

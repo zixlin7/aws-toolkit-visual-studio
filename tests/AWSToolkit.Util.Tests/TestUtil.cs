@@ -6,13 +6,13 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AWSToolkit.Util.Tests
+namespace Amazon.AWSToolkit.Util.Tests
 {
     public static class TestUtil
     {
         public static Stream LoadInvalidXmlEndpointsFile(string fileName)
         {
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("AWSToolkit.Util.Tests.Resources." + fileName);
+            var stream = typeof(TestUtil).Assembly.GetManifestResourceStream("Amazon.AWSToolkit.Util.Tests.Resources." + fileName);
             return stream;
         }
 
