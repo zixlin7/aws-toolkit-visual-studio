@@ -215,8 +215,9 @@ namespace AWSDeployment
             {
                 if (this._beanstalkClient == null)
                 {
+                    var beanstalkConfig = new AmazonElasticBeanstalkConfig();
                     var endpoint = RegionEndPoints.GetEndpoint("ElasticBeanstalk");
-                    var beanstalkConfig = new AmazonElasticBeanstalkConfig {ServiceURL = endpoint.Url, AuthenticationRegion = endpoint.AuthRegion};
+                    endpoint.ApplyToClientConfig(beanstalkConfig);
                     this._beanstalkClient = new AmazonElasticBeanstalkClient(Credentials, beanstalkConfig);
                 }
 
@@ -232,7 +233,9 @@ namespace AWSDeployment
             {
                 if (this._rdsClient == null)
                 {
-                    var rdsConfig = new AmazonRDSConfig {ServiceURL = RegionEndPoints.GetEndpoint("RDS").Url};
+                    var rdsConfig = new AmazonRDSConfig();
+                    var endpoint = RegionEndPoints.GetEndpoint("RDS");
+                    endpoint.ApplyToClientConfig(rdsConfig);
                     this._rdsClient = new AmazonRDSClient(Credentials, rdsConfig);
                 }
 
@@ -248,7 +251,9 @@ namespace AWSDeployment
             {
                 if (this._iamClient == null)
                 {
-                    var iamConfig = new AmazonIdentityManagementServiceConfig {ServiceURL = RegionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).Url};
+                    var iamConfig = new AmazonIdentityManagementServiceConfig();
+                    var endpoint = RegionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
+                    endpoint.ApplyToClientConfig(iamConfig);
                     this._iamClient = new AmazonIdentityManagementServiceClient(Credentials, iamConfig);
                 }
 
@@ -449,23 +454,15 @@ namespace AWSDeployment
                 Observer.Status("..starting deployment to AWS Elastic Beanstalk environment '{0}'", EnvironmentName);
 
                 string versionLabel = null;
-                if (!UseIncrementalDeployment)
+                S3Location s3Location = null;
+                if (DeploymentMode != DeploymentModes.DeployPriorVersion)
                 {
-                    S3Location s3Location = null;
-                    if (DeploymentMode != DeploymentModes.DeployPriorVersion)
-                    {
-                        s3Location = UploadDeploymentPackage(UploadBucket);
-                        versionLabel = CreateApplicationVersion(s3Location);
-                        this.DeploymentCreatedApplication = true;
-                    }
-                    else
-                        versionLabel = this.VersionLabel;
+                    s3Location = UploadDeploymentPackage(UploadBucket);
+                    versionLabel = CreateApplicationVersion(s3Location);
+                    this.DeploymentCreatedApplication = true;
                 }
                 else
-                {
-                    DeployViaDevTools(false);
-                    versionLabel = GetLatestApplicationVersionLabel();
-                }
+                    versionLabel = this.VersionLabel;
 
                 if ((RDSSecurityGroups != null && RDSSecurityGroups.Any()) || (VPCSecurityGroups != null && VPCSecurityGroups.Any()))
                 {
@@ -707,19 +704,10 @@ namespace AWSDeployment
 
                 if (!this.CreateNewEnvironment)
                 {
-                    if (UseIncrementalDeployment)
-                        DeployViaDevTools(true);
-                    else
-                        UpdateEnvironment();
+                    UpdateEnvironment();
                 }
                 else
                 {
-                    if (UseIncrementalDeployment)
-                    {
-                        DeployViaDevTools(false);
-                        VersionLabel = GetLatestApplicationVersionLabel();
-                    }
-
                     CreateEnvironment(VersionLabel);
                 }
 
@@ -1028,84 +1016,6 @@ namespace AWSDeployment
             File.WriteAllText(archiveFilePath, content);
         }
 
-        /// <summary>
-        /// Deploys incrementally to either a new application or an existing environment.
-        /// </summary>
-        /// <param name="includeEnvironment"></param>
-        protected void DeployViaDevTools(bool includeEnvironment)
-        {
-            if (DeploymentMode == DeploymentModes.RedeployNewVersion)
-            {
-                // work around Beanstalk api restriction where new config settings have to be
-                // done separately from version update; noop if nothing altered
-                UpdateChangedEnvironmentSettings();
-            }
-
-            long start = DateTime.Now.Ticks;
-            Observer.Status("...starting incremental deployment to environment '{0}'", EnvironmentName);
-
-            FixArchive(DeploymentPackage);
-            FileRepositoryBuilder builder = new FileRepositoryBuilder();
-
-            Observer.Info("...staging deployment from work folder {0}", DeploymentPackage);
-            builder.SetWorkTree(DeploymentPackage);
-
-            Observer.Info("...commit repository root set at {0}", IncrementalPushRepositoryLocation);
-            builder.SetGitDir(Path.Combine(IncrementalPushRepositoryLocation, ".git"));
-
-            var rep = builder.Build();
-            bool initialUpload = false;
-            if (!((FileBasedConfig)rep.GetConfig()).GetFile().Exists())
-            {
-                rep.Create();
-                initialUpload = true;
-            }
-
-            var git = new Git(rep);
-            git.Add().AddFilepattern(".").Call();
-            string commitMsg;
-            if (!string.IsNullOrEmpty(this.ApplicationDescription))
-                commitMsg = this.ApplicationDescription;
-            else
-                commitMsg = "Incremental Deployment: " + DateTime.Now.ToString();
-            var commitResults = git.Commit().SetAll(true).SetMessage(commitMsg).Call();
-
-            string url = getRemoteURL(includeEnvironment);
-            var pushCommand = git.Push().SetRemote(url).SetForce(true).Add("master");
-            pushCommand.SetTimeout(20 * 60); // Set timeout to 20 minutes
-            var results = pushCommand.Call();
-
-            CheckForErrorsPushing(results);
-            var oldTree = GetPrePushTree(git, results);
-
-            if (initialUpload || oldTree == null)
-            {
-                Observer.Info("...a full deployment of the application content is required");
-            }
-            else
-            {
-                var uniqueFiles = new Dictionary<string, string>();
-                addFiles(git, oldTree, uniqueFiles);
-
-                if (uniqueFiles.Count != 0)
-                {
-                    Observer.Status(
-                        "   Incremental Changes Deployed\r\n" +
-                        "   ----------------------------");
-
-                    if (uniqueFiles.Count <= NUMBER_OF_FILES_CHANGES_TO_SWITCH_TO_ABBREVIATED_MODE)
-                        writeUpdatedFiles(uniqueFiles);
-                    else
-                        writeAbbreviatedFilesMessage(uniqueFiles);
-
-                    Observer.Status("\r\n");
-                }
-                else
-                    Observer.Status("...no changes detected during commit phase");
-            }
-
-            Observer.Status("...finished incremental deployment in {0} ms", new TimeSpan(DateTime.Now.Ticks - start).TotalMilliseconds);
-        }
 
         public string GetLatestApplicationVersionLabel()
         {
@@ -1215,26 +1125,6 @@ namespace AWSDeployment
             }
         }
 
-
-        string getRemoteURL(bool includeEnvironment)
-        {
-            var user = new AWSUser();
-            var credentialKeys = Credentials.GetCredentials();
-            user.AccessKey = credentialKeys.AccessKey;
-            user.SecretKey = credentialKeys.SecretKey;
-            var request = new AWSElasticBeanstalkRequest();
-            request.Host = GetGitPushHost();
-            request.Region = RegionEndPoints.SystemName;
-            request.Application = ApplicationName;
-
-            if (includeEnvironment)
-                request.Environment = EnvironmentName;
-
-            var auth = new AWSDevToolsAuth(user, request);
-            var url = auth.DeriveRemote();
-            return url.ToString();
-        }
-
         void detectChanges(string repository, string zip, out List<string> adds, out List<string> deletes)
         {
             adds = new List<string>();
@@ -1290,19 +1180,6 @@ namespace AWSDeployment
                     outputStream.Write(buffer, 0, bytesRead);
                 }
             }
-        }
-
-        string GetGitPushHost()
-        {
-            var host = RegionEndPoints.GetEndpoint(GIT_PUSH_SERVICE_NAME).Url;
-            int pos = host.IndexOf("://");
-            if (pos > 0)
-                host = host.Substring(pos + 3);
-
-            if (host.EndsWith("/"))
-                host = host.Substring(0, host.Length - 1);
-
-            return host;
         }
 
         #endregion
