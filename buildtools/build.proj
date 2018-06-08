@@ -71,9 +71,15 @@
         <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=14.0;Configuration=$(Configuration)" />
 		
 		<Message Text="------------------------------------------------------------------------------" />
+        <Message Text="| Visual Studio 2017 Toolkit - $(Configuration)" />
+		<Message Text="------------------------------------------------------------------------------" />
+        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=15.0;Configuration=$(Configuration)" />
+		
+		<Message Text="------------------------------------------------------------------------------" />
         <Message Text="| AWS Studio - $(Configuration)" />
 		<Message Text="------------------------------------------------------------------------------" />
         <MSBuild Projects="..\solutions\AWSStudioToolkit.sln" Properties="Configuration=$(Configuration)" />
+
 	</Target>
 
     <Target Name="run-tests" DependsOnTargets="build-vstoolkit">
