@@ -246,12 +246,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 KMSKeyArn = kmsArn
             };
 
-            if(selectedDeadLetterTargetArn != null)
+            if(!string.IsNullOrEmpty(selectedDeadLetterTargetArn))
             {
                 request.DeadLetterConfig = new DeadLetterConfig { TargetArn = selectedDeadLetterTargetArn };
             }
 
-            if(selectedTracingMode != null)
+            if(!string.IsNullOrEmpty(selectedTracingMode))
             {
                 request.TracingConfig = new TracingConfig { Mode = selectedTracingMode };
             }
@@ -326,6 +326,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 //this._results = worker.Results;
             }, state);
         }
+
 
         string ILambdaFunctionUploadHelpers.CreateRole(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region, string functionName, ManagedPolicy managedPolicy)
         {
