@@ -6,11 +6,22 @@ using System.Text;
 using Xunit;
 using Amazon.AWSToolkit;
 using Moq;
+using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace AWSToolkit.Util.Tests
 {
-    public class RegionEndPointsManagerTests
+    public class RegionEndPointsManagerTests : IDisposable
     {
+        private string _testWorkspaceFolder;
+
+        public RegionEndPointsManagerTests()
+        {
+            /// Each test gets its own random subfolder to use.
+            /// Folder is auto cleaned up at the end of the test, and allows tests to run in parallel.
+            _testWorkspaceFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(_testWorkspaceFolder);
+        }
+
         /// <summary>
         /// Validates that the endpoints available in cache or from download
         /// load successfully - this is effectively a canary for the normal user 
@@ -64,38 +75,104 @@ namespace AWSToolkit.Util.Tests
             }
 
             // use a random subfolder so tests can run in parallel
-            var tempLocation = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            Directory.CreateDirectory(tempLocation);
-            var dummyEndpointsPath = Path.Combine(tempLocation, Constants.SERVICE_ENDPOINT_FILE);
+            var dummyEndpointsPath = Path.Combine(_testWorkspaceFolder, Constants.SERVICE_ENDPOINT_FILE);
             File.WriteAllText(dummyEndpointsPath, badEndpointsXml);
 
             var mock = new Mock<IS3FileFetcherContentResolver>();
-            mock.Setup(fetcher => fetcher.GetUserConfiguredLocalHostedFilesPath()).Returns(tempLocation);
+            mock.Setup(fetcher => fetcher.GetUserConfiguredLocalHostedFilesPath()).Returns(_testWorkspaceFolder);
 
-            try
+            var s3FileFetcher = new S3FileFetcher(mock.Object);
+            var rep = RegionEndPointsManager.GetInstance(s3FileFetcher);
+
+            Assert.False(rep.FailedToLoad, "FailedToLoad flag set true, an error occurred");
+            Assert.True(rep.LoadedFromResources, "Expected LoadedFromResources to be set true!");
+            Assert.Equal(S3FileFetcher.ResolvedLocation.Resources, s3FileFetcher.ResolvedContentLocation);
+
+            // validate we can enumerate and retrieve by name regions that should have been loaded
+            // from resources
+            foreach (var r in rep.Regions)
             {
-                var s3FileFetcher = new S3FileFetcher(mock.Object);
-                var rep = RegionEndPointsManager.GetInstance(s3FileFetcher);
-
-                Assert.False(rep.FailedToLoad, "FailedToLoad flag set true, an error occurred");
-                Assert.True(rep.LoadedFromResources, "Expected LoadedFromResources to be set true!");
-                Assert.Equal(S3FileFetcher.ResolvedLocation.Resources, s3FileFetcher.ResolvedContentLocation);
-
-                // validate we can enumerate and retrieve by name regions that should have been loaded
-                // from resources
-                foreach (var r in rep.Regions)
-                {
-                    var endpoint = rep.GetRegion(r.SystemName);
-                    Assert.NotNull(endpoint);
-                }
+                var endpoint = rep.GetRegion(r.SystemName);
+                Assert.NotNull(endpoint);
             }
-            finally
+        }
+
+        /// <summary>
+        /// If the Endpoints Config file is not available locally, S3FileFetcher attempts to load from CloudFront, then S3.
+        /// Simulate a CloudFront failure, and check that a url failure Metric was sent.
+        /// </summary>
+        [Fact]
+        public void TestManagerProducesMetricsForCloudFrontFailure()
+        {
+            var s3FileFetcherContentResolverMock = new Mock<IS3FileFetcherContentResolver>();
+            s3FileFetcherContentResolverMock.Setup(fetcher => fetcher.GetUserConfiguredLocalHostedFilesPath()).Returns(_testWorkspaceFolder); // no hosted file exists, triggering url loads
+            s3FileFetcherContentResolverMock.Setup(fetcher => fetcher.ConstructWebRequest(GetCloudFrontConfigFilesLocation())).Throws<Exception>(); // Simulate Cloudfront retrieval failure
+            s3FileFetcherContentResolverMock.Setup(fetcher => fetcher.ConstructWebRequest(GetS3FallbackConfigFilesLocation())).Returns<string>(url => WebRequest.Create(url) as HttpWebRequest); // Allow S3 requests to work
+
+            var simpleMobileAnalyticsMock = new Mock<ISimpleMobileAnalytics>();
+
+            var s3FileFetcher = new S3FileFetcher(s3FileFetcherContentResolverMock.Object, simpleMobileAnalyticsMock.Object);
+
+            // Create our own Endpoints Manager, because we have a custom file fetcher, which we don't want 
+            // getting stuffed into the Singleton Instance and breaking other tests.
+            var rep = RegionEndPointsManagerTestExtension.CreateRegionEndPointsManager(s3FileFetcher);
+
+            Assert.False(rep.FailedToLoad, "FailedToLoad flag set true, an error occurred");
+            Assert.False(rep.LoadedFromResources, "Expected LoadedFromResources to be set false!");
+            Assert.Equal(S3FileFetcher.ResolvedLocation.S3, s3FileFetcher.ResolvedContentLocation);
+
+            // Assert that we logged a url load error
+            // It fires two times because CacheFileContent fails, triggering a second OpenFileStream within S3FileFetcher
+            simpleMobileAnalyticsMock.Verify(mock => mock.QueueEventToBeRecorded(It.Is<ToolkitEvent>(toolkitEvent => toolkitEvent.Attributes.ContainsKey(AttributeKeys.FileFetcherUrlFailure.ToString()))), Times.Exactly(2), "A Metric indicating a load from url failure should have been sent");
+        }
+
+        /// <summary>
+        /// If the Endpoints Config file is not available locally, S3FileFetcher attempts to load from CloudFront, then S3.
+        /// Simulate a CloudFront and S3 failure, and check that a url failure Metric was sent.
+        /// </summary>
+        [Fact]
+        public void TestManagerProducesMetricsForCloudFrontAndS3Failures()
+        {
+            var s3FileFetcherContentResolverMock = new Mock<IS3FileFetcherContentResolver>();
+            s3FileFetcherContentResolverMock.Setup(fetcher => fetcher.GetUserConfiguredLocalHostedFilesPath()).Returns(_testWorkspaceFolder); // no hosted file exists, triggering url loads
+            s3FileFetcherContentResolverMock.Setup(fetcher => fetcher.ConstructWebRequest(It.IsAny<string>())).Throws<Exception>(); // Simulate retrieval failure from any url
+
+            var simpleMobileAnalyticsMock = new Mock<ISimpleMobileAnalytics>();
+
+            var s3FileFetcher = new S3FileFetcher(s3FileFetcherContentResolverMock.Object, simpleMobileAnalyticsMock.Object);
+
+            // Create our own Endpoints Manager, because we have a custom file fetcher, which we don't want 
+            // getting stuffed into the Singleton Instance and breaking other tests.
+            var rep = RegionEndPointsManagerTestExtension.CreateRegionEndPointsManager(s3FileFetcher);
+
+            Assert.False(rep.FailedToLoad, "FailedToLoad flag set true, an error occurred");
+            Assert.False(rep.LoadedFromResources, "Expected LoadedFromResources to be set false!");
+            Assert.Equal(S3FileFetcher.ResolvedLocation.Resources, s3FileFetcher.ResolvedContentLocation);
+
+            // Assert that we logged telemetry
+            simpleMobileAnalyticsMock.Verify(mock => mock.QueueEventToBeRecorded(It.Is<ToolkitEvent>(toolkitEvent => toolkitEvent.Attributes.ContainsKey(AttributeKeys.FileFetcherUrlFailure.ToString()))), Times.Exactly(2), "A Metric indicating a load form url failure should have been sent");
+        }
+
+        #region IDisposable 
+
+        public void Dispose()
+        {
+            if (Directory.Exists(_testWorkspaceFolder))
             {
-                if (Directory.Exists(tempLocation))
-                {
-                    Directory.Delete(tempLocation, true);
-                }
+                Directory.Delete(_testWorkspaceFolder, true);
             }
+        }
+
+        #endregion
+
+        private string GetCloudFrontConfigFilesLocation()
+        {
+            return string.Format("{0}{1}", S3FileFetcher.CLOUDFRONT_CONFIG_FILES_LOCATION, Constants.SERVICE_ENDPOINT_FILE);
+        }
+
+        private string GetS3FallbackConfigFilesLocation()
+        {
+            return string.Format("{0}{1}", S3FileFetcher.S3_FALLBACK_LOCATION, Constants.SERVICE_ENDPOINT_FILE);
         }
     }
 }

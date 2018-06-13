@@ -14,7 +14,12 @@ using log4net;
 
 namespace Amazon.AWSToolkit.MobileAnalytics
 {
-    public class SimpleMobileAnalytics : IDisposable
+    public interface ISimpleMobileAnalytics
+    {
+        bool QueueEventToBeRecorded(ToolkitEvent toolkitEvent);
+    }
+
+    public class SimpleMobileAnalytics : ISimpleMobileAnalytics, IDisposable
     {
         internal static ILog LOGGER = LogManager.GetLogger(typeof(SimpleMobileAnalytics));
 

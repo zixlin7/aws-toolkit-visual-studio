@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LambdaIAMRoleFixUpTests.cs" />
+    <Compile Include="RegionEndPointsManagerTestExtension.cs" />
     <Compile Include="RegionEndPointsManagerTests.cs" />
     <Compile Include="S3FileFetcherTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
