@@ -117,11 +117,9 @@ namespace Amazon.Common.DotNetCli.Tools
                 var currentPos = 0;
                 while (currentPos != -1 && currentPos < option.Length)
                 {
-                    string name;
-                    GetNextToken(option, '=', ref currentPos, out name);
+                    GetNextToken(option, '=', ref currentPos, out var name);
 
-                    string value;
-                    GetNextToken(option, ';', ref currentPos, out value);
+                    GetNextToken(option, ';', ref currentPos, out var value);
 
                     if (string.IsNullOrEmpty(name))
                         throw new ToolsException($"Error parsing option ({option}), format should be <key1>=<value1>;<key2>=<value2>", ToolsException.CommonErrorCode.CommandLineParseError);
@@ -349,7 +347,8 @@ namespace Amazon.Common.DotNetCli.Tools
             }
             catch(Exception e)
             {
-                throw new ToolsException($"Error determining region for bucket {s3Bucket}: {e.Message}", ToolsException.CommonErrorCode.S3GetBucketLocation, e);
+                Console.Error.WriteLine($"Warning: Unable to determine region for bucket {s3Bucket}, assuming bucket is in correct region: {e.Message}", ToolsException.CommonErrorCode.S3GetBucketLocation, e);
+                return;
             }
 
             var configuredRegion = s3Client.Config.RegionEndpoint?.SystemName;
@@ -370,25 +369,18 @@ namespace Amazon.Common.DotNetCli.Tools
 
         }
 
-        public static async Task<string> GetBucketRegionAsync(IAmazonS3 s3Client, string bucket)
+        private static async Task<string> GetBucketRegionAsync(IAmazonS3 s3Client, string bucket)
         {
-            try
-            {
-                var request = new GetBucketLocationRequest { BucketName = bucket };
-                var response = await s3Client.GetBucketLocationAsync(request);
+            var request = new GetBucketLocationRequest { BucketName = bucket };
+            var response = await s3Client.GetBucketLocationAsync(request);
 
-                // Handle the legacy naming conventions
-                if (response.Location == S3Region.US)
-                    return "us-east-1";
-                if (response.Location == S3Region.EU)
-                    return "eu-west-1";
+            // Handle the legacy naming conventions
+            if (response.Location == S3Region.US)
+                return "us-east-1";
+            if (response.Location == S3Region.EU)
+                return "eu-west-1";
 
-                return response.Location.Value;
-            }
-            catch(Exception e)
-            {
-                throw new ToolsException($"Error determining region for bucket {bucket}: {e.Message}", ToolsException.CommonErrorCode.S3GetBucketLocation, e);
-            }
+            return response.Location.Value;
         }
 
         public static async Task<bool> EnsureBucketExistsAsync(IToolLogger logger, IAmazonS3 s3Client, string bucketName)
