@@ -147,7 +147,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageControllers
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error creating AWS Lambda C# Project: " + e.Message);
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error creating AWS Lambda Project: " + e.Message);
                 return false;
             }
         }
