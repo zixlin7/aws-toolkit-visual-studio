@@ -78,6 +78,8 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
             properties.DockerImageTag = dockerImageTag;
 
+            properties.DockerBuildWorkingDirectory = hostingWizard[PublishContainerToAWSWizardProperties.DockerBuildWorkingDirectory] as string;
+
             return properties;
         }
 
