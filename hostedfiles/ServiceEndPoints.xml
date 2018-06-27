@@ -250,10 +250,13 @@
             <service name="DynamoDB">https://dynamodb.cn-northwest-1.amazonaws.com.cn</service>
             <service name="DynamoDBStream">https://streams.dynamodb.cn-northwest-1.amazonaws.com.cn</service>
             <service name="EC2">https://ec2.cn-northwest-1.amazonaws.com.cn</service>
+            <service name="ECR">https://ecr.cn-northwest-1.amazonaws.com.cn</service>
+            <service name="ECS">https://ecs.cn-northwest-1.amazonaws.com.cn</service>
             <service name="ELB">https://elasticloadbalancing.cn-northwest-1.amazonaws.com.cn</service>
             <service name="ElasticBeanstalk">https://elasticbeanstalk.cn-northwest-1.amazonaws.com.cn</service>
             <service name="IAM" authregion="cn-north-1">https://iam.cn-north-1.amazonaws.com.cn</service>
             <service name="Kinesis">https://kinesis.cn-northwest-1.amazonaws.com.cn</service>
+            <service name="Lambda">https://lambda.cn-northwest-1.amazonaws.com.cn</service>
             <service name="Logs">https://logs.cn-northwest-1.amazonaws.com.cn</service>
             <service name="RDS">https://rds.cn-northwest-1.amazonaws.com.cn</service>
             <service name="S3">https://s3.cn-northwest-1.amazonaws.com.cn</service>
