@@ -331,6 +331,20 @@
       </HiddenTags>
     </Blueprint>
     <Blueprint>
+      <Name>Simple SQS Function</Name>
+      <Description>A project for responding to SQS Event notifications</Description>
+      <SortOrder>101</SortOrder>
+      <File>SimpleSQSFunction.zip</File>
+      <Tags>
+        <Tag>SQS</Tag>
+        <Tag>Simple</Tag>
+      </Tags>
+      <HiddenTags>
+        <HiddenTag>C#</HiddenTag>
+        <HiddenTag>LambdaProject</HiddenTag>
+      </HiddenTags>
+    </Blueprint>
+    <Blueprint>
       <Name>Step Functions Hello World</Name>
       <Description>A simple example of how to build a .NET Core Lambda Step Function project.</Description>
       <SortOrder>101</SortOrder>
