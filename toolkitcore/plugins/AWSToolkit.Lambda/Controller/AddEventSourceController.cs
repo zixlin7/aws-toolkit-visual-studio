@@ -25,6 +25,9 @@ using Amazon.S3.Model;
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 
+using Amazon.SQS;
+using Amazon.SQS.Model;
+
 using Amazon.CloudWatchEvents;
 using Amazon.CloudWatchEvents.Model;
 
@@ -46,6 +49,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         IAmazonIdentityManagementService _iamClient;
         IAmazonKinesis _kinesisClient;
         IAmazonS3 _s3Client;
+        IAmazonSQS _sqsClient;
         IAmazonSimpleNotificationService _snsClient;
         IAmazonCloudWatchEvents _cloudWatchEventsClient;
 
@@ -93,6 +97,10 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             var s3Config = new AmazonS3Config();
             endPoints.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME).ApplyToClientConfig(s3Config);
             this._s3Client = new AmazonS3Client(account.Credentials, s3Config);
+
+            var sqsConfig = new AmazonSQSConfig();
+            endPoints.GetEndpoint(RegionEndPointsManager.SQS_SERVICE_NAME).ApplyToClientConfig(sqsConfig);
+            this._sqsClient = new AmazonSQSClient(account.Credentials, sqsConfig);
 
             var snsConfig = new AmazonSimpleNotificationServiceConfig();
             endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME).ApplyToClientConfig(snsConfig);
@@ -263,29 +271,33 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         }
 
         private bool SaveEventSource()
-        {            
-            string eventSourceArn = null;
+        {
+            var request = new CreateEventSourceMappingRequest
+            {
+                FunctionName = this._functionName
+            };
+
             switch (this._control.EventSourceType)
             {
                 case AddEventSourceControl.SourceType.DynamoDBStream:
+                    request.BatchSize = this._control.BatchSize;
+                    request.StartingPosition = this._control.StartPosition;
                     var tokens = this._control.Resource.Split('/');
-                    eventSourceArn = string.Format("arn:aws:dynamodb:{0}:{1}:table/{2}/stream/{3}", this._region, this._accountNumber, tokens[0], tokens[1]);
+                    request.EventSourceArn = string.Format("arn:aws:dynamodb:{0}:{1}:table/{2}/stream/{3}", this._region, this._accountNumber, tokens[0], tokens[1]);
                     break;
                 case AddEventSourceControl.SourceType.Kinesis:
-                    eventSourceArn = string.Format("arn:aws:kinesis:{0}:{1}:stream/{2}", this._region, this._accountNumber, this._control.Resource);
+                    request.BatchSize = this._control.BatchSize;
+                    request.StartingPosition = this._control.StartPosition;
+                    request.EventSourceArn = string.Format("arn:aws:kinesis:{0}:{1}:stream/{2}", this._region, this._accountNumber, this._control.Resource);
+                    break;
+                case AddEventSourceControl.SourceType.SQS:
+                    request.BatchSize = this._control.SQSBatchSize;
+                    request.EventSourceArn = string.Format("arn:aws:sqs:{0}:{1}:{2}", this._region, this._accountNumber, this._control.Resource);
                     break;
             }
 
-            if (eventSourceArn == null)
+            if (request.EventSourceArn == null)
                 return false;
-
-            var request = new CreateEventSourceMappingRequest
-            {
-                FunctionName = this._functionName,
-                BatchSize = this._control.BatchSize,
-                EventSourceArn = eventSourceArn,
-                StartingPosition = this._control.StartPosition
-            };
 
             try
             {
@@ -304,7 +316,19 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                     else
                         return false;
                 }
-                if (e.Message.StartsWith("Cannot access stream arn:aws:dynamodb"))
+                else if(e.Message.StartsWith("The provided execution role does not have permissions to call ReceiveMessage on SQS"))
+                {
+                    if (ToolkitFactory.Instance.ShellProvider.Confirm("Add Policy",
+                        "The IAM role executing the Lambda function does not have permission to read messages from the SQS queue. " +
+                        "Do you wish to apply a read only policy for SQS to the role and continue adding the event source?"))
+                    {
+                        ApplyRoleTypeAndCreateEventSourceWithRetry(LambdaUtilities.RoleType.SQS, request);
+                    }
+                    else
+                        return false;
+
+                }
+                else if (e.Message.StartsWith("Cannot access stream arn:aws:dynamodb"))
                 {
                     if (ToolkitFactory.Instance.ShellProvider.Confirm("Add Policy",
                         "The IAM role executing the Lambda function does not have permission to read from the DynamoDB stream. " +
@@ -314,7 +338,6 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                     }
                     else
                         return false;
-
                 }
                 else
                     throw;
@@ -376,6 +399,21 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             }
 
             return topics;
+        }
+
+        public List<string> GetSQSTopics()
+        {
+            var queues = new List<string>();
+            if (this._sqsClient == null)
+                return queues;
+
+            var response = this._sqsClient.ListQueues(new ListQueuesRequest());
+            foreach (var queueUrl in response.QueueUrls.OrderBy(x => x))
+            {
+                queues.Add(queueUrl.Substring(queueUrl.LastIndexOf("/") + 1));
+            }
+
+            return queues;
         }
 
         public List<string> GetDynamoDBStreams()

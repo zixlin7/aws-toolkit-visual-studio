@@ -436,7 +436,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
                 foreach(var eventSourceConfiguration in response.EventSourceMappings)
                 {
-                    if (!eventSourceConfiguration.State.Equals("enabled", StringComparison.OrdinalIgnoreCase))
+                    if (!eventSourceConfiguration.State.Equals("enabled", StringComparison.OrdinalIgnoreCase) && !eventSourceConfiguration.State.Equals("creating", StringComparison.OrdinalIgnoreCase))
                         continue;
 
                     var wrapper = new EventSourceWrapper(eventSourceConfiguration);

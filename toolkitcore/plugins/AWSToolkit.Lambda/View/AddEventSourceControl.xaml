@@ -41,6 +41,7 @@
             Style="{DynamicResource awsComboBoxStyle}">
             <ComboBoxItem>Amazon S3</ComboBoxItem>
             <ComboBoxItem>Amazon DynamoDB Stream</ComboBoxItem>
+            <ComboBoxItem>Amazon SQS</ComboBoxItem>
             <ComboBoxItem>Amazon SNS</ComboBoxItem>
             <ComboBoxItem>Amazon Kinesis</ComboBoxItem>
             <ComboBoxItem>CloudWatch Events - Schedule</ComboBoxItem>
@@ -253,6 +254,46 @@
                 <ComboBoxItem>TRIM_HORIZON</ComboBoxItem>
                 <ComboBoxItem>LATEST</ComboBoxItem>
             </ComboBox>
+
+        </Grid>
+
+        <Grid
+            Name="_ctlPanelSQSEventSource"
+            Grid.Row="3"
+            Grid.ColumnSpan="2"
+            Margin="0"
+            Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="0"
+                Margin="15,5,5,5"
+                VerticalAlignment="Center"
+                Style="{DynamicResource awsTextBlockBaseStyle}"
+                ToolTip="The largest number of records that will be read from your queue at once.">
+                Batch Size:
+            </TextBlock>
+
+            <TextBox
+                Name="_ctlSQSBatchSize"
+                Grid.Row="0"
+                Grid.Column="1"
+                Width="50"
+                Margin="5,5,5,5"
+                HorizontalAlignment="Left"
+                Style="{DynamicResource awsTextBoxStyle}"
+                Text="10"
+                ToolTip="The largest number of records that will be read from your queue at once." />
+
+
 
         </Grid>
     </Grid>
