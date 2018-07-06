@@ -29,7 +29,7 @@ namespace Amazon.Lambda.Tools
 
 
         public const string AWS_LAMBDA_MANAGED_POLICY_PREFIX = "AWSLambda";
-        
+
         public static readonly Dictionary<string, string> KNOWN_MANAGED_POLICY_DESCRIPTIONS = new Dictionary<string, string>
         {
             {"arn:aws:iam::aws:policy/PowerUserAccess","Provides full access to AWS services and resources, but does not allow management of users and groups."},
