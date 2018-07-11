@@ -99,6 +99,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 }
 
                 copyValues(CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION, PublishContainerToAWSWizardProperties.Configuration);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_DOCKER_BUILD_WORKING_DIRECTORY, PublishContainerToAWSWizardProperties.DockerBuildWorkingDirectory);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_TD_NAME, PublishContainerToAWSWizardProperties.TaskDefinition);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_CONTAINER_NAME, PublishContainerToAWSWizardProperties.Container);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_CONTAINER_MEMORY_HARD_LIMIT, PublishContainerToAWSWizardProperties.MemoryHardLimit);

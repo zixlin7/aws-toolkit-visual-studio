@@ -45,6 +45,7 @@ namespace Amazon.AWSToolkit.ECS
         public static readonly string Configuration = "configuration";
         public static readonly string DockerRepository = "dockerRepository";
         public static readonly string DockerTag = "dockerTag";
+        public static readonly string DockerBuildWorkingDirectory = "dockerBuildWorkingDirectory";
 
         public static readonly string TaskDefinition = "taskDefinition";
         public static readonly string Container = "container";

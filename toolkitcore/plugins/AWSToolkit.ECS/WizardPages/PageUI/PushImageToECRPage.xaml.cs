@@ -94,6 +94,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             if(hostWizard[PublishContainerToAWSWizardProperties.Configuration] is string)
                 this.Configuration = hostWizard[PublishContainerToAWSWizardProperties.Configuration] as string;
+            if (hostWizard[PublishContainerToAWSWizardProperties.DockerBuildWorkingDirectory] is string)
+                this.DockerBuildWorkingDirectory = hostWizard[PublishContainerToAWSWizardProperties.DockerBuildWorkingDirectory] as string;
             if (hostWizard[PublishContainerToAWSWizardProperties.DeploymentMode] is Constants.DeployMode)
             {
                 var mode = (Constants.DeployMode)hostWizard[PublishContainerToAWSWizardProperties.DeploymentMode];
@@ -320,6 +322,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         private void _ctlDockerTagPicker_TextChanged(object sender, RoutedEventArgs e)
         {
             NotifyPropertyChanged("DockerTag");
+        }
+
+        public string DockerBuildWorkingDirectory
+        {
+            get { return this._ctlWorkingDirectory.Text; }
+            set { this._ctlWorkingDirectory.Text = value; }
         }
 
         private void _ctlDockerTagPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)

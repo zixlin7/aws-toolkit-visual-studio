@@ -141,6 +141,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             HostingWizard[PublishContainerToAWSWizardProperties.DockerRepository] = _pageUI.DockerRepository.ToLower();
             HostingWizard[PublishContainerToAWSWizardProperties.DockerTag] = _pageUI.DockerTag.ToLower();
 
+            HostingWizard[PublishContainerToAWSWizardProperties.DockerBuildWorkingDirectory] = _pageUI.DockerBuildWorkingDirectory?.ToLower();
+
             HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode] = _pageUI.DeploymentOption.Mode;
 
             HostingWizard[PublishContainerToAWSWizardProperties.PersistSettingsToConfigFile] = _pageUI.PersistSettingsToConfigFile;
