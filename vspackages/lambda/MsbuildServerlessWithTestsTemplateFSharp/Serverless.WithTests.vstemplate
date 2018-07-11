@@ -9,7 +9,7 @@
     <DefaultName>AWSServerless</DefaultName>
     <RequiredFrameworkVersion>4.5</RequiredFrameworkVersion>
     <SortOrder>200</SortOrder>
-    <TemplateID>D4E05EC1-46A6-4178-866E-0E40D7789A21</TemplateID>
+    <TemplateID>B3344718-DFBB-4430-A30F-F433BAE07F11</TemplateID>
     <CreateNewFolder>true</CreateNewFolder>
     <CreateInPlace>true</CreateInPlace>
     <ProvideDefaultName>true</ProvideDefaultName>
