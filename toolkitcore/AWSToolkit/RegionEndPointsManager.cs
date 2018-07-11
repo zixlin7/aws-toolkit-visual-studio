@@ -98,7 +98,7 @@ namespace Amazon.AWSToolkit
             return _instance;
         }
 
-        public S3FileFetcher FileFetcher { get; private set; }
+        public S3FileFetcher FileFetcher { get; protected set; }
 
         public void Refresh()
         {
@@ -121,6 +121,7 @@ namespace Amazon.AWSToolkit
         public LocalRegionEndPoints LocalRegion
         {
             get { return this._localRegions; }
+            protected set { this._localRegions = value; }
         }
 
         public RegionEndPoints GetDefaultRegionEndPoints()
@@ -166,7 +167,20 @@ namespace Amazon.AWSToolkit
             return xdoc;
         }
 
-        private void LoadEndPoints()
+        /// <summary>
+        /// Intended for test code to be able to instantiate a LocalRegionEndpoints object
+        /// </summary>
+        /// <param name="fileFetcher"></param>
+        /// <returns></returns>
+        protected LocalRegionEndPoints CreateLocalRegionEndPoints(S3FileFetcher fileFetcher)
+        {
+            return new LocalRegionEndPoints()
+            {
+                FileFetcher = fileFetcher
+            };
+        }
+
+        protected void LoadEndPoints()
         {
             try
             {
