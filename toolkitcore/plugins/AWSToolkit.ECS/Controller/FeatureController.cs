@@ -12,7 +12,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
         private IAmazonECS _ecsClient;
         private IAmazonECR _ecrClient;
         private M _model;
-        private string _endpoint;
+        private string _endpointUniqueIdentifier;
         private FeatureViewModel _featureViewModel;
 
         public override ActionResults Execute(IViewModel model)
@@ -21,7 +21,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
             if (this._featureViewModel == null)
                 return new ActionResults().WithSuccess(false);
 
-            this._endpoint = ((IEndPointSupport)this._featureViewModel.Parent).CurrentEndPoint.Url;
+            this._endpointUniqueIdentifier = ((IEndPointSupport)this._featureViewModel.Parent).CurrentEndPoint.UniqueIdentifier;
             this._ecsClient = this._featureViewModel.ECSClient;
             this._model = new M();
 
@@ -54,11 +54,11 @@ namespace Amazon.AWSToolkit.ECS.Controller
             get { return this._model; }
         }
 
-        public string EndPoint
+        public string EndPointUniqueIdentifier
         {
             get
             {
-                return this._endpoint;
+                return this._endpointUniqueIdentifier;
             }
         }
 

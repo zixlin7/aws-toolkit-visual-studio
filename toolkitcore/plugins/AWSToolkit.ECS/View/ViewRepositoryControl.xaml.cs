@@ -39,7 +39,7 @@ namespace Amazon.AWSToolkit.ECS.View
             {
                 return string.Format("Repository: {0} {1}_{2}",
                                      this._controller.RepositoryArn,
-                                     this._controller.EndPoint,
+                                     this._controller.EndPointUniqueIdentifier,
                                      this._controller.Account.SettingsUniqueKey);
             }
         }

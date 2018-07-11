@@ -49,13 +49,15 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
 
             if (endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME) != null)
             {
-                var snsConfig = new AmazonSimpleNotificationServiceConfig {ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME).Url};
+                var snsConfig = new AmazonSimpleNotificationServiceConfig();
+                endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME).ApplyToClientConfig(snsConfig);
                 this._snsClient = new AmazonSimpleNotificationServiceClient(this._rootModel.AccountViewModel.Credentials, snsConfig);
             }
 
             if (endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_SERVICE_NAME) != null)
             {
-                var cwConfig = new AmazonCloudWatchConfig {ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_SERVICE_NAME).Url};
+                var cwConfig = new AmazonCloudWatchConfig ();
+                endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_SERVICE_NAME).ApplyToClientConfig(cwConfig);
                 this._cwClient = new AmazonCloudWatchClient(this._rootModel.AccountViewModel.Credentials, cwConfig);
             }
 

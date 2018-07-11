@@ -28,38 +28,32 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages
         public static IAmazonElasticBeanstalk GetBeanstalkClient(AccountViewModel accountViewModel, RegionEndPointsManager.RegionEndPoints region)
         {
             var endpoint = region.GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME);
-            var beanstalkConfig = new AmazonElasticBeanstalkConfig
-            {
-                ServiceURL = endpoint.Url,
-                AuthenticationRegion = endpoint.AuthRegion
-            };
+            var beanstalkConfig = new AmazonElasticBeanstalkConfig();
+            endpoint.ApplyToClientConfig(beanstalkConfig);
             return new AmazonElasticBeanstalkClient(accountViewModel.Credentials, beanstalkConfig);
         }
 
         public static IAmazonIdentityManagementService GetIAMClient(AccountViewModel accountViewModel, RegionEndPointsManager.RegionEndPoints region)
         {
-            var config = new AmazonIdentityManagementServiceConfig
-            {
-                ServiceURL = region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).Url
-            };
+            var config = new AmazonIdentityManagementServiceConfig();
+            var endpoint = region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
+            endpoint.ApplyToClientConfig(config);
             return new AmazonIdentityManagementServiceClient(accountViewModel.Credentials, config);
         }
 
         public static IAmazonEC2 GetEC2Client(AccountViewModel accountViewModel, RegionEndPointsManager.RegionEndPoints region)
         {
-            var ec2Config = new AmazonEC2Config
-            {
-                ServiceURL = region.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).Url
-            };
+            var ec2Config = new AmazonEC2Config();
+            var endpoint = region.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
+            endpoint.ApplyToClientConfig(ec2Config);
             return new AmazonEC2Client(accountViewModel.Credentials, ec2Config);
         }
 
         public static IAmazonRDS GetRDSClient(AccountViewModel accountViewModel, RegionEndPointsManager.RegionEndPoints region)
         {
-            var rdsConfig = new AmazonRDSConfig
-            {
-                ServiceURL = region.GetEndpoint(RegionEndPointsManager.RDS_SERVICE_NAME).Url
-            };
+            var rdsConfig = new AmazonRDSConfig();
+            var endpoint = region.GetEndpoint(RegionEndPointsManager.RDS_SERVICE_NAME);
+            endpoint.ApplyToClientConfig(rdsConfig);
             return new AmazonRDSClient(accountViewModel.Credentials, rdsConfig);
         }
 

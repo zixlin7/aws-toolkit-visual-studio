@@ -68,11 +68,8 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
 
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
-            var config = new AmazonCloudFormationConfig {MaxErrorRetry = 6, ServiceURL = this.CurrentEndPoint.Url};
-            if (this.CurrentEndPoint.Signer != null)
-                config.SignatureVersion = this.CurrentEndPoint.Signer;
-            if (this.CurrentEndPoint.AuthRegion != null)
-                config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
+            var config = new AmazonCloudFormationConfig {MaxErrorRetry = 6};
+            this.CurrentEndPoint.ApplyToClientConfig(config);
             this._cloudFormationClient = new AmazonCloudFormationClient(awsCredentials, config);
         }
 

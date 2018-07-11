@@ -25,7 +25,6 @@ namespace Amazon.AWSToolkit.RDS.Controller
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ViewDBInstancesController));
 
         IAmazonRDS _rdsClient;
-        string _endpoint;
 
         ViewDBInstancesControl _control;
         RDSInstanceRootViewModel _instanceRootViewModel;
@@ -45,7 +44,6 @@ namespace Amazon.AWSToolkit.RDS.Controller
             if (this._instanceRootViewModel == null)
                 return new ActionResults().WithSuccess(false);
 
-            this._endpoint = ((IEndPointSupport)this._instanceRootViewModel.Parent).CurrentEndPoint.Url;
             this._rdsClient = this._instanceRootViewModel.RDSClient;
             this.Model = new ViewDBInstancesModel();
 
@@ -222,9 +220,9 @@ namespace Amazon.AWSToolkit.RDS.Controller
             get { return this._instanceRootViewModel.AccountViewModel; }
         }
 
-        public string EndPoint
+        public string EndPointUniqueIdentifier
         {
-            get { return this._instanceRootViewModel.CurrentEndPoint.Url; }
+            get { return this._instanceRootViewModel.CurrentEndPoint.UniqueIdentifier; }
         }
 
         public string RegionDisplayName

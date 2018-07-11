@@ -113,7 +113,10 @@ namespace Amazon.AWSToolkit.SNS.Controller
            try
            {
                string[] tokens = this._model.Endpoint.Split(':');
-               string queryUrl = this._sqsRootViewModel.CurrentEndPoint.Url;
+                var sqsConfig = new AmazonSQSConfig();
+                this._sqsRootViewModel.CurrentEndPoint.ApplyToClientConfig(sqsConfig);
+
+               string queryUrl = sqsConfig.ServiceURL;
                if (!queryUrl.EndsWith("/"))
                    queryUrl += "/";
                queryUrl += string.Format("{0}/{1}", tokens[4], tokens[5]);

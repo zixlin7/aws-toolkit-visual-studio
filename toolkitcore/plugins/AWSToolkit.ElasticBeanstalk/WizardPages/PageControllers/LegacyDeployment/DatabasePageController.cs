@@ -202,7 +202,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyD
         List<DBInstance> FindAvailableRDSInstances(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
         {
             var config = new AmazonRDSConfig();
-            config.ServiceURL = region.GetEndpoint(RegionEndPointsManager.RDS_SERVICE_NAME).Url;
+            region.GetEndpoint(RegionEndPointsManager.RDS_SERVICE_NAME).ApplyToClientConfig(config);
             var rdsClient = new AmazonRDSClient(account.Credentials, config);
 
             List<DBInstance> dbInstances = null;
@@ -223,7 +223,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyD
         List<DBSecurityGroup> QueryAvailableDBSecurityGroups(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
         {
             var config = new AmazonRDSConfig();
-            config.ServiceURL = region.GetEndpoint(RegionEndPointsManager.RDS_SERVICE_NAME).Url;
+            region.GetEndpoint(RegionEndPointsManager.RDS_SERVICE_NAME).ApplyToClientConfig(config);
             var rdsClient = new AmazonRDSClient(account.Credentials, config);
 
             var dbSecurityGroups = new List<DBSecurityGroup>();

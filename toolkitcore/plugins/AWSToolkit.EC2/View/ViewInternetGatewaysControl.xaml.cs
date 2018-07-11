@@ -66,7 +66,7 @@ namespace Amazon.AWSToolkit.EC2.View
         {
             get
             {
-                return "InternetGateways_" + this._controller.EndPoint + "_" + this._controller.Account.SettingsUniqueKey;
+                return "InternetGateways_" + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
             }
         }
 

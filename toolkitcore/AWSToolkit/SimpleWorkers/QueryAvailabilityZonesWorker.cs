@@ -46,14 +46,8 @@ namespace Amazon.AWSToolkit.SimpleWorkers
             bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(WorkerCompleted);
 
             var region = regionEndPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
-            var ec2Config = new AmazonEC2Config()
-            {
-                ServiceURL = region.Url
-            };
-            if (region.Signer != null)
-                ec2Config.SignatureVersion = region.Signer;
-            if (region.AuthRegion != null)
-                ec2Config.AuthenticationRegion = region.AuthRegion;
+            var ec2Config = new AmazonEC2Config();
+            region.ApplyToClientConfig(ec2Config);
 
             IAmazonEC2 ec2Client = new AmazonEC2Client(account.Credentials, ec2Config);
 

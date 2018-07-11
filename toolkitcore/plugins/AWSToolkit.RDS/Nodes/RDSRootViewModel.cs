@@ -56,11 +56,8 @@ namespace Amazon.AWSToolkit.RDS.Nodes
 
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
-            var config = new AmazonRDSConfig {ServiceURL = this.CurrentEndPoint.Url};
-            if (this.CurrentEndPoint.Signer != null)
-                config.SignatureVersion = this.CurrentEndPoint.Signer;
-            if (this.CurrentEndPoint.AuthRegion != null)
-                config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
+            var config = new AmazonRDSConfig ();
+            this.CurrentEndPoint.ApplyToClientConfig(config);
             this._rdsClient = new AmazonRDSClient(awsCredentials, config);
         }
 

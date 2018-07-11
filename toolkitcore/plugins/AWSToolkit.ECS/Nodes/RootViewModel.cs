@@ -40,19 +40,13 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
-            var ecsConfig = new AmazonECSConfig { ServiceURL = this.CurrentEndPoint.Url };
-            if (this.CurrentEndPoint.Signer != null)
-                ecsConfig.SignatureVersion = this.CurrentEndPoint.Signer;
-            if (this.CurrentEndPoint.AuthRegion != null)
-                ecsConfig.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
+            var ecsConfig = new AmazonECSConfig();
+            this.CurrentEndPoint.ApplyToClientConfig(ecsConfig);
             this._ecsClient = new AmazonECSClient(awsCredentials, ecsConfig);
 
             var ecrEndpoint = this.CurrentRegion.GetEndpoint(RootViewMetaNode.ECR_ENDPOINT_LOOKUP);
-            var ecrConfig = new AmazonECRConfig { ServiceURL = ecrEndpoint.Url };
-            if (ecrEndpoint.Signer != null)
-                ecrConfig.SignatureVersion = ecrEndpoint.Signer;
-            if (ecrEndpoint.AuthRegion != null)
-                ecrConfig.AuthenticationRegion = ecrEndpoint.AuthRegion;
+            var ecrConfig = new AmazonECRConfig();
+            ecrEndpoint.ApplyToClientConfig(ecrConfig);
             this._ecrClient = new AmazonECRClient(awsCredentials, ecrConfig);
 
         }

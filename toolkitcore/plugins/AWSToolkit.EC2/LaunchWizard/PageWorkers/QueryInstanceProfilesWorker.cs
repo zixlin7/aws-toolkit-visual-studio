@@ -42,11 +42,8 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageWorkers
             var bw = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
 
             var endpoint = regionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
-            var iamConfig = new AmazonIdentityManagementServiceConfig {ServiceURL = endpoint.Url};
-            if (endpoint.Signer != null)
-                iamConfig.SignatureVersion = endpoint.Signer;
-            if (endpoint.AuthRegion != null)
-                iamConfig.AuthenticationRegion = endpoint.AuthRegion;
+            var iamConfig = new AmazonIdentityManagementServiceConfig();
+            endpoint.ApplyToClientConfig(iamConfig);
 
             var iamClient = new AmazonIdentityManagementServiceClient(accountViewModel.Credentials, iamConfig);
 

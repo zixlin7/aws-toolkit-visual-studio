@@ -35,11 +35,8 @@ namespace Amazon.AWSToolkit.EC2.Nodes
 
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
-            var config = new AmazonEC2Config {ServiceURL = this.CurrentEndPoint.Url};
-            if (this.CurrentEndPoint.Signer != null)
-                config.SignatureVersion = this.CurrentEndPoint.Signer;
-            if (this.CurrentEndPoint.AuthRegion != null)
-                config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
+            var config = new AmazonEC2Config();
+            this.CurrentEndPoint.ApplyToClientConfig(config);
             this._ec2Client = new AmazonEC2Client(awsCredentials, config);
         }
     }

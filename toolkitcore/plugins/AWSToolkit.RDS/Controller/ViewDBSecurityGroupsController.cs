@@ -25,7 +25,6 @@ namespace Amazon.AWSToolkit.RDS.Controller
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ViewDBSecurityGroupsController));
 
         IAmazonRDS _rdsClient;
-        string _endpoint;
 
         ViewDBSecurityGroupsControl _control;
         RDSSecurityGroupRootViewModel _securityRootViewModel;
@@ -45,7 +44,6 @@ namespace Amazon.AWSToolkit.RDS.Controller
             if (this._securityRootViewModel == null)
                 return new ActionResults().WithSuccess(false);
 
-            this._endpoint = ((IEndPointSupport)this._securityRootViewModel.Parent).CurrentEndPoint.Url;
             this._rdsClient = this._securityRootViewModel.RDSClient;
             this.Model = new ViewDBSecurityGroupsModel();
 
@@ -118,9 +116,9 @@ namespace Amazon.AWSToolkit.RDS.Controller
             get { return this._securityRootViewModel.AccountViewModel; }
         }
 
-        public string EndPoint
+        public string EndPointUniqueIdentifier
         {
-            get { return this._securityRootViewModel.CurrentEndPoint.Url; }
+            get { return this._securityRootViewModel.CurrentEndPoint.UniqueIdentifier; }
         }
 
         public string RegionDisplayName

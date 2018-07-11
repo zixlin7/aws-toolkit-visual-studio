@@ -47,7 +47,8 @@ namespace Amazon.AWSToolkit.CloudFormation.Util
 
             this._cfClient = this._viewModel.CloudFormationClient;
 
-            var ec2Config = new AmazonEC2Config {ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).Url};
+            var ec2Config = new AmazonEC2Config();
+            endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).ApplyToClientConfig(ec2Config);
             this._ec2Client = new AmazonEC2Client(this._viewModel.AccountViewModel.Credentials, ec2Config);
         }
         public CloudFormationUtil(IAmazonCloudFormation cfClient, IAmazonEC2 ec2Client)
@@ -194,8 +195,10 @@ namespace Amazon.AWSToolkit.CloudFormation.Util
 
             string url = null;
 
-            var s3Host = region.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME);
-            var s3HostUrl = s3Host.Url;
+            var s3Endpoint = region.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME);
+            var s3Config = new AmazonS3Config();
+            s3Endpoint.ApplyToClientConfig(s3Config);
+            var s3HostUrl = s3Config.ServiceURL;
             if (!s3HostUrl.EndsWith("/"))
                 s3HostUrl += "/";
 

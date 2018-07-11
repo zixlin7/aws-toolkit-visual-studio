@@ -52,19 +52,19 @@ namespace Amazon.AWSToolkit.S3.Controller
             RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.GetInstance().GetRegion(region);
 
             var iamConfig = new AmazonIdentityManagementServiceConfig();
-            iamConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).Url;
+            endPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).ApplyToClientConfig(iamConfig);
             this._iamClient = new AmazonIdentityManagementServiceClient(account.Credentials, iamConfig);
 
             var sqsConfig = new AmazonSQSConfig();
-            sqsConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.SQS_SERVICE_NAME).Url;
+            endPoints.GetEndpoint(RegionEndPointsManager.SQS_SERVICE_NAME).ApplyToClientConfig(sqsConfig);
             this._sqsClient = new AmazonSQSClient(account.Credentials, sqsConfig);
 
             var snsConfig = new AmazonSimpleNotificationServiceConfig();
-            snsConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME).Url;
+            endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME).ApplyToClientConfig(snsConfig);
             this._snsClient = new AmazonSimpleNotificationServiceClient(account.Credentials, snsConfig);
 
             var lambdaConfig = new AmazonLambdaConfig();
-            lambdaConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.LAMBDA_SERVICE_NAME).Url;
+            endPoints.GetEndpoint(RegionEndPointsManager.LAMBDA_SERVICE_NAME).ApplyToClientConfig(lambdaConfig);
             this._lambdaClient = new AmazonLambdaClient(account.Credentials, lambdaConfig);
 
             this._control = new AddEventConfigurationControl(this);

@@ -66,7 +66,7 @@ namespace Amazon.AWSToolkit.EC2.View
         {
             get
             {
-                return "EC2SecurityGroups_" + this._controller.EndPoint + "_" + this._controller.Account.SettingsUniqueKey;
+                return "EC2SecurityGroups_" + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
             }
         }
 

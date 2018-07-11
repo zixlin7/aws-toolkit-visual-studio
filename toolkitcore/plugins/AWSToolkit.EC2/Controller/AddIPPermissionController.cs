@@ -113,11 +113,8 @@ namespace Amazon.AWSToolkit.EC2.Controller
             var endPoints = RegionEndPointsManager.GetInstance().GetRegion(this._viewModel.RegionSystemName);
             var endPoint = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
 
-            var config = new AmazonEC2Config() { ServiceURL = endPoint.Url };
-            if (endPoint.Signer != null)
-                config.SignatureVersion = endPoint.Signer;
-            if (endPoint.AuthRegion != null)
-                config.AuthenticationRegion = endPoint.AuthRegion;
+            var config = new AmazonEC2Config();
+            endPoint.ApplyToClientConfig(config);
 
             var client = new AmazonEC2Client(account.Credentials, config);
 

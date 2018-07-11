@@ -44,11 +44,7 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
             AmazonLambdaConfig config = new AmazonLambdaConfig();
-            config.ServiceURL = this.CurrentEndPoint.Url;
-            if (this.CurrentEndPoint.Signer != null)
-                config.SignatureVersion = this.CurrentEndPoint.Signer;
-            if (this.CurrentEndPoint.AuthRegion != null)
-                config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
+            this.CurrentEndPoint.ApplyToClientConfig(config);
             this._lambdaClient = new AmazonLambdaClient(awsCredentials, config);
         }
 

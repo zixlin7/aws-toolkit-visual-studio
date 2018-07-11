@@ -82,11 +82,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
             AmazonDynamoDBConfig config = new AmazonDynamoDBConfig();
-            config.ServiceURL = this.CurrentEndPoint.Url;
-            if (this.CurrentEndPoint.Signer != null)
-                config.SignatureVersion = this.CurrentEndPoint.Signer;
-            if (this.CurrentEndPoint.AuthRegion != null)
-                config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
+            this.CurrentEndPoint.ApplyToClientConfig(config);
             this._ddbClient = new AmazonDynamoDBClient(awsCredentials, config);            
         }
 

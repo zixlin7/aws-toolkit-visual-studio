@@ -316,8 +316,7 @@ namespace Amazon.AWSToolkit.Account
                 var configTypeName = type.FullName.Replace("Client", "Config");
                 var configType = type.Assembly.GetType(configTypeName);
                 var config = Activator.CreateInstance(configType) as ClientConfig;
-                config.ServiceURL = endpoint.Url;
-                config.AuthenticationRegion = endpoint.AuthRegion;
+                endpoint.ApplyToClientConfig(config);
 
                 var constructor = type.GetConstructor(new[] { typeof(AWSCredentials), configType });
                 var client = constructor.Invoke(new object[] { Credentials, config }) as T;

@@ -55,11 +55,8 @@ namespace Amazon.AWSToolkit.S3
 
         public static AmazonS3Config BuildS3Config(RegionEndPointsManager.EndPoint endpoint)
         {
-            var config = new AmazonS3Config { ServiceURL = endpoint.Url };
-            if (endpoint.Signer != null)
-                config.SignatureVersion = endpoint.Signer;
-            if (endpoint.AuthRegion != null)
-                config.AuthenticationRegion = endpoint.AuthRegion;
+            var config = new AmazonS3Config();
+            endpoint.ApplyToClientConfig(config);
             return config;
         }
 

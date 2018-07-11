@@ -157,9 +157,8 @@ namespace Amazon.AWSToolkit.CloudFormation
                 throw new ArgumentException(string.Format("Expected '{0}' key in environmentDetails"), CloudFormationConstants.DeploymentTargetQueryParam_StackName);
 
             var config = new AmazonCloudFormationConfig();
-            config.ServiceURL 
-                = RegionEndPointsManager.GetInstance().GetRegion(region)
-                            .GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME).Url;
+            RegionEndPointsManager.GetInstance().GetRegion(region)
+                            .GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME).ApplyToClientConfig(config);
             IAmazonCloudFormation client = new AmazonCloudFormationClient(account.Credentials, config);
             bool isValid = false;
             try
@@ -197,7 +196,8 @@ namespace Amazon.AWSToolkit.CloudFormation
 
             try
             {
-                var config = new AmazonCloudFormationConfig {ServiceURL = endpoint.Url};
+                var config = new AmazonCloudFormationConfig();
+                endpoint.ApplyToClientConfig(config);
                 var client = new AmazonCloudFormationClient(account.Credentials, config);
 
                 var response = client.DescribeStacks(new DescribeStacksRequest());

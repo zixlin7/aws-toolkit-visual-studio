@@ -376,10 +376,8 @@ namespace Amazon.AWSToolkit.CodeCommit
 
             try
             {
-                var iamConfig = new AmazonIdentityManagementServiceConfig
-                {
-                    ServiceURL = region.GetEndpoint(iamEndpointsName).Url
-                };
+                var iamConfig = new AmazonIdentityManagementServiceConfig();
+                region.GetEndpoint(iamEndpointsName).ApplyToClientConfig(iamConfig);
                 var iamClient = new AmazonIdentityManagementServiceClient(account.Credentials, iamConfig);
 
                 // First, is the user running as an iam user or as root? If the latter, we can't help them

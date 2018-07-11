@@ -75,31 +75,31 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.GetInstance().GetRegion(region);
 
             var dynamoDBConfig = new AmazonDynamoDBConfig();
-            dynamoDBConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.DYNAMODB_SERVICE_NAME).Url;
+            endPoints.GetEndpoint(RegionEndPointsManager.DYNAMODB_SERVICE_NAME).ApplyToClientConfig(dynamoDBConfig);
             this._dynamoDBClient = new AmazonDynamoDBClient(account.Credentials, dynamoDBConfig);
 
             var dynamoDBStreamConfig = new AmazonDynamoDBStreamsConfig();
-            dynamoDBStreamConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.DYNAMODB_STREAM_SERVICE_NAME).Url;
+            endPoints.GetEndpoint(RegionEndPointsManager.DYNAMODB_STREAM_SERVICE_NAME).ApplyToClientConfig(dynamoDBStreamConfig);
             this._dynamoDBStreamsClient = new AmazonDynamoDBStreamsClient(account.Credentials, dynamoDBStreamConfig);
 
             var iamConfig = new AmazonIdentityManagementServiceConfig();
-            iamConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).Url;
+            endPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).ApplyToClientConfig(iamConfig);
             this._iamClient = new AmazonIdentityManagementServiceClient(account.Credentials, iamConfig);
 
             var kinesisConfig = new AmazonKinesisConfig();
-            kinesisConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.KINESIS_SERVICE_NAME).Url;
+            endPoints.GetEndpoint(RegionEndPointsManager.KINESIS_SERVICE_NAME).ApplyToClientConfig(kinesisConfig);
             this._kinesisClient = new AmazonKinesisClient(account.Credentials, kinesisConfig);
 
             var s3Config = new AmazonS3Config();
-            s3Config.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME).Url;
+            endPoints.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME).ApplyToClientConfig(s3Config);
             this._s3Client = new AmazonS3Client(account.Credentials, s3Config);
 
             var snsConfig = new AmazonSimpleNotificationServiceConfig();
-            snsConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME).Url;
+            endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME).ApplyToClientConfig(snsConfig);
             this._snsClient = new AmazonSimpleNotificationServiceClient(account.Credentials, snsConfig);
 
             var cloudWatchEventsConfig = new AmazonCloudWatchEventsConfig();
-            cloudWatchEventsConfig.ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_EVENT_SERVICE_NAME).Url;
+            endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_EVENT_SERVICE_NAME).ApplyToClientConfig(cloudWatchEventsConfig);
             this._cloudWatchEventsClient = new AmazonCloudWatchEventsClient(account.Credentials, cloudWatchEventsConfig);
 
             this._control = new AddEventSourceControl(this);
