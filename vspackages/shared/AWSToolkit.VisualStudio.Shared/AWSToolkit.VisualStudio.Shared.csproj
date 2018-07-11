@@ -106,6 +106,10 @@
       <Project>{5a78bf40-7d5b-467e-8ce4-9659f22669d0}</Project>
       <Name>AWSToolkit.CloudFormation.Interface</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
+      <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
+      <Name>AWSToolkit.Util</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(BuildRoot)\vspackages\shared\MPFProjDir\Src\CSharp\ProjectBase.files" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

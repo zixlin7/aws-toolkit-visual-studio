@@ -7,7 +7,7 @@ using Xunit;
 using Amazon.AWSToolkit;
 using Moq;
 
-namespace AWSToolkit.Util.Tests
+namespace Amazon.AWSToolkit.Util.Tests
 {
     public class RegionEndPointsManagerTests
     {
