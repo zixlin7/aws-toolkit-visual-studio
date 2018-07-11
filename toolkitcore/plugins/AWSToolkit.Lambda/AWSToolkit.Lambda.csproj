@@ -331,6 +331,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\EmbeddedImages\trace-timeline.png" />
+    <EmbeddedResource Include="Resources\EmbeddedImages\sqs-service.png" />
     <Content Include="Resources\Images\trace-timeline.png" />
   </ItemGroup>
   <ItemGroup>

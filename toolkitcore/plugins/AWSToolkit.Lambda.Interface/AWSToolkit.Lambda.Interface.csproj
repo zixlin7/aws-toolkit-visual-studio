@@ -89,5 +89,8 @@
     <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.IdentityManagement.3.3.6.3\analyzers\dotnet\cs\AWSSDK.IdentityManagement.CodeAnalysis.dll" />
     <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.Lambda.3.3.13.2\analyzers\dotnet\cs\AWSSDK.Lambda.CodeAnalysis.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Policies\LambdaInvokeRoleSQS.json" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
