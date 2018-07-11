@@ -7,6 +7,7 @@ using Xunit;
 using Amazon.AWSToolkit;
 using Moq;
 using Amazon.AWSToolkit.MobileAnalytics;
+using AWSToolkit.Util.Tests;
 
 namespace Amazon.AWSToolkit.Util.Tests
 {

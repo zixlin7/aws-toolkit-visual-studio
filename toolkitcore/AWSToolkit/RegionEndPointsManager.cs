@@ -69,7 +69,7 @@ namespace Amazon.AWSToolkit
         // mainly used to verify behavior in unit testing
         private bool _loadedFromResourceContent;
 
-        readonly LocalRegionEndPoints _localRegions = new LocalRegionEndPoints();
+        private LocalRegionEndPoints _localRegions = new LocalRegionEndPoints();
 
         // Returns the singleton manager instance.
         /// <summary>
