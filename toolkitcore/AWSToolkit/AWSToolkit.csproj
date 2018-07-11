@@ -54,9 +54,6 @@
     <Reference Include="AWSSDK.CloudWatch, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.CloudWatch.3.3.6.2\lib\net45\AWSSDK.CloudWatch.dll</HintPath>
     </Reference>
-    <Reference Include="AWSSDK.CognitoIdentity, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.CognitoIdentity.3.3.2.22\lib\net45\AWSSDK.CognitoIdentity.dll</HintPath>
-    </Reference>
     <Reference Include="AWSSDK.CognitoSync, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.CognitoSync.3.3.1.31\lib\net45\AWSSDK.CognitoSync.dll</HintPath>
     </Reference>
@@ -300,13 +297,6 @@
     </Compile>
     <Compile Include="IPluginActivator.cs" />
     <Compile Include="IRegisterDataConnectionService.cs" />
-    <Compile Include="MobileAnalytics\AnalyticsCognitoAWSCredentials.cs" />
-    <Compile Include="MobileAnalytics\AMAConstants.cs" />
-    <Compile Include="MobileAnalytics\AMAServiceCallHandler.cs" />
-    <Compile Include="MobileAnalytics\ClientContext.cs" />
-    <Compile Include="MobileAnalytics\ClientContextConfig.cs" />
-    <Compile Include="MobileAnalytics\SimpleMobileAnalytics.cs" />
-    <Compile Include="MobileAnalytics\ToolkitEvent.cs" />
     <Compile Include="Navigator\Node\AbstractViewModel.cs" />
     <Compile Include="Navigator\ActionHandlerWrapper.cs" />
     <Compile Include="Navigator\ActionResults.cs" />
