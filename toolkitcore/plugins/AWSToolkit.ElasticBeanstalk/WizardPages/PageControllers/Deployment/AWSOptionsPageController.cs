@@ -127,9 +127,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                     var stacks = FilterStacksForSingleInstanceEnvironment(_windowsSolutionStacks);
                     stacks = FilterStacksForNetCoreSupport(stacks);
 
-                    var defaultStackName =
-                        ToolkitAMIManifest.Instance.QueryDefaultWebDeploymentContainer(
-                            ToolkitAMIManifest.HostService.ElasticBeanstalk);
+                    var defaultStackName = DeploymentWizardHelper.PickDefaultSolutionStack(stacks);
+
                     _pageUI.SetSolutionStacks(stacks, defaultStackName);
                 }
             }
@@ -326,7 +325,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
                 var stacks = FilterStacksForSingleInstanceEnvironment(_windowsSolutionStacks);
                 stacks = FilterStacksForNetCoreSupport(stacks);
-                var defaultStackName = ToolkitAMIManifest.Instance.QueryDefaultWebDeploymentContainer(ToolkitAMIManifest.HostService.ElasticBeanstalk);
+                var defaultStackName = DeploymentWizardHelper.PickDefaultSolutionStack(stacks);
                 _pageUI.SetSolutionStacks(stacks, defaultStackName);
             }
             catch (Exception e)

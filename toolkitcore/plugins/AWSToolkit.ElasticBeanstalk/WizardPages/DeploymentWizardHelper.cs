@@ -25,7 +25,7 @@ using Amazon.ElasticBeanstalk.Model;
 using log4net;
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages
 {
-    internal static class DeploymentWizardHelper
+    public static class DeploymentWizardHelper
     {
         static ILog LOGGER = LogManager.GetLogger(typeof(DeploymentWizardHelper));
         public static IAmazonElasticBeanstalk GetBeanstalkClient(AccountViewModel accountViewModel, RegionEndPointsManager.RegionEndPoints region)
@@ -199,6 +199,34 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages
             }
 
             return results;
+        }
+
+        public const string DEFALT_SOLUTION_STACK_NAME_PREFIX = "64bit Windows Server 2016 v";
+        public static string PickDefaultSolutionStack(IEnumerable<string> existingSolutionStacks)
+        {
+            string defaultStack = null;
+            Version currentVersion = null;
+
+            foreach(var stackName in existingSolutionStacks)
+            {
+                if(stackName.StartsWith(DEFALT_SOLUTION_STACK_NAME_PREFIX, StringComparison.OrdinalIgnoreCase))
+                {
+                    var pos = stackName.IndexOf(' ', DEFALT_SOLUTION_STACK_NAME_PREFIX.Length);
+                    if (pos == -1)
+                        continue;
+
+                    var verionStr = stackName.Substring(DEFALT_SOLUTION_STACK_NAME_PREFIX.Length, pos - DEFALT_SOLUTION_STACK_NAME_PREFIX.Length);
+                    Version ver;
+                    if(Version.TryParse(verionStr, out ver) && (currentVersion == null || currentVersion < ver))
+                    {
+                        currentVersion = ver;
+                        defaultStack = stackName;
+                    }
+                }
+            }
+
+
+            return defaultStack ?? existingSolutionStacks.FirstOrDefault();
         }
     }
 }

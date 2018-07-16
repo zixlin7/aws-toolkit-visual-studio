@@ -279,9 +279,7 @@ namespace AWSDeployment
             Region = "us-east-1";
             Observer = observer;
             CreateNewEnvironment = true;
-            SolutionStack = ToolkitAMIManifest.Instance.QueryDefaultWebDeploymentContainer(ToolkitAMIManifest.HostService.ElasticBeanstalk);
-            if (string.IsNullOrEmpty(SolutionStack))
-                SolutionStack = FALLBACK_DEFAULT_STACK;
+            SolutionStack = FALLBACK_DEFAULT_STACK;
         }
 
         #region DeploymentEngineBase Overrides
