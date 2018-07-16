@@ -12,6 +12,7 @@ using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
 using Amazon.ElasticBeanstalk.Model;
+using System.Diagnostics;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 {
@@ -26,6 +27,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         public static readonly string uiProperty_Enable32BitAppPool = "Enable32BitAppPool";
         public static readonly string uiProperty_DeploymentVersionLabel = "DeploymentVersionLabel";
         public static readonly string uiProperty_EnableXRayDaemon = "EnableXRayDaemon";
+        public static readonly string uiProperty_EnableEnhancedHealth = "EnableEnhancedHealth";
 
         public ApplicationOptionsPage()
         {
@@ -181,6 +183,42 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             }
         }
 
+        public Visibility EnvironmentOptionsPanelVisibility
+        {
+            get
+            {
+                if (this.XRayPanelVisibility == Visibility.Visible || this.EnhancedHealthPanelVisibility == Visibility.Visible)
+                    return Visibility.Visible;
+
+                return Visibility.Hidden;
+            }
+        }
+
+        Visibility _xrayPanelVisibility = Visibility.Visible;
+        public Visibility XRayPanelVisibility
+        {
+            get { return this._xrayPanelVisibility; }
+            set
+            {
+                this._xrayPanelVisibility = value;
+                NotifyPropertyChanged("XRayPanelVisibility");
+                NotifyPropertyChanged("EnvironmentOptionsPanelVisibility");
+            }
+        }
+
+        Visibility _enhancedHealthPanelVisibility = Visibility.Visible;
+        public Visibility EnhancedHealthPanelVisibility
+        {
+            get { return this._enhancedHealthPanelVisibility; }
+            set
+            {
+                this._enhancedHealthPanelVisibility = value;
+                NotifyPropertyChanged("EnhancedHealthPanelVisibility");
+                NotifyPropertyChanged("EnvironmentOptionsPanelVisibility");
+            }
+        }
+
+
         private bool _enableXRayDaemon;
         public bool EnableXRayDaemon
         {
@@ -192,9 +230,21 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             }
         }
 
-        public void SetXRayAvailability(bool xrayIsAvailable)
+        public void SetEnvironmentOptionsAvailability(bool xrayIsAvailable, bool enhancedHealthAvailable)
         {
-            _ctlXRayOptionsPanel.Visibility = xrayIsAvailable ? Visibility.Visible : Visibility.Collapsed;
+            XRayPanelVisibility = xrayIsAvailable ? Visibility.Visible : Visibility.Collapsed;
+            EnhancedHealthPanelVisibility = enhancedHealthAvailable ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private bool _enableEnhancedHealth;
+        public bool EnableEnhancedHealth
+        {
+            get { return this._enableEnhancedHealth; }
+            set
+            {
+                this._enableEnhancedHealth = value;
+                NotifyPropertyChanged(uiProperty_EnableEnhancedHealth);
+            }
         }
 
         public void SetDefaultRuntimesOrFrameworks(string targetRuntime, IDictionary<string, string> availableRuntimes)
@@ -306,6 +356,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
             Utility.LaunchXRayHelp(true);
+        }
+
+        private void Hyperlink_RequestNavigateEnhancedHealth(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.ToString()));
         }
     }
 }

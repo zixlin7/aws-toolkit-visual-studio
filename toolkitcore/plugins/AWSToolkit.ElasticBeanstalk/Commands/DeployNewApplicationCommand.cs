@@ -154,6 +154,19 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                     }
                 }
 
+                string enableEnhancedHealth = getValue<string>(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableEnhancedHealth);
+                if (!string.IsNullOrEmpty(enableEnhancedHealth))
+                {
+                    Deployment.EnableEnhancedHealth = Convert.ToBoolean(enableEnhancedHealth);
+
+                    if (Deployment.EnableEnhancedHealth.GetValueOrDefault())
+                    {
+                        ToolkitEvent evnt = new ToolkitEvent();
+                        evnt.AddProperty(AttributeKeys.BeanstalkEnhancedHealth, "true");
+                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                    }
+                }
+
                 Deployment.VPCSecurityGroupId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_VPCSecurityGroup);
                 Deployment.InstanceSubnetId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_InstanceSubnet);
                 Deployment.ELBSubnetId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ELBSubnet);

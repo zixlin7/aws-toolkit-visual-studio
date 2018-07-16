@@ -44,7 +44,7 @@
 
             <Label
                 Grid.ColumnSpan="2"
-                Margin="0,8,0,0"
+                Margin="0,0,0,0"
                 Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                 Build and Deployment Settings
             </Label>
@@ -103,8 +103,9 @@
                 Text="{Binding IISAppPath}" />
         </Grid>
 
-        <Grid Grid.Row="1" x:Name="_ctlXRayOptionsPanel">
+        <Grid Grid.Row="1" Visibility="{Binding EnvironmentOptionsPanelVisibility}">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -114,20 +115,35 @@
             </Grid.ColumnDefinitions>
 
             <Label Margin="0,6,0,0" Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
-                AWS X-Ray
+                AWS Elastic Beanstalk Environment Options
             </Label>
 
             <CheckBox
                 Grid.Row="1"
                 Margin="8,2,8,0"
                 IsChecked="{Binding EnableXRayDaemon}"
+                Visibility="{Binding XRayPanelVisibility}"
                 ToolTip="AWS X-Ray is a service that collects data about requests that your application serves, and provides tools you can use to view, filter, and gain insights into that data to identify issues and opportunities for optimization."
                 Style="{DynamicResource awsCheckboxButtonBaseStyle}">
                 Enable AWS X-Ray Tracing Support
             </CheckBox>
 
-            <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,5" TextWrapping="WrapWithOverflow" Style="{DynamicResource awsInfoTextStyle}" Background="Transparent">
+            <TextBlock Grid.Row="1" Grid.Column="1" Margin="10,5" TextWrapping="WrapWithOverflow" Style="{DynamicResource awsInfoTextStyle}" Background="Transparent" Visibility="{Binding XRayPanelVisibility}">
              <Hyperlink NavigateUri="https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-dotnet.html" RequestNavigate="Hyperlink_RequestNavigate">Learn More</Hyperlink>.
+            </TextBlock>
+
+            <CheckBox
+                Grid.Row="2"
+                Margin="8,2,8,0"
+                IsChecked="{Binding EnableEnhancedHealth}"
+                Visibility="{Binding EnhancedHealthPanelVisibility}"
+                ToolTip="Enhanced health reporting provides free real-time application and operating system monitoring of the instances and other resources in your environment."
+                Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+                Enable Enhanced Health Reporting
+            </CheckBox>
+
+            <TextBlock Grid.Row="2" Grid.Column="1" Margin="10,5" TextWrapping="WrapWithOverflow" Style="{DynamicResource awsInfoTextStyle}" Background="Transparent" Visibility="{Binding EnhancedHealthPanelVisibility}">
+                <Hyperlink NavigateUri="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/health-enhanced.html" RequestNavigate="Hyperlink_RequestNavigateEnhancedHealth">Learn More</Hyperlink>.
             </TextBlock>
         </Grid>
 

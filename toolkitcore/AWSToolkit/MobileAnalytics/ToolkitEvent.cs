@@ -69,7 +69,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         ECSConfiguredELB,
         ECSDeleteService,
 
-        XRayEnabled
+        XRayEnabled,
+        BeanstalkEnhancedHealth
     };
 
     public enum MetricKeys

@@ -203,6 +203,9 @@ namespace AWSDeployment
         public const string XRayOptionsNamespace = "aws:elasticbeanstalk:xray";
         public const string XRayEnabledOption = "XRayEnabled";
 
+        public const string AdvancedHealthNamespace = "aws:elasticbeanstalk:healthreporting:system";
+        public const string AdvancedHealthName = "SystemType";
+
         #endregion
 
         #region AWS Clients
@@ -862,10 +865,14 @@ namespace AWSDeployment
                 });
             }
 
+            var xrayOptionSpecification = new OptionSpecification {Namespace = XRayOptionsNamespace, OptionName = XRayEnabledOption };
+            var advancedHealthOptionSpecification = new OptionSpecification { Namespace = AdvancedHealthNamespace, OptionName = AdvancedHealthName };
+            var validOptions = TestForValidOptionsForEnvironnment(false, xrayOptionSpecification, advancedHealthOptionSpecification);
+
             // solution stack may not support the xray config so do additional check beyond endpoint availability
             if (RegionEndPoints.GetEndpoint(RegionEndPointsManager.XRAY_ENDPOINT_LOOKUP) != null)
             {
-                if (TestEnvironnmentSupportsXRayOptions())
+                if (validOptions.Contains(xrayOptionSpecification))
                 {
                     if (EnableXRayDaemon != null && configOptionSettings.FirstOrDefault(
                             x => (x.Namespace == XRayOptionsNamespace && x.OptionName == XRayEnabledOption)) == null)
@@ -882,6 +889,24 @@ namespace AWSDeployment
                 {
                     Observer.Warn("Solution stack for environment does not support X-Ray configuration options, ignoring requested X-Ray settings");
                 }
+            }
+
+            if(validOptions.Contains(advancedHealthOptionSpecification))
+            {
+                if (EnableEnhancedHealth != null && configOptionSettings.FirstOrDefault(
+                        x => (x.Namespace == AdvancedHealthNamespace && x.OptionName == AdvancedHealthName)) == null)
+                {
+                    configOptionSettings.Add(new ConfigurationOptionSetting()
+                    {
+                        Namespace = AdvancedHealthNamespace,
+                        OptionName = AdvancedHealthName,
+                        Value = EnableEnhancedHealth.Value ? "enhanced" : "basic"
+                    });
+                }
+            }
+            else
+            {
+                Observer.Warn("Solution stack for environment does not support advanced health options, ignoring requested advanced health settings");
             }
 
             if (!IsSingleInstanceEnvironmentType && !string.IsNullOrEmpty(ApplicationHealthcheckPath) && configOptionSettings.FirstOrDefault(
@@ -912,61 +937,44 @@ namespace AWSDeployment
             BeanstalkClient.UpdateEnvironment(request);
         }
 
-        bool TestEnvironnmentSupportsXRayOptions()
+
+        IList<OptionSpecification> TestForValidOptionsForEnvironnment(bool solutionStack, params OptionSpecification[] options)
         {
-            var xrayOptionSupported = false;
+            var results = new List<OptionSpecification>();
+
             try
             {
-                var response = BeanstalkClient.DescribeConfigurationOptions(new DescribeConfigurationOptionsRequest
+                var request = new DescribeConfigurationOptionsRequest();
+                if (solutionStack)
                 {
-                    ApplicationName = ApplicationName,
-                    EnvironmentName = EnvironmentName,
-                    Options = new List<OptionSpecification>
-                    {
-                        new OptionSpecification
-                        {
-                            Namespace = XRayOptionsNamespace,
-                            OptionName = XRayEnabledOption
-                        }
-                    }
-                });
+                    request.SolutionStackName = SolutionStack;
+                }
+                else
+                {
+                    request.ApplicationName = ApplicationName;
+                    request.EnvironmentName = EnvironmentName;
+                }
 
-                xrayOptionSupported = response.Options != null && response.Options.Count == 1;
+                request.Options.AddRange(options);
+
+                var response = BeanstalkClient.DescribeConfigurationOptions(request);
+
+                foreach(var configDesc in response.Options)
+                {
+                    var option = options.FirstOrDefault(x => string.Equals(x.Namespace, configDesc.Namespace, StringComparison.OrdinalIgnoreCase) && 
+                                            string.Equals(x.OptionName, configDesc.Name, StringComparison.OrdinalIgnoreCase));
+                    if(option != null)
+                    {
+                        results.Add(option);
+                    }
+                }
             }
             catch (Exception e)
             {
-                Observer.LogOnly("Test for option {0} in namespace {1} returned error {2}", XRayEnabledOption, XRayOptionsNamespace, e.Message);
+                Observer.LogOnly("Test for valid options in environment returned error {0}", e.Message);
             }
 
-            return xrayOptionSupported;
-        }
-
-        bool TestSolutionStackSupportsXRayOptions()
-        {
-            var xrayOptionSupported = false;
-            try
-            {
-                var response = BeanstalkClient.DescribeConfigurationOptions(new DescribeConfigurationOptionsRequest
-                {
-                    SolutionStackName = SolutionStack,
-                    Options = new List<OptionSpecification>
-                    {
-                        new OptionSpecification
-                        {
-                            Namespace = XRayOptionsNamespace,
-                            OptionName = XRayEnabledOption
-                        }
-                    }
-                });
-
-                xrayOptionSupported = response.Options != null && response.Options.Count == 1;
-            }
-            catch (Exception e)
-            {
-                Observer.LogOnly("Test for option {0} in namespace {1} returned error {2}", XRayEnabledOption, XRayOptionsNamespace, e.Message);
-            }
-
-            return xrayOptionSupported;
+            return results;
         }
 
         void UpdateChangedEnvironmentSettings()
@@ -1423,10 +1431,14 @@ namespace AWSDeployment
                 });
             }
 
+            var xrayOptionSpecification = new OptionSpecification { Namespace = XRayOptionsNamespace, OptionName = XRayEnabledOption };
+            var advancedHealthOptionSpecification = new OptionSpecification { Namespace = AdvancedHealthNamespace, OptionName = AdvancedHealthName };
+            var validOptions = TestForValidOptionsForEnvironnment(true, xrayOptionSpecification, advancedHealthOptionSpecification);
+
             // solution stack may not support the xray config so do additional check beyond endpoint availability
             if (RegionEndPoints.GetEndpoint(RegionEndPointsManager.XRAY_ENDPOINT_LOOKUP) != null)
             {
-                if (TestSolutionStackSupportsXRayOptions())
+                if (validOptions.Contains(xrayOptionSpecification))
                 {
                     if (EnableXRayDaemon != null && configOptionSettings.FirstOrDefault(
                             x => (x.Namespace == XRayOptionsNamespace && x.OptionName == XRayEnabledOption)) == null)
@@ -1444,6 +1456,27 @@ namespace AWSDeployment
                     Observer.Warn("Solution stack does not support X-Ray configuration options, ignoring requested X-Ray settings");
                 }
             }
+
+            if (validOptions.Contains(advancedHealthOptionSpecification))
+            {
+                if (EnableEnhancedHealth != null && configOptionSettings.FirstOrDefault(
+                        x => (x.Namespace == AdvancedHealthNamespace && x.OptionName == AdvancedHealthName)) == null)
+                {
+                    configOptionSettings.Add(new ConfigurationOptionSetting()
+                    {
+                        Namespace = AdvancedHealthNamespace,
+                        OptionName = AdvancedHealthName,
+                        Value = EnableEnhancedHealth.Value ? "enhanced" : "basic"
+                    });
+                }
+            }
+            else
+            {
+                Observer.Warn("Solution stack for environment does not support advanced health options, ignoring requested advanced health settings");
+            }
+
+
+
             if (!string.IsNullOrEmpty(TargetRuntime) && configOptionSettings.FirstOrDefault(
                 x => (x.Namespace == "aws:elasticbeanstalk:container:dotnet:apppool" && x.OptionName == "Target Runtime")) == null)
             {
