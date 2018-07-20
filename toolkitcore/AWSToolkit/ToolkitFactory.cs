@@ -215,6 +215,15 @@ namespace Amazon.AWSToolkit
                     catch (Exception e)
                     {
                         LOGGER.Debug("Error loading assembly: " + assemblyPath, e);
+                        var typeLoadException = e as ReflectionTypeLoadException;
+                        if (typeLoadException != null)
+                        {
+                            var loaderExceptions = typeLoadException.LoaderExceptions;
+                            foreach (var le in loaderExceptions)
+                            {
+                                LOGGER.Debug("...type load exception: " + le.Message);
+                            }
+                        }
                     }
                 }
             }
