@@ -6959,6 +6959,11 @@
               "WebACLId": {
                 "type": "String",
                 "required": false,
+                "resource-ref-type": [
+                  "*",
+                  "AWS::WAF::WebACL",
+                  "AWS::WAFRegional::WebACLAssociation"
+                ],
                 "description": "The AWS WAF web ACL to associate with this distribution."
               },
               "IPV6Enabled": {
@@ -26095,6 +26100,70 @@
             "type": "Number",
             "required": false,
             "description": "The maximum session duration (in seconds) for the specified role."
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "Description": {
+        "type": "String",
+        "required": false,
+        "description": "A description for the CloudFormation resource. This field is ignored when the template is deployed to CloudFormation."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::IAM::ServiceLinkedRole": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::IAM::ServiceLinkedRole resource creates a service-linked role in AWS Identity and Access Management (IAM).",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::IAM::ServiceLinkedRole resource creates a service-linked role in AWS Identity and Access Management (IAM)."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "CustomSuffix": {
+            "type": "String",
+            "required": false,
+            "description": "A string that you provide, which is combined with the service-provided prefix to form the complete role name."
+          },
+          "Description": {
+            "type": "String",
+            "required": false,
+            "description": "The description of the role."
+          },
+          "AWSServiceName": {
+            "type": "String",
+            "required": true,
+            "description": "The service principal for the AWS service to which this role is attached."
           }
         }
       },
