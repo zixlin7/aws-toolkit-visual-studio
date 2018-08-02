@@ -138,7 +138,11 @@
       <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.KeyManagementService.3.3.5.5\lib\net45\AWSSDK.KeyManagementService.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="AWSSDK.Lambda, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+    <Reference Include="AWSSDK.Kinesis, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Kinesis.3.3.6\lib\net45\AWSSDK.Kinesis.dll</HintPath>
+      <Private>True</Private>
+    </Reference>    
+	<Reference Include="AWSSDK.Lambda, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Lambda.3.3.13.2\lib\net45\AWSSDK.Lambda.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.MobileAnalytics, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
@@ -1146,6 +1150,12 @@
     </Content>
     <Content Include="$(OutputRoot)\AWSSDK.KeyManagementService.dll">
       <Link>AWSSDK.KeyManagementService.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.Kinesis.dll">
+      <Link>AWSSDK.Kinesis.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
