@@ -57,7 +57,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
             catch (Exception e)
             {
                 ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.CodeCommitCloneStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
+                evnt.AddProperty(AttributeKeys.CodeCommitCloneStatus, ToolkitEvent.COMMON_STATUS_FAILURE);
                 SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
                 LOGGER.Error("Clone failed using libgit2sharp", e);
