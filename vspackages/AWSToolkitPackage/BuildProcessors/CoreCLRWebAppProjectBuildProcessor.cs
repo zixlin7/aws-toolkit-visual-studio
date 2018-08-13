@@ -79,27 +79,35 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
                     SetupAWSDeploymentManifest(packagingLocation, iisAppPath);
 
                     TaskInfo.Logger.OutputMessage("..zipping publishing directory");
-                    this._outputPackage = Path.Combine(outputLocation, taskInfo.ProjectInfo.ProjectName + "-" + DateTime.Now.Ticks + ".zip");
+                    this._outputPackage = Path.Combine(outputLocation,
+                        taskInfo.ProjectInfo.ProjectName + "-" + DateTime.Now.Ticks + ".zip");
                     var zip = new FastZip();
                     zip.CreateZip(this._outputPackage, packagingLocation, true, null);
 
                     if (File.Exists(_outputPackage))
                     {
                         ToolkitEvent sizeEvent = new ToolkitEvent();
-                        sizeEvent.AddProperty(MetricKeys.DeploymentBundleSize, new FileInfo(this._outputPackage).Length);
+                        sizeEvent.AddProperty(MetricKeys.DeploymentBundleSize,
+                            new FileInfo(this._outputPackage).Length);
                         SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(sizeEvent);
 
                         ProcessorResult = ResultCodes.Succeeded;
+
+                        TaskInfo.Logger.OutputMessage("..deployment package created successfully...");
                     }
                     else
-                        taskInfo.Logger.OutputMessage(string.Format("...error, folder '{0}' could not be found", _outputPackage), true, true);
+                    {
+                        taskInfo.Logger.OutputMessage(
+                            string.Format("...error, package '{0}' could not be found", _outputPackage), true, true);
 
-                    TaskInfo.Logger.OutputMessage(ProcessorResult == ResultCodes.Succeeded
-                        ? "..deployment package created successfully..."
-                        : "..build fail, unable to find expected deployment package.");
+                        TaskInfo.Logger.OutputMessage("..build fail, unable to find expected deployment package.");
+                    }
+                }
 
+                if (success && ProcessorResult == ResultCodes.Succeeded)
+                {
                     ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.DeploymentSuccessType, ANALYTICS_VALUE);
+                    evnt.AddProperty(AttributeKeys.WebApplicationBuildSuccess, ANALYTICS_VALUE);
                     evnt.AddProperty(AttributeKeys.DeploymentNetCoreTargetFramework, TaskInfo.TargetFramework);
                     SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
                 }
@@ -110,7 +118,7 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
                     taskInfo.Logger.OutputMessage(msg);
 
                     ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.DeploymentErrorType, ANALYTICS_VALUE);
+                    evnt.AddProperty(AttributeKeys.WebApplicationBuildError, ANALYTICS_VALUE);
                     evnt.AddProperty(AttributeKeys.DeploymentNetCoreTargetFramework, TaskInfo.TargetFramework);
                     SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
                 }
@@ -122,7 +130,7 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
                 TaskInfo.Logger.OutputMessage(msg);
 
                 ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.DeploymentErrorType, ANALYTICS_VALUE);
+                evnt.AddProperty(AttributeKeys.WebApplicationBuildError, ANALYTICS_VALUE);
                 evnt.AddProperty(AttributeKeys.DeploymentNetCoreTargetFramework, TaskInfo.TargetFramework);
                 SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }

@@ -18,8 +18,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         ReadableTimestamp,
         NavigationReason,
         DeploymentNetCoreTargetFramework,
-        DeploymentSuccessType,
-        DeploymentErrorType,
+        WebApplicationBuildSuccess,
+        WebApplicationBuildError,
 
         CloudFormationNewProject,
         LambdaNodeJsNewProject,

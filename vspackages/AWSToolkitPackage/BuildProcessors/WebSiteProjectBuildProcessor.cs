@@ -127,21 +127,24 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
                 TaskInfo.Logger.OutputMessage(ProcessorResult == ResultCodes.Succeeded
                     ? "..deployment package created successfully..."
                     : "..build fail, unable to find expected deployment package.");
-
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.DeploymentSuccessType, ANALYTICS_VALUE);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }
             catch (Exception exc)
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.DeploymentErrorType, ANALYTICS_VALUE);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
                 TaskInfo.Logger.OutputMessage("...caught exception during deployment package creation: " + exc.Message, true, true);
             }
             finally
             {
+                ToolkitEvent evnt = new ToolkitEvent();
+                if (ProcessorResult == ResultCodes.Succeeded)
+                {
+                    evnt.AddProperty(AttributeKeys.WebApplicationBuildSuccess, ANALYTICS_VALUE);
+                }
+                else
+                {
+                    evnt.AddProperty(AttributeKeys.WebApplicationBuildError, ANALYTICS_VALUE);
+                }
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
                 EndStatusBarBuildFeedback();
 
                 TaskInfo.CompletionSignalEvent.Set();
