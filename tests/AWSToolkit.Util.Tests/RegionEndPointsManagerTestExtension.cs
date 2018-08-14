@@ -1,6 +1,6 @@
 ﻿using Amazon.AWSToolkit;
 
-namespace AWSToolkit.Util.Tests
+namespace Amazon.AWSToolkit.Util.Tests
 {
     /// <summary>
     /// RegionEndPointsManager is set up to be a singleton, which isn't too Depencency Injection friendly.
