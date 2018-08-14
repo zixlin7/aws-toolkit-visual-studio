@@ -63,7 +63,7 @@ namespace Amazon.AWSToolkit.EC2.View
         {
             get
             {
-                return "ElasticIPs_" + this._controller.EndPoint + "_" + this._controller.Account.SettingsUniqueKey;
+                return "ElasticIPs_" + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
             }
         }
 

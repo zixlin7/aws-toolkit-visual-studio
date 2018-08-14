@@ -84,11 +84,8 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
 
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
-            var config = new AmazonIdentityManagementServiceConfig {ServiceURL = this.CurrentEndPoint.Url};
-            if (this.CurrentEndPoint.Signer != null)
-                config.SignatureVersion = this.CurrentEndPoint.Signer;
-            if (this.CurrentEndPoint.AuthRegion != null)
-                config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
+            var config = new AmazonIdentityManagementServiceConfig ();
+            this.CurrentEndPoint.ApplyToClientConfig(config);
             this._iamClient = new AmazonIdentityManagementServiceClient(awsCredentials, config);
         }
 

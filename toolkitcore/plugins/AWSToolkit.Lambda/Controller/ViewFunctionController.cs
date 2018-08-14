@@ -201,54 +201,44 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         void ConstructClients()
         {
             RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.GetInstance().GetRegion(this._region);
-            var endpointURL = endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_LOGS_NAME).Url;
-            if (endpointURL != null)
+            var endpoint = endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_LOGS_NAME);
+            if (endpoint != null)
             {
-                var logsConfig = new AmazonCloudWatchLogsConfig
-                {
-                    ServiceURL = endpointURL
-                };
+                var logsConfig = new AmazonCloudWatchLogsConfig();
+                endpoint.ApplyToClientConfig(logsConfig);
                 this._logsClient = new AmazonCloudWatchLogsClient(this._account.Credentials, logsConfig);
             }
 
-            endpointURL = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).Url;
-            if (endpointURL != null)
+            endpoint = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
+            if (endpoint != null)
             {
-                var ec2Config = new AmazonEC2Config
-                {
-                    ServiceURL = endpointURL
-                };
+                var ec2Config = new AmazonEC2Config();
+                endpoint.ApplyToClientConfig(ec2Config);
                 this._ec2Client = new AmazonEC2Client(this._account.Credentials, ec2Config);
             }
 
-            endpointURL = endPoints.GetEndpoint(RegionEndPointsManager.KMS_SERVICE_NAME).Url;
-            if (endpointURL != null)
+            endpoint = endPoints.GetEndpoint(RegionEndPointsManager.KMS_SERVICE_NAME);
+            if (endpoint != null)
             {
-                var kmsConfig = new AmazonKeyManagementServiceConfig
-                {
-                    ServiceURL = endpointURL
-                };
+                var kmsConfig = new AmazonKeyManagementServiceConfig();
+                endpoint.ApplyToClientConfig(kmsConfig);
                 this._kmsClient = new AmazonKeyManagementServiceClient(this._account.Credentials, kmsConfig);
             }
 
 
-            endpointURL = endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME).Url;
-            if (endpointURL != null)
+            endpoint = endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME);
+            if (endpoint != null)
             {
-                var config = new AmazonSimpleNotificationServiceConfig
-                {
-                    ServiceURL = endpointURL
-                };
+                var config = new AmazonSimpleNotificationServiceConfig();
+                endpoint.ApplyToClientConfig(config);
                 this._snsClient = new AmazonSimpleNotificationServiceClient(this._account.Credentials, config);
             }
 
-            endpointURL = endPoints.GetEndpoint(RegionEndPointsManager.SQS_SERVICE_NAME).Url;
-            if (endpointURL != null)
+            endpoint = endPoints.GetEndpoint(RegionEndPointsManager.SQS_SERVICE_NAME);
+            if (endpoint != null)
             {
-                var config = new AmazonSQSConfig
-                {
-                    ServiceURL = endpointURL
-                };
+                var config = new AmazonSQSConfig();
+                endpoint.ApplyToClientConfig(config);
                 this._sqsClient = new AmazonSQSClient(this._account.Credentials, config);
             }
         }
@@ -446,7 +436,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
                 foreach(var eventSourceConfiguration in response.EventSourceMappings)
                 {
-                    if (!eventSourceConfiguration.State.Equals("enabled", StringComparison.OrdinalIgnoreCase))
+                    if (!eventSourceConfiguration.State.Equals("enabled", StringComparison.OrdinalIgnoreCase) && !eventSourceConfiguration.State.Equals("creating", StringComparison.OrdinalIgnoreCase))
                         continue;
 
                     var wrapper = new EventSourceWrapper(eventSourceConfiguration);

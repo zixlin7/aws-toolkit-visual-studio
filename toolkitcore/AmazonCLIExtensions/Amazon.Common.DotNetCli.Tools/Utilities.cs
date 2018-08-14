@@ -25,6 +25,54 @@ namespace Amazon.Common.DotNetCli.Tools
         }
 
         /// <summary>
+        /// Creates a relative path 
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="relativeTo"></param>
+        /// <returns></returns>
+        public static string RelativePathTo(string start, string relativeTo)
+        {
+            start = Path.GetFullPath(start).Replace("\\", "/");
+            relativeTo = Path.GetFullPath(relativeTo).Replace("\\", "/");
+
+            string[] startDirs = start.Split('/');
+            string[] relativeToDirs = relativeTo.Split('/');
+
+            int len = startDirs.Length < relativeToDirs.Length ? startDirs.Length : relativeToDirs.Length;
+
+            int lastCommonRoot = -1;
+            int index;
+
+            for (index = 0; index < len && string.Equals(startDirs[index], relativeToDirs[index], StringComparison.OrdinalIgnoreCase); index++)
+            {
+                lastCommonRoot = index;
+            }
+
+            // The 2 paths don't share a common ancestor. So the closest we can give is the absolute path to the target.
+            if (lastCommonRoot == -1)
+            {
+                return relativeTo;
+            }
+
+            StringBuilder relativePath = new StringBuilder();
+            for (index = lastCommonRoot + 1; index < startDirs.Length; index++)
+            {
+                if (startDirs[index].Length > 0) relativePath.Append("../");
+            }
+
+            for (index = lastCommonRoot + 1; index < relativeToDirs.Length; index++)
+            {
+                relativePath.Append(relativeToDirs[index]);
+                if(index + 1 < relativeToDirs.Length)
+                {
+                    relativePath.Append("/");
+                }
+            }
+
+            return relativePath.ToString();
+        }
+
+        /// <summary>
         /// Determine where the dotnet publish should put its artifacts at.
         /// </summary>
         /// <param name="workingDirectory"></param>
@@ -349,7 +397,8 @@ namespace Amazon.Common.DotNetCli.Tools
             }
             catch(Exception e)
             {
-                throw new ToolsException($"Error determining region for bucket {s3Bucket}: {e.Message}", ToolsException.CommonErrorCode.S3GetBucketLocation, e);
+                Console.Error.WriteLine($"Warning: Unable to determine region for bucket {s3Bucket}, assuming bucket is in correct region: {e.Message}", ToolsException.CommonErrorCode.S3GetBucketLocation, e);
+                return;
             }
 
             var configuredRegion = s3Client.Config.RegionEndpoint?.SystemName;
@@ -370,25 +419,18 @@ namespace Amazon.Common.DotNetCli.Tools
 
         }
 
-        public static async Task<string> GetBucketRegionAsync(IAmazonS3 s3Client, string bucket)
+        private static async Task<string> GetBucketRegionAsync(IAmazonS3 s3Client, string bucket)
         {
-            try
-            {
-                var request = new GetBucketLocationRequest { BucketName = bucket };
-                var response = await s3Client.GetBucketLocationAsync(request);
+            var request = new GetBucketLocationRequest { BucketName = bucket };
+            var response = await s3Client.GetBucketLocationAsync(request);
 
-                // Handle the legacy naming conventions
-                if (response.Location == S3Region.US)
-                    return "us-east-1";
-                if (response.Location == S3Region.EU)
-                    return "eu-west-1";
+            // Handle the legacy naming conventions
+            if (response.Location == S3Region.US)
+                return "us-east-1";
+            if (response.Location == S3Region.EU)
+                return "eu-west-1";
 
-                return response.Location.Value;
-            }
-            catch(Exception e)
-            {
-                throw new ToolsException($"Error determining region for bucket {bucket}: {e.Message}", ToolsException.CommonErrorCode.S3GetBucketLocation, e);
-            }
+            return response.Location.Value;
         }
 
         public static async Task<bool> EnsureBucketExistsAsync(IToolLogger logger, IAmazonS3 s3Client, string bucketName)

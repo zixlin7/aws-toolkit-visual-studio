@@ -8,7 +8,7 @@ using Amazon.AWSToolkit;
 using Moq;
 using Amazon.AWSToolkit.MobileAnalytics;
 
-namespace AWSToolkit.Util.Tests
+namespace Amazon.AWSToolkit.Util.Tests
 {
     public class RegionEndPointsManagerTests : IDisposable
     {

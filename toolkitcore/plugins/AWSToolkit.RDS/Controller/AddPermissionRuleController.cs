@@ -117,7 +117,8 @@ namespace Amazon.AWSToolkit.RDS.Controller
             var endPoints = RegionEndPointsManager.GetInstance().GetRegion(this._securityRootViewModel.CurrentEndPoint.RegionSystemName);
             var endPoint = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
 
-            var config = new AmazonEC2Config() { ServiceURL = endPoint.Url };
+            var config = new AmazonEC2Config();
+            endPoint.ApplyToClientConfig(config);
             var client = new AmazonEC2Client(account.Credentials, config);
 
             var response = client.DescribeSecurityGroups(new DescribeSecurityGroupsRequest());

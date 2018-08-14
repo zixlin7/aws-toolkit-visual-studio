@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <versions location="http://aws.amazon.com/visualstudio">
+  <version number="1.14.4.0" release-date="2018-07-09" prompt="false">
+    <change>Added support for .NET Core 2.1 with AWS Lambda.</change>
+    <change>Added support for configuring SQS event source for AWS Lambda functions.</change>
+    <change>Added ability to set working directory for the docker build command in Amazon ECS deployment wizard.</change>
+  </version>
+  <version number="1.14.3.3" release-date="2018-05-24" prompt="false">
+    <change>Fixed issue with Node.js AWS Lambda deployments incorrectly requiring a dead letter queue.</change>
+  </version>
   <version number="1.14.3.2" release-date="2018-05-09" prompt="false">
     <change>Fixed issue deploying .NET Core 1.0 Lambda functions from within Visual Studio 2015 and 2017.</change>
   </version>

@@ -14,7 +14,10 @@ namespace Amazon.ECS.Tools.Commands
     {
         public string Configuration { get; set; }
         public string TargetFramework { get; set; }
+        public string PublishOptions { get; set; }
         public string DockerImageTag { get; set; }
+        public string DockerBuildWorkingDirectory { get; set; }
+        public string DockerBuildOptions { get; set; }
 
         internal void ParseCommandArguments(CommandOptions values)
         {
@@ -23,8 +26,14 @@ namespace Amazon.ECS.Tools.Commands
                 this.Configuration = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK.Switch)) != null)
                 this.TargetFramework = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_PUBLISH_OPTIONS.Switch)) != null)
+                this.PublishOptions = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG.Switch)) != null)
                 this.DockerImageTag = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_DOCKER_BUILD_WORKING_DIRECTORY.Switch)) != null)
+                this.DockerBuildWorkingDirectory = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(ECSDefinedCommandOptions.ARGUMENT_DOCKER_BUILD_OPTIONS.Switch)) != null)
+                this.DockerBuildOptions = tuple.Item2.StringValue;
         }
 
 
@@ -32,6 +41,8 @@ namespace Amazon.ECS.Tools.Commands
         {
             data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION.ConfigFileKey, command.GetStringValueOrDefault(this.Configuration, CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION, false));
             data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK.ConfigFileKey, command.GetStringValueOrDefault(this.TargetFramework, CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK, false));
+            data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_PUBLISH_OPTIONS.ConfigFileKey, command.GetStringValueOrDefault(this.PublishOptions, CommonDefinedCommandOptions.ARGUMENT_PUBLISH_OPTIONS, false));
+
 
             var tag = command.GetStringValueOrDefault(this.DockerImageTag, ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG, false);
             if (!string.IsNullOrEmpty(tag))
@@ -45,6 +56,9 @@ namespace Amazon.ECS.Tools.Commands
 
                 data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG.ConfigFileKey, tag);
             }
+
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_DOCKER_BUILD_WORKING_DIRECTORY.ConfigFileKey, command.GetStringValueOrDefault(this.DockerBuildWorkingDirectory, ECSDefinedCommandOptions.ARGUMENT_DOCKER_BUILD_WORKING_DIRECTORY, false));
+            data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_DOCKER_BUILD_OPTIONS.ConfigFileKey, command.GetStringValueOrDefault(this.DockerBuildOptions, ECSDefinedCommandOptions.ARGUMENT_DOCKER_BUILD_OPTIONS, false));
         }
     }
 

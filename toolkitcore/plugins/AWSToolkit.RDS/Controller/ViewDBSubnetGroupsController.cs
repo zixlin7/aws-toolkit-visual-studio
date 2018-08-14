@@ -17,7 +17,6 @@ namespace Amazon.AWSToolkit.RDS.Controller
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ViewDBSubnetGroupsController));
 
         IAmazonRDS _rdsClient;
-        string _endpoint;
 
         ViewDBSubnetGroupsControl _control;
         RDSSubnetGroupsRootViewModel _subnetGroupsRootViewModel;
@@ -37,7 +36,6 @@ namespace Amazon.AWSToolkit.RDS.Controller
             if (this._subnetGroupsRootViewModel == null)
                 return new ActionResults().WithSuccess(false);
 
-            this._endpoint = ((IEndPointSupport)this._subnetGroupsRootViewModel.Parent).CurrentEndPoint.Url;
             this._rdsClient = this._subnetGroupsRootViewModel.RDSClient;
             this.Model = new ViewDBSubnetGroupsModel();
 
@@ -111,9 +109,9 @@ namespace Amazon.AWSToolkit.RDS.Controller
             get { return this._subnetGroupsRootViewModel.AccountViewModel; }
         }
 
-        public string EndPoint
+        public string EndPointUniqueIdentifier
         {
-            get { return this._subnetGroupsRootViewModel.CurrentEndPoint.Url; }
+            get { return this._subnetGroupsRootViewModel.CurrentEndPoint.UniqueIdentifier; }
         }
 
         public string RegionDisplayName

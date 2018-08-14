@@ -27,11 +27,12 @@ namespace Amazon.AWSToolkit.Lambda.View
 
         public const int SOURCE_TYPE_S3_INDEX = 0;
         public const int SOURCE_TYPE_DYNAMODB_STREAM_INDEX = 1;
-        public const int SOURCE_TYPE_SNS_INDEX = 2;
-        public const int SOURCE_TYPE_KINESIS_INDEX = 3;
-        public const int SOURCE_TYPE_CLOUDWATCH_EVENTS_SCHEDULE = 4;
+        public const int SOURCE_TYPE_SQS_INDEX = 2;
+        public const int SOURCE_TYPE_SNS_INDEX = 3;
+        public const int SOURCE_TYPE_KINESIS_INDEX = 4;
+        public const int SOURCE_TYPE_CLOUDWATCH_EVENTS_SCHEDULE = 5;
 
-        public enum SourceType { Unknown, S3, DynamoDBStream, Kinesis, SNS, CloudWatchEventsSchedule };
+        public enum SourceType { Unknown, S3, DynamoDBStream, Kinesis, SQS, SNS, CloudWatchEventsSchedule };
 
         AddEventSourceController _controller;
         public AddEventSourceControl(AddEventSourceController controller)
@@ -64,6 +65,8 @@ namespace Amazon.AWSToolkit.Lambda.View
                         return SourceType.Kinesis;
                     case SOURCE_TYPE_SNS_INDEX:
                         return SourceType.SNS;
+                    case SOURCE_TYPE_SQS_INDEX:
+                        return SourceType.SQS;
                     case SOURCE_TYPE_CLOUDWATCH_EVENTS_SCHEDULE:
                         return SourceType.CloudWatchEventsSchedule;
                     default:
@@ -77,6 +80,18 @@ namespace Amazon.AWSToolkit.Lambda.View
             get
             {
                 return this._ctlResources.Text;
+            }
+        }
+
+        public int SQSBatchSize
+        {
+            get
+            {
+                int value;
+                if (int.TryParse(this._ctlSQSBatchSize.Text, out value))
+                    return value;
+
+                return 10;
             }
         }
 
@@ -131,6 +146,12 @@ namespace Amazon.AWSToolkit.Lambda.View
                 return false;
             }
 
+            if (this._ctlSQSBatchSize.IsEnabled && (!int.TryParse(this._ctlSQSBatchSize.Text, out batchSize) || batchSize <= 0))
+            {
+                ToolkitFactory.Instance.ShellProvider.ShowError("Batch size must be a positive integer.");
+                return false;
+            }
+
             if (string.IsNullOrEmpty(this._ctlResources.Text))
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("A resource is required to create event source.");
@@ -168,6 +189,7 @@ namespace Amazon.AWSToolkit.Lambda.View
             this._ctlPanelScheduledEventProperties.Visibility = Visibility.Collapsed;
             this._ctlPanelS3Properties.Visibility = Visibility.Collapsed;
             this._ctlPanelLambdaEventSource.Visibility = Visibility.Collapsed;
+            this._ctlPanelSQSEventSource.Visibility = Visibility.Collapsed;
 
             switch (this._ctlSourceType.SelectedIndex)
             {
@@ -186,6 +208,10 @@ namespace Amazon.AWSToolkit.Lambda.View
                 case SOURCE_TYPE_SNS_INDEX:
                     UpdateForSNSType();
                     this._ctlResources.Visibility = Visibility.Visible;
+                    break;
+                case SOURCE_TYPE_SQS_INDEX:
+                    UpdateForSQSType();
+                    this._ctlPanelSQSEventSource.Visibility = Visibility.Visible;
                     break;
                 case SOURCE_TYPE_CLOUDWATCH_EVENTS_SCHEDULE:
                     this._ctlResourceLabel.Visibility = Visibility.Collapsed;
@@ -224,6 +250,22 @@ namespace Amazon.AWSToolkit.Lambda.View
             catch (Exception e)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error getting the list of topics: " + e.Message);
+            }
+        }
+
+        private void UpdateForSQSType()
+        {
+            this._ctlResourceLabel.Text = "SQS Queue:";
+
+            this._ctlResources.Items.Clear();
+
+            try
+            {
+                PopulateResources(this._controller.GetSQSTopics());
+            }
+            catch (Exception e)
+            {
+                ToolkitFactory.Instance.ShellProvider.ShowError("Error getting the list of queues: " + e.Message);
             }
         }
 

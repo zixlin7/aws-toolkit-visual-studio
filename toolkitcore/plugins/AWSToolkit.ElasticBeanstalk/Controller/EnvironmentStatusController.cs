@@ -62,16 +62,20 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             
             this._beanstalkClient = this._environmentModel.BeanstalkClient;
 
-            var cwConfig = new AmazonCloudWatchConfig {ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_SERVICE_NAME).Url};
+            var cwConfig = new AmazonCloudWatchConfig ();
+            endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_SERVICE_NAME).ApplyToClientConfig(cwConfig);
             this._cwClient = new AmazonCloudWatchClient(this._environmentModel.AccountViewModel.Credentials, cwConfig);
 
-            var asConfig = new AmazonAutoScalingConfig {ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.AUTOSCALING_SERVICE_NAME).Url};
+            var asConfig = new AmazonAutoScalingConfig ();
+            endPoints.GetEndpoint(RegionEndPointsManager.AUTOSCALING_SERVICE_NAME).ApplyToClientConfig(asConfig);
             this._asClient = new AmazonAutoScalingClient(this._environmentModel.AccountViewModel.Credentials, asConfig);
 
-            var elbConfig = new AmazonElasticLoadBalancingConfig {ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.ELB_SERVICE_NAME).Url};
+            var elbConfig = new AmazonElasticLoadBalancingConfig ();
+            endPoints.GetEndpoint(RegionEndPointsManager.ELB_SERVICE_NAME).ApplyToClientConfig(elbConfig);
             this._elbClient = new AmazonElasticLoadBalancingClient(this._environmentModel.AccountViewModel.Credentials, elbConfig);
 
-            var ec2Config = new AmazonEC2Config {ServiceURL = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).Url};
+            var ec2Config = new AmazonEC2Config ();
+            endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).ApplyToClientConfig(ec2Config);
             this._ec2Client = new AmazonEC2Client(this._environmentModel.AccountViewModel.Credentials, ec2Config);
 
             var ec2Model = this._environmentModel.AccountViewModel.FindSingleChild<IEC2RootViewModel>(false);

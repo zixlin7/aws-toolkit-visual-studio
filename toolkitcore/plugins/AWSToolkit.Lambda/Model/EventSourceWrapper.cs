@@ -16,6 +16,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         public const string DYNAMODB_FRIENDLY_NAME = "DynamoDB";
         public const string KINESIS_FRIENDLY_NAME = "Kinesis";
         public const string SNS_FRIENDLY_NAME = "SNS";
+        public const string SQS_FRIENDLY_NAME = "SQS";
         public const string EVENTS_FRIENDLY_NAME = "CloudWatch Events";
         public const string S3_FRIENDLY_NAME = "S3";
 
@@ -34,6 +35,9 @@ namespace Amazon.AWSToolkit.Lambda.Model
                 case "dynamodb":
                     ServiceName = DYNAMODB_FRIENDLY_NAME;
                     break;
+                case "sqs":
+                    ServiceName = SQS_FRIENDLY_NAME;
+                    break;
                 default:
                     ServiceName = tokens[2];
                     break;
@@ -50,7 +54,11 @@ namespace Amazon.AWSToolkit.Lambda.Model
             }
 
             StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("Batch Size: {0}, Last Result: {1}", configuration.BatchSize, configuration.LastProcessingResult);
+            sb.AppendFormat("Batch Size: {0}", configuration.BatchSize);
+            if(!string.IsNullOrEmpty(configuration.LastProcessingResult))
+            {
+                sb.AppendFormat(", Last Result: {0}", configuration.LastProcessingResult);
+            }
             this.Details = sb.ToString();
         }
 
@@ -65,6 +73,8 @@ namespace Amazon.AWSToolkit.Lambda.Model
                     ServiceName = S3_FRIENDLY_NAME;
                 else if (statement.Principals[0].Id.StartsWith("sns", StringComparison.InvariantCultureIgnoreCase))
                     ServiceName = SNS_FRIENDLY_NAME;
+                else if (statement.Principals[0].Id.StartsWith("sqs", StringComparison.InvariantCultureIgnoreCase))
+                    ServiceName = SQS_FRIENDLY_NAME;
                 else if (statement.Principals[0].Id.StartsWith("events", StringComparison.InvariantCultureIgnoreCase))
                     ServiceName = EVENTS_FRIENDLY_NAME;
                 else
@@ -132,6 +142,8 @@ namespace Amazon.AWSToolkit.Lambda.Model
                         return IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.Lambda.Resources.EmbeddedImages.s3-service.png").Source;
                     case SNS_FRIENDLY_NAME:
                         return IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.Lambda.Resources.EmbeddedImages.sns-service.png").Source;
+                    case SQS_FRIENDLY_NAME:
+                        return IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.Lambda.Resources.EmbeddedImages.sqs-service.png").Source;
                     case EVENTS_FRIENDLY_NAME:
                         return IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.Lambda.Resources.EmbeddedImages.cloudwatch-service.png").Source;
                     default:

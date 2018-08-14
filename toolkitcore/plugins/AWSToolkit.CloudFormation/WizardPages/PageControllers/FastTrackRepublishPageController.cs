@@ -276,7 +276,8 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
             Stack stack = null;
             try
             {
-                var cfConfig = new AmazonCloudFormationConfig {ServiceURL = region.GetEndpoint("CloudFormation").Url};
+                var cfConfig = new AmazonCloudFormationConfig ();
+                region.GetEndpoint("CloudFormation").ApplyToClientConfig(cfConfig);
                 var cfClient = new AmazonCloudFormationClient(account.Credentials, cfConfig);
 
                 var response = cfClient.DescribeStacks(new DescribeStacksRequest() { StackName = stackName });

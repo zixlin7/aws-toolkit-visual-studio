@@ -62,7 +62,8 @@ namespace Amazon.AWSToolkit.RDS.Controller
                 var endPoints = RegionEndPointsManager.GetInstance().GetRegion(_rootModel.CurrentEndPoint.RegionSystemName);
                 var endPoint = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
 
-                var config = new AmazonEC2Config() { ServiceURL = endPoint.Url };
+                var config = new AmazonEC2Config();
+                endPoint.ApplyToClientConfig(config);
                 var ec2Client = new AmazonEC2Client(account.Credentials, config);
                 seedProperties[RDSWizardProperties.SeedData.propkey_EC2Client] = ec2Client;
 

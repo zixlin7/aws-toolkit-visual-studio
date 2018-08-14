@@ -48,11 +48,8 @@ namespace Amazon.AWSToolkit.SNS.Nodes
 
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
-            var config = new AmazonSimpleNotificationServiceConfig {ServiceURL = this.CurrentEndPoint.Url};
-            if (this.CurrentEndPoint.Signer != null)
-                config.SignatureVersion = this.CurrentEndPoint.Signer;
-            if (this.CurrentEndPoint.AuthRegion != null)
-                config.AuthenticationRegion = this.CurrentEndPoint.AuthRegion;
+            var config = new AmazonSimpleNotificationServiceConfig();
+            this.CurrentEndPoint.ApplyToClientConfig(config);
             this._snsClient = new AmazonSimpleNotificationServiceClient(awsCredentials, config);
         }
 

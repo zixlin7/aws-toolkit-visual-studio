@@ -86,5 +86,8 @@
     <EmbeddedResource Include="Policies\LambdaInvokeRoleS3.json" />
     <EmbeddedResource Include="Policies\LambdaInvokeRoleDynamoDBStream.json" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Policies\LambdaInvokeRoleSQS.json" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -246,11 +246,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             if(roleTemplates != null)
             {
                 var endpoint = region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
-                var config = new AmazonIdentityManagementServiceConfig()
-                {
-                    ServiceURL = endpoint.Url,
-                    AuthenticationRegion = endpoint.AuthRegion
-                };
+                var config = new AmazonIdentityManagementServiceConfig();
+                endpoint.ApplyToClientConfig(config);
 
                 var client = new AmazonIdentityManagementServiceClient(account.Credentials, config);
 
@@ -454,11 +451,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             try
             {
                 var endpoint = region.GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME);
-                var config = new AmazonElasticBeanstalkConfig()
-                {
-                    ServiceURL = endpoint.Url,
-                    AuthenticationRegion = endpoint.AuthRegion
-                };
+                var config = new AmazonElasticBeanstalkConfig();
+                endpoint.ApplyToClientConfig(config);
 
                 var client = new AmazonElasticBeanstalkClient(account.Credentials, config);
                 var response = client.CreateStorageLocation();
@@ -485,11 +479,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             Observer.Status("Creating keypair '{0}'", keyName);
 
             var endpoint = region.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
-            var config = new AmazonEC2Config()
-            {
-                ServiceURL = endpoint.Url,
-                AuthenticationRegion = endpoint.AuthRegion
-            };
+            var config = new AmazonEC2Config();
+            endpoint.ApplyToClientConfig(config);
 
             var client = new AmazonEC2Client(account.Credentials, config);
 

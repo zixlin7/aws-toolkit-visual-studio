@@ -334,6 +334,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             finally
             {
                 Interlocked.Decrement(ref _backgroundWorkersActive);
+                TestForwardTransitionEnablement();
             }
         }
 

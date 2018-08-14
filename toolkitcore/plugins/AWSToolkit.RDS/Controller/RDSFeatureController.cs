@@ -21,7 +21,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
     {
         IAmazonRDS _rdsClient;
         M _model;
-        string _endpoint;
+        string _endpointUniqueIdentifier;
         RDSFeatureViewModel _featureViewModel;
 
         public override ActionResults Execute(IViewModel model)
@@ -30,7 +30,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
             if (this._featureViewModel == null)
                 return new ActionResults().WithSuccess(false);
 
-            this._endpoint = ((IEndPointSupport)this._featureViewModel.Parent).CurrentEndPoint.Url;
+            this._endpointUniqueIdentifier = ((IEndPointSupport)this._featureViewModel.Parent).CurrentEndPoint.UniqueIdentifier;
             this._rdsClient = this._featureViewModel.RDSClient;
             this._model = new M();
 
@@ -56,11 +56,11 @@ namespace Amazon.AWSToolkit.RDS.Controller
             get { return this._model; }
         }
 
-        public string EndPoint
+        public string EndPointUniqueIdentifier
         {
             get
             {
-                return this._endpoint;
+                return this._endpointUniqueIdentifier;
             }
         }
 

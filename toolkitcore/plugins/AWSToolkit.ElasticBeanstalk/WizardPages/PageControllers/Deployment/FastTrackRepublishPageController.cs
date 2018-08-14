@@ -249,7 +249,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
             try
             {
                 var endpoint = region.GetEndpoint("ElasticBeanstalk");
-                var beanstalkConfig = new AmazonElasticBeanstalkConfig {ServiceURL = endpoint.Url, AuthenticationRegion = endpoint.AuthRegion};
+                var beanstalkConfig = new AmazonElasticBeanstalkConfig();
+                endpoint.ApplyToClientConfig(beanstalkConfig);
                 var beanstalkClient = new AmazonElasticBeanstalkClient(account.Credentials, beanstalkConfig);
 
                 var response = beanstalkClient.DescribeEnvironments(new DescribeEnvironmentsRequest

@@ -42,11 +42,8 @@ namespace Amazon.AWSToolkit.EC2.Controller
         {
             // Create client for the destination region
             var endpoint = _destinationRegion.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
-            var config = new AmazonEC2Config {ServiceURL = endpoint.Url};
-            if (endpoint.Signer != null)
-                config.SignatureVersion = endpoint.Signer;
-            if (endpoint.AuthRegion != null)
-                config.AuthenticationRegion = endpoint.AuthRegion;
+            var config = new AmazonEC2Config();
+            endpoint.ApplyToClientConfig(config);
 
             AmazonEC2Client ec2Client = new AmazonEC2Client(_account.Credentials, config);
             

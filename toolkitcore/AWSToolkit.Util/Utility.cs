@@ -161,6 +161,7 @@ namespace Amazon.AWSToolkit
             return null;
         }
 
+
         public static void AddDotnetCliToolReference(string projectFilePath, string nuGetPackageName)
         {
             // Skip VS 2015 .NET Core project format and Node.js projects
@@ -180,6 +181,18 @@ namespace Amazon.AWSToolkit
             var version = data[nuGetPackageName].ToString();
 
             var content = File.ReadAllText(projectFilePath);
+
+            // Migrate existing projects to the new AWSProjectType property setting
+            if(string.Equals("Amazon.Lambda.Tools", nuGetPackageName, StringComparison.OrdinalIgnoreCase))
+            {
+                var updatedContent = ProjectFileUtilities.SetAWSProjectType(content, "Lambda");
+                if(!string.Equals(content, updatedContent, StringComparison.Ordinal))
+                {
+                    content = updatedContent;
+                    File.WriteAllText(projectFilePath, content);
+                }
+            }
+
             if (!content.Contains(nuGetPackageName) && content.StartsWith("<Project Sdk="))
             {
                 content = content.Replace("</Project>",

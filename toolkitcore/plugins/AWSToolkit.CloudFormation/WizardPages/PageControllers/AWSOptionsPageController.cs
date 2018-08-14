@@ -374,7 +374,8 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
                 IAmazonEC2 ec2Client;
                 if (!this._ec2ClientsByAccountAndRegion.ContainsKey(accountAndRegion))
                 {
-                    var ec2Config = new AmazonEC2Config {ServiceURL = rep.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).Url};
+                    var ec2Config = new AmazonEC2Config ();
+                    rep.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).ApplyToClientConfig(ec2Config);
                     ec2Client = new AmazonEC2Client(selectedAccount.Credentials, ec2Config);
                     this._ec2ClientsByAccountAndRegion.Add(accountAndRegion, ec2Client);
                 }

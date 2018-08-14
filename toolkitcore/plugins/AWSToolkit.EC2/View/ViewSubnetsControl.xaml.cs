@@ -70,7 +70,7 @@ namespace Amazon.AWSToolkit.EC2.View
         {
             get
             {
-                return "Subnets_" + this._controller.EndPoint + "_" + this._controller.Account.SettingsUniqueKey;
+                return "Subnets_" + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
             }
         }
 

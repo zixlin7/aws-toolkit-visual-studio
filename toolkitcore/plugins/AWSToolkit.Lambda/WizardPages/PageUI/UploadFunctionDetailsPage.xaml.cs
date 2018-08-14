@@ -247,6 +247,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             {
                 if(!this.IsVS2015)
                 {
+                    this._ctlFrameworkPicker.Items.Add("netcoreapp2.1");
                     this._ctlFrameworkPicker.Items.Add("netcoreapp2.0");
                 }
                 this._ctlFrameworkPicker.Items.Add("netcoreapp1.0");
@@ -317,7 +318,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                     try
                     {
                         NotifyPropertyChanged("Framework");
-                        if(string.Equals(_framework, "netcoreapp2.0", StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(_framework, "netcoreapp2.1", StringComparison.OrdinalIgnoreCase))
+                        {
+                            _runtime = RuntimeOption.NetCore_v2_1;
+                            this._ctlRuntime.SelectedItem = _runtime;
+                        }
+                        if (string.Equals(_framework, "netcoreapp2.0", StringComparison.OrdinalIgnoreCase))
                         {
                             _runtime = RuntimeOption.NetCore_v2_0;
                             this._ctlRuntime.SelectedItem = _runtime;

@@ -1,0 +1,4 @@
+<StoreArtifacts>
+  <Package Id="Microsoft.AspNetCore.All" Version="2.1.0" />
+  <Package Id="Microsoft.AspNetCore.App" Version="2.1.0" />
+</StoreArtifacts>

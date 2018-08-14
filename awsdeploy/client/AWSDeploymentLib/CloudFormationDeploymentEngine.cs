@@ -111,7 +111,8 @@ namespace AWSDeployment
             {
                 if (this._cfClient == null)
                 {
-                    var cfConfig = new AmazonCloudFormationConfig {ServiceURL = RegionEndPoints.GetEndpoint("CloudFormation").Url};
+                    var cfConfig = new AmazonCloudFormationConfig();
+                    RegionEndPoints.GetEndpoint("CloudFormation").ApplyToClientConfig(cfConfig);
                     this._cfClient = new AmazonCloudFormationClient(Credentials, cfConfig);
                 }
 
@@ -126,7 +127,8 @@ namespace AWSDeployment
             {
                 if (this._asClient == null)
                 {
-                    var asConfig = new AmazonAutoScalingConfig {ServiceURL = RegionEndPoints.GetEndpoint("AutoScaling").Url};
+                    var asConfig = new AmazonAutoScalingConfig ();
+                    RegionEndPoints.GetEndpoint("AutoScaling").ApplyToClientConfig(asConfig);
                     this._asClient = new AmazonAutoScalingClient(Credentials, asConfig);
                 }
 
@@ -141,7 +143,8 @@ namespace AWSDeployment
             {
                 if (this._elbClient == null)
                 {
-                    var elbConfig = new AmazonElasticLoadBalancingConfig {ServiceURL = RegionEndPoints.GetEndpoint("ELB").Url};
+                    var elbConfig = new AmazonElasticLoadBalancingConfig ();
+                    RegionEndPoints.GetEndpoint("ELB").ApplyToClientConfig(elbConfig);
                     this._elbClient = new AmazonElasticLoadBalancingClient(Credentials, elbConfig);
                 }
 

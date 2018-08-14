@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using YamlDotNet.RepresentationModel;
 using YamlDotNet.Serialization;
 
 using Newtonsoft.Json;
@@ -28,7 +29,7 @@ namespace Amazon.Lambda.Tools
                 return;
 
             string suffix = lambdaRuntime.Substring(lambdaRuntime.Length - 3);
-			Version runtimeVersion;
+            Version runtimeVersion;
             if (!Version.TryParse(suffix, out runtimeVersion))
                 return;
 
@@ -36,7 +37,7 @@ namespace Amazon.Lambda.Tools
                 return;
 
             suffix = targetFramework.Substring(targetFramework.Length - 3);
-			Version frameworkVersion;
+            Version frameworkVersion;
             if (!Version.TryParse(suffix, out frameworkVersion))
                 return;
 
@@ -46,52 +47,60 @@ namespace Amazon.Lambda.Tools
             }
         }
 
-
-        public static void ValidateMicrosoftAspNetCoreAllReference(IToolLogger logger, string csprofPath, out string manifestContent)
+        public static string LoadPackageStoreManifest(IToolLogger logger, string targetFramework)
         {
-            if(!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(LambdaConstants.ENV_DOTNET_LAMBDA_CLI_LOCAL_MANIFEST_OVERRIDE)))
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(LambdaConstants.ENV_DOTNET_LAMBDA_CLI_LOCAL_MANIFEST_OVERRIDE)))
             {
                 var filePath = Environment.GetEnvironmentVariable(LambdaConstants.ENV_DOTNET_LAMBDA_CLI_LOCAL_MANIFEST_OVERRIDE);
-                if(File.Exists(filePath))
+                if (File.Exists(filePath))
                 {
                     logger?.WriteLine($"Using local manifest override: {filePath}");
-                    manifestContent = File.ReadAllText(filePath);
+                    return File.ReadAllText(filePath);
                 }
                 else
                 {
                     logger?.WriteLine("Using local manifest override");
-                    manifestContent = null;
+                    return null;
                 }
             }
-            else
-            {
-                manifestContent = ToolkitConfigFileFetcher.Instance.GetFileContentAsync(logger, "LambdaPackageStoreManifest.xml").Result;
-            }
-            if (string.IsNullOrEmpty(manifestContent))
-            {
-                return;
-            }
 
-            if (Directory.Exists(csprofPath))
+            string manifestFilename = null;
+            if (string.Equals("netcoreapp2.0", targetFramework, StringComparison.OrdinalIgnoreCase))
+                manifestFilename = "LambdaPackageStoreManifest.xml";
+            else if (string.Equals("netcoreapp2.0", targetFramework, StringComparison.OrdinalIgnoreCase))
+                manifestFilename = "LambdaPackageStoreManifest-v2.1.xml";
+
+            if (manifestFilename == null)
+                return null;
+
+            return ToolkitConfigFileFetcher.Instance.GetFileContentAsync(logger, manifestFilename).Result;
+        }
+
+        public static void ValidateMicrosoftAspNetCoreAllReferenceFromProjectPath(IToolLogger logger, string targetFramework, string manifestContent, string profPath)
+        {
+            HashSet<string> validProjectExtensions = new HashSet<string> { ".csproj", ".fsproj", ".vbproj" };
+
+            if (Directory.Exists(profPath))
             {
-                var projectFiles = Directory.GetFiles(csprofPath, "*.csproj", SearchOption.TopDirectoryOnly);
-                if(projectFiles.Length != 1)
+                var projectFiles = Directory.GetFiles(profPath, "*.??proj", SearchOption.TopDirectoryOnly)
+                    .Where(x => validProjectExtensions.Contains(Path.GetExtension(x))).ToArray();
+                if (projectFiles.Length != 1)
                 {
-                    logger?.WriteLine("Unable to determine csproj project file when validating version of Microsoft.AspNetCore.All");
+                    logger?.WriteLine("Unable to determine project file when validating version of Microsoft.AspNetCore.All");
                     return;
                 }
-                csprofPath = projectFiles[0];
+                profPath = projectFiles[0];
             }
 
-            // If the file is not a csproj file then skip validation. This could happen
+            // If the file is not a valid proj file then skip validation. This could happen
             // if the project is an F# project or an older style project.json.
-            if (!string.Equals(Path.GetExtension(csprofPath), ".csproj"))
+            if (!validProjectExtensions.Contains(Path.GetExtension(profPath)))
                 return;
 
-            var projectContent = File.ReadAllText(csprofPath);
+            var projectContent = File.ReadAllText(profPath);
 
-            
-            ValidateMicrosoftAspNetCoreAllReferenceWithManifest(logger, manifestContent, projectContent);
+
+            ValidateMicrosoftAspNetCoreAllReferenceFromProjectContent(logger, targetFramework, manifestContent, projectContent);
         }
 
         /// <summary>
@@ -100,25 +109,27 @@ namespace Amazon.Lambda.Tools
         /// </summary>
         /// <param name="logger"></param>
         /// <param name="manifestContent"></param>
-        /// <param name="csprojContent"></param>
-        public static void ValidateMicrosoftAspNetCoreAllReferenceWithManifest(IToolLogger logger, string manifestContent, string csprojContent)
+        /// <param name="projContent"></param>
+        public static void ValidateMicrosoftAspNetCoreAllReferenceFromProjectContent(IToolLogger logger, string targetFramework, string manifestContent, string projContent)
         {
+            const string NO_VERSION = "NO_VERSION";
             const string ASPNET_CORE_ALL = "Microsoft.AspNetCore.All";
+            const string ASPNET_CORE_APP = "Microsoft.AspNetCore.App";
             try
             {
-                XDocument csprojXmlDoc = XDocument.Parse(csprojContent);
+                XDocument projXmlDoc = XDocument.Parse(projContent);
 
-                Func<string> searchForAspNetCoreAllVersion = () =>
+                Func<string, string> searchForPackageVersion = (nuGetPackage) =>
                 {
                     // Not using XPath because to avoid adding an addition dependency for a simple one time use.
-                    foreach (var group in csprojXmlDoc.Root.Elements("ItemGroup"))
+                    foreach (var group in projXmlDoc.Root.Elements("ItemGroup"))
                     {
                         foreach (XElement packageReference in group.Elements("PackageReference"))
                         {
                             var name = packageReference.Attribute("Include")?.Value;
-                            if (string.Equals(name, ASPNET_CORE_ALL, StringComparison.Ordinal))
+                            if (string.Equals(name, nuGetPackage, StringComparison.Ordinal))
                             {
-                                return packageReference.Attribute("Version")?.Value;
+                                return packageReference.Attribute("Version")?.Value ?? NO_VERSION;
                             }
                         }
                     }
@@ -126,47 +137,121 @@ namespace Amazon.Lambda.Tools
                     return null;
                 };
 
-                var projectAspNetCoreVersion = searchForAspNetCoreAllVersion();
+                Func<string, string, Tuple<bool, string>> searchForSupportedVersion = (nuGetPackage, nuGetPackageVersion) =>
+                {
+                    if (string.IsNullOrEmpty(manifestContent))
+                        return new Tuple<bool, string>(true, null);
 
-                if (string.IsNullOrEmpty(projectAspNetCoreVersion))
+                    var manifestXmlDoc = XDocument.Parse(manifestContent);
+
+                    string latestLambdaDeployedVersion = null;
+                    foreach (var element in manifestXmlDoc.Root.Elements("Package"))
+                    {
+                        var name = element.Attribute("Id")?.Value;
+                        if (string.Equals(name, nuGetPackage, StringComparison.Ordinal))
+                        {
+                            var version = element.Attribute("Version")?.Value;
+                            if (string.Equals(nuGetPackageVersion, version, StringComparison.Ordinal))
+                            {
+                                // Version specifed in project file is available in Lambda Runtime
+                                return new Tuple<bool, string>(true, null);
+                            }
+
+                            // Record latest supported version to provide meaningful error message.
+                            if (latestLambdaDeployedVersion == null || Version.Parse(latestLambdaDeployedVersion) < Version.Parse(version))
+                            {
+                                latestLambdaDeployedVersion = version;
+                            }
+                        }
+                    }
+
+                    return new Tuple<bool, string>(false, latestLambdaDeployedVersion);
+                };
+
+                var projectAspNetCoreAllVersion = searchForPackageVersion(ASPNET_CORE_ALL);
+                var projectAspNetCoreAppVersion = searchForPackageVersion(ASPNET_CORE_APP);
+
+                if (string.IsNullOrEmpty(projectAspNetCoreAllVersion) && string.IsNullOrEmpty(projectAspNetCoreAppVersion))
                 {
                     // Project is not using Microsoft.AspNetCore.All so skip validation.
                     return;
                 }
 
 
-                var manifestXmlDoc = XDocument.Parse(manifestContent);
-
-                string latestLambdaDeployedVersion = null;
-                foreach (var element in manifestXmlDoc.Root.Elements("Package"))
+                if (string.Equals("netcoreapp2.0", targetFramework, StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(projectAspNetCoreAllVersion))
                 {
-                    var name = element.Attribute("Id")?.Value;
-                    if (string.Equals(name, ASPNET_CORE_ALL, StringComparison.Ordinal))
+                    if (string.IsNullOrEmpty(manifestContent))
+                        return;
+
+                    var results = searchForSupportedVersion(ASPNET_CORE_ALL, projectAspNetCoreAllVersion);
+                    // project specified version is supported.
+                    if(results.Item1)
                     {
-                        var version = element.Attribute("Version")?.Value;
-                        if (string.Equals(projectAspNetCoreVersion, version, StringComparison.Ordinal))
-                        {
-                            // Version specifed in project file is available in Lambda Runtime
-                            return;
-                        }
-
-                        // Record latest supported version to provide meaningful error message.
-                        if (latestLambdaDeployedVersion == null || Version.Parse(latestLambdaDeployedVersion) < Version.Parse(version))
-                        {
-                            latestLambdaDeployedVersion = version;
-                        }
+                        return;
                     }
-                }
 
-                throw new LambdaToolsException($"Project is referencing version {projectAspNetCoreVersion} of {ASPNET_CORE_ALL} which is newer " +
-                    $"than {latestLambdaDeployedVersion}, the latest version available in the Lambda Runtime environment. Please update your project to " +
-                    $"use version {latestLambdaDeployedVersion} and then redeploy your Lambda function.", LambdaToolsException.LambdaErrorCode.AspNetCoreAllValidation);
+                    throw new LambdaToolsException($"Project is referencing version {projectAspNetCoreAllVersion} of {ASPNET_CORE_ALL} which is newer " +
+                        $"than {results.Item2}, the latest version available in the Lambda Runtime environment. Please update your project to " +
+                        $"use version {results.Item2} and then redeploy your Lambda function.",
+                        LambdaToolsException.LambdaErrorCode.AspNetCoreAllValidation);
+                }
+                else if (string.Equals("netcoreapp2.1", targetFramework, StringComparison.OrdinalIgnoreCase))
+                {
+                    string packageName, packageVersion;
+                    if(projectAspNetCoreAllVersion != null)
+                    {
+                        packageName = ASPNET_CORE_ALL;
+                        packageVersion = projectAspNetCoreAllVersion;
+                    }
+                    else
+                    {
+                        packageName = ASPNET_CORE_APP;
+                        packageVersion = projectAspNetCoreAppVersion;
+                    }
+
+                    var results = searchForSupportedVersion(packageName, packageVersion);
+
+                    // When .NET Core 2.1 was first released developers were encouraged to not include a version attribute for Microsoft.AspNetCore.All or Microsoft.AspNetCore.App.
+                    // This turns out not to be a good practice for Lambda because it makes the package bundle require the latest version of these packages
+                    // that is installed on the dev/build box regardless of what is supported in Lambda. To avoid deployment failure confusion we will require the version attribute
+                    // be set so we can verify compatiblity.
+                    if (string.Equals(packageVersion, NO_VERSION, StringComparison.OrdinalIgnoreCase))
+                    {
+                        var message = $"Project is referencing {packageName} without specifying a version. A version is required to ensure compatiblity with the supported versions of {packageName} " +
+                            $"in the Lambda compute environment. Edit the PackageReference for {packageName} in your project file to include a Version attribute.";
+
+                        if(!string.IsNullOrEmpty(results.Item2))
+                        {
+                            message += "  The latest version supported in Lambda is {results.Item2}.";
+                        }
+                        throw new LambdaToolsException(message,
+                            LambdaToolsException.LambdaErrorCode.AspNetCoreAllValidation);
+                    }
+
+                    // project specified version is supported.
+                    if (results.Item1)
+                    {
+                        return;
+                    }
+
+
+                    if(packageVersion.StartsWith("2.0", StringComparison.OrdinalIgnoreCase))
+                    {
+                        throw new LambdaToolsException($"Project is referencing version {packageVersion} of {packageName}. The minimum supported version is 2.1.0 for the .NET Core 2.1 Lambda runtime.",
+                            LambdaToolsException.LambdaErrorCode.AspNetCoreAllValidation);
+                    }
+
+                    throw new LambdaToolsException($"Project is referencing version {packageVersion} of {packageName} which is newer " +
+                        $"than {results.Item2}, the latest version available in the Lambda Runtime environment. Please update your project to " +
+                        $"use version {results.Item2} and then redeploy your Lambda function.",
+                        LambdaToolsException.LambdaErrorCode.AspNetCoreAllValidation);
+                }
             }
             catch (LambdaToolsException)
             {
                 throw;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger?.WriteLine($"Unknown error validating version of {ASPNET_CORE_ALL}: {e.Message}");
             }
@@ -181,7 +266,7 @@ namespace Amazon.Lambda.Tools
             logger?.WriteLine($"Processing {substitutions.Count} substitutions.");
             var root = JsonConvert.DeserializeObject(templateBody) as JObject;
 
-            foreach(var kvp in substitutions)
+            foreach (var kvp in substitutions)
             {
                 logger?.WriteLine($"Processing substitution: {kvp.Key}");
                 var token = root.SelectToken(kvp.Key);
@@ -204,14 +289,14 @@ namespace Amazon.Lambda.Tools
 
                 try
                 {
-                    switch(token.Type)
+                    switch (token.Type)
                     {
                         case JTokenType.String:
                             ((JValue)token).Value = replacementValue;
                             break;
                         case JTokenType.Boolean:
                             bool b;
-                            if(bool.TryParse(replacementValue, out b))
+                            if (bool.TryParse(replacementValue, out b))
                             {
                                 ((JValue)token).Value = b;
                             }
@@ -219,7 +304,7 @@ namespace Amazon.Lambda.Tools
                             {
                                 throw new LambdaToolsException($"Failed to convert {replacementValue} to a bool", LambdaToolsException.LambdaErrorCode.ServerlessTemplateSubstitutionError);
                             }
-                            
+
                             break;
                         case JTokenType.Integer:
                             int i;
@@ -252,7 +337,7 @@ namespace Amazon.Lambda.Tools
                             {
                                 subData = JsonConvert.DeserializeObject(replacementValue) as JToken;
                             }
-                            catch(Exception e)
+                            catch (Exception e)
                             {
                                 throw new LambdaToolsException($"Failed to parse substitue JSON data: {e.Message}", LambdaToolsException.LambdaErrorCode.ServerlessTemplateSubstitutionError);
                             }
@@ -261,11 +346,11 @@ namespace Amazon.Lambda.Tools
                         default:
                             throw new LambdaToolsException($"Unable to determine how to convert substitute value into the template. " +
                                                             "Make sure to have a default value in the template which is used to determine the type. " +
-                                                            "For example \"\" for string fields or {} for JSON objects.", 
+                                                            "For example \"\" for string fields or {} for JSON objects.",
                                                             LambdaToolsException.LambdaErrorCode.ServerlessTemplateSubstitutionError);
                     }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     throw new LambdaToolsException($"Error setting property {kvp.Key} with value {kvp.Value}: {e.Message}", LambdaToolsException.LambdaErrorCode.ServerlessTemplateSubstitutionError);
                 }
@@ -310,9 +395,9 @@ namespace Amazon.Lambda.Tools
             }
 
             var resources = root["Resources"];
-            if(resources == null)
+            if (resources == null)
                 throw new LambdaToolsException("CloudFormation template does not define any AWS resources", LambdaToolsException.LambdaErrorCode.ServerlessTemplateMissingResourceSection);
-            
+
 
             foreach (var field in resources.PropertyNames)
             {
@@ -346,51 +431,55 @@ namespace Amazon.Lambda.Tools
         public static string UpdateCodeLocationInYamlTemplate(string templateBody, string s3Bucket, string s3Key)
         {
             var s3Url = $"s3://{s3Bucket}/{s3Key}";
-            var deserialize = new YamlDotNet.Serialization.Deserializer();
 
-            var root = deserialize.Deserialize(new StringReader(templateBody)) as Dictionary<object, object>;
+            // Setup the input
+            var input = new StringReader(templateBody);
+
+            // Load the stream
+            var yaml = new YamlStream();
+            yaml.Load(input);
+
+            // Examine the stream
+            var root = (YamlMappingNode)yaml.Documents[0].RootNode;
+
             if (root == null)
                 return templateBody;
 
-            if (!root.ContainsKey("Resources"))
+            var resourcesKey = new YamlScalarNode("Resources");
+
+            if (!root.Children.ContainsKey(resourcesKey))
                 return templateBody;
 
-            var resources = root["Resources"] as IDictionary<object, object>;
+            var resources = (YamlMappingNode)root.Children[resourcesKey];
 
-
-            foreach(var kvp in resources)
+            foreach (var resource in resources.Children)
             {
-                var resource = kvp.Value as IDictionary<object, object>;
-                if (resource == null)
-                    continue;
+                var resourceBody = (YamlMappingNode)resource.Value;
+                var type = (YamlScalarNode)resourceBody.Children[new YamlScalarNode("Type")];
+                var properties = (YamlMappingNode)resourceBody.Children[new YamlScalarNode("Properties")];
 
-                if (!resource.ContainsKey("Properties"))
-                    continue;
-                var properties = resource["Properties"] as IDictionary<object, object>;
+                if (properties == null) continue;
+                if (type == null) continue;
 
-
-                if (!resource.ContainsKey("Type"))
-                    continue;
-
-                var type = resource["Type"]?.ToString();
-                if (string.Equals(type, "AWS::Serverless::Function", StringComparison.Ordinal))
+                if (string.Equals(type?.Value, "AWS::Serverless::Function", StringComparison.Ordinal))
                 {
-                    properties["CodeUri"] = s3Url;
+                    properties.Children.Remove(new YamlScalarNode("CodeUri"));
+                    properties.Add("CodeUri", s3Url);
                 }
-
-                if (string.Equals(type, "AWS::Lambda::Function", StringComparison.Ordinal))
+                else if (string.Equals(type?.Value, "AWS::Lambda::Function", StringComparison.Ordinal))
                 {
-                    var code = new Dictionary<object, object>();
-                    code["S3Bucket"] = s3Bucket;
-                    code["S3Key"] = s3Key;
-                    properties["Code"] = code;
+                    properties.Children.Remove(new YamlScalarNode("Code"));
+                    var code = new YamlMappingNode();
+                    code.Add("S3Bucket", s3Bucket);
+                    code.Add("S3Key", s3Key);
+
+                    properties.Add("Code", code);
                 }
             }
+            var myText = new StringWriter();
+            yaml.Save(myText);
 
-            var serializer = new Serializer();
-            var updatedTemplateBody = serializer.Serialize(root);
-
-            return updatedTemplateBody;
+            return myText.ToString();
         }
 
 
@@ -401,6 +490,98 @@ namespace Amazon.Lambda.Tools
                 return TemplateFormat.Json;
 
             return TemplateFormat.Yaml;
+        }
+
+        /// <summary>
+        /// If the template is a JSON document get the list of parameters to make sure the passed in parameters are valid for the template.
+        /// </summary>
+        /// <param name="templateBody"></param>
+        /// <returns></returns>
+        internal static List<Tuple<string, bool>> GetTemplateDefinedParameters(string templateBody)
+        {
+            if (templateBody.Trim().StartsWith("{"))
+                return GetJsonTemplateDefinedParameters(templateBody);
+            else
+                return GetYamlTemplateDefinedParameters(templateBody);
+        }
+
+        private static List<Tuple<string, bool>> GetJsonTemplateDefinedParameters(string templateBody)
+        {
+            try
+            {
+                var root = Newtonsoft.Json.JsonConvert.DeserializeObject(templateBody) as JObject;
+                if (root == null)
+                    return null;
+
+                var parameters = root["Parameters"] as JObject;
+
+                var parms = new List<Tuple<string, bool>>();
+                if (parameters == null)
+                    return parms;
+
+                foreach (var property in parameters.Properties())
+                {
+                    var noEcho = false;
+                    var prop = parameters[property.Name] as JObject;
+                    if (prop != null && prop["NoEcho"] != null)
+                    {
+                        noEcho = Boolean.Parse(prop["NoEcho"].ToString());
+                    }
+
+                    parms.Add(new Tuple<string, bool>(property.Name, noEcho));
+                }
+
+                return parms;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private static List<Tuple<string, bool>> GetYamlTemplateDefinedParameters(string templateBody)
+        {
+            try
+            {
+                var yaml = new YamlStream();
+                yaml.Load(new StringReader(templateBody));
+
+                // Examine the stream
+                var root = (YamlMappingNode)yaml.Documents[0].RootNode;
+                if (root == null)
+                    return null;
+
+                var parms = new List<Tuple<string, bool>>();
+
+                var parametersKey = new YamlScalarNode("Parameters");
+                if (!root.Children.ContainsKey(parametersKey))
+                    return parms;
+
+                var parameters = (YamlMappingNode)root.Children[parametersKey];
+
+                var noEchoKey = new YamlScalarNode("NoEcho");
+
+                foreach (var parameter in parameters.Children)
+                {
+                    var parameterBody = parameter.Value as YamlMappingNode;
+                    if (parameterBody == null)
+                        continue;
+
+                    var noEcho = false;
+                    if(parameterBody.Children.ContainsKey(noEchoKey))
+                    {
+                        noEcho = bool.Parse(parameterBody.Children[noEchoKey].ToString());
+                    }
+
+                    parms.Add(new Tuple<string, bool>(parameter.Key.ToString(), noEcho));
+                }
+
+                return parms;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

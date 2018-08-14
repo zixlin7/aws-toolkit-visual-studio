@@ -43,9 +43,11 @@ namespace Amazon.Lambda.Tools
             string lambdaRuntimePackageStoreManifestContent = null;
             var computedProjectLocation = Utilities.DetermineProjectLocation(workingDirectory, projectLocation);
 
+            var packageStoreManifest = LambdaUtilities.LoadPackageStoreManifest(logger, targetFramework);
+
             if (!disableVersionCheck)
             {
-                LambdaUtilities.ValidateMicrosoftAspNetCoreAllReference(logger, computedProjectLocation, out lambdaRuntimePackageStoreManifestContent);
+                LambdaUtilities.ValidateMicrosoftAspNetCoreAllReferenceFromProjectPath(logger, targetFramework, packageStoreManifest, computedProjectLocation);
             }
 
             var cli = new LambdaDotNetCLIWrapper(logger, workingDirectory);
@@ -53,7 +55,7 @@ namespace Amazon.Lambda.Tools
             publishLocation = Utilities.DeterminePublishLocation(workingDirectory, projectLocation, configuration, targetFramework);
             logger?.WriteLine("Executing publish command");
             if (cli.Publish(defaults, projectLocation, publishLocation, targetFramework, configuration, msbuildParameters, lambdaRuntimePackageStoreManifestContent) != 0)
-                return false;
+                throw new LambdaToolsException("Failed to publish Lambda Function with dotnet cli", LambdaToolsException.LambdaErrorCode.LambdaCliPublish);
 
             var buildLocation = Utilities.DetermineBuildLocation(workingDirectory, projectLocation, configuration, targetFramework);
 
