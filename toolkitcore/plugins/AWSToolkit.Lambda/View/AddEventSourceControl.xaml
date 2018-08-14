@@ -182,7 +182,7 @@
                 Margin="15,5,5,5"
                 VerticalAlignment="Center"
                 Style="{DynamicResource awsTextBlockBaseStyle}"
-                ToolTip="Filter events for S3 object starting with this suffix">
+                ToolTip="Filter events for S3 object ending with this suffix">
                 Suffix:
             </TextBlock>
 

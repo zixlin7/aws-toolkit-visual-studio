@@ -81,6 +81,7 @@
   <ItemGroup>
     <Compile Include="LambdaIAMRoleFixUpTests.cs" />
     <Compile Include="PickSolutionStackNameTests.cs" />
+    <Compile Include="RegionEndPointsManagerTestExtension.cs" />
     <Compile Include="ProjectFileUtilitiesTests.cs" />
     <Compile Include="RegionEndPointsManagerTests.cs" />
     <Compile Include="S3FileFetcherTests.cs" />

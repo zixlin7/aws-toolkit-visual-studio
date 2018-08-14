@@ -9,6 +9,7 @@ using Microsoft.Win32;
 
 using log4net;
 
+using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.Runtime.Internal.Settings;
 
 namespace Amazon.AWSToolkit
@@ -173,17 +174,25 @@ namespace Amazon.AWSToolkit
 
         private readonly IS3FileFetcherContentResolver _contentResolver;
 
+        private readonly ISimpleMobileAnalytics _simpleMobileAnalytics;
+
         // ReSharper disable once InconsistentNaming
         private static readonly S3FileFetcher _Instance = new S3FileFetcher();
 
         public S3FileFetcher()
         {
             _contentResolver = new DefaultS3FileFetcherContentResolver(_logger);
+            _simpleMobileAnalytics = SimpleMobileAnalytics.Instance;
         }
 
-        public S3FileFetcher(IS3FileFetcherContentResolver testResolver)
+        public S3FileFetcher(IS3FileFetcherContentResolver testResolver) : this(testResolver, SimpleMobileAnalytics.Instance)
+        {
+        }
+
+        public S3FileFetcher(IS3FileFetcherContentResolver testResolver, ISimpleMobileAnalytics simpleMobileAnalytics)
         {
             _contentResolver = testResolver;
+            _simpleMobileAnalytics = simpleMobileAnalytics;
         }
 
         public static S3FileFetcher Instance
@@ -237,8 +246,8 @@ namespace Amazon.AWSToolkit
             var fileStream = LoadFromConfiguredHostedFilesFolder(filename)                      // registry or folder path set in options dialog
                              ?? LoadFromUserProfileCache(filename, cacheMode)                   // appdata cache folder
                              ?? LoadFromConfiguredHostedFilesUri(filename, out canCacheLocal)   // region: or uri configured location in options dialog
-                             ?? LoadFromUrl(CLOUDFRONT_CONFIG_FILES_LOCATION + filename, out canCacheLocal) // preferred
-                             ?? LoadFromUrl(S3_FALLBACK_LOCATION + filename, out canCacheLocal) // backup preference
+                             ?? LoadFromUrl(CLOUDFRONT_CONFIG_FILES_LOCATION + filename, ResolvedLocation.CloudFront, out canCacheLocal) // preferred
+                             ?? LoadFromUrl(S3_FALLBACK_LOCATION + filename, ResolvedLocation.S3, out canCacheLocal) // backup preference
                              ?? LoadFromUserProfileCache(filename); // everything failed but we have cached so use it anyway as last-but-one resort
 
             // if we got content from an online source, then consider caching it in the user profile
@@ -442,7 +451,7 @@ namespace Amazon.AWSToolkit
         /// <param name="targetUrl"></param>
         /// <param name="cacheLocal"></param>
         /// <returns></returns>
-        private Stream LoadFromUrl(string targetUrl, out bool cacheLocal)
+        private Stream LoadFromUrl(string targetUrl, ResolvedLocation resolvedContentLocation, out bool cacheLocal)
         {
             Stream fileStream = null;
             cacheLocal = false;
@@ -454,18 +463,26 @@ namespace Amazon.AWSToolkit
                 var httpRequest = _contentResolver.ConstructWebRequest(targetUrl);
                 var response = httpRequest.GetResponse() as HttpWebResponse;
                 fileStream = response.GetResponseStream();
+
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.FileFetcherUrlSuccess, targetUrl);
+                _simpleMobileAnalytics.QueueEventToBeRecorded(evnt);
             }
             catch (Exception e)
             {
                 var logMsg = string.Format("Failed to load hosted file {0}", targetUrl);
                 _logger.Error(logMsg, e);
+
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.FileFetcherUrlFailure, targetUrl);
+                _simpleMobileAnalytics.QueueEventToBeRecorded(evnt);
             }
             finally
             {
                 if (fileStream != null)
                 {
                     cacheLocal = true;
-                    ResolvedContentLocation = ResolvedLocation.CloudFront;
+                    ResolvedContentLocation = resolvedContentLocation;
                 }
             }
 
