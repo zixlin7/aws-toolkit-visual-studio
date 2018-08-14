@@ -9,19 +9,21 @@ using Amazon.CloudFormation;
 
 using log4net;
 
+using Amazon.Common.DotNetCli.Tools;
+
 using Amazon.Lambda.Tools;
 using Amazon.Lambda.Tools.Commands;
 
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Account;
 using System.IO;
+using Amazon.AWSToolkit.Lambda.Util;
 
 namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 {
     public class PublishServerlessApplicationWorker
     {
-        const string MOBILEANALYTICS_TYPE = "Serverless";
-
         ILog LOGGER = LogManager.GetLogger(typeof(UploadGenericWorker));
 
         PublishServerlessApplicationWorkerSettings Settings { get; }
@@ -42,6 +44,11 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
         public void Publish()
         {
             var logger = new UploadNETCoreWorker.DeployToolLogger(Helpers);
+
+            var lambdaDeploymentMetrics =
+                new LambdaDeploymentMetrics(LambdaDeploymentMetrics.LambdaPublishMethod.Serverless,
+                    Settings.Framework);
+
             try
             {
                 var command = new DeployServerlessCommand(logger, Settings.SourcePath, new string[0]);
@@ -62,47 +69,52 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
                 if (command.ExecuteAsync().Result)
                 {
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentSuccess, string.Concat(MOBILEANALYTICS_TYPE, "-", command.TargetFramework));
-                    evnt.AddProperty(AttributeKeys.LambdaFunctionTargetFramework, command.TargetFramework);
+                    var lambdaDeploymentProperties = new LambdaDeploymentMetrics.LambdaDeploymentProperties
+                    {
+                        TargetFramework = command.TargetFramework
+                    };
 
-                    var zipArchivePath = Path.Combine(Settings.SourcePath, "bin", Settings.Configuration, Settings.Framework, new DirectoryInfo(Settings.SourcePath).Name + ".zip");
+                    var zipArchivePath = Path.Combine(Settings.SourcePath, "bin", Settings.Configuration,
+                        Settings.Framework, new DirectoryInfo(Settings.SourcePath).Name + ".zip");
                     if (File.Exists(zipArchivePath))
                     {
-                        long size = new FileInfo(zipArchivePath).Length;
-                        evnt.AddProperty(MetricKeys.LambdaDeploymentBundleSize, size);
+                        lambdaDeploymentProperties.BundleSize = new FileInfo(zipArchivePath).Length;
                     }
 
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                    lambdaDeploymentMetrics.QueueDeploymentSuccess(lambdaDeploymentProperties);
 
                     this.Helpers.PublishServerlessAsyncCompleteSuccess(this.Settings);
                 }
                 else
                 {
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentError, MOBILEANALYTICS_TYPE);
                     if (command.LastToolsException != null)
                     {
-                        if (string.IsNullOrEmpty(command.LastToolsException.ServiceCode))
-                            evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentErrorDetail, $"{command.LastToolsException.Code}");
-                        else
-                            evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentErrorDetail, $"{command.LastToolsException.Code}-{command.LastToolsException.ServiceCode}");
+                        throw command.LastToolsException;
                     }
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
-                    this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
+                    else
+                    {
+                        throw new ToolkitException("Failed to publish AWS Serverless application",
+                            ToolkitException.CommonErrorCode.UnexpectedError);
+                    }
                 }
-
+            }
+            catch (ToolsException e)
+            {
+                lambdaDeploymentMetrics.QueueDeploymentFailure(e.Code, e.ServiceCode);
+                this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
+            }
+            catch (ToolkitException e)
+            {
+                logger.WriteLine(e.Message);
+                lambdaDeploymentMetrics.QueueDeploymentFailure(e.Code, e.ServiceErrorCode, e.ServiceStatusCode);
+                this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
             }
             catch (Exception e)
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentError, MOBILEANALYTICS_TYPE);
-
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
+                logger.WriteLine(e.Message);
                 LOGGER.Error("Error publishing AWS Serverless application.", e);
-                this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application: " + e.Message);
+                lambdaDeploymentMetrics.QueueDeploymentFailure(ToolkitException.CommonErrorCode.UnexpectedError.ToString(), null);
+                this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
             }
         }
     }

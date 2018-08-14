@@ -80,6 +80,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LambdaIAMRoleFixUpTests.cs" />
+    <Compile Include="PickSolutionStackNameTests.cs" />
+    <Compile Include="RegionEndPointsManagerTestExtension.cs" />
     <Compile Include="ProjectFileUtilitiesTests.cs" />
     <Compile Include="RegionEndPointsManagerTests.cs" />
     <Compile Include="S3FileFetcherTests.cs" />
@@ -97,6 +99,10 @@
     <ProjectReference Include="..\..\toolkitcore\AWSToolkit\AWSToolkit.csproj">
       <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
       <Name>AWSToolkit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk\AWSToolkit.ElasticBeanstalk.csproj">
+      <Project>{aa98ec2e-ac7c-4080-993b-f80592d31037}</Project>
+      <Name>AWSToolkit.ElasticBeanstalk</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj">
       <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>

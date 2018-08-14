@@ -3,6 +3,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.EC2.Model;
+using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.Nodes;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
@@ -331,19 +332,35 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
         string ILambdaFunctionUploadHelpers.CreateRole(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region, string functionName, ManagedPolicy managedPolicy)
         {
             var iamClient = account.CreateServiceClient<AmazonIdentityManagementServiceClient>(region);
+            Role newRole = null;
 
-            var newRole = IAMUtilities.CreateRole(iamClient, "lambda_exec_" + functionName, LambdaConstants.LAMBDA_ASSUME_ROLE_POLICY);
+            try
+            {
+                newRole = IAMUtilities.CreateRole(iamClient, "lambda_exec_" + functionName, LambdaConstants.LAMBDA_ASSUME_ROLE_POLICY);
+            }
+            catch (Exception e)
+            {
+                throw new IamToolkitException($"Error creating IAM Role: {e.Message}", IamToolkitException.IamErrorCode.IamCreateRole, e);
+            }
 
             (this as ILambdaFunctionUploadHelpers).AppendUploadStatus("Created IAM Role {0}", newRole.RoleName);
 
-            if(managedPolicy != null)
+            if (managedPolicy != null)
             {
-                iamClient.AttachRolePolicy(new AttachRolePolicyRequest
+                try
                 {
-                    RoleName = newRole.RoleName,
-                    PolicyArn = managedPolicy.Arn
-                });
-                (this as ILambdaFunctionUploadHelpers).AppendUploadStatus("Attach policy {0} to role {1}", managedPolicy.PolicyName, newRole.RoleName);
+                    iamClient.AttachRolePolicy(new AttachRolePolicyRequest
+                    {
+                        RoleName = newRole.RoleName,
+                        PolicyArn = managedPolicy.Arn
+                    });
+                }
+                catch (Exception e)
+                {
+                    throw new IamToolkitException($"Error attaching IAM Role Policy: {e.Message}", IamToolkitException.IamErrorCode.IamAttachRolePolicy, e);
+                }
+
+                (this as ILambdaFunctionUploadHelpers).AppendUploadStatus("Attached policy {0} to role {1}", managedPolicy.PolicyName, newRole.RoleName);
             }
 
             return newRole.Arn;

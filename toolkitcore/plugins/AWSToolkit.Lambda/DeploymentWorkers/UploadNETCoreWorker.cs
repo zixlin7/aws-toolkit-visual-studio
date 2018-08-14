@@ -11,6 +11,8 @@ using System;
 using System.Threading;
 using Amazon.AWSToolkit.Lambda.Controller;
 using System.IO;
+using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
@@ -28,6 +30,11 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
         public override void UploadFunction(UploadFunctionController.UploadFunctionState uploadState)
         {
             var logger = new DeployToolLogger(this.FunctionUploader);
+
+            var lambdaDeploymentMetrics =
+                new LambdaDeploymentMetrics(LambdaDeploymentMetrics.LambdaPublishMethod.NetCore,
+                    uploadState.Request.Runtime);
+
             try
             {
 
@@ -66,59 +73,67 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 else
                 {
                     command.Role = this.CreateRole(uploadState);
-                    logger.WriteLine(string.Format("Created IAM role {0} with managed policy {1}", command.Role, uploadState.SelectedManagedPolicy.PolicyName));
+                    logger.WriteLine(string.Format("Created IAM role {0} with managed policy {1}", command.Role,
+                        uploadState.SelectedManagedPolicy.PolicyName));
                     logger.WriteLine("Waiting for new IAM Role to propagate to AWS regions");
                     Thread.Sleep(SLEEP_TIME_FOR_ROLE_PROPOGATION);
                 }
 
                 if (command.ExecuteAsync().Result)
                 {
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentSuccess, uploadState.Request.Runtime);
-                    evnt.AddProperty(AttributeKeys.LambdaFunctionTargetFramework, command.TargetFramework);
-                    evnt.AddProperty(AttributeKeys.LambdaFunctionMemorySize, command.MemorySize.GetValueOrDefault().ToString());
-
-                    if(string.Equals(command.TracingMode, TracingMode.Active, StringComparison.OrdinalIgnoreCase))
+                    var lambdaDeploymentProperties = new LambdaDeploymentMetrics.LambdaDeploymentProperties
                     {
-                        evnt.AddProperty(AttributeKeys.XRayEnabled, "Lambda");
+                        TargetFramework = command.TargetFramework,
+                        MemorySize = command.MemorySize.GetValueOrDefault().ToString(),
+
+                    };
+
+                    if (string.Equals(command.TracingMode, TracingMode.Active, StringComparison.OrdinalIgnoreCase))
+                    {
+                        lambdaDeploymentProperties.XRayEnabled = true;
                     }
 
-                    var zipArchivePath = Path.Combine(uploadState.SourcePath, "bin", uploadState.Configuration, uploadState.Framework, new DirectoryInfo(uploadState.SourcePath).Name + ".zip");
-                    if(File.Exists(zipArchivePath))
+                    var zipArchivePath = Path.Combine(uploadState.SourcePath, "bin", uploadState.Configuration,
+                        uploadState.Framework, new DirectoryInfo(uploadState.SourcePath).Name + ".zip");
+                    if (File.Exists(zipArchivePath))
                     {
-                        long size = new FileInfo(zipArchivePath).Length;
-                        evnt.AddProperty(MetricKeys.LambdaDeploymentBundleSize, size);
+                        lambdaDeploymentProperties.BundleSize = new FileInfo(zipArchivePath).Length;
                     }
 
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                    lambdaDeploymentMetrics.QueueDeploymentSuccess(lambdaDeploymentProperties);
 
                     this.FunctionUploader.UploadFunctionAsyncCompleteSuccess(uploadState);
                 }
                 else
                 {
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentError, uploadState.Request.Runtime);
-                    if(command.LastToolsException != null)
+                    if (command.LastToolsException != null)
                     {
-                        if(string.IsNullOrEmpty(command.LastToolsException.ServiceCode))
-                            evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentErrorDetail, $"{command.LastToolsException.Code}");
-                        else
-                            evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentErrorDetail, $"{command.LastToolsException.Code}-{command.LastToolsException.ServiceCode}");
+                        throw command.LastToolsException;
                     }
-
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
-                    this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading function");
+                    else
+                    {
+                        throw new ToolkitException("Failed to deploy Lambda Function", ToolkitException.CommonErrorCode.UnexpectedError);
+                    }
                 }
             }
-            catch(Exception e)
-            {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentError, uploadState.Request.Runtime);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
+            catch (ToolsException e)
+            {
+                lambdaDeploymentMetrics.QueueDeploymentFailure(e.Code, e.ServiceCode);
+                this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading function");
+            }
+            catch (ToolkitException e)
+            {
+                logger.WriteLine(e.Message);
+                lambdaDeploymentMetrics.QueueDeploymentFailure(e.Code, e.ServiceErrorCode, e.ServiceStatusCode);
+                this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading function");
+            }
+            catch (Exception e)
+            {
+                logger.WriteLine(e.Message);
                 LOGGER.Error("Error uploading Lambda function.", e);
-                this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading function: " + e.Message);
+                lambdaDeploymentMetrics.QueueDeploymentFailure(ToolkitException.CommonErrorCode.UnexpectedError.ToString(), null);
+                this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading function");
             }
         }
 

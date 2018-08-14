@@ -21,6 +21,9 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         WebApplicationBuildSuccess,
         WebApplicationBuildError,
 
+        FileFetcherUrlSuccess,
+        FileFetcherUrlFailure,
+
         CloudFormationNewProject,
         LambdaNodeJsNewProject,
         LambdaNETCoreNewProject,
@@ -69,7 +72,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         ECSConfiguredELB,
         ECSDeleteService,
 
-        XRayEnabled
+        XRayEnabled,
+        BeanstalkEnhancedHealth
     };
 
     public enum MetricKeys
@@ -90,6 +94,14 @@ namespace Amazon.AWSToolkit.MobileAnalytics
 
         private const string SERVICE_NAME_IDENTIFIER = "Amazon.AWSToolkit.";
         private const string VIEW_NAME_IDENTIFIER = ".View.";
+
+        public IReadOnlyDictionary<string, string> Attributes
+        {
+            get
+            {
+                return _attributes;
+            }
+        }
 
         private Dictionary<string, string> _attributes;
         private Dictionary<string, double> _metrics;
