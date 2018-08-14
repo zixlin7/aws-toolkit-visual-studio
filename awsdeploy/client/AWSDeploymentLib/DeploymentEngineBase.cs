@@ -115,6 +115,11 @@ namespace AWSDeployment
         public bool? EnableXRayDaemon { get; set; }
 
         /// <summary>
+        /// If set to true, the deployment environment will enable Beanstalk Advanced Health
+        /// </summary>
+        public bool? EnableEnhancedHealth { get; set; }
+
+        /// <summary>
         /// The path from the root of the page in the application to be used for healthcheck pings, if load balancing is enabled.
         /// </summary>
         public string ApplicationHealthcheckPath { get; set; }

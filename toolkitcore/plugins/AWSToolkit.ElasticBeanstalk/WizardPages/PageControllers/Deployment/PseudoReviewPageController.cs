@@ -373,6 +373,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                 }
             }
 
+            if (HostingWizard.IsPropertySet(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableEnhancedHealth))
+            {
+                var enableXRay = (bool)HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableEnhancedHealth];
+                if (enableXRay)
+                {
+                    sb.Append("Enable Enhanced Health Monitoring.");
+                }
+            }
+
             if (!isCoreCLRDeployment)
             {
                 IDictionary<string, string> appSettings = null;

@@ -114,6 +114,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
         string _originalHealthCheckUri = "/";
         bool _originalEnable32bitAppPool = false;
         bool _originalEnableXRayDaemon = false;
+        bool _originalEnableEnhancedHealth = false;
 
         bool _needToFetchData;
 
@@ -126,11 +127,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                 if (HostingWizard.IsPropertySet(DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath))
                     _pageUI.IISAppPath = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath] as string;
 
+                DeploymentWizardHelper.ValidBeanstalkOptions validOptions = null;
+
+                var selectedAccount = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
+                var selectedRegion = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
+
                 if (HostingWizard.GetProperty<bool>(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy))
                 {
-                    var selectedAccount = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
-                    var selectedRegion = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
                     var selectedEnvironment = HostingWizard[BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_EnvName] as string;
+                    var applicationName = HostingWizard[DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName] as string;
 
                     if (!string.Equals(selectedAccount.AccountDisplayName, _lastSeenAccount, StringComparison.CurrentCulture)
                         || !string.Equals(selectedRegion.SystemName, _lastSeenRegion, StringComparison.CurrentCulture)
@@ -140,27 +145,40 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                         _lastSeenRegion = selectedRegion.SystemName;
                         _lastSeenEnvironment = selectedEnvironment;
 
-                        var applicationName = HostingWizard[DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName] as string;
                         LoadEnvironmentSettings(selectedAccount, selectedRegion, applicationName, selectedEnvironment);
                     }
+
+                    validOptions = DeploymentWizardHelper.TestForValidOptionsForEnvironnment(DeploymentWizardHelper.GetBeanstalkClient(selectedAccount, selectedRegion), applicationName, selectedEnvironment);
                 }
                 else
                 {
                     _pageUI.ConfigureForEnvironmentType(DeploymentWizardHelper.IsSingleInstanceEnvironment(HostingWizard));
                     // always load versions as we could be deploying a new environment for an existing app; the load will
                     // yield an empty version collection for as-yet-unknown apps
-                    _pageUI.LoadExistingVersions();                    
+                    _pageUI.LoadExistingVersions();
+
+                    var selectedSolutionStack = HostingWizard[BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_SolutionStack] as string;
+                    validOptions = DeploymentWizardHelper.TestForValidOptionsForEnvironnment(DeploymentWizardHelper.GetBeanstalkClient(selectedAccount, selectedRegion), selectedSolutionStack);
                 }
 
-                var xrayAvailable = (bool)HostingWizard.GetProperty(BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_XRayAvailable);
-                _pageUI.SetXRayAvailability(xrayAvailable);
-                if (xrayAvailable)
+                var xrayAvailableInRegion = (bool)HostingWizard.GetProperty(BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_XRayAvailable);
+                _pageUI.SetEnvironmentOptionsAvailability(xrayAvailableInRegion && validOptions.XRay, validOptions.EnhancedHealth);
+                if (xrayAvailableInRegion && validOptions.XRay)
                 {
                     var enableXRayDaemon = false;
                     if (HostingWizard.IsPropertySet(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon))
                         enableXRayDaemon = (bool)HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon];
 
                     _pageUI.EnableXRayDaemon = enableXRayDaemon;
+                }
+                
+                if(validOptions.EnhancedHealth)
+                {
+                    var enableEnhancedHealth = false;
+                    if (HostingWizard.IsPropertySet(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableEnhancedHealth))
+                        enableEnhancedHealth = (bool)HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableEnhancedHealth];
+
+                    _pageUI.EnableEnhancedHealth = enableEnhancedHealth;
                 }
             }
 
@@ -199,6 +217,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                     var healthCheckUri = "/";
                     var enable32Bit = false;
                     var enableXRayDaemon = false;
+                    bool enableEnhancedHealth = false;
                     var isSingleInstanceEnvironment = false;
                     var appSettings = new Dictionary<string, string>();
                     this._originalAppSettings.Clear();
@@ -252,6 +271,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
                                         continue;
                                     }
+
+                                    if (optionSetting.Namespace == "aws:elasticbeanstalk:healthreporting:system")
+                                    {
+                                        if (optionSetting.OptionName == "SystemType" && string.Equals(optionSetting.Value, "enhanced", StringComparison.OrdinalIgnoreCase))
+                                            enableEnhancedHealth = true;
+
+                                        continue;
+                                    }
                                 }
                             }
                         }
@@ -266,6 +293,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
                             this._originalEnableXRayDaemon = enableXRayDaemon;
                             this._pageUI.EnableXRayDaemon = enableXRayDaemon;
+
+                            this._originalEnableEnhancedHealth = enableEnhancedHealth;
+                            this._pageUI.EnableEnhancedHealth = enableEnhancedHealth;
 
                             this._pageUI.ConfigureForEnvironmentType(isSingleInstanceEnvironment);
 
@@ -344,6 +374,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
             HostingWizard[BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_AppOptionsUpdated] = this.HasEnvironmentSettingsChanged;
 
             HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon] = this._pageUI.EnableXRayDaemon;
+            HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableEnhancedHealth] = this._pageUI.EnableEnhancedHealth;
         }
 
         private bool HasEnvironmentSettingsChanged

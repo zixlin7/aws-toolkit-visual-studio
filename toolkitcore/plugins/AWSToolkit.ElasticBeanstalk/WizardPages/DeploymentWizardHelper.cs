@@ -20,11 +20,14 @@ using Amazon.EC2;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.RDS;
+using Amazon.ElasticBeanstalk.Model;
 
+using log4net;
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages
 {
-    internal static class DeploymentWizardHelper
+    public static class DeploymentWizardHelper
     {
+        static ILog LOGGER = LogManager.GetLogger(typeof(DeploymentWizardHelper));
         public static IAmazonElasticBeanstalk GetBeanstalkClient(AccountViewModel accountViewModel, RegionEndPointsManager.RegionEndPoints region)
         {
             var endpoint = region.GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME);
@@ -147,6 +150,83 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages
             // deployments within service organised by accountid: <region, T>
             var accountDeployments = beanstalkDeployments.DeploymentsForAccount(account.SettingsUniqueKey);
             return accountDeployments.ContainsKey(regionSystemName) ? accountDeployments[regionSystemName] : null;
+        }
+
+        internal class ValidBeanstalkOptions
+        {
+            public bool XRay { get; set; }
+            public bool EnhancedHealth { get; set; }
+        }
+
+        internal static ValidBeanstalkOptions TestForValidOptionsForEnvironnment(IAmazonElasticBeanstalk beanstalkClient, string solutionStack)
+        {
+            return TestForValidOptionsForEnvironnment(beanstalkClient, new DescribeConfigurationOptionsRequest { SolutionStackName = solutionStack });
+        }
+
+        internal static ValidBeanstalkOptions TestForValidOptionsForEnvironnment(IAmazonElasticBeanstalk beanstalkClient, string applicationName, string environmentName)
+        {
+            return TestForValidOptionsForEnvironnment(beanstalkClient, new DescribeConfigurationOptionsRequest { ApplicationName = applicationName, EnvironmentName = environmentName });
+        }
+
+        private static ValidBeanstalkOptions TestForValidOptionsForEnvironnment(IAmazonElasticBeanstalk beanstalkClient, DescribeConfigurationOptionsRequest request)
+        {
+            var results = new ValidBeanstalkOptions();
+
+            try
+            {
+                var xrayOption = new OptionSpecification
+                {
+                    Namespace = "aws:elasticbeanstalk:xray",
+                    OptionName = "XRayEnabled"
+                };
+                request.Options.Add(xrayOption);
+
+                var enhancedHealthOption = new OptionSpecification
+                {
+                    Namespace = "aws:elasticbeanstalk:healthreporting:system",
+                    OptionName = "SystemType"
+                };
+                request.Options.Add(enhancedHealthOption);
+
+                var response = beanstalkClient.DescribeConfigurationOptions(request);
+
+                results.XRay = response.Options.FirstOrDefault(x => string.Equals(x.Namespace, xrayOption.Namespace, StringComparison.OrdinalIgnoreCase) && string.Equals(x.Name, xrayOption.OptionName, StringComparison.OrdinalIgnoreCase)) != null;
+                results.EnhancedHealth = response.Options.FirstOrDefault(x => string.Equals(x.Namespace, enhancedHealthOption.Namespace, StringComparison.OrdinalIgnoreCase) && string.Equals(x.Name, enhancedHealthOption.OptionName, StringComparison.OrdinalIgnoreCase)) != null;
+            }
+            catch (Exception e)
+            {
+                LOGGER.ErrorFormat("Test for valid options in environment returned error {0}", e.Message);
+            }
+
+            return results;
+        }
+
+        public const string DEFALT_SOLUTION_STACK_NAME_PREFIX = "64bit Windows Server 2016 v";
+        public static string PickDefaultSolutionStack(IEnumerable<string> existingSolutionStacks)
+        {
+            string defaultStack = null;
+            Version currentVersion = null;
+
+            foreach(var stackName in existingSolutionStacks)
+            {
+                if(stackName.StartsWith(DEFALT_SOLUTION_STACK_NAME_PREFIX, StringComparison.OrdinalIgnoreCase))
+                {
+                    var pos = stackName.IndexOf(' ', DEFALT_SOLUTION_STACK_NAME_PREFIX.Length);
+                    if (pos == -1)
+                        continue;
+
+                    var verionStr = stackName.Substring(DEFALT_SOLUTION_STACK_NAME_PREFIX.Length, pos - DEFALT_SOLUTION_STACK_NAME_PREFIX.Length);
+                    Version ver;
+                    if(Version.TryParse(verionStr, out ver) && (currentVersion == null || currentVersion < ver))
+                    {
+                        currentVersion = ver;
+                        defaultStack = stackName;
+                    }
+                }
+            }
+
+
+            return defaultStack ?? existingSolutionStacks.FirstOrDefault();
         }
     }
 }

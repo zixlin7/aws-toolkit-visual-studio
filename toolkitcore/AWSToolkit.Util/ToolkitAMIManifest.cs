@@ -23,8 +23,7 @@ namespace Amazon.AWSToolkit
 
         public enum HostService
         {
-            CloudFormation,
-            ElasticBeanstalk,
+            CloudFormation
         }
 
         public static ToolkitAMIManifest Instance
@@ -92,9 +91,6 @@ namespace Amazon.AWSToolkit
         /// <returns></returns>
         public string QueryWebDeploymentAMI(HostService service, string region, string containerName)
         {
-            if (service == HostService.ElasticBeanstalk)
-                throw new ArgumentException("Only CloudFormation amis are defined at this time.");
-
             string serviceName = ServiceNameFromEnum(service);
             var cfdeployments = from el in _amiManifest.Elements(webDemploymentCategoryValue)
                                 where (string)el.Attribute("service") == serviceName
@@ -119,9 +115,6 @@ namespace Amazon.AWSToolkit
         /// </summary>
         public IEnumerable<ContainerAMI> QueryWebDeploymentContainers(HostService service, string region)
         {
-            if (service == HostService.ElasticBeanstalk)
-                throw new ArgumentException("Only CloudFormation amis are defined at this time.");
-
             string serviceName = ServiceNameFromEnum(service);
             var cfdeployments = from el in _amiManifest.Elements(webDemploymentCategoryValue)
                                 where (string) el.Attribute("service") == serviceName
