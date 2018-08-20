@@ -96,6 +96,7 @@ namespace Amazon.AWSToolkit.VisualStudio
     [AWSCommandLineRegistration(CommandLineToken = awsToolkitPluginsParam, DemandLoad = false, Arguments = 1)]
     [ProvideService(typeof(SAWSToolkitShellProvider))]
     [ProvideEditorFactory(typeof(TemplateEditorFactory), 113)]
+    [ProvideEditorLogicalView(typeof(TemplateEditorFactory), "{7651A703-06E5-11D1-8EBD-00A0C90F26EA}")]
     [ProvideEditorExtension(typeof(TemplateEditorFactory), ".template", 10000, NameResourceID = 113)]
     // need to force load when VS starts for CFN editor project stuff
     [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string)]
