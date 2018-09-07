@@ -13,25 +13,24 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <Style TargetType="{x:Type Grid}">
-                <Setter Property="Margin" Value="0" />
-            </Style>
         </ResourceDictionary>
     </commonui:BaseAWSUserControl.Resources>
     
-    <Grid>
+    <Grid Margin="7">
         <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="100"/>
         </Grid.RowDefinitions>
 
-        <Grid>
+        <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             
-            <Grid Grid.Row="0" Grid.Column="0" Margin="5">
+            <Grid Grid.Row="0" Grid.Column="0" Margin="0 0 5 5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="*"/>
@@ -53,7 +52,12 @@
                         Sample Input
                     </Label>
 
-                    <Button Grid.Column="1" Grid.Row="0" Margin="6,10,10,10" Click="Execute_Click">
+                    <Button 
+                        Grid.Column="1" Grid.Row="0" 
+                        Margin="7 0 0 0"
+                        Width="75" Height="23" 
+                        Click="Execute_Click"
+                        >
                         <WrapPanel>
                             <Image Width="16" Height="16" DataContext="{DynamicResource CommonIcons}" Source="{Binding ExecuteIcon}"/>
                             <TextBlock Margin="4,0,4,0">Invoke</TextBlock>
@@ -63,20 +67,22 @@
                         x:Name="_ctlProgressBar"
                         Grid.Row="0"
                         Grid.Column="2"
-                        Height="10"
-                        Margin="8"
+                        Height="15"
                         Maximum="100"
+                        Margin="7 0 0 0"
                         Visibility="Hidden"
                         Minimum="0" />
 
-                    <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}"
-                        Margin="10, 4,4,4"
+                    <Label Style="{DynamicResource awsLabelBaseStyle}"
+                               Margin="0 7 0 0"
                         Grid.Column="0" Grid.Row="1" VerticalAlignment="Center">
                         Example Requests:
-                    </TextBlock>
+                    </Label>
 
                     <local:SampleEventPicker
                         Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                        Margin="7 0 0 0"
+                        Height="23"
                         x:Name="_ctlSampleEvents"
                         PropertyChanged="_ctlSampleEvents_PropertyChanged"
                         >
@@ -88,6 +94,7 @@
                 <TextBox 
                     Name="_ctlSampleInput"
                 Grid.Row="1"   
+                Margin="0 7 0 0"
                 FontStyle="Italic"
                 TextWrapping="Wrap"
                 AcceptsReturn="True"
@@ -98,7 +105,23 @@
                 </TextBox>
             </Grid>
 
-            <Grid Grid.Row="0" Grid.Column="1" Margin="5">
+            <!-- TODO : This vertical GridSplitter has a horizontal ellipses due to the default styling in Brushes.xaml.
+            Unfortunately, that styling handles horizontal splitters, not vertical splitters. Investigate/fix.
+            That is also why properties like Cursor and Background are explicitly set here.
+            -->
+            <GridSplitter 
+                Grid.Row="0"
+                Grid.Column="1"
+                Width="5"
+                Height="Auto"
+                ResizeDirection="Columns"
+                ResizeBehavior="PreviousAndNext"
+                HorizontalAlignment="Stretch"
+                Cursor="SizeWE"
+                Background="LightGray"
+                />
+
+            <Grid Grid.Row="0" Grid.Column="2" Margin="5 0 0 5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="*"/>
@@ -118,8 +141,9 @@
                     <Button Grid.Column="1" 
                             IsEnabled="False" 
                             Name="_ctlPrettyPrint" 
-                            Margin="10" 
+                            Margin="7 0 0 0"
                             Padding="4,0,4,0" 
+                            MinWidth="75" Height="23" 
                             Click="PrettyPrint_Click"
                             >JSON Pretty Print
                     </Button>
@@ -127,6 +151,7 @@
 
                 <TextBox 
                 Grid.Row="1"  
+                Margin="0 7 0 0"
                 Name="_ctlResponse"
                 FontStyle="Italic"
                 TextWrapping="Wrap"
@@ -141,7 +166,14 @@
 
         </Grid>
 
-        <Grid Grid.Row="1" Margin="5">
+        <GridSplitter
+            Grid.Row="1"
+            Height="5"
+            HorizontalAlignment="Stretch"
+            Background="LightGray"
+            />
+
+        <Grid Grid.Row="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
@@ -154,6 +186,7 @@
 
             <TextBox 
                 Grid.Row="1" 
+                Margin="0 5 0 0"
                 Name="_ctlLogOutput"
                 FontStyle="Italic"
                 TextWrapping="Wrap"
