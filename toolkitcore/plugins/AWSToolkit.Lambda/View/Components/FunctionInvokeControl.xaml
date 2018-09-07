@@ -75,14 +75,13 @@
                         Example Requests:
                     </TextBlock>
 
-                    <ComboBox Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Margin="4"
-                              Style="{DynamicResource awsComboBoxStyle}"
-                              Name="_ctlExampleRequests"
-                              SelectionChanged="_ctlExampleRequests_SelectionChanged"
-                              >
-                        
-                    </ComboBox>
+                    <local:SampleEventPicker
+                        Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+                        x:Name="_ctlSampleEvents"
+                        PropertyChanged="_ctlSampleEvents_PropertyChanged"
+                        >
 
+                    </local:SampleEventPicker>
 
                 </Grid>
 
