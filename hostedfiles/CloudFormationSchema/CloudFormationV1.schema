@@ -439,6 +439,23 @@
             "type": "String",
             "required": true,
             "description": "The name of the broker. This value must be unique in your AWS account, 1-50 characters long, must contain only letters, numbers, dashes, and underscores, and must not contain whitespaces, brackets, wildcard characters, or special characters."
+          },
+          "Logs": {
+            "type": "Object",
+            "required": false,
+            "description": "The list of information about logs currently enabled and pending to be deployed for the specified broker.",
+            "properties": {
+              "Audit": {
+                "type": "Boolean",
+                "required": false,
+                "description": "Enables audit logging. Every user management action made using JMX or the ActiveMQ Web Console is logged."
+              },
+              "General": {
+                "type": "Boolean",
+                "required": false,
+                "description": "Enables general logging."
+              }
+            }
           }
         }
       },
@@ -2422,7 +2439,8 @@
           "KeyId": {
             "type": "String",
             "required": true,
-            "description": "The ID of the usage plan key."
+            "description": "The ID of the usage plan key.",
+            "resource-ref-type": "AWS::ApiGateway::ApiKey"
           },
           "KeyType": {
             "type": "String",
@@ -2435,7 +2453,8 @@
           "UsagePlanId": {
             "type": "String",
             "required": true,
-            "description": "The value of the usage plan key."
+            "description": "The value of the usage plan key.",
+            "resource-ref-type": "AWS::ApiGateway::UsagePlan"
           }
         }
       },
@@ -3789,6 +3808,30 @@
             "required": false,
             "description": "The Amazon Resource Name (ARN) of the service-linked role that the Auto Scaling group uses to call other AWS services on your behalf. ",
             "resource-ref-type": "AWS::IAM::Role"
+          },
+          "LaunchTemplate": {
+            "type": "Object",
+            "required": false,
+            "description": "The launch template to use to launch instances.",
+            "properties": {
+              "LaunchTemplateId": {
+                "type": "String",
+                "required": false,
+                "description": "The ID of the launch template. You must specify either a template ID or a template name.",
+                "resource-ref-type": "AWS::EC2::LaunchTemplate"
+              },
+              "LaunchTemplateName": {
+                "type": "String",
+                "required": false,
+                "description": "The name of the launch template. You must specify either a template name or a template ID.",
+                "resource-ref-type": "AWS::EC2::LaunchTemplate"
+              },
+              "Version": {
+                "type": "String",
+                "required": false,
+                "description": "The version number."
+              }
+            }
           }
         }
       },
@@ -7713,6 +7756,16 @@
                   "NO_ARTIFACTS"
                 ],
                 "description": "The type of build output artifact."
+              },
+              "OverrideArtifactName": {
+                "type": "Boolean",
+                "required": false,
+                "description": "If set to true a name specified in the buildspec file overrides the artifact name."
+              },
+              "EncryptionDisabled": {
+                "type": "Boolean",
+                "required": false,
+                "description": "If set to true, then the build output artifacts are not encrypted."
               }
             }
           },
@@ -8801,6 +8854,12 @@
     "type": "Object",
     "required": false,
     "description": "The AWS::CodePipeline::Pipeline resource creates an AWS CodePipeline pipeline that describes how software changes go through a release process.",
+    "return-values": [
+      {
+        "name": "Version",
+        "description": "The version of the pipeline."
+      }
+    ],
     "properties": {
       "Type": {
         "type": "String",
@@ -11014,6 +11073,18 @@
             "type": "Json",
             "required": false,
             "description": "A map of tags to associate with the DAX cluster."
+          },
+          "SSESpecification": {
+            "type": "Object",
+            "required": false,
+            "description": "Whether server-side encryption is enabled or not.",
+            "properties": {
+              "SSEEnabled": {
+                "type": "Boolean",
+                "required": false,
+                "description": "Whether server-side encryption is enabled or not."
+              }
+            }
           }
         }
       },
@@ -16285,6 +16356,72 @@
                   "request",
                   "maintain"
                 ]
+              },
+              "LaunchTemplateConfigs": {
+                "type": "Array",
+                "array-type": "Object",
+                "required": false,
+                "description": "Describes a launch template and overrides.",
+                "properties": {
+                  "LaunchTemplateSpecification": {
+                    "type": "Object",
+                    "required": false,
+                    "description": "The launch template.",
+                    "properties": {
+                      "LaunchTemplateId": {
+                        "type": "String",
+                        "required": false,
+                        "description": "The ID of the launch template. You must specify either a template ID or a template name.",
+                        "resource-ref-type": "AWS::EC2::LaunchTemplate"
+                      },
+                      "LaunchTemplateName": {
+                        "type": "String",
+                        "required": false,
+                        "description": "The name of the launch template. You must specify either a template name or a template ID.",
+                        "resource-ref-type": "AWS::EC2::LaunchTemplate"
+                      },
+                      "Version": {
+                        "type": "String",
+                        "required": false,
+                        "description": "The version number. By default, the default version of the launch template is used."
+                      }
+                    }
+                  },
+                  "Overrides": {
+                    "type": "Array",
+                    "array-type": "Object",
+                    "required": false,
+                    "description": "Any parameters that you specify override the same parameters in the launch template.",
+                    "properties": {
+                      "AvailabilityZone": {
+                        "type": "String",
+                        "required": false,
+                        "description": "The Availability Zone in which to launch the instances."
+                      },
+                      "InstanceType": {
+                        "type": "String",
+                        "required": false,
+                        "description": "The instance type."
+                      },
+                      "SpotPrice": {
+                        "type": "String",
+                        "required": false,
+                        "description": "The maximum price per unit hour that you are willing to pay for a Spot Instance."
+                      },
+                      "SubnetId": {
+                        "type": "String",
+                        "required": false,
+                        "description": "The ID of the subnet in which to launch the instances.",
+                        "resource-ref-type": "AWS::EC2::Subnet"
+                      },
+                      "WeightedCapacity": {
+                        "type": "Number",
+                        "required": false,
+                        "description": "The number of units provided by the specified instance type."
+                      }
+                    }
+                  }
+                }
               }
             }
           }
@@ -17261,6 +17398,66 @@
     }
   }
 ,
+  "AWS::EC2::VPCEndpointServicePermissions": {
+    "type": "Object",
+    "required": false,
+    "description": "Grant or revoke permissions for service consumers (IAM users, IAM roles, and AWS accounts) to connect to the VPC endpoint service.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "Grant or revoke permissions for service consumers (IAM users, IAM roles, and AWS accounts) to connect to the VPC endpoint service."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "AllowedPrincipals": {
+            "type": "Array",
+            "array-type": "String",
+            "required": false,
+            "description": "The Amazon Resource Names (ARN) of one or more principals (IAM users, IAM roles, and AWS accounts)."
+          },
+          "ServiceId": {
+            "type": "String",
+            "required": true,
+            "description": "The ID of the VPC endpoint service."
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "Description": {
+        "type": "String",
+        "required": false,
+        "description": "A description for the CloudFormation resource. This field is ignored when the template is deployed to CloudFormation."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
   "AWS::EC2::VPCGatewayAttachment": {
     "type": "Object",
     "required": false,
@@ -17364,6 +17561,11 @@
             "required": true,
             "resource-ref-type": "AWS::EC2::VPC",
             "description": "The ID of the VPC that is requesting a peering connection."
+          },
+          "PeerRegion": {
+            "type": "String",
+            "required": false,
+            "description": "The region code for the accepter VPC, if the accepter VPC is located in a region other than the region in which you make the request. The default is the region in which you make the request."
           },
           "Tags": {
             "type": "Array",
@@ -18680,6 +18882,21 @@
             "required": false,
             "resource-ref-type": "AWS::KMS::Key",
             "description": "The ID of the AWS KMS customer master key (CMK) to use to protect the encrypted file system."
+          },
+          "ProvisionedThroughputInMibps": {
+            "type": "Number",
+            "required": false,
+            "description": "The throughput, measured in MiB/s, that you want to provision for a file system that you're creating."
+          },
+          "ThroughputMode": {
+            "type": "String",
+            "required": false,
+            "description": "The throughput mode for the file system to be created.",
+            "allowed-values": [
+              "*",
+              "bursting",
+              "provisioned"
+            ]
           },
           "FileSystemTags": {
             "type": "Array",
@@ -22484,6 +22701,38 @@
             "required": false,
             "description": "Indicates how individual EC2 instances terminate when an automatic scale-in activity occurs or an instance group is resized."
           },
+          "KerberosAttributes": {
+            "type": "Object",
+            "required": false,
+            "description": "Attributes for Kerberos configuration when Kerberos authentication is enabled using a security configuration.",
+            "properties": {
+              "ADDomainJoinPassword": {
+                "type": "String",
+                "required": false,
+                "description": "The Active Directory password for ADDomainJoinUser."
+              },
+              "ADDomainJoinUser": {
+                "type": "String",
+                "required": false,
+                "description": "Required only when establishing a cross-realm trust with an Active Directory domain. A user with sufficient privileges to join resources to the domain."
+              },
+              "CrossRealmTrustPrincipalPassword": {
+                "type": "String",
+                "required": false,
+                "description": "Required only when establishing a cross-realm trust with a KDC in a different realm. The cross-realm principal password, which must be identical across realms."
+              },
+              "KdcAdminPassword": {
+                "type": "String",
+                "required": true,
+                "description": "The password used within the cluster for the kadmin service on the cluster-dedicated KDC, which maintains Kerberos principals, password policies, and keytabs for the cluster."
+              },
+              "Realm": {
+                "type": "String",
+                "required": true,
+                "description": "The name of the Kerberos realm to which all nodes in a cluster belong. For example, EC2.INTERNAL."
+              }
+            }
+          },
           "Tags": {
             "type": "Array",
             "array-type": "Object",
@@ -23919,6 +24168,45 @@
                 "description": "The name of the classifier."
               }
             }
+          },
+          "XMLClassifier": {
+            "type": "Object",
+            "required": false,
+            "description": "A classifier for XML content.",
+            "properties": {
+              "RowTag": {
+                "type": "String",
+                "required": true,
+                "description": "The XML tag designating the element that contains each record in an XML document being parsed."
+              },
+              "Classification": {
+                "type": "String",
+                "required": true,
+                "description": "An identifier of the data format that the classifier matches."
+              },
+              "Name": {
+                "type": "String",
+                "required": false,
+                "description": "The name of the classifier."
+              }
+            }
+          },
+          "JsonClassifier": {
+            "type": "Object",
+            "required": false,
+            "description": "A classifier for JSON content.",
+            "properties": {
+              "JsonPath": {
+                "type": "String",
+                "required": true,
+                "description": "A JsonPath string defining the JSON data for the classifier to classify. AWS Glue supports a subset of JsonPath, as described in Writing JsonPath Custom Classifiers."
+              },
+              "Name": {
+                "type": "String",
+                "required": false,
+                "description": "The name of the classifier."
+              }
+            }
           }
         }
       },
@@ -24207,6 +24495,11 @@
             "type": "String",
             "required": false,
             "description": "The name of the crawler."
+          },
+          "Configuration": {
+            "type": "String",
+            "required": false,
+            "description": "Crawler configuration information."
           }
         }
       },
@@ -39268,6 +39561,26 @@
             "required": false,
             "resource-ref-type": "AWS::SNS::Topic",
             "description": "The Amazon Resource Name (ARN) of the topic to subscribe to."
+          },
+          "DeliveryPolicy": {
+            "type": "Json",
+            "required": false,
+            "description": "The JSON serialization of the subscription's delivery policy."
+          },
+          "FilterPolicy": {
+            "type": "Json",
+            "required": false,
+            "description": "The filter policy JSON that is assigned to the subscription."
+          },
+          "RawMessageDelivery": {
+            "type": "Boolean",
+            "required": false,
+            "description": "true if raw message delivery is enabled for the subscription."
+          },
+          "Region": {
+            "type": "String",
+            "required": false,
+            "description": "The region in which the topic resides."
           }
         }
       },
@@ -39551,6 +39864,24 @@
             "required": false,
             "resource-ref-type": "AWS::KMS::Key",
             "description": "The ID of an AWS managed customer master key (CMK) for Amazon SQS or a custom CMK."
+          },
+          "Tags": {
+            "type": "Array",
+            "array-type": "Object",
+            "required": false,
+            "description": "The tags that you want to attach to this queue.",
+            "properties": {
+              "Key": {
+                "type": "String",
+                "required": true,
+                "description": "The key name of the tag."
+              },
+              "Value": {
+                "type": "String",
+                "required": true,
+                "description": "The value for the tag."
+              }
+            }
           }
         }
       },
