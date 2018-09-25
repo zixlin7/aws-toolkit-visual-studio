@@ -21597,6 +21597,10 @@
               "Id": {
                 "type": "String",
                 "required": true,
+                "resource-ref-type": [
+                  "*",
+                  "AWS::EC2::Instance"
+                ],
                 "description": "The ID of the target, such as an EC2 instance ID."
               },
               "Port": {
