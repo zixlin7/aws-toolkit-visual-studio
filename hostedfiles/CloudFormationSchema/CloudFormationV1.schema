@@ -7834,7 +7834,8 @@
                 "required": true,
                 "allowed-values": [
                   "*",
-                  "LINUX_CONTAINER"
+                  "LINUX_CONTAINER",
+                  "WINDOWS_CONTAINER"
                 ],
                 "description": "The type of build environment."
               },
@@ -7881,10 +7882,12 @@
                 "required": true,
                 "allowed-values": [
                   "*",
+                  "CODECOMMIT",
                   "CODEPIPELINE",
                   "S3",
                   "NO_ARTIFACTS",
-                  "GITHUB"
+                  "GITHUB",
+                  "GITHUB_ENTERPRISE"
                 ],
                 "description": "The type of repository that contains your source code."
               },
@@ -17269,7 +17272,7 @@
             "description": "The ID of one or more security groups to associate with the endpoint network interface.",
             "resource-ref-type": "AWS::EC2::SecurityGroup"
           },
-          "VPCEndpointType": {
+          "VpcEndpointType": {
             "type": "String",
             "required": false,
             "description": "The type of endpoint.",
