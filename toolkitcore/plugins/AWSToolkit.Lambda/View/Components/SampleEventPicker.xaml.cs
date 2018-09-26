@@ -31,18 +31,16 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
         /// </summary>
         public void SetSampleEvents(IEnumerable<SampleEvent> sampleEvents)
         {
-            var items = new List<UISampleEventItem>();
-
             // Group events, add them by category
-            foreach (var groupedEvents in sampleEvents
+            var items = sampleEvents
                 .GroupBy(evnt => string.IsNullOrWhiteSpace(evnt.Group) ? "AWS" : evnt.Group)
-                .OrderBy(group => group.Key))
-            {
-                items.Add(new UISampleEventCategory(groupedEvents.Key));
-                items.AddRange(groupedEvents
-                    .OrderBy(evnt => evnt.Name)
-                    .Select(evnt => new UISampleEvent(evnt)));
-            }
+                .OrderBy(group => group.Key)
+                .SelectMany(groupedEvents => 
+                    new UISampleEventItem[] { new UISampleEventCategory(groupedEvents.Key) }
+                        .Concat(groupedEvents
+                            .OrderBy(evnt => evnt.Name)
+                            .Select(evnt => new UISampleEvent(evnt)))
+                );
 
             _ctlCombo.ItemsSource = items;
         }
@@ -59,8 +57,7 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
         // Create the OnPropertyChanged method to raise the event 
         protected void OnPropertyChanged(string name)
         {
-            var handler = PropertyChanged;
-            handler?.Invoke(this, new PropertyChangedEventArgs(name));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         #endregion
