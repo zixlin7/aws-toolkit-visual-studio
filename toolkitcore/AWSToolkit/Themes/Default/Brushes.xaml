@@ -54,6 +54,35 @@
 
     <!-- This style came from http://social.msdn.microsoft.com/forums/en-US/wpf/thread/67687d1d-5bd8-4f25-8c44-2311dd8db67b -->
     <Style TargetType="{x:Type GridSplitter}">
+        <Style.Triggers>
+            <Trigger Property="ResizeDirection" Value="Columns">
+                <Setter Property="Height" Value="Auto"/>
+                <Setter Property="Border.BorderThickness" Value="1,0,0,0" />
+                <Setter Property="Cursor" Value="SizeWE"></Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Border BorderThickness="{TemplateBinding Border.BorderThickness}" BorderBrush="{TemplateBinding Border.BorderBrush}" Background="{TemplateBinding Panel.Background}">
+                                <Border BorderThickness="1,1,0,0" BorderBrush="{DynamicResource awsGridSplitterBackgroundGradientBrushKey}">
+                                    <Canvas Width="3" Height="19">
+                                        <Rectangle Fill="{DynamicResource awsGridSplitterBackgroundGradientBrushKey}" Width="2" Height="2" Canvas.Left="0" Canvas.Top="1" />
+                                        <Rectangle Fill="{DynamicResource awsGridSplitterBackgroundGradientBrushKey}" Width="2" Height="2" Canvas.Left="0" Canvas.Top="5" />
+                                        <Rectangle Fill="{DynamicResource awsGridSplitterBackgroundGradientBrushKey}" Width="2" Height="2" Canvas.Left="0" Canvas.Top="9" />
+                                        <Rectangle Fill="{DynamicResource awsGridSplitterBackgroundGradientBrushKey}" Width="2" Height="2" Canvas.Left="0" Canvas.Top="13" />
+                                        <Rectangle Fill="{DynamicResource awsGridSplitterBackgroundGradientBrushKey}" Width="2" Height="2" Canvas.Left="0" Canvas.Top="17" />
+                                        <Rectangle Fill="{TemplateBinding TextElement.Foreground}" Width="2" Height="2" Canvas.Left="0" Canvas.Top="0" />
+                                        <Rectangle Fill="{TemplateBinding TextElement.Foreground}" Width="2" Height="2" Canvas.Left="0" Canvas.Top="4" />
+                                        <Rectangle Fill="{TemplateBinding TextElement.Foreground}" Width="2" Height="2" Canvas.Left="0" Canvas.Top="8" />
+                                        <Rectangle Fill="{TemplateBinding TextElement.Foreground}" Width="2" Height="2" Canvas.Left="0" Canvas.Top="12" />
+                                        <Rectangle Fill="{TemplateBinding TextElement.Foreground}" Width="2" Height="2" Canvas.Left="0" Canvas.Top="16" />
+                                    </Canvas>
+                                </Border>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
         <Setter Property="Height" Value="8"/>
         <Setter Property="TextElement.Foreground" Value="{DynamicResource awsGridSplitterTextForegroundBrushKey}" />
         <Setter Property="Border.BorderBrush" Value="{DynamicResource awsGridSplitterBorderBrushKey}" />

@@ -1,11 +1,7 @@
 {
   "Records": [
     {
-      "eventId": "5a824061-17ca-46a9-bbf9-114edeadbeef",
-      "eventVersion": "1.0",
-      "eventTime": "2016-01-01T23:59:59.000+0000",
-      "eventTriggerName": "my-trigger",
-      "eventPartNumber": 1,
+      "awsRegion": "{region}",
       "codecommit": {
         "references": [
           {
@@ -14,13 +10,17 @@
           }
         ]
       },
+      "eventId": "5a824061-17ca-46a9-bbf9-114edeadbeef",
       "eventName": "TriggerEventTest",
-      "eventTriggerConfigId": "5a824061-17ca-46a9-bbf9-114edeadbeef",
-      "eventSourceARN": "arn:aws:codecommit:us-east-1:123456789012:my-repo",
-      "userIdentityARN": "arn:aws:iam::123456789012:root",
+      "eventPartNumber": 1,
       "eventSource": "aws:codecommit",
-      "awsRegion": "us-east-1",
-      "eventTotalParts": 1
+      "eventSourceARN": "arn:{partition}:codecommit:{region}:123456789012:my-repo",
+      "eventTime": "2016-01-01T15:59:59-08:00",
+      "eventTotalParts": 1,
+      "eventTriggerConfigId": "5a824061-17ca-46a9-bbf9-114edeadbeef",
+      "eventTriggerName": "my-trigger",
+      "eventVersion": "1.0",
+      "userIdentityARN": "arn:{partition}:iam::123456789012:root"
     }
   ]
 }

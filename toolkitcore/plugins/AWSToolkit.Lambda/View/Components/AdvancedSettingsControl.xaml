@@ -18,276 +18,400 @@
         </ResourceDictionary>
     </commonui:BaseAWSUserControl.Resources>
 
-    <Grid Margin="4">
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="280" />
-            <ColumnDefinition Width="5" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid IsSharedSizeScope="True" Margin="7">
 
-        <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="3*" />
+                </Grid.ColumnDefinitions>
 
-            <Label Grid.Row="0" Style="{DynamicResource awsLabel122PercentStyle}">
-                Execution
-            </Label>
-
-            <TextBlock
-                Grid.Row="1"
-                Grid.Column="0"
-                Margin="8,2,4,2"
-                Style="{DynamicResource awsTextBlockBaseStyle}"
-                Text="Memory (MB):" />
-            <ComboBox
-                Name="_ctlMemory"
-                Grid.Row="1"
-                Grid.Column="1"
-                MinWidth="50"
-                Margin="4"
-                HorizontalAlignment="Left"
-                SelectedIndex="0"
-                SelectedItem="{Binding MemorySize}"
-                Style="{DynamicResource awsComboBoxStyle}"
-                ToolTip="Choose the memory available to your Lambda function. CPU will be assigned proportional to memory. The higher the setting, the more compute resources your code will have, which can improve its execution performance. You can specify memory in 64-MB increments up to 1024 MB. Changing this setting will impact your duration cost." />
-
-            <TextBlock
-                Grid.Row="2"
-                Grid.Column="0"
-                Margin="8,2,4,2"
-                Style="{DynamicResource awsTextBlockBaseStyle}"
-                Text="Timeout (Secs):" />
-            <TextBox
-                Name="_ctlTimeout"
-                Grid.Row="2"
-                Grid.Column="1"
-                MinWidth="50"
-                Margin="4"
-                HorizontalAlignment="Left"
-                PreviewTextInput="PreviewIntTextInput"
-                Style="{DynamicResource awsTextBoxStyle}"
-                Text="{Binding Timeout}"
-                ToolTip="Choose a duration limit for your Lambda function. Lambda will terminate your Lambda function once it executes up to the duration limit. Changing this setting can potentially help you control duration costs." />
-
-            <Label
-                Grid.Row="3"
-                Margin="0,20,0,0"
-                Style="{DynamicResource awsLabel122PercentStyle}">
-                VPC
-            </Label>
-
-            <TextBlock
-                Grid.Row="4"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                Margin="8,2,4,12"
-                FontStyle="Italic"
-                Style="{DynamicResource awsInfoTextStyle}"
-                TextWrapping="Wrap">
-                If your function accesses resources in a VPC, select the list
-                of subnets and security group IDs (these must belong to the same VPC).
-            </TextBlock>
-            <Label
-                Grid.Row="5"
-                Grid.Column="0"
-                Margin="6,2,4,2"
-                VerticalAlignment="Center"
-                Style="{DynamicResource awsLabelBaseStyle}">
-                _VPC Subnets:
-            </Label>
-            <localcomponents:SubnetMultiSelectionControl
-                x:Name="_ctlVpcSubnets"
-                Grid.Row="5"
-                Grid.Column="1"
-                MinWidth="50"
-                Margin="4,2"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Top"
-                Cursor="Wait" />
-
-            <Label
-                Grid.Row="6"
-                Grid.Column="0"
-                Margin="6,2,4,2"
-                VerticalAlignment="Center"
-                Style="{DynamicResource awsLabelBaseStyle}">
-                Security _Groups:
-            </Label>
-
-            <localcomponents:SecurityGroupMultiSelectionControl
-                x:Name="_ctlSecurityGroups"
-                Grid.Row="6"
-                Grid.Column="1"
-                MinWidth="50"
-                Margin="4,2"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Center" />
-
-            <Label 
-                Margin="0,20,0,0"
-                Grid.Row="7" 
-                Style="{DynamicResource awsLabel122PercentStyle}" Grid.ColumnSpan="2">
-                Error Handling
-            </Label>
-
-            <Label
-                    Grid.Row="8"
+                <!-- Execution Panel -->
+                <Grid
+                    Grid.Row="0"
                     Grid.Column="0"
-                    Margin="4,4,4,2"
-                    Style="{DynamicResource awsLabelBaseStyle}">
-                _Dead Letter Queue:
-            </Label>
+                    Grid.ColumnSpan="3"
+                    Margin="0,0,0,7">
 
-            <localcomponents:DLQSelectionControl
-                    x:Name="_ctlDLQ"
-                    Grid.Row="8"
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition SharedSizeGroup="FirstColumn" Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" Grid.ColumnSpan="4" Style="{DynamicResource awsLabel122PercentStyle}">
+                        Execution
+                    </Label>
+
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="8,5,0,0"
+                        Style="{DynamicResource awsTextBlockBaseStyle}"
+                        Text="Handler:" />
+                    <TextBox
+                        Name="_ctlHandler"
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Grid.ColumnSpan="3"
+                        MinWidth="50"
+                        Height="23"
+                        Margin="5,0,0,0"
+                        HorizontalAlignment="Stretch"
+                        Style="{DynamicResource awsTextBoxStyle}"
+                        Text="{Binding Handler}"
+                        ToolTip="{Binding HandlerDescriptionInfo}" />
+
+                    <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Margin="8,5,0,0"
+                        Style="{DynamicResource awsTextBlockBaseStyle}"
+                        Text="Description:" />
+                    <TextBox
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Grid.ColumnSpan="3"
+                        Name="_ctlDescription"
+                        MinHeight="46"
+                        Margin="5,7,0,0"
+                        HorizontalAlignment="Stretch"
+                        Style="{DynamicResource awsTextBoxStyle}"
+                        Text="{Binding Description}"
+                        VerticalScrollBarVisibility="Auto"
+                        TextWrapping="Wrap" />
+
+                    <TextBlock
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Margin="8,5,0,0"
+                        Style="{DynamicResource awsTextBlockBaseStyle}"
+                        Text="Role:" />
+                    <TextBox
+                        Grid.Row="3"
+                        Grid.Column="1"
+                        Grid.ColumnSpan="3"
+                        Margin="5,7,0,0"
+                        Style="{DynamicResource awsSelectableTextBoxStyle}"
+                        Text="{Binding Role}" />
+
+                    <TextBlock
+                        Grid.Row="4"
+                        Grid.Column="0"
+                        Margin="8,5,0,0"
+                        Style="{DynamicResource awsTextBlockBaseStyle}"
+                        Text="Memory (MB):" />
+                    <ComboBox
+                        Name="_ctlMemory"
+                        Grid.Row="4"
+                        Grid.Column="1"
+                        MinWidth="100"
+                        Height="23"
+                        Margin="5,7,0,0"
+                        HorizontalAlignment="Left"
+                        SelectedIndex="0"
+                        SelectedItem="{Binding MemorySize}"
+                        Style="{DynamicResource awsComboBoxStyle}"
+                        ToolTip="Choose the memory available to your Lambda function. CPU will be assigned proportional to memory. The higher the setting, the more compute resources your code will have, which can improve its execution performance. You can specify memory in 64-MB increments. Changing this setting will impact your duration cost." />
+
+                    <TextBlock
+                        Grid.Row="4"
+                        Grid.Column="2"
+                        Margin="8,5,0,0"
+                        Style="{DynamicResource awsTextBlockBaseStyle}"
+                        Text="Timeout (Seconds):" />
+                    <TextBox
+                        Name="_ctlTimeout"
+                        Grid.Row="4"
+                        Grid.Column="3"
+                        MinWidth="100"
+                        Height="23"
+                        Margin="5,7,0,0"
+                        HorizontalAlignment="Left"
+                        PreviewTextInput="PreviewIntTextInput"
+                        Style="{DynamicResource awsTextBoxStyle}"
+                        Text="{Binding Timeout}"
+                        ToolTip="Choose a duration limit for your Lambda function. Lambda will terminate your Lambda function once it executes up to the duration limit. Changing this setting can potentially help you control duration costs." />
+
+                </Grid>
+
+                <!-- Horizontal line under Execution Panel -->
+                <Border
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="3"
+                    BorderBrush="{DynamicResource awsPanelBorderBrushKey}"
+                    BorderThickness="1" />
+
+                <!-- Vertical line between VPC/Error Panels and Environment Panel -->
+                <Border
+                    Grid.Row="1"
+                    Grid.RowSpan="4"
                     Grid.Column="1"
-                    MinWidth="50"
-                    Margin="4,2"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Center" />
-        </Grid>
+                    BorderBrush="{DynamicResource awsPanelBorderBrushKey}"
+                    BorderThickness="1" />
 
-        <Border
-            Grid.Column="1"
-            Margin="2,8,2,2"
-            BorderBrush="{DynamicResource awsPanelBorderBrushKey}"
-            BorderThickness="1" />
+                <!-- VPC Panel -->
+                <Grid Grid.Row="2" Grid.Column="0" Margin="0,0,7,0">
 
-        <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition SharedSizeGroup="FirstColumn" Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+                    <Label
+                        Grid.Row="0"
+                        Grid.ColumnSpan="2"
+                        Style="{DynamicResource awsLabel122PercentStyle}">
+                        VPC
+                    </Label>
 
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Margin="8,2,0,0"
+                        FontStyle="Italic"
+                        Style="{DynamicResource awsInfoTextStyle}"
+                        TextWrapping="Wrap">
+                        If your function accesses resources in a VPC, select the list
+                        of subnets and security group IDs (these must belong to the same VPC).
+                    </TextBlock>
+                    <Label
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Margin="6,5,0,0"
+                        VerticalAlignment="Center"
+                        Style="{DynamicResource awsLabelBaseStyle}">
+                        _VPC Subnets:
+                    </Label>
+                    <localcomponents:SubnetMultiSelectionControl
+                        x:Name="_ctlVpcSubnets"
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        MinWidth="50"
+                        Height="23"
+                        Margin="5,7,0,0"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Top"
+                        Cursor="Wait" />
 
-            <Label
-                Grid.Row="0"
-                Grid.ColumnSpan="2"
-                Style="{DynamicResource awsLabel122PercentStyle}">
-                Environment
-            </Label>
+                    <Label
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Margin="6,5,0,0"
+                        VerticalAlignment="Center"
+                        Style="{DynamicResource awsLabelBaseStyle}">
+                        Security _Groups:
+                    </Label>
 
-            <TextBlock
-                Grid.Row="1"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                Margin="8,0,4,2"
-                FontStyle="Italic"
-                Style="{DynamicResource awsInfoTextStyle}"
-                TextWrapping="Wrap">
-                Environment variables available to your function during execution. An Amazon KMS key can also be
-                used to protect the contents of those variables at rest.
-            </TextBlock>
+                    <localcomponents:SecurityGroupMultiSelectionControl
+                        x:Name="_ctlSecurityGroups"
+                        Grid.Row="3"
+                        Grid.Column="1"
+                        MinWidth="50"
+                        Height="23"
+                        Margin="5,7,0,0"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center" />
+                </Grid>
 
-            <Label
-                Grid.Row="2"
-                Grid.Column="0"
-                Margin="4,4,4,2"
-                Style="{DynamicResource awsLabelBaseStyle}">
-                _KMS Key:
-            </Label>
+                <!-- Horizontal line between VPC and Error Panels -->
+                <Border
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    Margin="0,7,0,0"
+                    BorderBrush="{DynamicResource awsPanelBorderBrushKey}"
+                    BorderThickness="1" />
 
-            <localcomponents:KMSKeySelectorControl
-                x:Name="_ctlKMSKey"
-                Grid.Row="2"
-                Grid.Column="1"
-                Margin="4,2"
-                HorizontalAlignment="Stretch"
-                VerticalAlignment="Center" />
+                <!-- Error Handling Panel -->
+                <Grid Grid.Row="4" Grid.Column="0" Margin="0,0,7,0">
 
-            <commonui:ToolkitDataGridWrapper
-                x:Name="_ctlEnvironmentVariables"
-                Grid.Row="3"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                Margin="6,2,4,0"
-                HorizontalAlignment="Stretch"
-                VerticalContentAlignment="Center"
-                AutoGenerateColumns="False"
-                CanUserAddRows="False"
-                CanUserDeleteRows="False"
-                CanUserSortColumns="False"
-                CellEditEnding="_ctlEnvironmentVariables_CellEditEnding"
-                FrozenColumnCount="1"
-                HeadersVisibility="All"
-                HorizontalScrollBarVisibility="Hidden"
-                ItemsSource="{Binding EnvironmentVariables}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition SharedSizeGroup="FirstColumn" Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
 
-                <commonui:ToolkitDataGridWrapper.Columns>
-                    <DataGridTextColumn
-                        Width="180"
-                        Binding="{Binding Variable, Mode=TwoWay}"
-                        Header="Variable">
-                        <DataGridTextColumn.EditingElementStyle>
-                            <Style TargetType="TextBox" />
-                        </DataGridTextColumn.EditingElementStyle>
-                    </DataGridTextColumn>
+                    <Label
+                        Grid.Row="0"
+                        Style="{DynamicResource awsLabel122PercentStyle}" Grid.ColumnSpan="2">
+                        Error Handling
+                    </Label>
 
-                    <DataGridTextColumn
-                        Width="*"
-                        Binding="{Binding Value, Mode=TwoWay}"
-                        Header="Value">
-                        <DataGridTextColumn.EditingElementStyle>
-                            <Style TargetType="TextBox" />
-                        </DataGridTextColumn.EditingElementStyle>
-                    </DataGridTextColumn>
+                    <Label
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Margin="4,5,0,0"
+                        Style="{DynamicResource awsLabelBaseStyle}">
+                        _Dead Letter Queue:
+                    </Label>
 
-                    <DataGridTemplateColumn Width="20" Header="">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Button x:Name="_removeVariable" Click="RemoveVariable_Click">
-                                        <Image
-                                            Width="16"
-                                            Height="16"
-                                            DataContext="{DynamicResource CommonIcons}"
-                                            Source="{Binding RemoveIcon}" />
-                                    </Button>
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                    <localcomponents:DLQSelectionControl
+                        x:Name="_ctlDLQ"
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        MinWidth="50"
+                        Height="23"
+                        Margin="5,7,0,0"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center" />
+                </Grid>
 
-                </commonui:ToolkitDataGridWrapper.Columns>
+                <!-- Environment Panel -->
+                <Grid Grid.Row="2" Grid.RowSpan="3" Grid.Column="2" Margin="7,0,0,0">
 
-            </commonui:ToolkitDataGridWrapper>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-            <Button
-                Grid.Row="4"
-                Grid.Column="1"
-                Margin="4"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"
-                Click="AddVariable_Click">
-                _Add...
-            </Button>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
 
-        </Grid>
+                    <Label
+                        Grid.Row="0"
+                        Grid.ColumnSpan="2"
+                        Style="{DynamicResource awsLabel122PercentStyle}">
+                        Environment
+                    </Label>
 
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Margin="8,0,0,0"
+                        FontStyle="Italic"
+                        Style="{DynamicResource awsInfoTextStyle}"
+                        TextWrapping="Wrap">
+                        Environment variables available to your function during execution. An Amazon KMS key can also be
+                        used to protect the contents of those variables at rest.
+                    </TextBlock>
+
+                    <Label
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        Margin="4,5,0,0"
+                        Style="{DynamicResource awsLabelBaseStyle}">
+                        _KMS Key:
+                    </Label>
+
+                    <localcomponents:KMSKeySelectorControl
+                        x:Name="_ctlKMSKey"
+                        Grid.Row="2"
+                        Grid.Column="1"
+                        Margin="5,7,0,0"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center" />
+
+                    <commonui:ToolkitDataGridWrapper
+                        x:Name="_ctlEnvironmentVariables"
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Margin="6,7,0,0"
+                        MinHeight="150"
+                        HorizontalAlignment="Stretch"
+                        VerticalContentAlignment="Center"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserSortColumns="False"
+                        CellEditEnding="_ctlEnvironmentVariables_CellEditEnding"
+                        FrozenColumnCount="1"
+                        HeadersVisibility="All"
+                        HorizontalScrollBarVisibility="Hidden"
+                        ItemsSource="{Binding EnvironmentVariables}">
+
+                        <commonui:ToolkitDataGridWrapper.Columns>
+                            <DataGridTextColumn
+                                Width="180"
+                                Binding="{Binding Variable, Mode=TwoWay}"
+                                Header="Variable">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox" />
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding Value, Mode=TwoWay}"
+                                Header="Value">
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox" />
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+
+                            <DataGridTemplateColumn Width="20" Header="">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Button x:Name="_removeVariable" Click="RemoveVariable_Click">
+                                                <Image
+                                                    Width="16"
+                                                    Height="16"
+                                                    DataContext="{DynamicResource CommonIcons}"
+                                                    Source="{Binding RemoveIcon}" />
+                                            </Button>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                        </commonui:ToolkitDataGridWrapper.Columns>
+
+                    </commonui:ToolkitDataGridWrapper>
+
+                    <Button
+                        Grid.Row="4"
+                        Grid.Column="1"
+                        Margin="0,7,0,0"
+                        Height="23"
+                        Width="75"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Click="AddVariable_Click">
+                        _Add...
+                    </Button>
+
+                </Grid>
+
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </commonui:BaseAWSUserControl>

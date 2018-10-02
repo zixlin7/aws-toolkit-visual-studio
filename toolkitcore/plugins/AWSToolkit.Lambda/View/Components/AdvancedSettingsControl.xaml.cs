@@ -28,6 +28,8 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
         {
             InitializeComponent();
 
+            ThemeUtil.UpdateDictionariesForTheme(this.Resources);
+
             FillAdvanceSettingsComboBoxes();
 
 

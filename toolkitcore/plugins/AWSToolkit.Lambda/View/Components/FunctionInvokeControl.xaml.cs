@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -136,11 +137,15 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
                                 Filename = item.Element("filename").Value
                             };
 
-                foreach(var item in query)
-                {
-                    _sampleRequests[item.Name] = item.Filename;
-                    int index = this._ctlExampleRequests.Items.Add(item.Name);
-                }
+                var sampleEvents = from item in xmlDoc.Descendants("request")
+                    select new SampleEvent
+                    {
+                        Group = item.Attribute("category")?.Value ?? string.Empty,
+                        Name = item.Element("name")?.Value ?? string.Empty,
+                        Filename = item.Element("filename")?.Value ?? string.Empty, 
+                    };
+
+                _ctlSampleEvents.SetSampleEvents(sampleEvents);
             }
             catch(Exception e)
             {
@@ -148,24 +153,26 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
             }
         }
 
-        private void _ctlExampleRequests_SelectionChanged(object sender, SelectionChangedEventArgs evnt)
+        private void _ctlSampleEvents_PropertyChanged(object sender, PropertyChangedEventArgs evnt)
         {
+            string content = string.Empty;
+
             try
             {
-                var name = this._ctlExampleRequests.SelectedValue as string;
-                if (string.IsNullOrEmpty(name))
+                var file = this._ctlSampleEvents.SelectedItem?.Filename;
+                if (string.IsNullOrEmpty(file))
                     return;
 
-                string file;
-                if(_sampleRequests.TryGetValue(name, out file))
-                {
-                    var content = S3FileFetcher.Instance.GetFileContent(SAMPLE_REQUESTS_PREFIX + file);
-                    this._ctlSampleInput.Text = content;
-                }
+                content = S3FileFetcher.Instance.GetFileContent(SAMPLE_REQUESTS_PREFIX + file);
             }
             catch (Exception e)
             {
                 LOGGER.Error("Error updating sample input with example.", e);
+                content = string.Empty;
+            }
+            finally
+            {
+                this._ctlSampleInput.Text = content;
             }
         }
 

@@ -133,12 +133,14 @@
     <Compile Include="Model\KeyAndAliasWrapper.cs" />
     <Compile Include="Model\LogStreamWrapper.cs" />
     <Compile Include="Model\RuntimeOption.cs" />
+    <Compile Include="Model\SampleEvent.cs" />
     <Compile Include="Model\ViewControllerModel.cs" />
     <Compile Include="Nodes\LambdaFunctionViewMetaNode.cs" />
     <Compile Include="Nodes\LambdaFunctionViewModel.cs" />
     <Compile Include="Nodes\LambdaRootViewMetaNode.cs" />
     <Compile Include="Nodes\LambdaRootViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\LambdaDeploymentMetrics.cs" />
     <Compile Include="View\AddEventSourceControl.xaml.cs">
       <DependentUpon>AddEventSourceControl.xaml</DependentUpon>
     </Compile>
@@ -163,12 +165,19 @@
     <Compile Include="View\Components\NewS3Bucket.xaml.cs">
       <DependentUpon>NewS3Bucket.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Components\ObjectToTypeConverter.cs" />
+    <Compile Include="View\Components\SampleEventPicker.xaml.cs">
+      <DependentUpon>SampleEventPicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Components\SecurityGroupMultiSelectionControl.xaml.cs">
       <DependentUpon>SecurityGroupMultiSelectionControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\Components\SubnetMultiSelectionControl.xaml.cs">
       <DependentUpon>SubnetMultiSelectionControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Components\UISampleEvent.cs" />
+    <Compile Include="View\Components\UISampleEventCategory.cs" />
+    <Compile Include="View\Components\UISampleEventItem.cs" />
     <Compile Include="View\Components\XRaySetting.xaml.cs">
       <DependentUpon>XRaySetting.xaml</DependentUpon>
     </Compile>
@@ -270,6 +279,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Components\NewS3Bucket.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Components\SampleEventPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

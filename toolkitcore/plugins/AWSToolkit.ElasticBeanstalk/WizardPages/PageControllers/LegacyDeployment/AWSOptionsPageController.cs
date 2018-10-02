@@ -119,7 +119,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyD
                 {
                     // may be same user, but might have gone back and changed template/environment type
                     var stacks = FilterStacksForSingleInstanceEnvironment(_windowsSolutionStacks);
-                    string defaultStackName = ToolkitAMIManifest.Instance.QueryDefaultWebDeploymentContainer(ToolkitAMIManifest.HostService.ElasticBeanstalk);
+                    var defaultStackName = DeploymentWizardHelper.PickDefaultSolutionStack(stacks);
                     _pageUI.SetSolutionStacks(stacks, defaultStackName);
                 }
             }
@@ -263,7 +263,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyD
                 }
 
                 var stacks = FilterStacksForSingleInstanceEnvironment(_windowsSolutionStacks);
-                string defaultStackName = ToolkitAMIManifest.Instance.QueryDefaultWebDeploymentContainer(ToolkitAMIManifest.HostService.ElasticBeanstalk);
+                var defaultStackName = DeploymentWizardHelper.PickDefaultSolutionStack(stacks);
                 _pageUI.SetSolutionStacks(stacks, defaultStackName);
             }
             catch (Exception e)

@@ -32,6 +32,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
 
             public static readonly string propkey_EnableXRayDaemon = "enableXRayDaemon";
 
+            public static readonly string propkey_EnableEnhancedHealth = "enableEnhancedHealth";
+
         }
 
         public static class DeploymentModeProperties

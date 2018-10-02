@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AWSToolkit.Navigator;
 
 using Amazon.Lambda;
@@ -10,7 +12,8 @@ using ICSharpCode.SharpZipLib.Zip;
 
 using log4net;
 using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
-using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.IdentityManagement.Model;
+using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 {
@@ -27,6 +30,10 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
         public override void UploadFunction(UploadFunctionState uploadState)
         {
+            var lambdaDeploymentMetrics =
+                new LambdaDeploymentMetrics(LambdaDeploymentMetrics.LambdaPublishMethod.Generic,
+                    uploadState.Request.Runtime);
+
             string zipFile = null;
             bool deleteZipWhenDone = false;
             try
@@ -80,76 +87,23 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 var existingConfiguration = this.FunctionUploader.GetExistingConfiguration(this.LambdaClient, uploadState.Request.FunctionName);
                 // Add retry logic in case the new IAM role has not propagated yet.
                 const int MAX_RETRIES = 10;
-                for (int i = 0; true; i++)
+                bool publishLambdaSuccess = false;
+                for (int i = 0; !publishLambdaSuccess; i++)
                 {
-                    try
+                    using (var stream = File.OpenRead(zipFile))
                     {
-                        using (var stream = File.OpenRead(zipFile))
+                        using (var ms = new MemoryStream())
                         {
-                            using (var ms = new MemoryStream())
-                            {
-                                stream.CopyTo(ms);
-                                ms.Position = 0;
+                            stream.CopyTo(ms);
+                            ms.Position = 0;
 
-                                if (existingConfiguration == null)
-                                {
-                                    uploadState.Request.Code = new FunctionCode { ZipFile = ms };
-                                    this.LambdaClient.CreateFunction(uploadState.Request);
-                                    break;
-                                }
-                                else
-                                {
-                                    // Check to see if the config for the function changed, if so update the config.
-                                    if (!string.Equals(uploadState.Request.Description, existingConfiguration.Description) ||
-                                        !string.Equals(uploadState.Request.Handler, existingConfiguration.Handler) ||
-                                        uploadState.Request.MemorySize != existingConfiguration.MemorySize ||
-                                        !string.Equals(uploadState.Request.Role, existingConfiguration.Role) ||
-                                        uploadState.Request.Timeout != existingConfiguration.Timeout ||
-                                        uploadState.Request.Environment != null )
-                                    {
-                                        var uploadConfigRequest = new UpdateFunctionConfigurationRequest
-                                        {
-                                            Description = uploadState.Request.Description,
-                                            FunctionName = uploadState.Request.FunctionName,
-                                            Handler = uploadState.Request.Handler,
-                                            MemorySize = uploadState.Request.MemorySize,
-                                            Role = uploadState.Request.Role,
-                                            Timeout = uploadState.Request.Timeout,
-                                            Environment = uploadState.Request.Environment
-                                        };
-                                        this.LambdaClient.UpdateFunctionConfiguration(uploadConfigRequest);
-                                    }
-
-                                    var uploadCodeRequest = new UpdateFunctionCodeRequest
-                                    {
-                                        FunctionName = uploadState.Request.FunctionName,
-                                        ZipFile = ms
-                                    };
-                                    this.LambdaClient.UpdateFunctionCode(uploadCodeRequest);
-                                    break;
-                                }
-                            }
+                            publishLambdaSuccess = CreateOrUpdateFunction(uploadState, existingConfiguration, ms, i,
+                                MAX_RETRIES);
                         }
-                    }
-                    catch (AmazonLambdaException e)
-                    {
-                        if (uploadState.SelectedRole == null &&
-                            e.Message.Contains(LambdaConstants.ERROR_MESSAGE_CANT_BE_ASSUMED))
-                        {
-                            if (i == MAX_RETRIES)
-                                throw;
-
-                            this.FunctionUploader.AppendUploadStatus("New IAM role has not been propagated, retry attempt {0}.", i + 1);
-                            Thread.Sleep(1000);
-                        }
-                        else
-                            throw;
                     }
                 }
 
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentSuccess, uploadState.Request.Runtime);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                lambdaDeploymentMetrics.QueueDeploymentSuccess();
 
                 this.FunctionUploader.AppendUploadStatus("Upload complete.");
 
@@ -157,14 +111,31 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
                 this.FunctionUploader.UploadFunctionAsyncCompleteSuccess(uploadState);
             }
+            catch (ToolkitException e)
+            {
+                this.FunctionUploader.AppendUploadStatus(e.Message);
+                this.FunctionUploader.AppendUploadStatus("Upload stopped.");
+
+                lambdaDeploymentMetrics.QueueDeploymentFailure(e.Code, e.ServiceErrorCode, e.ServiceStatusCode);
+                this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading Lamdba function");
+            }
             catch (Exception e)
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.LambdaFunctionDeploymentError, uploadState.Request.Runtime);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                string serviceCode = null;
+                var serviceException = e as AmazonServiceException;
+                if (serviceException != null)
+                {
+                    serviceCode = $"{serviceException.ErrorCode}-{serviceException.StatusCode}";
+                    this.FunctionUploader.AppendUploadStatus("{0} - {1}", serviceException.ErrorCode, serviceException.StatusCode);
+                }
+
+                this.FunctionUploader.AppendUploadStatus(e.Message);
+                this.FunctionUploader.AppendUploadStatus("Upload stopped.");
 
                 LOGGER.Error("Error uploading Lambda function.", e);
-                this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading Lamdba function: " + e.Message);
+
+                lambdaDeploymentMetrics.QueueDeploymentFailure(ToolkitException.CommonErrorCode.UnexpectedError.ToString(), serviceCode);
+                this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading Lamdba function");
             }
             finally
             {
@@ -172,5 +143,121 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                     File.Delete(zipFile);
             }
         }
+
+        /// <summary>
+        /// Creates a Lambda Function, and if it already exists, Updates it.
+        ///
+        /// An exception is thrown if an issue arrises that isn't related to waiting on IAM
+        /// Permission propagation, or if we have reached the retry attempt limit.
+        /// </summary>
+        /// <returns>
+        /// true: Lambda Creation/Updating was successful
+        /// false: Creation/Updating was not successful, but caller may want to try again
+        /// </returns>
+        private bool CreateOrUpdateFunction(UploadFunctionState uploadState,
+            GetFunctionConfigurationResponse existingConfiguration, MemoryStream lambdaCodeStream, int attempt,
+            int maxAttempts)
+        {
+            if (existingConfiguration == null)
+            {
+                uploadState.Request.Code = new FunctionCode {ZipFile = lambdaCodeStream};
+                try
+                {
+                    this.LambdaClient.CreateFunction(uploadState.Request);
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    if (WaitForIamRolePropagation(uploadState.SelectedRole, e, attempt, maxAttempts))
+                    {
+                        return false;
+                    }
+
+                    throw new LambdaToolkitException(e.Message,
+                        LambdaToolkitException.LambdaErrorCode.LambdaCreateFunction, e);
+                }
+            }
+            else
+            {
+                // Check to see if the config for the function changed, if so update the config.
+                if (!string.Equals(uploadState.Request.Description, existingConfiguration.Description) ||
+                    !string.Equals(uploadState.Request.Handler, existingConfiguration.Handler) ||
+                    uploadState.Request.MemorySize != existingConfiguration.MemorySize ||
+                    !string.Equals(uploadState.Request.Role, existingConfiguration.Role) ||
+                    uploadState.Request.Timeout != existingConfiguration.Timeout ||
+                    uploadState.Request.Environment != null)
+                {
+                    try
+                    {
+                        var uploadConfigRequest = new UpdateFunctionConfigurationRequest
+                        {
+                            Description = uploadState.Request.Description,
+                            FunctionName = uploadState.Request.FunctionName,
+                            Handler = uploadState.Request.Handler,
+                            MemorySize = uploadState.Request.MemorySize,
+                            Role = uploadState.Request.Role,
+                            Timeout = uploadState.Request.Timeout,
+                            Environment = uploadState.Request.Environment
+                        };
+                        this.LambdaClient.UpdateFunctionConfiguration(uploadConfigRequest);
+                    }
+                    catch (Exception e)
+                    {
+                        if (WaitForIamRolePropagation(uploadState.SelectedRole, e, attempt, maxAttempts))
+                        {
+                            return false;
+                        }
+
+                        throw new LambdaToolkitException(e.Message,
+                            LambdaToolkitException.LambdaErrorCode.LambdaUpdateFunctionConfig, e);
+                    }
+                }
+
+                try
+                {
+                    var uploadCodeRequest = new UpdateFunctionCodeRequest
+                    {
+                        FunctionName = uploadState.Request.FunctionName,
+                        ZipFile = lambdaCodeStream
+                    };
+                    this.LambdaClient.UpdateFunctionCode(uploadCodeRequest);
+                }
+                catch (Exception e)
+                {
+                    if (WaitForIamRolePropagation(uploadState.SelectedRole, e, attempt, maxAttempts))
+                    {
+                        return false;
+                    }
+
+                    throw new LambdaToolkitException(e.Message,
+                        LambdaToolkitException.LambdaErrorCode.LambdaUpdateFunctionCode, e);
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Determines if the exception is related to IAM Permissions, and if we are interested in waiting to see if the permissions
+        /// will update.
+        /// </summary>
+        /// <returns>
+        /// true: we will delay a while, and the caller should make another attempt at their operation
+        /// false: the exception is not of interest, or we have made enough attempts. The caller should deal with the exception.
+        /// </returns>
+        private bool WaitForIamRolePropagation(Role lambdaFunctionRole, Exception exception, int attempt, int maxAttempts)
+        {
+            if (lambdaFunctionRole == null &&
+                exception.Message.Contains(LambdaConstants.ERROR_MESSAGE_CANT_BE_ASSUMED) &&
+                attempt < maxAttempts)
+            {
+                this.FunctionUploader.AppendUploadStatus("New IAM role has not been propagated, retry attempt {0}.", attempt + 1);
+                Thread.Sleep(1000);
+                return true;
+            }
+
+            return false;
+        }
+
     }
 }

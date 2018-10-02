@@ -18,8 +18,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         ReadableTimestamp,
         NavigationReason,
         DeploymentNetCoreTargetFramework,
-        DeploymentSuccessType,
-        DeploymentErrorType,
+        WebApplicationBuildSuccess,
+        WebApplicationBuildError,
 
         FileFetcherUrlSuccess,
         FileFetcherUrlFailure,
@@ -72,7 +72,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         ECSConfiguredELB,
         ECSDeleteService,
 
-        XRayEnabled
+        XRayEnabled,
+        BeanstalkEnhancedHealth
     };
 
     public enum MetricKeys

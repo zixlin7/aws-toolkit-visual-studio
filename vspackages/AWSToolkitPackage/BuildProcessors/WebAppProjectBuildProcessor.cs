@@ -207,10 +207,6 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
 
                     TaskInfo.Logger.OutputMessage(msg);
                 }
-
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.DeploymentSuccessType, ANALYTICS_VALUE);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }
             catch (InvalidOperationException exc)
             {
@@ -226,16 +222,23 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
             }
             catch (Exception exc)
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.DeploymentErrorType, ANALYTICS_VALUE);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
                 var msg = string.Format("...caught exception during deployment package creation - {0}", exc.Message);
                 LOGGER.ErrorFormat(msg);
                 TaskInfo.Logger.OutputMessage(msg);
             }
             finally
             {
+                ToolkitEvent evnt = new ToolkitEvent();
+                if (ProcessorResult == ResultCodes.Succeeded)
+                {
+                    evnt.AddProperty(AttributeKeys.WebApplicationBuildSuccess, ANALYTICS_VALUE);
+                }
+                else
+                {
+                    evnt.AddProperty(AttributeKeys.WebApplicationBuildError, $"{ANALYTICS_VALUE}:{ProcessorResult}");
+                }
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
                 EndStatusBarBuildFeedback();
 
                 TaskInfo.CompletionSignalEvent.Set();

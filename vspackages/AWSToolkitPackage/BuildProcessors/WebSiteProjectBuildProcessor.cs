@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
+using log4net;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -15,6 +16,8 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
     internal class WebSiteProjectBuildProcessor : BuildProcessorBase, IBuildProcessor, IVsUpdateSolutionEvents
     {
         const string ANALYTICS_VALUE = "WEB_SITE";
+
+        static readonly ILog LOGGER = LogManager.GetLogger(typeof(WebSiteProjectBuildProcessor));
 
         string _outputPackage = string.Empty;
 
@@ -127,21 +130,24 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
                 TaskInfo.Logger.OutputMessage(ProcessorResult == ResultCodes.Succeeded
                     ? "..deployment package created successfully..."
                     : "..build fail, unable to find expected deployment package.");
-
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.DeploymentSuccessType, ANALYTICS_VALUE);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }
             catch (Exception exc)
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.DeploymentErrorType, ANALYTICS_VALUE);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
                 TaskInfo.Logger.OutputMessage("...caught exception during deployment package creation: " + exc.Message, true, true);
             }
             finally
             {
+                ToolkitEvent evnt = new ToolkitEvent();
+                if (ProcessorResult == ResultCodes.Succeeded)
+                {
+                    evnt.AddProperty(AttributeKeys.WebApplicationBuildSuccess, ANALYTICS_VALUE);
+                }
+                else
+                {
+                    evnt.AddProperty(AttributeKeys.WebApplicationBuildError, ANALYTICS_VALUE);
+                }
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
                 EndStatusBarBuildFeedback();
 
                 TaskInfo.CompletionSignalEvent.Set();
@@ -180,8 +186,9 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
 
         int IVsUpdateSolutionEvents.UpdateSolution_Done(int fSucceeded, int fModified, int fCancelCommand)
         {
-            if (fSucceeded != 0)
-                BuildStageSucceeded = true;
+            LOGGER.InfoFormat("IVsUpdateSolutionEvents.UpdateSolution_Done, fSucceeded={0}, fModified={1}, fCancelCommand={2}", fSucceeded, fModified, fCancelCommand);
+
+            BuildStageSucceeded = fSucceeded != 0;
             return VSConstants.S_OK;
         }
 
