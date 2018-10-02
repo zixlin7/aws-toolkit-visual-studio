@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
@@ -64,6 +65,15 @@ namespace Amazon.AWSToolkit.Util.Tests
                     Assert.NotNull(endpoint.GetEndpoint(RegionEndPointsManager.ECS_SERVICE_NAME));
                 }
             }
+        }
+
+        [Fact]
+        public void TestLocalRegionEndPointsFileFetcherInjection()
+        {
+            var s3FileFetcher = new S3FileFetcher();
+            var rep = RegionEndPointsManager.GetInstance(s3FileFetcher);
+            var localRegion = rep.Regions.OfType<RegionEndPointsManager.LocalRegionEndPoints>().Single();
+            Assert.Equal(s3FileFetcher, localRegion.FileFetcher);
         }
 
         [Fact]

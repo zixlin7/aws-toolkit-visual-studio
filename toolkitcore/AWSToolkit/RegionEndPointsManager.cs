@@ -88,7 +88,11 @@ namespace Amazon.AWSToolkit
                     var s3FileFetcher = fileFetcher ?? S3FileFetcher.Instance;
                     _instance = new RegionEndPointsManager
                     {
-                        FileFetcher = s3FileFetcher
+                        FileFetcher = s3FileFetcher,
+                        LocalRegion = new LocalRegionEndPoints()
+                        {
+                            FileFetcher = s3FileFetcher
+                        },
                     };
 
                     _instance.LoadEndPoints();
