@@ -542,7 +542,8 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                 var response = this._logsClient.GetLogEvents(request);
                 foreach (var evnt in response.Events)
                 {
-                    writer.Write("{0:yyyy-MM-dd HH:mm:ss}: {1}", evnt.Timestamp.ToLocalTime(), evnt.Message);
+                    string message = NormalizeLineEnding(evnt.Message);
+                    writer.Write("{0:yyyy-MM-dd HH:mm:ss}: {1}", evnt.Timestamp.ToLocalTime(), message);
                 }
             }
 
@@ -550,6 +551,21 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             process.StartInfo.FileName = fileName;
             process.StartInfo.Verb = "Open";
             process.Start();
+        }
+
+        private static string NormalizeLineEnding(string text)
+        {
+            if (text.EndsWith("\r\n"))
+            {
+                return text.Remove(text.Length - 2) + System.Environment.NewLine;
+            }
+
+            if (text.EndsWith("\n"))
+            {
+                return text.Remove(text.Length - 1) + System.Environment.NewLine;
+            }
+
+            return text;
         }
 
         public void DeleteLog(LogStreamWrapper logStream)
