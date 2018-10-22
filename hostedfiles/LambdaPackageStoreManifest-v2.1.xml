@@ -2,7 +2,11 @@
   <Package Id="Microsoft.AspNetCore.All" Version="2.1.0" />
   <Package Id="Microsoft.AspNetCore.All" Version="2.1.1" />
   <Package Id="Microsoft.AspNetCore.All" Version="2.1.2" />
+  <Package Id="Microsoft.AspNetCore.All" Version="2.1.3" />
+  <Package Id="Microsoft.AspNetCore.All" Version="2.1.4" />
   <Package Id="Microsoft.AspNetCore.App" Version="2.1.0" />
   <Package Id="Microsoft.AspNetCore.App" Version="2.1.1" />
   <Package Id="Microsoft.AspNetCore.App" Version="2.1.2" />
+  <Package Id="Microsoft.AspNetCore.App" Version="2.1.3" />
+  <Package Id="Microsoft.AspNetCore.App" Version="2.1.4" />
 </StoreArtifacts>
