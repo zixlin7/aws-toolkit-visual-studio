@@ -376,6 +376,37 @@
         />
 	</Target>
 
+    <Target Name="upload-hostedfile-ec2-quicklaunch-all" DependsOnTargets="upload-hostedfile-ec2-quicklaunch;upload-hostedfile-ec2-quicklaunch-bjs" />
+
+    <Target Name="upload-hostedfile-ec2-quicklaunch" DependsOnTargets="build-tools" Condition="$(PushHostedFiles)">
+
+        <UploadHostedFileTask
+				Bucket="$(HostedFilesBucket)"
+				S3Key="EC2QuickLaunch.json"
+				LocalFilename="$(HostedFilesFolder)/EC2QuickLaunch.json">
+			<Output TaskParameter="KeysToInvalidate" PropertyName="HostedFilesInvalidationKeys" />
+		</UploadHostedFileTask>
+
+		<CFInvalidateTask
+			Condition="!('$(HostedFilesInvalidationKeys)'=='')"
+			Distribution="$(VSToolkitDistribution)"
+			Keys="$(HostedFilesInvalidationKeys)"
+		/>
+    </Target>
+
+    <Target Name="upload-hostedfile-ec2-quicklaunch-bjs" DependsOnTargets="build-tools" Condition="$(PushHostedFiles)">
+
+		<!-- we don't seem to do invalidation on bjs, but gather the keys anyway -->
+        <UploadHostedFileTask
+				Bucket="$(BJSHostedFilesBucket)"
+				S3Key="EC2QuickLaunch.json"
+				LocalFilename="$(HostedFilesFolder)/EC2QuickLaunch.json"
+				CredentialSet="$(BJSCredentials)"
+				RegionValue="cn-north-1">
+			<Output TaskParameter="KeysToInvalidate" PropertyName="HostedFilesInvalidationKeysBJS" />
+		</UploadHostedFileTask>
+    </Target>
+
     <Target Name="upload-hostedfiles-all" DependsOnTargets="upload-hostedfiles;upload-hostedfiles-bjs" />
 
     <Target Name="upload-hostedfiles" DependsOnTargets="build-tools" Condition="$(PushHostedFiles)">
