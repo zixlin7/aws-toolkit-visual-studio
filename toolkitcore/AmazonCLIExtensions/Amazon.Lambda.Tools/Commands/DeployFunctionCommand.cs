@@ -45,8 +45,9 @@ namespace Amazon.Lambda.Tools.Commands
             LambdaDefinedCommandOptions.ARGUMENT_DEADLETTER_TARGET_ARN,
             LambdaDefinedCommandOptions.ARGUMENT_TRACING_MODE,
             LambdaDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES,
+            LambdaDefinedCommandOptions.ARGUMENT_APPEND_ENVIRONMENT_VARIABLES,
             LambdaDefinedCommandOptions.ARGUMENT_KMS_KEY_ARN,
-            LambdaDefinedCommandOptions.ARGUMENT_APPLY_DEFAULTS_FOR_UPDATE,
+            LambdaDefinedCommandOptions.ARGUMENT_APPLY_DEFAULTS_FOR_UPDATE_OBSOLETE,
             LambdaDefinedCommandOptions.ARGUMENT_S3_BUCKET,
             LambdaDefinedCommandOptions.ARGUMENT_S3_PREFIX,
             LambdaDefinedCommandOptions.ARGUMENT_DISABLE_VERSION_CHECK
@@ -121,7 +122,11 @@ namespace Amazon.Lambda.Tools.Commands
             string package = this.GetStringValueOrDefault(this.Package, LambdaDefinedCommandOptions.ARGUMENT_PACKAGE, false);
             if(string.IsNullOrEmpty(package))
             {
-                string configuration = this.GetStringValueOrDefault(this.Configuration, CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION, true);
+                EnsureInProjectDirectory();
+
+                // Release will be the default configuration if nothing set.
+                string configuration = this.GetStringValueOrDefault(this.Configuration, CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION, false);
+
                 string targetFramework = this.GetStringValueOrDefault(this.TargetFramework, CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK, true);
                 string msbuildParameters = this.GetStringValueOrDefault(this.MSBuildParameters, CommonDefinedCommandOptions.ARGUMENT_MSBUILD_PARAMETERS, false);
 
@@ -129,11 +134,7 @@ namespace Amazon.Lambda.Tools.Commands
 
                 bool disableVersionCheck = this.GetBoolValueOrDefault(this.DisableVersionCheck, LambdaDefinedCommandOptions.ARGUMENT_DISABLE_VERSION_CHECK, false).GetValueOrDefault();
                 string publishLocation;
-                bool bundleCreated = LambdaPackager.CreateApplicationBundle(this.DefaultConfig, this.Logger, this.WorkingDirectory, projectLocation, configuration, targetFramework, msbuildParameters, disableVersionCheck, out publishLocation, ref zipArchivePath);
-
-                if (!bundleCreated)
-                    return false;
-
+                LambdaPackager.CreateApplicationBundle(this.DefaultConfig, this.Logger, this.WorkingDirectory, projectLocation, configuration, targetFramework, msbuildParameters, disableVersionCheck, out publishLocation, ref zipArchivePath);
                 if (string.IsNullOrEmpty(zipArchivePath))
                     return false;
             }
@@ -189,8 +190,9 @@ namespace Amazon.Lambda.Tools.Commands
                         }
                     };
 
-                    var environmentVariables = this.GetKeyValuePairOrDefault(this.EnvironmentVariables, LambdaDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES, false);
-                    if(environmentVariables != null && environmentVariables.Count > 0)
+                    var environmentVariables = GetEnvironmentVariables(null);
+
+                    if (environmentVariables != null && environmentVariables.Count > 0)
                     {
                         createRequest.Environment = new Model.Environment
                         {
@@ -320,6 +322,7 @@ namespace Amazon.Lambda.Tools.Commands
             data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_DEADLETTER_TARGET_ARN.ConfigFileKey, this.GetStringValueOrDefault(this.DeadLetterTargetArn, LambdaDefinedCommandOptions.ARGUMENT_DEADLETTER_TARGET_ARN, false));
             data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_TRACING_MODE.ConfigFileKey, this.GetStringValueOrDefault(this.TracingMode, LambdaDefinedCommandOptions.ARGUMENT_TRACING_MODE, false));
             data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES.ConfigFileKey, LambdaToolsDefaults.FormatKeyValue(this.GetKeyValuePairOrDefault(this.EnvironmentVariables, LambdaDefinedCommandOptions.ARGUMENT_ENVIRONMENT_VARIABLES, false)));
+            data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_APPEND_ENVIRONMENT_VARIABLES.ConfigFileKey, LambdaToolsDefaults.FormatKeyValue(this.GetKeyValuePairOrDefault(this.AppendEnvironmentVariables, LambdaDefinedCommandOptions.ARGUMENT_APPEND_ENVIRONMENT_VARIABLES, false)));
             data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_KMS_KEY_ARN.ConfigFileKey, this.GetStringValueOrDefault(this.KMSKeyArn, LambdaDefinedCommandOptions.ARGUMENT_KMS_KEY_ARN, false));
             data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_S3_BUCKET.ConfigFileKey, this.GetStringValueOrDefault(this.S3Bucket, LambdaDefinedCommandOptions.ARGUMENT_S3_BUCKET, false));
             data.SetIfNotNull(LambdaDefinedCommandOptions.ARGUMENT_S3_PREFIX.ConfigFileKey, this.GetStringValueOrDefault(this.S3Prefix, LambdaDefinedCommandOptions.ARGUMENT_S3_PREFIX, false));

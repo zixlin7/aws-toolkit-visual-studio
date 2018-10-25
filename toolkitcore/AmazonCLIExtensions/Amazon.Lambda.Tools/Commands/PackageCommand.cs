@@ -18,6 +18,9 @@ namespace Amazon.Lambda.Tools.Commands
             CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION,
             CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK,
             CommonDefinedCommandOptions.ARGUMENT_MSBUILD_PARAMETERS,
+            CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
+            CommonDefinedCommandOptions.ARGUMENT_CONFIG_FILE,
+            CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE,
             LambdaDefinedCommandOptions.ARGUMENT_OUTPUT_PACKAGE,
             LambdaDefinedCommandOptions.ARGUMENT_DISABLE_VERSION_CHECK
         };
@@ -79,12 +82,16 @@ namespace Amazon.Lambda.Tools.Commands
 
         protected override Task<bool> PerformActionAsync()
         {
+            EnsureInProjectDirectory();
+
             // Disable interactive since this command is intended to be run as part of a pipeline.
             this.DisableInteractive = true;
 
             return Task.Run(() =>
             {
-                var configuration = this.GetStringValueOrDefault(this.Configuration, CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION, true);
+                // Release will be the default configuration if nothing set.
+                var configuration = this.GetStringValueOrDefault(this.Configuration, CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION, false);
+
                 var targetFramework = this.GetStringValueOrDefault(this.TargetFramework, CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK, true);
                 var projectLocation = this.GetStringValueOrDefault(this.ProjectLocation, CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION, false);
                 var msbuildParameters = this.GetStringValueOrDefault(this.MSBuildParameters, CommonDefinedCommandOptions.ARGUMENT_MSBUILD_PARAMETERS, false);

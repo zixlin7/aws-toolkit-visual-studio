@@ -23,7 +23,7 @@ namespace Amazon.Common.DotNetCli.Tools.Options
                 ShortSwitch = "-f",
                 Switch = "--framework",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "Target framework to compile, for example netcoreapp1.0.",
+                Description = "Target framework to compile, for example netcoreapp2.1.",
             };
         public static readonly CommandOption ARGUMENT_PUBLISH_OPTIONS =
             new CommandOption
@@ -61,6 +61,33 @@ namespace Amazon.Common.DotNetCli.Tools.Options
                 Description = "Optional override to the search location for Profiles, points at a shared credentials file."
             };
 
+        public static readonly CommandOption ARGUMENT_AWS_ACCESS_KEY_ID =
+            new CommandOption
+            {
+                Name = "AWS Access Key ID",
+                Switch = "--aws-access-key-id",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "The AWS access key id. Used when setting credentials explicitly instead of using --profile."
+            };
+
+        public static readonly CommandOption ARGUMENT_AWS_SECRET_KEY =
+            new CommandOption
+            {
+                Name = "AWS Secret Key",
+                Switch = "--aws-secret-key",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "The AWS secret key. Used when setting credentials explicitly instead of using --profile."
+            };
+
+        public static readonly CommandOption ARGUMENT_AWS_SESSION_TOKEN =
+            new CommandOption
+            {
+                Name = "AWS Access Key ID",
+                Switch = "--aws-session-token",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "The AWS session token. Used when setting credentials explicitly instead of using --profile."
+            };
+
         public static readonly CommandOption ARGUMENT_AWS_REGION =
             new CommandOption
             {
@@ -87,7 +114,7 @@ namespace Amazon.Common.DotNetCli.Tools.Options
                 Name = "MSBuild Parameters",
                 Switch = "--msbuild-parameters",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "Additional msbuild parameters passed to the 'dotnet publish' command",
+                Description = "Additional msbuild parameters passed to the 'dotnet publish' command. Add quotes around the value if the value contains spaces.",
             };
         
 

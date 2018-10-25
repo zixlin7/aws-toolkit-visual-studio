@@ -142,15 +142,24 @@ namespace Amazon.Lambda.Tools
                 ShortSwitch = "-ev",
                 Switch = "--environment-variables",
                 ValueType = CommandOption.CommandOptionValueType.KeyValuePairs,
-                Description = "Environment variables set for the function. Format is <key1>=<value1>;<key2>=<value2>"
+                Description = "Environment variables set for the function. For existing functions this replaces the current environment variables. Format is <key1>=<value1>;<key2>=<value2>"
+            };
+        public static readonly CommandOption ARGUMENT_APPEND_ENVIRONMENT_VARIABLES =
+            new CommandOption
+            {
+                Name = "Append Environment Variables",
+                ShortSwitch = "-aev",
+                Switch = "--append-environment-variables",
+                ValueType = CommandOption.CommandOptionValueType.KeyValuePairs,
+                Description = "Append environment variables to the existing set of environment variables for the function. Format is <key1>=<value1>;<key2>=<value2>"
             };
         public static readonly CommandOption ARGUMENT_FUNCTION_TAGS =
             new CommandOption
             {
-                Name = "Function Tags",
+                Name = "Tags",
                 Switch = "--tags",
                 ValueType = CommandOption.CommandOptionValueType.KeyValuePairs,
-                Description = "Tags applied to the function. Format is <name1>=<value1>;<name2>=<value2>"
+                Description = "AWS tags to apply. Format is <name1>=<value1>;<name2>=<value2>"
             };
         public static readonly CommandOption ARGUMENT_KMS_KEY_ARN =
             new CommandOption
@@ -257,7 +266,7 @@ namespace Amazon.Lambda.Tools
         public static readonly CommandOption ARGUMENT_OUTPUT_PACKAGE =
             new CommandOption
             {
-                Name = "Payload for function",
+                Name = "The zip file that will be created with compiled and packaged Lambda function.",
                 ShortSwitch = "-o",
                 Switch = "--output-package",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
@@ -274,13 +283,13 @@ namespace Amazon.Lambda.Tools
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
                 Description = "Path to write updated serverless template with CodeURI fields updated to the location of the packaged build artifacts in S3."
             };
-        public static readonly CommandOption ARGUMENT_APPLY_DEFAULTS_FOR_UPDATE =
+        public static readonly CommandOption ARGUMENT_APPLY_DEFAULTS_FOR_UPDATE_OBSOLETE =
             new CommandOption
             {
                 Name = "Apply Defaults for Update",
                 Switch = "--apply-defaults",
                 ValueType = CommandOption.CommandOptionValueType.BoolValue,
-                Description = "If set to true then values set in the defaults file will be applied when updating an existing function configuration."
+                Description = "Obsolete: as of version 3.0.0.0 defaults are always applied."
             };
 
 
