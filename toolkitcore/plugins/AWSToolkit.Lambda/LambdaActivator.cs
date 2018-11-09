@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.Account;
@@ -9,6 +8,7 @@ using Amazon.AWSToolkit.Navigator;
 
 using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.Nodes;
+using Amazon.AWSToolkit.Lambda.Util;
 
 namespace Amazon.AWSToolkit.Lambda
 {
@@ -58,6 +58,11 @@ namespace Amazon.AWSToolkit.Lambda
 
             var controller = new UploadFunctionController();
             controller.UploadFunctionFromPath(seedProperties);
+        }
+
+        public void EnsureLambdaTesterConfigured(string projectPath)
+        {
+            LambdaTesterInstaller.Install(projectPath);
         }
     }
 }
