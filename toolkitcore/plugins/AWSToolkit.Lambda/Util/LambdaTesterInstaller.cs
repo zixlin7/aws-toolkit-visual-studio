@@ -36,7 +36,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
                 if (!projectContent.Contains("<AWSProjectType>"))
                     return;
 
-                var xdoc = XDocument.Parse(File.ReadAllText(projectPath));
+                var xdoc = XDocument.Parse(projectContent);
                 var awsProjectType = xdoc.XPathSelectElement("//PropertyGroup/AWSProjectType")?.Value;
                 if (string.IsNullOrEmpty(awsProjectType) || !awsProjectType.Contains("Lambda"))
                     return;
