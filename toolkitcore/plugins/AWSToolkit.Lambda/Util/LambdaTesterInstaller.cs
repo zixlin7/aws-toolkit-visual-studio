@@ -16,6 +16,8 @@ namespace Amazon.AWSToolkit.Lambda.Util
 {
     public static class LambdaTesterInstaller
     {
+        const int DOTNET_NOT_FOUND_ERROR_CODE = -10;
+
         static ILog LOGGER = LogManager.GetLogger(typeof(LambdaTesterInstaller));
         const string LAUNCH_SETTINGS_FILE = "launchSettings.json";
 
@@ -28,7 +30,15 @@ namespace Amazon.AWSToolkit.Lambda.Util
         {
             try
             {
-                if (!File.ReadAllText(projectPath).Contains("<AWSProjectType>Lambda</AWSProjectType>"))
+                var projectContent = File.ReadAllText(projectPath);
+                // Short circuit load the XML document if we know the project doesn't include an 
+                // AWSProjectType string. 
+                if (!projectContent.Contains("<AWSProjectType>"))
+                    return;
+
+                var xdoc = XDocument.Parse(File.ReadAllText(projectPath));
+                var awsProjectType = xdoc.XPathSelectElement("//PropertyGroup/AWSProjectType")?.Value;
+                if (string.IsNullOrEmpty(awsProjectType) || !awsProjectType.Contains("Lambda"))
                     return;
 
                 var lambdaTesterInstallpath = GetLambdaTesterPath(Path.GetDirectoryName(projectPath));
@@ -128,7 +138,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
         {
             var dotnetCLI = DotNetCLIWrapper.FindExecutableInPath("dotnet.exe");
             if (dotnetCLI == null)
-                return -10;
+                return DOTNET_NOT_FOUND_ERROR_CODE;
 
 
             var arguments = $"tool {command} -g {LAMBDA_TESTER_PACKAGE}";
