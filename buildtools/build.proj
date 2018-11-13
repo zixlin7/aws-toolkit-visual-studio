@@ -194,6 +194,7 @@
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.AutoScaling.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.CloudFormation.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.CloudWatch.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.CognitoIdentity.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.EC2.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.ElasticBeanstalk.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.ElasticLoadBalancing.dll"/>
