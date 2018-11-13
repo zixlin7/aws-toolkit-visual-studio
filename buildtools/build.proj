@@ -38,10 +38,10 @@
         <VSToolkitDistribution>E38QEBQWXHC945</VSToolkitDistribution>
          
 		<SignVsixPackages Condition="'$(SignVsixPackages)'==''">false</SignVsixPackages>
-        
+        <BuildVSToolkit2017>true</BuildVSToolkit2017>
     </PropertyGroup>
 
-	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;get-latest-endpoint-data;restore-nuget;update-version;build-awsdeploy;build-vstoolkit;run-tests;keyscan;copy-artifacts;sign-packages;save-build">
+	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;get-latest-endpoint-data;restore-nuget;update-version;build-awsdeploy;build-vstoolkit;build-vstoolkit-2017;run-tests;keyscan;copy-artifacts;sign-packages;save-build">
 		<Message Text="Builds all components of the AWS Toolkit for Visual Studio"/>
 	</Target>
 
@@ -69,18 +69,21 @@
         <Message Text="| Visual Studio 2015 Toolkit - $(Configuration)" />
 		<Message Text="------------------------------------------------------------------------------" />
         <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=14.0;Configuration=$(Configuration)" />
-		
-		<Message Text="------------------------------------------------------------------------------" />
-        <Message Text="| Visual Studio 2017 Toolkit - $(Configuration)" />
-		<Message Text="------------------------------------------------------------------------------" />
-        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=15.0;Configuration=$(Configuration)" />
-		
+				
 		<Message Text="------------------------------------------------------------------------------" />
         <Message Text="| AWS Studio - $(Configuration)" />
 		<Message Text="------------------------------------------------------------------------------" />
         <MSBuild Projects="..\solutions\AWSStudioToolkit.sln" Properties="Configuration=$(Configuration)" />
 
 	</Target>
+	
+	<Target Name="build-vstoolkit-2017" DependsOnTargets="patch-vsixmanifest" Condition="'$(BuildVSToolkit2017)'=='true'">
+		<Message Text="------------------------------------------------------------------------------" />
+        <Message Text="| Visual Studio 2017 Toolkit - $(Configuration)" />
+		<Message Text="------------------------------------------------------------------------------" />
+        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=15.0;Configuration=$(Configuration)" />
+	</Target>
+	
 
     <Target Name="run-tests" DependsOnTargets="build-vstoolkit">
         <Message Text="$(Configuration) - running unit tests."/>
