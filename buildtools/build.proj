@@ -195,7 +195,9 @@
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.ElasticBeanstalk.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.ElasticLoadBalancing.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.IdentityManagement.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.KeyManagementService.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.Lambda.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.MobileAnalytics.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.RDS.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.S3.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.SimpleNotificationService.dll"/>
@@ -211,6 +213,7 @@
 			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\Mono.Security.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\Sharpen.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\YamlDotNet.dll"/>
 			
         </ItemGroup>
         <Copy
