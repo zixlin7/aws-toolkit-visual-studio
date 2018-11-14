@@ -14,8 +14,6 @@ namespace Amazon.AWSToolkit.ECS.Controller
 {
     public class DeleteRepositoryController : BaseContextCommand
     {
-        ActionResults _results;
-
         public override ActionResults Execute(IViewModel model)
         {
             var repositoryModel = model as RepositoryViewModel;

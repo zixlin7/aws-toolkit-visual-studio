@@ -168,15 +168,5 @@ namespace Amazon.AWSToolkit.CloudFormation.TemplateWizards.WizardPages.PageUI
                 this._ctlSampleTemplate.SelectedIndex = 0;
             }
         }
-
-        #region INotifyPropertyChanged Implementation
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void NotifyPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-        #endregion
     }
 }

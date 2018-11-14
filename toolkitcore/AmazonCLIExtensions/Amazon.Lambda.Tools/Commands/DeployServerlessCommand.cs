@@ -12,6 +12,7 @@ using Amazon.CloudFormation.Model;
 using ThirdParty.Json.LitJson;
 using Amazon.Common.DotNetCli.Tools;
 using Amazon.Common.DotNetCli.Tools.Options;
+using Amazon.Lambda.Tools.TemplateProcessor;
 using Newtonsoft.Json.Linq;
 
 namespace Amazon.Lambda.Tools.Commands
@@ -45,6 +46,7 @@ namespace Amazon.Lambda.Tools.Commands
             LambdaDefinedCommandOptions.ARGUMENT_CLOUDFORMATION_ROLE,
             LambdaDefinedCommandOptions.ARGUMENT_STACK_NAME,
             LambdaDefinedCommandOptions.ARGUMENT_CLOUDFORMATION_DISABLE_CAPABILITIES,
+            LambdaDefinedCommandOptions.ARGUMENT_FUNCTION_TAGS,
             LambdaDefinedCommandOptions.ARGUMENT_STACK_WAIT,
             LambdaDefinedCommandOptions.ARGUMENT_DISABLE_VERSION_CHECK
         });
@@ -63,6 +65,7 @@ namespace Amazon.Lambda.Tools.Commands
         public string CloudFormationRole { get; set; }
         public Dictionary<string, string> TemplateParameters { get; set; }
         public Dictionary<string, string> TemplateSubstitutions { get; set; }
+        public Dictionary<string, string> Tags { get; set; }
 
         public bool? DisableVersionCheck { get; set; }
 
@@ -105,6 +108,8 @@ namespace Amazon.Lambda.Tools.Commands
                 this.CloudFormationRole = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(LambdaDefinedCommandOptions.ARGUMENT_DISABLE_VERSION_CHECK.Switch)) != null)
                 this.DisableVersionCheck = tuple.Item2.BoolValue;
+            if ((tuple = values.FindCommandOption(LambdaDefinedCommandOptions.ARGUMENT_FUNCTION_TAGS.Switch)) != null)
+                this.Tags = tuple.Item2.KeyValuePairs;
 
             if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_MSBUILD_PARAMETERS.Switch)) != null)
                 this.MSBuildParameters = tuple.Item2.StringValue;
@@ -142,50 +147,24 @@ namespace Amazon.Lambda.Tools.Commands
             if (!File.Exists(templatePath))
                 throw new LambdaToolsException($"Template file {templatePath} cannot be found.", LambdaToolsException.LambdaErrorCode.ServerlessTemplateNotFound);
 
-
-            // Build and bundle up the users project.
-            string zipArchivePath = null;
-            string package = this.GetStringValueOrDefault(this.Package, LambdaDefinedCommandOptions.ARGUMENT_PACKAGE, false);
-            if(string.IsNullOrEmpty(package))
-            {
-                string configuration = this.GetStringValueOrDefault(this.Configuration, CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION, true);
-                string targetFramework = this.GetStringValueOrDefault(this.TargetFramework, CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK, true);
-                string msbuildParameters = this.GetStringValueOrDefault(this.MSBuildParameters, CommonDefinedCommandOptions.ARGUMENT_MSBUILD_PARAMETERS, false);
-                bool disableVersionCheck = this.GetBoolValueOrDefault(this.DisableVersionCheck, LambdaDefinedCommandOptions.ARGUMENT_DISABLE_VERSION_CHECK, false).GetValueOrDefault();
-
-                string publishLocation;
-                bool bundleCreated = LambdaPackager.CreateApplicationBundle(this.DefaultConfig, this.Logger, this.WorkingDirectory, projectLocation, configuration, targetFramework, msbuildParameters, disableVersionCheck, out publishLocation, ref zipArchivePath);
-                if (!bundleCreated)
-                    return false;
-                if (string.IsNullOrEmpty(zipArchivePath))
-                    return false;
-            }
-            else
-            {
-                if (!File.Exists(package))
-                    throw new LambdaToolsException($"Package {package} does not exist", LambdaToolsException.LambdaErrorCode.InvalidPackage);
-                if (!string.Equals(Path.GetExtension(package), ".zip", StringComparison.OrdinalIgnoreCase))
-                    throw new LambdaToolsException($"Package {package} must be a zip file", LambdaToolsException.LambdaErrorCode.InvalidPackage);
-
-                this.Logger.WriteLine($"Skipping compilation and using precompiled package {package}");
-                zipArchivePath = package;
-            }
-
-
-            // Upload the app bundle to S3
-            string s3KeyApplicationBundle;
-            using (var stream = new MemoryStream(File.ReadAllBytes(zipArchivePath)))
-            {
-                s3KeyApplicationBundle = await Utilities.UploadToS3Async(this.Logger, this.S3Client, s3Bucket, s3Prefix, stackName, stream);
-            }
-
             // Read in the serverless template and update all the locations for Lambda functions to point to the app bundle that was just uploaded.
             string templateBody = File.ReadAllText(templatePath);
 
             // Process any template substitutions
             templateBody = LambdaUtilities.ProcessTemplateSubstitions(this.Logger, templateBody, this.GetKeyValuePairOrDefault(this.TemplateSubstitutions, LambdaDefinedCommandOptions.ARGUMENT_CLOUDFORMATION_TEMPLATE_SUBSTITUTIONS, false), Utilities.DetermineProjectLocation(this.WorkingDirectory, projectLocation));
-
-            templateBody = LambdaUtilities.UpdateCodeLocationInTemplate(templateBody, s3Bucket, s3KeyApplicationBundle);
+            
+            
+            var options = new DefaultLocationOption
+            {
+                Configuration = this.GetStringValueOrDefault(this.Configuration, CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION, false),
+                TargetFramework = this.GetStringValueOrDefault(this.TargetFramework, CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK, false),
+                MSBuildParameters = this.GetStringValueOrDefault(this.MSBuildParameters, CommonDefinedCommandOptions.ARGUMENT_MSBUILD_PARAMETERS, false),
+                DisableVersionCheck = this.GetBoolValueOrDefault(this.DisableVersionCheck, LambdaDefinedCommandOptions.ARGUMENT_DISABLE_VERSION_CHECK, false).GetValueOrDefault(),
+                Package = this.GetStringValueOrDefault(this.Package, LambdaDefinedCommandOptions.ARGUMENT_PACKAGE, false)
+            };
+            
+            var templateProcessor = new TemplateProcessorManager(this.Logger, this.S3Client, s3Bucket, s3Prefix, options);
+            templateBody = await templateProcessor.TransformTemplateAsync(templatePath, templateBody);
 
             // Upload the template to S3 instead of sending it straight to CloudFormation to avoid the size limitation
             string s3KeyTemplate;
@@ -197,6 +176,19 @@ namespace Amazon.Lambda.Tools.Commands
             var existingStack = await GetExistingStackAsync(stackName);
             this.Logger.WriteLine("Found existing stack: " + (existingStack != null));
             var changeSetName = "Lambda-Tools-" + DateTime.Now.Ticks;
+
+            List<Tag> tagList = null;
+            {
+                var tags = this.GetKeyValuePairOrDefault(this.Tags, LambdaDefinedCommandOptions.ARGUMENT_FUNCTION_TAGS, false);
+                if(tags != null)
+                {
+                    tagList = new List<Tag>();
+                    foreach(var kvp in tags)
+                    {
+                        tagList.Add(new Tag { Key = kvp.Key, Value = kvp.Value });
+                    }
+                }
+            }
 
             // Determine if the stack is in a good state to be updated.
             ChangeSetType changeSetType;
@@ -233,6 +225,10 @@ namespace Amazon.Lambda.Tools.Commands
                     existingStack.StackStatus == StackStatus.UPDATE_ROLLBACK_COMPLETE)
             {
                 changeSetType = ChangeSetType.UPDATE;
+                if(tagList == null)
+                {
+                    tagList = existingStack.Tags;
+                }
             }
             // All other states means the Stack is in an inconsistent state.
             else
@@ -286,6 +282,16 @@ namespace Amazon.Lambda.Tools.Commands
                     capabilities.Add("CAPABILITY_NAMED_IAM");
                 }
 
+                if(tagList == null)
+                {
+                    tagList = new List<Tag>();
+                }
+
+                if(tagList.FirstOrDefault(x => string.Equals(x.Key, LambdaConstants.SERVERLESS_TAG_NAME)) == null)
+                {
+                    tagList.Add(new Tag { Key = LambdaConstants.SERVERLESS_TAG_NAME, Value = "true" });
+                }
+
                 var changeSetRequest = new CreateChangeSetRequest
                 {
                     StackName = stackName,
@@ -294,7 +300,7 @@ namespace Amazon.Lambda.Tools.Commands
                     ChangeSetType = changeSetType,
                     Capabilities = capabilities,
                     RoleARN = this.GetStringValueOrDefault(this.CloudFormationRole, LambdaDefinedCommandOptions.ARGUMENT_CLOUDFORMATION_ROLE, false),
-                    Tags = new List<Tag> { new Tag { Key = LambdaConstants.SERVERLESS_TAG_NAME, Value = "true" } }
+                    Tags = tagList
                 };
 
                 if(new FileInfo(templatePath).Length < LambdaConstants.MAX_TEMPLATE_BODY_IN_REQUEST_SIZE)

@@ -14,19 +14,19 @@
 
     <Grid>
         <TextBox
-            Name="TextInput"
+            Name="TextInputControl"
             Visibility="Hidden"
             Style="{DynamicResource awsTextBoxStyle}"/>
         <ComboBox
-            Name="ComboInput"
+            Name="ComboInputControl"
             Visibility="Hidden"
             Style="{DynamicResource awsComboBoxStyle}"/>
         <CheckBox
-            Name="CheckInput"
+            Name="CheckInputControl"
             Visibility="Hidden"
             Style="{DynamicResource awsCheckboxButtonBaseStyle}"/>
         <StackPanel
-            Name="ListValues"
+            Name="ListValuesControl"
             Visibility="Hidden"
             Orientation="Vertical"
             />

@@ -3,7 +3,7 @@
   <Metadata>
     <Identity Id="|%CurrentProject%;GetVsixGuid|" Version="|%CurrentProject%;GetVsixVersion|" Language="en-US" Publisher="Amazon Web Services LLC" />
     <DisplayName>|%CurrentProject%;GetVsixDisplayName|</DisplayName>
-    <Description xml:space="preserve">The AWS Toolkit for Visual Studio 2017 is an extension for Microsoft Visual Studio 2017 on Microsoft Windows that makes it easier for developers to develop, debug, and deploy .NET and .NET Core applications using Amazon Web Services. With the AWS Toolkit you'll be able to get started faster and be more productive when building AWS applications.</Description>
+    <Description xml:space="preserve">The AWS Toolkit for Visual Studio is an extension for Microsoft Visual Studio on Windows that makes it easier for developers to develop, debug, and deploy .NET applications using Amazon Web Services. With the AWS Toolkit for Visual Studio, you'll be able to get started faster and be more productive when building AWS applications.</Description>
     <MoreInfo>https://aws.amazon.com/sdkfornet</MoreInfo>
     <License>License.txt</License>
     <GettingStartedGuide>https://docs.aws.amazon.com/AWSToolkitVS/latest/UserGuide/welcome.html</GettingStartedGuide>
@@ -86,60 +86,32 @@
 
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.Extensions.dll" AssemblyName="AWSSDK.Extensions, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.AutoScaling.dll" AssemblyName="AWSSDK.AutoScaling, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.AWSSupport.dll" AssemblyName="AWSSDK.AWSSupport, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CloudFormation.dll" AssemblyName="AWSSDK.CloudFormation, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CloudFront.dll" AssemblyName="AWSSDK.CloudFront, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CloudHSM.dll" AssemblyName="AWSSDK.CloudHSM, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CloudSearch.dll" AssemblyName="AWSSDK.CloudSearch, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CloudSearchDomain.dll" AssemblyName="AWSSDK.CloudSearchDomain, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CloudTrail.dll" AssemblyName="AWSSDK.CloudTrail, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CloudWatch.dll" AssemblyName="AWSSDK.CloudWatch, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CloudWatchLogs.dll" AssemblyName="AWSSDK.CloudWatchLogs, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CloudWatchEvents.dll" AssemblyName="AWSSDK.CloudWatchEvents, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CodeCommit.dll" AssemblyName="AWSSDK.CodeCommit, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CodeDeploy.dll" AssemblyName="AWSSDK.CodeDeploy, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CodePipeline.dll" AssemblyName="AWSSDK.CodePipeline, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CognitoIdentity.dll" AssemblyName="AWSSDK.CognitoIdentity, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.CognitoSync.dll" AssemblyName="AWSSDK.CognitoSync, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.ConfigService.dll" AssemblyName="AWSSDK.ConfigService, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.Core.dll" AssemblyName="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.DataPipeline.dll" AssemblyName="AWSSDK.DataPipeline, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.DeviceFarm.dll" AssemblyName="AWSSDK.DeviceFarm, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.DirectConnect.dll" AssemblyName="AWSSDK.DirectConnect, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.DirectoryService.dll" AssemblyName="AWSSDK.DirectoryService, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.DynamoDBv2.dll" AssemblyName="AWSSDK.DynamoDBv2, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.EC2.dll" AssemblyName="AWSSDK.EC2, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.ECR.dll" AssemblyName="AWSSDK.ECR, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.ECS.dll" AssemblyName="AWSSDK.ECS, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.ElastiCache.dll" AssemblyName="AWSSDK.ElastiCache, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.ElasticBeanstalk.dll" AssemblyName="AWSSDK.ElasticBeanstalk, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.ElasticFileSystem.dll" AssemblyName="AWSSDK.ElasticFileSystem, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.ElasticLoadBalancing.dll" AssemblyName="AWSSDK.ElasticLoadBalancing, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.ElasticMapReduce.dll" AssemblyName="AWSSDK.ElasticMapReduce, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.ElasticTranscoder.dll" AssemblyName="AWSSDK.ElasticTranscoder, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.Glacier.dll" AssemblyName="AWSSDK.Glacier, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.IdentityManagement.dll" AssemblyName="AWSSDK.IdentityManagement, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.ImportExport.dll" AssemblyName="AWSSDK.ImportExport, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.KeyManagementService.dll" AssemblyName="AWSSDK.KeyManagementService, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.Kinesis.dll" AssemblyName="AWSSDK.Kinesis, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
+	<Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.Kinesis.dll" AssemblyName="AWSSDK.Kinesis, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.Lambda.dll" AssemblyName="AWSSDK.Lambda, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.MachineLearning.dll" AssemblyName="AWSSDK.MachineLearning, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.MobileAnalytics.dll" AssemblyName="AWSSDK.MobileAnalytics, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.OpsWorks.dll" AssemblyName="AWSSDK.OpsWorks, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.RDS.dll" AssemblyName="AWSSDK.RDS, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.Redshift.dll" AssemblyName="AWSSDK.Redshift, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.Route53.dll" AssemblyName="AWSSDK.Route53, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.Route53Domains.dll" AssemblyName="AWSSDK.Route53Domains, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.S3.dll" AssemblyName="AWSSDK.S3, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SecurityToken.dll" AssemblyName="AWSSDK.SecurityToken, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SimpleDB.dll" AssemblyName="AWSSDK.SimpleDB, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SimpleEmail.dll" AssemblyName="AWSSDK.SimpleEmail, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SimpleNotificationService.dll" AssemblyName="AWSSDK.SimpleNotificationService, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SimpleSystemsManagement.dll" AssemblyName="AWSSDK.SimpleSystemsManagement, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SimpleWorkflow.dll" AssemblyName="AWSSDK.SimpleWorkflow, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SQS.dll" AssemblyName="AWSSDK.SQS, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.StorageGateway.dll" AssemblyName="AWSSDK.StorageGateway, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.WorkSpaces.dll" AssemblyName="AWSSDK.WorkSpaces, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
 
   </Assets>
   <Prerequisites>

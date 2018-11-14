@@ -31,7 +31,8 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
         public BaseCommand(IToolLogger logger, string workingDirectory, IList<CommandOption> possibleOptions, string[] args)
             : this(logger, workingDirectory)
         {
-            this.OriginalCommandLineArguments = args ?? new string[0];
+            args = args ?? new string[0];
+            this.OriginalCommandLineArguments = args;
             var values = CommandLineParser.ParseArguments(possibleOptions, args);
             ParseCommandArguments(values);
         }
@@ -84,6 +85,9 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
             CommonDefinedCommandOptions.ARGUMENT_AWS_REGION,
             CommonDefinedCommandOptions.ARGUMENT_AWS_PROFILE,
             CommonDefinedCommandOptions.ARGUMENT_AWS_PROFILE_LOCATION,
+            CommonDefinedCommandOptions.ARGUMENT_AWS_ACCESS_KEY_ID,
+            CommonDefinedCommandOptions.ARGUMENT_AWS_SECRET_KEY,
+            CommonDefinedCommandOptions.ARGUMENT_AWS_SESSION_TOKEN,
             CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
             CommonDefinedCommandOptions.ARGUMENT_CONFIG_FILE,
             CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE
@@ -125,12 +129,26 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
             if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION.Switch)) != null)
                 this.ProjectLocation = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_CONFIG_FILE.Switch)) != null)
+            {
                 this.ConfigFile = tuple.Item2.StringValue;
+                if (!File.Exists(this.ConfigFile))
+                {
+                    throw new ToolsException($"Config file {this.ConfigFile} can not be found.", ToolsException.CommonErrorCode.MissingConfigFile);
+                }
+            }
             if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE.Switch)) != null)
                 this.PersistConfigFile = tuple.Item2.BoolValue;
+            if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_AWS_ACCESS_KEY_ID.Switch)) != null)
+                this.AWSAccessKeyId = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_AWS_SECRET_KEY.Switch)) != null)
+                this.AWSSecretKey = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_AWS_SESSION_TOKEN.Switch)) != null)
+                this.AWSSessionToken = tuple.Item2.StringValue;
 
             if (string.IsNullOrEmpty(this.ConfigFile))
+            {
                 this.ConfigFile = new TDefaultConfig().DefaultConfigFileName;
+            }
         }
 
 
@@ -156,6 +174,9 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
         public string Region { get; set; }
         public string Profile { get; set; }
         public string ProfileLocation { get; set; }
+        public string AWSAccessKeyId { get; set; }
+        public string AWSSecretKey { get; set; }
+        public string AWSSessionToken { get; set; }
         public AWSCredentials Credentials { get; set; }
         public string ProjectLocation { get; set; }
         public string ConfigFile { get; set; }
@@ -177,13 +198,27 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
             }
             else
             {
-                var profile = this.Profile;
-                if (string.IsNullOrEmpty(profile))
-                {
-                    profile = DefaultConfig[CommonDefinedCommandOptions.ARGUMENT_AWS_PROFILE.Switch] as string;
-                }
+                var awsAccessKeyId = GetStringValueOrDefault(this.AWSAccessKeyId, CommonDefinedCommandOptions.ARGUMENT_AWS_ACCESS_KEY_ID, false);
+                var profile = this.GetStringValueOrDefault(this.Profile, CommonDefinedCommandOptions.ARGUMENT_AWS_PROFILE, false);
 
-                if (!string.IsNullOrEmpty(profile))
+                if(!string.IsNullOrEmpty(awsAccessKeyId))
+                {
+                    var awsSecretKey = GetStringValueOrDefault(this.AWSSecretKey, CommonDefinedCommandOptions.ARGUMENT_AWS_SECRET_KEY, false);
+                    var awsSessionToken = GetStringValueOrDefault(this.AWSSessionToken, CommonDefinedCommandOptions.ARGUMENT_AWS_SESSION_TOKEN, false);
+
+                    if (string.IsNullOrEmpty(awsSecretKey))
+                        throw new ToolsException("An AWS access key id was specified without a required AWS secret key. Either set an AWS secret key or remove the AWS access key id and use profiles for credentials.", ToolsException.CommonErrorCode.InvalidCredentialConfiguration);
+
+                    if(string.IsNullOrEmpty(awsSessionToken))
+                    {
+                        credentials = new BasicAWSCredentials(awsAccessKeyId, awsSecretKey);
+                    }
+                    else
+                    {
+                        credentials = new SessionAWSCredentials(awsAccessKeyId, awsSecretKey, awsSessionToken);
+                    }
+                }
+                else if (!string.IsNullOrEmpty(profile))
                 {
                     var chain = new CredentialProfileStoreChain(this.ProfileLocation);
                     if (!chain.TryGetAWSCredentials(profile, out credentials))
@@ -272,7 +307,7 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
                 throw new ToolsException($"Missing required parameter: {option.Switch}", ToolsException.CommonErrorCode.MissingRequiredParameter);
             }
 
-            return null;
+            return propertyValue;
         }
 
         public string GetRoleValueOrDefault(string propertyValue, CommandOption option, string assumeRolePrincipal, string awsManagedPolicyPrefix, Dictionary<string, string> knownManagedPolicyDescription, bool required)
@@ -780,6 +815,20 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
             } while (input != 'y' && input != 'n');
 
             return input == 'y';
+        }
+
+        protected void EnsureInProjectDirectory()
+        {
+            var projectLocation = Utilities.DetermineProjectLocation(this.WorkingDirectory, this.GetStringValueOrDefault(this.ProjectLocation, CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION, false));
+
+            if (Directory.GetFiles(projectLocation, "*.csproj", SearchOption.TopDirectoryOnly).Length == 1 ||
+                Directory.GetFiles(projectLocation, "*.fsproj", SearchOption.TopDirectoryOnly).Length == 1 ||
+                Directory.GetFiles(projectLocation, "*.vbproj", SearchOption.TopDirectoryOnly).Length == 1)
+            {
+                return;
+            }
+
+            throw new ToolsException($"No .NET project found in directory {projectLocation} to build.", ToolsException.CommonErrorCode.NoProjectFound);
         }
     }
 }

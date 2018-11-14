@@ -1,4 +1,5 @@
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
+
+  <Import Project="$(MSBuildThisFileDirectory)\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
 
 </Project>

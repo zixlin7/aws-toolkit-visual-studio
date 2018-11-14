@@ -298,17 +298,5 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
                 NotifyPropertyChanged("MaintenanceDuration");
             }
         }
-
-        void NotifyPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        #region INotifyPropertyChanged Members
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        #endregion
     }
 }

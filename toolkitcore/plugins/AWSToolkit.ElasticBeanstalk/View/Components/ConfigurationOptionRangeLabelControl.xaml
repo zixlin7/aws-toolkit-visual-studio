@@ -14,7 +14,7 @@
 
     <DockPanel>
         <TextBlock
-            Name="TextInput"            
+            Name="TextInputControl"            
              Style="{DynamicResource awsTextBlockBaseStyle}"/>
     </DockPanel>
 </commonui:BaseAWSUserControl>

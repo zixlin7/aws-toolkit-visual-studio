@@ -1,7 +1,7 @@
 <Project ToolsVersion="14.0" DefaultTargets="full-build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <PropertyGroup>
-        <InternalBuildTools Condition="'$(InternalBuildTools)'==''">..\..\AWSDotNetBuildTools</InternalBuildTools>
+        <InternalBuildTools Condition="'$(InternalBuildTools)'==''">$(MSBuildProjectDirectory)\..\..\AWSDotNetBuildTools</InternalBuildTools>
     </PropertyGroup>
 
 	<Import Project="$(InternalBuildTools)\references.targets" Condition="Exists('$(InternalBuildTools)\references.targets')" />
@@ -14,10 +14,10 @@
         <Configuration Condition="'$(Configuration)'==''">Debug</Configuration>
 
         <!-- path to the root of the repo artifacts; locations for output content will be inferred from this -->
-        <RootPath Condition="'$(RootPath)'==''">$(MSBuildProjectDirectory)\..</RootPath>
+		<BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
 
         <!-- default location for artifacts consolidation -->
-        <Deployment Condition="'$(Deployment)'==''">$(RootPath)\Deployment</Deployment>
+        <Deployment Condition="'$(Deployment)'==''">$(BuildRoot)\Deployment</Deployment>
 
         <RunKeyScan Condition="'$(RunKeyScan)'==''">false</RunKeyScan>
 
@@ -27,12 +27,9 @@
 
     	<AWSToolkitPackageOutput>$(Deployment)\AWSToolkitPackage</AWSToolkitPackageOutput>
 
-        <Build2017Package Condition="'$(Build2017Package)' == '' And '$(Configuration)' == 'Debug'">true</Build2017Package>
-        <Build2017Package Condition="'$(Build2017Package)' == '' And '$(Configuration)' == 'Release'">false</Build2017Package>
-        
 		<PushHostedFiles Condition="'$(PushHostedFiles)'==''">true</PushHostedFiles>
         <HostedFilesBucket Condition="'$(HostedFilesBucket)'==''">aws-vs-toolkit</HostedFilesBucket>
-        <HostedFilesFolder Condition="'$(HostedFilesFolder)'==''">$(RootPath)\hostedfiles</HostedFilesFolder>
+        <HostedFilesFolder Condition="'$(HostedFilesFolder)'==''">$(BuildRoot)\hostedfiles</HostedFilesFolder>
 
 		<!-- cn-north-1 artifact properties -->
         <BJSHostedFilesBucket Condition="'$(BJSHostedFilesBucket)'==''">aws-vs-toolkit-cn-north-1</BJSHostedFilesBucket>
@@ -50,31 +47,41 @@
 
     <Target Name="restore-nuget">
         <Message Text="Restoring nuget packages"/>
-        <Exec Command="$(RootPath)\solutions\.nuget\NuGet.exe restore $(RootPath)\solutions\AWSVisualStudioToolkit.sln" />
+        <Exec Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSDeploymentHostManager.sln" />
+        <Exec Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSVisualStudioToolkit.sln" />
+        <Exec Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSStudioToolkit.sln" />
     </Target>
     
     <Target Name="build-awsdeploy">
-		<Message Text="$(Configuration) - building host components for AWSDeploy."/>
-		
+		<Message Text="------------------------------------------------------------------------------" />
+		<Message Text="| AWSDeploy - $(Configuration)"/>
+		<Message Text="------------------------------------------------------------------------------" />
         <MSBuild Projects="..\solutions\AWSDeploymentHostManager.sln" Properties="Configuration=$(Configuration)" />
     </Target>
 
     <Target Name="build-vstoolkit" DependsOnTargets="patch-vsixmanifest">
-        <Message Text="$(Configuration) - building core toolkit, service plugin modules and Visual Studio packages."/>
-		
+		<Message Text="------------------------------------------------------------------------------" />
+        <Message Text="| Visual Studio 2013 Toolkit - $(Configuration)" />
+		<Message Text="------------------------------------------------------------------------------" />
         <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=12.0;Configuration=$(Configuration)" />
 		
+		<Message Text="------------------------------------------------------------------------------" />
+        <Message Text="| Visual Studio 2015 Toolkit - $(Configuration)" />
+		<Message Text="------------------------------------------------------------------------------" />
         <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=14.0;Configuration=$(Configuration)" />
-    </Target>
+		
+		<Message Text="------------------------------------------------------------------------------" />
+        <Message Text="| Visual Studio 2017 Toolkit - $(Configuration)" />
+		<Message Text="------------------------------------------------------------------------------" />
+        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=15.0;Configuration=$(Configuration)" />
+		
+		<Message Text="------------------------------------------------------------------------------" />
+        <Message Text="| AWS Studio - $(Configuration)" />
+		<Message Text="------------------------------------------------------------------------------" />
+        <MSBuild Projects="..\solutions\AWSStudioToolkit.sln" Properties="Configuration=$(Configuration)" />
 
-    <Target Name="build-vs2017-toolkit" DependsOnTargets="copy-cf-msbuild-targets" Condition="'$(Build2017Package)'">
-        <Message Text="$(Configuration) - launching shell to build 2017 vsix package."/>
+	</Target>
 
-        <Exec Command="cmd.exe /k $(MSBuildProjectDirectory)\vs2017buildshell.bat $(RootPath) $(Configuration)" 
-              WorkingDirectory="$(RootPath)"
-              />
-    </Target>
-    
     <Target Name="run-tests" DependsOnTargets="build-vstoolkit">
         <Message Text="$(Configuration) - running unit tests."/>
         
@@ -102,7 +109,7 @@
         -->
 	</Target>
 
-    <Target Name="copy-artifacts" DependsOnTargets="build-vstoolkit;copy-awsdeploy;copy-icons;copy-awsdeploy;copy-cf-msbuild-targets;copy-templates;copy-hostedfiles;build-vs2017-toolkit" />
+    <Target Name="copy-artifacts" DependsOnTargets="build-vstoolkit;copy-awsdeploy;copy-icons;copy-awsdeploy;copy-cf-msbuild-targets;copy-templates;copy-hostedfiles" />
 
     <Target Name="copy-icons" DependsOnTargets="build-vstoolkit">
 		<Message Text="Consolidating icons to deployment folder"/>
@@ -129,10 +136,10 @@
         </PropertyGroup>
         
         <ItemGroup>
-            <SampleProjectTemplates Include="$(RootPath)\vspackages\templates\AWSProjectTemplates\AWS Samples\**\*" />
-            <ConsoleProjectTemplates Include="$(RootPath)\vspackages\templates\AWSProjectTemplates\AWS_Console\**\*" />
-            <EmptyProjectTemplates Include="$(RootPath)\vspackages\templates\AWSProjectTemplates\AWS_Empty\**\*" />
-            <WebProjectTemplates Include="$(RootPath)\vspackages\templates\AWSProjectTemplates\AWS_Web\**\*" />
+            <SampleProjectTemplates Include="$(BuildRoot)\vspackages\templates\AWSProjectTemplates\AWS Samples\**\*" />
+            <ConsoleProjectTemplates Include="$(BuildRoot)\vspackages\templates\AWSProjectTemplates\AWS_Console\**\*" />
+            <EmptyProjectTemplates Include="$(BuildRoot)\vspackages\templates\AWSProjectTemplates\AWS_Empty\**\*" />
+            <WebProjectTemplates Include="$(BuildRoot)\vspackages\templates\AWSProjectTemplates\AWS_Web\**\*" />
         </ItemGroup>
         
         <Copy
@@ -176,34 +183,34 @@
 		
         <MakeDir Directories="$(AwsDeployDest)" />
         <ItemGroup>
-            <AWSDeployBinaries Include="..\awsdeploy\client\AWSDeploymentTool\bin\$(Configuration)\awsdeploy.exe" />
-			<AWSDeployBinaries Include="..\awsdeploy\client\AWSDeploymentLib\bin\$(Configuration)\AWSDeploymentLib.dll" />
-			<AWSDeployBinaries Include="..\Deployment\14.0\$(Configuration)\AWSDeploymentCryptoUtility.dll"/>
-			<AWSDeployBinaries Include="..\Deployment\14.0\$(Configuration)\AWSDeploymentHostManagerClientLib.dll"/>
-			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.Core.dll"/>
-			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.AutoScaling.dll"/>
-			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.CloudFormation.dll"/>
-			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.CloudWatch.dll"/>
-			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.EC2.dll"/>
-			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.ElasticBeanstalk.dll"/>
-			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.ElasticLoadBalancing.dll"/>
-			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.IdentityManagement.dll"/>
-			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.Lambda.dll"/>
-			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.RDS.dll"/>
-			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.S3.dll"/>
-			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.SimpleNotificationService.dll"/>
-			<AWSDeployBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.SQS.dll"/>
-			<AWSDeployBinaries Include="..\Deployment\14.0\$(Configuration)\AWSSDK.Extensions.dll"/>
-			<AWSDeployBinaries Include="..\Deployment\14.0\$(Configuration)\AWSToolkit.Util.dll"/>
-			<AWSDeployBinaries Include="..\Deployment\14.0\$(Configuration)\AWSToolkit.dll"/>
+            <AWSDeployBinaries Include="$(BuildRoot)\awsdeploy\client\AWSDeploymentTool\bin\$(Configuration)\awsdeploy.exe" />
+			<AWSDeployBinaries Include="$(BuildRoot)\awsdeploy\client\AWSDeploymentLib\bin\$(Configuration)\AWSDeploymentLib.dll" />
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSDeploymentCryptoUtility.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSDeploymentHostManagerClientLib.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.Core.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.AutoScaling.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.CloudFormation.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.CloudWatch.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.EC2.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.ElasticBeanstalk.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.ElasticLoadBalancing.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.IdentityManagement.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.Lambda.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.RDS.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.S3.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.SimpleNotificationService.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.SQS.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.Extensions.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSToolkit.Util.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSToolkit.dll"/>
 			
-			<AWSDeployBinaries Include="..\thirdparty\ICSharpCode.SharpZipLib.dll"/>
-			<AWSDeployBinaries Include="..\thirdparty\log4net.dll"/>
-			<AWSDeployBinaries Include="..\thirdparty\NGit.dll"/>
-			<AWSDeployBinaries Include="..\thirdparty\NSch.dll"/>
-			<AWSDeployBinaries Include="..\thirdparty\Mono.Security.dll"/>
-			<AWSDeployBinaries Include="..\thirdparty\Sharpen.dll"/>
-			<AWSDeployBinaries Include="..\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\ICSharpCode.SharpZipLib.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\solutions\packages\log4net*\lib\net45-full\log4net.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\NGit.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\NSch.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\Mono.Security.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\Sharpen.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll"/>
 			
         </ItemGroup>
         <Copy
@@ -219,14 +226,14 @@
 		<MakeDir Directories="$(CfMsbuildTargetsDest)" />
 		
         <ItemGroup>
-            <CfMsBuildTargetBinaries Include="..\vspackages\cloudformation\AWSToolkit.CloudFormation.MSBuildTasks\cloudformation.targets" />
-			<CfMsBuildTargetBinaries Include="..\Deployment\14.0\$(Configuration)\AWSToolkit.CloudFormation.MSBuildTasks.dll" />
-			<CfMsBuildTargetBinaries Include="..\Deployment\14.0\$(Configuration)\AWSToolkit.CloudFormation.Parser.dll"/>
-			<CfMsBuildTargetBinaries Include="..\Deployment\14.0\$(Configuration)\AWSToolkit.Util.dll"/>
-			<CfMsBuildTargetBinaries Include="..\thirdparty\log4net.dll"/>
-			<CfMsBuildTargetBinaries Include="..\Include\sdk\assemblies\net45\AWSSDK.Core.dll"/>
-			<CfMsBuildTargetBinaries Include="..\Deployment\14.0\$(Configuration)\AWSDeploymentCryptoUtility.dll"/>
-			<CfMsBuildTargetBinaries Include="..\Deployment\14.0\$(Configuration)\AWSDeploymentHostManagerClientLib.dll"/>
+            <CfMsBuildTargetBinaries Include="$(BuildRoot)\vspackages\cloudformation\AWSToolkit.CloudFormation.MSBuildTasks\cloudformation.targets" />
+			<CfMsBuildTargetBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSToolkit.CloudFormation.MSBuildTasks.dll" />
+			<CfMsBuildTargetBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSToolkit.CloudFormation.Parser.dll"/>
+			<CfMsBuildTargetBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSToolkit.Util.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\solutions\packages\log4net*\lib\net45-full\log4net.dll"/>
+			<CfMsBuildTargetBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.Core.dll"/>
+			<CfMsBuildTargetBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSDeploymentCryptoUtility.dll"/>
+			<CfMsBuildTargetBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSDeploymentHostManagerClientLib.dll"/>
         </ItemGroup>
         <Copy
             SourceFiles="@(CfMsBuildTargetBinaries)"
@@ -436,7 +443,9 @@
 	</Target>
 
 	<Target Name="get-references"  DependsOnTargets="build-tools"  Condition="$(EnableGetReferences)">
-		<MSBuild Projects ="$(MSBuildProjectFullPath)" Targets="get-reference-sdk" Properties="TargetRepository=$(MSBuildProjectDirectory)\.."/>
+		<!-- 
+		<MSBuild Projects ="$(MSBuildProjectFullPath)" Targets="get-reference-sdk" Properties="TargetRepository=$(MSBuildProjectDirectory)\.."/> 
+		-->
 	</Target>
     
 </Project>

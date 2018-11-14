@@ -106,7 +106,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
         readonly Dictionary<string, string> _originalAppSettings = new Dictionary<string, string>();
         string _originalHealthCheckUri = "/";
-        bool _originalEnable32bitAppPool = false;
         bool _originalEnableXRayDaemon = false;
         bool _originalEnableEnhancedHealth = false;
 

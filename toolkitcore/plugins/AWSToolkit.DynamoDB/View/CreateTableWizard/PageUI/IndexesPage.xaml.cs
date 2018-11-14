@@ -27,11 +27,6 @@ namespace Amazon.AWSToolkit.DynamoDB.View.CreateTableWizard.PageUI
     /// </summary>
     public partial class IndexesPage
     {
-        DataGrid _valuesGrid = null;
-        Button _btnAddValue = null, _btnDeleteValue = null;
-        ObservableCollection<StringWrapper> _nonKeyList;
-
-
         IndexesPageController _controller;
         public IndexesPage(IndexesPageController controller)
         {

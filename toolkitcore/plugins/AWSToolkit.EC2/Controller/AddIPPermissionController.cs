@@ -60,7 +60,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
             if (this.Model.IsPortAndIpChecked)
             {
-                permission.IpRanges = new List<string>(){this.Model.SourceCIDR};
+                permission.Ipv4Ranges = new List<IpRange> { new IpRange { CidrIp = this.Model.SourceCIDR } };
             }
             else
             {

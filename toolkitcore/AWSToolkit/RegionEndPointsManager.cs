@@ -69,7 +69,7 @@ namespace Amazon.AWSToolkit
         // mainly used to verify behavior in unit testing
         private bool _loadedFromResourceContent;
 
-        private LocalRegionEndPoints _localRegions;
+        private LocalRegionEndPoints _localRegions = new LocalRegionEndPoints();
 
         // Returns the singleton manager instance.
         /// <summary>
@@ -89,10 +89,10 @@ namespace Amazon.AWSToolkit
                     _instance = new RegionEndPointsManager
                     {
                         FileFetcher = s3FileFetcher,
-						_localRegions = new LocalRegionEndPoints
-						{
-							FileFetcher = s3FileFetcher
-						}
+                        LocalRegion = new LocalRegionEndPoints()
+                        {
+                            FileFetcher = s3FileFetcher
+                        },
                     };
 
                     _instance.LoadEndPoints();

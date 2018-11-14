@@ -563,7 +563,7 @@ namespace AWSDeployment
                         FromPort = 80,
                         ToPort = 80,
                         IpProtocol = "tcp",
-                        IpRanges = new List<string>{"0.0.0.0/0"}
+                        Ipv4Ranges = new List<IpRange> { new IpRange { CidrIp = "0.0.0.0/0" } }
                     }
                 }
                 });

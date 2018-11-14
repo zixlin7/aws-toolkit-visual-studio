@@ -31,7 +31,6 @@ namespace Amazon.Lambda.Tools
             IAMCreateRole,
             IAMGetRole,
 
-            LambdaCliPublish,
 
             LambdaCreateFunction,
             LambdaDeleteFunction,
@@ -47,6 +46,8 @@ namespace Amazon.Lambda.Tools
             ServerlessTemplateParseError,
             ServerlessTemplateMissingResourceSection,
             ServerlessTemplateSubstitutionError,
+            ServerlessTemplateMissingLocalPath,
+            ServerlessTemplateUnknownActionForLocalPath,
             WaitingForStackError,
 
             FailedToFindZipProgram

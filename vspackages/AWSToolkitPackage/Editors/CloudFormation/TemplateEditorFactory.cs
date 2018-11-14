@@ -114,6 +114,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
             int retval = VSConstants.E_NOTIMPL;
             pbstrPhysicalView = null;   // We support only one view.
             if (rguidLogicalView.Equals(VSConstants.LOGVIEWID_Designer) ||
+            rguidLogicalView.Equals(VSConstants.LOGVIEWID_TextView) ||
             rguidLogicalView.Equals(VSConstants.LOGVIEWID_Primary))
             {
                 retval = VSConstants.S_OK;

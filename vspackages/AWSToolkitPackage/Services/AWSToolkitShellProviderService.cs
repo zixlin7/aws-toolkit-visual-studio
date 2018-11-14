@@ -23,6 +23,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
     /// </summary>
     internal class EnvDTEConstants
     {
+        // Guid Source: https://docs.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.shell.logicalview?view=visualstudiosdk-2017
+        // Represents a Logical Text View of a VS Editor
         public const string vsViewKindTextView = "{7651A703-06E5-11D1-8EBD-00A0C90F26EA}";
     }
 

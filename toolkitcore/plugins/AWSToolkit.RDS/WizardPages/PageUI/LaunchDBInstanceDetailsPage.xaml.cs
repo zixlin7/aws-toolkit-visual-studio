@@ -196,18 +196,6 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
             }
         }
 
-        void NotifyPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        #region INotifyPropertyChanged Members
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        #endregion
-
         private void _dbEngineVersions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             NotifyPropertyChanged("engineVersion");

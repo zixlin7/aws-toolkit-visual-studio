@@ -32,5 +32,10 @@ namespace Amazon.AWSToolkit.CommonUI
         {
             _action();
         }
+
+        public void RaiseCanExecuteChanged()
+        {
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        }
     }
 }

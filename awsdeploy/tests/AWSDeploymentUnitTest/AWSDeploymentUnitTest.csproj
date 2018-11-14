@@ -1,5 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
+  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -35,22 +40,20 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK.Core, Version=3.0.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Include\sdk\assemblies\net35\AWSSDK.Core.dll</HintPath>
+    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Core.3.3.28.1\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
-    <Reference Include="AWSSDK.S3, Version=3.0.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Include\sdk\assemblies\net35\AWSSDK.S3.dll</HintPath>
+    <Reference Include="AWSSDK.S3, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.S3.3.3.18.2\lib\net45\AWSSDK.S3.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Web.Administration, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ThirdParty\Microsoft.Web.Administration.dll</HintPath>
+      <HintPath>$(BuildRoot)\ThirdParty\Microsoft.Web.Administration.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Deployment, Version=7.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ThirdParty\Microsoft.Web.Deployment.dll</HintPath>
+      <HintPath>$(BuildRoot)\ThirdParty\Microsoft.Web.Deployment.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -85,15 +88,15 @@
     <Compile Include="UpdateApplicationTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\host\AWSDeploymentCryptoUtility\AWSDeploymentCryptoUtility.csproj">
+    <ProjectReference Include="$(BuildRoot)\awsdeploy\host\AWSDeploymentCryptoUtility\AWSDeploymentCryptoUtility.csproj">
       <Project>{4A43FDED-F828-4872-89DA-0FE738BCB93A}</Project>
       <Name>AWSDeploymentCryptoUtility</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\host\AWSDeploymentHostManagerApp\AWSDeploymentHostManagerApp.csproj">
+    <ProjectReference Include="$(BuildRoot)\awsdeploy\host\AWSDeploymentHostManagerApp\AWSDeploymentHostManagerApp.csproj">
       <Project>{343CCCBD-185E-497E-8E65-D656168B94F9}</Project>
       <Name>AWSBeanstalkHostManagerApp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\host\AWSDeploymentHostManager\AWSDeploymentHostManager.csproj">
+    <ProjectReference Include="$(BuildRoot)\awsdeploy\host\AWSDeploymentHostManager\AWSDeploymentHostManager.csproj">
       <Project>{742E95C8-858C-4BD7-AB01-BD1A7960D4B0}</Project>
       <Name>AWSBeanstalkHostManager</Name>
     </ProjectReference>
@@ -105,11 +108,4 @@
     <EmbeddedResource Include="Resources\sample-configfile.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

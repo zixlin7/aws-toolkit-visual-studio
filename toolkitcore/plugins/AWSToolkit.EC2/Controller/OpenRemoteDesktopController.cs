@@ -126,7 +126,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
                         IpPermission permission = new IpPermission()
                         {
-                            IpRanges = new List<string>(){ control.IPAddress},
+                            Ipv4Ranges = new List<IpRange> { new IpRange { CidrIp = control.IPAddress } },
                             IpProtocol = NetworkProtocol.RDP.UnderlyingProtocol.ToString().ToLower(),
                             FromPort = NetworkProtocol.RDP.DefaultPort.GetValueOrDefault(),
                             ToPort = NetworkProtocol.RDP.DefaultPort.GetValueOrDefault()

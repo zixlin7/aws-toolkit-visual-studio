@@ -29,7 +29,6 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ModifyDBInstancePageController));
         object _syncLock = new object();
         ModifyDBInstancePage _pageUI;
-        bool isInVpc = false;
 
         int _backgroundWorkersActive = 0;
         int BackgroundWorkerCount

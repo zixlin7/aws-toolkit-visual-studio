@@ -203,7 +203,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                         ToPort = permission.ToPort
                     };
                     if (!string.IsNullOrEmpty(permission.Source))
-                        ipPermSpec.IpRanges = new List<string> {permission.Source};
+                        ipPermSpec.Ipv4Ranges = new List<IpRange> { new IpRange { CidrIp = permission.Source } };
 
                     ingressRequest.IpPermissions.Add(ipPermSpec);
                 }

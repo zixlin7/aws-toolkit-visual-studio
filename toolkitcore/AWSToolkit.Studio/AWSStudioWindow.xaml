@@ -1,0 +1,53 @@
+﻿<Window x:Class="Amazon.AWSToolkit.Studio.AWSStudioWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:navigation="clr-namespace:Amazon.AWSToolkit.Navigator;assembly=AWSToolkit"
+    Title="AWS Studio" Height="549" Width="646" Icon="MainIcon.ico">
+    
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/_AWSStudioThemeOverrides.xaml"/>
+                <ResourceDictionary Source="Themes/ClosableTabItem.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    
+    <DockPanel LastChildFill="True">
+
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Test" x:Name="_testMenu">
+                <MenuItem x:Name="_beanstalkAspNet" Header="Beanstalk ASP.NET Deployment" Click="_beanstalkAspNet_OnClick" />
+                <MenuItem x:Name="_beanstalkAspNetCore" Header="Beanstalk ASP.NET Core Deployment" Click="_beanstalkAspNetCore_OnClick" />
+                <Separator/>
+                <MenuItem x:Name="_lambdaNetCore10Function" Header="Lambda .NET Core 1.0 Function Deployment" Click="_lambdaNetCore10Function_OnClick"/>
+                <MenuItem x:Name="_lambdaNetCore10Serverless" Header="Lambda .NET Core 1.0 Serverless Deployment" Click="_lambdaNetCore10Serverless_OnClick"/>
+                <MenuItem x:Name="_lambdaNetCore20Function" Header="Lambda .NET Core 2.0 Function Deployment" Click="_lambdaNetCore20Function_OnClick"/>
+                <MenuItem x:Name="_lambdaNetCore20Serverless" Header="Lambda .NET Core 2.0 Serverless Deployment" Click="_lambdaNetCore20Serverless_OnClick"/>
+            </MenuItem>    
+        </Menu>
+
+        <StatusBar VerticalAlignment="Bottom" DockPanel.Dock="Bottom">
+            <TextBlock Name="_ctlStatusField" Style="{DynamicResource awsTextBlockBaseStyle}"></TextBlock>
+        </StatusBar>
+
+        <Grid Name="_ctlMainGrid">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="5"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <navigation:NavigatorControl x:Name="_navigation" Grid.Column="0" />
+
+            <GridSplitter Grid.Column="1" Grid.Row="0" Height="Auto" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray"/>
+
+            <Grid Grid.Column="2" Background="Gray">
+                <TabControl Name="_ctlEditorTab" Background="Gray" Style="{DynamicResource awsPropertyPageHorizontalTabStyle}">
+                </TabControl>
+            </Grid>
+        </Grid>
+    </DockPanel>
+</Window>
