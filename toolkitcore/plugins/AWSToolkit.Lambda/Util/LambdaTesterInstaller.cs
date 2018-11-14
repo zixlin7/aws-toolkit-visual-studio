@@ -21,8 +21,9 @@ namespace Amazon.AWSToolkit.Lambda.Util
         static ILog LOGGER = LogManager.GetLogger(typeof(LambdaTesterInstaller));
         const string LAUNCH_SETTINGS_FILE = "launchSettings.json";
 
-        const string LAMBDA_TESTER_PACKAGE = "Amazon.Lambda.Tester-2.1";
-        const string LAMBDA_TESTER_EXE = "dotnet-lambda-tester-2.1.exe";
+        const string LAMBDA_TEST_TOOL_PACKAGE = "Amazon.Lambda.TestTool-2.1";
+        const string LAMBDA_TEST_TOOL_EXE = "dotnet-lambda-test-tool-2.1.exe";
+        const string LAUNCH_SETTINGS_NODE = "Mock Lambda Test Tool";
 
         static readonly HashSet<string> SUPPORTED_TARGET_FRAMEWORKS = new HashSet<string> { "netcoreapp2.1" };
 
@@ -41,11 +42,11 @@ namespace Amazon.AWSToolkit.Lambda.Util
                 if (string.IsNullOrEmpty(awsProjectType) || !awsProjectType.Contains("Lambda"))
                     return;
 
-                var lambdaTesterInstallpath = GetLambdaTesterPath(Path.GetDirectoryName(projectPath));
-                if (string.IsNullOrEmpty(lambdaTesterInstallpath) || !File.Exists(lambdaTesterInstallpath))
+                var lambdaTestToolInstallpath = GetLambdaTestToolPath(Path.GetDirectoryName(projectPath));
+                if (string.IsNullOrEmpty(lambdaTestToolInstallpath) || !File.Exists(lambdaTestToolInstallpath))
                     return;
 
-                var targetFramework = GetTargetFramework(projectPath);
+                var targetFramework = GetTargetFramework(xdoc);
                 if (string.IsNullOrEmpty(targetFramework) || !SUPPORTED_TARGET_FRAMEWORKS.Contains(targetFramework))
                     return;
 
@@ -60,17 +61,17 @@ namespace Amazon.AWSToolkit.Lambda.Util
                     root["profiles"] = profiles;
                 }
 
-                var lambdaTester = profiles["LambdaTester"];
+                var lambdaTester = profiles[LAUNCH_SETTINGS_NODE];
                 if (lambdaTester == null)
                 {
                     lambdaTester = new JObject();
                     lambdaTester["commandName"] = "Executable";
                     lambdaTester["commandLineArgs"] = "--port 5050";
 
-                    profiles["LambdaTester"] = lambdaTester;
+                    profiles[LAUNCH_SETTINGS_NODE] = lambdaTester;
                 }
 
-                lambdaTester["executablePath"] = $"{lambdaTesterInstallpath}";
+                lambdaTester["executablePath"] = $"{lambdaTestToolInstallpath}";
                 lambdaTester["workingDirectory"] = $".\\bin\\Debug\\{targetFramework}";
 
                 var updated = JsonConvert.SerializeObject(root, Formatting.Indented);
@@ -82,10 +83,10 @@ namespace Amazon.AWSToolkit.Lambda.Util
             }
         }
 
-        private static string GetLambdaTesterPath(string projectDirectory)
+        private static string GetLambdaTestToolPath(string projectDirectory)
         {
             var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            var fullPath = Path.Combine(userProfile, ".dotnet", "tools", LAMBDA_TESTER_EXE);
+            var fullPath = Path.Combine(userProfile, ".dotnet", "tools", LAMBDA_TEST_TOOL_EXE);
 
             if (!File.Exists(fullPath))
             {
@@ -102,10 +103,9 @@ namespace Amazon.AWSToolkit.Lambda.Util
             return fullPath;
         }
 
-        private static string GetTargetFramework(string projectPath)
+        private static string GetTargetFramework(XDocument xdocProject)
         {
-            var xdoc = XDocument.Parse(File.ReadAllText(projectPath));
-            var targetFramework = xdoc.XPathSelectElement("//PropertyGroup/TargetFramework")?.Value;
+            var targetFramework = xdocProject.XPathSelectElement("//PropertyGroup/TargetFramework")?.Value;
             return targetFramework;
         }
 
@@ -141,7 +141,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
                 return DOTNET_NOT_FOUND_ERROR_CODE;
 
 
-            var arguments = $"tool {command} -g {LAMBDA_TESTER_PACKAGE}";
+            var arguments = $"tool {command} -g {LAMBDA_TEST_TOOL_PACKAGE}";
             var psi = new ProcessStartInfo
             {
                 FileName = dotnetCLI,
