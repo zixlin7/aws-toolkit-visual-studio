@@ -138,6 +138,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         
         Guid _guidAwsOutputWindowPane = new Guid(0xb1c55205, 0xa332, 0x4dcb, 0xbf, 0xa0, 0x86, 0x62, 0x7f, 0x6d, 0x4, 0x86 );
         IVsOutputWindowPane _awsOutputWindowPane;
+        SolutionEvents _events;
 
         uint _vsShellPropertyChangeEventSinkCookie;
 
@@ -517,6 +518,9 @@ namespace Amazon.AWSToolkit.VisualStudio
             });
 			
             var dte = (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
+            _events = dte.Events.SolutionEvents;
+            _events.ProjectAdded += OnProjectAddedEvent;
+            _events.Opened += OnSolutionOpenedEvent;
 
             ToolkitEvent evnt = new ToolkitEvent();
             evnt.AddProperty(AttributeKeys.VisualStudioIdentifier, string.Format("{0}/{1}", dte.Version, dte.Edition));
@@ -563,6 +567,28 @@ namespace Amazon.AWSToolkit.VisualStudio
             if (shellService != null)
             {
                 ErrorHandler.ThrowOnFailure(shellService.AdviseShellPropertyChanges(this, out _vsShellPropertyChangeEventSinkCookie));
+            }
+        }
+
+        private void OnSolutionOpenedEvent()
+        {
+            var dte = (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
+            foreach (Project project in dte.Solution.Projects)
+            {
+                EnsureLambdaTesterConfigured(project);
+            }
+        }
+
+        private void OnProjectAddedEvent(Project project)
+        {
+            EnsureLambdaTesterConfigured(project);
+        }
+
+        private void EnsureLambdaTesterConfigured(Project project)
+        {
+            if (this.LambdaPluginAvailable)
+            {
+                this.LambdaPlugin.EnsureLambdaTesterConfigured(project.FileName);
             }
         }
 

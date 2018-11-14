@@ -8,5 +8,7 @@ namespace Amazon.AWSToolkit.Lambda
     public interface IAWSLambda
     {
         void UploadFunctionFromPath(Dictionary<string, object> seedProperties);
+
+        void EnsureLambdaTesterConfigured(string projectPath);
     }
 }
