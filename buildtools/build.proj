@@ -38,10 +38,10 @@
         <VSToolkitDistribution>E38QEBQWXHC945</VSToolkitDistribution>
          
 		<SignVsixPackages Condition="'$(SignVsixPackages)'==''">false</SignVsixPackages>
-        
+        <BuildVSToolkit2017>true</BuildVSToolkit2017>
     </PropertyGroup>
 
-	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;get-latest-endpoint-data;restore-nuget;update-version;build-awsdeploy;build-vstoolkit;run-tests;keyscan;copy-artifacts;sign-packages;save-build">
+	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;get-latest-endpoint-data;restore-nuget;update-version;build-awsdeploy;build-vstoolkit;build-vstoolkit-2017;run-tests;keyscan;copy-artifacts;sign-packages;save-build">
 		<Message Text="Builds all components of the AWS Toolkit for Visual Studio"/>
 	</Target>
 
@@ -69,18 +69,21 @@
         <Message Text="| Visual Studio 2015 Toolkit - $(Configuration)" />
 		<Message Text="------------------------------------------------------------------------------" />
         <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=14.0;Configuration=$(Configuration)" />
-		
-		<Message Text="------------------------------------------------------------------------------" />
-        <Message Text="| Visual Studio 2017 Toolkit - $(Configuration)" />
-		<Message Text="------------------------------------------------------------------------------" />
-        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=15.0;Configuration=$(Configuration)" />
-		
+				
 		<Message Text="------------------------------------------------------------------------------" />
         <Message Text="| AWS Studio - $(Configuration)" />
 		<Message Text="------------------------------------------------------------------------------" />
         <MSBuild Projects="..\solutions\AWSStudioToolkit.sln" Properties="Configuration=$(Configuration)" />
 
 	</Target>
+	
+	<Target Name="build-vstoolkit-2017" DependsOnTargets="patch-vsixmanifest" Condition="'$(BuildVSToolkit2017)'=='true'">
+		<Message Text="------------------------------------------------------------------------------" />
+        <Message Text="| Visual Studio 2017 Toolkit - $(Configuration)" />
+		<Message Text="------------------------------------------------------------------------------" />
+        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=15.0;Configuration=$(Configuration)" />
+	</Target>
+	
 
     <Target Name="run-tests" DependsOnTargets="build-vstoolkit">
         <Message Text="$(Configuration) - running unit tests."/>
@@ -191,11 +194,14 @@
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.AutoScaling.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.CloudFormation.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.CloudWatch.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.CognitoIdentity.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.EC2.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.ElasticBeanstalk.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.ElasticLoadBalancing.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.IdentityManagement.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.KeyManagementService.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.Lambda.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.MobileAnalytics.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.RDS.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.S3.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.SimpleNotificationService.dll"/>
@@ -211,6 +217,7 @@
 			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\Mono.Security.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\Sharpen.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll"/>
+			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\YamlDotNet.dll"/>
 			
         </ItemGroup>
         <Copy
@@ -230,7 +237,7 @@
 			<CfMsBuildTargetBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSToolkit.CloudFormation.MSBuildTasks.dll" />
 			<CfMsBuildTargetBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSToolkit.CloudFormation.Parser.dll"/>
 			<CfMsBuildTargetBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSToolkit.Util.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\solutions\packages\log4net*\lib\net45-full\log4net.dll"/>
+			<CfMsBuildTargetBinaries Include="$(BuildRoot)\solutions\packages\log4net*\lib\net45-full\log4net.dll"/>
 			<CfMsBuildTargetBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.Core.dll"/>
 			<CfMsBuildTargetBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSDeploymentCryptoUtility.dll"/>
 			<CfMsBuildTargetBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSDeploymentHostManagerClientLib.dll"/>
