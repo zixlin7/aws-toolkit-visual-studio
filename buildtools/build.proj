@@ -303,7 +303,7 @@
         </ItemGroup>
 		
 		<ItemGroup>
-			<FolderException>solutions\packages</FolderException>
+			<FolderException Include="solutions\packages"/>
 		</ItemGroup>
 
         <KeyScannerTask
