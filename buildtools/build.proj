@@ -301,12 +301,17 @@
 			<FileException Include="Include\sdk\Models\elasticbeanstalk.customizations.json" />
 			
         </ItemGroup>
+		
+		<ItemGroup>
+			<FolderException>solutions\packages</FolderException>
+		</ItemGroup>
 
         <KeyScannerTask
             Folder="$(MSBuildProjectDirectory)\.."
             FilePattern="**"
             PrivateKeyExceptions="@(PrivateKeyException)"
             FileExceptions="@(FileException)"
+			FolderExceptions="@(FolderException)"
             ParallelScan="true"
             />
 
