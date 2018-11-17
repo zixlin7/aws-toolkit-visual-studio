@@ -73,6 +73,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages
         /// <summary>
         /// 
         /// </summary>
+        public static readonly string IsSelectedFunctionExisting = "IsSelectedFunctionExisting";
+
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly string Configuration = "configuration";
 
         /// <summary>

@@ -610,6 +610,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
         private void _ctlFunctionName_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            UpdateIfUsingExistingFunction();
             if (_loadingExistingFunctions)
                 return;
 
@@ -618,7 +619,15 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
         private void _ctlFunctionName_TextChanged(object sender, RoutedEventArgs e)
         {
+            UpdateIfUsingExistingFunction();
             NotifyPropertyChanged("FunctionName");
+        }
+
+        private void UpdateIfUsingExistingFunction()
+        {
+            IAWSWizard hostWizard = PageController.HostingWizard;
+            hostWizard.SetProperty(UploadFunctionWizardProperties.IsSelectedFunctionExisting, 
+                this._ctlFunctionNamePicker.SelectedValue != null && this._existingFunctions.ContainsKey(this._ctlFunctionNamePicker.SelectedValue as string));
         }
 
         private void _ctlFunctionNamePicker_DropDownClosed(object sender, EventArgs e)

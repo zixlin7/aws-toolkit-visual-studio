@@ -137,8 +137,15 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
         {
             get
             {
-                if (_pageUI == null)    // todo: this is not always the case (say if the function exists)
+                if (_pageUI == null)
+                {
+                    if(HostingWizard[UploadFunctionWizardProperties.IsSelectedFunctionExisting] is bool)
+                    {
+                        return (bool)HostingWizard[UploadFunctionWizardProperties.IsSelectedFunctionExisting];
+                    }
+
                     return false;
+                }
 
                 if (BackgroundWorkerCount > 0)
                     return false;

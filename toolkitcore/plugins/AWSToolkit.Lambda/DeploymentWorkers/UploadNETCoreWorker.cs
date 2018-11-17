@@ -70,7 +70,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 {
                     command.Role = uploadState.SelectedRole.Arn;
                 }
-                else
+                else if(uploadState.SelectedManagedPolicy != null)
                 {
                     command.Role = this.CreateRole(uploadState);
                     logger.WriteLine(string.Format("Created IAM role {0} with managed policy {1}", command.Role,
