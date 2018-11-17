@@ -169,6 +169,8 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// </summary>
         bool? _msdeployInstallVerified = null;
 
+        EnvDTE.DebuggerEvents _debuggerEvents;
+
         internal SimpleMobileAnalytics AnalyticsRecorder { get; private set; }
 
         /// <summary>
@@ -522,6 +524,9 @@ namespace Amazon.AWSToolkit.VisualStudio
             _events.ProjectAdded += OnProjectAddedEvent;
             _events.Opened += OnSolutionOpenedEvent;
 
+            _debuggerEvents = dte.Events.DebuggerEvents;
+            _debuggerEvents.OnContextChanged += OnDebuggerContextChange;
+            
             ToolkitEvent evnt = new ToolkitEvent();
             evnt.AddProperty(AttributeKeys.VisualStudioIdentifier, string.Format("{0}/{1}", dte.Version, dte.Edition));
             SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
@@ -567,6 +572,28 @@ namespace Amazon.AWSToolkit.VisualStudio
             if (shellService != null)
             {
                 ErrorHandler.ThrowOnFailure(shellService.AdviseShellPropertyChanges(this, out _vsShellPropertyChangeEventSinkCookie));
+            }
+        }
+
+
+        int _lastDebugProcessId = -1;
+        private void OnDebuggerContextChange(EnvDTE.Process newProcess, Program newProgram, Thread newThread, EnvDTE.StackFrame newStackFrame)
+        {
+            try
+            {
+                var debugAppName = newProcess.Name;
+
+                if (_lastDebugProcessId != newProcess.ProcessID && !string.IsNullOrEmpty(debugAppName) && debugAppName.Contains("dotnet-lambda-test-tool"))
+                {
+                    _lastDebugProcessId= newProcess.ProcessID;
+                    ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(AttributeKeys.DotnetLambdaTestToolLaunch_2_1, "1");
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                }
+            }
+            catch (Exception e)
+            {
+                LOGGER.Info("Error detecting debug action", e);
             }
         }
 
