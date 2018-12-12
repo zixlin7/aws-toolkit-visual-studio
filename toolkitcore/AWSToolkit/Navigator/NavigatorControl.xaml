@@ -148,15 +148,6 @@
                             <AutomationProperties.AutomationId>
                                 <Binding StringFormat="Region_{0}" Path="SystemName" />
                             </AutomationProperties.AutomationId>
-                            <Image
-                                Width="13"
-                                Height="12"
-                                Margin="5,0,0,0"
-                                Source="{Binding FlagIcon}">
-                                <AutomationProperties.AutomationId>
-                                    <Binding StringFormat="Region_Flag_{0}" Path="SystemName" />
-                                </AutomationProperties.AutomationId>
-                            </Image>
                             <TextBlock Margin="5,0,0,0" Text="{Binding DisplayName}">
                                 <AutomationProperties.AutomationId>
                                     <Binding StringFormat="Region_Label_{0}" Path="DisplayName" />
