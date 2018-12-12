@@ -150,7 +150,6 @@ namespace Amazon.AWSToolkit.EC2.View
 
                     var regionItem = new MenuItem { Header = item.DisplayName, Tag = item };
                     regionItem.Click += this.onCopyAmiClick;
-                    regionItem.Icon = IconHelper.GetIcon(item.FlagIcon);
 
                     copyAmi.Items.Add(regionItem);
                 }
