@@ -613,9 +613,28 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         private void EnsureLambdaTesterConfigured(Project project)
         {
+            if (project == null)
+                return;
+
             if (this.LambdaPluginAvailable)
             {
-                this.LambdaPlugin.EnsureLambdaTesterConfigured(project.FileName);
+                var name = project.Name;
+                var kind = project.Kind;
+
+                // If we got an event that a project folder was opened then we have
+                // to manually look for the projects under the folder because VS won't send 
+                // the child events.
+                if (string.Equals(kind, GuidList.VSProjectTypeProjectFolder))
+                {
+                    foreach (ProjectItem childItem in project.ProjectItems)
+                    {
+                        EnsureLambdaTesterConfigured(childItem.SubProject);
+                    }
+                }
+                else
+                {
+                    this.LambdaPlugin.EnsureLambdaTesterConfigured(project.FileName);
+                }
             }
         }
 

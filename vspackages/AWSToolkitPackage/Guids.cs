@@ -46,5 +46,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         // Team Explorer integration
         public const string guidCodeCommitConnectSectionString = "d4632b03-6cf0-4f5e-9124-175280c955df";
+
+        public const string VSProjectTypeProjectFolder = "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}";
     };
 }
