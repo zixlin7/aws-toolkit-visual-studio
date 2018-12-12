@@ -195,7 +195,6 @@ namespace Amazon.AWSToolkit
                             {
                                 SystemName = p.Element("systemname").Value,
                                 DisplayName = p.Element("displayname").Value,
-                                FlagIcon = p.Element("flag-icon").Value,
                                 MinToolkitVersion = p.Element("min-toolkit-version") != null ? p.Element("min-toolkit-version").Value : null,
                                 Restrictions = p.Element("restrictions") != null ? p.Element("restrictions").Value.Split(',') : null
                             };
@@ -220,7 +219,7 @@ namespace Amazon.AWSToolkit
 
                     if (string.IsNullOrEmpty(regionName.MinToolkitVersion) || !VersionManager.IsVersionGreaterThanToolkit(regionName.MinToolkitVersion))
                     {
-                        var region = new RegionEndPoints(regionName.SystemName, regionName.DisplayName, regionName.FlagIcon, endpoints, regionName.Restrictions)
+                        var region = new RegionEndPoints(regionName.SystemName, regionName.DisplayName, endpoints, regionName.Restrictions)
                         {
                             FileFetcher = this.FileFetcher
                         };
@@ -241,11 +240,10 @@ namespace Amazon.AWSToolkit
             protected IDictionary<string, EndPoint> _endpoints;
             readonly HashSet<string> _restrictions;
 
-            internal RegionEndPoints(string systemName, string displayName, string flagIconName, IDictionary<string, EndPoint> endpoints, string[] restrictions)
+            internal RegionEndPoints(string systemName, string displayName, IDictionary<string, EndPoint> endpoints, string[] restrictions)
             {
                 this.SystemName = systemName;
                 this.DisplayName = displayName;
-                this.FlagIconName = flagIconName;
                 this._endpoints = endpoints;
 
                 this._restrictions = new HashSet<string>();
@@ -298,21 +296,6 @@ namespace Amazon.AWSToolkit
                 private set;
             }
 
-            public string FlagIconName
-            {
-                get;
-                private set;
-            }
-
-            public Stream FlagIcon
-            {
-                get
-                {
-                    Stream stream = FileFetcher.OpenFileStream(FlagIconName, S3FileFetcher.CacheMode.Permanent);
-                    return stream;
-                }
-            }
-
             public virtual EndPoint GetEndpoint(string serviceName)
             {
                 EndPoint endpoint = null;
@@ -339,7 +322,7 @@ namespace Amazon.AWSToolkit
         public class LocalRegionEndPoints : RegionEndPoints            
         {
             internal LocalRegionEndPoints()
-                : base("local", "Local (localhost)", "flags/local.png", new Dictionary<string, EndPoint>(), new string[]{})
+                : base("local", "Local (localhost)", new Dictionary<string, EndPoint>(), new string[]{})
             {
             }
 

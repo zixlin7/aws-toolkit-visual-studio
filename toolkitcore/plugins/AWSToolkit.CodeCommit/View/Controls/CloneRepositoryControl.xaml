@@ -145,7 +145,6 @@
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <Image Margin="4,0,0,0" Width="13" Height="12" Source="{Binding FlagIcon}"/>
                         <TextBlock Margin="4,0,0,0" Text="{Binding DisplayName}" Style="{DynamicResource awsTextBlockBaseStyle}" />
                     </StackPanel>
                 </DataTemplate>
