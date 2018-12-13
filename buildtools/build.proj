@@ -426,6 +426,7 @@
         <UploadHostedFilesTask
 				Bucket="$(HostedFilesBucket)"
 				S3Path=""
+				KeyExceptions="ServiceEndPoints.xml"
 				LocalPath="$(HostedFilesFolder)">
 			<Output TaskParameter="KeysToInvalidate" PropertyName="HostedFilesInvalidationKeys" />
 		</UploadHostedFilesTask>
