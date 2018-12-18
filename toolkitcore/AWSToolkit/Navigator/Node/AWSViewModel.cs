@@ -26,7 +26,8 @@ namespace Amazon.AWSToolkit.Navigator.Node
         AWSViewMetaNode _metaNode;
         ObservableCollection<AccountViewModel> _accounts = new ObservableCollection<AccountViewModel>();
         SettingsWatcher _sdkCredentialWatcher;
-        FileSystemWatcher _sharedCredentialWatcher;
+        bool _sharedCredentialWatchersInitialized = false;
+        Dictionary<string, FileSystemWatcher> _sharedCredentialWatchers = new Dictionary<string, FileSystemWatcher>();
 
         ILog _logger = LogManager.GetLogger(typeof(AWSViewModel));
 
@@ -67,29 +68,49 @@ namespace Amazon.AWSToolkit.Navigator.Node
         /// </remarks>
         internal void SetupSharedCredentialFileMonitoring()
         {
-            if (this._sharedCredentialWatcher != null)
+            if (_sharedCredentialWatchersInitialized)
                 return;
 
-            var sharedStore = new SharedCredentialsFile();
-
-            var sharedCredentialPath = Path.GetDirectoryName(sharedStore.FilePath);
-            if (!Directory.Exists(sharedCredentialPath))
-                return;
-
-            this._sharedCredentialWatcher = new FileSystemWatcher(sharedCredentialPath, Path.GetFileName(sharedStore.FilePath));
-
-            Action<object, FileSystemEventArgs> callback = (o, e) => 
+            try
+            {
+                Action<object, FileSystemEventArgs> callback = (o, e) =>
                 {
                     this._dispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate ()
                     {
                         this.Refresh();
                     });
                 };
-            this._sharedCredentialWatcher.Changed += new FileSystemEventHandler(callback);
-            this._sharedCredentialWatcher.Created += new FileSystemEventHandler(callback);
-            this._sharedCredentialWatcher.Renamed += new RenamedEventHandler(callback);
 
-            this._sharedCredentialWatcher.EnableRaisingEvents = true;
+                var credentialPaths = GetCandidateCredentialPaths();
+
+                foreach (var credentialPath in credentialPaths)
+                {
+                    var directoryName = Path.GetDirectoryName(credentialPath);
+                    var fileName = Path.GetFileName(credentialPath);
+
+                    if (string.IsNullOrWhiteSpace(directoryName) ||
+                        string.IsNullOrWhiteSpace(fileName))
+                    {
+                        continue;
+                    }
+
+                    var watcher = new FileSystemWatcher(directoryName, fileName);
+
+                    watcher.Changed += new FileSystemEventHandler(callback);
+                    watcher.Created += new FileSystemEventHandler(callback);
+                    watcher.Renamed += new RenamedEventHandler(callback);
+
+                    watcher.EnableRaisingEvents = true;
+
+                    this._sharedCredentialWatchers[credentialPath] = watcher;
+                }
+
+                _sharedCredentialWatchersInitialized = true;
+            }
+            catch (Exception e)
+            {
+                this._logger.Error("Error setting up credential file watcher", e);
+            }
         }
 
         public ObservableCollection<AccountViewModel> RegisteredAccounts
@@ -242,6 +263,35 @@ namespace Amazon.AWSToolkit.Navigator.Node
             get
             {
                 return false;
+            }
+        }
+
+        private IEnumerable<string> GetCandidateCredentialPaths()
+        {
+            return new string[]
+                {
+                    SharedCredentialsFile.DefaultFilePath,
+                    AWSConfigs.AWSProfilesLocation,
+                    GetCurrentSharedCredentialsPath()
+                }
+                .Distinct()
+                .Where(path => !string.IsNullOrWhiteSpace(path));
+        }
+
+        /// <summary>
+        /// Attempts to determine the path of the shared credentials file
+        /// </summary>
+        /// <returns>The current path of the shared credentials file, if it could be found and loaded successfully. Null otherwise.</returns>
+        private string GetCurrentSharedCredentialsPath()
+        {
+            try
+            {
+                var credentialsFile = new SharedCredentialsFile();
+                return credentialsFile.FilePath;
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
     }
