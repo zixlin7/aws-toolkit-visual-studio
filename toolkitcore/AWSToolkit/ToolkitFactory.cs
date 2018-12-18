@@ -46,7 +46,12 @@ namespace Amazon.AWSToolkit
             }
         }
 
-        public static void InitializeToolkit(NavigatorControl navigator, IAWSToolkitShellProvider shellProvider, string additionalPluginPaths, Action initializeCompleteCallback)
+        public static void InitializeToolkit(
+            NavigatorControl navigator,
+            IAWSToolkitShellProvider shellProvider,
+            string additionalPluginPaths,
+            Action initializeCompleteCallback
+        )
         {
             if (INSTANCE != null)
                 throw new ApplicationException("Toolkit has already been initialized");
@@ -63,19 +68,35 @@ namespace Amazon.AWSToolkit
                 INSTANCE.registerMetaNodes();
 
 
-                INSTANCE.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                INSTANCE.ShellProvider.ShellDispatcher.BeginInvoke((Action) (() =>
                 {
-                    INSTANCE._rootViewModel = new AWSViewModel(INSTANCE._shellProvider.ShellDispatcher, INSTANCE._rootViewMetaNode);
-                    INSTANCE._navigator.Initialize(INSTANCE._rootViewModel);
-
-                    if(initializeCompleteCallback != null)
+                    try
                     {
-                        initializeCompleteCallback();
+                        INSTANCE._rootViewModel = new AWSViewModel(
+                            INSTANCE._shellProvider.ShellDispatcher,
+                            INSTANCE._rootViewMetaNode);
+                        INSTANCE._navigator.Initialize(INSTANCE._rootViewModel);
+
+                        if (initializeCompleteCallback != null)
+                        {
+                            initializeCompleteCallback();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        LOGGER.Fatal("Unhandled exception during AWS Toolkit startup", e);
+                        ToolkitFactory.Instance.ShellProvider.ShowError(
+                            string.Format(
+                                "Unexpected error during initialization of AWS Toolkit. Toolkit is likely to be unstable until Visual Studio is restarted.{0}{0}{1}",
+                                Environment.NewLine,
+                                e.Message
+                            )
+                        );
                     }
                 }));
             });
 
-            if(Application.Current != null)
+            if (Application.Current != null)
                 Application.Current.DispatcherUnhandledException += onDispatcherUnhandledException;
         }
 
