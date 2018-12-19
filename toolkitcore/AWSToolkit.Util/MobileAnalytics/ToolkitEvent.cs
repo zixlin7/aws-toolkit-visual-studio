@@ -85,7 +85,10 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         GroupIndex,
         DeploymentBundleSize,
         LambdaDeploymentBundleSize,
-        FunctionInvokeTime
+        FunctionInvokeTime,
+
+        ErrorInitializingAwsViewModel,
+        ErrorLoadingProfiles,
     };
 
     public class ToolkitEvent

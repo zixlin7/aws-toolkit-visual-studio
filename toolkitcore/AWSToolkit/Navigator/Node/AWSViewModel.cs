@@ -13,6 +13,7 @@ using Amazon.Runtime;
 using Amazon.Runtime.Internal.Settings;
 
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.MobileAnalytics;
 using log4net;
 using Amazon.Util;
 using Amazon.Runtime.CredentialManagement;
@@ -193,6 +194,10 @@ namespace Amazon.AWSToolkit.Navigator.Node
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error loading AWS profiles: " + e.Message);
                 _logger.Error("Error loading AWS profiles", e);
+
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(MetricKeys.ErrorLoadingProfiles, 1);
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }
         }
 

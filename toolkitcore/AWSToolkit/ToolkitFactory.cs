@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using System.Globalization;
-
+using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.Util;
 
 using Amazon.AWSToolkit.Navigator;
@@ -92,6 +92,11 @@ namespace Amazon.AWSToolkit
                                 e.Message
                             )
                         );
+
+                        // We might not have initialized enough to send telemetry, but we should try.
+                        ToolkitEvent evnt = new ToolkitEvent();
+                        evnt.AddProperty(MetricKeys.ErrorInitializingAwsViewModel, 1);
+                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
                     }
                 }));
             });
