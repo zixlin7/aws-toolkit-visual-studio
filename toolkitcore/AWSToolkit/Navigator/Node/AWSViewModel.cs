@@ -27,8 +27,10 @@ namespace Amazon.AWSToolkit.Navigator.Node
         AWSViewMetaNode _metaNode;
         ObservableCollection<AccountViewModel> _accounts = new ObservableCollection<AccountViewModel>();
         SettingsWatcher _sdkCredentialWatcher;
+        object _sharedCredentialWatchersLock = new object();
         bool _sharedCredentialWatchersInitialized = false;
-        Dictionary<string, FileSystemWatcher> _sharedCredentialWatchers = new Dictionary<string, FileSystemWatcher>();
+        Dictionary<string, FileSystemWatcher> _sharedCredentialWatchers = 
+            new Dictionary<string, FileSystemWatcher>(StringComparer.InvariantCultureIgnoreCase);
 
         ILog _logger = LogManager.GetLogger(typeof(AWSViewModel));
 
@@ -69,48 +71,51 @@ namespace Amazon.AWSToolkit.Navigator.Node
         /// </remarks>
         internal void SetupSharedCredentialFileMonitoring()
         {
-            if (_sharedCredentialWatchersInitialized)
-                return;
-
-            try
+            lock (_sharedCredentialWatchersLock)
             {
-                Action<object, FileSystemEventArgs> callback = (o, e) =>
+                if (_sharedCredentialWatchersInitialized)
+                    return;
+
+                try
                 {
-                    this._dispatcher.Invoke((System.Windows.Forms.MethodInvoker)delegate ()
+                    Action<object, FileSystemEventArgs> callback = (o, e) =>
                     {
-                        this.Refresh();
-                    });
-                };
+                        this._dispatcher.Invoke((System.Windows.Forms.MethodInvoker) delegate()
+                        {
+                            this.Refresh();
+                        });
+                    };
 
-                var credentialPaths = GetCandidateCredentialPaths();
+                    var credentialPaths = GetCandidateCredentialPaths();
 
-                foreach (var credentialPath in credentialPaths)
-                {
-                    var directoryName = Path.GetDirectoryName(credentialPath);
-                    var fileName = Path.GetFileName(credentialPath);
-
-                    if (string.IsNullOrWhiteSpace(directoryName) ||
-                        string.IsNullOrWhiteSpace(fileName))
+                    foreach (var credentialPath in credentialPaths)
                     {
-                        continue;
+                        var directoryName = Path.GetDirectoryName(credentialPath);
+                        var fileName = Path.GetFileName(credentialPath);
+
+                        if (string.IsNullOrWhiteSpace(directoryName) ||
+                            string.IsNullOrWhiteSpace(fileName))
+                        {
+                            continue;
+                        }
+
+                        var watcher = new FileSystemWatcher(directoryName, fileName);
+
+                        watcher.Changed += new FileSystemEventHandler(callback);
+                        watcher.Created += new FileSystemEventHandler(callback);
+                        watcher.Renamed += new RenamedEventHandler(callback);
+
+                        watcher.EnableRaisingEvents = true;
+
+                        this._sharedCredentialWatchers[credentialPath] = watcher;
                     }
 
-                    var watcher = new FileSystemWatcher(directoryName, fileName);
-
-                    watcher.Changed += new FileSystemEventHandler(callback);
-                    watcher.Created += new FileSystemEventHandler(callback);
-                    watcher.Renamed += new RenamedEventHandler(callback);
-
-                    watcher.EnableRaisingEvents = true;
-
-                    this._sharedCredentialWatchers[credentialPath] = watcher;
+                    _sharedCredentialWatchersInitialized = true;
                 }
-
-                _sharedCredentialWatchersInitialized = true;
-            }
-            catch (Exception e)
-            {
-                this._logger.Error("Error setting up credential file watcher", e);
+                catch (Exception e)
+                {
+                    this._logger.Error("Error setting up credential file watcher", e);
+                }
             }
         }
 

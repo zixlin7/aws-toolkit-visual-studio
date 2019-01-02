@@ -87,7 +87,7 @@ namespace Amazon.AWSToolkit
                         LOGGER.Fatal("Unhandled exception during AWS Toolkit startup", e);
                         ToolkitFactory.Instance.ShellProvider.ShowError(
                             string.Format(
-                                "Unexpected error during initialization of AWS Toolkit. Toolkit is likely to be unstable until Visual Studio is restarted.{0}{0}{1}",
+                                "Unexpected error during initialization of AWS Toolkit. The toolkit may be unstable until Visual Studio is restarted.{0}{0}{1}",
                                 Environment.NewLine,
                                 e.Message
                             )
