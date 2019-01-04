@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace Amazon.AWSToolkit.Lambda
         public const int MAX_MEMORY_SIZE = 3008;
 
         public const int MIN_TIMEOUT = 1;
-        public const int MAX_TIMEOUT = 300;
+        public const int MAX_TIMEOUT = 900;
 
         public static string DetermineStartupFromPath(string sourcePath)
         {
