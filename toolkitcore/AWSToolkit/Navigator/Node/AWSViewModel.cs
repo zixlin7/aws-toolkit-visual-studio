@@ -290,12 +290,10 @@ namespace Amazon.AWSToolkit.Navigator.Node
                     AWSConfigs.AWSProfilesLocation,
                     GetCurrentSharedCredentialsPath()
                 }
-                .Select(path => Path.GetFullPath(path).TrimEnd(
-                    Path.DirectorySeparatorChar,
-                    Path.AltDirectorySeparatorChar
-                ))
+                .Select(NormalizePath)
                 .Distinct()
-                .Where(path => !string.IsNullOrWhiteSpace(path));
+                .Where(path => !string.IsNullOrWhiteSpace(path))
+                .ToList();
         }
 
         /// <summary>
@@ -308,6 +306,27 @@ namespace Amazon.AWSToolkit.Navigator.Node
             {
                 var credentialsFile = new SharedCredentialsFile();
                 return credentialsFile.FilePath;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private string NormalizePath(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return null;
+            }
+
+            try
+            {
+                return Path.GetFullPath(path)
+                    .TrimEnd(
+                        Path.DirectorySeparatorChar,
+                        Path.AltDirectorySeparatorChar
+                    );
             }
             catch (Exception)
             {
