@@ -458,14 +458,6 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         {
             get
             {
-                if (this.Timeout < LambdaUtilities.MIN_TIMEOUT && this.Timeout >= LambdaUtilities.MAX_TIMEOUT)
-                {
-                    return false;
-                }
-                if (this.Memory < LambdaUtilities.MIN_MEMORY_SIZE && this.Memory >= LambdaUtilities.MAX_MEMORY_SIZE)
-                {
-                    return false;
-                }
                 if (this.IAMPicker.SelectedRole == null && this.IAMPicker.SelectedManagedPolicy == null)
                 {
                     return false;
