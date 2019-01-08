@@ -99,6 +99,12 @@ namespace Amazon.AWSToolkit.Navigator.Node
                             continue;
                         }
 
+                        // Shake out any redundant casing duplications
+                        if (this._sharedCredentialWatchers.ContainsKey(credentialPath))
+                        {
+                            continue;
+                        }
+
                         var watcher = new FileSystemWatcher(directoryName, fileName);
 
                         watcher.Changed += new FileSystemEventHandler(callback);
@@ -284,6 +290,10 @@ namespace Amazon.AWSToolkit.Navigator.Node
                     AWSConfigs.AWSProfilesLocation,
                     GetCurrentSharedCredentialsPath()
                 }
+                .Select(path => Path.GetFullPath(path).TrimEnd(
+                    Path.DirectorySeparatorChar,
+                    Path.AltDirectorySeparatorChar
+                ))
                 .Distinct()
                 .Where(path => !string.IsNullOrWhiteSpace(path));
         }
