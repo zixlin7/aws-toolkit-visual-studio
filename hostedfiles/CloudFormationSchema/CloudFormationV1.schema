@@ -3209,6 +3209,896 @@
     }
   }
 ,
+  "AWS::ApiGatewayV2::Api": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::ApiGatewayV2::Api resource contains an Amazon API Gateway API.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::ApiGatewayV2::Api resource contains an Amazon API Gateway API."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "RouteSelectionExpression": {
+            "type": "String",
+            "required": true,
+            "description": "The route selection expression for the API."
+          },
+          "Description": {
+            "type": "String",
+            "required": false,
+            "description": "The description of the API."
+          },
+          "Version": {
+            "type": "String",
+            "required": false,
+            "description": "A version identifier for the API."
+          },
+          "ProtocolType": {
+            "type": "String",
+            "required": true,
+            "description": "The API protocol."
+          },
+          "DisableSchemaValidation": {
+            "type": "Boolean",
+            "required": false,
+            "description": "Avoid validating models when creating a deployment."
+          },
+          "Name": {
+            "type": "String",
+            "required": true,
+            "description": "The name of the API."
+          },
+          "ApiKeySelectionExpression": {
+            "type": "String",
+            "required": false,
+            "description": "An API key selection expression."
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "Description": {
+        "type": "String",
+        "required": false,
+        "description": "A description for the CloudFormation resource. This field is ignored when the template is deployed to CloudFormation."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::ApiGatewayV2::Authorizer": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::ApiGatewayV2::Authorizer resource creates an authorization layer for an Amazon API Gateway (API Gateway) API.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::ApiGatewayV2::Authorizer resource creates an authorization layer for an Amazon API Gateway (API Gateway) API."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "IdentityValidationExpression": {
+            "type": "String",
+            "required": false,
+            "description": "A validation expression for the incoming identity."
+          },
+          "AuthorizerUri": {
+            "type": "String",
+            "required": true,
+            "description": "The authorizer's Uniform Resource Identifier (URI)."
+          },
+          "AuthorizerCredentialsArn": {
+            "type": "String",
+            "required": false,
+            "description": "The credentials that are required for the authorizer."
+          },
+          "AuthorizerType": {
+            "type": "String",
+            "required": true,
+            "description": "The authorizer type. Currently the only valid value is REQUEST, for a Lambda function using incoming request parameters.",
+            "allowed-values": [
+              "*",
+              "REQUEST"
+            ]
+          },
+          "AuthorizerResultTtlInSeconds": {
+            "type": "Number",
+            "required": false,
+            "description": "The time-to-live (TTL) period, in seconds, that specifies how long API Gateway caches authorizer results."
+          },
+          "IdentitySource": {
+            "type": "Array",
+            "array-type": "String",
+            "required": true,
+            "description": "The source of the identity in an incoming request."
+          },
+          "ApiId": {
+            "type": "String",
+            "required": true,
+            "description": "The ID of the Api resource that API Gateway creates the authorizer in.",
+            "resource-ref-type": "AWS::ApiGatewayV2::Api"
+          },
+          "Name": {
+            "type": "String",
+            "required": true,
+            "description": "The name of the authorizer."
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "Description": {
+        "type": "String",
+        "required": false,
+        "description": "A description for the CloudFormation resource. This field is ignored when the template is deployed to CloudFormation."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::ApiGatewayV2::Deployment": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::ApiGatewayV2::Deployment resource represents a deployment for an API.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::ApiGatewayV2::Deployment resource represents a deployment for an API."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "Description": {
+            "type": "String",
+            "required": false,
+            "description": "Describes the stage that API Gateway creates with this deployment."
+          },
+          "StageName": {
+            "type": "String",
+            "required": false,
+            "description": "A name for the stage that API Gateway creates with this deployment. Use only alphanumeric characters.",
+            "resource-ref-type": "AWS::ApiGatewayV2::Stage"
+          },
+          "ApiId": {
+            "type": "String",
+            "required": true,
+            "description": "The ID of the Api resource to deploy.",
+            "resource-ref-type": "AWS::ApiGatewayV2::Api"
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "Description": {
+        "type": "String",
+        "required": false,
+        "description": "A description for the CloudFormation resource. This field is ignored when the template is deployed to CloudFormation."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::ApiGatewayV2::Integration": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::ApiGatewayV2::Integration resource defines an API integration.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::ApiGatewayV2::Integration resource defines an API integration."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "Description": {
+            "type": "String",
+            "required": false,
+            "description": "The description of the integration."
+          },
+          "TemplateSelectionExpression": {
+            "type": "String",
+            "required": false,
+            "description": "The template selection expression for the integration."
+          },
+          "ConnectionType": {
+            "type": "String",
+            "required": false,
+            "description": "The type of the network connection to the integration endpoint.",
+            "allowed-values": [
+              "*",
+              "INTERNET"
+            ]
+          },
+          "IntegrationMethod": {
+            "type": "String",
+            "required": false,
+            "description": "Specifies the integration's HTTP method type."
+          },
+          "PassthroughBehavior": {
+            "type": "String",
+            "required": false,
+            "description": "Specifies the pass-through behavior for incoming requests based on the Content-Type header in the request, and the available mapping templates specified as the requestTemplates property on the Integration resource.",
+            "allowed-values": [
+              "*",
+              "WHEN_NO_MATCH",
+              "WHEN_NO_TEMPLATES",
+              "NEVER"
+            ]
+          },
+          "RequestParameters": {
+            "type": "Json",
+            "required": false,
+            "description": "A key-value map specifying request parameters that are passed from the method request to the backend."
+          },
+          "IntegrationUri": {
+            "type": "String",
+            "required": false,
+            "description": "For a Lambda proxy integration, this is the URI of the Lambda function."
+          },
+          "CredentialsArn": {
+            "type": "String",
+            "required": false,
+            "description": "Specifies the credentials required for the integration, if any."
+          },
+          "RequestTemplates": {
+            "type": "Json",
+            "required": false,
+            "description": "Represents a map of Velocity templates that are applied on the request payload based on the value of the Content-Type header sent by the client."
+          },
+          "TimeoutInMillis": {
+            "type": "Number",
+            "required": false,
+            "description": "Custom timeout between 50 and 29,000 milliseconds."
+          },
+          "ContentHandlingStrategy": {
+            "type": "String",
+            "required": false,
+            "description": "Specifies how to handle response payload content type conversions.",
+            "allowed-values": [
+              "*",
+              "CONVERT_TO_BINARY",
+              "CONVERT_TO_TEXT"
+            ]
+          },
+          "ApiId": {
+            "type": "String",
+            "required": true,
+            "description": "The API ID.",
+            "resource-ref-type": "AWS::ApiGatewayV2::Api"
+          },
+          "IntegrationType": {
+            "type": "String",
+            "required": true,
+            "description": "The integration type of an integration.",
+            "allowed-values": [
+              "*",
+              "AWS",
+              "AWS_PROXY",
+              "HTTP",
+              "HTTP_PROXY",
+              "MOCK"
+            ]
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "Description": {
+        "type": "String",
+        "required": false,
+        "description": "A description for the CloudFormation resource. This field is ignored when the template is deployed to CloudFormation."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::ApiGatewayV2::IntegrationResponse": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::ApiGatewayV2::IntegrationResponse resource defines an API integration response.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::ApiGatewayV2::IntegrationResponse resource defines an API integration response."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "ResponseTemplates": {
+            "type": "Json",
+            "required": false,
+            "description": "The collection of response templates for the integration response as a string-to-string map of key-value pairs."
+          },
+          "TemplateSelectionExpression": {
+            "type": "String",
+            "required": false,
+            "description": "The template selection expression for the integration response."
+          },
+          "ResponseParameters": {
+            "type": "Json",
+            "required": false,
+            "description": "A key-value map specifying response parameters that are passed to the method response from the backend."
+          },
+          "ContentHandlingStrategy": {
+            "type": "String",
+            "required": false,
+            "description": "Specifies how to handle response payload content type conversions.",
+            "allowed-values": [
+              "*",
+              "CONVERT_TO_BINARY",
+              "CONVERT_TO_TEXT"
+            ]
+          },
+          "IntegrationId": {
+            "type": "String",
+            "required": true,
+            "description": "The integration ID.",
+            "resource-ref-type": "AWS::ApiGatewayV2::Integration"
+          },
+          "IntegrationResponseKey": {
+            "type": "String",
+            "required": true,
+            "description": "The integration response key."
+          },
+          "ApiId": {
+            "type": "String",
+            "required": true,
+            "description": "The API ID.",
+            "resource-ref-type": "AWS::ApiGatewayV2::Api"
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "Description": {
+        "type": "String",
+        "required": false,
+        "description": "A description for the CloudFormation resource. This field is ignored when the template is deployed to CloudFormation."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::ApiGatewayV2::Model": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::ApiGatewayV2::Model resource define a data model for an API.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::ApiGatewayV2::Model resource define a data model for an API."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "Description": {
+            "type": "String",
+            "required": false,
+            "description": "A description that identifies this model."
+          },
+          "ContentType": {
+            "type": "String",
+            "required": false,
+            "description": "The content type for the model."
+          },
+          "Schema": {
+            "type": "Json",
+            "required": true,
+            "description": "The schema to use to transform data to one or more output formats."
+          },
+          "ApiId": {
+            "type": "String",
+            "required": true,
+            "description": "The ID of the API with which to associate this model.",
+            "resource-ref-type": "AWS::ApiGatewayV2::Api"
+          },
+          "Name": {
+            "type": "String",
+            "required": true,
+            "description": "A name for the model."
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "Description": {
+        "type": "String",
+        "required": false,
+        "description": "A description for the CloudFormation resource. This field is ignored when the template is deployed to CloudFormation."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::ApiGatewayV2::Route": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::ApiGatewayV2::Route resource to represent a route for a WebSocket API.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::ApiGatewayV2::Route resource to represent a route for a WebSocket API."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "Target": {
+            "type": "String",
+            "required": false,
+            "description": "The target for the route."
+          },
+          "RouteResponseSelectionExpression": {
+            "type": "String",
+            "required": false,
+            "description": "The route response selection expression for the route."
+          },
+          "AuthorizerId": {
+            "type": "String",
+            "required": false,
+            "description": "The identifier of the Authorizer resource to be associated with this route, if the authorizationType is CUSTOM.",
+            "resource-ref-type": "AWS::ApiGatewayV2::Authorizer"
+          },
+          "RequestModels": {
+            "type": "Json",
+            "required": false,
+            "description": "The request models for the route."
+          },
+          "OperationName": {
+            "type": "String",
+            "required": false,
+            "description": "The operation name for the route."
+          },
+          "AuthorizationScopes": {
+            "type": "Array",
+            "array-type": "String",
+            "required": false,
+            "description": "The authorization scopes supported by this route."
+          },
+          "ApiKeyRequired": {
+            "type": "Boolean",
+            "required": false,
+            "description": "Specifies whether an API key is required for the route."
+          },
+          "RouteKey": {
+            "type": "String",
+            "required": true,
+            "description": "The route key for the route."
+          },
+          "AuthorizationType": {
+            "type": "String",
+            "required": false,
+            "description": "The authorization type for the route.",
+            "allowed-values": [
+              "*",
+              "NONE",
+              "AWS_IAM",
+              "CUSTOM"
+            ]
+          },
+          "ModelSelectionExpression": {
+            "type": "String",
+            "required": false,
+            "description": "The model selection expression for the route."
+          },
+          "ApiId": {
+            "type": "String",
+            "required": true,
+            "description": "The API identifier.",
+            "resource-ref-type": "AWS::ApiGatewayV2::Api"
+          },
+          "RequestParameters": {
+            "type": "Json",
+            "required": false,
+            "description": "The request parameters for the route."
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "Description": {
+        "type": "String",
+        "required": false,
+        "description": "A description for the CloudFormation resource. This field is ignored when the template is deployed to CloudFormation."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::ApiGatewayV2::RouteResponse": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::ApiGatewayV2::RouteResponse resource defines the route response for a WebSocket API route.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::ApiGatewayV2::RouteResponse resource defines the route response for a WebSocket API route."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "RouteResponseKey": {
+            "type": "String",
+            "required": true,
+            "description": "The route response key."
+          },
+          "ResponseParameters": {
+            "type": "Json",
+            "required": false,
+            "description": "The route response parameters."
+          },
+          "RouteId": {
+            "type": "String",
+            "required": true,
+            "description": "The route ID.",
+            "resource-ref-type": "AWS::ApiGatewayV2::Route"
+          },
+          "ModelSelectionExpression": {
+            "type": "String",
+            "required": false,
+            "description": "The model selection expression for the route response."
+          },
+          "ApiId": {
+            "type": "String",
+            "required": true,
+            "description": "The API ID",
+            "resource-ref-type": "AWS::ApiGatewayV2::Api"
+          },
+          "ResponseModels": {
+            "type": "Json",
+            "required": false,
+            "description": "The response models for the route response."
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "Description": {
+        "type": "String",
+        "required": false,
+        "description": "A description for the CloudFormation resource. This field is ignored when the template is deployed to CloudFormation."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
+  "AWS::ApiGatewayV2::Stage": {
+    "type": "Object",
+    "required": false,
+    "description": "The AWS::ApiGatewayV2::Stage resource creates a stage for an Amazon API Gateway deployment.",
+    "properties": {
+      "Type": {
+        "type": "String",
+        "required": true,
+        "description": "The AWS::ApiGatewayV2::Stage resource creates a stage for an Amazon API Gateway deployment."
+      },
+      "Properties": {
+        "type": "Object",
+        "required": true,
+        "properties": {
+          "ClientCertificateId": {
+            "type": "String",
+            "required": false,
+            "description": "The ID of a client certificate for the stage."
+          },
+          "DeploymentId": {
+            "type": "String",
+            "required": true,
+            "description": "The ID of the deployment that the stage is associated with.",
+            "resource-ref-type": "AWS::ApiGatewayV2::Deployment"
+          },
+          "Description": {
+            "type": "String",
+            "required": false,
+            "description": "Description of the stage."
+          },
+          "AccessLogSettings": {
+            "type": "Object",
+            "required": false,
+            "description": "Settings for logging access in this stage.",
+            "properties": {
+              "Format": {
+                "type": "String",
+                "required": false,
+                "description": "A single line format of the access logs of data, as specified by selected $context variables."
+              },
+              "DestinationArn": {
+                "type": "String",
+                "required": false,
+                "description": "The ARN of the CloudWatch Logs log group to receive access logs.",
+                "resource-ref-type": "AWS::Logs::LogGroup"
+              }
+            }
+          },
+          "RouteSettings": {
+            "type": "Json",
+            "required": false,
+            "description": "Route settings for the stage. This is a mapping of Strings to RouteSettings."
+          },
+          "StageName": {
+            "type": "String",
+            "required": true,
+            "description": "The name of the stage."
+          },
+          "StageVariables": {
+            "type": "Json",
+            "required": false,
+            "description": "A String to String mapping that defines the stage variables for a stage resource."
+          },
+          "ApiId": {
+            "type": "String",
+            "required": true,
+            "description": "The API ID.",
+            "resource-ref-type": "AWS::ApiGatewayV2::Api"
+          },
+          "DefaultRouteSettings": {
+            "type": "Object",
+            "required": false,
+            "description": "Default route settings for the stage.",
+            "properties": {
+              "LoggingLevel": {
+                "type": "String",
+                "required": false,
+                "description": "Specifies the logging level for this route",
+                "allowed-values": [
+                  "*",
+                  "DEBUG",
+                  "INFO",
+                  "WARN"
+                ]
+              },
+              "DataTraceEnabled": {
+                "type": "Boolean",
+                "required": false,
+                "description": "Specifies whether (true) or not (false) data trace logging is enabled for this route."
+              },
+              "ThrottlingBurstLimit": {
+                "type": "Number",
+                "required": false,
+                "description": "Specifies the throttling burst limit."
+              },
+              "DetailedMetricsEnabled": {
+                "type": "Boolean",
+                "required": false,
+                "description": "Specifies whether detailed metrics are enabled."
+              },
+              "ThrottlingRateLimit": {
+                "type": "Number",
+                "required": false,
+                "description": "Specifies the throttling rate limit."
+              }
+            }
+          }
+        }
+      },
+      "Condition": {
+        "type": "ConditionDeclaration",
+        "required": false,
+        "description": "Associated condition that if true will allow the resource to be created."
+      },
+      "DependsOn": {
+        "type": "Resource",
+        "required": false,
+        "description": "The DependsOn attribute enables you to specify that the creation of a specific resource follows another."
+      },
+      "Description": {
+        "type": "String",
+        "required": false,
+        "description": "A description for the CloudFormation resource. This field is ignored when the template is deployed to CloudFormation."
+      },
+      "DeletionPolicy": {
+        "type": "String",
+        "required": false,
+        "allowed-values": [
+          "Delete",
+          "Retain"
+        ],
+        "disable-refs": true,
+        "description": "The DeletionPolicy attribute enables you to specify how AWS CloudFormation handles the resource deletion."
+      },
+      "Metadata": {
+        "type": "Json",
+        "required": false,
+        "description": "The Metadata attribute enables you to associate structured data with a resource."
+      }
+    }
+  }
+,
   "AWS::ApiGateway::VpcLink": {
     "type": "Object",
     "required": false,
@@ -10170,6 +11060,11 @@
                 "type": "Boolean",
                 "required": false,
                 "description": "Specifies whether or not to begin automatically rebuilding the source code every time a code change is pushed to the repository."
+              },
+              "FilterGroups": {
+                "type": "Json",
+                "required": false,
+                "description": "An array of arrays of WebhookFilter objects used to determine which webhooks are triggered. At least one WebhookFilter in the array must specify EVENT as its type."
               }
             }
           },
@@ -17886,6 +18781,96 @@
                       "standard",
                       "unlimited"
                     ]
+                  }
+                }
+              },
+              "ElasticInferenceAccelerators": {
+                "type": "Array",
+                "array-type": "Object",
+                "required": false,
+                "description": "An elastic inference accelerator.",
+                "properties": {
+                  "Type": {
+                    "type": "String",
+                    "required": false,
+                    "description": "The type of elastic inference accelerator.",
+                    "allowed-values": [
+                      "*",
+                      "eia1.small",
+                      "eia1.medium",
+                      "eia1.large"
+                    ]
+                  }
+                }
+              },
+              "HibernationOptions": {
+                "type": "Object",
+                "required": false,
+                "description": "Indicates whether an instance is enabled for hibernation.",
+                "properties": {
+                  "Configured": {
+                    "type": "Boolean",
+                    "required": false,
+                    "description": "If you set this parameter to true, the instance is enabled for hibernation."
+                  }
+                }
+              },
+              "LicenseSpecifications": {
+                "type": "Array",
+                "array-type": "Object",
+                "required": false,
+                "description": "The license configurations.",
+                "properties": {
+                  "LicenseConfigurationArn": {
+                    "type": "String",
+                    "required": false,
+                    "description": "The Amazon Resource Name (ARN) of the license configuration."
+                  }
+                }
+              },
+              "CpuOptions": {
+                "type": "Object",
+                "required": false,
+                "description": "The CPU options for the instance.",
+                "properties": {
+                  "ThreadsPerCore": {
+                    "type": "Number",
+                    "required": false,
+                    "description": "The number of threads per CPU core."
+                  },
+                  "CoreCount": {
+                    "type": "Number",
+                    "required": false,
+                    "description": "The number of CPU cores for the instance."
+                  }
+                }
+              },
+              "CapacityReservationSpecification": {
+                "type": "Object",
+                "required": false,
+                "description": "The Capacity Reservation targeting option.",
+                "properties": {
+                  "CapacityReservationPreference": {
+                    "type": "String",
+                    "required": false,
+                    "description": "Indicates the instance's Capacity Reservation preferences.",
+                    "allowed-values": [
+                      "*",
+                      "open",
+                      "none"
+                    ]
+                  },
+                  "CapacityReservationTarget": {
+                    "type": "Object",
+                    "required": false,
+                    "description": "Information about the target Capacity Reservation.",
+                    "properties": {
+                      "CapacityReservationId": {
+                        "type": "String",
+                        "required": false,
+                        "description": "The ID of the Capacity Reservation."
+                      }
+                    }
                   }
                 }
               }
@@ -37921,6 +38906,11 @@
               "Chef",
               "Puppet"
             ]
+          },
+          "AssociatePublicIpAddress": {
+            "type": "Boolean",
+            "required": false,
+            "description": "Associate a public IP address with a server that you are launching."
           }
         }
       },
