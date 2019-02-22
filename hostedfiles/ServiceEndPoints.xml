@@ -299,6 +299,37 @@
         </services>
     </region>
     <region>
+        <displayname>EU (Stockholm)</displayname>
+        <systemname>eu-north-1</systemname>
+        <flag-icon>flags/aws.png</flag-icon>
+        <min-toolkit-version>1.6.2.0</min-toolkit-version>
+        <services>
+            <service name="AutoScaling">https://autoscaling.eu-north-1.amazonaws.com</service>
+            <service name="CloudFormation">https://cloudformation.eu-north-1.amazonaws.com</service>
+            <service name="CloudFront" authregion="us-east-1">https://cloudfront.amazonaws.com</service>
+            <service name="CloudWatch">https://monitoring.eu-north-1.amazonaws.com</service>
+            <service name="CloudWatchEvents">https://events.eu-north-1.amazonaws.com</service>
+            <service name="CodeDeploy">https://codedeploy.eu-north-1.amazonaws.com</service>
+            <service name="DynamoDB">https://dynamodb.eu-north-1.amazonaws.com</service>
+            <service name="DynamoDBStream">https://streams.dynamodb.eu-north-1.amazonaws.com</service>
+            <service name="EC2">https://ec2.eu-north-1.amazonaws.com</service>
+            <service name="ECR">https://ecr.eu-north-1.amazonaws.com</service>
+            <service name="ECS">https://ecs.eu-north-1.amazonaws.com</service>
+            <service name="ELB">https://elasticloadbalancing.eu-north-1.amazonaws.com</service>
+            <service name="ElasticBeanstalk">https://elasticbeanstalk.eu-north-1.amazonaws.com</service>
+            <service name="IAM" authregion="us-east-1">https://iam.amazonaws.com</service>
+            <service name="KMS">https://kms.eu-north-1.amazonaws.com</service>
+            <service name="Kinesis">https://kinesis.eu-north-1.amazonaws.com</service>
+            <service name="Lambda">https://lambda.eu-north-1.amazonaws.com</service>
+            <service name="Logs">https://logs.eu-north-1.amazonaws.com</service>
+            <service name="RDS">https://rds.eu-north-1.amazonaws.com</service>
+            <service name="S3">https://s3.eu-north-1.amazonaws.com</service>
+            <service name="SNS">https://sns.eu-north-1.amazonaws.com</service>
+            <service name="SQS">https://sqs.eu-north-1.amazonaws.com</service>
+            <service name="XRay">https://xray.eu-north-1.amazonaws.com</service>
+        </services>
+    </region>
+    <region>
         <displayname>EU (Ireland)</displayname>
         <systemname>eu-west-1</systemname>
         <flag-icon>flags/eu-west-1.png</flag-icon>
