@@ -205,6 +205,20 @@
       </HiddenTags>
     </Blueprint>
     <Blueprint>
+      <Name>Simple Application Load Balancer Function</Name>
+      <Description>A skeleton Lambda function to get started responding to Application Load Balancer events.</Description>
+      <SortOrder>101</SortOrder>
+      <File>SimpleApplicationLoadBalancer.zip</File>
+      <Tags>
+        <Tag>ALB</Tag>
+        <Tag>Simple</Tag>
+      </Tags>
+      <HiddenTags>
+        <HiddenTag>C#</HiddenTag>
+        <HiddenTag>LambdaProject</HiddenTag>
+      </HiddenTags>
+    </Blueprint>
+    <Blueprint>
       <Name>Simple DynamoDB Function</Name>
       <Description>A skeleton Lambda function to get started responding to Amazon DynamoDB stream events</Description>
       <SortOrder>101</SortOrder>
