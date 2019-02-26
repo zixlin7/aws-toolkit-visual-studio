@@ -53,6 +53,9 @@ using Amazon.AWSToolkit.Lambda.WizardPages;
 using System.Xml;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
+using System.Threading;
+
+using Task = System.Threading.Tasks.Task;
 
 #if VS2015_OR_LATER
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers;
@@ -73,10 +76,10 @@ namespace Amazon.AWSToolkit.VisualStudio
     /// </summary>
     // This attribute tells the PkgDef creation utility (CreatePkgDef.exe) that this class is
     // a package.
-    [PackageRegistration(UseManagedResourcesOnly = true)]
+    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     // This attribute is used to register the informations needed to show the this package
     // in the Help/About dialog of Visual Studio.
-    [InstalledProductRegistration(true, null, null, null)]
+    [InstalledProductRegistration(null, null, null)]
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers a tool window exposed by this package.
@@ -99,7 +102,6 @@ namespace Amazon.AWSToolkit.VisualStudio
     [ProvideEditorLogicalView(typeof(TemplateEditorFactory), EnvDTEConstants.vsViewKindTextView)]
     [ProvideEditorExtension(typeof(TemplateEditorFactory), ".template", 10000, NameResourceID = 113)]
     // need to force load when VS starts for CFN editor project stuff
-    [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string)]
     [ProvideProjectFactory(typeof(CloudFormationTemplateProjectFactory),
                            null,
                            "CloudFormation Template Project Files (*.cfproj);*.cfproj",
@@ -110,7 +112,7 @@ namespace Amazon.AWSToolkit.VisualStudio
     [ProvideProfile(typeof(GeneralOptionsPage), "AWS Toolkit", "General", 150, 160, true, DescriptionResourceID = 150)]
     [ProvideOptionPage(typeof(ProxyOptionsPage), "AWS Toolkit", "Proxy", 150, 170, true)]
     [ProvideProfile(typeof(ProxyOptionsPage), "AWS Toolkit", "Proxy", 150, 170, true, DescriptionResourceID = 150)]
-    public sealed class AWSToolkitPackage : ProjectPackage, 
+    public sealed class AWSToolkitPackage : ProjectAsyncPackage, 
                                             IVsInstalledProduct, 
                                             IAWSToolkitShellThemeService,
                                             IRegisterDataConnectionService, 
@@ -236,9 +238,10 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         internal void OutputToConsole(string message, bool forceVisible)
         {
+
             // we may be calling OutputStringThreadSafe but the COM object represented by
             // _awsOutputWindowPane appears to still need to be called on the UI thread
-            ShellDispatcher.Invoke((Action) (() =>
+            JoinableTaskFactory.Run(delegate
             {
                 if (_awsOutputWindowPane == null)
                 {
@@ -487,10 +490,10 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
         /// </summary>
-        protected override void Initialize()
+        protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             Trace.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this));
-            base.Initialize();
+            await base.InitializeAsync(cancellationToken, progress);
 
             RegisterProjectFactory(new CloudFormationTemplateProjectFactory(this));
             RegisterEditorFactory(new TemplateEditorFactory(this));
@@ -519,7 +522,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 ShowFirstRun();
             });
 			
-            var dte = (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
+            var dte = (EnvDTE.DTE)(await GetServiceAsync(typeof(EnvDTE.DTE)));
             _events = dte.Events.SolutionEvents;
             _events.ProjectAdded += OnProjectAddedEvent;
             _events.Opened += OnSolutionOpenedEvent;
@@ -537,7 +540,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             RegisterEditorFactory(new HostedEditorFactory(this));
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
-            var mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+            var mcs = await GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             if ( null != mcs )
             {
                 // Create the command for the tool window
@@ -568,7 +571,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 #endif
             }
 
-            var shellService = GetService(typeof(SVsShell)) as IVsShell;
+            var shellService = await GetServiceAsync(typeof(SVsShell)) as IVsShell;
             if (shellService != null)
             {
                 ErrorHandler.ThrowOnFailure(shellService.AdviseShellPropertyChanges(this, out _vsShellPropertyChangeEventSinkCookie));
@@ -577,7 +580,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
 
         int _lastDebugProcessId = -1;
-        private void OnDebuggerContextChange(EnvDTE.Process newProcess, Program newProgram, Thread newThread, EnvDTE.StackFrame newStackFrame)
+        private void OnDebuggerContextChange(EnvDTE.Process newProcess, Program newProgram, EnvDTE.Thread newThread, EnvDTE.StackFrame newStackFrame)
         {
             try
             {
