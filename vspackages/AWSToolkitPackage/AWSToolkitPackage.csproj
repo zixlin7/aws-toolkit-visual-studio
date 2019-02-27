@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
@@ -29,7 +29,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>$(BuildConstants)</DefineConstants>
+    <DefineConstants>DEBUG;;VS2017;VS2017_OR_LATER;VS2015_OR_LATER;VS2013_OR_LATER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CreateVsixContainer>True</CreateVsixContainer>
@@ -141,8 +141,8 @@
     <Reference Include="AWSSDK.Kinesis, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Kinesis.3.3.6\lib\net45\AWSSDK.Kinesis.dll</HintPath>
       <Private>True</Private>
-    </Reference>    
-	<Reference Include="AWSSDK.Lambda, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+    </Reference>
+    <Reference Include="AWSSDK.Lambda, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
       <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Lambda.3.3.17.2\lib\net45\AWSSDK.Lambda.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.MobileAnalytics, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">

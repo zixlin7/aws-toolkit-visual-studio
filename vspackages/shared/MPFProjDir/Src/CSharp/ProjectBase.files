@@ -307,6 +307,10 @@
       <Link>ProjectBase\OutputGroup.cs</Link>
       <Visible>true</Visible>
     </Compile>
+    <Compile Include="$(ProjectBasePath)\ProjectAsyncPackage.cs">
+      <Link>ProjectBase\ProjectAsyncPackage.cs</Link>
+      <Visible>true</Visible>
+    </Compile>
     <Compile Include="$(ProjectBasePath)\ProjectConfig.cs">
       <Link>ProjectBase\ProjectConfig.cs</Link>
       <Visible>true</Visible>

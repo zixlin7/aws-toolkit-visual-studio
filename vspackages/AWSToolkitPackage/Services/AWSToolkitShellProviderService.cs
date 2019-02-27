@@ -15,6 +15,7 @@ using Amazon.AWSToolkit.Shared;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Threading;
 
 namespace Amazon.AWSToolkit.VisualStudio.Services
 {
@@ -143,27 +144,33 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
                 var documentMoniker = Path.Combine(_hostPackage.GetTempFileLocation(), filename);
                 IVsWindowFrame frame;
-                var result = openShell.OpenSpecificEditor(0,  // grfOpenSpecific 
-                                                          documentMoniker, // pszMkDocument 
-                                                          ref editorFactoryGuid,  // rGuidEditorType 
-                                                          null, // pszPhysicalView 
-                                                          ref logicalView, // rguidLogicalView +++
-                                                          editorControl.Title, // pszOwnerCaption 
-                                                          _hostPackage._navigatorVsUIHierarchy, // pHier 
-                                                          controlId, // itemid 
-                                                          new IntPtr(0), // punkDocDataExisting 
-                                                          null, // pSPHierContext 
-                                                          out frame);
 
-                if (result != VSConstants.S_OK)
+                _hostPackage.JoinableTaskFactory.Run(async delegate
                 {
-                    _hostPackage.ControlCache.Remove(controlId);
-                    Trace.WriteLine(result);
-                }
-                else
-                {
-                    frame.Show();
-                }
+                    await _hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    var result = openShell.OpenSpecificEditor(0,  // grfOpenSpecific 
+                                                              documentMoniker, // pszMkDocument 
+                                                              ref editorFactoryGuid,  // rGuidEditorType 
+                                                              null, // pszPhysicalView 
+                                                              ref logicalView, // rguidLogicalView +++
+                                                              editorControl.Title, // pszOwnerCaption 
+                                                              _hostPackage._navigatorVsUIHierarchy, // pHier 
+                                                              controlId, // itemid 
+                                                              new IntPtr(0), // punkDocDataExisting 
+                                                              null, // pSPHierContext 
+                                                              out frame);
+
+                    if (result != VSConstants.S_OK)
+                    {
+                        _hostPackage.ControlCache.Remove(controlId);
+                        Trace.WriteLine(result);
+                    }
+                    else
+                    {
+                        frame.Show();
+                    }
+                });
+
             }
             catch
             {

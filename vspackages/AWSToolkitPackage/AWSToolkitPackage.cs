@@ -79,7 +79,7 @@ namespace Amazon.AWSToolkit.VisualStudio
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     // This attribute is used to register the informations needed to show the this package
     // in the Help/About dialog of Visual Studio.
-    [InstalledProductRegistration(null, null, null)]
+    [InstalledProductRegistration(true, null, null, null)]
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers a tool window exposed by this package.
@@ -238,16 +238,14 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         internal void OutputToConsole(string message, bool forceVisible)
         {
-
-            // we may be calling OutputStringThreadSafe but the COM object represented by
-            // _awsOutputWindowPane appears to still need to be called on the UI thread
-            JoinableTaskFactory.Run(delegate
+            JoinableTaskFactory.Run(async delegate
             {
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
                 if (_awsOutputWindowPane == null)
                 {
                     try
                     {
-                        var output = (IVsOutputWindow) GetService(typeof (SVsOutputWindow));
+                        var output = await GetServiceAsync(typeof (SVsOutputWindow)) as IVsOutputWindow;
                         if (output != null && output.CreatePane(ref _guidAwsOutputWindowPane,
                             "Amazon Web Services",
                             Convert.ToInt32(forceVisible),
@@ -278,7 +276,9 @@ namespace Amazon.AWSToolkit.VisualStudio
                     LOGGER.ErrorFormat("Caught exception calling IVsOutputWindow.OutputStringThreadSafe.");
                     LOGGER.ErrorFormat("Exception message: '{0}', original message content '{1}'", e.Message, message);
                 }
-            }));
+
+                return;
+            });
         }
 
         internal ProjectDeploymentsPersistenceManager LegacyDeploymentsPersistenceManager
@@ -506,7 +506,9 @@ namespace Amazon.AWSToolkit.VisualStudio
             // default plugin load fails - use a command line switch so dev's can inform toolkit
             // of where to go look
             var additionalPluginFolders = string.Empty;
-            var vsCmdLine = GetService(typeof(SVsAppCommandLine)) as IVsAppCommandLine;
+#if DEBUG
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
+            var vsCmdLine = await GetServiceAsync(typeof(SVsAppCommandLine)) as IVsAppCommandLine;
             if (vsCmdLine != null)
             {
                 int optPresent;
@@ -514,6 +516,8 @@ namespace Amazon.AWSToolkit.VisualStudio
                 if (vsCmdLine.GetOption(awsToolkitPluginsParam, out optPresent, out optValue) == VSConstants.S_OK && optPresent != 0)
                     additionalPluginFolders = optValue as string;
             }
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
+#endif
 
             var navigator = new NavigatorControl();
             ToolkitFactory.InitializeToolkit(navigator, ToolkitShellProviderService as IAWSToolkitShellProvider, additionalPluginFolders, () =>
@@ -562,9 +566,9 @@ namespace Amazon.AWSToolkit.VisualStudio
                 SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployToLambdaSolutionExplorer, UploadToLambda, UploadToLambdaMenuCommand_BeforeQueryStatus);
                 SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAddAWSServerlessTemplate, AddAWSServerlessTemplate, AddAWSServerlessTemplate_BeforeQueryStatus);
 
-#if VS2015_OR_LATER                
+#if VS2015_OR_LATER
                 SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidTeamExplorerConnect, AddTeamExplorerConnection, null);
-#endif                
+#endif
 
 #if VS2017_OR_LATER
                 SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidPublishContainerToAWS, PublishContainerToAWS, PublishContainerToAWS_BeforeQueryStatus);
@@ -777,7 +781,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        #region VSToolkit (web app/web site) Deployment Commands
+#region VSToolkit (web app/web site) Deployment Commands
 
         /// <summary>
         /// Called by the IDE to determine if the PublishToAWS command should be visible
@@ -1181,7 +1185,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Add seed/default properties for deployment wizard based on last-run persisted
@@ -1731,7 +1735,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         }
 
 
-        #region Template Command Query Status
+#region Template Command Query Status
 
         void TemplateCommandSolutionExplorer_BeforeQueryStatus(object sender, EventArgs e)
         {
@@ -1783,9 +1787,9 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch { }
         }
 
-        #endregion
+#endregion
 
-        #region CloudFormation Template Deployment Command
+#region CloudFormation Template Deployment Command
 
         void DeployTemplateSolutionExplorer(object sender, EventArgs e)
         {
@@ -1844,9 +1848,9 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        #endregion
+#endregion
 
-        #region Estimate Template Cost Command
+#region Estimate Template Cost Command
 
         void EstimateTemplateCostSolutionExplorer(object sender, EventArgs e)
         {
@@ -1909,9 +1913,9 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        #endregion
+#endregion
 
-        #region Format Template Command
+#region Format Template Command
 
         void FormatTemplateSolutionExplorer(object sender, EventArgs e)
         {
@@ -2008,9 +2012,9 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        #endregion
+#endregion
 
-        #region Add CloudFormation Template Command
+#region Add CloudFormation Template Command
 
         void AddCloudFormationTemplate(object sender, EventArgs e)
         {
@@ -2066,9 +2070,9 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch { }
         }
 
-        #endregion
+#endregion
 
-        #region Add Serverless Template
+#region Add Serverless Template
 
         void AddAWSServerlessTemplate(object sender, EventArgs evnt)
         {
@@ -2117,9 +2121,9 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch { }
         }
 
-        #endregion
+#endregion
 
-        #region Add Upload to Lambda Command
+#region Add Upload to Lambda Command
 
         void UploadToLambda(object sender, EventArgs e)
         {
@@ -2224,21 +2228,21 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch { }
         }
 
-        #endregion
+#endregion
 
-        #region Team Explorer Command
+#region Team Explorer Command
 
-#if VS2015_OR_LATER        
+#if VS2015_OR_LATER
         void AddTeamExplorerConnection(object sender, EventArgs e)
         {
             ConnectController.OpenConnection();    
         }
 #endif
 
-        #endregion
+#endregion
 
 
-        #region IVsPackage Members
+#region IVsPackage Members
 
         int IVsPackage.Close()
         {
@@ -2246,9 +2250,9 @@ namespace Amazon.AWSToolkit.VisualStudio
             return Microsoft.VisualStudio.VSConstants.S_OK;
         }
 
-        #endregion
+#endregion
 
-        #region IVsInstalledProduct Members
+#region IVsInstalledProduct Members
 
         int IVsInstalledProduct.IdBmpSplash(out uint pIdBmp)
         {
@@ -2287,9 +2291,9 @@ namespace Amazon.AWSToolkit.VisualStudio
             return VSConstants.S_OK;
         }
 
-        #endregion
+#endregion
 
-        #region IAWSToolkitShellThemeService
+#region IAWSToolkitShellThemeService
 
         // platformui namespace reference in the xaml file needs to be to a specific
         // shell version, and you can't just include references to prior shell version
@@ -2431,7 +2435,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
 #endregion
 
-        #region IRegisterDataConnectionService
+#region IRegisterDataConnectionService
 
         public void AddDataConnection(DatabaseTypes type, string connectionName, string connectionString)
         {
@@ -2546,9 +2550,9 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        #endregion
+#endregion
 		
-        #region IVsBroadcastMessageEvents
+#region IVsBroadcastMessageEvents
 
         const int WM_WININICHANGE = 0x001A;
         const int WM_DISPLAYCHANGE = 0x007E;
@@ -2569,6 +2573,6 @@ namespace Amazon.AWSToolkit.VisualStudio
         }
 
 
-        #endregion
+#endregion
     }
 }
