@@ -79,7 +79,6 @@ namespace Amazon.AWSToolkit.VisualStudio
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     // This attribute is used to register the informations needed to show the this package
     // in the Help/About dialog of Visual Studio.
-    [InstalledProductRegistration(true, null, null, null)]
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers a tool window exposed by this package.
@@ -202,7 +201,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
             AppDomain.CurrentDomain.AssemblyResolve += Utility.AssemblyResolveEventHandler;
 
-            _navigatorVsUIHierarchy = new NavigatorVsUIHierarchy();
+            _navigatorVsUIHierarchy = new NavigatorVsUIHierarchy(this);
             ShellDispatcher = Dispatcher.CurrentDispatcher;
 
             var serviceContainer = this as IServiceContainer;
@@ -215,9 +214,13 @@ namespace Amazon.AWSToolkit.VisualStudio
 			
             try
             {
-                var vsShell = (IVsShell)GetGlobalService(typeof(SVsShell));
-                uint cookie;
-                vsShell.AdviseBroadcastMessages(this, out cookie);
+                this.JoinableTaskFactory.Run(async () =>
+                {
+                    await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    var vsShell = (IVsShell)GetGlobalService(typeof(SVsShell));
+                    uint cookie;
+                    vsShell.AdviseBroadcastMessages(this, out cookie);
+                });
             }
             catch (Exception e)
             {
@@ -474,16 +477,20 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         internal void ShowExplorerWindow()
         {
-            // Get the instance number 0 of this tool window. This window is single instance so this instance
-            // is actually the only one.
-            // The last flag is set to true so that if the tool window does not exists it will be created.
-            var window = FindToolWindow(typeof(AWSNavigatorToolWindow), 0, true);
-            if ((null == window) || (null == window.Frame))
+            this.JoinableTaskFactory.Run(async () =>
             {
-                throw new NotSupportedException(Resources.CanNotCreateWindow);
-            }
-            var windowFrame = (IVsWindowFrame)window.Frame;
-            ErrorHandler.ThrowOnFailure(windowFrame.Show());
+                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                // Get the instance number 0 of this tool window. This window is single instance so this instance
+                // is actually the only one.
+                // The last flag is set to true so that if the tool window does not exists it will be created.
+                var window = FindToolWindow(typeof(AWSNavigatorToolWindow), 0, true);
+                if ((null == window) || (null == window.Frame))
+                {
+                    throw new NotSupportedException(Resources.CanNotCreateWindow);
+                }
+                var windowFrame = (IVsWindowFrame)window.Frame;
+                ErrorHandler.ThrowOnFailure(windowFrame.Show());
+            });
         }
 
         /// <summary>
@@ -575,11 +582,15 @@ namespace Amazon.AWSToolkit.VisualStudio
 #endif
             }
 
-            var shellService = await GetServiceAsync(typeof(SVsShell)) as IVsShell;
-            if (shellService != null)
+            await this.JoinableTaskFactory.RunAsync(async () =>
             {
-                ErrorHandler.ThrowOnFailure(shellService.AdviseShellPropertyChanges(this, out _vsShellPropertyChangeEventSinkCookie));
-            }
+                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var shellService = await GetServiceAsync(typeof(SVsShell)) as IVsShell;
+                if (shellService != null)
+                {
+                    ErrorHandler.ThrowOnFailure(shellService.AdviseShellPropertyChanges(this, out _vsShellPropertyChangeEventSinkCookie));
+                }
+            });
         }
 
 
@@ -660,11 +671,15 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 if (propertyValue)
                 {
-                    var shellService = GetService(typeof (SVsShell)) as IVsShell;
-                    if (shellService != null)
+                    this.JoinableTaskFactory.Run(async () =>
                     {
-                        ErrorHandler.ThrowOnFailure(shellService.UnadviseShellPropertyChanges(_vsShellPropertyChangeEventSinkCookie));
-                    }
+                        await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                        var shellService = await GetServiceAsync(typeof(SVsShell)) as IVsShell;
+                        if (shellService != null)
+                        {
+                            ErrorHandler.ThrowOnFailure(shellService.UnadviseShellPropertyChanges(_vsShellPropertyChangeEventSinkCookie));
+                        }
+                    });
 
                     _vsShellPropertyChangeEventSinkCookie = 0;
 
@@ -683,8 +698,9 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             if (_shellInitialized && _toolkitInitialized)
             {
-                ShellDispatcher.Invoke((Action)(() =>
+                this.JoinableTaskFactory.Run(async () =>
                 {
+                    await this.JoinableTaskFactory.SwitchToMainThreadAsync();
                     try
                     {
                         if (FirstRunController.ShouldShowFirstRunSetupPage)
@@ -697,7 +713,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                     {
                         LOGGER.ErrorFormat("Caught exception on first-run setup, message {0}, stack {1}", e.Message, e.StackTrace);
                     }
-                }));
+                });
             }
         }
 
@@ -1030,34 +1046,42 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// <returns>True if the wizard ran to completion. False if the user cancelled or requested the legacy wizard.</returns>
         bool InitializeAndRunDeploymentWizard(VSWebProjectInfo projectInfo, out IDictionary<string, object> wizardProperties)
         {
-            var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Deployment2AWS.View.Deploy2AWS", null);
-            wizard.Title = "Publish to Amazon Web Services";
-
-            SetVSToolkitDeploymentSeedData(wizard, projectInfo);
-
-            // register the page groups we expect child pages to fit into
-            wizard.RegisterPageGroups(DeploymentWizardPageGroups.DeploymentPageGroups);
-
-            var beanstalk = AWSBeanstalkPlugin;
-            if (beanstalk != null)
+            var tuple = this.JoinableTaskFactory.Run<Tuple<bool, IDictionary<string, object>>>(async () =>
             {
-                var collatedPages = new List<IAWSWizardPageController>(beanstalk.DeploymentService.ConstructDeploymentPages(wizard, false))
+                IDictionary<string, object> localWizardProperties;
+                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Deployment2AWS.View.Deploy2AWS", null);
+                wizard.Title = "Publish to Amazon Web Services";
+
+                SetVSToolkitDeploymentSeedData(wizard, projectInfo);
+
+                // register the page groups we expect child pages to fit into
+                wizard.RegisterPageGroups(DeploymentWizardPageGroups.DeploymentPageGroups);
+
+                var beanstalk = AWSBeanstalkPlugin;
+                if (beanstalk != null)
+                {
+                    var collatedPages = new List<IAWSWizardPageController>(beanstalk.DeploymentService.ConstructDeploymentPages(wizard, false))
                 {
                     new CommonUI.LegacyDeploymentWizard.PageControllers.DeploymentReviewPageController()
                 };
-                wizard.RegisterPageControllers(collatedPages, 0);
-            }
+                    wizard.RegisterPageControllers(collatedPages, 0);
+                }
 
-            wizard.SetShortCircuitPage(AWSWizardConstants.WizardPageReferences.LastPageID);
+                wizard.SetShortCircuitPage(AWSWizardConstants.WizardPageReferences.LastPageID);
 
-            var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
-            IntPtr parent;
-            uiShell.GetDialogOwnerHwnd(out parent);
+                var uiShell = (IVsUIShell)GetServiceAsync(typeof(SVsUIShell));
+                IntPtr parent;
+                uiShell.GetDialogOwnerHwnd(out parent);
 
-            var ret = wizard.Run();
-            wizardProperties = wizard.CollectedProperties;
+                var ret = wizard.Run();
+                localWizardProperties = wizard.CollectedProperties;
 
-            return ret;
+                return new Tuple<bool, IDictionary<string, object>>(ret, localWizardProperties);
+            });
+
+            wizardProperties = tuple.Item2;
+            return tuple.Item1;
         }
 
         /// <summary>
@@ -1069,51 +1093,60 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// <returns>True if the wizard ran to completion, false if the user cancelled</returns>
         bool InitializeAndRunLegacyDeploymentWizard(VSWebProjectInfo projectInfo, out IDictionary<string, object> wizardProperties)
         {
-            var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Deployment2AWS.View.LegacyDeploy2AWS", null);
-            wizard.Title = "Publish to Amazon Web Services";
-
-            wizard.SetProperty(DeploymentWizardProperties.SeedData.propkey_LegacyDeploymentMode, true);
-
-            SetVSToolkitDeploymentSeedData(wizard, projectInfo);
-
-            // fix the build configuration to deploy from the seed property we just set, so the legacy and new
-            // wizards can share the same build logic
-            var activeBuildConfiguration = wizard[DeploymentWizardProperties.SeedData.propkey_ActiveBuildConfiguration] as string;
-            wizard[DeploymentWizardProperties.AppOptions.propkey_SelectedBuildConfiguration] = activeBuildConfiguration;
-
-            var pageControllers = new List<IAWSWizardPageController>
+            var tuple = this.JoinableTaskFactory.Run<Tuple<bool, IDictionary<string, object>>>(async () =>
             {
-                new CommonUI.WizardPages.PageControllers.AccountRegistrationPageController(),
-                new CommonUI.LegacyDeploymentWizard.PageControllers.DeploymentTemplateSelectorPageController()
-            };
+                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                IDictionary<string, object> localWizardProperties;
 
-            // the legacy wizard does not use page groups
-            var cloudFormation = AWSCloudFormationPlugin;
-            if (cloudFormation != null)
-            {
-                var collatedPages = cloudFormation.DeploymentService.ConstructDeploymentPages(wizard, false);
-                pageControllers.AddRange(collatedPages);
-            }
+                var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Deployment2AWS.View.LegacyDeploy2AWS", null);
+                wizard.Title = "Publish to Amazon Web Services";
 
-            var beanstalk = AWSBeanstalkPlugin;
-            if (beanstalk != null)
-            {
-                var collatedPages = beanstalk.DeploymentService.ConstructDeploymentPages(wizard, false);
-                pageControllers.AddRange(collatedPages);
-            }
+                wizard.SetProperty(DeploymentWizardProperties.SeedData.propkey_LegacyDeploymentMode, true);
 
-            pageControllers.Add(new CommonUI.LegacyDeploymentWizard.PageControllers.DeploymentReviewPageController());
-            wizard.RegisterPageControllers(pageControllers, 0);
-            wizard.SetShortCircuitPage(AWSWizardConstants.WizardPageReferences.LastPageID);
+                SetVSToolkitDeploymentSeedData(wizard, projectInfo);
 
-            var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
-            IntPtr parent;
-            uiShell.GetDialogOwnerHwnd(out parent);
+                // fix the build configuration to deploy from the seed property we just set, so the legacy and new
+                // wizards can share the same build logic
+                var activeBuildConfiguration = wizard[DeploymentWizardProperties.SeedData.propkey_ActiveBuildConfiguration] as string;
+                wizard[DeploymentWizardProperties.AppOptions.propkey_SelectedBuildConfiguration] = activeBuildConfiguration;
 
-            var ret = wizard.Run();
-            wizardProperties = wizard.CollectedProperties;
+                var pageControllers = new List<IAWSWizardPageController>
+                {
+                    new CommonUI.WizardPages.PageControllers.AccountRegistrationPageController(),
+                    new CommonUI.LegacyDeploymentWizard.PageControllers.DeploymentTemplateSelectorPageController()
+                };
 
-            return ret;
+                // the legacy wizard does not use page groups
+                var cloudFormation = AWSCloudFormationPlugin;
+                if (cloudFormation != null)
+                {
+                    var collatedPages = cloudFormation.DeploymentService.ConstructDeploymentPages(wizard, false);
+                    pageControllers.AddRange(collatedPages);
+                }
+
+                var beanstalk = AWSBeanstalkPlugin;
+                if (beanstalk != null)
+                {
+                    var collatedPages = beanstalk.DeploymentService.ConstructDeploymentPages(wizard, false);
+                    pageControllers.AddRange(collatedPages);
+                }
+
+                pageControllers.Add(new CommonUI.LegacyDeploymentWizard.PageControllers.DeploymentReviewPageController());
+                wizard.RegisterPageControllers(pageControllers, 0);
+                wizard.SetShortCircuitPage(AWSWizardConstants.WizardPageReferences.LastPageID);
+
+                var uiShell = (IVsUIShell)GetServiceAsync(typeof(SVsUIShell));
+                IntPtr parent;
+                uiShell.GetDialogOwnerHwnd(out parent);
+
+                var ret = wizard.Run();
+                localWizardProperties = wizard.CollectedProperties;
+                return new Tuple<bool, IDictionary<string, object>>(ret, localWizardProperties);
+            });
+
+            wizardProperties = tuple.Item2;
+
+            return tuple.Item1;
         }
 
         /// <summary>
@@ -1123,66 +1156,71 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// <param name="e"></param>
         void RepublishToAWS(object sender, EventArgs e)
         {
-            var pi = VSUtility.SelectedWebProject;
-            if (pi == null || pi.VsProjectType == VSWebProjectInfo.VsWebProjectType.NotWebProjectType)
-                return;
-
-            var projectGuid = VSUtility.QueryProjectIDGuid(pi.VsHierarchy);
-            var deploymentHistory = _projectDeployments[projectGuid].LastDeploymentOfType(DeploymentTypeIdentifiers.VSToolkitDeployment);
-            if (!ValidateLastDeploymentAvailable(projectGuid, deploymentHistory))
+            this.JoinableTaskFactory.Run(async () =>
             {
-                string msg;
+                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                var pi = VSUtility.SelectedWebProject;
+                if (pi == null || pi.VsProjectType == VSWebProjectInfo.VsWebProjectType.NotWebProjectType)
+                    return;
+
+                var projectGuid = VSUtility.QueryProjectIDGuid(pi.VsHierarchy);
+                var deploymentHistory = _projectDeployments[projectGuid].LastDeploymentOfType(DeploymentTypeIdentifiers.VSToolkitDeployment);
+                if (!ValidateLastDeploymentAvailable(projectGuid, deploymentHistory))
+                {
+                    string msg;
+                    if (deploymentHistory is BeanstalkDeploymentHistory)
+                        msg = string.Format("Environment '{0}' is no longer available; redeployment cannot proceed.",
+                                            (deploymentHistory as BeanstalkDeploymentHistory).EnvironmentName);
+                    else
+                        msg = string.Format("Stack '{0}' is no longer available; redeployment cannot proceed.",
+                                            (deploymentHistory as CloudFormationDeploymentHistory).LastStack);
+
+                    ToolkitShellProviderService.ShowMessage("Not Available", msg);
+                    return;
+                }
+
+                // use a one-page wizard to have the same look as the standard deployment wizard
+                var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Deployment2AWS.View.Redeploy2AWS", null);
+                SetVSToolkitFastRedeploymentSeedData(wizard, pi, deploymentHistory);
+
+                var pageControllers = new List<IAWSWizardPageController>();
+
+                // fast-track republish does not use page groups
                 if (deploymentHistory is BeanstalkDeploymentHistory)
-                    msg = string.Format("Environment '{0}' is no longer available; redeployment cannot proceed.",
-                                        (deploymentHistory as BeanstalkDeploymentHistory).EnvironmentName);
+                {
+                    wizard.SetProperty(DeploymentWizardProperties.SeedData.propkey_LegacyDeploymentMode, false);
+
+                    wizard.Title = "Re-publish to AWS Elastic Beanstalk";
+                    var beanstalk = AWSBeanstalkPlugin;
+                    if (beanstalk != null)
+                    {
+                        pageControllers.AddRange(beanstalk.DeploymentService.ConstructDeploymentPages(wizard, true));
+                    }
+                }
                 else
-                    msg = string.Format("Stack '{0}' is no longer available; redeployment cannot proceed.",
-                                        (deploymentHistory as CloudFormationDeploymentHistory).LastStack);
-
-                ToolkitShellProviderService.ShowMessage("Not Available", msg);
-                return;
-            }
-
-            // use a one-page wizard to have the same look as the standard deployment wizard
-            var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Deployment2AWS.View.Redeploy2AWS", null);
-            SetVSToolkitFastRedeploymentSeedData(wizard, pi, deploymentHistory);
-
-            var pageControllers = new List<IAWSWizardPageController>();
-
-            // fast-track republish does not use page groups
-            if (deploymentHistory is BeanstalkDeploymentHistory)
-            {
-                wizard.SetProperty(DeploymentWizardProperties.SeedData.propkey_LegacyDeploymentMode, false);
-
-                wizard.Title = "Re-publish to AWS Elastic Beanstalk";
-                var beanstalk = AWSBeanstalkPlugin;
-                if (beanstalk != null)
                 {
-                    pageControllers.AddRange(beanstalk.DeploymentService.ConstructDeploymentPages(wizard, true));
+                    wizard.Title = "Re-publish to AWS CloudFormation";
+                    var cloudFormation = AWSCloudFormationPlugin;
+                    if (cloudFormation != null)
+                    {
+                        pageControllers.AddRange(cloudFormation.DeploymentService.ConstructDeploymentPages(wizard, true));
+                    }
                 }
-            }
-            else
-            {
-                wizard.Title = "Re-publish to AWS CloudFormation";
-                var cloudFormation = AWSCloudFormationPlugin;
-                if (cloudFormation != null)
+
+                wizard.RegisterPageControllers(pageControllers, 0);
+
+                var uiShell = (IVsUIShell)GetServiceAsync(typeof(SVsUIShell));
+                IntPtr parent;
+                uiShell.GetDialogOwnerHwnd(out parent);
+
+                if (wizard.Run())
                 {
-                    pageControllers.AddRange(cloudFormation.DeploymentService.ConstructDeploymentPages(wizard, true));
+                    // persist first so we take advantage of any save actions during build
+                    PersistVSToolkitDeployment(pi, wizard.CollectedProperties);
+                    BuildAndDeployProject(pi, wizard.CollectedProperties);
                 }
-            }
-
-            wizard.RegisterPageControllers(pageControllers, 0);
-
-            var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
-            IntPtr parent;
-            uiShell.GetDialogOwnerHwnd(out parent);
-
-            if (wizard.Run())
-            {
-                // persist first so we take advantage of any save actions during build
-                PersistVSToolkitDeployment(pi, wizard.CollectedProperties);
-                BuildAndDeployProject(pi, wizard.CollectedProperties);
-            }
+            });
         }
 
 #endregion
@@ -1273,18 +1311,22 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 if (!seedProperties.ContainsKey(DeploymentWizardProperties.SeedData.propkey_SeedName))
                 {
-                    object value;
-                    if (projectInfo.VsHierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_Name, out value)
-                                == VSConstants.S_OK && value != null && value is string)
+                    this.JoinableTaskFactory.Run(async () =>
                     {
-                        var sb = new StringBuilder();
-                        foreach (var c in (string)value)
+                        await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                        object value;
+                        if (projectInfo.VsHierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_Name, out value)
+                                    == VSConstants.S_OK && value != null && value is string)
                         {
-                            if (Char.IsLetterOrDigit(c))
-                                sb.Append(c);
+                            var sb = new StringBuilder();
+                            foreach (var c in (string)value)
+                            {
+                                if (Char.IsLetterOrDigit(c))
+                                    sb.Append(c);
+                            }
+                            seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_SeedName, sb.ToString());
                         }
-                        seedProperties.Add(DeploymentWizardProperties.SeedData.propkey_SeedName, sb.ToString());
-                    }
+                    });
                 }
 
                 // seed the suggested .NET runtime needed for the application from project properties, if available
@@ -1683,36 +1725,43 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         internal Window GetParentWindow()
         {
-            var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
-            IntPtr parent;
-            if (uiShell.GetDialogOwnerHwnd(out parent) != VSConstants.S_OK)
+            return this.JoinableTaskFactory.Run<Window>(async () =>
             {
-                return null;
-            }
-            var host = new Window();
-            var wih = new WindowInteropHelper(host) {Owner = parent};
+                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var uiShell = (IVsUIShell)GetServiceAsync(typeof(SVsUIShell));
+                IntPtr parent;
+                if (uiShell.GetDialogOwnerHwnd(out parent) != VSConstants.S_OK)
+                {
+                    return null;
+                }
+                var host = new Window();
+                var wih = new WindowInteropHelper(host) { Owner = parent };
 
-            return host;
+                return host;
+            });
         }
 
-       
         /// <summary>
         /// Checks whether the specified project is a solution folder
         /// </summary>
         public bool IsSolutionFolderProject(IVsHierarchy pHier)
         {
-            var pFileFormat = pHier as IPersistFileFormat;
-            if (pFileFormat != null)
+            return this.JoinableTaskFactory.Run<bool>(async () =>
             {
-                Guid guidClassID;
-                if (pFileFormat.GetClassID(out guidClassID) == VSConstants.S_OK 
-                        && guidClassID.CompareTo(_guidSolutionFolderProject) == 0)
+                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var pFileFormat = pHier as IPersistFileFormat;
+                if (pFileFormat != null)
                 {
-                    return true;
+                    Guid guidClassID;
+                    if (pFileFormat.GetClassID(out guidClassID) == VSConstants.S_OK
+                            && guidClassID.CompareTo(_guidSolutionFolderProject) == 0)
+                    {
+                        return true;
+                    }
                 }
-            }
 
-            return false;
+                return false;
+            });
         }
 
         /// <summary>
@@ -1722,16 +1771,20 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// <returns>String loaded for the specified resource</returns>
         internal string GetResourceString(string resourceName)
         {
-            string resourceValue;
-            var resourceManager = (IVsResourceManager)GetService(typeof(SVsResourceManager));
-            if (resourceManager == null)
+            return this.JoinableTaskFactory.Run<string>(async () =>
             {
-                throw new InvalidOperationException("Could not get SVsResourceManager service. Make sure the package is Sited before calling this method");
-            }
-            var packageGuid = this.GetType().GUID;
-            var hr = resourceManager.LoadResourceString(ref packageGuid, -1, resourceName, out resourceValue);
-            ErrorHandler.ThrowOnFailure(hr);
-            return resourceValue;
+                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                string resourceValue;
+                var resourceManager = await GetServiceAsync(typeof(SVsResourceManager)) as IVsResourceManager;
+                if (resourceManager == null)
+                {
+                    throw new InvalidOperationException("Could not get SVsResourceManager service. Make sure the package is Sited before calling this method");
+                }
+                var packageGuid = this.GetType().GUID;
+                var hr = resourceManager.LoadResourceString(ref packageGuid, -1, resourceName, out resourceValue);
+                ErrorHandler.ThrowOnFailure(hr);
+                return resourceValue;
+            });
         }
 
 
@@ -2030,11 +2083,14 @@ namespace Amazon.AWSToolkit.VisualStudio
             int dontShowAgain;
             var projectTypeGuid = GuidList.guidCloudFormationTemplateProjectFactory;
 
-            var addItemDialog = this.GetService(typeof(IVsAddProjectItemDlg)) as IVsAddProjectItemDlg;
-            addItemDialog.AddProjectItemDlg(selectedItemId, ref projectTypeGuid, vsProject,
-                                                    (uint)__VSADDITEMFLAGS.VSADDITEM_AddNewItems, "",
-                                                     @"AWS CloudFormation\AWS CloudFormation Template", ref strLocation, ref strFilter, out dontShowAgain);
-
+            this.JoinableTaskFactory.Run(async () =>
+            {
+                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var addItemDialog = await this.GetServiceAsync(typeof(IVsAddProjectItemDlg)) as IVsAddProjectItemDlg;
+                addItemDialog.AddProjectItemDlg(selectedItemId, ref projectTypeGuid, vsProject,
+                                                        (uint)__VSADDITEMFLAGS.VSADDITEM_AddNewItems, "",
+                                                         @"AWS CloudFormation\AWS CloudFormation Template", ref strLocation, ref strFilter, out dontShowAgain);
+            });
         }
 
         void AddCloudFormationTemplate_BeforeQueryStatus(object sender, EventArgs e)
@@ -2444,13 +2500,17 @@ namespace Amazon.AWSToolkit.VisualStudio
             var conn = decMgr.AddConnection(connectionName, guidProvider, connectionString, false);
             decMgr.SelectConnection(conn);
 
-            var toolWindowGuid = new Guid(ToolWindowGuids.ServerExplorer);
-            IVsWindowFrame toolWindow;
-            var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
-            if (uiShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref toolWindowGuid, out toolWindow) == VSConstants.S_OK)
+            this.JoinableTaskFactory.Run(async () =>
             {
-                toolWindow.Show();
-            }
+                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var toolWindowGuid = new Guid(ToolWindowGuids.ServerExplorer);
+                IVsWindowFrame toolWindow;
+                var uiShell = (IVsUIShell)GetServiceAsync(typeof(SVsUIShell));
+                if (uiShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref toolWindowGuid, out toolWindow) == VSConstants.S_OK)
+                {
+                    toolWindow.Show();
+                }
+            });
         }
 
         public void RegisterDataConnection(DatabaseTypes type, string connectionPrefixName, string host, int port, string masterUsername, string initialDBName)
@@ -2502,13 +2562,17 @@ namespace Amazon.AWSToolkit.VisualStudio
                 //host, port, "norm_test", masterUsername, "testtest"), false);
                 decMgr.SelectConnection(conn);
 
-                var toolWindowGuid = new Guid(ToolWindowGuids.ServerExplorer);
-                IVsWindowFrame toolWindow;
-                var uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
-                if (uiShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref toolWindowGuid, out toolWindow) == VSConstants.S_OK)
+                this.JoinableTaskFactory.Run(async () =>
                 {
-                    toolWindow.Show();
-                }
+                    await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    var toolWindowGuid = new Guid(ToolWindowGuids.ServerExplorer);
+                    IVsWindowFrame toolWindow;
+                    var uiShell = (IVsUIShell)GetServiceAsync(typeof(SVsUIShell));
+                    if (uiShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref toolWindowGuid, out toolWindow) == VSConstants.S_OK)
+                    {
+                        toolWindow.Show();
+                    }
+                });
             }
 
             dlg.Dispose();

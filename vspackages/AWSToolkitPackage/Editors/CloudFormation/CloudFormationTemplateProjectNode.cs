@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.Project;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using Amazon.AWSToolkit.CloudFormation.EditorExtensions;
+using Microsoft.VisualStudio.Shell;
 
 namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
 {
@@ -68,34 +69,40 @@ namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
 
             if (projectFirstChild != null)
             {
-                Action<HierarchyNode> copyNodes = null;
-                copyNodes = node =>
+                this.package.JoinableTaskFactory.Run(async () =>
                 {
-                    while (node != null)
+                    await this.package.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    Action<HierarchyNode> copyNodes = null;
+                    copyNodes = node =>
                     {
-                        if (node is FileNode)
+                        ThreadHelper.ThrowIfNotOnUIThread();
+                        while (node != null)
                         {
-                            Object prjItemObject = null;
-                            this.GetProperty(node.ID, (int)__VSHPROPID.VSHPROPID_ExtObject, out prjItemObject);
+                            if (node is FileNode)
+                            {
+                                Object prjItemObject = null;
+                                
+                                this.GetProperty(node.ID, (int)__VSHPROPID.VSHPROPID_ExtObject, out prjItemObject);
 
-                            var prjItem = prjItemObject as EnvDTE.ProjectItem;
-                            if (prjItem == null)
-                                continue;
+                                var prjItem = prjItemObject as EnvDTE.ProjectItem;
+                                if (prjItem == null)
+                                    continue;
 
-                            var fileName = node.Url.Substring(oldRootDirectory.Length + 1);
-                            var fullPath = Path.Combine(rootDir, fileName);
-                            prjItem.SaveAs(fullPath);
+                                var fileName = node.Url.Substring(oldRootDirectory.Length + 1);
+                                var fullPath = Path.Combine(rootDir, fileName);
+                                prjItem.SaveAs(fullPath);
+                            }
+
+                            var firstChild = node.FirstChild;
+                            if (firstChild != null)
+                                copyNodes(firstChild);
+
+                            node = node.NextSibling;
                         }
+                    };
 
-                        var firstChild = node.FirstChild;
-                        if(firstChild != null)
-                            copyNodes(firstChild);
-
-                        node = node.NextSibling;
-                    }
-                };
-
-                copyNodes(projectFirstChild);
+                    copyNodes(projectFirstChild);
+                });
             }
 
             return VSConstants.S_OK;
@@ -171,7 +178,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
         /// <returns></returns>
         protected override int QueryStatusOnNode(Guid guidCmdGroup, uint cmd, IntPtr pCmdText, ref QueryStatusResult result)
         {
-            if (guidCmdGroup == VsMenus.guidStandardCommandSet2K)
+            if (guidCmdGroup == Microsoft.VisualStudio.Project.VsMenus.guidStandardCommandSet2K)
             {
                 if ((VsCommands2K)cmd == VsCommands2K.ADDREFERENCE)
                 {

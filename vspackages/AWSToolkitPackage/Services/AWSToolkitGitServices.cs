@@ -30,12 +30,16 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
     internal class AWSToolkitGitServices : IAWSToolkitGitServices
     {
         private readonly ILog LOGGER = LogManager.GetLogger(typeof(AWSToolkitGitServices));
-        readonly IVsStatusbar _statusBar;
+        IVsStatusbar _statusBar;
 
         public AWSToolkitGitServices(AWSToolkitPackage hostPackage)
         {
             HostPackage = hostPackage;
-            _statusBar = hostPackage.GetVSShellService(typeof(IVsStatusbar)) as IVsStatusbar;
+            hostPackage.JoinableTaskFactory.Run(async () =>
+            {
+                await hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                this._statusBar = hostPackage.GetVSShellService(typeof(IVsStatusbar)) as IVsStatusbar;
+            });            
         }
 
         private AWSToolkitPackage HostPackage { get; }
@@ -69,7 +73,12 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
                 await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.RunAsync(async () =>
                 {
-                    progress.ProgressChanged += (s, e) => _statusBar.SetText(e.ProgressText);
+                    await this.HostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    progress.ProgressChanged += (s, e) =>
+                    {
+                        Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+                        _statusBar.SetText(e.ProgressText);
+                    };
                     await gitExt.CloneAsync(repositoryUrl, 
                                             destinationFolder, 
                                             recurseSubmodules,
@@ -132,8 +141,9 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                     gitCredentials.Dispose();
                 }
 
-                HostPackage.ShellDispatcher.Invoke(() =>
+                await HostPackage.JoinableTaskFactory.RunAsync(async () =>
                 {
+                    await HostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
                     TeamExplorerConnection.ActiveConnection.RefreshRepositories();
                 });
             }
@@ -228,8 +238,9 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             }
             finally
             {
-                HostPackage.ShellDispatcher.Invoke(() =>
+                await HostPackage.JoinableTaskFactory.RunAsync(async () =>
                 {
+                    await HostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
                     TeamExplorerConnection.ActiveConnection.RefreshRepositories();
                 });
             }

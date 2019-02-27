@@ -69,11 +69,16 @@ namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
             {
                 // "Site" the text buffer with the service provider we were
                 // provided.
-                IObjectWithSite textBufferSite = pTextBuffer as IObjectWithSite;
-                if (textBufferSite != null)
+                this.parentPackage.JoinableTaskFactory.Run(async () =>
                 {
-                    textBufferSite.SetSite(this.serviceProvider);
-                }
+                    await this.parentPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    IObjectWithSite textBufferSite = pTextBuffer as IObjectWithSite;
+                    if (textBufferSite != null)
+                    {
+                        textBufferSite.SetSite(this.serviceProvider);
+                    }
+                });
+
 
                 // Instantiate a code window of type IVsCodeWindow.
                 Guid clsidCodeWindow = typeof(VsCodeWindowClass).GUID;

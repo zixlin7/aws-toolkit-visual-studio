@@ -137,12 +137,16 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
         {
             get
             {
-                if (_statusBar == null && TaskInfo.HostServiceProvider != null)
+                return Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run<IVsStatusbar>(async () =>
                 {
-                    _statusBar = (IVsStatusbar)TaskInfo.HostServiceProvider(typeof(SVsStatusbar));
-                }
+                    await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    if (_statusBar == null && TaskInfo.HostServiceProvider != null)
+                    {
+                        _statusBar = (IVsStatusbar)TaskInfo.HostServiceProvider(typeof(SVsStatusbar));
+                    }
 
-                return _statusBar;
+                    return _statusBar;
+                });
             }
         }
 
@@ -154,23 +158,27 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
         /// <param name="statusText"></param>
         protected void StartStatusBarBuildFeedback(short feedbackIcon, string statusText)
         {
-            var statusBar = StatusBar;
-            if (statusBar == null)
-                return;
-
-            statusBar.Animation(1, ref _icon);
-            if (!string.IsNullOrEmpty(statusText))
+            Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
-                int alreadyFrozen;
-                statusBar.IsFrozen(out alreadyFrozen);
+                await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var statusBar = StatusBar;
+                if (statusBar == null)
+                    return;
 
-                if (alreadyFrozen == 0)
+                statusBar.Animation(1, ref _icon);
+                if (!string.IsNullOrEmpty(statusText))
                 {
-                    statusBar.SetText(statusText);
-                    statusBar.FreezeOutput(1);
-                    _hasLockedStatusText = true;
+                    int alreadyFrozen;
+                    statusBar.IsFrozen(out alreadyFrozen);
+
+                    if (alreadyFrozen == 0)
+                    {
+                        statusBar.SetText(statusText);
+                        statusBar.FreezeOutput(1);
+                        _hasLockedStatusText = true;
+                    }
                 }
-            }
+            });
         }
 
         protected void EndStatusBarBuildFeedback()
@@ -179,13 +187,17 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
             if (statusBar == null)
                 return;
 
-            statusBar.Animation(0, ref _icon);
-
-            if (_hasLockedStatusText)
+            Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
-                statusBar.FreezeOutput(0);
-                statusBar.Clear();
-            }
+                await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                statusBar.Animation(0, ref _icon);
+
+                if (_hasLockedStatusText)
+                {
+                    statusBar.FreezeOutput(0);
+                    statusBar.Clear();
+                }
+            });
         }
 
         protected void WaitOnBuildCompletion(IVsSolutionBuildManager solnBuildManager)
@@ -195,8 +207,12 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
             // We can't guarantee the order though...
             while (true)
             {
-                int buildBusy;
-                solnBuildManager.QueryBuildManagerBusy(out buildBusy);
+                var buildBusy = Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run<int>(async () =>
+                {
+                    await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    solnBuildManager.QueryBuildManagerBusy(out int value);
+                    return value;
+                });
                 if (buildBusy == 0)
                 {
                     if (BuildStageSucceeded != null)

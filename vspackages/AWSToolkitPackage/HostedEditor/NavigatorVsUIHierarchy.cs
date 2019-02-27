@@ -21,8 +21,11 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
     {
         private static ServiceProvider _serviceProvider;
 
-        public NavigatorVsUIHierarchy()
+        AWSToolkitPackage _package;
+
+        public NavigatorVsUIHierarchy(AWSToolkitPackage package)
         {
+            this._package = package;
         }
 
         public int AdviseHierarchyEvents(IVsHierarchyEvents pEventSink, out uint pdwCookie)
@@ -129,7 +132,11 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
 
         public int GetSite(out IOleServiceProvider ppSP)
         {
-            ppSP = _serviceProvider.GetService(typeof(IOleServiceProvider)) as IOleServiceProvider;
+            ppSP = this._package.JoinableTaskFactory.Run<IOleServiceProvider>(async () =>
+            {
+                await this._package.JoinableTaskFactory.SwitchToMainThreadAsync();
+                return _serviceProvider.GetService(typeof(IOleServiceProvider)) as IOleServiceProvider;
+            });
             return VSConstants.S_OK;
         }
 

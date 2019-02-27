@@ -142,12 +142,13 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
                 return;
 
             var validRepos = CodeCommitPlugin.GetRepositories(Account, repoPaths);
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke(() =>
+            Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
+                await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 Repositories.Clear();
                 foreach (var repo in validRepos)
                 {
-                    Repositories.Add(repo);                   
+                    Repositories.Add(repo);
                 }
 
                 OnPropertyChanged("Repositories");

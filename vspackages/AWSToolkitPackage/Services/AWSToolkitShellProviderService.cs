@@ -88,77 +88,82 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         public void OpenShellWindow(ShellWindows window)
         {
-            switch (window)
+            this._hostPackage.JoinableTaskFactory.Run(async () =>
             {
-                case ShellWindows.Explorer:
-                    ShellDispatcher.Invoke((Action)(_hostPackage.ShowExplorerWindow));
-                    break;
+                await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                switch (window)
+                {
+                    case ShellWindows.Explorer:
+                        _hostPackage.ShowExplorerWindow();
+                        break;
 
-                case ShellWindows.Output:
-                    break;
-            }
+                    case ShellWindows.Output:
+                        break;
+                }
+            });
         }
 
         public void OpenInEditor(IAWSToolkitControl editorControl)
         {
-            var openShell = _hostPackage.GetVSShellService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
-
-            ToolkitEvent toolkitEvent = new ToolkitEvent();
-            toolkitEvent.AddProperty(AttributeKeys.OpenViewFullIdentifier, editorControl.GetType().FullName);
-            _hostPackage.AnalyticsRecorder.QueueEventToBeRecorded(toolkitEvent);
-
-            var logicalView = VSConstants.LOGVIEWID_Primary;
-            var editorFactoryGuid = new Guid(GuidList.HostedEditorFactoryGuidString);
-
-            var controlId = (uint)(Interlocked.Increment(ref _hostPackage.ControlCounter));
-
-            _hostPackage.ControlCache[controlId] = new WeakReference(editorControl);
-            try
+            this._hostPackage.JoinableTaskFactory.Run(async () =>
             {
-                var uniqueId = editorControl.UniqueId;
-                if (ToolkitFactory.Instance.Navigator.SelectedAccount != null)
-                {
-                    uniqueId += ToolkitFactory.Instance.Navigator.SelectedAccount.SettingsUniqueKey;
-                }
-                if (ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints != null)
-                {
-                    uniqueId += ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints.SystemName;
-                }
+                await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var openShell = _hostPackage.GetVSShellService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
 
-                string filename;
-                if (!_hostPackage.ControlUniqueNameToFileName.TryGetValue(uniqueId, out filename))
+                ToolkitEvent toolkitEvent = new ToolkitEvent();
+                toolkitEvent.AddProperty(AttributeKeys.OpenViewFullIdentifier, editorControl.GetType().FullName);
+                _hostPackage.AnalyticsRecorder.QueueEventToBeRecorded(toolkitEvent);
+
+                var logicalView = VSConstants.LOGVIEWID_Primary;
+                var editorFactoryGuid = new Guid(GuidList.HostedEditorFactoryGuidString);
+
+                var controlId = (uint)(Interlocked.Increment(ref _hostPackage.ControlCounter));
+
+                _hostPackage.ControlCache[controlId] = new WeakReference(editorControl);
+                try
                 {
-                    filename = Guid.NewGuid() + ".hostedControl";
-                    _hostPackage.ControlUniqueNameToFileName[uniqueId] = filename;
-                    _hostPackage.OpenedEditors[filename] = new WeakReference(editorControl);
-                }
-                else if (_hostPackage.OpenedEditors.ContainsKey(filename))
-                {
-                    var wr = _hostPackage.OpenedEditors[filename];
-                    if (wr.IsAlive)
+                    var uniqueId = editorControl.UniqueId;
+                    if (ToolkitFactory.Instance.Navigator.SelectedAccount != null)
                     {
-                        var existingOpenEditor = wr.Target as IAWSToolkitControl;
-                        existingOpenEditor.RefreshInitialData(editorControl.GetInitialData());
+                        uniqueId += ToolkitFactory.Instance.Navigator.SelectedAccount.SettingsUniqueKey;
                     }
-                }
+                    if (ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints != null)
+                    {
+                        uniqueId += ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints.SystemName;
+                    }
 
-                var documentMoniker = Path.Combine(_hostPackage.GetTempFileLocation(), filename);
-                IVsWindowFrame frame;
+                    string filename;
+                    if (!_hostPackage.ControlUniqueNameToFileName.TryGetValue(uniqueId, out filename))
+                    {
+                        filename = Guid.NewGuid() + ".hostedControl";
+                        _hostPackage.ControlUniqueNameToFileName[uniqueId] = filename;
+                        _hostPackage.OpenedEditors[filename] = new WeakReference(editorControl);
+                    }
+                    else if (_hostPackage.OpenedEditors.ContainsKey(filename))
+                    {
+                        var wr = _hostPackage.OpenedEditors[filename];
+                        if (wr.IsAlive)
+                        {
+                            var existingOpenEditor = wr.Target as IAWSToolkitControl;
+                            existingOpenEditor.RefreshInitialData(editorControl.GetInitialData());
+                        }
+                    }
 
-                _hostPackage.JoinableTaskFactory.Run(async delegate
-                {
+                    var documentMoniker = Path.Combine(_hostPackage.GetTempFileLocation(), filename);
+                    IVsWindowFrame frame;
+
                     await _hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
                     var result = openShell.OpenSpecificEditor(0,  // grfOpenSpecific 
-                                                              documentMoniker, // pszMkDocument 
-                                                              ref editorFactoryGuid,  // rGuidEditorType 
-                                                              null, // pszPhysicalView 
-                                                              ref logicalView, // rguidLogicalView +++
-                                                              editorControl.Title, // pszOwnerCaption 
-                                                              _hostPackage._navigatorVsUIHierarchy, // pHier 
-                                                              controlId, // itemid 
-                                                              new IntPtr(0), // punkDocDataExisting 
-                                                              null, // pSPHierContext 
-                                                              out frame);
+                                                                documentMoniker, // pszMkDocument 
+                                                                ref editorFactoryGuid,  // rGuidEditorType 
+                                                                null, // pszPhysicalView 
+                                                                ref logicalView, // rguidLogicalView +++
+                                                                editorControl.Title, // pszOwnerCaption 
+                                                                _hostPackage._navigatorVsUIHierarchy, // pHier 
+                                                                controlId, // itemid 
+                                                                new IntPtr(0), // punkDocDataExisting 
+                                                                null, // pSPHierContext 
+                                                                out frame);
 
                     if (result != VSConstants.S_OK)
                     {
@@ -169,15 +174,14 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                     {
                         frame.Show();
                     }
-                });
+                }
+                catch
+                {
+                    _hostPackage.ControlCache.Remove(controlId);
+                }
 
-            }
-            catch
-            {
-                _hostPackage.ControlCache.Remove(controlId);
-            }
-
-            ThreadPool.QueueUserWorkItem(_hostPackage.ClearDeadWeakReferences, null);
+                ThreadPool.QueueUserWorkItem(_hostPackage.ClearDeadWeakReferences, null);
+            });
         }
 
         public void OpenInEditor(string fileName)
@@ -212,39 +216,43 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         public bool ShowModal(Window window, string metricId)
         {
-            ToolkitEvent toolkitEvent = new ToolkitEvent();
-            toolkitEvent.AddProperty(AttributeKeys.OpenViewFullIdentifier, metricId);
-            _hostPackage.AnalyticsRecorder.QueueEventToBeRecorded(toolkitEvent);
-
-            var uiShell = (IVsUIShell)_hostPackage.GetVSShellService(typeof(SVsUIShell));
-            IntPtr parent;
-            if (uiShell.GetDialogOwnerHwnd(out parent) != VSConstants.S_OK)
+            return this._hostPackage.JoinableTaskFactory.Run<bool>(async () =>
             {
-                Trace.Fail("Failed to get hwnd for ShowModal: " + window.Title);
-                return false;
-            }
+                await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                ToolkitEvent toolkitEvent = new ToolkitEvent();
+                toolkitEvent.AddProperty(AttributeKeys.OpenViewFullIdentifier, metricId);
+                _hostPackage.AnalyticsRecorder.QueueEventToBeRecorded(toolkitEvent);
 
-            try
-            {
-                window.HorizontalAlignment = HorizontalAlignment.Center;
-                window.VerticalAlignment = VerticalAlignment.Center;
+                var uiShell = (IVsUIShell)_hostPackage.GetVSShellService(typeof(SVsUIShell));
+                IntPtr parent;
+                if (uiShell.GetDialogOwnerHwnd(out parent) != VSConstants.S_OK)
+                {
+                    Trace.Fail("Failed to get hwnd for ShowModal: " + window.Title);
+                    return false;
+                }
 
-                var wih = new WindowInteropHelper(window);
-                wih.Owner = parent;
+                try
+                {
+                    window.HorizontalAlignment = HorizontalAlignment.Center;
+                    window.VerticalAlignment = VerticalAlignment.Center;
 
-                uiShell.EnableModeless(0);
-                var dialogResult = window.ShowDialog().GetValueOrDefault();
-                return dialogResult;
-            }
-            catch (Exception e)
-            {
-                Trace.Fail("Error displaying modal dialog: " + e.Message);
-                return false;
-            }
-            finally
-            {
-                uiShell.EnableModeless(1);
-            }
+                    var wih = new WindowInteropHelper(window);
+                    wih.Owner = parent;
+
+                    uiShell.EnableModeless(0);
+                    var dialogResult = window.ShowDialog().GetValueOrDefault();
+                    return dialogResult;
+                }
+                catch (Exception e)
+                {
+                    Trace.Fail("Error displaying modal dialog: " + e.Message);
+                    return false;
+                }
+                finally
+                {
+                    uiShell.EnableModeless(1);
+                }
+            });
         }
 
         public void ShowError(string message)
@@ -254,17 +262,17 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         public void ShowError(string title, string message)
         {
-            ShellDispatcher.Invoke((Action)(() => MessageBox.Show(_hostPackage.GetParentWindow(), message, title, MessageBoxButton.OK, MessageBoxImage.Error)));
+            this.ExecuteOnUIThread(() => MessageBox.Show(_hostPackage.GetParentWindow(), message, title, MessageBoxButton.OK, MessageBoxImage.Error));
         }
 
         public void ShowErrorWithLinks(string title, string message)
         {
-            ShellDispatcher.Invoke((Action)(() => Messaging.ShowErrorWithLinks(_hostPackage.GetParentWindow(), title, message)));
+            this.ExecuteOnUIThread(() => Messaging.ShowErrorWithLinks(_hostPackage.GetParentWindow(), title, message));
         }
 
         public void ShowMessage(string title, string message)
         {
-            ShellDispatcher.Invoke((Action)(() => MessageBox.Show(_hostPackage.GetParentWindow(), message, title, MessageBoxButton.OK, MessageBoxImage.Information)));
+            this.ExecuteOnUIThread(() => MessageBox.Show(_hostPackage.GetParentWindow(), message, title, MessageBoxButton.OK, MessageBoxImage.Information));
         }
 
         public bool Confirm(string title, string message)
@@ -274,45 +282,74 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         public bool Confirm(string title, string message, MessageBoxButton buttons)
         {
-            var uiShell = (IVsUIShell)_hostPackage.GetVSShellService(typeof(SVsUIShell));
-            IntPtr parent;
-            if (uiShell.GetDialogOwnerHwnd(out parent) == VSConstants.S_OK)
+            return this._hostPackage.JoinableTaskFactory.Run<bool>(async () =>
             {
-                var host = new Window();
-                var wih = new WindowInteropHelper(host);
-                wih.Owner = parent;
+                await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var uiShell = (IVsUIShell)_hostPackage.GetVSShellService(typeof(SVsUIShell));
+                IntPtr parent;
+                if (uiShell.GetDialogOwnerHwnd(out parent) == VSConstants.S_OK)
+                {
+                    var host = new Window();
+                    var wih = new WindowInteropHelper(host);
+                    wih.Owner = parent;
 
-                var result = MessageBox.Show(host, message, title, buttons, MessageBoxImage.Exclamation);
-                return result == MessageBoxResult.Yes || result == MessageBoxResult.OK;
-            }
+                    var result = MessageBox.Show(host, message, title, buttons, MessageBoxImage.Exclamation);
+                    return result == MessageBoxResult.Yes || result == MessageBoxResult.OK;
+                }
 
-            Trace.Fail("Failed to get hwnd for error message: " + message);
-            return false;
+                Trace.Fail("Failed to get hwnd for error message: " + message);
+                return false;
+            });
         }
 
         public void UpdateStatus(string status)
         {
-            try
+            this._hostPackage.JoinableTaskFactory.Run(async () =>
             {
-                var statusBar = (IVsStatusbar)_hostPackage.GetVSShellService(typeof(SVsStatusbar));
-                int frozen;
-
-                statusBar.IsFrozen(out frozen);
-
-                if (frozen == 0)
+                await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                try
                 {
-                    if (string.IsNullOrEmpty(status))
-                        statusBar.Clear();
-                    else
-                        statusBar.SetText(status);
+                    var statusBar = (IVsStatusbar)_hostPackage.GetVSShellService(typeof(SVsStatusbar));
+                    int frozen;
+
+                    statusBar.IsFrozen(out frozen);
+
+                    if (frozen == 0)
+                    {
+                        if (string.IsNullOrEmpty(status))
+                            statusBar.Clear();
+                        else
+                            statusBar.SetText(status);
+                    }
                 }
-            }
-            catch (Exception) { }
+                catch (Exception) { }
+            });
         }
 
         public Dispatcher ShellDispatcher
         {
             get { return _hostPackage.ShellDispatcher; }
+        }
+
+        internal void ExecuteOnUIThread(Action action)
+        {
+            this._hostPackage.JoinableTaskFactory.Run(async delegate
+            {
+                await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                action();
+            });
+        }
+
+        internal T ExecuteOnUIThread<T>(Func<T> func)
+        {
+            Func<System.Threading.Tasks.Task<T>> taskFunc = async () =>
+            {
+                await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                return func();
+            };
+            T t = this._hostPackage.JoinableTaskFactory.Run<T>(taskFunc);
+
+            return t;
         }
 
         public void OutputToHostConsole(string message)
@@ -390,28 +427,36 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         public void OpenInBrowser(string url, bool preferInternalBrowser)
         {
-            if (preferInternalBrowser)
+            this._hostPackage.JoinableTaskFactory.Run(async () =>
             {
-                var service = _hostPackage.GetVSShellService(typeof(SVsWebBrowsingService)) as IVsWebBrowsingService;
-
-                if (service != null)
+                await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                if (preferInternalBrowser)
                 {
-                    __VSCREATEWEBBROWSER createFlags = __VSCREATEWEBBROWSER.VSCWB_AutoShow;
-                    VSPREVIEWRESOLUTION resolution = VSPREVIEWRESOLUTION.PR_Default;
-                    int result = ErrorHandler.CallWithCOMConvention(() => service.CreateExternalWebBrowser((uint)createFlags, resolution, new Uri(url).AbsoluteUri));
-                    if (ErrorHandler.Succeeded(result))
-                        return;
+                    var service = _hostPackage.GetVSShellService(typeof(SVsWebBrowsingService)) as IVsWebBrowsingService;
+
+                    if (service != null)
+                    {
+                        __VSCREATEWEBBROWSER createFlags = __VSCREATEWEBBROWSER.VSCWB_AutoShow;
+                        VSPREVIEWRESOLUTION resolution = VSPREVIEWRESOLUTION.PR_Default;
+                        int result = ErrorHandler.CallWithCOMConvention(() =>
+                        {
+                            ThreadHelper.ThrowIfNotOnUIThread();
+                            return service.CreateExternalWebBrowser((uint)createFlags, resolution, new Uri(url).AbsoluteUri);
+                        });
+                        if (ErrorHandler.Succeeded(result))
+                            return;
+                    }
                 }
-            }
 
-            // prefer not set, or internal service not available - launch the system
-            // default browser in a separate process
-            var u = new UriBuilder(url)
-            {
-                Scheme = "https"
-            };
+                // prefer not set, or internal service not available - launch the system
+                // default browser in a separate process
+                var u = new UriBuilder(url)
+                {
+                    Scheme = "https"
+                };
 
-            Process.Start(new ProcessStartInfo(u.Uri.ToString()));
+                Process.Start(new ProcessStartInfo(u.Uri.ToString()));
+            });
         }
 
         public void CloseEditor(IAWSToolkitControl editorControl)

@@ -72,7 +72,11 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
 
         public void OpenInBrowser(string endpoint)
         {
-            HostPackage.ToolkitShellProviderService.OpenInBrowser(endpoint, true);
+            this.HostPackage.JoinableTaskFactory.Run(async () =>
+            {
+                await this.HostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                HostPackage.ToolkitShellProviderService.OpenInBrowser(endpoint, true);
+            });            
         }
 
         private void ModelOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)

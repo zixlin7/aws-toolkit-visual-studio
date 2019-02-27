@@ -175,17 +175,21 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
                 }
             }
 
-            if (solutionCreated)
+            Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
-                var teamExplorerService =
-                    ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<ITeamExplorer>();
-                teamExplorerService?.NavigateToPage(new Guid(TeamExplorerPageIds.Home), null);
-            }
-            else
-            {
-                var solutionService = ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<IVsSolution>();
-                solutionService?.OpenSolutionViaDlg(SelectedRepository.LocalFolder, 1);
-            }
+                await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                if (solutionCreated)
+                {
+                    var teamExplorerService =
+                        ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<ITeamExplorer>();
+                    teamExplorerService?.NavigateToPage(new Guid(TeamExplorerPageIds.Home), null);
+                }
+                else
+                {
+                    var solutionService = ToolkitFactory.Instance.ShellProvider.QueryShellProviderService<IVsSolution>();
+                    solutionService?.OpenSolutionViaDlg(SelectedRepository.LocalFolder, 1);
+                }
+            });
         }
     }
 }

@@ -78,17 +78,21 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
         private void createViewAndData(uint controlId, out object docView, out object docData)
         {
             IAWSToolkitControl control = this.editorPackage.PopControl(controlId);
-            docView = new HostedEditorPane(control);
+            docView = new HostedEditorPane(editorPackage, control);
             docData = docView;
         }
 
 
         public void Dispose()
         {
-            if (vsServiceProvider != null)
+            this.editorPackage.JoinableTaskFactory.Run(async () =>
             {
-                vsServiceProvider.Dispose();
-            }
+                await this.editorPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                if (vsServiceProvider != null)
+                {
+                    vsServiceProvider.Dispose();
+                }
+            });
         }
 
         public int SetSite(Microsoft.VisualStudio.OLE.Interop.IServiceProvider psp)
@@ -99,7 +103,11 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
 
         public object GetService(Type serviceType)
         {
-            return vsServiceProvider.GetService(serviceType);
+            return this.editorPackage.JoinableTaskFactory.Run<object>(async () =>
+            {
+                await this.editorPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                return vsServiceProvider.GetService(serviceType);
+            });
         }
 
         public int MapLogicalView(ref Guid rguidLogicalView, out string pbstrPhysicalView)

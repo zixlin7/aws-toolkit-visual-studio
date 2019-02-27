@@ -28,7 +28,12 @@ namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
             LOGGER.Debug("Creating CloudFormation Project");
             CloudFormationTemplateProjectNode project = new CloudFormationTemplateProjectNode(this.package);
 
-            project.SetSite((IOleServiceProvider)((IServiceProvider)this.package).GetService(typeof(IOleServiceProvider)));
+            Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
+            {
+                await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                project.SetSite((IOleServiceProvider)((IServiceProvider)this.package).GetService(typeof(IOleServiceProvider)));
+            });
+            
             return project;
         }
     }

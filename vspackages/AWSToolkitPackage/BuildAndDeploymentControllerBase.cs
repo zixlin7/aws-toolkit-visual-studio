@@ -146,7 +146,13 @@ namespace Amazon.AWSToolkit.VisualStudio
                 finally
                 {
                     if (controller.OnCompletionCallback != null)
-                        CallerDispatcher.Invoke(controller.OnCompletionCallback, succeeded);
+                    {
+                        Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
+                        {
+                            await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                            controller.OnCompletionCallback(succeeded);
+                        });
+                    }
                 }
             }
         }

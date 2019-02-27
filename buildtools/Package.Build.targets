@@ -21,7 +21,7 @@
   <PropertyGroup>
     <VsixDisplayName Condition="'$(VisualStudioVersion)' == '12.0' ">AWS Toolkit for Visual Studio 2013</VsixDisplayName>
     <VsixDisplayName Condition="'$(VisualStudioVersion)' == '14.0' ">AWS Toolkit for Visual Studio 2015</VsixDisplayName>
-    <VsixDisplayName Condition="'$(VisualStudioVersion)' == '15.0' ">AWS Toolkit for Visual Studio 2017 &amp; 2019</VsixDisplayName>
+    <VsixDisplayName Condition="'$(VisualStudioVersion)' == '15.0' ">AWS Toolkit for Visual Studio 2017 and 2019</VsixDisplayName>
   </PropertyGroup>
 
   <PropertyGroup>

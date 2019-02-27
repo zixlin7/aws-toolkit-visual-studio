@@ -43,8 +43,9 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
 
         }
 
-        public HostedEditorPane(IAWSToolkitControl hostedControl)
+        public HostedEditorPane(AWSToolkitPackage package, IAWSToolkitControl hostedControl)
         {
+            this._package = package;
             // Start the data to be load in the background
             hostedControl.ExecuteBackGroundLoadDataLoad();
             this._hostedControl = new HostedUserControl();
@@ -184,8 +185,15 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
 
         public int GetClassID(out Guid pClassID)
         {
-            ErrorHandler.ThrowOnFailure(((Microsoft.VisualStudio.OLE.Interop.IPersist)this).GetClassID(out pClassID));
-            return VSConstants.S_OK;
+            var tuple = this._package.JoinableTaskFactory.Run<Tuple<int, Guid>>(async () =>
+            {
+                Guid localpClassId;
+                await this._package.JoinableTaskFactory.SwitchToMainThreadAsync();
+                ErrorHandler.ThrowOnFailure(((Microsoft.VisualStudio.OLE.Interop.IPersist)this).GetClassID(out localpClassId));
+                return new Tuple<int, Guid>(VSConstants.S_OK, localpClassId);
+            });
+            pClassID = tuple.Item2;
+            return tuple.Item1;
         }
 
         #region IPersistFileFormat Members
@@ -333,7 +341,17 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
         /// <returns>S_OK if the function succeeds</returns>
         public int IsDocDataDirty(out int pfDirty)
         {
-            return ((IPersistFileFormat)this).IsDirty(out pfDirty);
+            var tuple = this._package.JoinableTaskFactory.Run<Tuple<int, int>>(async () =>
+            {
+                await this._package.JoinableTaskFactory.SwitchToMainThreadAsync();
+                int localPfDirty;
+                var result = ((IPersistFileFormat)this).IsDirty(out localPfDirty);
+                return new Tuple<int, int>(result, localPfDirty);
+            });
+
+            pfDirty = tuple.Item2;
+
+            return tuple.Item1;            
         }
 
         /// <summary>
@@ -358,85 +376,94 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
         /// <returns></returns>
         public int SaveDocData(Microsoft.VisualStudio.Shell.Interop.VSSAVEFLAGS dwSave, out string pbstrMkDocumentNew, out int pfSaveCanceled)
         {
-            pbstrMkDocumentNew = null;
-            pfSaveCanceled = 0;
-            int hr = VSConstants.S_OK;
-
-            switch (dwSave)
+            var tuple = this._package.JoinableTaskFactory.Run<Tuple<int, string, int>>(async () =>
             {
-                case VSSAVEFLAGS.VSSAVE_Save:
-                case VSSAVEFLAGS.VSSAVE_SilentSave:
-                    {
-                        IVsQueryEditQuerySave2 queryEditQuerySave = (IVsQueryEditQuerySave2)GetService(typeof(SVsQueryEditQuerySave));
+                string localpbstrMkDocumentNew = null;
+                int localpfSaveCanceled = 0;
+                await this._package.JoinableTaskFactory.SwitchToMainThreadAsync();
+                int hr = VSConstants.S_OK;
 
-                        // Call QueryEditQuerySave
-                        uint result = 0;
-                        hr = queryEditQuerySave.QuerySaveFile(
-                                fileName,        // filename
-                                0,    // flags
-                                null,            // file attributes
-                                out result);    // result
-                        if (ErrorHandler.Failed(hr))
-                            return hr;
-
-                        // Process according to result from QuerySave
-                        switch ((tagVSQuerySaveResult)result)
+                switch (dwSave)
+                {
+                    case VSSAVEFLAGS.VSSAVE_Save:
+                    case VSSAVEFLAGS.VSSAVE_SilentSave:
                         {
-                            case tagVSQuerySaveResult.QSR_NoSave_Cancel:
-                                // Note that this is also case tagVSQuerySaveResult.QSR_NoSave_UserCanceled because these
-                                // two tags have the same value.
-                                pfSaveCanceled = ~0;
-                                break;
+                            IVsQueryEditQuerySave2 queryEditQuerySave = (IVsQueryEditQuerySave2)GetService(typeof(SVsQueryEditQuerySave));
 
-                            case tagVSQuerySaveResult.QSR_SaveOK:
-                                {
-                                    // Call the shell to do the save for us
-                                    IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
-                                    hr = uiShell.SaveDocDataToFile(dwSave, (IPersistFileFormat)this, fileName, out pbstrMkDocumentNew, out pfSaveCanceled);
-                                    if (ErrorHandler.Failed(hr))
-                                        return hr;
-                                }
-                                break;
+                            // Call QueryEditQuerySave
+                            uint result = 0;
+                            hr = queryEditQuerySave.QuerySaveFile(
+                                    fileName,        // filename
+                                    0,    // flags
+                                    null,            // file attributes
+                                    out result);    // result
+                            if (ErrorHandler.Failed(hr))
+                                return new Tuple<int, string, int>(hr, localpbstrMkDocumentNew, localpfSaveCanceled);
 
-                            case tagVSQuerySaveResult.QSR_ForceSaveAs:
-                                {
-                                    // Call the shell to do the SaveAS for us
-                                    IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
-                                    hr = uiShell.SaveDocDataToFile(VSSAVEFLAGS.VSSAVE_SaveAs, (IPersistFileFormat)this, fileName, out pbstrMkDocumentNew, out pfSaveCanceled);
-                                    if (ErrorHandler.Failed(hr))
-                                        return hr;
-                                }
-                                break;
+                            // Process according to result from QuerySave
+                            switch ((tagVSQuerySaveResult)result)
+                            {
+                                case tagVSQuerySaveResult.QSR_NoSave_Cancel:
+                                    // Note that this is also case tagVSQuerySaveResult.QSR_NoSave_UserCanceled because these
+                                    // two tags have the same value.
+                                    localpfSaveCanceled = ~0;
+                                    break;
 
-                            case tagVSQuerySaveResult.QSR_NoSave_Continue:
-                                // In this case there is nothing to do.
-                                break;
+                                case tagVSQuerySaveResult.QSR_SaveOK:
+                                    {
+                                        // Call the shell to do the save for us
+                                        IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
+                                        hr = uiShell.SaveDocDataToFile(dwSave, (IPersistFileFormat)this, fileName, out localpbstrMkDocumentNew, out localpfSaveCanceled);
+                                        if (ErrorHandler.Failed(hr))
+                                            return new Tuple<int, string, int>(hr, localpbstrMkDocumentNew, localpfSaveCanceled);
+                                    }
+                                    break;
 
-                            default:
-                                throw new NotSupportedException("Unsupported result from QEQS");
+                                case tagVSQuerySaveResult.QSR_ForceSaveAs:
+                                    {
+                                        // Call the shell to do the SaveAS for us
+                                        IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
+                                        hr = uiShell.SaveDocDataToFile(VSSAVEFLAGS.VSSAVE_SaveAs, (IPersistFileFormat)this, fileName, out localpbstrMkDocumentNew, out localpfSaveCanceled);
+                                        if (ErrorHandler.Failed(hr))
+                                            return new Tuple<int, string, int>(hr, localpbstrMkDocumentNew, localpfSaveCanceled);
+                                    }
+                                    break;
+
+                                case tagVSQuerySaveResult.QSR_NoSave_Continue:
+                                    // In this case there is nothing to do.
+                                    break;
+
+                                default:
+                                    throw new NotSupportedException("Unsupported result from QEQS");
+                            }
+                            break;
                         }
-                        break;
-                    }
-                case VSSAVEFLAGS.VSSAVE_SaveAs:
-                case VSSAVEFLAGS.VSSAVE_SaveCopyAs:
-                    {
-                        // Make sure the file name as the right extension
-                        if (String.Compare(MyExtension, System.IO.Path.GetExtension(fileName), true, CultureInfo.CurrentCulture) != 0)
+                    case VSSAVEFLAGS.VSSAVE_SaveAs:
+                    case VSSAVEFLAGS.VSSAVE_SaveCopyAs:
                         {
-                            fileName += MyExtension;
+                            // Make sure the file name as the right extension
+                            if (String.Compare(MyExtension, System.IO.Path.GetExtension(fileName), true, CultureInfo.CurrentCulture) != 0)
+                            {
+                                fileName += MyExtension;
+                            }
+                            // Call the shell to do the save for us
+                            IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
+                            hr = uiShell.SaveDocDataToFile(dwSave, (IPersistFileFormat)this, fileName, out localpbstrMkDocumentNew, out localpfSaveCanceled);
+                            if (ErrorHandler.Failed(hr))
+                                return new Tuple<int, string, int>(hr, localpbstrMkDocumentNew, localpfSaveCanceled);
+                            break;
                         }
-                        // Call the shell to do the save for us
-                        IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
-                        hr = uiShell.SaveDocDataToFile(dwSave, (IPersistFileFormat)this, fileName, out pbstrMkDocumentNew, out pfSaveCanceled);
-                        if (ErrorHandler.Failed(hr))
-                            return hr;
-                        break;
-                    }
-                default:
-                    throw new ArgumentException("Unsupported Save flag");
-            };
+                    default:
+                        throw new ArgumentException("Unsupported Save flag");
+                };
 
-            return VSConstants.S_OK;
+                return new Tuple<int, string, int>(VSConstants.S_OK, localpbstrMkDocumentNew, localpfSaveCanceled);
+            });
+
+            pbstrMkDocumentNew = tuple.Item2;
+            pfSaveCanceled = tuple.Item3;
+
+            return tuple.Item1;
         }
 
         /// <summary>
@@ -446,7 +473,11 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
         /// <returns>S_Ok if the method succeeds</returns>
         public int LoadDocData(string pszMkDocument)
         {
-            return ((IPersistFileFormat)this).Load(pszMkDocument, 0, 0);
+            return this._package.JoinableTaskFactory.Run<int>(async () =>
+            {
+                await this._package.JoinableTaskFactory.SwitchToMainThreadAsync();
+                return ((IPersistFileFormat)this).Load(pszMkDocument, 0, 0);
+            });            
         }
 
         /// <summary>
@@ -457,7 +488,11 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
         /// <returns>S_OK if the mthod succeeds</returns>
         public int SetUntitledDocPath(string pszDocDataPath)
         {
-            return ((IPersistFileFormat)this).InitNew(MyFormat);
+            return this._package.JoinableTaskFactory.Run<int>(async () =>
+            {
+                await this._package.JoinableTaskFactory.SwitchToMainThreadAsync();
+                return ((IPersistFileFormat)this).InitNew(MyFormat);
+            });
         }
 
         /// <summary>
@@ -516,7 +551,11 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
         /// <returns>S_OK if the mthod succeeds</returns>
         public int ReloadDocData(uint grfFlags)
         {
-            return ((IPersistFileFormat)this).Load(fileName, grfFlags, 0);
+            return this._package.JoinableTaskFactory.Run<int>(async () =>
+            {
+                await this._package.JoinableTaskFactory.SwitchToMainThreadAsync();
+                return ((IPersistFileFormat)this).Load(fileName, grfFlags, 0);
+            });
         }
 
         /// <summary>
@@ -568,15 +607,19 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
         /// <returns> Hresult that represents success or failure.</returns>
         int SetStatusBarInsertMode()
         {
-            // Get the IVsStatusBar interface
-            IVsStatusbar statusBar = GetService(typeof(SVsStatusbar)) as IVsStatusbar;
-            if (statusBar == null)
-                return VSConstants.E_FAIL;
+            return this._package.JoinableTaskFactory.Run<int>(async () =>
+            {
+                await this._package.JoinableTaskFactory.SwitchToMainThreadAsync();
+                // Get the IVsStatusBar interface
+                IVsStatusbar statusBar = GetService(typeof(SVsStatusbar)) as IVsStatusbar;
+                if (statusBar == null)
+                    return VSConstants.E_FAIL;
 
-            // Set the insert mode based on our editorControl.richTextBoxCtrl.Overstrike value.  If 1 is passed
-            // in then it will display OVR and if 0 is passed in it will display INS.
-            object insertMode = 0;
-            return statusBar.SetInsMode(ref insertMode);
+                // Set the insert mode based on our editorControl.richTextBoxCtrl.Overstrike value.  If 1 is passed
+                // in then it will display OVR and if 0 is passed in it will display INS.
+                object insertMode = 0;
+                return statusBar.SetInsMode(ref insertMode);
+            });
         }
 
         /// <summary>
@@ -598,16 +641,20 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
         /// <returns> Hresult that represents success or failure.</returns>
         int SetStatusBarSelectionMode()
         {
-            // Get the IVsStatusBar interface.
-            IVsStatusbar statusBar = GetService(typeof(SVsStatusbar)) as IVsStatusbar;
-            if (statusBar == null)
-                return VSConstants.E_FAIL;
+            return this._package.JoinableTaskFactory.Run<int>(async () =>
+            {
+                await this._package.JoinableTaskFactory.SwitchToMainThreadAsync();
+                // Get the IVsStatusBar interface.
+                IVsStatusbar statusBar = GetService(typeof(SVsStatusbar)) as IVsStatusbar;
+                if (statusBar == null)
+                    return VSConstants.E_FAIL;
 
-            // Set the selection mode.  Since we only support stream selection we will
-            // always pass in zero here.  Passing in one would make "COL" show up
-            // just to the left of the insert mode on the status bar.
-            object selectionMode = 0;
-            return statusBar.SetSelMode(ref selectionMode);
+                // Set the selection mode.  Since we only support stream selection we will
+                // always pass in zero here.  Passing in one would make "COL" show up
+                // just to the left of the insert mode on the status bar.
+                object selectionMode = 0;
+                return statusBar.SetSelMode(ref selectionMode);
+            });
         }
 
         /// <summary>
@@ -622,55 +669,64 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
         #endregion
 
         private ITrackSelection _trackSel;
+        private AWSToolkitPackage _package;
+
         private ITrackSelection TrackSelection
         {
             get
             {
-                if (this._trackSel == null)
+                return this._package.JoinableTaskFactory.Run<ITrackSelection>(async () =>
                 {
-                    this._trackSel = GetService(typeof(STrackSelection)) as ITrackSelection;
-                }
-
-                return _trackSel;
+                    await this._package.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    if (this._trackSel == null)
+                    {
+                        this._trackSel = GetService(typeof(STrackSelection)) as ITrackSelection;
+                    }
+                    return _trackSel;
+                });
             }
         }
 
         void onPropertyChange(object sender, bool forceShow, IList propertyObjects)
         {
-            try
+            this._package.JoinableTaskFactory.Run(async () =>
             {
-                var tracker = this.TrackSelection;
-                if (tracker != null)
+                await this._package.JoinableTaskFactory.SwitchToMainThreadAsync();
+                try
                 {
-                    var selContainer = new Microsoft.VisualStudio.Shell.SelectionContainer(true, false);
-                    selContainer.SelectableObjects = propertyObjects;
-                    selContainer.SelectedObjects = propertyObjects;
-                    tracker.OnSelectChange((ISelectionContainer)selContainer);
-
-                    if (forceShow)
+                    var tracker = this.TrackSelection;
+                    if (tracker != null)
                     {
-                        var shell = GetService(typeof(SVsUIShell)) as IVsUIShell;
-                        if (shell != null)
+                        var selContainer = new Microsoft.VisualStudio.Shell.SelectionContainer(true, false);
+                        selContainer.SelectableObjects = propertyObjects;
+                        selContainer.SelectedObjects = propertyObjects;
+                        tracker.OnSelectChange((ISelectionContainer)selContainer);
+
+                        if (forceShow)
                         {
-                            var guidPropertyBrowser = new
-                                Guid(ToolWindowGuids.PropertyBrowser);
-
-                            IVsWindowFrame frame = null;
-                            shell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate,
-                                ref guidPropertyBrowser, out frame);
-
-                            if (frame != null)
+                            var shell = GetService(typeof(SVsUIShell)) as IVsUIShell;
+                            if (shell != null)
                             {
-                                frame.Show();
+                                var guidPropertyBrowser = new
+                                    Guid(ToolWindowGuids.PropertyBrowser);
+
+                                IVsWindowFrame frame = null;
+                                shell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate,
+                                    ref guidPropertyBrowser, out frame);
+
+                                if (frame != null)
+                                {
+                                    frame.Show();
+                                }
                             }
                         }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error displaying properties window", e);
-            }
+                catch (Exception e)
+                {
+                    LOGGER.Error("Error displaying properties window", e);
+                }
+            });
         }
     }
 }
