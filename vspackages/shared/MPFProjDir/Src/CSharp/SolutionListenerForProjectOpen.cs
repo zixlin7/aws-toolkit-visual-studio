@@ -12,6 +12,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 using System;
 using System.Diagnostics;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using IServiceProvider = System.IServiceProvider;
 
@@ -26,7 +27,12 @@ namespace Microsoft.VisualStudio.Project
 		{
 		}
 
-		public override int OnAfterOpenProject(IVsHierarchy hierarchy, int added)
+        public SolutionListenerForProjectOpen(IAsyncServiceProvider serviceProvider)
+            : base(serviceProvider)
+        {
+        }
+
+        public override int OnAfterOpenProject(IVsHierarchy hierarchy, int added)
 		{
 			// If this is a new project and our project. We use here that it is only our project that will implemnet the "internal"  IBuildDependencyOnProjectContainer.
 			if(added != 0 && hierarchy is IBuildDependencyUpdate)

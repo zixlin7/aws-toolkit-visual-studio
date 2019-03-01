@@ -8,7 +8,7 @@
     <ProjectType>FSharp</ProjectType>
     <DefaultName>AWSLambda</DefaultName>
     <SortOrder>200</SortOrder>
-    <TemplateID>F05A389A-60BF-479B-B382-842158A72113</TemplateID>
+    <TemplateID>A2EFA292-834F-4D3C-A91D-AB901CEDC5E6</TemplateID>
     <CreateNewFolder>true</CreateNewFolder>
     <CreateInPlace>true</CreateInPlace>
     <ProvideDefaultName>true</ProvideDefaultName>

@@ -144,6 +144,12 @@ namespace Amazon.AWSToolkit.Shared
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="action"></param>
+        void ExecuteOnUIThread(Action action);
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <param name="message"></param>
         void OutputToHostConsole(string message);
 

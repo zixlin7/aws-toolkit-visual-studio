@@ -12,6 +12,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 using System;
 using System.Diagnostics;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using IServiceProvider = System.IServiceProvider;
 using ShellConstants = Microsoft.VisualStudio.Shell.Interop.Constants;
@@ -26,7 +27,7 @@ namespace Microsoft.VisualStudio.Project
 		#region fields
 		private uint eventsCookie;
 		private IVsSolution solution;
-		private IServiceProvider serviceProvider;
+		private IAsyncServiceProvider asyncServiceProvider;
 		private bool isDisposed;
 		/// <summary>
 		/// Defines an object that will be a mutex for this object for synchronizing thread calls.
@@ -42,17 +43,39 @@ namespace Microsoft.VisualStudio.Project
                 throw new ArgumentNullException("serviceProviderParameter");
             }
 
-            this.serviceProvider = serviceProviderParameter;
-            this.solution = this.serviceProvider.GetService(typeof(SVsSolution)) as IVsSolution;
+            this.solution = serviceProviderParameter.GetService(typeof(SVsSolution)) as IVsSolution;
 
-			Debug.Assert(this.solution != null, "Could not get the IVsSolution object from the services exposed by this project");
+            Debug.Assert(this.solution != null, "Could not get the IVsSolution object from the services exposed by this project");
 
-			if(this.solution == null)
-			{
-				throw new InvalidOperationException();
-			}
-		}
-		#endregion
+            if (this.solution == null)
+            {
+                throw new InvalidOperationException();
+            }
+        }
+
+        protected SolutionListener(IAsyncServiceProvider serviceProviderParameter)
+        {
+            if (serviceProviderParameter == null)
+            {
+                throw new ArgumentNullException("serviceProviderParameter");
+            }
+
+            this.asyncServiceProvider = serviceProviderParameter;
+        }
+
+        #endregion
+
+        public async System.Threading.Tasks.Task CollectServicesAsync()
+        {
+            this.solution = await this.asyncServiceProvider.GetServiceAsync(typeof(SVsSolution)) as IVsSolution;
+
+            Debug.Assert(this.solution != null, "Could not get the IVsSolution object from the services exposed by this project");
+
+            if (this.solution == null)
+            {
+                throw new InvalidOperationException();
+            }
+        }
 
 		#region properties
 		protected uint EventsCookie
@@ -75,7 +98,7 @@ namespace Microsoft.VisualStudio.Project
 		{
 			get
 			{
-				return this.serviceProvider;
+				return this.asyncServiceProvider as IServiceProvider;
 			}
 		}
 		#endregion

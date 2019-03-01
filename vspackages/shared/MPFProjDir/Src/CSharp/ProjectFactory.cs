@@ -156,7 +156,7 @@ namespace Microsoft.VisualStudio.Project
 			Debug.Assert(node != null, "The project failed to be created");
 			node.BuildEngine = this.buildEngine;
             node.BuildProject = this.buildProject;
-			node.Package = this.package as ProjectPackage;
+			node.Package = this.package as IProjectPackage;
 			return node;
 		}
 
@@ -186,7 +186,7 @@ namespace Microsoft.VisualStudio.Project
 		#region helpers
 		private IProjectEvents GetProjectEventsProvider()
 		{
-			ProjectPackage projectPackage = this.package as ProjectPackage;
+            IProjectPackage projectPackage = this.package as IProjectPackage;
 			Debug.Assert(projectPackage != null, "Package not inherited from framework");
 			if(projectPackage != null)
 			{

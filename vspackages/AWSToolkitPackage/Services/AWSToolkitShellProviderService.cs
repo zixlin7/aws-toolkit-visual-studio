@@ -331,7 +331,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             get { return _hostPackage.ShellDispatcher; }
         }
 
-        internal void ExecuteOnUIThread(Action action)
+        public void ExecuteOnUIThread(Action action)
         {
             this._hostPackage.JoinableTaskFactory.Run(async delegate
             {
@@ -340,7 +340,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             });
         }
 
-        internal T ExecuteOnUIThread<T>(Func<T> func)
+        public T ExecuteOnUIThread<T>(Func<T> func)
         {
             Func<System.Threading.Tasks.Task<T>> taskFunc = async () =>
             {

@@ -24,8 +24,8 @@ namespace Microsoft.VisualStudio.Project
 	/// </summary>
 	[ComVisible(true)]
 	[CLSCompliant(false)]
-	public abstract class ProjectPackage : Microsoft.VisualStudio.Shell.Package
-	{
+	public abstract class ProjectPackage : Microsoft.VisualStudio.Shell.Package, IProjectPackage
+    {
 		#region fields
 		/// <summary>
 		/// This is the place to register all the solution listeners.
@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.Project
 		/// <summary>
 		/// Add your listener to this list. They should be added in the overridden Initialize befaore calling the base.
 		/// </summary>
-		protected internal IList<SolutionListener> SolutionListeners
+		public IList<SolutionListener> SolutionListeners
 		{
 			get
 			{

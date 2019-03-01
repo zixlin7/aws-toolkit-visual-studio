@@ -11,6 +11,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
 using System;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using IServiceProvider = System.IServiceProvider;
 
@@ -37,10 +38,15 @@ namespace Microsoft.VisualStudio.Project
 			: base(serviceProvider)
 		{
 		}
-		#endregion
 
-		#region overridden methods
-		public override int OnAfterOpenProject(IVsHierarchy hierarchy, int added)
+        internal SolutionListenerForProjectEvents(IAsyncServiceProvider serviceProvider)
+            : base(serviceProvider)
+        {
+        }
+        #endregion
+
+        #region overridden methods
+        public override int OnAfterOpenProject(IVsHierarchy hierarchy, int added)
 		{
 			IProjectEventsListener projectEventListener = hierarchy as IProjectEventsListener;
 			if(projectEventListener != null && projectEventListener.IsProjectEventsListener)

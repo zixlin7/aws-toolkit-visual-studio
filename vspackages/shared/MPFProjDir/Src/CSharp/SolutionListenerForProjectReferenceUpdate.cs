@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using IServiceProvider = System.IServiceProvider;
 
@@ -29,16 +30,21 @@ namespace Microsoft.VisualStudio.Project
 			: base(serviceProvider)
 		{
 		}
-		#endregion
 
-		#region overridden methods
-		/// <summary>
-		/// Delete this project from the references of projects of this type, if it is found.
-		/// </summary>
-		/// <param name="hierarchy"></param>
-		/// <param name="removed"></param>
-		/// <returns></returns>
-		public override int OnBeforeCloseProject(IVsHierarchy hierarchy, int removed)
+        public SolutionListenerForProjectReferenceUpdate(IAsyncServiceProvider serviceProvider)
+            : base(serviceProvider)
+        {
+        }
+        #endregion
+
+        #region overridden methods
+        /// <summary>
+        /// Delete this project from the references of projects of this type, if it is found.
+        /// </summary>
+        /// <param name="hierarchy"></param>
+        /// <param name="removed"></param>
+        /// <returns></returns>
+        public override int OnBeforeCloseProject(IVsHierarchy hierarchy, int removed)
 		{
 			if(removed != 0)
 			{

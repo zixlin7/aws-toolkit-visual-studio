@@ -19,6 +19,13 @@ using MSBuild = Microsoft.Build.Evaluation;
 namespace Microsoft.VisualStudio.Project
 {
 
+    public interface IProjectPackage
+    {
+        IList<SolutionListener> SolutionListeners { get; }
+        string ProductUserContext { get; }
+
+    }
+
 	/// <summary>
 	/// This interface defines the rules for handling build dependency on a project container.
 	/// </summary>

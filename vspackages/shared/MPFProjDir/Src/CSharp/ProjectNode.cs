@@ -336,7 +336,7 @@ namespace Microsoft.VisualStudio.Project
         /// <summary>
         /// The internal package implementation.
         /// </summary>
-        private ProjectPackage package;
+        private IProjectPackage package;
 
         // Has the object been disposed.
         private bool isDisposed;
@@ -988,7 +988,7 @@ namespace Microsoft.VisualStudio.Project
         /// The internal package implementation.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ProjectPackage Package
+        internal IProjectPackage Package
         {
             get
             {

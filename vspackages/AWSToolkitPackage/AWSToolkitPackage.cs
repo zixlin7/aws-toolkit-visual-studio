@@ -111,6 +111,7 @@ namespace Amazon.AWSToolkit.VisualStudio
     [ProvideProfile(typeof(GeneralOptionsPage), "AWS Toolkit", "General", 150, 160, true, DescriptionResourceID = 150)]
     [ProvideOptionPage(typeof(ProxyOptionsPage), "AWS Toolkit", "Proxy", 150, 170, true)]
     [ProvideProfile(typeof(ProxyOptionsPage), "AWS Toolkit", "Proxy", 150, 170, true, DescriptionResourceID = 150)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
     public sealed class AWSToolkitPackage : ProjectAsyncPackage, 
                                             IVsInstalledProduct, 
                                             IAWSToolkitShellThemeService,
@@ -526,13 +527,19 @@ namespace Amazon.AWSToolkit.VisualStudio
 #pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 #endif
 
-            var navigator = new NavigatorControl();
+            NavigatorControl navigator = null;
+            await this.JoinableTaskFactory.RunAsync(async delegate
+            {
+                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                navigator = new NavigatorControl();
+            });
+
             ToolkitFactory.InitializeToolkit(navigator, ToolkitShellProviderService as IAWSToolkitShellProvider, additionalPluginFolders, () =>
             {
                 _toolkitInitialized = true;
                 ShowFirstRun();
             });
-			
+
             var dte = (EnvDTE.DTE)(await GetServiceAsync(typeof(EnvDTE.DTE)));
             _events = dte.Events.SolutionEvents;
             _events.ProjectAdded += OnProjectAddedEvent;

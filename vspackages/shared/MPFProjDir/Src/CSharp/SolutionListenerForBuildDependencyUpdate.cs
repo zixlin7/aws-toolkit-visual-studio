@@ -14,6 +14,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using IServiceProvider = System.IServiceProvider;
 
@@ -29,16 +30,21 @@ namespace Microsoft.VisualStudio.Project
 			: base(serviceProvider)
 		{
 		}
-		#endregion
 
-		#region overridden methods
-		/// <summary>
-		/// Update build dependency list if solution is fully loaded
-		/// </summary>
-		/// <param name="hierarchy"></param>
-		/// <param name="added"></param>
-		/// <returns></returns>
-		public override int OnAfterOpenProject(IVsHierarchy hierarchy, int added)
+        public SolutionListenerForBuildDependencyUpdate(IAsyncServiceProvider serviceProvider)
+            : base(serviceProvider)
+        {
+        }
+        #endregion
+
+        #region overridden methods
+        /// <summary>
+        /// Update build dependency list if solution is fully loaded
+        /// </summary>
+        /// <param name="hierarchy"></param>
+        /// <param name="added"></param>
+        /// <returns></returns>
+        public override int OnAfterOpenProject(IVsHierarchy hierarchy, int added)
 		{
 			// Return from here if we are at load time
 			if(added == 0)
