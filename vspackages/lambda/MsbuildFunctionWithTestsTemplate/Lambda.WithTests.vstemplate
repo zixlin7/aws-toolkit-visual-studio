@@ -2,12 +2,11 @@
 <VSTemplate Version="2.0.0" Type="Project"
     xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
   <TemplateData>
-    <Name>AWS Lambda Project with Tests (.NET Core)</Name>
-    <Description>A project for creating a AWS Lambda Functions using .NET Core.</Description>
+    <Name>AWS Lambda Project with Tests (.NET Core - C#)</Name>
+    <Description>A C# project for creating a AWS Lambda Functions using .NET Core.</Description>
     <Icon>LambdaTemplateProject.ico</Icon>
     <ProjectType>CSharp</ProjectType>
     <DefaultName>AWSLambda</DefaultName>
-    <RequiredFrameworkVersion>4.5</RequiredFrameworkVersion>
     <SortOrder>200</SortOrder>
     <TemplateID>2A458983-1389-4948-B6D9-5DC845CB58A7</TemplateID>
     <CreateNewFolder>true</CreateNewFolder>

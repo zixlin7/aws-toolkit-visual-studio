@@ -2,12 +2,11 @@
 <VSTemplate Version="2.0.0" Type="Project"
     xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
   <TemplateData>
-    <Name>AWS Serverless Application (.NET Core)</Name>
-    <Description>An AWS Serverless application uses the power of AWS Lambda and AWS CloudFormation to build a cloud-enabled serverless application.</Description>
+    <Name>AWS Serverless Application (.NET Core - C#)</Name>
+    <Description>A C# AWS Serverless application uses the power of AWS Lambda and AWS CloudFormation to build a cloud-enabled serverless application.</Description>
     <Icon>LambdaTemplateProject.ico</Icon>
     <ProjectType>CSharp</ProjectType>
     <DefaultName>AWSServerless</DefaultName>
-    <RequiredFrameworkVersion>4.5</RequiredFrameworkVersion>
     <SortOrder>200</SortOrder>
     <TemplateID>5C9C25D4-E4C5-4FF6-9690-4B03E4EC286B</TemplateID>
     <CreateNewFolder>true</CreateNewFolder>
