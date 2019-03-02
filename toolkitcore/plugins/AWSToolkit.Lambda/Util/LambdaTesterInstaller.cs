@@ -43,7 +43,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
                     return;
 
                 var lambdaTestToolInstallpath = GetLambdaTestToolPath(Path.GetDirectoryName(projectPath));
-                if (string.IsNullOrEmpty(lambdaTestToolInstallpath) || !File.Exists(lambdaTestToolInstallpath))
+                if (string.IsNullOrEmpty(lambdaTestToolInstallpath))
                     return;
 
                 var targetFramework = GetTargetFramework(xdoc);
@@ -67,12 +67,12 @@ namespace Amazon.AWSToolkit.Lambda.Util
                     lambdaTester = new JObject();
                     lambdaTester["commandName"] = "Executable";
                     lambdaTester["commandLineArgs"] = "--port 5050";
+                    lambdaTester["workingDirectory"] = $".\\bin\\Debug\\{targetFramework}";
 
                     profiles[LAUNCH_SETTINGS_NODE] = lambdaTester;
                 }
 
                 lambdaTester["executablePath"] = $"{lambdaTestToolInstallpath}";
-                lambdaTester["workingDirectory"] = $".\\bin\\Debug\\{targetFramework}";
 
                 var updated = JsonConvert.SerializeObject(root, Formatting.Indented);
                 SaveLaunchSettings(projectPath, updated);
@@ -100,7 +100,8 @@ namespace Amazon.AWSToolkit.Lambda.Util
                 RunToolCommand(projectDirectory, "update");
             }
 
-            return fullPath;
+            var variablePath = Path.Combine(Directory.GetParent(userProfile).FullName, "%USERNAME%", ".dotnet", "tools", LAMBDA_TEST_TOOL_EXE);
+            return variablePath;
         }
 
         private static string GetTargetFramework(XDocument xdocProject)
