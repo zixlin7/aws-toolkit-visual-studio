@@ -1,6 +1,6 @@
 ﻿AWS Customer Agreement 
 
-The AWS Toolkit is copyright 2011-2018 Amazon.com, Inc. or its affiliates. All Rights Reserved. 
+The AWS Toolkit is copyright 2011-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved. 
 
 The AWS Toolkit is licensed under the AWS Customer Agreement (the “License”). You may not use this file except in compliance with the License. A copy of the License is located at 
 
