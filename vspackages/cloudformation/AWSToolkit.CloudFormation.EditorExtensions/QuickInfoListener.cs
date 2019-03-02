@@ -15,7 +15,7 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
     internal class QuickInfoControllerProvider : IIntellisenseControllerProvider
     {
         [Import]
-        internal IQuickInfoBroker QuickInfoBroker { get; set; }
+        internal IAsyncQuickInfoBroker QuickInfoBroker { get; set; }
 
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers)
         {
@@ -29,7 +29,7 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
         private IList<ITextBuffer> _subjectBuffers;
         private QuickInfoControllerProvider _componentContext;
 
-        private IQuickInfoSession _session;
+        private IAsyncQuickInfoSession _session;
 
         internal QuickInfoListener(ITextView textView, IList<ITextBuffer> subjectBuffers, QuickInfoControllerProvider componentContext)
         {
@@ -76,8 +76,7 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
 
                     if (!_componentContext.QuickInfoBroker.IsQuickInfoActive(_textView))
                     {
-                        _session = _componentContext.QuickInfoBroker.CreateQuickInfoSession(_textView, triggerPoint, true);
-                        _session.Start();
+                        this._componentContext.QuickInfoBroker.TriggerQuickInfoAsync(_textView, triggerPoint, QuickInfoSessionOptions.TrackMouse);
                     }
                 }
             }

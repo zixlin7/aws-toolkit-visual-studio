@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.Language.Intellisense;
 using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.Text;
@@ -14,17 +16,17 @@ using log4net;
 
 namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
 {
-    [Export(typeof(IQuickInfoSourceProvider))]
+    [Export(typeof(IAsyncQuickInfoSourceProvider))]
     [ContentType(TemplateContentType.ContentType)]
     [Name("CloudFormationTemplateQuickInfo")]
-    class QuickInfoSourceProvider : IQuickInfoSourceProvider
+    class QuickInfoSourceProvider : IAsyncQuickInfoSourceProvider
     {
-        public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer)
+        public IAsyncQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer)
         {
             return new QuickInfoSource(textBuffer);
         }
 
-        class QuickInfoSource : IQuickInfoSource
+        class QuickInfoSource : IAsyncQuickInfoSource
         {
             private ITextBuffer _buffer;
             private bool _disposed = false;
@@ -35,53 +37,54 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
                 _buffer = buffer;
             }
 
-            public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
+            public Task<QuickInfoItem> GetQuickInfoItemAsync(IAsyncQuickInfoSession session, CancellationToken cancellationToken)
             {
-                applicableToSpan = null;
-
-                if (_disposed)
-                    return;
-
-                try
+                return Task.Run<QuickInfoItem>(() =>
                 {
+                    if (_disposed)
+                        return null;
 
-                    var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(_buffer.CurrentSnapshot);
-                    if (triggerPoint == null)
-                        return;
-
-                    // First look for cached parse results.
-                    ParserResults parserResults = null;
-                    if (this._buffer.Properties.ContainsProperty(EditorContants.LAST_TEXT_BUFFER_PARSE_RESULTS))
-                        parserResults = this._buffer.Properties[EditorContants.LAST_TEXT_BUFFER_PARSE_RESULTS] as ParserResults;
-
-                    if (parserResults == null)
+                    try
                     {
-                        var parser = new TemplateParser();
-                        parserResults = parser.Parse(_buffer.CurrentSnapshot.GetText());
-                    }
 
-                    // TODO Switch to binary search
-                    foreach (var token in parserResults.HighlightedTemplateTokens)
-                    {
-                        if (token.Postion <= triggerPoint.Position && triggerPoint.Position < (token.Postion + token.Length))
+                        var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(_buffer.CurrentSnapshot);
+                        if (triggerPoint == null)
+                            return null;
+
+
+                        // First look for cached parse results.
+                        ParserResults parserResults = null;
+                        if (this._buffer.Properties.ContainsProperty(EditorContants.LAST_TEXT_BUFFER_PARSE_RESULTS))
+                            parserResults = this._buffer.Properties[EditorContants.LAST_TEXT_BUFFER_PARSE_RESULTS] as ParserResults;
+
+                        if (parserResults == null)
                         {
-                            if (!string.IsNullOrEmpty(token.Decription))
-                            {
-                                applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(token.Postion, token.Length, SpanTrackingMode.EdgeExclusive);
-                                quickInfoContent.Add(token.Decription);
-                                return;
-                            }
+                            var parser = new TemplateParser();
+                            parserResults = parser.Parse(_buffer.CurrentSnapshot.GetText());
+                        }
 
-                            break;
+                        // TODO Switch to binary search
+                        foreach (var token in parserResults.HighlightedTemplateTokens)
+                        {
+                            if (token.Postion <= triggerPoint.Position && triggerPoint.Position < (token.Postion + token.Length))
+                            {
+                                if (!string.IsNullOrEmpty(token.Decription))
+                                {
+                                    var applicableToSpan = _buffer.CurrentSnapshot.CreateTrackingSpan(token.Postion, token.Length, SpanTrackingMode.EdgeExclusive);
+                                    return new QuickInfoItem(applicableToSpan, token.Decription);
+                                }
+
+                                break;
+                            }
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        LogManager.GetLogger(typeof(QuickInfoSource)).Error("Error with quick info.", ex);
+                    }
 
-                    applicableToSpan = null;
-                }
-                catch (Exception ex)
-                {
-                    LogManager.GetLogger(typeof(QuickInfoSource)).Error("Error with quick info.", ex);
-                }
+                    return null;
+                });
             }
 
             public void Dispose()
