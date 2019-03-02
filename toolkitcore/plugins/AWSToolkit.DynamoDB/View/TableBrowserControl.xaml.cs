@@ -74,7 +74,7 @@ namespace Amazon.AWSToolkit.DynamoDB.View
 
         private void updateUi()
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() => 
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() => 
             {
                 this._ctlBinaryKeysToolbar.Visibility = this._controller.Model.HasBinaryKeys ? Visibility.Visible : System.Windows.Visibility.Collapsed;
                 var model = this._controller.Model;

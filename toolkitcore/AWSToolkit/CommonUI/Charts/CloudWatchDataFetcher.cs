@@ -109,7 +109,7 @@ namespace Amazon.AWSToolkit.CommonUI.Charts
                 max = max * 1.1;
                 min = min * .9;
 
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     var yaxis = this._chart.LineSeries.DependentRangeAxis as LinearAxis;
                     var xaxis = this._chart.LineSeries.IndependentAxis as LinearAxis;

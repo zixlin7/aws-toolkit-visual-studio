@@ -38,7 +38,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             var subnets = this.EC2Client.DescribeSubnets(new DescribeSubnetsRequest()).Subnets;
             var response = this.EC2Client.DescribeNetworkAcls(new DescribeNetworkAclsRequest());
             
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this.Model.NetworkAcls.Clear();
                 foreach (var item in response.NetworkAcls)
@@ -110,7 +110,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             var refreshedNetworkacls = response.NetworkAcls;
 
             
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 foreach (var networkAcl in this.Model.NetworkAcls)
                 {
@@ -174,7 +174,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
             IList<NetworkAclEntryWrapper> entries = permissionType == EC2Constants.PermissionType.Egrees ? networkAcl.EgressEntries : networkAcl.IngressEntries;
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 entries.Clear();
                 foreach (var item in refreshedNetworkAcl.Entries)

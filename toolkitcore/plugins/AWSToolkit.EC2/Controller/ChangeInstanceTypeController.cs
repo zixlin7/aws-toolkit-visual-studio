@@ -48,7 +48,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
             IList<InstanceType> validTypes = InstanceType.GetValidTypes(response.Images[0]);
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
                 {
                     this._model.InstanceTypes.Clear();
                     foreach(var type in validTypes)

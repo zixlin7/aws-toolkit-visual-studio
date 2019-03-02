@@ -147,7 +147,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         }
                     } while (!string.IsNullOrEmpty(response.NextToken));
 
-                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                     {
                         foreach (var repository in items.OrderBy(x => x))
                         {
@@ -218,7 +218,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     }
                 } while (!string.IsNullOrEmpty(response.NextToken));
 
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     foreach (var tag in items.OrderBy(x => x))
                     {

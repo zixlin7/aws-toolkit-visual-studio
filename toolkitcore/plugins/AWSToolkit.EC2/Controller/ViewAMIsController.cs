@@ -61,7 +61,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 this._describeCache[commonFilter] = images;
             }
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 this.Model.Images.Clear();
                 foreach (var image in images.OrderBy(x => x.ImageId.ToLower()))

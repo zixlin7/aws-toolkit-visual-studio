@@ -328,14 +328,18 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             });
         }
 
-        public Dispatcher ShellDispatcher
-        {
-            get { return _hostPackage.ShellDispatcher; }
-        }
-
         public void ExecuteOnUIThread(Action action)
         {
             this._hostPackage.JoinableTaskFactory.Run(async delegate
+            {
+                await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                action();
+            });
+        }
+
+        public void BeginExecuteOnUIThread(Action action)
+        {
+            this._hostPackage.JoinableTaskFactory.RunAsync(async delegate
             {
                 await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
                 action();

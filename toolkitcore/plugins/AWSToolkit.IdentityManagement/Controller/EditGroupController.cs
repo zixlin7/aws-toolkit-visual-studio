@@ -81,7 +81,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
 
                         policyModel.Policy = Policy.FromJson(response.GetDecodedPolicyDocument());
 
-                        ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() => this.Model.IAMPolicyModels.Add(policyModel)));
+                        ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() => this.Model.IAMPolicyModels.Add(policyModel)));
                     }
                     catch (Exception e)
                     {
@@ -147,7 +147,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
 
         public void Refresh()
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this._model.IAMPolicyModels.Clear();
             }));

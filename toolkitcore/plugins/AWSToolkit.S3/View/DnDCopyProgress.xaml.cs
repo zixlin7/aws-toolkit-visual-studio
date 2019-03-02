@@ -65,7 +65,7 @@ namespace Amazon.AWSToolkit.S3.View
 
         void closeInUIThread()
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 this.Close();
             }));

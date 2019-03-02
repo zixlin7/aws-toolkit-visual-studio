@@ -274,7 +274,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
             var environment = response.Environments[0];
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     this._statusModel.EnvironmentName = environment.EnvironmentName;
                     this._statusModel.Description = environment.Description;
@@ -304,7 +304,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
             var response = this._beanstalkClient.DescribeEvents(request);
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 lock (UPDATE_EVENT_LOCK_OBJECT)
                 {
@@ -437,7 +437,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
                     }
                 }
 
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     try
                     {
@@ -496,7 +496,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
                 });
             List<ConfigurationOptionDescription> options = optionsResponse.Options;
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 this._statusModel.ConfigModel.LoadConfigDescriptions(options);
             }));
@@ -519,7 +519,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             if (response.ConfigurationSettings.Count == 0)
                 return;
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 this._statusModel.ConfigModel.LoadConfigOptions(response.ConfigurationSettings[0].OptionSettings, changingEnvironmentType);
             }));
@@ -527,12 +527,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
         void setTabsForEnvironmentType(bool changingEnvironmentType)
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() => this._control.CustomizeTabsForEnvironmentType(changingEnvironmentType)));
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() => this._control.CustomizeTabsForEnvironmentType(changingEnvironmentType)));
         }
 
         public void ReapplyFilter()
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 lock (UPDATE_EVENT_LOCK_OBJECT)
                 {

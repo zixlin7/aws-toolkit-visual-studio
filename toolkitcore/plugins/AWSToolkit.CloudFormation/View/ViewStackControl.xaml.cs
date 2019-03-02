@@ -127,7 +127,7 @@ namespace Amazon.AWSToolkit.CloudFormation.View
             checkIfTerminateAndDisable();
             setupTimerForNextCallback();
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 BuildParameters();
                 BuildOutputs();
@@ -294,7 +294,7 @@ namespace Amazon.AWSToolkit.CloudFormation.View
                         {
                             this._controller.Poll();
 
-                            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                                 {
                                     if (this._ctlTemplateOutputPanel.Children.Count != this._controller.Model.Outputs.Count)
                                         BuildOutputs();
@@ -306,7 +306,7 @@ namespace Amazon.AWSToolkit.CloudFormation.View
                         {                            
                             if(this._controller.Model.Status == CloudFormationConstants.DeleteInProgressStatus)
                             {
-                                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                                 {
                                     this._controller.Model.Status = CloudFormationConstants.DeleteCompleteStatus;
                                     checkIfTerminateAndDisable();
@@ -374,7 +374,7 @@ namespace Amazon.AWSToolkit.CloudFormation.View
 
         void disableActions()
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 this._ctlConnect.IsEnabled = false;
                 this._ctlDeleteStack.IsEnabled = false;

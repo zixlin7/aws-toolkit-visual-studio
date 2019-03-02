@@ -90,7 +90,7 @@ namespace Amazon.AWSToolkit.SQS.Controller
                 }
             }
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     this._queueViewModel.Messages.Clear();
                     foreach (var message in messages)
@@ -108,7 +108,7 @@ namespace Amazon.AWSToolkit.SQS.Controller
                 QueueUrl = this._queueViewModel.QueueURL
             });
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     int timeout;
                     if (this.UseCacheValue(SQSConstants.ATTRIBUTE_VISIBILITY_TIMEOUT))

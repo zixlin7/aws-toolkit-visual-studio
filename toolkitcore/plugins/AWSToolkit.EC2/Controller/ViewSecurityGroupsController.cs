@@ -37,7 +37,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
         {
             var response = this.EC2Client.DescribeSecurityGroups(new DescribeSecurityGroupsRequest());            
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this.Model.SecurityGroups.Clear();
                 foreach (var group in response.SecurityGroups.OrderBy(x => x.GroupName.ToLower()))

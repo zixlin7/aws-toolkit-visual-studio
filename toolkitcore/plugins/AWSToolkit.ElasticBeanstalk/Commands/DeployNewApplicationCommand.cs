@@ -570,7 +570,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
         public void NotifyTaskCompletion(TaskWatcher callingNotifier)
         {
             bool success = callingNotifier.WatchingState == TaskWatcher.WatcherState.completedOK;
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 AWSNotificationToaster toaster = new AWSNotificationToaster();
                 DeploymentNotificationPanel panel = new DeploymentNotificationPanel();

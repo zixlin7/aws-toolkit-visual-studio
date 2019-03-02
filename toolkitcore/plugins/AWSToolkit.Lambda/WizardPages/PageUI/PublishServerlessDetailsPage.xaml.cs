@@ -228,7 +228,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                         } while (!string.IsNullOrEmpty(response.NextToken));
 
 
-                        ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                        ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                         {
                             foreach (var stack in items.OrderBy(x => x.StackName))
                             {
@@ -253,7 +253,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                     {
                         var buckets = s3Client.ListBuckets().Buckets;
 
-                        ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                        ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                         {
                             foreach (var bucket in buckets.OrderBy(x => x.BucketName))
                             {

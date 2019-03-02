@@ -67,7 +67,7 @@ namespace Amazon.AWSToolkit.EC2.View
 
         public void DeleteAsyncComplete(bool success)
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 var host = FindHost<OkCancelDialogHost>();
                 if (host == null)
@@ -82,7 +82,7 @@ namespace Amazon.AWSToolkit.EC2.View
 
         public void AppendOutputMessage(string message, params object[] args)
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 string line = string.Format(message, args);
                 var body = this._ctlOutputLog.Text;

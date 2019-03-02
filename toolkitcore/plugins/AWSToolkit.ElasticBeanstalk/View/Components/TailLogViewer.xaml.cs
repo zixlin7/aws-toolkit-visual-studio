@@ -131,7 +131,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
 
                 } while (new TimeSpan(DateTime.Now.Ticks - start).TotalSeconds < MAX_WAIT_TIME_FOR_SNAPSHOTS);
 
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     this.buildLinksToLogs(result);
                 }));
@@ -139,7 +139,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
             catch (Exception e)
             {
                 LOGGER.Error("Error polling for new environment logs", e);
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     this.buildLinksToLogs(null);
                 }));

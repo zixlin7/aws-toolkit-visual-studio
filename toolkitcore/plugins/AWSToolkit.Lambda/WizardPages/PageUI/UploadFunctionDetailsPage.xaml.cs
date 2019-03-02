@@ -516,7 +516,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                     } while (!string.IsNullOrEmpty(response.NextMarker));
                 }
 
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke(() =>
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
                 {
                     this._ctlFunctionNamePicker.Items.Clear();
                     if (!string.IsNullOrEmpty(this.SeedFunctionName))

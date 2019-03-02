@@ -32,7 +32,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
         {
             if (this.CurrentEndPoint.RegionSystemName == RegionEndPointsManager.GetInstance().LocalRegion.SystemName)
             {
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke(
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(
                     (Action)(() => UpdateDynamoDBLocalState()));
             }
         }

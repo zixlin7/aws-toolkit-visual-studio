@@ -128,7 +128,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
         public void UpdateModelImagesCollection(ICollection<ImageDetailWrapper> images)
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((System.Action) (() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((System.Action) (() =>
             {
                 this.Model.Repository.SetImages(images);
             }));

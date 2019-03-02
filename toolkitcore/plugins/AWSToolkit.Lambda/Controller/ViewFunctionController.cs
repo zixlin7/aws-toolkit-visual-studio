@@ -335,7 +335,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                     }
                 }).ContinueWith(task4 =>
                 {
-                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                     {
                         this._control.SetAvailableVpcSubnets(vpcs, subnets, this._model.VpcConfig?.SubnetIds);
                     }));
@@ -348,7 +348,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             var groups = new List<SecurityGroup>();
             if (string.IsNullOrEmpty(vpcId))
             {
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke(() =>
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
                 {
                     this._control.SetAvailableSecurityGroups(null, null, null);
                 });
@@ -373,7 +373,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                     }
                 }).ContinueWith(task2 =>
                 {
-                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                     {
                         this._control.SetAvailableSecurityGroups(groups, null, this._model.VpcConfig?.SecurityGroupIds);
                     }));
@@ -395,7 +395,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         void OnDLQTargetsAvailable(QueryDLQTargetsWorker.QueryResults results)
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 this._control.SetAvailableDLQTargets(results.TopicArns, results.QueueArns, this.Model.DLQTargetArn);
             }));
@@ -411,7 +411,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         void OnKMSKeysAvailable(IEnumerable<KeyListEntry> keys, IEnumerable<AliasListEntry> aliases)
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 this._control.SetAvailableKMSKeys(keys, aliases);
             }));
@@ -505,7 +505,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                     if (task.Exception == null)
                     {
                         var response = task.Result;
-                        ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke(() =>
+                        ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
                         {
                             foreach (var stream in response.LogStreams)
                             {

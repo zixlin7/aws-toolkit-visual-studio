@@ -137,7 +137,7 @@ namespace Amazon.AWSToolkit.S3.View
                 return;
             }
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 this._ctlDataGrid.Focus();
                 var cell = DataGridHelper.GetCell(this._ctlDataGrid, 0, 0);

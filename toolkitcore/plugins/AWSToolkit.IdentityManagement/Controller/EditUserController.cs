@@ -78,7 +78,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
                     listGroupsRequest.Marker = listGroupResponse.Marker;
                 listGroupResponse = this._iamClient.ListGroupsForUser(listGroupsRequest);
 
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
                     {
                         foreach (var group in listGroupResponse.Groups)
                         {
@@ -89,7 +89,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
             } while (listGroupResponse.IsTruncated);
 
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
                 {
                     var rootGroup = this._iamUserViewModel.IAMUserRootViewModel.IAMRootViewModel.IAMGroupRootViewModel;
                     foreach (IViewModel model in rootGroup.Children)
@@ -129,7 +129,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
                         });
                         policyModel.Policy = Policy.FromJson(response.GetDecodedPolicyDocument());
 
-                        ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() => this.Model.IAMPolicyModels.Add(policyModel)));
+                        ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() => this.Model.IAMPolicyModels.Add(policyModel)));
                     }
                     catch (Exception e)
                     {
@@ -157,7 +157,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
                     listAccessKeysRequest.Marker = listAccessKeysResponse.Marker;
                 listAccessKeysResponse = this._iamClient.ListAccessKeys(listAccessKeysRequest);
 
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
                     {
                         foreach (var metadata in listAccessKeysResponse.AccessKeyMetadata)
                         {
@@ -177,7 +177,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
 
         public void Refresh()
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
                 {
                     this._model.AccessKeys.Clear();
                     this._model.AssignedGroups.Clear();

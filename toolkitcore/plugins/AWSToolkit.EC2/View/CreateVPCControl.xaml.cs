@@ -119,7 +119,7 @@ namespace Amazon.AWSToolkit.EC2.View
 
         public void CreateAsyncComplete(bool success)
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 var host = FindHost<OkCancelDialogHost>();
                 if (host == null)

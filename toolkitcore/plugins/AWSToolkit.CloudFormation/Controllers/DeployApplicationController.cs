@@ -190,7 +190,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                 }
             }
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
                 {
                     AWSNotificationToaster toaster = new AWSNotificationToaster();
                     DeploymentNotificationPanel panel = new DeploymentNotificationPanel();

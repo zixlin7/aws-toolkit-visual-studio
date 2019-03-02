@@ -181,7 +181,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
                     }
                 } while (!string.IsNullOrEmpty(nextToken));
 
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     _repositories.Clear();
                     _repositories.AddRange(repositoryList);

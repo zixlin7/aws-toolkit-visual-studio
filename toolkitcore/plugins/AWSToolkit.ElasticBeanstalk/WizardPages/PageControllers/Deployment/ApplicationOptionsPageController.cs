@@ -283,7 +283,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                             }
                         }
 
-                        ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                        ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                         {
                             this._originalEnable32bitAppPool = enable32Bit;
                             this._pageUI.Enable32BitAppPool = enable32Bit;

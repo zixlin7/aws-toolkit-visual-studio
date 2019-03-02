@@ -37,7 +37,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
         {
             var response = this.EC2Client.DescribeAddresses(new DescribeAddressesRequest());
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this.Model.Addresses.Clear();
                 foreach (var item in response.Addresses)

@@ -79,7 +79,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
             var response = this.EC2Client.DescribeInstances(new DescribeInstancesRequest());
             
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
                 {
                     this.Model.RunningInstances.Clear();
                     foreach (var reservation in response.Reservations)
@@ -132,7 +132,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
                 var response = this.EC2Client.DescribeVolumes(request);
 
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     if (instance.Volumes == null)
                         instance.Volumes = new ObservableCollection<VolumeWrapper>();

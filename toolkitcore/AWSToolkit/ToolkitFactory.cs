@@ -71,7 +71,7 @@ namespace Amazon.AWSToolkit
                 try
                 {
                     INSTANCE._rootViewModel = new AWSViewModel(
-                        INSTANCE._shellProvider.ShellDispatcher,
+                        INSTANCE._shellProvider,
                         INSTANCE._rootViewMetaNode);
                     INSTANCE._navigator.Initialize(INSTANCE._rootViewModel);
 

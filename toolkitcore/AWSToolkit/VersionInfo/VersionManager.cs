@@ -78,7 +78,7 @@ namespace Amazon.AWSToolkit.VersionInfo
 
         void prompt(IList<Version> versions, string newUpdateLocation)
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 NewVersionAlertControl control = new NewVersionAlertControl(versions, newUpdateLocation);
                 ToolkitFactory.Instance.ShellProvider.ShowModal(control, System.Windows.MessageBoxButton.OK);

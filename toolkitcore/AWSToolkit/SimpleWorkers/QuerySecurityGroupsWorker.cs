@@ -118,7 +118,7 @@ namespace Amazon.AWSToolkit.SimpleWorkers
             {
                 if(this._errorCallback != null)
                 {
-                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                     {
                         this._errorCallback(exc);
                     }));

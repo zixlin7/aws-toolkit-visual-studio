@@ -443,7 +443,7 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
 
         void IAWSWizard.SetPageError(string errorText)
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 _awsBaseWizardImpl.PageErrorText = errorText;
                 NotifyPropertyChanged("PageErrorText");

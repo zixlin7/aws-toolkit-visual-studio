@@ -185,7 +185,7 @@ namespace Amazon.AWSToolkit.CommonUI
                 Thread.Sleep(100);
                 try
                 {
-                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                     {
                         grid.ScrollIntoView(obj);
                     }));

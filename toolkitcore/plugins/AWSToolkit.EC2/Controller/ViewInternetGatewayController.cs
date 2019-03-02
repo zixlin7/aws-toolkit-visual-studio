@@ -39,7 +39,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
             var account = this.FeatureViewModel.AccountViewModel;
             var region = this.FeatureViewModel.RegionSystemName;
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this.Model.Gateways.Clear();
                 foreach (var gateway in response.InternetGateways.OrderBy(x => x.InternetGatewayId))

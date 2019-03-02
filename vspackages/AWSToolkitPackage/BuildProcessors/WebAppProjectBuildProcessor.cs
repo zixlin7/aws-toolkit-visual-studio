@@ -51,34 +51,30 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
                 // the packaging stage.
                 if (taskInfo.IsFirstAttempt || !BuildStageSucceeded.GetValueOrDefault())
                 {
-                    Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
-                    {
-                        await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                        TaskInfo.Logger.OutputMessage(string.Format("..building configuration '{0}' for project '{1}'", solutionConfigurationName, taskInfo.ProjectInfo.ProjectName), true);
+                    TaskInfo.Logger.OutputMessage(string.Format("..building configuration '{0}' for project '{1}'", solutionConfigurationName, taskInfo.ProjectInfo.ProjectName), true);
 
-                        object value;
-                        taskInfo.ProjectInfo.VsHierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out value);
-                        var dteProject = value as EnvDTE.Project;
+                    object value;
+                    taskInfo.ProjectInfo.VsHierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out value);
+                    var dteProject = value as EnvDTE.Project;
 
-                        var solnBuildManager = taskInfo.HostServiceProvider(typeof(SVsSolutionBuildManager)) as IVsSolutionBuildManager;
-                        // because we do a two-stage build, we don't want to run the package stage if the initial build fails -
-                        // the simplest way to detect this is via solution events
-                        uint solutionEventsCookie;
-                        solnBuildManager.AdviseUpdateSolutionEvents(this, out solutionEventsCookie);
+                    var solnBuildManager = taskInfo.HostServiceProvider(typeof(SVsSolutionBuildManager)) as IVsSolutionBuildManager;
+                    // because we do a two-stage build, we don't want to run the package stage if the initial build fails -
+                    // the simplest way to detect this is via solution events
+                    uint solutionEventsCookie;
+                    solnBuildManager.AdviseUpdateSolutionEvents(this, out solutionEventsCookie);
 
-                        var dte = taskInfo.HostServiceProvider(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
-                        var solution = dte.Solution;
-                        var solutionBuild2 = (EnvDTE80.SolutionBuild2)solution.SolutionBuild;
+                    var dte = taskInfo.HostServiceProvider(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
+                    var solution = dte.Solution;
+                    var solutionBuild2 = (EnvDTE80.SolutionBuild2)solution.SolutionBuild;
 
-                        solutionBuild2.BuildProject(solutionConfigurationName, dteProject.FullName, false);
+                    solutionBuild2.BuildProject(solutionConfigurationName, dteProject.FullName, false);
 
-                        WaitOnBuildCompletion(solnBuildManager);
+                    WaitOnBuildCompletion(solnBuildManager);
 
-                        solnBuildManager.UnadviseUpdateSolutionEvents(solutionEventsCookie);
+                    solnBuildManager.UnadviseUpdateSolutionEvents(solutionEventsCookie);
 
-                        if (!BuildStageSucceeded.GetValueOrDefault())
-                            LOGGER.ErrorFormat("Project build failed to complete.");
-                    });
+                    if (!BuildStageSucceeded.GetValueOrDefault())
+                        LOGGER.ErrorFormat("Project build failed to complete.");
                 }
 
                 if (BuildStageSucceeded.GetValueOrDefault())

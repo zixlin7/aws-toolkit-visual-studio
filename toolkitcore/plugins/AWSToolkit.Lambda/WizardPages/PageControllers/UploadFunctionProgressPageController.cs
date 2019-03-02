@@ -368,7 +368,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
         void ILambdaFunctionUploadHelpers.PublishServerlessAsyncCompleteSuccess(PublishServerlessApplicationWorkerSettings settings)
         {
             PostDeploymentAnalysis(settings.SaveSettings);
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 (this as UploadFunctionProgressPageController)._pageUI.StopProgressBar();
 
@@ -400,7 +400,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
         void ILambdaFunctionUploadHelpers.UploadFunctionAsyncCompleteSuccess(UploadFunctionState uploadState)
         {
             PostDeploymentAnalysis(uploadState.SaveSettings);
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 (this as UploadFunctionProgressPageController)._pageUI.StopProgressBar();
 
@@ -483,7 +483,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         void ILambdaFunctionUploadHelpers.UploadFunctionAsyncCompleteError(string message)
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 (this as UploadFunctionProgressPageController)._pageUI.StopProgressBar();
                 (this as UploadFunctionProgressPageController)._pageUI.SetUploadFailedState(true);
@@ -511,7 +511,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 formattedMessage = message;
             }
             
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 (this as UploadFunctionProgressPageController)._pageUI.OutputProgressMessage(formattedMessage);
                 ToolkitFactory.Instance.ShellProvider.UpdateStatus(formattedMessage);

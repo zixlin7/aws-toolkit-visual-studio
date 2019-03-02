@@ -66,7 +66,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
         {
             var response = this._rdsClient.DescribeDBSubnetGroups();
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this.Model.DBSubnetGroups.Clear();
                 foreach (var db in response.DBSubnetGroups.OrderBy(x => x.DBSubnetGroupName.ToLower()))

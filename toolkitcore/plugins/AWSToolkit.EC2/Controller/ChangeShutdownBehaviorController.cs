@@ -46,7 +46,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             };
             var response = this._ec2Client.DescribeInstanceAttribute(request);
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this._model.SelectedOption = response.InstanceAttribute.InstanceInitiatedShutdownBehavior;
             }));

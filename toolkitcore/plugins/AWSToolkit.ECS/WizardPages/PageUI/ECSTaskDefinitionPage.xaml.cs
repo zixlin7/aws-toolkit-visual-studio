@@ -314,7 +314,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         this.PageController.HostingWizard.SetPageError("Error listing existing task definition families: " + e.Message);
                     }
 
-                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                     {
                         foreach (var family in items.OrderBy(x => x))
                         {
@@ -395,7 +395,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         this.PageController.HostingWizard.SetPageError("Error describing existing task definition: " + e.Message);
                     }
 
-                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                     {
                         foreach (var container in items.OrderBy(x => x))
                         {

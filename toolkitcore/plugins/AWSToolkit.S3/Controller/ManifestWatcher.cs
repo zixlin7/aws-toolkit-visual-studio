@@ -147,7 +147,7 @@ namespace Amazon.AWSToolkit.S3.Controller
                     var controller = new BucketBrowserController(s3Client, new BucketBrowserModel(bucket));
                     DownloadFilesJob job = new DownloadFilesJob(controller, bucket, relativePath, items.ToArray(), new FileInfo(fullPath).DirectoryName);
 
-                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                     {
                         DnDCopyProgress feedbackWindow = new DnDCopyProgress();
                         feedbackWindow.ShowInTaskbar = true;

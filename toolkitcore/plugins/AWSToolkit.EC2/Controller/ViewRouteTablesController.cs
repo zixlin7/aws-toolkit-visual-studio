@@ -81,7 +81,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             var response = this.EC2Client.DescribeRouteTables(request);
             var refreshedTable = response.RouteTables.FirstOrDefault(x => x.RouteTableId == routeTable.RouteTableId);
             
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 routeTable.Routes.Clear();
                 if (refreshedTable != null)
@@ -131,7 +131,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             var response = this.EC2Client.DescribeRouteTables(request);
             var refreshedTable = response.RouteTables.FirstOrDefault(x => x.RouteTableId == routeTable.RouteTableId);
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 routeTable.Associations.Clear();
                 if (refreshedTable != null)
@@ -153,7 +153,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             var subnets = this.EC2Client.DescribeSubnets(new DescribeSubnetsRequest()).Subnets;
             var response = this.EC2Client.DescribeRouteTables(new DescribeRouteTablesRequest());
             
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this.Model.RouteTables.Clear();
                 foreach (var item in response.RouteTables)

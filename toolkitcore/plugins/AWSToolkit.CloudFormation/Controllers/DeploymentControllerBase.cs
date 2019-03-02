@@ -192,7 +192,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             if (stack != null && showStatus)
             {
                 CloudFormationStackViewMetaNode meta = stack.MetaNode as CloudFormationStackViewMetaNode;
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() => stack.ExecuteDefaultAction() /* meta.OnOpen(stack)*/));
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() => stack.ExecuteDefaultAction() /* meta.OnOpen(stack)*/));
 
                 ToolkitFactory.Instance.Navigator.SelectedNode = stack;
             }

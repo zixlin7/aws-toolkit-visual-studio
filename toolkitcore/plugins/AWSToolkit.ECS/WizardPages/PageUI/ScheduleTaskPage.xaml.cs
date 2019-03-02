@@ -360,7 +360,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     }
                 }).ContinueWith(t =>
                 {
-                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((System.Action)(() =>
+                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((System.Action)(() =>
                     {
                         foreach (var item in t.Result.OrderBy(x => x))
                         {
@@ -407,7 +407,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         this._scheduleRulesState = new CloudWatchEventHelper.ScheduleRulesState();
                     }
 
-                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                     {
                         foreach (var ruleName in this._scheduleRulesState.RuleNames.OrderBy(x => x))
                         {
@@ -446,7 +446,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             var targets = this._scheduleRulesState.GetRuleTargets(ruleName);
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((System.Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((System.Action)(() =>
             {
                 foreach (var item in targets.OrderBy(x => x.Id))
                 {

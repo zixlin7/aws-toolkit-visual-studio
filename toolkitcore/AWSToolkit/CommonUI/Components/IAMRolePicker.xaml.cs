@@ -118,7 +118,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
         {
             try
             { 
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     this._ctlCombo.Items.Clear();
 

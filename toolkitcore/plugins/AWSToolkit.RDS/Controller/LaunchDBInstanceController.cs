@@ -251,7 +251,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
                 var instance = new DBInstanceWrapper(response.DBInstance, optionGroups);
 
                 var launchViewOnClose = getValue<bool>(launchProperties, RDSWizardProperties.ReviewProperties.propkey_LaunchInstancesViewOnClose);
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
                 {
                     if (this._rootModel != null)
                     {

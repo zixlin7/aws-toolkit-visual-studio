@@ -140,7 +140,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
             public void Add(List<ChildItem> childItems)
             {
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
                 {
                     this._model.Loading = true;
                     try
@@ -227,7 +227,7 @@ namespace Amazon.AWSToolkit.S3.Model
                     index++;
                 }
 
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
                 {
                     for (int i = indexes.Count - 1; i >= 0; i--)
                     {

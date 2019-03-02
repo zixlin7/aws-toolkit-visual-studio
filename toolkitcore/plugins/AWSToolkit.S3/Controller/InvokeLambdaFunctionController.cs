@@ -82,7 +82,7 @@ namespace Amazon.AWSToolkit.S3.Controller
 
             } while (!string.IsNullOrEmpty(response.NextMarker));
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke(((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread(((Action)(() =>
             {
                 this._model.Functions.Clear();
                 this._model.SelectedFunction = null;

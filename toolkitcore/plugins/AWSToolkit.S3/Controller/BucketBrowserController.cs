@@ -130,7 +130,7 @@ namespace Amazon.AWSToolkit.S3.Controller
         {
             try
             {
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
                 {
                     StartFetchingObject();
                 })); 
@@ -169,7 +169,7 @@ namespace Amazon.AWSToolkit.S3.Controller
         public void CancelFetchingObjects()
         {
             DisposeLoadingThread();
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this._control.UpdateFetchingStatus(
                     string.Format("Cancelled Fetching After {0} Items", this._browserModel.ChildItems.LoadItemsCount - 1), 
@@ -188,7 +188,7 @@ namespace Amazon.AWSToolkit.S3.Controller
 
         void fetchObjects()
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this._browserModel.ChildItems.Clear();
                 this._browserModel.SelectedItem = null;
@@ -223,7 +223,8 @@ namespace Amazon.AWSToolkit.S3.Controller
                     var itemsArray = items.ToArray();
                     Array.Sort(itemsArray, new NameComparer(ListSortDirection.Descending));
 
-                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((WaitCallback)((localNextMarker) =>
+                    var localNextMarker = nextMarker;
+                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                     {
                         this._browserModel.Loading = true;
                         try
@@ -251,7 +252,7 @@ namespace Amazon.AWSToolkit.S3.Controller
                         {
                             this._browserModel.Loading = false;
                         }
-                    }), nextMarker);
+                    }));
 
                     firstPass = false;
                 }

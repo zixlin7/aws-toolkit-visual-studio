@@ -154,7 +154,7 @@ namespace Amazon.AWSToolkit.EC2.View.DataGrid
 
         void persistColumnLayout()
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
                 {
                     JsonWriter jw = new JsonWriter();
 
@@ -223,7 +223,7 @@ namespace Amazon.AWSToolkit.EC2.View.DataGrid
                 newColumns.Add(def.FieldName);
             }
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
                 {
                     for (int i = this._ctlDataGrid.Columns.Count - 1; i >= 0; i--)
                     {

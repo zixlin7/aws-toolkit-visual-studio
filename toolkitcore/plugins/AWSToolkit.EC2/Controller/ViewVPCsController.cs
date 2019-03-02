@@ -40,7 +40,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
             var account = this.FeatureViewModel.AccountViewModel;
             var region = this.FeatureViewModel.RegionSystemName;
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this.Model.VPCs.Clear();
                 foreach (var vpc in response.Vpcs.OrderBy(x => x.VpcId))

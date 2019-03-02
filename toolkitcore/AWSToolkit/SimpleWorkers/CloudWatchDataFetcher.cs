@@ -95,7 +95,7 @@ namespace Amazon.AWSToolkit.SimpleWorkers
                 max = max * 1.1;
                 min = min * .9;
 
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     var yaxis = this._series.DependentRangeAxis as LinearAxis;
                     var xaxis = this._series.IndependentAxis as LinearAxis;

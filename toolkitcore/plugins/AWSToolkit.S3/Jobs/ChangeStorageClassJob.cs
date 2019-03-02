@@ -56,7 +56,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
             if (exception != null)
                 return;
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     foreach (var item in _itemsToChanged)
                     {

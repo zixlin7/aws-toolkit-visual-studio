@@ -158,7 +158,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                     progressCallback("Error creating VPC: " + e.Message);
                 }
 
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
                 {
                     ToolkitFactory.Instance.ShellProvider.ShowError("Create Fail", "Error creating VPC: " + e.Message);
                 }));

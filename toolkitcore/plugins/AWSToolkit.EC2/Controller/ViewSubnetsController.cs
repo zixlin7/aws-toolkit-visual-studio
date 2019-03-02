@@ -66,7 +66,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 }
             }
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this.Model.Subnets.Clear();
                 foreach (var item in subnetResponse.Subnets.OrderBy(x => x.SubnetId))

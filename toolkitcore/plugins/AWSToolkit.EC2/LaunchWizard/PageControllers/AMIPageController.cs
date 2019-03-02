@@ -192,7 +192,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
                 }
             }
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 this.Model.Images.Clear();
                 if (images != null)

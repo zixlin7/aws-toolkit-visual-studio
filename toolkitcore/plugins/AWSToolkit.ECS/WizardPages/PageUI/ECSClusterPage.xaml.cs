@@ -177,7 +177,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         } while (!string.IsNullOrEmpty(response.NextToken));
                     }
 
-                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                     {
                         foreach (var cluster in items.OrderBy(x => x))
                         {

@@ -40,7 +40,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
             var account = this.FeatureViewModel.AccountViewModel;
             var region = this.FeatureViewModel.RegionSystemName;
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 this.Model.KeyPairs.Clear();
                 foreach (var keyPair in response.KeyPairs.OrderBy(x => x.KeyName.ToLower()))

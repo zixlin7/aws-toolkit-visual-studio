@@ -18,12 +18,13 @@ using log4net;
 using Amazon.Util;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.Runtime.CredentialManagement.Internal;
+using Amazon.AWSToolkit.Shared;
 
 namespace Amazon.AWSToolkit.Navigator.Node
 {
     public class AWSViewModel : AbstractViewModel
     {
-        Dispatcher _dispatcher;
+        IAWSToolkitShellProvider _shellProvider;
         AWSViewMetaNode _metaNode;
         ObservableCollection<AccountViewModel> _accounts = new ObservableCollection<AccountViewModel>();
         SettingsWatcher _sdkCredentialWatcher;
@@ -34,10 +35,10 @@ namespace Amazon.AWSToolkit.Navigator.Node
 
         ILog _logger = LogManager.GetLogger(typeof(AWSViewModel));
 
-        public AWSViewModel(Dispatcher dispatcher, AWSViewMetaNode metaNode)
+        public AWSViewModel(IAWSToolkitShellProvider shellProvider, AWSViewMetaNode metaNode)
             : base(metaNode, null, "root")
         {
-            this._dispatcher = dispatcher;
+            this._shellProvider = shellProvider;
             this._metaNode = metaNode;
 
             SetupCredentialWatchers();
@@ -50,10 +51,10 @@ namespace Amazon.AWSToolkit.Navigator.Node
             this._sdkCredentialWatcher = PersistenceManager.Instance.Watch(ToolkitSettingsConstants.RegisteredProfiles);
             this._sdkCredentialWatcher.SettingsChanged += new EventHandler((o, e) =>
             {
-                this._dispatcher.Invoke((System.Windows.Forms.MethodInvoker) delegate()
+                this._shellProvider.ExecuteOnUIThread((Action)(() => 
                 {
                     this.Refresh();
-                });
+                }));
             });
 
             SetupSharedCredentialFileMonitoring();
@@ -80,10 +81,10 @@ namespace Amazon.AWSToolkit.Navigator.Node
                 {
                     Action<object, FileSystemEventArgs> callback = (o, e) =>
                     {
-                        this._dispatcher.Invoke((System.Windows.Forms.MethodInvoker) delegate()
+                        this._shellProvider.ExecuteOnUIThread((Action)(() =>
                         {
                             this.Refresh();
-                        });
+                        }));
                     };
 
                     var credentialPaths = GetCandidateCredentialPaths();

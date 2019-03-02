@@ -187,7 +187,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             var wrapper = CloudFormationTemplateWrapper.FromString(responseTemplate.TemplateBody);
             wrapper.LoadAndParse();
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() => 
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() => 
             {
                 
                 this._model.StackId = stack.StackId;
@@ -235,7 +235,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
             bool stateChange = !string.Equals(this._model.Status, stack.StackStatus);
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 this._model.Status = stack.StackStatus;
                 this._model.StatusReason = stack.StackStatusReason;
@@ -281,7 +281,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
             }while(!noNewEvents && !string.IsNullOrEmpty(response.NextToken));
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() => 
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() => 
             {
                 foreach (var evnt in events.OrderBy(x => x.Timestamp))
                 {
@@ -296,7 +296,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
         public void ReapplyFilter()
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 lock (UPDATE_EVENT_LOCK_OBJECT)
                 {
@@ -321,7 +321,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             var instanceIds = getListOfInstanceIds(stackResources, fetchedDescribes);
             loadInstances(instanceIds);
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 this.Model.Resources.Clear();
                 foreach (var resource in stackResources)
@@ -353,7 +353,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             var describeInstancesRequest = new DescribeInstancesRequest() { InstanceIds = instanceIds.ToList() };
             var describeInstanceResponse = this._ec2Client.DescribeInstances(describeInstancesRequest);
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this.Model.Instances.Clear();
 

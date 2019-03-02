@@ -50,7 +50,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             
             bool isEnabled = response.InstanceAttribute.DisableApiTermination;
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this._model.IsProtectionEnabled = isEnabled;
                 this._model.IsProtectionInitiallyEnabled = isEnabled;

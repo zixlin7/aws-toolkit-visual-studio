@@ -187,7 +187,7 @@ namespace Amazon.AWSToolkit.SNS.Controller
         {
             try
             {
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
                 {
                     LoadModel();
                 }));

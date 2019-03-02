@@ -155,7 +155,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
 
         protected void BeginCopingChildren(IList<IViewModel> items)
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this.InitializeChildrensCollection();
 
@@ -168,7 +168,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
 
         protected void AddErrorChild(Exception e)
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() => 
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() => 
             {
                 this.Children.Clear();
                 this.Children.Add(new ErrorViewModel(this, e));

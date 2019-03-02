@@ -74,7 +74,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
         {
             var response = this._rdsClient.DescribeDBSecurityGroups();
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this.Model.SecurityGroups.Clear();
                 foreach (var group in response.DBSecurityGroups.OrderBy(x => x.DBSecurityGroupName.ToLower()))

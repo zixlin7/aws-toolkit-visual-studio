@@ -94,7 +94,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
             var response = this._beanstalkClient.DescribeEvents(request);
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 lock (UPDATE_EVENT_LOCK_OBJECT)
                 {
@@ -117,7 +117,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
             var response = this._beanstalkClient.DescribeApplicationVersions(request);
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 this._statusModel.Versions.Clear();
                 foreach (var version in response.ApplicationVersions)
@@ -129,7 +129,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
         public void ReapplyFilter()
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 lock (UPDATE_EVENT_LOCK_OBJECT)
                 {

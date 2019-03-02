@@ -139,13 +139,14 @@ namespace Amazon.AWSToolkit.Shared
         /// <summary>
         /// 
         /// </summary>
-        Dispatcher ShellDispatcher {get;}
+        /// <param name="action"></param>
+        void ExecuteOnUIThread(Action action);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="action"></param>
-        void ExecuteOnUIThread(Action action);
+        void BeginExecuteOnUIThread(Action action);
 
         /// <summary>
         /// 

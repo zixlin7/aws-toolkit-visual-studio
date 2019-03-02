@@ -46,7 +46,7 @@ namespace Amazon.AWSToolkit.S3.View
         protected override object LoadAndReturnModel()
         {
             this._controller.LoadModel();
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
             {
                 this._ctlHeaderLabel.Text = string.Format("{0} part(s) successfully uploaded.", this._controller.Model.PartDetails.Count);
             }));

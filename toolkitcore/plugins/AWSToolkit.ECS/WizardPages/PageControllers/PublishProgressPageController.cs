@@ -241,7 +241,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 formattedMessage = message;
             }
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 (this as PublishProgressPageController)._pageUI.OutputProgressMessage(formattedMessage);
                 ToolkitFactory.Instance.ShellProvider.UpdateStatus(formattedMessage);
@@ -273,7 +273,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         private void LoadClusterView(IAWSWizard hostingWizard)
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 var account = HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
                 var region = HostingWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
@@ -322,7 +322,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             AddECSTools(state.PersistConfigFile.GetValueOrDefault());
             DefaultSuccessFinish();
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 var navigator = ToolkitFactory.Instance.Navigator;
                 if (navigator.SelectedAccount != state.Account)
@@ -353,7 +353,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         private void DefaultSuccessFinish()
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 (this as PublishProgressPageController)._pageUI.StopProgressBar();
 
@@ -372,7 +372,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public void SendCompleteErrorAsync(string message)
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 (this as PublishProgressPageController)._pageUI.StopProgressBar();
                 (this as PublishProgressPageController)._pageUI.SetUploadFailedState(true);

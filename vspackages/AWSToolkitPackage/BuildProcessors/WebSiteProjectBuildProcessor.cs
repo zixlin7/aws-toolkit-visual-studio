@@ -31,36 +31,32 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
             {
                 this.TaskInfo = taskInfo;
 
-                Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
-                {
-                    await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-                    object value;
-                    taskInfo.ProjectInfo.VsHierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out value);
-                    var dteProject = value as EnvDTE.Project;
+                object value;
+                taskInfo.ProjectInfo.VsHierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out value);
+                var dteProject = value as EnvDTE.Project;
 
-                    var solnBuildManager = TaskInfo.HostServiceProvider(typeof(SVsSolutionBuildManager)) as IVsSolutionBuildManager;
+                var solnBuildManager = TaskInfo.HostServiceProvider(typeof(SVsSolutionBuildManager)) as IVsSolutionBuildManager;
 
-                    // because we do a two-stage build, we don't want to run the package stage if the initial build fails -
-                    // the simplest way to detect this is via solution events
-                    uint solutionEventsCookie;
-                    solnBuildManager.AdviseUpdateSolutionEvents(this, out solutionEventsCookie);
+                // because we do a two-stage build, we don't want to run the package stage if the initial build fails -
+                // the simplest way to detect this is via solution events
+                uint solutionEventsCookie;
+                solnBuildManager.AdviseUpdateSolutionEvents(this, out solutionEventsCookie);
 
-                    // because we have no project file, run a build on the solution instead so any
-                    // references are taken care of. Note that project settings (in the solution file)
-                    // mean the build output can be well away from the actual source.
-                    //dteProject.DTE.ExecuteCommand("Build.BuildSolution", string.Empty);
-                    var dte = taskInfo.HostServiceProvider(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
-                    var solution = dte.Solution;
-                    var solutionBuild2 = (EnvDTE80.SolutionBuild2)solution.SolutionBuild;
+                // because we have no project file, run a build on the solution instead so any
+                // references are taken care of. Note that project settings (in the solution file)
+                // mean the build output can be well away from the actual source.
+                //dteProject.DTE.ExecuteCommand("Build.BuildSolution", string.Empty);
+                var dte = taskInfo.HostServiceProvider(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
+                var solution = dte.Solution;
+                var solutionBuild2 = (EnvDTE80.SolutionBuild2)solution.SolutionBuild;
 
-                    var configurationName = taskInfo.Options[DeploymentWizardProperties.AppOptions.propkey_SelectedBuildConfiguration] as string;
+                var configurationName = taskInfo.Options[DeploymentWizardProperties.AppOptions.propkey_SelectedBuildConfiguration] as string;
 
-                    solutionBuild2.BuildProject(configurationName, dteProject.FullName, false);
+                solutionBuild2.BuildProject(configurationName, dteProject.FullName, false);
 
-                    WaitOnBuildCompletion(solnBuildManager);
+                WaitOnBuildCompletion(solnBuildManager);
 
-                    solnBuildManager.UnadviseUpdateSolutionEvents(solutionEventsCookie);
-                });
+                solnBuildManager.UnadviseUpdateSolutionEvents(solutionEventsCookie);
 
                 if (BuildStageSucceeded.GetValueOrDefault())
                 {

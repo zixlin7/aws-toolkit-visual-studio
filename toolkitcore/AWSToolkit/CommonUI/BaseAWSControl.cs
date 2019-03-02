@@ -149,7 +149,7 @@ namespace Amazon.AWSToolkit.CommonUI
 
                 LOGGER.InfoFormat("Data loaded data for {0}", this.UniqueId);
 
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     try
                     {

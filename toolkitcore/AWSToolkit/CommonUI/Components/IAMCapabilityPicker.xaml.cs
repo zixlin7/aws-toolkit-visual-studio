@@ -136,7 +136,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
             try
             {
                 var templates = GetPolicyTemplates();
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     this._ctlCombo.Items.Clear();
                     this._selectedPolicyTemplates.Clear();

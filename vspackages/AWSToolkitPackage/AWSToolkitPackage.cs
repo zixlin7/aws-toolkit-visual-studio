@@ -1078,7 +1078,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 wizard.SetShortCircuitPage(AWSWizardConstants.WizardPageReferences.LastPageID);
 
-                var uiShell = (IVsUIShell)GetServiceAsync(typeof(SVsUIShell));
+                var uiShell = (await GetServiceAsync(typeof(SVsUIShell))) as IVsUIShell;
                 IntPtr parent;
                 uiShell.GetDialogOwnerHwnd(out parent);
 
@@ -1143,7 +1143,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 wizard.RegisterPageControllers(pageControllers, 0);
                 wizard.SetShortCircuitPage(AWSWizardConstants.WizardPageReferences.LastPageID);
 
-                var uiShell = (IVsUIShell)GetServiceAsync(typeof(SVsUIShell));
+                var uiShell = await GetServiceAsync(typeof(SVsUIShell)) as IVsUIShell;
                 IntPtr parent;
                 uiShell.GetDialogOwnerHwnd(out parent);
 
@@ -1218,7 +1218,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 wizard.RegisterPageControllers(pageControllers, 0);
 
-                var uiShell = (IVsUIShell)GetServiceAsync(typeof(SVsUIShell));
+                var uiShell = await GetServiceAsync(typeof(SVsUIShell)) as IVsUIShell;
                 IntPtr parent;
                 uiShell.GetDialogOwnerHwnd(out parent);
 
@@ -1662,7 +1662,9 @@ namespace Amazon.AWSToolkit.VisualStudio
                 };
             }
 
-            bdc.HostServiceProvider = GetService;
+            bdc.HostServiceProvider = GetServiceOnUI;
+
+
             switch (projectInfo.VsProjectType)
             {
                 case VSWebProjectInfo.VsWebProjectType.WebApplicationProject:
@@ -1682,6 +1684,15 @@ namespace Amazon.AWSToolkit.VisualStudio
             bdc.OnCompletionCallback = BuildAndDeploymentCompleted;
 
             bdc.Execute();
+        }
+
+        object GetServiceOnUI(Type serviceType)
+        {
+            return this.JoinableTaskFactory.Run<object>(async () =>
+            {
+                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                return await this.GetServiceAsync(serviceType);
+            });
         }
 
         // callback from build/deployment sequencer is done on our UI thread
@@ -1736,7 +1747,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             return this.JoinableTaskFactory.Run<Window>(async () =>
             {
                 await this.JoinableTaskFactory.SwitchToMainThreadAsync();
-                var uiShell = (IVsUIShell)GetServiceAsync(typeof(SVsUIShell));
+                var uiShell = await GetServiceAsync(typeof(SVsUIShell)) as IVsUIShell;
                 IntPtr parent;
                 if (uiShell.GetDialogOwnerHwnd(out parent) != VSConstants.S_OK)
                 {
@@ -2513,7 +2524,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 await this.JoinableTaskFactory.SwitchToMainThreadAsync();
                 var toolWindowGuid = new Guid(ToolWindowGuids.ServerExplorer);
                 IVsWindowFrame toolWindow;
-                var uiShell = (IVsUIShell)GetServiceAsync(typeof(SVsUIShell));
+                var uiShell = await GetServiceAsync(typeof(SVsUIShell)) as IVsUIShell;
                 if (uiShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref toolWindowGuid, out toolWindow) == VSConstants.S_OK)
                 {
                     toolWindow.Show();
@@ -2575,7 +2586,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                     await this.JoinableTaskFactory.SwitchToMainThreadAsync();
                     var toolWindowGuid = new Guid(ToolWindowGuids.ServerExplorer);
                     IVsWindowFrame toolWindow;
-                    var uiShell = (IVsUIShell)GetServiceAsync(typeof(SVsUIShell));
+                    var uiShell = await GetServiceAsync(typeof(SVsUIShell)) as IVsUIShell;
                     if (uiShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref toolWindowGuid, out toolWindow) == VSConstants.S_OK)
                     {
                         toolWindow.Show();

@@ -308,7 +308,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                         this.PageController.HostingWizard.SetPageError("Error listing existing service: " + e.Message);
                     }
 
-                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                     {
                         foreach (var service in items.OrderBy(x => x))
                         {

@@ -81,7 +81,7 @@ namespace Amazon.AWSToolkit.S3.Controller
 
             } while (response.IsTruncated);
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() => 
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() => 
             {
                 this._model.Uploads.Clear();
                 foreach (var item in lists.OrderBy(item => item.Key))

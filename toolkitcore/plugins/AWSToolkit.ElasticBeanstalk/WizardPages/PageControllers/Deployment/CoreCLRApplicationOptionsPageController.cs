@@ -279,7 +279,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                         this._needToFetchData = false;
                     }
 
-                    ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                     {
                         this._originalHealthCheckUri = healthCheckUri;
                         this._pageUI.HealthCheckUri = healthCheckUri;

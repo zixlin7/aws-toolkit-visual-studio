@@ -37,7 +37,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
         {
             var response = this.EC2Client.DescribeVolumes(new DescribeVolumesRequest());            
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
                 {
                     this.Model.Volumes.Clear();
                     foreach (var volume in response.Volumes)
@@ -88,7 +88,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
                 var response = EC2Client.DescribeSnapshots(request);
 
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     if (null == volume.Snapshots)
                         volume.Snapshots = new ObservableCollection<SnapshotWrapper>();

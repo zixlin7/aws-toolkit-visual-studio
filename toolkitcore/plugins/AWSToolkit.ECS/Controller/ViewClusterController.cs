@@ -257,7 +257,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
         private void UpdateServicesWithLoadBalancerInfo()
         {
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((System.Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((System.Action)(() =>
             {
 
                 foreach (var service in this.Model.Services)

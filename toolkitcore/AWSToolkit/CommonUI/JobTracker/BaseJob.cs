@@ -214,7 +214,7 @@ namespace Amazon.AWSToolkit.CommonUI.JobTracker
             finally
             {
                 this.IsComplete = true;
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     this.IsActionEnabled = false;
                     base.NotifyPropertyChanged("ActionIcon");
@@ -239,7 +239,7 @@ namespace Amazon.AWSToolkit.CommonUI.JobTracker
             finally
             {
                 this.IsComplete = true;
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     this.IsActionEnabled = false;
                     base.NotifyPropertyChanged("ActionIcon");

@@ -50,7 +50,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
             string userData = response.InstanceAttribute.UserData;
             userData = StringUtils.DecodeFrom64(userData);
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this._model.UserData = userData;
                 this._model.InitialUserData = userData;

@@ -217,7 +217,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View
             if (this._controller.Model.Status == BeanstalkConstants.STATUS_TERMINATED ||
                 this._controller.Model.Status == BeanstalkConstants.STATUS_TERMINATING)
             {
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     this._ctlServerComponent.IsEnabled = false;
                     this._ctlLoadBalancerComponent.IsEnabled = false;

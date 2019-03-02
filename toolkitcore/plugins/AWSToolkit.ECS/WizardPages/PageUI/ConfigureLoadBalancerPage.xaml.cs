@@ -417,7 +417,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 }
             }).ContinueWith(t =>
             {
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((System.Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((System.Action)(() =>
                 {
                     foreach (var item in t.Result.OrderBy(x => x.RoleName))
                     {
@@ -467,7 +467,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 }
             }).ContinueWith(t =>
             {
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((System.Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((System.Action)(() =>
                 {
                     foreach (var item in t.Result.OrderBy(x => x))
                     {
@@ -518,7 +518,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 }
             }).ContinueWith(t =>
             {
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((System.Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((System.Action)(() =>
                 {
                     foreach (var item in t.Result.OrderBy(x => x))
                     {
@@ -605,7 +605,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 }
             }).ContinueWith(t =>
             {
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((System.Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((System.Action)(() =>
                 {
                     foreach (var item in t.Result.Item1.OrderBy(x => x))
                     {

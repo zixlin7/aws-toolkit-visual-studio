@@ -141,7 +141,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Util
                         {
                             var zipFile = new FastZip();
                             zipFile.ExtractZip(localZipFile, Path.Combine(BASE_LOCAL_DIRECTORY, version.Version), FastZip.Overwrite.Always, null, null, null, true);
-                            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() => version.IsInstalled = true));
+                            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() => version.IsInstalled = true));
 
                             File.Delete(localZipFile);
                         }
@@ -167,7 +167,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Util
                 Directory.Delete(localFolder, true);
             }
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() => version.IsInstalled = false));
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() => version.IsInstalled = false));
         }
 
         private string ManifestContent()

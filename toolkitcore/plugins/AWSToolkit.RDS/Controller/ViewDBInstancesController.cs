@@ -75,7 +75,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
             var response = this._rdsClient.DescribeDBInstances();
             List<OptionGroup> allOptions = this._rdsClient.DescribeOptionGroups().OptionGroupsList;
 
-            ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this.Model.DBInstances.Clear();
                 foreach (var db in response.DBInstances.OrderBy(x => x.DBInstanceIdentifier.ToLower()))
@@ -201,7 +201,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
                     events.AddRange(response.Events);
                 }
 
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.BeginInvoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
                     this.Model.SelectedEvents.Clear();
                     foreach (var evnt in events.OrderByDescending(x => x.Date))

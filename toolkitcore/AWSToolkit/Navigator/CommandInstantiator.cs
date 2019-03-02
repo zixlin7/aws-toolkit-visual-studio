@@ -14,7 +14,7 @@ namespace Amazon.AWSToolkit.Navigator
             try
             {
                 ActionResults results = null;
-                ToolkitFactory.Instance.ShellProvider.ShellDispatcher.Invoke((Action)(() =>
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
                     {
                         T command = new T();
                         results = command.Execute(viewModel);
