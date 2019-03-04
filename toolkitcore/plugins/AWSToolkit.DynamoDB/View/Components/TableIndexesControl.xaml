@@ -109,7 +109,7 @@
                                    AllowsTransparency="False" 
                                    IsOpen="True" 
                                    Margin="1"               
-                                   Placement="Bottom" Width="200" Height="130"
+                                   Placement="Bottom" Width="200" Height="160"
                                    Loaded="PART_PopupKeyDefinition_Loaded"
                                    >
                     <Border x:Name="DropDownBorder" BorderThickness="1" Background="{DynamicResource awsPopupBorderBrushKey}">
