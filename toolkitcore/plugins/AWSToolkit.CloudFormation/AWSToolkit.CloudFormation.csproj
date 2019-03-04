@@ -118,7 +118,6 @@
     <Compile Include="Controllers\DeploymentControllerBase.cs" />
     <Compile Include="Controllers\DeploymentControllerBaseObserver.cs" />
     <Compile Include="Controllers\DeployTemplateController.cs" />
-    <Compile Include="Controllers\GetConfigurationController.cs" />
     <Compile Include="Controllers\GetUrlToCostEstimateController.cs" />
     <Compile Include="Controllers\RedeployApplicationController.cs" />
     <Compile Include="Controllers\ViewDeploymentLogController.cs" />

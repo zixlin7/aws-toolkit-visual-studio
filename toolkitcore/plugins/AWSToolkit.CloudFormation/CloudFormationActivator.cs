@@ -69,9 +69,6 @@ namespace Amazon.AWSToolkit.CloudFormation
 
             rootNode.CloudFormationStackViewMetaNode.OnDelete =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteStackController>().Execute);
-
-            rootNode.CloudFormationStackViewMetaNode.OnCreateConfig =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<GetConfigurationController>().Execute);
         }
 
         #region IAWSCloudFormation Members
