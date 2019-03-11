@@ -100,7 +100,6 @@ namespace Amazon.AWSToolkit.VisualStudio
     [ProvideEditorFactory(typeof(TemplateEditorFactory), 113)]
     [ProvideEditorLogicalView(typeof(TemplateEditorFactory), EnvDTEConstants.vsViewKindTextView)]
     [ProvideEditorExtension(typeof(TemplateEditorFactory), ".template", 10000, NameResourceID = 113)]
-    [InstalledProductRegistration(true, null, null, null)]
     // need to force load when VS starts for CFN editor project stuff
     [ProvideProjectFactory(typeof(CloudFormationTemplateProjectFactory),
                            null,
