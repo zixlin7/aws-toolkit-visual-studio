@@ -639,6 +639,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="$(BuildRoot)\toolkitcore\AmazonCLIExtensions\Amazon.Lambda.Tools\Resources\build-lambda-zip.exe">
+      <Link>Resources\build-lambda-zip.exe</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(BuildRoot)\vspackages\manifests\$(VisualStudioVersion)\source.extension.vsixmanifest">

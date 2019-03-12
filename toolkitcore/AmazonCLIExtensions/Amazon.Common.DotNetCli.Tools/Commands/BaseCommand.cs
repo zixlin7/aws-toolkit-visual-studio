@@ -131,9 +131,11 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
             if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_CONFIG_FILE.Switch)) != null)
             {
                 this.ConfigFile = tuple.Item2.StringValue;
-                if (!File.Exists(this.ConfigFile))
+
+                var fullConfigPath = Path.Combine(Utilities.DetermineProjectLocation(this.WorkingDirectory, this.ProjectLocation), this.ConfigFile);
+                if (!File.Exists(fullConfigPath))
                 {
-                    throw new ToolsException($"Config file {this.ConfigFile} can not be found.", ToolsException.CommonErrorCode.MissingConfigFile);
+                    throw new ToolsException($"Config file {fullConfigPath} can not be found.", ToolsException.CommonErrorCode.MissingConfigFile);
                 }
             }
             if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_PERSIST_CONFIG_FILE.Switch)) != null)
@@ -280,12 +282,15 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
         {
             if (!string.IsNullOrEmpty(propertyValue))
             {
-                return propertyValue;
+                var expanded = Utilities.ReplaceEnvironmentVariables(propertyValue);
+                return expanded;
             }
             else if (!string.IsNullOrEmpty(DefaultConfig[option.Switch] as string))
             {
                 var configDefault = DefaultConfig[option.Switch] as string;
-                return configDefault;
+                var expanded = Utilities.ReplaceEnvironmentVariables(configDefault);
+
+                return expanded;
             }
             else if(DefaultConfig[option.Switch] is int)
             {

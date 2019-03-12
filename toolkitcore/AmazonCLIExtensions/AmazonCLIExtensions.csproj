@@ -134,6 +134,11 @@
     <EmbeddedResource Include="Amazon.Lambda.Tools\Resources\netcore.runtime.hierarchy.json" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Amazon.Lambda.Tools\Resources\build-lambda-zip.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
