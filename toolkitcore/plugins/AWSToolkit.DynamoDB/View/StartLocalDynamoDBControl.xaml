@@ -123,7 +123,7 @@
                 <TextBlock Grid.Row="0" Margin="5" TextWrapping="Wrap" Style="{DynamicResource awsInfoTextStyle}">
                 <Run>The following code is an example of how to connect to DynamoDB Local using the AWS SDK for .NET.</Run>
                 </TextBlock>
-                <TextBox Grid.Row="1" Margin="20" Foreground="Black" VerticalAlignment="Top" FontWeight="DemiBold" TextWrapping="Wrap" Style="{DynamicResource awsSelectableTextBoxStyle}" Text="{Binding ExampleConnectCode,Mode=OneWay}"/>
+                <TextBox Grid.Row="1" Margin="20" VerticalAlignment="Top" TextWrapping="Wrap" Style="{DynamicResource awsSelectableTextBoxStyle}" Text="{Binding ExampleConnectCode,Mode=OneWay}"/>
             </Grid>
         </GroupBox>
 
