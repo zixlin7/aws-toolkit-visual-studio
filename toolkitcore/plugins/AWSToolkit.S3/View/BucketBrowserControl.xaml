@@ -68,7 +68,7 @@
                         </Style>
                     </WrapPanel.Resources>
                     <TextBlock Name="_ctlFetchStatus" Style="{DynamicResource awsTextBlockBaseStyle}">Fetched 0 Items</TextBlock>
-                    <TextBlock Name="_ctlFetchCancel"  Margin="5,0,0,0" Style="{StaticResource Cancel}" MouseLeftButtonDown="onCancelLoad" Cursor="Hand">(Cancel)</TextBlock>
+                    <TextBlock Name="_ctlFetchCancel"  Margin="5,0,0,0" Style="{StaticResource Cancel}" Cursor="Hand">(Cancel)</TextBlock>
                 </WrapPanel>
                 <WrapPanel Name="_ctlBreadCrumbPanel" DockPanel.Dock="Left">
                     <WrapPanel.Resources>
@@ -99,7 +99,7 @@
             <ToolBar DockPanel.Dock="Bottom" ToolBarTray.IsLocked="True" >
                 <ComboBox x:Name="zoomLevel"
                           IsReadOnly="True"
-                          Width="70"
+                          Width="90"
                           Style="{DynamicResource awsComboBoxStyle}" 
                           ItemsSource="{Binding ElementName=_ctlDataGrid, Path=ZoomLevels}"
                           SelectedValuePath="Level"

@@ -1246,19 +1246,29 @@ namespace Amazon.AWSToolkit.S3.View
             this._controller.CancelFetchingObjects();
         }
 
+
+        bool _isOnCancelHandlerAdded = false;
         public void UpdateFetchingStatus(string message, bool enableCancel)
         {
             this._ctlFetchStatus.Text = message;
 
             if (enableCancel)
             {
-                this._ctlFetchCancel.MouseLeftButtonDown += onCancelLoad;
+                if(!this._isOnCancelHandlerAdded)
+                {
+                    this._ctlFetchCancel.MouseLeftButtonDown += onCancelLoad;
+                    this._isOnCancelHandlerAdded = true;
+                }
                 this._ctlFetchCancel.Cursor = Cursors.Hand;
                 this._ctlFetchCancel.Foreground = FindResource("awsUrlTextFieldForegroundBrushKey") as SolidColorBrush;
             }
             else
             {
-                this._ctlFetchCancel.MouseLeftButtonDown -= onCancelLoad;
+                if(this._isOnCancelHandlerAdded)
+                {
+                    this._ctlFetchCancel.MouseLeftButtonDown -= onCancelLoad;
+                    this._isOnCancelHandlerAdded = false;
+                }
                 this._ctlFetchCancel.Cursor = Cursors.Arrow;
                 this._ctlFetchCancel.Foreground = FindResource("awsDisabledControlForegroundBrushKey") as SolidColorBrush; 
             }
