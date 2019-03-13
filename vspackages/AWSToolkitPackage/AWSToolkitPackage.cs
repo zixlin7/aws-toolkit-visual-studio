@@ -1055,7 +1055,6 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             var tuple = this.JoinableTaskFactory.Run<Tuple<bool, IDictionary<string, object>>>(async () =>
             {
-                IDictionary<string, object> localWizardProperties;
                 await this.JoinableTaskFactory.SwitchToMainThreadAsync();
                 var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Deployment2AWS.View.Deploy2AWS", null);
                 wizard.Title = "Publish to Amazon Web Services";
@@ -1078,11 +1077,17 @@ namespace Amazon.AWSToolkit.VisualStudio
                 wizard.SetShortCircuitPage(AWSWizardConstants.WizardPageReferences.LastPageID);
 
                 var uiShell = (await GetServiceAsync(typeof(SVsUIShell))) as IVsUIShell;
+                if (uiShell == null)
+                {
+                    LOGGER.Error("GetServiceAsync(typeof(SVsUIShell)) returned null");
+                    return new Tuple<bool, IDictionary<string, object>>(false, new Dictionary<string, object>());
+                }
+
                 IntPtr parent;
                 uiShell.GetDialogOwnerHwnd(out parent);
 
                 var ret = wizard.Run();
-                localWizardProperties = wizard.CollectedProperties;
+                IDictionary<string, object> localWizardProperties = wizard.CollectedProperties;
 
                 return new Tuple<bool, IDictionary<string, object>>(ret, localWizardProperties);
             });
@@ -1103,7 +1108,6 @@ namespace Amazon.AWSToolkit.VisualStudio
             var tuple = this.JoinableTaskFactory.Run<Tuple<bool, IDictionary<string, object>>>(async () =>
             {
                 await this.JoinableTaskFactory.SwitchToMainThreadAsync();
-                IDictionary<string, object> localWizardProperties;
 
                 var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Deployment2AWS.View.LegacyDeploy2AWS", null);
                 wizard.Title = "Publish to Amazon Web Services";
@@ -1147,7 +1151,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 uiShell.GetDialogOwnerHwnd(out parent);
 
                 var ret = wizard.Run();
-                localWizardProperties = wizard.CollectedProperties;
+                IDictionary<string, object> localWizardProperties = wizard.CollectedProperties;
                 return new Tuple<bool, IDictionary<string, object>>(ret, localWizardProperties);
             });
 
@@ -1218,6 +1222,12 @@ namespace Amazon.AWSToolkit.VisualStudio
                 wizard.RegisterPageControllers(pageControllers, 0);
 
                 var uiShell = await GetServiceAsync(typeof(SVsUIShell)) as IVsUIShell;
+                if(uiShell == null)
+                {
+                    LOGGER.Error("GetServiceAsync(typeof(SVsUIShell)) returned null");
+                    return;
+                }
+
                 IntPtr parent;
                 uiShell.GetDialogOwnerHwnd(out parent);
 

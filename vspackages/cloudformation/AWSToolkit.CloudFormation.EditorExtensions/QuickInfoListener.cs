@@ -29,8 +29,6 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
         private IList<ITextBuffer> _subjectBuffers;
         private QuickInfoControllerProvider _componentContext;
 
-        private IAsyncQuickInfoSession _session;
-
         internal QuickInfoListener(ITextView textView, IList<ITextBuffer> subjectBuffers, QuickInfoControllerProvider componentContext)
         {
             _textView = textView;

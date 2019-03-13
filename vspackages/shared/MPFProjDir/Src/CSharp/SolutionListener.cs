@@ -27,7 +27,8 @@ namespace Microsoft.VisualStudio.Project
 		#region fields
 		private uint eventsCookie;
 		private IVsSolution solution;
-		private IAsyncServiceProvider asyncServiceProvider;
+        private IServiceProvider syncServiceProvider;
+        private IAsyncServiceProvider asyncServiceProvider;
 		private bool isDisposed;
 		/// <summary>
 		/// Defines an object that will be a mutex for this object for synchronizing thread calls.
@@ -43,6 +44,7 @@ namespace Microsoft.VisualStudio.Project
                 throw new ArgumentNullException("serviceProviderParameter");
             }
 
+            this.syncServiceProvider = serviceProviderParameter;
             this.solution = serviceProviderParameter.GetService(typeof(SVsSolution)) as IVsSolution;
 
             Debug.Assert(this.solution != null, "Could not get the IVsSolution object from the services exposed by this project");
@@ -67,13 +69,16 @@ namespace Microsoft.VisualStudio.Project
 
         public async System.Threading.Tasks.Task CollectServicesAsync()
         {
-            this.solution = await this.asyncServiceProvider.GetServiceAsync(typeof(SVsSolution)) as IVsSolution;
-
-            Debug.Assert(this.solution != null, "Could not get the IVsSolution object from the services exposed by this project");
-
-            if (this.solution == null)
+            if (this.asyncServiceProvider != null)
             {
-                throw new InvalidOperationException();
+                this.solution = await this.asyncServiceProvider.GetServiceAsync(typeof(SVsSolution)) as IVsSolution;
+
+                Debug.Assert(this.solution != null, "Could not get the IVsSolution object from the services exposed by this project");
+
+                if (this.solution == null)
+                {
+                    throw new InvalidOperationException();
+                }
             }
         }
 
@@ -98,7 +103,10 @@ namespace Microsoft.VisualStudio.Project
 		{
 			get
 			{
-				return this.asyncServiceProvider as IServiceProvider;
+                if (this.asyncServiceProvider != null)
+                    return this.asyncServiceProvider as IServiceProvider;
+
+				return this.syncServiceProvider;
 			}
 		}
 		#endregion
