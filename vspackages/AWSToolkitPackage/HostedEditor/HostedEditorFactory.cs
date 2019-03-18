@@ -19,7 +19,6 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
     public sealed class HostedEditorFactory : IVsEditorFactory, IDisposable
     {
         private AWSToolkitPackage editorPackage;
-        private ServiceProvider vsServiceProvider;
 
 
         public HostedEditorFactory(AWSToolkitPackage package)
@@ -88,16 +87,11 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
             this.editorPackage.JoinableTaskFactory.Run(async () =>
             {
                 await this.editorPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
-                if (vsServiceProvider != null)
-                {
-                    vsServiceProvider.Dispose();
-                }
             });
         }
 
         public int SetSite(Microsoft.VisualStudio.OLE.Interop.IServiceProvider psp)
         {
-            vsServiceProvider = new ServiceProvider(psp);
             return VSConstants.S_OK;
         }
 
@@ -106,7 +100,7 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
             return this.editorPackage.JoinableTaskFactory.Run<object>(async () =>
             {
                 await this.editorPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
-                return vsServiceProvider.GetService(serviceType);
+                return await this.editorPackage.GetServiceAsync(serviceType);
             });
         }
 

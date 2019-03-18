@@ -503,8 +503,12 @@ namespace Amazon.AWSToolkit.VisualStudio
             Trace.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this));
             await base.InitializeAsync(cancellationToken, progress);
 
-            RegisterProjectFactory(new CloudFormationTemplateProjectFactory(this));
-            RegisterEditorFactory(new TemplateEditorFactory(this));
+            await this.JoinableTaskFactory.RunAsync(async delegate
+            {
+                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                RegisterProjectFactory(new CloudFormationTemplateProjectFactory(this));
+                RegisterEditorFactory(new TemplateEditorFactory(this));
+            });
 
             // shell provider is used all the time, so pre-load. Leave legacy deployment
             // service until a plugin asks for it.
@@ -552,10 +556,14 @@ namespace Amazon.AWSToolkit.VisualStudio
             evnt.AddProperty(AttributeKeys.VisualStudioIdentifier, string.Format("{0}/{1}", dte.Version, dte.Edition));
             SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
-            ThemeUtil.Initialize(dte.Version);			
+            ThemeUtil.Initialize(dte.Version);
 
-            //Create Editor Factory. Note that the base Package class will call Dispose on it.
-            RegisterEditorFactory(new HostedEditorFactory(this));
+            await this.JoinableTaskFactory.RunAsync(async delegate
+            {
+                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                //Create Editor Factory. Note that the base Package class will call Dispose on it.
+                RegisterEditorFactory(new HostedEditorFactory(this));
+            });
 
             // Add our command handlers for menu (commands must exist in the .vsct file)
             var mcs = await GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
