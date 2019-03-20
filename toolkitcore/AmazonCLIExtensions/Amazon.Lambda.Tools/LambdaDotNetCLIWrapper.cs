@@ -99,8 +99,9 @@ namespace Amazon.Lambda.Tools
                 if (Directory.GetFiles(fullProjectLocation, "*.cshtml", SearchOption.AllDirectories).Length == 0)
                 {
                     arguments.Append($" -r {LambdaConstants.RUNTIME_HIERARCHY_STARTING_POINT}");
+
                     if (msbuildParameters == null ||
-                        msbuildParameters.IndexOf("--self-contained", StringComparison.InvariantCultureIgnoreCase) != -1)
+                        msbuildParameters.IndexOf("--self-contained", StringComparison.InvariantCultureIgnoreCase) == -1)
                     {
                         arguments.Append(" --self-contained false ");
                     }
