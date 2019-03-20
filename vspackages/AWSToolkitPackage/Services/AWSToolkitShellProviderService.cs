@@ -32,10 +32,12 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
     internal class AWSToolkitShellProviderService : SAWSToolkitShellProvider, IAWSToolkitShellProvider
     {
         private AWSToolkitPackage _hostPackage;
+        private EnvDTE.DTE _dte;
 
-        public AWSToolkitShellProviderService(AWSToolkitPackage hostPackage)
+        public AWSToolkitShellProviderService(AWSToolkitPackage hostPackage, EnvDTE.DTE dte)
         {
             _hostPackage = hostPackage;
+            _dte = dte;
         }
 
         #region IAWSToolkitShellProvider
@@ -47,15 +49,18 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             {
                 if (string.IsNullOrEmpty(_knownShell))
                 {
-                    var dte = (EnvDTE.DTE)_hostPackage.GetVSShellService(typeof(EnvDTE.DTE));
-                    if (dte != null) // null can happen during initialization
+                    if (_dte != null) // null can happen during initialization
                     {
-                        if (dte.Version.StartsWith("12"))
+                        if (_dte.Version.StartsWith("12"))
                             _knownShell = Constants.VS2013HostShell.ShellName;
-                        else if (dte.Version.StartsWith("14"))
+                        else if (_dte.Version.StartsWith("14"))
                             _knownShell = Constants.VS2015HostShell.ShellName;
-                        else
+                        else if (_dte.Version.StartsWith("14"))
+                            _knownShell = Constants.VS2015HostShell.ShellName;
+                        else if (_dte.Version.StartsWith("15"))
                             _knownShell = Constants.VS2017HostShell.ShellName;
+                        else
+                            _knownShell = Constants.VS2019HostShell.ShellName;
                     }
                 }
 
@@ -70,14 +75,13 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             {
                 if (string.IsNullOrEmpty(_shellVersion))
                 {
-                    var dte = (EnvDTE.DTE)_hostPackage.GetVSShellService(typeof(EnvDTE.DTE));
-                    if (dte != null) // null can happen during initialization
+                    if (_dte != null) // null can happen during initialization
                     {
-                        if (dte.Version.StartsWith("12"))
+                        if (_dte.Version.StartsWith("12"))
                             _shellVersion = "2013";
-                        else if (dte.Version.StartsWith("14"))
+                        else if (_dte.Version.StartsWith("14"))
                             _shellVersion = "2015";
-                        else if (dte.Version.StartsWith("15"))
+                        else if (_dte.Version.StartsWith("15"))
                             _shellVersion = "2017";
                         else
                             _shellVersion = "2019";

@@ -88,6 +88,11 @@ namespace Amazon.AWSToolkit
             public static readonly string ShellName = "AWSToolkitPackage.VS2017";
         }
 
+        public static class VS2019HostShell
+        {
+            public static readonly string ShellName = "AWSToolkitPackage.VS2019";
+        }
+
         public static void AWSExplorerDescribeUserAgentRequestEventHandler(object sender, RequestEventArgs args)
         {
             if (args is WebServiceRequestEventArgs)

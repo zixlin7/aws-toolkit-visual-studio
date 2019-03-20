@@ -442,14 +442,14 @@ namespace Amazon.AWSToolkit.VisualStudio
             return null;
         }
 
-        void InstantiateToolkitShellProviderService()
+        void InstantiateToolkitShellProviderService(EnvDTE.DTE dte)
         {
             lock (this)
             {
                 if (ToolkitShellProviderService == null)
                 {
                     LOGGER.Debug("Creating SAWSToolkitShellProvider service");
-                    ToolkitShellProviderService = new AWSToolkitShellProviderService(this);
+                    ToolkitShellProviderService = new AWSToolkitShellProviderService(this, dte);
                 }
             }
         }
@@ -510,9 +510,10 @@ namespace Amazon.AWSToolkit.VisualStudio
                 RegisterEditorFactory(new TemplateEditorFactory(this));
             });
 
+            var dte = (EnvDTE.DTE)(await GetServiceAsync(typeof(EnvDTE.DTE)));
             // shell provider is used all the time, so pre-load. Leave legacy deployment
             // service until a plugin asks for it.
-            InstantiateToolkitShellProviderService();
+            InstantiateToolkitShellProviderService(dte);
 
             // ranu build of package deploys us outside of build folder hierarchy, so toolkit's
             // default plugin load fails - use a command line switch so dev's can inform toolkit
@@ -544,7 +545,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                 ShowFirstRun();
             });
 
-            var dte = (EnvDTE.DTE)(await GetServiceAsync(typeof(EnvDTE.DTE)));
             _events = dte.Events.SolutionEvents;
             _events.ProjectAdded += OnProjectAddedEvent;
             _events.Opened += OnSolutionOpenedEvent;
