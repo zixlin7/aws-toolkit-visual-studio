@@ -214,6 +214,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                         this._ctlNETCoreHandlerPanel.Visibility = Visibility.Visible;
                         this._ctlGenericHandlerPanel.Visibility = Visibility.Collapsed;
                         this._ctlPersistPanel.Visibility = Visibility.Visible;
+                        this._ctlGenericHandlerDescription.Text = string.Empty;
                         if (isFirstTimeConfig)
                         {
                             Runtime = RuntimeOption.NetCore_v2_1;
