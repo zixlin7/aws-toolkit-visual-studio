@@ -167,6 +167,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -207,10 +208,9 @@
                 Margin="18,2,4,4"
                 Style="{DynamicResource awsTextBoxStyle}"
                 Visibility="Hidden" />
-
-            <!--  .net core function panel  -->
+            
             <Grid
-                Name="_ctlNETCoreHandlerPanel"
+                Name="_ctlNETCoreFrameworkPanel"
                 Grid.Row="2"
                 Grid.ColumnSpan="2"
                 Visibility="Visible">
@@ -222,10 +222,6 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
@@ -264,8 +260,28 @@
                     SelectedItem="{Binding Framework, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     Style="{DynamicResource awsComboBoxStyle}" />
 
+            </Grid>
+
+            <!--  .net core function panel  -->
+            <Grid
+                Name="_ctlNETCoreHandlerPanel"
+                Grid.Row="3"
+                Grid.ColumnSpan="2"
+                Visibility="Visible">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="110" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+
                 <Label
-                    Grid.Row="1"
+                    Grid.Row="0"
                     Grid.Column="0"
                     Margin="10,2,4,2"
                     VerticalAlignment="Center"
@@ -274,15 +290,14 @@
                 </Label>
                 <TextBox
                     Name="_ctlAssemblyName"
-                    Grid.Row="1"
+                    Grid.Row="0"
                     Grid.Column="1"
-                    Grid.ColumnSpan="3"
                     Margin="16,2,4,2"
                     Style="{DynamicResource awsTextBoxStyle}"
                     Text="{Binding Assembly, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
                 <Label
-                    Grid.Row="2"
+                    Grid.Row="1"
                     Grid.Column="0"
                     Margin="10,2,4,2"
                     VerticalAlignment="Center"
@@ -291,9 +306,8 @@
                 </Label>
                 <TextBox
                     Name="_ctlTypeName"
-                    Grid.Row="2"
+                    Grid.Row="1"
                     Grid.Column="1"
-                    Grid.ColumnSpan="3"
                     Margin="16,2,4,2"
                     behaviors:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding SuggestedTypes}"
                     Style="{DynamicResource awsTextBoxStyle}"
@@ -301,7 +315,7 @@
                     TextChanged="_ctlTypeName_TextChanged" />
 
                 <Label
-                    Grid.Row="3"
+                    Grid.Row="2"
                     Grid.Column="0"
                     Margin="10,2,4,2"
                     VerticalAlignment="Center"
@@ -310,17 +324,15 @@
                 </Label>
                 <TextBox
                     Name="_ctlMethodName"
-                    Grid.Row="3"
+                    Grid.Row="2"
                     Grid.Column="1"
-                    Grid.ColumnSpan="3"
                     Margin="16,2,4,2"
                     behaviors:AutoCompleteBehavior.AutoCompleteItemsSource="{Binding SuggestedMethods}"
                     Style="{DynamicResource awsTextBoxStyle}"
                     Text="{Binding MethodName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 <TextBlock
-                    Grid.Row="4"
+                    Grid.Row="3"
                     Grid.Column="1"
-                    Grid.ColumnSpan="3"
                     Margin="16,2,4,0"
                     FontStyle="Italic"
                     Style="{DynamicResource awsFieldHintTextStyle}"
@@ -331,10 +343,10 @@
 
             </Grid>
 
-            <!--  .generic function panel  -->
+             <!--  .generic function panel  -->
             <Grid
                 Name="_ctlGenericHandlerPanel"
-                Grid.Row="2"
+                Grid.Row="3"
                 Grid.ColumnSpan="2"
                 Visibility="Hidden">
                 <Grid.ColumnDefinitions>
@@ -371,7 +383,7 @@
                     Margin="10,4,4,4"
                     VerticalAlignment="Center"
                     Style="{DynamicResource awsLabelBaseStyle}"
-                    ToolTip="The function within your code that Lambda calls to begin execution. For Node.js, it is the module-name.export value in your function. For .NET it will be&lt;assembly&gt;::&lt;type&gt;::&lt;method&gt;.">
+                    ToolTip="The function within your code that Lambda calls to begin execution.">
                     _Handler:
                 </Label>
                 <TextBox
@@ -381,15 +393,16 @@
                     Margin="16,4,4,4"
                     Style="{DynamicResource awsTextBoxStyle}"
                     Text="{Binding Handler, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    ToolTip="The function within your code that Lambda calls to begin execution. For Node.js, it is the module-name.export value in your function. For .NET it will be&lt;assembly&gt;::&lt;type&gt;::&lt;method&gt;." />
+                    ToolTip="The function within your code that Lambda calls to begin execution." />
                 <TextBlock
                     Grid.Row="2"
                     Grid.Column="1"
                     Margin="16,4,4,0"
+                    Name="_ctlGenericHandlerDescription"
                     FontStyle="Italic"
                     Style="{DynamicResource awsFieldHintTextStyle}"
                     TextWrapping="Wrap">
-                    The handler identifies the function within your code that Lambda calls to begin execution. For Node.js, it is the module-name.export value in your function. For .NET it will be&lt;assembly&gt;::&lt;type&gt;::&lt;method&gt;.
+                    
                 </TextBlock>
 
             </Grid>

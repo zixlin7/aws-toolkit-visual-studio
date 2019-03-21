@@ -26,6 +26,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
     /// </summary>
     public partial class UploadFunctionDetailsPage : INotifyPropertyChanged
     {
+        const string HANDLER_DESCRIPTION_CUSTOM_RUNTIME = "For custom runtimes the handler field is optional. The value is made available to the Lambda function through the _HANDLER environment variable.";
+        const string HANDLER_DESCRIPTION_GENERIC = "The handler identifies the function within your code that Lambda calls to begin execution. For Node.js, it is the module-name.export value in your function. For .NET it will be&lt;assembly&gt;::&lt;type&gt;::&lt;method&gt;.";
+
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionDetailsPage));
 
         public IAWSWizardPageController PageController { get; private set; }
@@ -182,23 +185,41 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             switch (DeploymentType)
             {
                 case UploadFunctionController.DeploymentType.Generic:
-                    this._ctlGenericHandlerPanel.Visibility = Visibility.Visible;
+                    this._ctlNETCoreFrameworkPanel.Visibility = Visibility.Collapsed;
                     this._ctlNETCoreHandlerPanel.Visibility = Visibility.Collapsed;
+                    this._ctlGenericHandlerPanel.Visibility = Visibility.Visible;
                     this._ctlPersistPanel.Visibility = Visibility.Collapsed;
+                    this._ctlGenericHandlerDescription.Text = HANDLER_DESCRIPTION_GENERIC;
                     if (isFirstTimeConfig)
                     {
                         Runtime = RuntimeOption.NodeJS_v8_10;
                     }
                     break;
                 case UploadFunctionController.DeploymentType.NETCore:
-                    this._ctlNETCoreHandlerPanel.Visibility = Visibility.Visible;
-                    this._ctlGenericHandlerPanel.Visibility = Visibility.Collapsed;
-                    this._ctlPersistPanel.Visibility = Visibility.Visible;
-                    if (isFirstTimeConfig)
+                    this._ctlNETCoreFrameworkPanel.Visibility = Visibility.Visible;
+                    if (this.Runtime == RuntimeOption.PROVIDED)
                     {
-                        Runtime = RuntimeOption.NetCore_v1_0;
-                        InitializeControlForNETCore(PageController.HostingWizard[UploadFunctionWizardProperties.SourcePath] as string);
-                        InitializeNETCoreFields();
+                        this._ctlNETCoreHandlerPanel.Visibility = Visibility.Collapsed;
+                        this._ctlGenericHandlerPanel.Visibility = Visibility.Visible;
+                        this._ctlPersistPanel.Visibility = Visibility.Visible;
+                        this._ctlGenericHandlerDescription.Text = HANDLER_DESCRIPTION_CUSTOM_RUNTIME;
+                        if (isFirstTimeConfig)
+                        {
+                            InitializeControlForNETCore(PageController.HostingWizard[UploadFunctionWizardProperties.SourcePath] as string);
+                            InitializeNETCoreFields();
+                        }
+                    }
+                    else
+                    {
+                        this._ctlNETCoreHandlerPanel.Visibility = Visibility.Visible;
+                        this._ctlGenericHandlerPanel.Visibility = Visibility.Collapsed;
+                        this._ctlPersistPanel.Visibility = Visibility.Visible;
+                        if (isFirstTimeConfig)
+                        {
+                            Runtime = RuntimeOption.NetCore_v2_1;
+                            InitializeControlForNETCore(PageController.HostingWizard[UploadFunctionWizardProperties.SourcePath] as string);
+                            InitializeNETCoreFields();
+                        }
                     }
                     break;
             }
@@ -321,18 +342,21 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                         if (string.Equals(_framework, "netcoreapp2.1", StringComparison.OrdinalIgnoreCase))
                         {
                             _runtime = RuntimeOption.NetCore_v2_1;
-                            this._ctlRuntime.SelectedItem = _runtime;
                         }
-                        if (string.Equals(_framework, "netcoreapp2.0", StringComparison.OrdinalIgnoreCase))
+                        else if (string.Equals(_framework, "netcoreapp2.0", StringComparison.OrdinalIgnoreCase))
                         {
                             _runtime = RuntimeOption.NetCore_v2_0;
-                            this._ctlRuntime.SelectedItem = _runtime;
                         }
                         else if(string.Equals(_framework, "netcoreapp1.0", StringComparison.OrdinalIgnoreCase))
                         {
                             _runtime = RuntimeOption.NetCore_v1_0;
-                            this._ctlRuntime.SelectedItem = _runtime;
                         }
+                        else
+                        {
+                            _runtime = RuntimeOption.PROVIDED;                            
+                        }
+
+                        this._ctlRuntime.SelectedItem = _runtime;
                     }
                     finally
                     {
@@ -425,7 +449,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         {
             get
             {
-                if (DeploymentType == DeploymentType.NETCore)
+                if (DeploymentType == DeploymentType.NETCore && this.Runtime != RuntimeOption.PROVIDED)
                     return string.Format("{0}::{1}::{2}", Assembly, TypeName, MethodName);
 
                 return _handler;
@@ -557,19 +581,21 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
                 if (DeploymentType == UploadFunctionController.DeploymentType.NETCore)
                 {
-                    if (string.IsNullOrEmpty(this.Assembly))
+                    if (this.Runtime != RuntimeOption.PROVIDED)
                     {
-                        return false;
+                        if (string.IsNullOrEmpty(this.Assembly))
+                        {
+                            return false;
+                        }
+                        if (string.IsNullOrEmpty(this.TypeName))
+                        {
+                            return false;
+                        }
+                        if (string.IsNullOrEmpty(this.MethodName))
+                        {
+                            return false;
+                        }
                     }
-                    if (string.IsNullOrEmpty(this.TypeName))
-                    {
-                        return false;
-                    }
-                    if (string.IsNullOrEmpty(this.MethodName))
-                    {
-                        return false;
-                    }
-
                 }
                 else
                 {

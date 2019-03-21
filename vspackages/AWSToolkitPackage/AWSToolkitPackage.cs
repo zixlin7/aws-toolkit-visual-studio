@@ -2238,7 +2238,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 seedProperties[UploadFunctionWizardProperties.SourcePath] = rootDirectory;
 
                 var prop = item.Properties.Item("StartupFile");
-                if (prop != null && prop.Value is string)
+                if (prop != null && prop.Value is string && !string.IsNullOrEmpty((string)prop.Value))
                 {
                     string fullPath = prop.Value as string;
                     string relativePath;
