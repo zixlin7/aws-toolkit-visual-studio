@@ -131,7 +131,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
                         var content = S3FileFetcher.Instance.GetFileContent("CodeCommit/vsdefault.gitignore.txt",
                             S3FileFetcher.CacheMode.PerInstance);
                         var target = Path.Combine(newRepositoryInfo.LocalFolder, ".gitignore");
-                        File.WriteAllText(target, content);
+                        System.IO.File.WriteAllText(target, content);
                         initialCommitContent.Add(target);
                     }
                         break;
@@ -139,7 +139,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
                     case GitIgnoreOption.OptionType.Custom:
                     {
                         var target = Path.Combine(newRepositoryInfo.LocalFolder, ".gitignore");
-                        File.Copy(newRepositoryInfo.GitIgnore.CustomFilename, target);
+                        System.IO.File.Copy(newRepositoryInfo.GitIgnore.CustomFilename, target);
                         initialCommitContent.Add(target);
                     }
                         break;

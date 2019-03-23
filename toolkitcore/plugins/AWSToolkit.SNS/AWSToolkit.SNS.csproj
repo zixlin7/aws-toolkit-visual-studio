@@ -40,16 +40,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Core.3.3.28.1\lib\net45\AWSSDK.Core.dll</HintPath>
+      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Core.3.3.100\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.Lambda, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Lambda.3.3.17.2\lib\net45\AWSSDK.Lambda.dll</HintPath>
+      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Lambda.3.3.100\lib\net45\AWSSDK.Lambda.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.SimpleNotificationService, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.SimpleNotificationService.3.3.0.29\lib\net45\AWSSDK.SimpleNotificationService.dll</HintPath>
+      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.SimpleNotificationService.3.3.100\lib\net45\AWSSDK.SimpleNotificationService.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.SQS, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.SQS.3.3.3.7\lib\net45\AWSSDK.SQS.dll</HintPath>
+      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.SQS.3.3.100\lib\net45\AWSSDK.SQS.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>$(BuildRoot)\solutions\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
@@ -227,9 +227,9 @@
     <EmbeddedResource Include="Resources\EmbeddedImages\delete_subscription.png" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.Lambda.3.3.17.2\analyzers\dotnet\cs\AWSSDK.Lambda.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.SimpleNotificationService.3.3.0.29\analyzers\dotnet\cs\AWSSDK.SimpleNotificationService.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.SQS.3.3.3.7\analyzers\dotnet\cs\AWSSDK.SQS.CodeAnalysis.dll" />
+    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.Lambda.3.3.100\analyzers\dotnet\cs\AWSSDK.Lambda.CodeAnalysis.dll" />
+    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.SimpleNotificationService.3.3.100\analyzers\dotnet\cs\AWSSDK.SimpleNotificationService.CodeAnalysis.dll" />
+    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.SQS.3.3.100\analyzers\dotnet\cs\AWSSDK.SQS.CodeAnalysis.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

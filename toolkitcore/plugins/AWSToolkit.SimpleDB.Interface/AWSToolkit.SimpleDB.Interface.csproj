@@ -38,10 +38,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Core.3.3.28.1\lib\net45\AWSSDK.Core.dll</HintPath>
+      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Core.3.3.100\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.SimpleDB, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.SimpleDB.3.3.0.28\lib\net45\AWSSDK.SimpleDB.dll</HintPath>
+      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.SimpleDB.3.3.100\lib\net45\AWSSDK.SimpleDB.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -72,7 +72,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.SimpleDB.3.3.0.28\analyzers\dotnet\cs\AWSSDK.SimpleDB.CodeAnalysis.dll" />
+    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.SimpleDB.3.3.100\analyzers\dotnet\cs\AWSSDK.SimpleDB.CodeAnalysis.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -36,13 +36,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Core.3.3.28.1\lib\net45\AWSSDK.Core.dll</HintPath>
+      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Core.3.3.100\lib\net45\AWSSDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.Lambda, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Lambda.3.3.17.2\lib\net45\AWSSDK.Lambda.dll</HintPath>
+      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Lambda.3.3.100\lib\net45\AWSSDK.Lambda.dll</HintPath>
     </Reference>
     <Reference Include="AWSSDK.MobileAnalytics, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.MobileAnalytics.3.3.1.28\lib\net45\AWSSDK.MobileAnalytics.dll</HintPath>
+      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.MobileAnalytics.3.3.100\lib\net45\AWSSDK.MobileAnalytics.dll</HintPath>
     </Reference>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>False</EmbedInteropTypes>
@@ -131,8 +131,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.Lambda.3.3.17.2\analyzers\dotnet\cs\AWSSDK.Lambda.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.MobileAnalytics.3.3.1.28\analyzers\dotnet\cs\AWSSDK.MobileAnalytics.CodeAnalysis.dll" />
+    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.Lambda.3.3.100\analyzers\dotnet\cs\AWSSDK.Lambda.CodeAnalysis.dll" />
+    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.MobileAnalytics.3.3.100\analyzers\dotnet\cs\AWSSDK.MobileAnalytics.CodeAnalysis.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
