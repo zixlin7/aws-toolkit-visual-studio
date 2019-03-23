@@ -7,6 +7,15 @@ namespace Amazon.ElasticBeanstalk.Tools
 {
     public class EBDefinedCommandOptions
     {
+        public static readonly CommandOption ARGUMENT_INPUT_PACKAGE =
+            new CommandOption
+            {
+                Name = "Package",
+                ShortSwitch = "-pac",
+                Switch = "--package",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "Application package to use for deployment, skips building the project"
+            };
         public static readonly CommandOption ARGUMENT_EB_APPLICATION =
             new CommandOption
             {
@@ -144,6 +153,15 @@ namespace Amazon.ElasticBeanstalk.Tools
                 Switch = "--additional-options",
                 ValueType = CommandOption.CommandOptionValueType.KeyValuePairs,
                 Description = "Additional options for the environment. Format is <option-namespace>,<option-name>=<option-value>;..."
+            };
+        public static readonly CommandOption ARGUMENT_OUTPUT_PACKAGE =
+            new CommandOption
+            {
+                Name = "The output zip file name",
+                ShortSwitch = "-o",
+                Switch = "--output-package",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = "The zip file containing the application will be packaged into."
             };
     }
 }
