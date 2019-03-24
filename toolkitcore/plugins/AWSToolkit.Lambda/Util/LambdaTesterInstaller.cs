@@ -37,6 +37,11 @@ namespace Amazon.AWSToolkit.Lambda.Util
                 if (!projectContent.Contains("<AWSProjectType>"))
                     return;
 
+                // The mock test tool does not currently support projects using 
+                // Amazon.Lambda.RuntimeSupport for custom runtimes.
+                if (projectContent.Contains("Amazon.Lambda.RuntimeSupport"))
+                    return;
+
                 var xdoc = XDocument.Parse(projectContent);
                 var awsProjectType = xdoc.XPathSelectElement("//PropertyGroup/AWSProjectType")?.Value;
                 if (string.IsNullOrEmpty(awsProjectType) || !awsProjectType.Contains("Lambda"))
