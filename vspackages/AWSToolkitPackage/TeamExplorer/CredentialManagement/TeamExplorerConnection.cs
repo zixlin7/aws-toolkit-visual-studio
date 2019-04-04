@@ -79,7 +79,10 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
         public void RefreshRepositories()
         {
             if (CodeCommitPlugin == null)
+            {
+                LOGGER.Warn("Skipping loading refresh repositories because the main toolkit instance hasn't initialized yet.");
                 return;
+            }
 
             var reposToValidate = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -420,12 +423,10 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
             if (string.Equals(ToolkitFactory.Instance?.ShellProvider.ShellVersion, "2019"))
             {
                 TEGitKey = @"Software\Microsoft\VisualStudio\16.0\TeamFoundation\GitSourceControl";
-                LOGGER.Info($"Using regkey {TEGitKey} to look for TeamFoundation\\GitSourceControl for VS 2019");
             }
             else if (string.Equals(ToolkitFactory.Instance?.ShellProvider.ShellVersion, "2017"))
             {
                 TEGitKey = @"Software\Microsoft\VisualStudio\15.0\TeamFoundation\GitSourceControl";
-                LOGGER.Info($"Using regkey {TEGitKey} to look for TeamFoundation\\GitSourceControl for VS 2019");
             }
             else
             {
@@ -441,7 +442,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
 #endif
             }
 
-
+            LOGGER.Info($"Using regkey {TEGitKey} to look for TeamFoundation\\GitSourceControl for VS {ToolkitFactory.Instance?.ShellProvider.ShellVersion}");
 
 #elif VS2015
             const string TEGitKey = @"Software\Microsoft\VisualStudio\14.0\TeamFoundation\GitSourceControl";

@@ -3,6 +3,8 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers;
 
+using log4net;
+
 namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
 {
     /// <summary>
@@ -11,6 +13,8 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
     /// </summary>
     public partial class ConnectControl
     {
+        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(ConnectControl));
+
         private ConnectController _controller;
 
         public ConnectControl()
@@ -62,7 +66,10 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
             get
             {
                 if (RootViewModel == null)
+                {
+                    LOGGER.Warn("Skipping loading accounts because the main toolkit instance hasn't initialized yet.");
                     return null;
+                }
 
                 if (_accounts == null)
                 {

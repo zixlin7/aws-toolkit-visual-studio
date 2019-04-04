@@ -14,6 +14,8 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
     /// </summary>
     public partial class ConnectionSectionControl
     {
+        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(ConnectionSectionControl));
+
         public ConnectionSectionControl()
         {
             InitializeComponent();
@@ -86,7 +88,10 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
         private void OnClickUpdateCredentials(object sender, RoutedEventArgs routedEventArgs)
         {
             if (TeamExplorerConnection.CodeCommitPlugin == null)
+            {
+                LOGGER.Warn("Skipping OnClickUpdateCredentials because the main toolkit instance hasn't initialized yet.");
                 return;
+            }
 
             try
             {
