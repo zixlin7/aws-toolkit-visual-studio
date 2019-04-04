@@ -17,8 +17,6 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.Base
     {
         protected IServiceProvider TeamExplorerServiceProvider { get; set; }
 
-        protected IAWSCodeCommit CodeCommitPlugin { get; set; }
-
         public void Dispose()
         {
             Dispose(true);

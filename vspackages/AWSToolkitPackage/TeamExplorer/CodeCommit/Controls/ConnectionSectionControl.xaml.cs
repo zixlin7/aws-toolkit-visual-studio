@@ -65,6 +65,9 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
 
         private void OnClickBrowseRepositoryMenuItem(object sender, RoutedEventArgs e)
         {
+            if (TeamExplorerConnection.CodeCommitPlugin == null)
+                return;
+
             try
             {
                 var url = TeamExplorerConnection.CodeCommitPlugin.GetConsoleBrowsingUrl(ViewModel.SelectedRepository.LocalFolder);
@@ -82,6 +85,9 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controls
         // any subsequent use.
         private void OnClickUpdateCredentials(object sender, RoutedEventArgs routedEventArgs)
         {
+            if (TeamExplorerConnection.CodeCommitPlugin == null)
+                return;
+
             try
             {
                 var regionName = TeamExplorerConnection.CodeCommitPlugin.GetRepositoryRegion(ViewModel.SelectedRepository.LocalFolder);

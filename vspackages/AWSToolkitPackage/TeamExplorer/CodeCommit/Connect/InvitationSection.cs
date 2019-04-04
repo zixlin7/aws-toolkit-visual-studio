@@ -34,11 +34,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Connect
 
             Icon = LoadSectionIcon("Resources/CodeCommit32x32.png");
 
-            CodeCommitPlugin 
-                = ToolkitFactory.Instance.ShellProvider.QueryAWSToolkitPluginService(typeof(IAWSCodeCommit))
-                                as IAWSCodeCommit;
-
-            IsVisible = CodeCommitPlugin != null && TeamExplorerConnection.ActiveConnection == null;
+            IsVisible = TeamExplorerConnection.ActiveConnection == null;
             TeamExplorerConnection.OnTeamExplorerBindingChanged += (connection) => { IsVisible = connection == null; };
         }
 

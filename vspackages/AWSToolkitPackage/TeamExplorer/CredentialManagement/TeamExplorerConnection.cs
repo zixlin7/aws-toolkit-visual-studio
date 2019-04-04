@@ -45,7 +45,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
         public delegate void TeamExplorerBindingChanged(TeamExplorerConnection connection);
         public static event TeamExplorerBindingChanged OnTeamExplorerBindingChanged;
 
-        public static IAWSCodeCommit CodeCommitPlugin { get; }
+        public static IAWSCodeCommit CodeCommitPlugin { get; set; }
 
         /// <summary>
         /// Gets and sets the single active connection, if any, within Team Explorer.
@@ -78,6 +78,9 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
 
         public void RefreshRepositories()
         {
+            if (CodeCommitPlugin == null)
+                return;
+
             var reposToValidate = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             RegistryKey regkey = null;
@@ -137,6 +140,10 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
 
         private void QueryNewlyAddedRepositoriesDataAsync(object state)
         {
+            if (CodeCommitPlugin == null)
+                return;
+
+
             var repoPaths = state as IEnumerable<string>;
             if (repoPaths == null)
                 return;
@@ -351,18 +358,28 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
 
         static TeamExplorerConnection()
         {
-            CodeCommitPlugin = ToolkitFactory.Instance.QueryPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
-            if (CodeCommitPlugin == null)
+            ToolkitFactory.AddToolkitInitializedDelegate(Initialize);
+        }
+
+        private static void Initialize()
+        {
+            Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
-                LOGGER.Error("TeamExplorerConnection - CodeCommit plugin not available at load time");
-            }
+                await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            var storeFile = GetSettingsFilePath();
-            if (!File.Exists(storeFile))
-                return;
+                CodeCommitPlugin = ToolkitFactory.Instance.QueryPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
+                if (CodeCommitPlugin == null)
+                {
+                    LOGGER.Error("TeamExplorerConnection - CodeCommit plugin not available at load time");
+                }
 
-            var data = File.ReadAllText(storeFile);
-            ActiveConnection = FromJson(data);
+                var storeFile = GetSettingsFilePath();
+                if (!File.Exists(storeFile))
+                    return;
+
+                var data = File.ReadAllText(storeFile);
+                ActiveConnection = FromJson(data);
+            });
         }
 
         private TeamExplorerConnection(AccountViewModel account)
@@ -399,7 +416,33 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
         private static RegistryKey OpenTEGitSourceControlRegistryKey(string path)
         {
 #if VS2017
-            const string TEGitKey = @"Software\Microsoft\VisualStudio\15.0\TeamFoundation\GitSourceControl";
+            string TEGitKey;
+            if (string.Equals(ToolkitFactory.Instance?.ShellProvider.ShellVersion, "2019"))
+            {
+                TEGitKey = @"Software\Microsoft\VisualStudio\16.0\TeamFoundation\GitSourceControl";
+                LOGGER.Info($"Using regkey {TEGitKey} to look for TeamFoundation\\GitSourceControl for VS 2019");
+            }
+            else if (string.Equals(ToolkitFactory.Instance?.ShellProvider.ShellVersion, "2017"))
+            {
+                TEGitKey = @"Software\Microsoft\VisualStudio\15.0\TeamFoundation\GitSourceControl";
+                LOGGER.Info($"Using regkey {TEGitKey} to look for TeamFoundation\\GitSourceControl for VS 2019");
+            }
+            else
+            {
+                var errorMessage = $"Error unable to determine TeamFoundation\\GitSourceControl for shell {ToolkitFactory.Instance?.ShellProvider.ShellVersion}";
+                LOGGER.Error(errorMessage);
+
+// If we are debug mode throw a fatal exception so we know to update this code when adding support for a new shell.
+// We don't want to run the risk of crashing VS for the released version so we will just log the error.
+#if DEBUG
+                throw new Exception(errorMessage);
+#else
+                return null;
+#endif
+            }
+
+
+
 #elif VS2015
             const string TEGitKey = @"Software\Microsoft\VisualStudio\14.0\TeamFoundation\GitSourceControl";
 #else

@@ -25,7 +25,11 @@ namespace Amazon.AWSToolkit
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ToolkitFactory));
 
+        public delegate void ToolkitInitialized();
+        private static event ToolkitInitialized OnToolkitInitialized;
+
         static ToolkitFactory INSTANCE;
+        static readonly object INSTANCE_CREATE_LOCK = new object();
 
         readonly NavigatorControl _navigator;
         readonly IAWSToolkitShellProvider _shellProvider;
@@ -56,56 +60,68 @@ namespace Amazon.AWSToolkit
             if (INSTANCE != null)
                 throw new ApplicationException("Toolkit has already been initialized");
 
-            Amazon.Util.Internal.InternalSDKUtils.SetUserAgent(shellProvider.ShellName, Constants.VERSION_NUMBER);
-            ProxyUtilities.ApplyCurrentProxySettings();
-
-            INSTANCE = new ToolkitFactory(navigator, shellProvider);
-
-            
-            INSTANCE.loadPluginActivators(additionalPluginPaths);
-            INSTANCE.registerMetaNodes();
-
-
-            INSTANCE.ShellProvider.ExecuteOnUIThread((Action) (() =>
+            lock (INSTANCE_CREATE_LOCK)
             {
-                try
-                {
-                    INSTANCE._rootViewModel = new AWSViewModel(
-                        INSTANCE._shellProvider,
-                        INSTANCE._rootViewMetaNode);
-                    INSTANCE._navigator.Initialize(INSTANCE._rootViewModel);
+                Amazon.Util.Internal.InternalSDKUtils.SetUserAgent(shellProvider.ShellName, Constants.VERSION_NUMBER);
+                ProxyUtilities.ApplyCurrentProxySettings();
 
-                    if (initializeCompleteCallback != null)
-                    {
-                        initializeCompleteCallback();
-                    }
-                }
-                catch (Exception e)
-                {
-                    LOGGER.Fatal("Unhandled exception during AWS Toolkit startup", e);
-                    ToolkitFactory.Instance.ShellProvider.ShowError(
-                        string.Format(
-                            "Unexpected error during initialization of AWS Toolkit. The toolkit may be unstable until Visual Studio is restarted.{0}{0}{1}",
-                            Environment.NewLine,
-                            e.Message
-                        )
-                    );
+                INSTANCE = new ToolkitFactory(navigator, shellProvider);
+
+
+                INSTANCE.loadPluginActivators(additionalPluginPaths);
+                INSTANCE.registerMetaNodes();
+
+
+                INSTANCE.ShellProvider.ExecuteOnUIThread((Action)(() =>
+               {
+                   try
+                   {
+                       INSTANCE._rootViewModel = new AWSViewModel(
+                           INSTANCE._shellProvider,
+                           INSTANCE._rootViewMetaNode);
+                       INSTANCE._navigator.Initialize(INSTANCE._rootViewModel);
+
+                       if (initializeCompleteCallback != null)
+                       {
+                           initializeCompleteCallback();
+                       }
+                   }
+                   catch (Exception e)
+                   {
+                       LOGGER.Fatal("Unhandled exception during AWS Toolkit startup", e);
+                       ToolkitFactory.Instance.ShellProvider.ShowError(
+                           string.Format(
+                               "Unexpected error during initialization of AWS Toolkit. The toolkit may be unstable until Visual Studio is restarted.{0}{0}{1}",
+                               Environment.NewLine,
+                               e.Message
+                           )
+                       );
 
                     // We might not have initialized enough to send telemetry, but we should try.
                     ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(MetricKeys.ErrorInitializingAwsViewModel, 1);
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-                }
-            }));
-
-            if (Application.Current != null)
-                Application.Current.DispatcherUnhandledException += onDispatcherUnhandledException;
+                       evnt.AddProperty(MetricKeys.ErrorInitializingAwsViewModel, 1);
+                       SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                   }
+               }));
+            }
+            OnToolkitInitialized?.Invoke();
         }
 
-        static void onDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        public static void AddToolkitInitializedDelegate(ToolkitInitialized callback)
         {
-            LOGGER.Fatal("Unhandled exception", e.Exception);
+            lock(INSTANCE_CREATE_LOCK)
+            {
+                if (INSTANCE != null)
+                {
+                    callback();
+                }
+                else
+                {
+                    OnToolkitInitialized += callback;
+                }
+            }
         }
+
 
         public static ToolkitFactory Instance
         {
