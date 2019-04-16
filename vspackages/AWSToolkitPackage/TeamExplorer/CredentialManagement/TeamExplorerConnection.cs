@@ -54,6 +54,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
         {
             get
             {
+                LOGGER.Info("TeamExplorerConnection: get_ActiveConnection");
                 lock (_synclock)
                 {
                     return _activeConnection;
@@ -61,11 +62,12 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
             }
             private set
             {
+                LOGGER.Info("TeamExplorerConnection: set_ActiveConnection");
                 lock (_synclock)
                 {
                     _activeConnection = value;
-                    OnTeamExplorerBindingChanged?.Invoke(value);
                 }
+                OnTeamExplorerBindingChanged?.Invoke(value);
             }
         }
 
@@ -78,6 +80,8 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
 
         public void RefreshRepositories()
         {
+            LOGGER.Info("TeamExplorerConnection: RefreshRepositories");
+
             if (CodeCommitPlugin == null)
             {
                 LOGGER.Warn("Skipping loading refresh repositories because the main toolkit instance hasn't initialized yet.");
@@ -143,6 +147,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
 
         private void QueryNewlyAddedRepositoriesDataAsync(object state)
         {
+            LOGGER.Info("TeamExplorerConnection: QueryNewlyAddedRepositoriesDataAsync");
             if (CodeCommitPlugin == null)
                 return;
 
@@ -361,11 +366,13 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement
 
         static TeamExplorerConnection()
         {
+            LOGGER.Info("TeamExplorerConnection: static TeamExplorerConnection");
             ToolkitFactory.AddToolkitInitializedDelegate(Initialize);
         }
 
         private static void Initialize()
         {
+            LOGGER.Info("TeamExplorerConnection: Initialize");
             Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();

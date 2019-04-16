@@ -60,66 +60,77 @@ namespace Amazon.AWSToolkit
             if (INSTANCE != null)
                 throw new ApplicationException("Toolkit has already been initialized");
 
-            lock (INSTANCE_CREATE_LOCK)
+            Amazon.Util.Internal.InternalSDKUtils.SetUserAgent(shellProvider.ShellName, Constants.VERSION_NUMBER);
+            ProxyUtilities.ApplyCurrentProxySettings();
+
+            INSTANCE = new ToolkitFactory(navigator, shellProvider);
+
+
+            INSTANCE.loadPluginActivators(additionalPluginPaths);
+            INSTANCE.registerMetaNodes();
+
+
+            INSTANCE.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
-                Amazon.Util.Internal.InternalSDKUtils.SetUserAgent(shellProvider.ShellName, Constants.VERSION_NUMBER);
-                ProxyUtilities.ApplyCurrentProxySettings();
+                try
+                {
+                    INSTANCE._rootViewModel = new AWSViewModel(
+                        INSTANCE._shellProvider,
+                        INSTANCE._rootViewMetaNode);
+                    INSTANCE._navigator.Initialize(INSTANCE._rootViewModel);
 
-                INSTANCE = new ToolkitFactory(navigator, shellProvider);
+                    if (initializeCompleteCallback != null)
+                    {
+                        initializeCompleteCallback();
+                    }
+                }
+                catch (Exception e)
+                {
+                    LOGGER.Fatal("Unhandled exception during AWS Toolkit startup", e);
+                    ToolkitFactory.Instance.ShellProvider.ShowError(
+                        string.Format(
+                            "Unexpected error during initialization of AWS Toolkit. The toolkit may be unstable until Visual Studio is restarted.{0}{0}{1}",
+                            Environment.NewLine,
+                            e.Message
+                        )
+                    );
 
+                // We might not have initialized enough to send telemetry, but we should try.
+                ToolkitEvent evnt = new ToolkitEvent();
+                    evnt.AddProperty(MetricKeys.ErrorInitializingAwsViewModel, 1);
+                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                }
 
-                INSTANCE.loadPluginActivators(additionalPluginPaths);
-                INSTANCE.registerMetaNodes();
-
-
-                INSTANCE.ShellProvider.ExecuteOnUIThread((Action)(() =>
-               {
-                   try
-                   {
-                       INSTANCE._rootViewModel = new AWSViewModel(
-                           INSTANCE._shellProvider,
-                           INSTANCE._rootViewMetaNode);
-                       INSTANCE._navigator.Initialize(INSTANCE._rootViewModel);
-
-                       if (initializeCompleteCallback != null)
-                       {
-                           initializeCompleteCallback();
-                       }
-                   }
-                   catch (Exception e)
-                   {
-                       LOGGER.Fatal("Unhandled exception during AWS Toolkit startup", e);
-                       ToolkitFactory.Instance.ShellProvider.ShowError(
-                           string.Format(
-                               "Unexpected error during initialization of AWS Toolkit. The toolkit may be unstable until Visual Studio is restarted.{0}{0}{1}",
-                               Environment.NewLine,
-                               e.Message
-                           )
-                       );
-
-                    // We might not have initialized enough to send telemetry, but we should try.
-                    ToolkitEvent evnt = new ToolkitEvent();
-                       evnt.AddProperty(MetricKeys.ErrorInitializingAwsViewModel, 1);
-                       SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-                   }
-               }));
-            }
-            OnToolkitInitialized?.Invoke();
+                LOGGER.Info("ToolkitFactory initialized");
+            }));
         }
 
         public static void AddToolkitInitializedDelegate(ToolkitInitialized callback)
         {
             lock(INSTANCE_CREATE_LOCK)
             {
-                if (INSTANCE != null)
+                if (_isShellInitializationComplete)
                 {
+                    LOGGER.Info("ToolkitFactory calling callback now since toolkit is initialized");
                     callback();
                 }
                 else
                 {
+                    LOGGER.Info("ToolkitFactory adding callback waiting for initialization");
                     OnToolkitInitialized += callback;
                 }
             }
+        }
+
+        private static bool _isShellInitializationComplete;
+        public static void SignalShellInitializationComplete()
+        {
+            LOGGER.Info("ToolkitFactory SignalShellInitializationComplete");
+            lock (INSTANCE_CREATE_LOCK)
+            {
+                _isShellInitializationComplete = true;
+            }
+            OnToolkitInitialized?.Invoke();
         }
 
 

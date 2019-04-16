@@ -23,6 +23,8 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Connect
         [ImportingConstructor]
         public ConnectionSection()
         {
+            Utility.ConfigureLog4Net();
+            LOGGER.Info("Creating CodeCommit ConnectionSection");
         }
 
         protected override ITeamExplorerSection CreateViewModel(SectionInitializeEventArgs e)
@@ -40,6 +42,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Connect
 
         public override void Initialize(object sender, SectionInitializeEventArgs e)
         {
+            LOGGER.Info("CodeCommit Connect Initialize");
             base.Initialize(sender, e);
 
             IsVisible = TeamExplorerConnection.ActiveConnection != null;
@@ -48,11 +51,13 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Connect
 
         protected override object CreateView(SectionInitializeEventArgs e)
         {
+            LOGGER.Info("CodeCommit Connect CreateView");
             return _view ?? (_view = new ConnectionSectionControl());
         }
 
         protected override void InitializeView(SectionInitializeEventArgs e)
         {
+            LOGGER.Info("CodeCommit Connect InitializeView");
             _view.DataContext = _viewModel;
         }
 
@@ -60,6 +65,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Connect
         // in the panel
         private void OnTeamExplorerBindingChanged(TeamExplorerConnection connection)
         {
+            LOGGER.Info("CodeCommit Connect OnTeamExplorerBindingChanged");
             IsVisible = connection != null;
             //_viewModel?.RefreshRepositoriesList();
         }

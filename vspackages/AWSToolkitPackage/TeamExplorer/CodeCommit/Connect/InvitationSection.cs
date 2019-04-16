@@ -24,6 +24,8 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Connect
         [ImportingConstructor]
         public InvitationSection()
         {
+            Utility.ConfigureLog4Net();
+            LOGGER.Info("Creating CodeCommit InvitationSection");
             CanConnect = true;
             CanSignUp = true;
             ConnectLabel = Resources.InvitationSectionConnectLabel;
@@ -40,6 +42,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Connect
 
         public override void Connect()
         {
+            LOGGER.Info("CodeCommit Connect");
             // If the user has no registered profiles, launch the account registration dialog 
             // and we'll use the new profile it creates. Otherwise show them their profile(s)
             // and take the selection.
@@ -53,6 +56,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Connect
 
         public override void SignUp()
         {
+            LOGGER.Info("CodeCommit SignUp");
             try
             {
                 var u = new UriBuilder(_signUpUrl)

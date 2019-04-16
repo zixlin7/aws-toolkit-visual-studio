@@ -32,12 +32,12 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
     internal class AWSToolkitShellProviderService : SAWSToolkitShellProvider, IAWSToolkitShellProvider
     {
         private AWSToolkitPackage _hostPackage;
-        private EnvDTE.DTE _dte;
+        private string _shellVersion;
 
-        public AWSToolkitShellProviderService(AWSToolkitPackage hostPackage, EnvDTE.DTE dte)
+        public AWSToolkitShellProviderService(AWSToolkitPackage hostPackage, string shellVersion)
         {
             _hostPackage = hostPackage;
-            _dte = dte;
+            _shellVersion = shellVersion;
         }
 
         #region IAWSToolkitShellProvider
@@ -49,15 +49,15 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             {
                 if (string.IsNullOrEmpty(_knownShell))
                 {
-                    if (_dte != null) // null can happen during initialization
+                    if (_shellVersion != null) // null can happen during initialization
                     {
-                        if (_dte.Version.StartsWith("12"))
+                        if (_shellVersion.StartsWith("12"))
                             _knownShell = Constants.VS2013HostShell.ShellName;
-                        else if (_dte.Version.StartsWith("14"))
+                        else if (_shellVersion.StartsWith("14"))
                             _knownShell = Constants.VS2015HostShell.ShellName;
-                        else if (_dte.Version.StartsWith("14"))
+                        else if (_shellVersion.StartsWith("14"))
                             _knownShell = Constants.VS2015HostShell.ShellName;
-                        else if (_dte.Version.StartsWith("15"))
+                        else if (_shellVersion.StartsWith("15"))
                             _knownShell = Constants.VS2017HostShell.ShellName;
                         else
                             _knownShell = Constants.VS2019HostShell.ShellName;
@@ -68,27 +68,27 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             }
         }
 
-        string _shellVersion = null;
+        string _shellDisplayVersion = null;
         public string ShellVersion
         {
             get
             {
-                if (string.IsNullOrEmpty(_shellVersion))
+                if (string.IsNullOrEmpty(_shellDisplayVersion))
                 {
-                    if (_dte != null) // null can happen during initialization
+                    if (_shellVersion != null) // null can happen during initialization
                     {
-                        if (_dte.Version.StartsWith("12"))
-                            _shellVersion = "2013";
-                        else if (_dte.Version.StartsWith("14"))
-                            _shellVersion = "2015";
-                        else if (_dte.Version.StartsWith("15"))
-                            _shellVersion = "2017";
+                        if (_shellVersion.StartsWith("12"))
+                            _shellDisplayVersion = "2013";
+                        else if (_shellVersion.StartsWith("14"))
+                            _shellDisplayVersion = "2015";
+                        else if (_shellVersion.StartsWith("15"))
+                            _shellDisplayVersion = "2017";
                         else
-                            _shellVersion = "2019";
+                            _shellDisplayVersion = "2019";
                     }
                 }
 
-                return _shellVersion ?? "2013";
+                return _shellDisplayVersion ?? "2013";
             }
         }
 

@@ -442,14 +442,14 @@ namespace Amazon.AWSToolkit.VisualStudio
             return null;
         }
 
-        void InstantiateToolkitShellProviderService(EnvDTE.DTE dte)
+        void InstantiateToolkitShellProviderService(string shellVersion)
         {
             lock (this)
             {
                 if (ToolkitShellProviderService == null)
                 {
                     LOGGER.Debug("Creating SAWSToolkitShellProvider service");
-                    ToolkitShellProviderService = new AWSToolkitShellProviderService(this, dte);
+                    ToolkitShellProviderService = new AWSToolkitShellProviderService(this, shellVersion);
                 }
             }
         }
@@ -500,108 +500,121 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// </summary>
         protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
-            Trace.WriteLine (string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this));
-            await base.InitializeAsync(cancellationToken, progress);
-
-            await this.JoinableTaskFactory.RunAsync(async delegate
+            LOGGER.Info("AWSToolkitPackage InitializeAsync started");
+            try
             {
-                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
-                RegisterProjectFactory(new CloudFormationTemplateProjectFactory(this));
-                RegisterEditorFactory(new TemplateEditorFactory(this));
-            });
+                Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this));
 
-            var dte = (EnvDTE.DTE)(await GetServiceAsync(typeof(EnvDTE.DTE)));
-            // shell provider is used all the time, so pre-load. Leave legacy deployment
-            // service until a plugin asks for it.
-            InstantiateToolkitShellProviderService(dte);
+                // ranu build of package deploys us outside of build folder hierarchy, so toolkit's
+                // default plugin load fails - use a command line switch so dev's can inform toolkit
+                // of where to go look
+                var additionalPluginFolders = string.Empty;
 
-            // ranu build of package deploys us outside of build folder hierarchy, so toolkit's
-            // default plugin load fails - use a command line switch so dev's can inform toolkit
-            // of where to go look
-            var additionalPluginFolders = string.Empty;
+                string dteVersion = null;
+                string dteEdition = null;
+
+                NavigatorControl navigator = null;
+                await this.JoinableTaskFactory.RunAsync(async delegate
+                {
+                    await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    await base.InitializeAsync(cancellationToken, progress);
+
 #if DEBUG
 #pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
-            var vsCmdLine = await GetServiceAsync(typeof(SVsAppCommandLine)) as IVsAppCommandLine;
-            if (vsCmdLine != null)
-            {
-                int optPresent;
-                string optValue;
-                if (vsCmdLine.GetOption(awsToolkitPluginsParam, out optPresent, out optValue) == VSConstants.S_OK && optPresent != 0)
-                    additionalPluginFolders = optValue as string;
-            }
+                    var vsCmdLine = await GetServiceAsync(typeof(SVsAppCommandLine)) as IVsAppCommandLine;
+                    if (vsCmdLine != null)
+                    {
+                        int optPresent;
+                        string optValue;
+                        if (vsCmdLine.GetOption(awsToolkitPluginsParam, out optPresent, out optValue) == VSConstants.S_OK && optPresent != 0)
+                            additionalPluginFolders = optValue as string;
+                    }
 #pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 #endif
 
-            NavigatorControl navigator = null;
-            await this.JoinableTaskFactory.RunAsync(async delegate
-            {
-                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
-                navigator = new NavigatorControl();
-            });
+                    var dte = (EnvDTE.DTE)(await GetServiceAsync(typeof(EnvDTE.DTE)));
+                    dteVersion = dte.Version;
+                    dteEdition = dte.Edition;
 
-            ToolkitFactory.InitializeToolkit(navigator, ToolkitShellProviderService as IAWSToolkitShellProvider, additionalPluginFolders, () =>
-            {
-                _toolkitInitialized = true;
-                ShowFirstRun();
-            });
+                    _events = dte.Events.SolutionEvents;
+                    _events.ProjectAdded += OnProjectAddedEvent;
+                    _events.Opened += OnSolutionOpenedEvent;
 
-            _events = dte.Events.SolutionEvents;
-            _events.ProjectAdded += OnProjectAddedEvent;
-            _events.Opened += OnSolutionOpenedEvent;
+                    _debuggerEvents = dte.Events.DebuggerEvents;
+                    _debuggerEvents.OnContextChanged += OnDebuggerContextChange;
 
-            _debuggerEvents = dte.Events.DebuggerEvents;
-            _debuggerEvents.OnContextChanged += OnDebuggerContextChange;
-            
-            ToolkitEvent evnt = new ToolkitEvent();
-            evnt.AddProperty(AttributeKeys.VisualStudioIdentifier, string.Format("{0}/{1}", dte.Version, dte.Edition));
-            SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
-            ThemeUtil.Initialize(dte.Version);
+                    navigator = new NavigatorControl();
 
-            await this.JoinableTaskFactory.RunAsync(async delegate
-            {
-                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
-                //Create Editor Factory. Note that the base Package class will call Dispose on it.
-                RegisterEditorFactory(new HostedEditorFactory(this));
+                    RegisterProjectFactory(new CloudFormationTemplateProjectFactory(this));
+                    RegisterEditorFactory(new TemplateEditorFactory(this));
 
-                // Add our command handlers for menu (commands must exist in the .vsct file)
-                var mcs = await GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
-                if (null != mcs)
-                {
-                    // Create the command for the tool window
-                    SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAWSNavigator, ShowToolWindow, null);
-                    SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidPublishToAWS, PublishToAWS, PublishMenuCommand_BeforeQueryStatus);
-                    SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdIdRepublishToAWS, RepublishToAWS, RepublishMenuCommand_BeforeQueryStatus);
+                    //Create Editor Factory. Note that the base Package class will call Dispose on it.
+                    RegisterEditorFactory(new HostedEditorFactory(this));
 
-                    SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployTemplateSolutionExplorer, DeployTemplateSolutionExplorer, TemplateCommandSolutionExplorer_BeforeQueryStatus);
-                    SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployTemplateActiveDocument, DeployTemplateActiveDocument, TemplateCommandActiveDocument_BeforeQueryStatus);
+                    // Add our command handlers for menu (commands must exist in the .vsct file)
+                    var mcs = await GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
+                    if (null != mcs)
+                    {
+                        // Create the command for the tool window
+                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAWSNavigator, ShowToolWindow, null);
+                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidPublishToAWS, PublishToAWS, PublishMenuCommand_BeforeQueryStatus);
+                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdIdRepublishToAWS, RepublishToAWS, RepublishMenuCommand_BeforeQueryStatus);
 
-                    SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidEstimateTemplateCostSolutionExplorer, EstimateTemplateCostSolutionExplorer, TemplateCommandSolutionExplorer_BeforeQueryStatus);
-                    SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidEstimateTemplateCostActiveDocument, EstimateTemplateCostActiveDocument, TemplateCommandActiveDocument_BeforeQueryStatus);
+                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployTemplateSolutionExplorer, DeployTemplateSolutionExplorer, TemplateCommandSolutionExplorer_BeforeQueryStatus);
+                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployTemplateActiveDocument, DeployTemplateActiveDocument, TemplateCommandActiveDocument_BeforeQueryStatus);
 
-                    SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidFormatTemplateSolutionExplorer, FormatTemplateSolutionExplorer, TemplateCommandSolutionExplorer_BeforeQueryStatus);
-                    SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidFormatTemplateActiveDocument, FormatTemplateActiveDocument, TemplateCommandActiveDocument_BeforeQueryStatus);
+                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidEstimateTemplateCostSolutionExplorer, EstimateTemplateCostSolutionExplorer, TemplateCommandSolutionExplorer_BeforeQueryStatus);
+                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidEstimateTemplateCostActiveDocument, EstimateTemplateCostActiveDocument, TemplateCommandActiveDocument_BeforeQueryStatus);
 
-                    SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAddCloudFormationTemplate, AddCloudFormationTemplate, AddCloudFormationTemplate_BeforeQueryStatus);
+                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidFormatTemplateSolutionExplorer, FormatTemplateSolutionExplorer, TemplateCommandSolutionExplorer_BeforeQueryStatus);
+                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidFormatTemplateActiveDocument, FormatTemplateActiveDocument, TemplateCommandActiveDocument_BeforeQueryStatus);
 
-                    SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployToLambdaSolutionExplorer, UploadToLambda, UploadToLambdaMenuCommand_BeforeQueryStatus);
-                    SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAddAWSServerlessTemplate, AddAWSServerlessTemplate, AddAWSServerlessTemplate_BeforeQueryStatus);
+                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAddCloudFormationTemplate, AddCloudFormationTemplate, AddCloudFormationTemplate_BeforeQueryStatus);
+
+                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployToLambdaSolutionExplorer, UploadToLambda, UploadToLambdaMenuCommand_BeforeQueryStatus);
+                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAddAWSServerlessTemplate, AddAWSServerlessTemplate, AddAWSServerlessTemplate_BeforeQueryStatus);
 
 #if VS2015_OR_LATER
-                    SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidTeamExplorerConnect, AddTeamExplorerConnection, null);
+                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidTeamExplorerConnect, AddTeamExplorerConnection, null);
 #endif
 
 #if VS2017_OR_LATER
-                    SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidPublishContainerToAWS, PublishContainerToAWS, PublishContainerToAWS_BeforeQueryStatus);
+                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidPublishContainerToAWS, PublishContainerToAWS, PublishContainerToAWS_BeforeQueryStatus);
 #endif
 
-                    var shellService = await GetServiceAsync(typeof(SVsShell)) as IVsShell;
-                    if (shellService != null)
-                    {
-                        ErrorHandler.ThrowOnFailure(shellService.AdviseShellPropertyChanges(this, out _vsShellPropertyChangeEventSinkCookie));
+                        var shellService = await GetServiceAsync(typeof(SVsShell)) as IVsShell;
+                        if (shellService != null)
+                        {
+                            ErrorHandler.ThrowOnFailure(shellService.AdviseShellPropertyChanges(this, out _vsShellPropertyChangeEventSinkCookie));
+                        }
                     }
-                }
-            });
+                });
+
+                // shell provider is used all the time, so pre-load. Leave legacy deployment
+                // service until a plugin asks for it.
+                InstantiateToolkitShellProviderService(dteVersion);
+
+
+                ToolkitEvent evnt = new ToolkitEvent();
+                evnt.AddProperty(AttributeKeys.VisualStudioIdentifier, string.Format("{0}/{1}", dteVersion, dteEdition));
+                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+
+                ThemeUtil.Initialize(dteVersion);
+
+
+                ToolkitFactory.InitializeToolkit(navigator, ToolkitShellProviderService as IAWSToolkitShellProvider, additionalPluginFolders, () =>
+                {
+                    _toolkitInitialized = true;
+                    ShowFirstRun();
+                });
+
+                ToolkitFactory.SignalShellInitializationComplete();
+            }
+            finally
+            {
+                LOGGER.Info("AWSToolkitPackage InitializeAsync complete");
+            }
         }
 
 

@@ -32,13 +32,20 @@ namespace Amazon.AWSToolkit
             return null;
         }
 
+        private static bool _loggingInitialized;
         public static void ConfigureLog4Net()
         {
-            string directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            string fullPath = string.Format(@"{0}\log4net.config", directory);
-            if (File.Exists(fullPath))
+            if(!_loggingInitialized)
             {
-                XmlConfigurator.ConfigureAndWatch(new FileInfo(fullPath));
+                _loggingInitialized = true;
+
+                string directory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string fullPath = string.Format(@"{0}\log4net.config", directory);
+                if (File.Exists(fullPath))
+                {
+                    XmlConfigurator.ConfigureAndWatch(new FileInfo(fullPath));
+                }
+
             }
         }
 

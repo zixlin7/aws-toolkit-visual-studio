@@ -42,6 +42,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
         /// <param name="connection"></param>
         private void OnTeamExplorerBindingChanged(TeamExplorerConnection connection)
         {
+            LOGGER.InfoFormat("ConnectionSectionViewModel OnTeamExplorerBindingChanged");
             if (connection != null)
             {
                 connection.PropertyChanged += ActiveConnectionOnPropertyChanged;
@@ -124,6 +125,7 @@ namespace Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Model
 
         public void OpenRepository()
         {
+            LOGGER.InfoFormat("ConnectionSectionViewModel OpenRepository");
             // there is no procedure to bind to a repo from within Team Explorer, so adopt
             // GitHub's approach of opening a transient solution in the repo, that we then
             // discard
