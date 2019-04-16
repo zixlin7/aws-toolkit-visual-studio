@@ -128,6 +128,10 @@ namespace Amazon.AWSToolkit
             LOGGER.Info("ToolkitFactory SignalShellInitializationComplete");
             lock (INSTANCE_CREATE_LOCK)
             {
+                // If the shell has already been initialized then skip calling the callbacks again.
+                if (_isShellInitializationComplete)
+                    return;
+
                 _isShellInitializationComplete = true;
             }
             OnToolkitInitialized?.Invoke();
