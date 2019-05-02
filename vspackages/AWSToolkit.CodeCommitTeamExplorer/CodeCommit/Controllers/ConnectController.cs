@@ -49,7 +49,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
         /// Called from the main package in response to the user selecting
         /// CodeCommit under the Manage Connections dropdown
         /// </summary>
-        public static void OpenConnection()
+        public static void  OpenConnection()
         {
             if (TeamExplorerConnection.ActiveConnection != null)
                 TeamExplorerConnection.ActiveConnection.Signout();

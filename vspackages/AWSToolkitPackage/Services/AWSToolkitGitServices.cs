@@ -10,7 +10,7 @@ using Amazon.AWSToolkit.CodeCommit.Interface.Model;
 using Amazon.AWSToolkit.CodeCommit.Model;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
-using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
+using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
 using log4net;
 using Microsoft.VisualStudio.Shell.Interop;
 

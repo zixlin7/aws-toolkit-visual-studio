@@ -23,6 +23,7 @@
     <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="AWSToolkit.CloudFormation.EditorExtensions" Path="|AWSToolkit.CloudFormation.EditorExtensions|" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" TargetVersion="[15.0,16.0)" d:ProjectName="AWSToolkit.CodeCommitTeamExplorer.v15" Path="|AWSToolkit.CodeCommitTeamExplorer.v15|" />
 
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="AWSToolkit.Lambda.TemplateWizards" Path="|AWSToolkit.Lambda.TemplateWizards|" AssemblyName="|AWSToolkit.Lambda.TemplateWizards;AssemblyName|" />
     <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="AWSToolkit.CloudFormation.TemplateWizards" Path="|AWSToolkit.CloudFormation.TemplateWizards|" AssemblyName="|AWSToolkit.CloudFormation.TemplateWizards;AssemblyName|" />
