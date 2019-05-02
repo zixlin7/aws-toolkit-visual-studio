@@ -162,6 +162,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSDeploymentHostManagerCli
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSDeploymentHostManagerClient", "..\awsdeploy\host\AWSDeploymentHostManagerClient\AWSDeploymentHostManagerClient.csproj", "{E5103B26-6ED2-42EB-A6BB-3BC920751D20}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeCommitTeamExplorer.v15", "..\vspackages\AWSToolkit.CodeCommitTeamExplorer\AWSToolkit.CodeCommitTeamExplorer.v15.csproj", "{94F578FB-AFEB-4C67-BD0D-C5797E50E9E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -420,6 +422,10 @@ Global
 		{E5103B26-6ED2-42EB-A6BB-3BC920751D20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5103B26-6ED2-42EB-A6BB-3BC920751D20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5103B26-6ED2-42EB-A6BB-3BC920751D20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94F578FB-AFEB-4C67-BD0D-C5797E50E9E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94F578FB-AFEB-4C67-BD0D-C5797E50E9E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94F578FB-AFEB-4C67-BD0D-C5797E50E9E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94F578FB-AFEB-4C67-BD0D-C5797E50E9E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -496,6 +502,7 @@ Global
 		{4A43FDED-F828-4872-89DA-0FE738BCB93A} = {C74FEDAE-A2DD-4033-9CDD-9005681D6059}
 		{4CEA2748-E89E-4DB9-A75B-E47F59113920} = {C74FEDAE-A2DD-4033-9CDD-9005681D6059}
 		{E5103B26-6ED2-42EB-A6BB-3BC920751D20} = {C74FEDAE-A2DD-4033-9CDD-9005681D6059}
+		{94F578FB-AFEB-4C67-BD0D-C5797E50E9E8} = {7C126B63-12FD-4829-A22A-EB2A93815ACD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50B40085-A3FF-4E79-90F0-ECAA786ECF93}
