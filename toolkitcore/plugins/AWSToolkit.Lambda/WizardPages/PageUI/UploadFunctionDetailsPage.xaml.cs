@@ -27,7 +27,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
     public partial class UploadFunctionDetailsPage : INotifyPropertyChanged
     {
         const string HANDLER_DESCRIPTION_CUSTOM_RUNTIME = "For custom runtimes the handler field is optional. The value is made available to the Lambda function through the _HANDLER environment variable.";
-        const string HANDLER_DESCRIPTION_GENERIC = "The handler identifies the function within your code that Lambda calls to begin execution. For Node.js, it is the module-name.export value in your function. For .NET it will be&lt;assembly&gt;::&lt;type&gt;::&lt;method&gt;.";
+        const string HANDLER_DESCRIPTION_GENERIC = "The handler identifies the function within your code that Lambda calls to begin execution. For Node.js, it is the module-name.export value in your function. For .NET it will be: <assembly>::<type>::<method>";
 
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionDetailsPage));
 
