@@ -2,6 +2,7 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SuppressCommonAssemblyMetadata>true</SuppressCommonAssemblyMetadata>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
@@ -14,11 +15,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{94F578FB-AFEB-4C67-BD0D-C5797E50E9E8}</ProjectGuid>
+    <ProjectGuid>{5739EE0E-1E8C-4AC6-9AAA-F58C7345B9A8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Amazon.AWSToolkit.CodeCommitTeamExplorer</RootNamespace>
-    <AssemblyName>AWSToolkit.CodeCommitTeamExplorer.v15</AssemblyName>
+    <AssemblyName>AWSToolkit.CodeCommitTeamExplorer.v16</AssemblyName>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -145,19 +146,19 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.TeamFoundation.Client">
-      <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Client.dll</HintPath>
+      <HintPath>$(BuildRoot)\thirdparty\TeamExplorer.v16\Microsoft.TeamFoundation.Client.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.TeamFoundation.Controls">
-      <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Controls.dll</HintPath>
+      <HintPath>$(BuildRoot)\thirdparty\TeamExplorer.v16\Microsoft.TeamFoundation.Controls.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.TeamFoundation.Git.Controls">
-      <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Git.Controls.dll</HintPath>
+      <HintPath>$(BuildRoot)\thirdparty\TeamExplorer.v16\Microsoft.TeamFoundation.Git.Controls.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.TeamFoundation.Git.Provider">
-      <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Git.Provider.dll</HintPath>
+      <HintPath>$(BuildRoot)\thirdparty\TeamExplorer.v16\Microsoft.TeamFoundation.Git.Provider.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>

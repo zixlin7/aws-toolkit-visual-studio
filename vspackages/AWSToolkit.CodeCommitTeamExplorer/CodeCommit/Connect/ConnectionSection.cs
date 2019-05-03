@@ -14,6 +14,11 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
     [PartCreationPolicy(CreationPolicy.NonShared)]
     public class ConnectionSection : TeamExplorerSectionBase
     {
+        static ConnectionSection()
+        {
+            Amazon.AWSToolkit.CodeCommit.ConnectServiceManager.ConnectService = new TeamExplorerConnectService();
+        }
+
         public const string TeamExplorerConnectionSectionId = "FF7A257A-3AFB-44AC-B0F9-EA5F8789107E";
 
         private readonly ILog LOGGER = LogManager.GetLogger(typeof(ConnectionSection));

@@ -15,6 +15,11 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
     [PartCreationPolicy(CreationPolicy.NonShared)]
     public class InvitationSection : TeamExplorerInvitationBase
     {
+        static InvitationSection()
+        {
+            Amazon.AWSToolkit.CodeCommit.ConnectServiceManager.ConnectService = new TeamExplorerConnectService();
+        }
+
         private readonly ILog LOGGER = LogManager.GetLogger(typeof(InvitationSection));
 
         public const int CodeCommitInvitationSectionPriority = 150;

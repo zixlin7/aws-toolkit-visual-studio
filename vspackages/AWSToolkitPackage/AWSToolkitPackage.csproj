@@ -1367,6 +1367,12 @@
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\vspackages\AWSToolkit.CodeCommitTeamExplorer\AWSToolkit.CodeCommitTeamExplorer.v16.csproj">
+      <Project>{5739EE0E-1E8C-4AC6-9AAA-F58C7345B9A8}</Project>
+      <Name>AWSToolkit.CodeCommitTeamExplorer.v16</Name>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup Condition="'$(VisualStudioVersion)' == '15.0'">
     <ProjectReference Include="$(BuildRoot)\vspackages\lambda\MsbuildFunctionTemplate\MsbuildFunctionTemplate.csproj">

@@ -2332,7 +2332,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 #if VS2015_OR_LATER
         void AddTeamExplorerConnection(object sender, EventArgs e)
         {
-            ConnectController.OpenConnection();    
+            Amazon.AWSToolkit.CodeCommit.ConnectServiceManager.ConnectService?.OpenConnection();
         }
 #endif
 
