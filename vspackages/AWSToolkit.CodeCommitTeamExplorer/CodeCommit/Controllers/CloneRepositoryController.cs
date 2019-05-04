@@ -50,14 +50,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
 
             // delegate the actual clone operation via an intermediary; this allows us to use either
             // Team Explorer or CodeCommit to do the clone operation depending on the host shell.
-            var gitServices = ToolkitFactory
-                                  .Instance
-                                  .ShellProvider
-                                  .QueryShellProviderService<IAWSToolkitGitServices>() ?? ToolkitFactory
-                                  .Instance
-                                  .QueryPluginService(typeof(IAWSToolkitGitServices)) as IAWSToolkitGitServices;
-            gitServices.ServiceProvider = TeamExplorerServiceProvider;
-            gitServices?.CloneAsync(gitCredentials, selectedRepository.RepositoryUrl, selectedRepository.LocalFolder);
+            GitUtilities.CloneAsync(gitCredentials, selectedRepository.RepositoryUrl, selectedRepository.LocalFolder);
         }
     }
 }

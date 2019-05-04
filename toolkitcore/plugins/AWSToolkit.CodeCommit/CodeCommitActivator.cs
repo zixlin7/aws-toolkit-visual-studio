@@ -60,16 +60,16 @@ namespace Amazon.AWSToolkit.CodeCommit
                 return this;
 
             if (serviceType == typeof(IAWSToolkitGitServices))
-                return new AWSToolkitGitServices(this);
+                return new CodeCommitGitServices(this);
 
             return null;
         }
 
         #region IAWSCodeCommit Members
 
-        public IAWSToolkitGitServices ToolkitGitServices
+        public ICodeCommitGitServices CodeCommitGitServices
         {
-            get { return new AWSToolkitGitServices(this); }
+            get { return new CodeCommitGitServices(this); }
         }
 
         public void AssociateCredentialsWithProfile(string profileArtifactsId, string userName, string password)

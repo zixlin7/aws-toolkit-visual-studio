@@ -19,7 +19,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// the implementation based around Team Explorer that you get if you query for this
         /// interface on the VS shell provider.
         /// </summary>
-        IAWSToolkitGitServices ToolkitGitServices { get; }
+        ICodeCommitGitServices CodeCommitGitServices { get; }
 
         /// <summary>
         /// Persists a set of service-specific credentials for CodeCommit, associating them

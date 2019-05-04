@@ -11,21 +11,20 @@ using log4net;
 using LibGit2Sharp;
 
 using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.AWSToolkit.CodeCommit.Interface;
 
 namespace Amazon.AWSToolkit.CodeCommit.Services
 {
-    internal class AWSToolkitGitServices : IAWSToolkitGitServices
+    internal class CodeCommitGitServices : ICodeCommitGitServices
     {
-        private readonly ILog LOGGER = LogManager.GetLogger(typeof(AWSToolkitGitServices));
+        private readonly ILog LOGGER = LogManager.GetLogger(typeof(CodeCommitGitServices));
 
-        public AWSToolkitGitServices(CodeCommitActivator hostActivator)
+        public CodeCommitGitServices(CodeCommitActivator hostActivator)
         {
             HostActivator = hostActivator;
         }
 
         private CodeCommitActivator HostActivator { get; }
-
-        public IServiceProvider ServiceProvider { get; set; }
 
         public Task CloneAsync(ServiceSpecificCredentials credentials, 
                                      string repositoryUrl, 
