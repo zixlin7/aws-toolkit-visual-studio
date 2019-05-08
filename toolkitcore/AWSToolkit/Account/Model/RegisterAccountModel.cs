@@ -82,11 +82,42 @@ namespace Amazon.AWSToolkit.Account.Model
 
         public IList<AccountTypes.AccountType> AllAccountTypes
         {
-            get 
+            get
             {
                 return AccountTypes.AllAccountTypes;
             }
         }
+
+        public System.Windows.Visibility StorageLocationVisibility
+        {
+            get;
+            set;
+        }
+
+        StorageTypes.StorageType selectedStorageType;
+        public StorageTypes.StorageType SelectedStorageType
+        {
+            get
+            {
+                if (selectedStorageType == null)
+                    selectedStorageType = AllStorageTypes[0];
+                return selectedStorageType;
+            }
+            set
+            {
+                selectedStorageType = value;
+                OnPropertyChanged("SelectedStorageType");
+            }
+        }
+
+        public IList<StorageTypes.StorageType> AllStorageTypes
+        {
+            get
+            {
+                return StorageTypes.AllStorageTypes;
+            }
+        }
+
 
         public void LoadAWSCredentialsFromCSV(string csvFilename)
         {

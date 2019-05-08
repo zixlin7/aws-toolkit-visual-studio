@@ -33,8 +33,14 @@ namespace Amazon.AWSToolkit.Account.Controller
             return base.Execute();
         }
 
+        protected override void CustomizeControl(RegisterAccountControl control)
+        {
+            control.Height -= 70;
+        }
+
         protected override void LoadModel()
         {
+            this.Model.StorageLocationVisibility = System.Windows.Visibility.Collapsed;
             if (this._accountViewModel.ProfileStore is NetSDKCredentialsFile)
             {
                 var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);

@@ -147,6 +147,7 @@
   <ItemGroup>
     <Compile Include="Account\Controller\RegisterServiceCredentialsController.cs" />
     <Compile Include="Account\Model\RegisterServiceCredentialsModel.cs" />
+    <Compile Include="Account\StorageTypes.cs" />
     <Compile Include="Account\View\RegisterServiceCredentialsControl.xaml.cs">
       <DependentUpon>RegisterServiceCredentialsControl.xaml</DependentUpon>
     </Compile>
