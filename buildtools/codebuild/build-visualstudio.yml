@@ -1,0 +1,13 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - cmd /c mklink /J C:\src ${PWD}  # make a junction or we'll hit the path length limit
+      - cd C:\src
+      - cmd /k 'C:\BuildTools15\Common7\Tools\VsDevCmd.bat & msbuild .\buildtools\build.proj -t:restore-nuget,build-awsdeploy,build-vstoolkit-2017 /p:DeployExtension=false /p:Configuration=Release'
+artifacts:
+  discard-paths: yes
+  files:
+    - Deployment\**\*.vsix
+    - buildtools\releaseartifacts\*

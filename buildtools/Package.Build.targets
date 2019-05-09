@@ -28,7 +28,7 @@
   <PropertyGroup>
     <VsixVsTarget Condition="'$(VisualStudioVersion)' == '12.0' ">[$(VSTarget)]</VsixVsTarget>
     <VsixVsTarget Condition="'$(VisualStudioVersion)' == '14.0' ">[$(VSTarget),)</VsixVsTarget>
-    <VsixVsTarget Condition="'$(VisualStudioVersion)' == '15.0' ">[$(VSTarget),)</VsixVsTarget>
+    <VsixVsTarget Condition="'$(VisualStudioVersion)' == '15.0' ">[$(VSTarget),17.0)</VsixVsTarget>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
