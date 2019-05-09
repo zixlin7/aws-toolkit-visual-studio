@@ -1,0 +1,30 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<Import Project="buildtools.targets" />
+
+	<PropertyGroup>
+		<LocalArchiveRootFolder></LocalArchiveRootFolder>
+		<SaveReferenceGitBranch></SaveReferenceGitBranch>
+	</PropertyGroup>
+
+	<UsingTask
+		AssemblyFile="BuildTasks\bin\Debug\BuildTasks.dll"
+		TaskName="BuildTasks.KeyScannerTask" />
+
+	<UsingTask
+		AssemblyFile="BuildTasks\bin\Debug\BuildTasks.dll"
+		TaskName="BuildTasks.CompareToS3Task" />
+
+	<UsingTask
+		AssemblyFile="BuildTasks\bin\Debug\BuildTasks.dll"
+		TaskName="BuildTasks.UploadHostedFileTask" />
+
+	<UsingTask
+		AssemblyFile="BuildTasks\bin\Debug\BuildTasks.dll"
+		TaskName="BuildTasks.UploadHostedFilesTask" />
+
+	<UsingTask
+		AssemblyFile="BuildTasks\bin\Debug\BuildTasks.dll"
+		TaskName="BuildTasks.DownloadFromS3Task" />
+
+</Project>
