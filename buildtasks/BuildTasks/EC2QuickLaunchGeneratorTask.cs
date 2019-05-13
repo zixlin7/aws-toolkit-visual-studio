@@ -107,7 +107,6 @@ namespace BuildTasks
             }
 
             Log.LogError("ERROR: EC2 quick launch config is out of date");
-            Log.LogError("Visit https://w.amazon.com/index.php/AWSSDKsAndTools/AWSToolkitForVisualStudio/EC2QuickLaunchConfig for instructions on fixing it\r\n\r\n");
             Log.LogError(ec2TransformedContent);
 
             var cwd = Directory.GetCurrentDirectory();
