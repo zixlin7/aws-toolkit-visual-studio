@@ -1,7 +1,4 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-    <!--<Import Project="properties.targets" />-->
-
 	<Target Name="build-tools" >
 		<Exec Command="$(MSBuildThisFileDirectory)..\solutions\.nuget\NuGet.exe restore $(MSBuildThisFileDirectory)BuildTasks.sln"/>
 		<MSBuild Projects="$(MSBuildThisFileDirectory)BuildTasks.sln"/>
