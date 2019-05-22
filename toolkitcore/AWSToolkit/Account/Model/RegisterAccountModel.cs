@@ -100,7 +100,7 @@ namespace Amazon.AWSToolkit.Account.Model
             get
             {
                 if (selectedStorageType == null)
-                    selectedStorageType = AllStorageTypes[0];
+                    selectedStorageType = StorageTypes.SharedCredentialsFile;
                 return selectedStorageType;
             }
             set

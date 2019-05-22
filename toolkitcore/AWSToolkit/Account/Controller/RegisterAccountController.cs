@@ -107,7 +107,7 @@ namespace Amazon.AWSToolkit.Account.Controller
                 CredentialProfileUtils.SetUniqueKey(profile, this.Model.UniqueKey);
                 profileStore.RegisterProfile(profile);
 
-                // The shared credential file can't be used to store account number and restricitons so we'll put that in a side SDK Credential store file.
+                // The shared credential file can't be used to store account number and restrictions so we'll put that in a side SDK Credential store file.
                 var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.NonNetSDKCredentialStoreMetadata);
                 var os = settings.NewObjectSettings(this.Model.UniqueKey.ToString());
 

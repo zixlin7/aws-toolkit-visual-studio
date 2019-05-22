@@ -32,6 +32,7 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
@@ -104,8 +105,8 @@
                   ItemsSource="{Binding AllAccountTypes}"
                   DisplayMemberPath="DisplayName"
                   Style="{DynamicResource awsComboBoxStyle}"/>
-
-        <WrapPanel Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="2" Margin="0,4,0,0">
+        
+        <WrapPanel Grid.Column="0" Grid.Row="10" Grid.ColumnSpan="2" Margin="0,4,0,0">
             <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}">Account information can found at:</TextBlock>
             <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}" Margin="4,0,0,0">
             <Hyperlink NavigateUri="http://aws.amazon.com/developers/access-keys/" RequestNavigate="onRequestNavigate">
@@ -117,7 +118,7 @@
 
         </WrapPanel>
 
-        <TextBlock Grid.Column="0" Grid.Row="10" Grid.ColumnSpan="2" Margin="4" TextWrapping="Wrap" Style="{DynamicResource awsTextBlockBaseStyle}">
+        <TextBlock Grid.Column="0" Grid.Row="11" Grid.ColumnSpan="2" Margin="4" TextWrapping="Wrap" Style="{DynamicResource awsTextBlockBaseStyle}">
             * Account Number is an optional field used for constructing amazon resource names (ARN).
         </TextBlock>
     </Grid>
