@@ -35,6 +35,7 @@ namespace Amazon.AWSToolkit.Account.Controller
 
         protected override void LoadModel()
         {
+            this.Model.StorageLocationVisibility = System.Windows.Visibility.Collapsed;
             if (this._accountViewModel.ProfileStore is NetSDKCredentialsFile)
             {
                 var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
