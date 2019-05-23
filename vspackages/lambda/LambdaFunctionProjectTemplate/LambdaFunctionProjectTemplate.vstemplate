@@ -12,7 +12,12 @@
     <CreateNewFolder>true</CreateNewFolder>
     <DefaultName>Lambda Function</DefaultName>
     <ProvideDefaultName>true</ProvideDefaultName>
+    <LanguageTag>JavaScript</LanguageTag>
+    <PlatformTag>AWS</PlatformTag>
+    <ProjectTypeTag>Cloud</ProjectTypeTag>
+    <ProjectTypeTag>Serverless</ProjectTypeTag>
   </TemplateData>
+  
   <TemplateContent>
     <Project File="LambdaFunctionProject.njsproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true">ReadMe.txt</ProjectItem>
