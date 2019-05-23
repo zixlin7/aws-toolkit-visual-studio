@@ -12,7 +12,7 @@
     <CreateNewFolder>true</CreateNewFolder>
     <CreateInPlace>true</CreateInPlace>
     <ProvideDefaultName>true</ProvideDefaultName>
-    <LanguageTag>C#</LanguageTag>
+    <LanguageTag>F#</LanguageTag>
     <PlatformTag>AWS</PlatformTag>
     <ProjectTypeTag>Cloud</ProjectTypeTag>
     <ProjectTypeTag>Serverless</ProjectTypeTag>
