@@ -511,26 +511,6 @@
         <Reference Include="Microsoft.VisualStudio.Validation, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
           <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Validation.15.0.82\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
         </Reference>
-        <Reference Include="Microsoft.TeamFoundation.Common">
-          <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Common.dll</HintPath>
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.TeamFoundation.Client">
-          <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Client.dll</HintPath>
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.TeamFoundation.Controls">
-          <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Controls.dll</HintPath>
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.TeamFoundation.Git.Controls">
-          <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Git.Controls.dll</HintPath>
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.TeamFoundation.Git.Provider">
-          <HintPath>$(DevEnvDir)\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Git.Provider.dll</HintPath>
-          <Private>False</Private>
-        </Reference>
       </ItemGroup>
     </When>
   </Choose>
@@ -539,34 +519,7 @@
     <Analyzer Include="$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Threading.Analyzers.15.7.18\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup Condition="'$(VisualStudioVersion)' != '12.0'">
-    <Compile Include="TeamExplorer\Base\TeamExplorerBase.cs" />
-    <Compile Include="TeamExplorer\Base\TeamExplorerInvitationBase.cs" />
-    <Compile Include="TeamExplorer\CodeCommit\Connect\ConnectionSection.cs" />
-    <Compile Include="TeamExplorer\CodeCommit\Connect\InvitationSection.cs" />
-    <Compile Include="TeamExplorer\CodeCommit\Controllers\ConnectController.cs" />
-    <Compile Include="TeamExplorer\CodeCommit\Controllers\BaseCodeCommitController.cs" />
-    <Compile Include="TeamExplorer\CodeCommit\Controllers\CloneRepositoryController.cs" />
-    <Compile Include="TeamExplorer\CodeCommit\Controllers\CreateRepositoryController.cs" />
-    <Compile Include="TeamExplorer\CredentialManagement\GitCredentials.cs" />
-    <Compile Include="TeamExplorer\CredentialManagement\NativeMethods.cs" />
-    <Compile Include="TeamExplorer\CredentialManagement\TeamExplorerConnection.cs" />
-    <Compile Include="Services\AWSToolkitGitServices.cs" />
     <Compile Include="NativeMethods.cs" />
-    <Compile Include="TeamExplorer\CodeCommit\Controls\ConnectControl.xaml.cs">
-      <DependentUpon>ConnectControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="TeamExplorer\CodeCommit\Controls\ConnectionSectionControl.xaml.cs">
-      <DependentUpon>ConnectionSectionControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="TeamExplorer\CodeCommit\Model\ConnectSectionViewModel.cs" />
-    <Page Include="TeamExplorer\CodeCommit\Controls\ConnectControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="TeamExplorer\CodeCommit\Controls\ConnectionSectionControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft.VisualStudio.CommandBars">
@@ -1386,6 +1339,18 @@
     <ProjectReference Include="$(BuildRoot)\vspackages\shared\AWSToolkit.VisualStudio.Shared\AWSToolkit.VisualStudio.Shared.csproj">
       <Project>{81552efa-46b0-4ebe-bc29-5ba6a7628207}</Project>
       <Name>AWSToolkit.VisualStudio.Shared</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\vspackages\AWSToolkit.CodeCommitTeamExplorer\AWSToolkit.CodeCommitTeamExplorer.v15.csproj">
+      <Project>{94f578fb-afeb-4c67-bd0d-c5797e50e9e8}</Project>
+      <Name>AWSToolkit.CodeCommitTeamExplorer.v15</Name>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\vspackages\AWSToolkit.CodeCommitTeamExplorer\AWSToolkit.CodeCommitTeamExplorer.v16.csproj">
+      <Project>{5739EE0E-1E8C-4AC6-9AAA-F58C7345B9A8}</Project>
+      <Name>AWSToolkit.CodeCommitTeamExplorer.v16</Name>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup Condition="'$(VisualStudioVersion)' == '15.0'">

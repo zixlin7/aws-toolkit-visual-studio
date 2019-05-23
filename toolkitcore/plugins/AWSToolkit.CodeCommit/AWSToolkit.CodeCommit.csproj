@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeCommitActivator.cs" />
+    <Compile Include="ConnectServiceManager.cs" />
     <Compile Include="Controller\CreateRepositoryController.cs" />
     <Compile Include="Controller\CloneRepositoryController.cs" />
     <Compile Include="Controller\SaveServiceSpecificCredentialsController.cs" />
@@ -103,7 +104,7 @@
     <Compile Include="Nodes\CodeCommitRootViewMetaNode.cs" />
     <Compile Include="Nodes\CodeCommitRootViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\AWSToolkitGitServices.cs" />
+    <Compile Include="Services\CodeCommitGitServices.cs" />
     <Compile Include="View\Controls\CreateRepositoryControl.xaml.cs">
       <DependentUpon>CreateRepositoryControl.xaml</DependentUpon>
     </Compile>

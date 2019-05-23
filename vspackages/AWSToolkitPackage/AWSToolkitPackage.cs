@@ -21,6 +21,7 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
 
 using Amazon.AWSToolkit.CloudFormation;
 using Amazon.AWSToolkit.ElasticBeanstalk;
@@ -56,11 +57,6 @@ using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 using System.Threading;
 
 using Task = System.Threading.Tasks.Task;
-
-#if VS2015_OR_LATER
-using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CodeCommit.Controllers;
-using Amazon.AWSToolkit.VisualStudio.TeamExplorer.CredentialManagement;
-#endif
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -2336,7 +2332,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 #if VS2015_OR_LATER
         void AddTeamExplorerConnection(object sender, EventArgs e)
         {
-            ConnectController.OpenConnection();    
+            Amazon.AWSToolkit.CodeCommit.ConnectServiceManager.ConnectService?.OpenConnection();
         }
 #endif
 
