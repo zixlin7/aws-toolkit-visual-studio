@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Timers;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Threading;
@@ -24,6 +25,9 @@ namespace Amazon.AWSToolkit.Navigator.Node
 {
     public class AWSViewModel : AbstractViewModel
     {
+        private const int RegisteredProfilesAttempts = 5;
+        private const int DelayedRefreshIntervalMillis = 333;
+
         IAWSToolkitShellProvider _shellProvider;
         AWSViewMetaNode _metaNode;
         ObservableCollection<AccountViewModel> _accounts = new ObservableCollection<AccountViewModel>();
@@ -34,6 +38,14 @@ namespace Amazon.AWSToolkit.Navigator.Node
             new Dictionary<string, FileSystemWatcher>(StringComparer.InvariantCultureIgnoreCase);
 
         ILog _logger = LogManager.GetLogger(typeof(AWSViewModel));
+        private readonly Timer _delayedRefreshTimer = new Timer
+        {
+            Interval = DelayedRefreshIntervalMillis,
+            AutoReset = false,
+            Enabled = false
+        };
+
+        private int _loadRegisteredProfilesAttempts = 0;
 
         public AWSViewModel(IAWSToolkitShellProvider shellProvider, AWSViewMetaNode metaNode)
             : base(metaNode, null, "root")
@@ -42,6 +54,8 @@ namespace Amazon.AWSToolkit.Navigator.Node
             this._metaNode = metaNode;
 
             SetupCredentialWatchers();
+
+            _delayedRefreshTimer.Elapsed += OnDelayedRefreshTimer;
 
             Refresh();
         }
@@ -58,6 +72,20 @@ namespace Amazon.AWSToolkit.Navigator.Node
             });
 
             SetupSharedCredentialFileMonitoring();
+        }
+
+        private void ResetDelayedRefreshTimer()
+        {
+            _delayedRefreshTimer.Stop();
+            _delayedRefreshTimer.Start();
+        }
+
+        private void OnDelayedRefreshTimer(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            this._shellProvider.ExecuteOnUIThread((Action)(() =>
+            {
+                this.Refresh();
+            }));
         }
 
         /// <summary>
@@ -81,10 +109,9 @@ namespace Amazon.AWSToolkit.Navigator.Node
                 {
                     Action<object, FileSystemEventArgs> callback = (o, e) =>
                     {
-                        this._shellProvider.ExecuteOnUIThread((Action)(() =>
-                        {
-                            this.Refresh();
-                        }));
+                        // A cluster of watcher events can come in quick succession.
+                        // Reduce the amount of callback handling by introducing a resettable delay.
+                        ResetDelayedRefreshTimer();
                     };
 
                     var credentialPaths = GetCandidateCredentialPaths();
@@ -201,9 +228,21 @@ namespace Amazon.AWSToolkit.Navigator.Node
                     _accounts.Add(add);
 
                 base.NotifyPropertyChanged("RegisteredAccounts");
+
+                _loadRegisteredProfilesAttempts = 0;
             }
             catch(Exception e)
             {
+                if (_loadRegisteredProfilesAttempts < RegisteredProfilesAttempts)
+                {
+                    // If a program was writing to the shared credentials file, there is a good chance 
+                    // it hasn't released its handle yet. Try again shortly before notifying the user.
+                    _loadRegisteredProfilesAttempts++;
+                    ResetDelayedRefreshTimer();
+
+                    return;
+                }
+
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error loading AWS profiles: " + e.Message);
                 _logger.Error("Error loading AWS profiles", e);
 
