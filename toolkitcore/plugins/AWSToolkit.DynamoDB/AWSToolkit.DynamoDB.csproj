@@ -166,7 +166,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -271,9 +270,18 @@
     <Resource Include="Resources\Images\AsNull.png" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.CloudWatch.3.3.100\analyzers\dotnet\cs\AWSSDK.CloudWatch.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.DynamoDBv2.3.3.100\analyzers\dotnet\cs\AWSSDK.DynamoDBv2.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.SimpleNotificationService.3.3.100\analyzers\dotnet\cs\AWSSDK.SimpleNotificationService.CodeAnalysis.dll" />
+    <PackageReference Include="AWSSDK.CloudWatch">
+      <Version>3.3.100.2</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.DynamoDBv2">
+      <Version>3.3.100.9</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.SimpleNotificationService">
+      <Version>3.3.100.10</Version>
+    </PackageReference>
+    <PackageReference Include="log4net">
+      <Version>2.0.8</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

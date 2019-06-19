@@ -35,9 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Core.3.3.28.1\lib\net45\AWSSDK.Core.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
@@ -52,15 +49,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="$(BuildRoot)\awsdeploy\host\AWSDeploymentCryptoUtility\AWSDeploymentCryptoUtility.csproj">
       <Project>{4A43FDED-F828-4872-89DA-0FE738BCB93A}</Project>
       <Name>AWSDeploymentCryptoUtility</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.Core">
+      <Version>3.3.102.7</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

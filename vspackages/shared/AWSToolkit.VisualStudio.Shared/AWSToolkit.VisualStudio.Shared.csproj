@@ -65,10 +65,6 @@
     <Reference Include="Microsoft.VisualStudio.Designer.Interfaces, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <Choose>
@@ -133,6 +129,11 @@
       <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
       <Name>AWSToolkit.Util</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="log4net">
+      <Version>2.0.8</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(BuildRoot)\vspackages\shared\MPFProjDir\Src\CSharp\ProjectBase.files" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

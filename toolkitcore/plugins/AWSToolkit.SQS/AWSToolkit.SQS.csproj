@@ -46,7 +46,7 @@
       <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.SQS.3.3.100\lib\net45\AWSSDK.SQS.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+      <HintPath>$(OutputRoot)\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -115,7 +115,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -193,7 +192,12 @@
     <Resource Include="Resources\Images\purgequeue.png" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.SQS.3.3.100\analyzers\dotnet\cs\AWSSDK.SQS.CodeAnalysis.dll" />
+    <PackageReference Include="AWSSDK.SQS">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="log4net">
+      <Version>2.0.8</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -42,34 +42,6 @@
     <Reference Include="AWSDeploymentCryptoUtility">
       <HintPath>$(BuildRoot)\awsdeploy\host\AWSDeploymentCryptoUtility\bin\$(Configuration)\AWSDeploymentCryptoUtility.dll</HintPath>
     </Reference>
-    <Reference Include="AWSDeploymentHostManagerClientLib">
-      <HintPath>$(BuildRoot)\awsdeploy\host\AWSDeploymentHostManagerClient\bin\$(Configuration)\AWSDeploymentHostManagerClientLib.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.CloudFormation, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.CloudFormation.3.3.100\lib\net45\AWSSDK.CloudFormation.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Core.3.3.100\lib\net45\AWSSDK.Core.dll</HintPath>
-    </Reference>
-	<Reference Include="AWSSDK.CognitoIdentity, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.CognitoIdentity.3.3.100\lib\net45\AWSSDK.CognitoIdentity.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.EC2, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.EC2.3.3.100\lib\net45\AWSSDK.EC2.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.IdentityManagement, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.IdentityManagement.3.3.100\lib\net45\AWSSDK.IdentityManagement.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.S3, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.S3.3.3.100\lib\net45\AWSSDK.S3.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.MobileAnalytics, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.MobileAnalytics.3.3.100\lib\net45\AWSSDK.MobileAnalytics.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -320,13 +292,35 @@
     <None Include="$(BuildRoot)\hostedfiles\stockamis.json">
       <Link>HostedFiles\stockamis.json</Link>
     </None>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.CloudFormation.3.3.100\analyzers\dotnet\cs\AWSSDK.CloudFormation.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.EC2.3.3.100\analyzers\dotnet\cs\AWSSDK.EC2.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.IdentityManagement.3.3.100\analyzers\dotnet\cs\AWSSDK.IdentityManagement.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.S3.3.3.100\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
+    <PackageReference Include="AWSSDK.CloudFormation">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.CognitoIdentity">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.EC2">
+      <Version>3.3.100.2</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.IdentityManagement">
+      <Version>3.3.100.11</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.MobileAnalytics">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.S3">
+      <Version>3.3.100.2</Version>
+    </PackageReference>
+    <PackageReference Include="log4net">
+      <Version>2.0.8</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\awsdeploy\host\AWSDeploymentHostManagerClient\AWSDeploymentHostManagerClient.csproj">
+      <Project>{e5103b26-6ed2-42eb-a6bb-3bc920751d20}</Project>
+      <Name>AWSDeploymentHostManagerClient</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

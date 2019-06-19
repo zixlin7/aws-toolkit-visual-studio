@@ -51,39 +51,39 @@
 	</UsingTask>
 
 	<UsingTask
-		AssemblyFile="BuildTasks\bin\Debug\BuildTasks.dll"
+		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
 		TaskName="BuildTasks.UpdatePowerShellVersionTask" />
 
 	<UsingTask
-		AssemblyFile="BuildTasks\bin\Debug\BuildTasks.dll"
+		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
 		TaskName="BuildTasks.EC2QuickLaunchGeneratorTask" />
 
   <UsingTask
-		AssemblyFile="BuildTasks\bin\Debug\BuildTasks.dll"
+		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
 		TaskName="BuildTasks.UpdateAssemblyInfoVersionTask" />
 
   <UsingTask
-		AssemblyFile="BuildTasks\bin\Debug\BuildTasks.dll"
+		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
 		TaskName="BuildTasks.UpdateVSToolkitVersionTask" />
 
   <UsingTask
-		AssemblyFile="BuildTasks\bin\Debug\BuildTasks.dll"
+		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
 		TaskName="BuildTasks.UpdateInstallVersionsTask" />
 
   <UsingTask
-		AssemblyFile="BuildTasks\bin\Debug\BuildTasks.dll"
+		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
 		TaskName="BuildTasks.PatchVsixManifestPackageIdTask" />
 
   <UsingTask
-		AssemblyFile="BuildTasks\bin\Debug\BuildTasks.dll"
+		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
 		TaskName="BuildTasks.CFInvalidateTask" />
 		
 	<UsingTask
-		AssemblyFile="BuildTasks\bin\Debug\BuildTasks.dll"
+		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
 		TaskName="BuildTasks.ReadInstallerVersionFileTask" />
 
 	<UsingTask
-		AssemblyFile="BuildTasks\bin\Debug\BuildTasks.dll"
+		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
 		TaskName="BuildTasks.IncrementInstallerPatchNumberTask" />
 
 </Project>	

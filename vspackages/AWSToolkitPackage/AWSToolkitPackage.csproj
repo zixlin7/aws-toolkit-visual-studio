@@ -68,116 +68,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSSDK.AutoScaling, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.AutoScaling.3.3.100\lib\net45\AWSSDK.AutoScaling.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.CloudFormation, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.CloudFormation.3.3.100\lib\net45\AWSSDK.CloudFormation.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.CloudFront, Version=3.3.4.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.CloudFront.3.3.100\lib\net45\AWSSDK.CloudFront.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.CloudWatch, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.CloudWatch.3.3.100\lib\net45\AWSSDK.CloudWatch.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.CloudWatchEvents, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.CloudWatchEvents.3.3.100\lib\net45\AWSSDK.CloudWatchEvents.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.CloudWatchLogs, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.CloudWatchLogs.3.3.100\lib\net45\AWSSDK.CloudWatchLogs.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.CognitoIdentity, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.CognitoIdentity.3.3.100\lib\net45\AWSSDK.CognitoIdentity.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.CognitoSync, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.CognitoSync.3.3.100\lib\net45\AWSSDK.CognitoSync.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Core.3.3.100\lib\net45\AWSSDK.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.DynamoDBv2, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.DynamoDBv2.3.3.100\lib\net45\AWSSDK.DynamoDBv2.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.EC2, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.EC2.3.3.100\lib\net45\AWSSDK.EC2.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.ECR, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.ECR.3.3.100\lib\net45\AWSSDK.ECR.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.ECS, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.ECS.3.3.100\lib\net45\AWSSDK.ECS.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.ElasticBeanstalk, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.ElasticBeanstalk.3.3.100\lib\net45\AWSSDK.ElasticBeanstalk.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.ElasticLoadBalancing, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.ElasticLoadBalancing.3.3.100\lib\net45\AWSSDK.ElasticLoadBalancing.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.ElasticLoadBalancingV2, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.ElasticLoadBalancingV2.3.3.100\lib\net45\AWSSDK.ElasticLoadBalancingV2.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.IdentityManagement, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.IdentityManagement.3.3.100\lib\net45\AWSSDK.IdentityManagement.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.KeyManagementService, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.KeyManagementService.3.3.100\lib\net45\AWSSDK.KeyManagementService.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.Kinesis, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Kinesis.3.3.100\lib\net45\AWSSDK.Kinesis.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.Lambda, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Lambda.3.3.100\lib\net45\AWSSDK.Lambda.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.MobileAnalytics, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.MobileAnalytics.3.3.100\lib\net45\AWSSDK.MobileAnalytics.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.RDS, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.RDS.3.3.100\lib\net45\AWSSDK.RDS.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.S3, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.S3.3.3.100\lib\net45\AWSSDK.S3.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.SecurityToken, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.SecurityToken.3.3.100\lib\net45\AWSSDK.SecurityToken.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.SimpleDB, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.SimpleDB.3.3.100\lib\net45\AWSSDK.SimpleDB.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.SimpleNotificationService, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.SimpleNotificationService.3.3.100\lib\net45\AWSSDK.SimpleNotificationService.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="AWSSDK.SQS, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.SQS.3.3.100\lib\net45\AWSSDK.SQS.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>$(BuildRoot)\thirdparty\ICSharpCode.SharpZipLib.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="YamlDotNet">
@@ -422,10 +314,6 @@
         <Reference Include="Microsoft.VisualStudio.CommandBars, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
           <EmbedInteropTypes>False</EmbedInteropTypes>
         </Reference>
-        <Reference Include="Microsoft.VisualStudio.OLE.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.OLE.Interop.7.10.6070\lib\Microsoft.VisualStudio.OLE.Interop.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
         <Reference Include="Microsoft.VisualStudio.Shell.Immutable.11.0, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
           <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Shell.Immutable.11.0.11.0.50727\lib\net45\Microsoft.VisualStudio.Shell.Immutable.11.0.dll</HintPath>
           <Private>True</Private>
@@ -434,90 +322,13 @@
           <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Shell.Immutable.12.0.12.0.21003\lib\net45\Microsoft.VisualStudio.Shell.Immutable.12.0.dll</HintPath>
           <Private>True</Private>
         </Reference>
-        <Reference Include="Microsoft.VisualStudio.Shell.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Shell.Interop.7.10.6071\lib\Microsoft.VisualStudio.Shell.Interop.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.Shell.Interop.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <EmbedInteropTypes>True</EmbedInteropTypes>
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Shell.Interop.10.0.10.0.30319\lib\Microsoft.VisualStudio.Shell.Interop.10.0.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.Shell.Interop.11.0, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <EmbedInteropTypes>True</EmbedInteropTypes>
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Shell.Interop.11.0.11.0.61030\lib\Microsoft.VisualStudio.Shell.Interop.11.0.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.Shell.Interop.12.0, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <EmbedInteropTypes>True</EmbedInteropTypes>
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Shell.Interop.12.0.12.0.30110\lib\Microsoft.VisualStudio.Shell.Interop.12.0.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Shell.Interop.8.0.8.0.50727\lib\Microsoft.VisualStudio.Shell.Interop.8.0.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.Shell.Interop.9.0, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Shell.Interop.9.0.9.0.30729\lib\Microsoft.VisualStudio.Shell.Interop.9.0.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TextManager.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.TextManager.Interop.7.10.6070\lib\Microsoft.VisualStudio.TextManager.Interop.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TextManager.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.TextManager.Interop.8.0.8.0.50727\lib\Microsoft.VisualStudio.TextManager.Interop.8.0.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.Data.Core, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
         <Reference Include="Microsoft.VisualStudio.Data.Services, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
         <Reference Include="Microsoft.VisualStudio.Designer.Interfaces, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
           <EmbedInteropTypes>True</EmbedInteropTypes>
         </Reference>
-        <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.CoreUtility.15.0.26201\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.Data, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Data.15.7.27703\lib\net45\Microsoft.VisualStudio.Data.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.Data.Framework, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Data.Framework.15.7.27703\lib\net45\Microsoft.VisualStudio.Data.Framework.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.Imaging, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Imaging.15.0.26201\lib\net45\Microsoft.VisualStudio.Imaging.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.14.3.25408\lib\net20\Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.dll</HintPath>
-          <EmbedInteropTypes>True</EmbedInteropTypes>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.Shell.15.0, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Shell.15.0.15.0.26201\lib\Microsoft.VisualStudio.Shell.15.0.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.Shell.Framework, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Shell.Framework.15.0.26201\lib\net45\Microsoft.VisualStudio.Shell.Framework.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime.14.3.25407\lib\Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime.dll</HintPath>
-          <EmbedInteropTypes>True</EmbedInteropTypes>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.Threading, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Threading.15.0.240\lib\net45\Microsoft.VisualStudio.Threading.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.Utilities, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Utilities.15.0.26201\lib\net45\Microsoft.VisualStudio.Utilities.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.Validation, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <HintPath>$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Validation.15.0.82\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
-        </Reference>
       </ItemGroup>
     </When>
   </Choose>
-  <ItemGroup Condition="'$(VisualStudioVersion)' == '15.0'">
-    <Analyzer Include="$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.SDK.Analyzers.15.7.7\analyzers\cs\Microsoft.VisualStudio.SDK.Analyzers.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Threading.Analyzers.15.7.18\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.dll" />
-  </ItemGroup>
   <ItemGroup Condition="'$(VisualStudioVersion)' != '12.0'">
     <Compile Include="NativeMethods.cs" />
   </ItemGroup>
@@ -597,7 +408,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="Resources\vsctimages_32bit.png" />
     <EmbeddedResource Include="Resources\CloudFormationTemplateProjectNode.png" />
     <EmbeddedResource Include="Resources\CloudFormationTemplateNode.png" />
@@ -1192,7 +1002,7 @@
       <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\solutions\packages\log4net.2.0.8\lib\net45-full\log4net.dll">
+    <Content Include="$(OutputRoot)\log4net.dll">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>log4net.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -1332,13 +1142,13 @@
       <Project>{81552efa-46b0-4ebe-bc29-5ba6a7628207}</Project>
       <Name>AWSToolkit.VisualStudio.Shared</Name>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\AWSToolkit.CodeCommitTeamExplorer\AWSToolkit.CodeCommitTeamExplorer.v15.csproj">
+    <ProjectReference Include="$(BuildRoot)\vspackages\AWSToolkit.CodeCommitTeamExplorer.v15\AWSToolkit.CodeCommitTeamExplorer.v15.csproj">
       <Project>{94f578fb-afeb-4c67-bd0d-c5797e50e9e8}</Project>
       <Name>AWSToolkit.CodeCommitTeamExplorer.v15</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\AWSToolkit.CodeCommitTeamExplorer\AWSToolkit.CodeCommitTeamExplorer.v16.csproj">
+    <ProjectReference Include="$(BuildRoot)\vspackages\AWSToolkit.CodeCommitTeamExplorer.v16\AWSToolkit.CodeCommitTeamExplorer.v16.csproj">
       <Project>{5739EE0E-1E8C-4AC6-9AAA-F58C7345B9A8}</Project>
       <Name>AWSToolkit.CodeCommitTeamExplorer.v16</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
@@ -1443,31 +1253,194 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.AutoScaling.3.3.100\analyzers\dotnet\cs\AWSSDK.AutoScaling.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.CloudFormation.3.3.100\analyzers\dotnet\cs\AWSSDK.CloudFormation.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.CloudFront.3.3.100\analyzers\dotnet\cs\AWSSDK.CloudFront.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.CloudWatch.3.3.100\analyzers\dotnet\cs\AWSSDK.CloudWatch.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.CloudWatchEvents.3.3.100\analyzers\dotnet\cs\AWSSDK.CloudWatchEvents.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.CloudWatchLogs.3.3.100\analyzers\dotnet\cs\AWSSDK.CloudWatchLogs.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.CognitoIdentity.3.3.100\analyzers\dotnet\cs\AWSSDK.CognitoIdentity.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.CognitoSync.3.3.100\analyzers\dotnet\cs\AWSSDK.CognitoSync.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.DynamoDBv2.3.3.100\analyzers\dotnet\cs\AWSSDK.DynamoDBv2.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.EC2.3.3.100\analyzers\dotnet\cs\AWSSDK.EC2.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.ECR.3.3.100\analyzers\dotnet\cs\AWSSDK.ECR.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.ECS.3.3.100\analyzers\dotnet\cs\AWSSDK.ECS.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.ElasticBeanstalk.3.3.100\analyzers\dotnet\cs\AWSSDK.ElasticBeanstalk.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.ElasticLoadBalancing.3.3.100\analyzers\dotnet\cs\AWSSDK.ElasticLoadBalancing.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.ElasticLoadBalancingV2.3.3.100\analyzers\dotnet\cs\AWSSDK.ElasticLoadBalancingV2.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.IdentityManagement.3.3.100\analyzers\dotnet\cs\AWSSDK.IdentityManagement.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.KeyManagementService.3.3.100\analyzers\dotnet\cs\AWSSDK.KeyManagementService.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.Lambda.3.3.100\analyzers\dotnet\cs\AWSSDK.Lambda.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.MobileAnalytics.3.3.100\analyzers\dotnet\cs\AWSSDK.MobileAnalytics.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.RDS.3.3.100\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.S3.3.3.100\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.SecurityToken.3.3.100\analyzers\dotnet\cs\AWSSDK.SecurityToken.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.SimpleDB.3.3.100\analyzers\dotnet\cs\AWSSDK.SimpleDB.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.SimpleNotificationService.3.3.100\analyzers\dotnet\cs\AWSSDK.SimpleNotificationService.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.SQS.3.3.100\analyzers\dotnet\cs\AWSSDK.SQS.CodeAnalysis.dll" />
+    <PackageReference Include="AWSSDK.AutoScaling">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.CloudFormation">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.CloudFront">
+      <Version>3.3.100.32</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.CloudWatch">
+      <Version>3.3.100.2</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.CloudWatchEvents">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.CloudWatchLogs">
+      <Version>3.3.100.36</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.CognitoIdentity">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.CognitoSync">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.Core">
+      <Version>3.3.102.7</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.DynamoDBv2">
+      <Version>3.3.100.9</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.EC2">
+      <Version>3.3.100.2</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.ECR">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.ECS">
+      <Version>3.3.100.2</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.ElasticBeanstalk">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.ElasticLoadBalancing">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.ElasticLoadBalancingV2">
+      <Version>3.3.100.2</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.IdentityManagement">
+      <Version>3.3.100.11</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.KeyManagementService">
+      <Version>3.3.100.13</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.Lambda">
+      <Version>3.3.100.9</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.MobileAnalytics">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.RDS">
+      <Version>3.3.100.6</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.S3">
+      <Version>3.3.100.2</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.SecurityToken">
+      <Version>3.3.101.17</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.SimpleDB">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.SimpleNotificationService">
+      <Version>3.3.100.10</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.SQS">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="log4net">
+      <Version>2.0.8</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.CoreUtility">
+      <Version>15.0.26201</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Data">
+      <Version>15.7.27703</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Data.Core">
+      <Version>9.0.21023</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Data.Framework">
+      <Version>15.7.27703</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Data.Services">
+      <Version>9.0.21023</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Editor">
+      <Version>14.3.25407</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Imaging">
+      <Version>15.0.26201</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime">
+      <Version>14.3.25408</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Language.Intellisense">
+      <Version>14.3.25407</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.OLE.Interop">
+      <Version>7.10.6071</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.SDK.Analyzers">
+      <Version>15.8.33</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes">
+      <Version>15.0.10</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Services.InteractiveClient">
+      <Version>15.112.1</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Shell.15.0">
+      <Version>15.0.26201</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Framework">
+      <Version>15.0.26201</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop">
+      <Version>7.10.6072</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.10.0">
+      <Version>10.0.30319</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.11.0">
+      <Version>11.0.61030</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.12.0">
+      <Version>12.0.30110</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime">
+      <Version>14.3.25407</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.8.0">
+      <Version>8.0.50727</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.9.0">
+      <Version>9.0.30729</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Text.Data">
+      <Version>14.3.25407</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Text.Logic">
+      <Version>14.3.25407</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI">
+      <Version>14.3.25407</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Text.UI.Wpf">
+      <Version>14.3.25407</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.TextManager.Interop">
+      <Version>7.10.6071</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.TextManager.Interop.8.0">
+      <Version>8.0.50727</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Threading">
+      <Version>15.8.122</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers">
+      <Version>15.8.122</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Utilities">
+      <Version>15.0.26201</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Validation">
+      <Version>15.3.15</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VSSDK.BuildTools">
+      <Version>15.8.3252</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VSSDK.VsixSignTool">
+      <Version>15.7.27703</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks.Extensions">
+      <Version>4.3.0</Version>
+    </PackageReference>
   </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
@@ -1480,17 +1453,6 @@
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(Language)' == 'C#' and '$(CreateVsixContainer)' != '' and $(CreateVsixContainer) and '$(VSToolsPath)' != ''" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" Condition="'$(Language)' == 'C++'" />
   <Import Project="$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Threading.Analyzers.15.7.18\build\Microsoft.VisualStudio.Threading.Analyzers.targets" Condition="'$(VisualStudioVersion)' == '15.0' And Exists('$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Threading.Analyzers.15.7.18\build\Microsoft.VisualStudio.Threading.Analyzers.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="'$(VisualStudioVersion)' == '14.0' And !Exists('$(BuildRoot)\solutions\packages\Microsoft.VSSDK.BuildTools.14.3.25407\build\Microsoft.VSSDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', '$(BuildRoot)\solutions\packages\Microsoft.VSSDK.BuildTools.14.3.25407\build\Microsoft.VSSDK.BuildTools.props'))" />
-    <Error Condition="'$(VisualStudioVersion)' == '14.0' And !Exists('$(BuildRoot)\solutions\packages\Microsoft.VSSDK.BuildTools.14.3.25407\build\Microsoft.VSSDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(BuildRoot)\solutions\packages\Microsoft.VSSDK.BuildTools.14.3.25407\build\Microsoft.VSSDK.BuildTools.targets'))" />
-    <Error Condition="'$(VisualStudioVersion)' == '15.0' And !Exists('$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Threading.Analyzers.15.7.18\build\Microsoft.VisualStudio.Threading.Analyzers.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.Threading.Analyzers.15.7.18\build\Microsoft.VisualStudio.Threading.Analyzers.targets'))" />
-    <Error Condition="'$(VisualStudioVersion)' == '15.0' And !Exists('$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.10\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.10\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets'))" />
-    <Error Condition="'$(VisualStudioVersion)' == '15.0' And !Exists('$(BuildRoot)\solutions\packages\Microsoft.VSSDK.BuildTools.15.8.3252\build\Microsoft.VSSDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', '$(BuildRoot)\solutions\packages\Microsoft.VSSDK.BuildTools.15.8.3252\build\Microsoft.VSSDK.BuildTools.props'))" />
-    <Error Condition="'$(VisualStudioVersion)' == '15.0' And !Exists('$(BuildRoot)\solutions\packages\Microsoft.VSSDK.BuildTools.15.8.3252\build\Microsoft.VSSDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(BuildRoot)\solutions\packages\Microsoft.VSSDK.BuildTools.15.8.3252\build\Microsoft.VSSDK.BuildTools.targets'))" />
-  </Target>
   <Import Project="$(BuildRoot)\solutions\packages\Microsoft.VSSDK.BuildTools.14.3.25407\build\Microsoft.VSSDK.BuildTools.targets" Condition="'$(VisualStudioVersion)' == '14.0' And Exists('$(BuildRoot)\solutions\packages\Microsoft.VSSDK.BuildTools.14.3.25407\build\Microsoft.VSSDK.BuildTools.targets')" />
   <Import Project="$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.10\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets" Condition="'$(VisualStudioVersion)' == '15.0' And Exists('$(BuildRoot)\solutions\packages\Microsoft.VisualStudio.SDK.EmbedInteropTypes.15.0.10\build\Microsoft.VisualStudio.SDK.EmbedInteropTypes.targets')" />
   <Import Project="$(BuildRoot)\solutions\packages\Microsoft.VSSDK.BuildTools.15.8.3252\build\Microsoft.VSSDK.BuildTools.targets" Condition="'$(VisualStudioVersion)' == '15.0' And Exists('$(BuildRoot)\solutions\packages\Microsoft.VSSDK.BuildTools.15.8.3252\build\Microsoft.VSSDK.BuildTools.targets')" />

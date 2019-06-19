@@ -139,19 +139,36 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.CloudFormation.3.3.100\analyzers\dotnet\cs\AWSSDK.CloudFormation.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.CloudWatchEvents.3.3.100\analyzers\dotnet\cs\AWSSDK.CloudWatchEvents.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.CloudWatchLogs.3.3.100\analyzers\dotnet\cs\AWSSDK.CloudWatchLogs.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.EC2.3.3.100\analyzers\dotnet\cs\AWSSDK.EC2.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.ECR.3.3.100\analyzers\dotnet\cs\AWSSDK.ECR.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.ECS.3.3.100\analyzers\dotnet\cs\AWSSDK.ECS.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.ElasticBeanstalk.3.3.100\analyzers\dotnet\cs\AWSSDK.ElasticBeanstalk.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.IdentityManagement.3.3.100\analyzers\dotnet\cs\AWSSDK.IdentityManagement.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.Lambda.3.3.100\analyzers\dotnet\cs\AWSSDK.Lambda.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.S3.3.3.100\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
+    <PackageReference Include="AWSSDK.CloudFormation">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.CloudWatchEvents">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.CloudWatchLogs">
+      <Version>3.3.100.36</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.EC2">
+      <Version>3.3.100.2</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.ECR">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.ECS">
+      <Version>3.3.100.2</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.ElasticBeanstalk">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.IdentityManagement">
+      <Version>3.3.100.11</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.Lambda">
+      <Version>3.3.100.9</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.S3">
+      <Version>3.3.100.2</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

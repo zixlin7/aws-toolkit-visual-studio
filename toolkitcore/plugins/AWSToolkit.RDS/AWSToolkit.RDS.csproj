@@ -218,7 +218,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -405,8 +404,15 @@
     <Resource Include="Resources\Images\CreateDBSubnetGroup.png" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.EC2.3.3.100\analyzers\dotnet\cs\AWSSDK.EC2.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.RDS.3.3.100\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
+    <PackageReference Include="AWSSDK.EC2">
+      <Version>3.3.100.2</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.RDS">
+      <Version>3.3.100.6</Version>
+    </PackageReference>
+    <PackageReference Include="log4net">
+      <Version>2.0.8</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

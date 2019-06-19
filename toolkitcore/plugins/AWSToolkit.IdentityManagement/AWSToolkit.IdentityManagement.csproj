@@ -155,7 +155,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -268,7 +267,12 @@
     <EmbeddedResource Include="Resources\EmbeddedImages\user_add.png" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.IdentityManagement.3.3.100\analyzers\dotnet\cs\AWSSDK.IdentityManagement.CodeAnalysis.dll" />
+    <PackageReference Include="AWSSDK.IdentityManagement">
+      <Version>3.3.100.11</Version>
+    </PackageReference>
+    <PackageReference Include="log4net">
+      <Version>2.0.8</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

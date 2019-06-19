@@ -15,6 +15,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit", "..\toolkitcore\AWSToolkit\AWSToolkit.csproj", "{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.Util", "..\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj", "{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E5103B26-6ED2-42EB-A6BB-3BC920751D20} = {E5103B26-6ED2-42EB-A6BB-3BC920751D20}
+		{4A43FDED-F828-4872-89DA-0FE738BCB93A} = {4A43FDED-F828-4872-89DA-0FE738BCB93A}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSSDK.Extensions", "..\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj", "{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}"
 EndProject
@@ -162,9 +166,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSDeploymentHostManagerCli
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSDeploymentHostManagerClient", "..\awsdeploy\host\AWSDeploymentHostManagerClient\AWSDeploymentHostManagerClient.csproj", "{E5103B26-6ED2-42EB-A6BB-3BC920751D20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeCommitTeamExplorer.v15", "..\vspackages\AWSToolkit.CodeCommitTeamExplorer\AWSToolkit.CodeCommitTeamExplorer.v15.csproj", "{94F578FB-AFEB-4C67-BD0D-C5797E50E9E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeCommitTeamExplorer.v15", "..\vspackages\AWSToolkit.CodeCommitTeamExplorer.v15\AWSToolkit.CodeCommitTeamExplorer.v15.csproj", "{94F578FB-AFEB-4C67-BD0D-C5797E50E9E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeCommitTeamExplorer.v16", "..\vspackages\AWSToolkit.CodeCommitTeamExplorer\AWSToolkit.CodeCommitTeamExplorer.v16.csproj", "{5739EE0E-1E8C-4AC6-9AAA-F58C7345B9A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeCommitTeamExplorer.v16", "..\vspackages\AWSToolkit.CodeCommitTeamExplorer.v16\AWSToolkit.CodeCommitTeamExplorer.v16.csproj", "{5739EE0E-1E8C-4AC6-9AAA-F58C7345B9A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

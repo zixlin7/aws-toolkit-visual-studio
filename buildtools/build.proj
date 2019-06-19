@@ -48,9 +48,9 @@
 
     <Target Name="restore-nuget">
         <Message Text="Restoring nuget packages"/>
-        <Exec Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSDeploymentHostManager.sln" />
-        <Exec Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSVisualStudioToolkit.sln" />
-        <Exec Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSStudioToolkit.sln" />
+        <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSDeploymentHostManager.sln" />
+        <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSVisualStudioToolkit.sln" />
+        <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSStudioToolkit.sln" />
     </Target>
     
     <Target Name="build-awsdeploy">

@@ -226,7 +226,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -448,12 +447,27 @@
     <EmbeddedResource Include="Resources\EmbeddedImages\sqs-service-icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.CloudFront.3.3.100\analyzers\dotnet\cs\AWSSDK.CloudFront.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.IdentityManagement.3.3.100\analyzers\dotnet\cs\AWSSDK.IdentityManagement.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.Lambda.3.3.100\analyzers\dotnet\cs\AWSSDK.Lambda.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.S3.3.3.100\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.SimpleNotificationService.3.3.100\analyzers\dotnet\cs\AWSSDK.SimpleNotificationService.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.SQS.3.3.100\analyzers\dotnet\cs\AWSSDK.SQS.CodeAnalysis.dll" />
+    <PackageReference Include="AWSSDK.CloudFront">
+      <Version>3.3.100.32</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.IdentityManagement">
+      <Version>3.3.100.11</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.Lambda">
+      <Version>3.3.100.9</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.S3">
+      <Version>3.3.100.2</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.SimpleNotificationService">
+      <Version>3.3.100.10</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.SQS">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="log4net">
+      <Version>2.0.8</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

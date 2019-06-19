@@ -40,43 +40,10 @@
       <HintPath>$(BuildRoot)\awsdeploy\host\AWSDeploymentCryptoUtility\bin\$(Configuration)\AWSDeploymentCryptoUtility.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="AWSDeploymentHostManagerClientLib">
-      <HintPath>$(BuildRoot)\awsdeploy\host\AWSDeploymentHostManagerClient\bin\$(Configuration)\AWSDeploymentHostManagerClientLib.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.AutoScaling, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.AutoScaling.3.3.100\lib\net45\AWSSDK.AutoScaling.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.CloudFormation, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.CloudFormation.3.3.100\lib\net45\AWSSDK.CloudFormation.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.Core.3.3.100\lib\net45\AWSSDK.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.EC2, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.EC2.3.3.100\lib\net45\AWSSDK.EC2.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.ElasticBeanstalk, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.ElasticBeanstalk.3.3.100\lib\net45\AWSSDK.ElasticBeanstalk.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.ElasticLoadBalancing, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.ElasticLoadBalancing.3.3.100\lib\net45\AWSSDK.ElasticLoadBalancing.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.IdentityManagement, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.IdentityManagement.3.3.100\lib\net45\AWSSDK.IdentityManagement.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.RDS, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.RDS.3.3.100\lib\net45\AWSSDK.RDS.dll</HintPath>
-    </Reference>
-    <Reference Include="AWSSDK.S3, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
-      <HintPath>$(BuildRoot)\solutions\packages\AWSSDK.S3.3.3.100\lib\net45\AWSSDK.S3.dll</HintPath>
-    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(BuildRoot)\thirdparty\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\solutions\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -134,19 +101,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.AutoScaling.3.3.100\analyzers\dotnet\cs\AWSSDK.AutoScaling.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.CloudFormation.3.3.100\analyzers\dotnet\cs\AWSSDK.CloudFormation.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.EC2.3.3.100\analyzers\dotnet\cs\AWSSDK.EC2.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.ElasticBeanstalk.3.3.100\analyzers\dotnet\cs\AWSSDK.ElasticBeanstalk.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.ElasticLoadBalancing.3.3.100\analyzers\dotnet\cs\AWSSDK.ElasticLoadBalancing.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.IdentityManagement.3.3.100\analyzers\dotnet\cs\AWSSDK.IdentityManagement.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.RDS.3.3.100\analyzers\dotnet\cs\AWSSDK.RDS.CodeAnalysis.dll" />
-    <Analyzer Include="$(BuildRoot)\solutions\packages\AWSSDK.S3.3.3.100\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
       <Project>{20c1f223-eef5-4eab-9e2d-8df31bb3ff45}</Project>
       <Name>AWSSDK.Extensions</Name>
@@ -159,6 +113,42 @@
       <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
       <Name>AWSToolkit</Name>
     </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\awsdeploy\host\AWSDeploymentHostManagerClient\AWSDeploymentHostManagerClientLib.csproj">
+      <Project>{4CEA2748-E89E-4DB9-A75B-E47F59113920}</Project>
+      <Name>AWSDeploymentHostManagerClientLib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.AutoScaling">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.CloudFormation">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.Core">
+      <Version>3.3.102.7</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.EC2">
+      <Version>3.3.100.2</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.ElasticBeanstalk">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.ElasticLoadBalancing">
+      <Version>3.3.100.35</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.IdentityManagement">
+      <Version>3.3.100.11</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.RDS">
+      <Version>3.3.100.6</Version>
+    </PackageReference>
+    <PackageReference Include="AWSSDK.S3">
+      <Version>3.3.100.2</Version>
+    </PackageReference>
+    <PackageReference Include="log4net">
+      <Version>2.0.8</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
