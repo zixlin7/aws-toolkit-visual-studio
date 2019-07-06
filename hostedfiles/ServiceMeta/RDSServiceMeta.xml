@@ -2,6 +2,313 @@
 <RDSMetaInfo>
 
   <DBInstanceTypes>
+
+    <DBInstanceType id="db.z1d.12xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>384 GiB</Memory>
+      <VirtualCores>48</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>25 Gbps</IOCapacity>
+    </DBInstanceType>
+    <DBInstanceType id="db.z1d.6xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>192 GiB</Memory>
+      <VirtualCores>24</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>10 Gbps</IOCapacity>
+    </DBInstanceType>  
+    <DBInstanceType id="db.z1d.3xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>96 GiB</Memory>
+      <VirtualCores>12</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gbps</IOCapacity>
+    </DBInstanceType>       
+    <DBInstanceType id="db.z1d.2xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>64 GiB</Memory>
+      <VirtualCores>8</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gbps</IOCapacity>
+    </DBInstanceType>         
+    <DBInstanceType id="db.z1d.xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>32 GiB</Memory>
+      <VirtualCores>4</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gbps</IOCapacity>
+    </DBInstanceType>   
+    <DBInstanceType id="db.z1d.large">
+      <DisplayName>Large</DisplayName>
+      <Memory>16 GiB</Memory>
+      <VirtualCores>2</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gbps</IOCapacity>
+    </DBInstanceType>    
+
+
+    <DBInstanceType id="db.x1e.32xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>3,904 GiB</Memory>
+      <VirtualCores>128</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>25 Gbps</IOCapacity>
+    </DBInstanceType>     
+    <DBInstanceType id="db.x1e.16xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>1,952 GiB</Memory>
+      <VirtualCores>64</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>10 Gbps</IOCapacity>
+    </DBInstanceType>          
+    <DBInstanceType id="db.x1e.8xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>976 GiB</Memory>
+      <VirtualCores>32</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gbps</IOCapacity>
+    </DBInstanceType>  
+    <DBInstanceType id="db.x1e.4xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>488 GiB</Memory>
+      <VirtualCores>16</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gbps</IOCapacity>
+    </DBInstanceType>      
+    <DBInstanceType id="db.x1e.2xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>244 GiB</Memory>
+      <VirtualCores>8</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gbps</IOCapacity>
+    </DBInstanceType>  
+    <DBInstanceType id="db.x1e.xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>122 GiB</Memory>
+      <VirtualCores>4</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gbps</IOCapacity>
+    </DBInstanceType>      
+
+
+    <DBInstanceType id="db.r5.24xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>768 GiB</Memory>
+      <VirtualCores>96</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>25 Gbps</IOCapacity>
+    </DBInstanceType>  
+    <DBInstanceType id="db.r5.12xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>384 GiB</Memory>
+      <VirtualCores>48</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>10 Gbps</IOCapacity>
+    </DBInstanceType>    
+    <DBInstanceType id="db.r5.4xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>128 GiB</Memory>
+      <VirtualCores>16</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gbps</IOCapacity>
+    </DBInstanceType>      
+    <DBInstanceType id="db.r5.2xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>64 GiB</Memory>
+      <VirtualCores>8</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gbps</IOCapacity>
+    </DBInstanceType>       
+    <DBInstanceType id="db.r5.xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>32 GiB</Memory>
+      <VirtualCores>4</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gbps</IOCapacity>
+    </DBInstanceType>     
+    <DBInstanceType id="db.r5.large">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>16 GiB</Memory>
+      <VirtualCores>2</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gbps</IOCapacity>
+    </DBInstanceType>      
+
+
+    <DBInstanceType id="db.r4.16xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>488 GiB</Memory>
+      <VirtualCores>64</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>25 Gbps</IOCapacity>
+    </DBInstanceType> 
+    <DBInstanceType id="db.r4.8xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>244 GiB</Memory>
+      <VirtualCores>32</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>10 Gbps</IOCapacity>
+    </DBInstanceType>     
+    <DBInstanceType id="db.r4.4xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>122 GiB</Memory>
+      <VirtualCores>16</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gbps</IOCapacity>
+    </DBInstanceType>   
+    <DBInstanceType id="db.r4.2xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>61 GiB</Memory>
+      <VirtualCores>8</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gbps</IOCapacity>
+    </DBInstanceType>       
+    <DBInstanceType id="db.r4.xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>30.5 GiB</Memory>
+      <VirtualCores>4</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gbps</IOCapacity>
+    </DBInstanceType>       
+    <DBInstanceType id="db.r4.large">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>15.25 GiB</Memory>
+      <VirtualCores>2</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gbps</IOCapacity>
+    </DBInstanceType> 
+
+    <DBInstanceType id="db.t3.2xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>32 GiB</Memory>
+      <VirtualCores>8</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 5 Gigabit</IOCapacity>
+    </DBInstanceType>  
+    <DBInstanceType id="db.t3.xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>16 GiB</Memory>
+      <VirtualCores>4</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 5 Gigabit</IOCapacity>
+    </DBInstanceType>   
+    <DBInstanceType id="db.t3.large">
+      <DisplayName>Large</DisplayName>
+      <Memory>8 GiB</Memory>
+      <VirtualCores>2</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 5 Gigabit</IOCapacity>
+    </DBInstanceType>        
+    <DBInstanceType id="db.t3.medium">
+      <DisplayName>Medium</DisplayName>
+      <Memory>4 GiB</Memory>
+      <VirtualCores>2</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 5 Gigabit</IOCapacity>
+    </DBInstanceType>     
+    <DBInstanceType id="db.t3.small">
+      <DisplayName>Small</DisplayName>
+      <Memory>2 GiB</Memory>
+      <VirtualCores>2</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 5 Gigabit</IOCapacity>
+    </DBInstanceType>         
+    <DBInstanceType id="db.t3.small">
+      <DisplayName>Micro</DisplayName>
+      <Memory>1 GiB</Memory>
+      <VirtualCores>2</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 5 Gigabit</IOCapacity>
+    </DBInstanceType>      
+
+
+
+    <DBInstanceType id="db.m5.24xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>384 GiB</Memory>
+      <VirtualCores>96</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>25 Gbps</IOCapacity>
+    </DBInstanceType>
+    <DBInstanceType id="db.m5.12xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>192 GiB</Memory>
+      <VirtualCores>48</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>10 Gbps</IOCapacity>
+    </DBInstanceType>
+    <DBInstanceType id="db.m5.4xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>64 GiB</Memory>
+      <VirtualCores>16</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gigabit</IOCapacity>
+    </DBInstanceType>
+    <DBInstanceType id="db.m5.2xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>32 GiB</Memory>
+      <VirtualCores>8</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gigabit</IOCapacity>
+    </DBInstanceType>
+    <DBInstanceType id="db.m5.xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>16 GiB</Memory>
+      <VirtualCores>4</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gigabit</IOCapacity>
+    </DBInstanceType>    
+    <DBInstanceType id="db.m5.large">
+      <DisplayName>Large</DisplayName>
+      <Memory>8 GiB</Memory>
+      <VirtualCores>2</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Up to 10 Gigabit</IOCapacity>
+    </DBInstanceType>    
+
+    <DBInstanceType id="db.m4.16xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>256 GiB</Memory>
+      <VirtualCores>64</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>25 Gbps</IOCapacity>
+    </DBInstanceType>  
+    <DBInstanceType id="db.m4.10xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>160 GiB</Memory>
+      <VirtualCores>40</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>10 Gbps</IOCapacity>
+    </DBInstanceType>     
+    <DBInstanceType id="db.m4.4xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>64 GiB</Memory>
+      <VirtualCores>16</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>High</IOCapacity>
+    </DBInstanceType>     
+    <DBInstanceType id="db.m4.2xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>32 GiB</Memory>
+      <VirtualCores>8</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>High</IOCapacity>
+    </DBInstanceType>   
+    <DBInstanceType id="db.m4.xlarge">
+      <DisplayName>Extra Large</DisplayName>
+      <Memory>16 GiB</Memory>
+      <VirtualCores>4</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>High</IOCapacity>
+    </DBInstanceType>    
+    <DBInstanceType id="db.m4.large">
+      <DisplayName>Large</DisplayName>
+      <Memory>8 GiB</Memory>
+      <VirtualCores>2</VirtualCores>
+      <ArchitectureBits>64</ArchitectureBits>
+      <IOCapacity>Moderate</IOCapacity>
+    </DBInstanceType>                             
+
     <DBInstanceType id="db.t1.micro">
       <DisplayName>Micro</DisplayName>
       <Memory>.615 GiB</Memory>
@@ -165,26 +472,52 @@
         <LicenseModel id="general-public-license" />
       </LicenseModels>
       <DBInstanceClasses>
+        <DBInstanceClass id="db.t3.2xlarge" />
+        <DBInstanceClass id="db.t3.xlarge" />
+        <DBInstanceClass id="db.t3.large" />
+        <DBInstanceClass id="db.t3.medium" />
+        <DBInstanceClass id="db.t3.small" />
+        <DBInstanceClass id="db.t3.micro" />
+        <DBInstanceClass id="db.m5.24xlarge" />
+        <DBInstanceClass id="db.m5.12xlarge" />
+        <DBInstanceClass id="db.m5.4xlarge" />
+        <DBInstanceClass id="db.m5.2xlarge" />
+        <DBInstanceClass id="db.m5.xlarge" />
+        <DBInstanceClass id="db.m5.large" />
+        <DBInstanceClass id="db.r5.24xlarge" />
+        <DBInstanceClass id="db.r5.12xlarge" />
+        <DBInstanceClass id="db.r5.4xlarge" />
+        <DBInstanceClass id="db.r5.2xlarge" />
+        <DBInstanceClass id="db.r5.xlarge" />
+        <DBInstanceClass id="db.r5.large" />
+        <DBInstanceClass id="db.r4.16xlarge" />
+        <DBInstanceClass id="db.r4.8xlarge" />
+        <DBInstanceClass id="db.r4.4xlarge" />
+        <DBInstanceClass id="db.r4.2xlarge" />
+        <DBInstanceClass id="db.r4.xlarge" />
+        <DBInstanceClass id="db.r4.large" />
+
+
         <DBInstanceClass id="db.t2.micro" />
-		<DBInstanceClass id="db.t2.small" />
-		<DBInstanceClass id="db.m3.medium" />
-		<DBInstanceClass id="db.m3.large" />
-		<DBInstanceClass id="db.m3.xlarge" />
-		<DBInstanceClass id="db.m3.2xlarge" />
-		<DBInstanceClass id="db.r3.large" />
-		<DBInstanceClass id="db.r3.xlarge" />
-		<DBInstanceClass id="db.r3.2xlarge" />
-		<DBInstanceClass id="db.r3.4xlarge" />
-		<DBInstanceClass id="db.r3.8xlarge" />
-		<DBInstanceClass id="db.m2.xlarge" />
-		<DBInstanceClass id="db.m2.2xlarge" />
-		<DBInstanceClass id="db.m2.4xlarge" />
-		<DBInstanceClass id="db.cr1.8xlarge" />
-		<DBInstanceClass id="db.m1.small" />
-		<DBInstanceClass id="db.m1.medium" />
-		<DBInstanceClass id="db.m1.large" />
-		<DBInstanceClass id="db.m1.xlarge" />
-		<DBInstanceClass id="db.t1.micro" />
+        <DBInstanceClass id="db.t2.small" />
+        <DBInstanceClass id="db.m3.medium" />
+        <DBInstanceClass id="db.m3.large" />
+        <DBInstanceClass id="db.m3.xlarge" />
+        <DBInstanceClass id="db.m3.2xlarge" />
+        <DBInstanceClass id="db.r3.large" />
+        <DBInstanceClass id="db.r3.xlarge" />
+        <DBInstanceClass id="db.r3.2xlarge" />
+        <DBInstanceClass id="db.r3.4xlarge" />
+        <DBInstanceClass id="db.r3.8xlarge" />
+        <DBInstanceClass id="db.m2.xlarge" />
+        <DBInstanceClass id="db.m2.2xlarge" />
+        <DBInstanceClass id="db.m2.4xlarge" />
+        <DBInstanceClass id="db.cr1.8xlarge" />
+        <DBInstanceClass id="db.m1.small" />
+        <DBInstanceClass id="db.m1.medium" />
+        <DBInstanceClass id="db.m1.large" />
+        <DBInstanceClass id="db.m1.xlarge" />
+        <DBInstanceClass id="db.t1.micro" />
       </DBInstanceClasses>
       <SupportsMultiAZ>true</SupportsMultiAZ>
       <Storage min="5" max="3072" />
@@ -201,26 +534,52 @@
         <LicenseModel id="postgresql-license" />
       </LicenseModels>
       <DBInstanceClasses>
+        <DBInstanceClass id="db.t3.2xlarge" />
+        <DBInstanceClass id="db.t3.xlarge" />
+        <DBInstanceClass id="db.t3.large" />
+        <DBInstanceClass id="db.t3.medium" />
+        <DBInstanceClass id="db.t3.small" />
+        <DBInstanceClass id="db.t3.micro" />
+        <DBInstanceClass id="db.m5.24xlarge" />
+        <DBInstanceClass id="db.m5.12xlarge" />
+        <DBInstanceClass id="db.m5.4xlarge" />
+        <DBInstanceClass id="db.m5.2xlarge" />
+        <DBInstanceClass id="db.m5.xlarge" />
+        <DBInstanceClass id="db.m5.large" />
+        <DBInstanceClass id="db.r5.24xlarge" />
+        <DBInstanceClass id="db.r5.12xlarge" />
+        <DBInstanceClass id="db.r5.4xlarge" />
+        <DBInstanceClass id="db.r5.2xlarge" />
+        <DBInstanceClass id="db.r5.xlarge" />
+        <DBInstanceClass id="db.r5.large" />
+        <DBInstanceClass id="db.r4.16xlarge" />
+        <DBInstanceClass id="db.r4.8xlarge" />
+        <DBInstanceClass id="db.r4.4xlarge" />
+        <DBInstanceClass id="db.r4.2xlarge" />
+        <DBInstanceClass id="db.r4.xlarge" />
+        <DBInstanceClass id="db.r4.large" />
+
+
         <DBInstanceClass id="db.t2.micro" />
-		<DBInstanceClass id="db.t2.small" />
-		<DBInstanceClass id="db.m3.medium" />
-		<DBInstanceClass id="db.m3.large" />
-		<DBInstanceClass id="db.m3.xlarge" />
-		<DBInstanceClass id="db.m3.2xlarge" />
-		<DBInstanceClass id="db.r3.large" />
-		<DBInstanceClass id="db.r3.xlarge" />
-		<DBInstanceClass id="db.r3.2xlarge" />
-		<DBInstanceClass id="db.r3.4xlarge" />
-		<DBInstanceClass id="db.r3.8xlarge" />
-		<DBInstanceClass id="db.m2.xlarge" />
-		<DBInstanceClass id="db.m2.2xlarge" />
-		<DBInstanceClass id="db.m2.4xlarge" />
-		<DBInstanceClass id="db.cr1.8xlarge" />
-		<DBInstanceClass id="db.m1.small" />
-		<DBInstanceClass id="db.m1.medium" />
-		<DBInstanceClass id="db.m1.large" />
-		<DBInstanceClass id="db.m1.xlarge" />
-		<DBInstanceClass id="db.t1.micro" />
+        <DBInstanceClass id="db.t2.small" />
+        <DBInstanceClass id="db.m3.medium" />
+        <DBInstanceClass id="db.m3.large" />
+        <DBInstanceClass id="db.m3.xlarge" />
+        <DBInstanceClass id="db.m3.2xlarge" />
+        <DBInstanceClass id="db.r3.large" />
+        <DBInstanceClass id="db.r3.xlarge" />
+        <DBInstanceClass id="db.r3.2xlarge" />
+        <DBInstanceClass id="db.r3.4xlarge" />
+        <DBInstanceClass id="db.r3.8xlarge" />
+        <DBInstanceClass id="db.m2.xlarge" />
+        <DBInstanceClass id="db.m2.2xlarge" />
+        <DBInstanceClass id="db.m2.4xlarge" />
+        <DBInstanceClass id="db.cr1.8xlarge" />
+        <DBInstanceClass id="db.m1.small" />
+        <DBInstanceClass id="db.m1.medium" />
+        <DBInstanceClass id="db.m1.large" />
+        <DBInstanceClass id="db.m1.xlarge" />
+        <DBInstanceClass id="db.t1.micro" />
       </DBInstanceClasses>
       <SupportsMultiAZ>true</SupportsMultiAZ>
       <Storage min="5" max="3072" />
@@ -237,18 +596,57 @@
         <LicenseModel id="bring-your-own-license" />
       </LicenseModels>
       <DBInstanceClasses>
+        <DBInstanceClass id="db.t3.2xlarge" />
+        <DBInstanceClass id="db.t3.xlarge" />
+        <DBInstanceClass id="db.t3.large" />
+        <DBInstanceClass id="db.t3.medium" />
+        <DBInstanceClass id="db.t3.small" />
+        <DBInstanceClass id="db.t3.micro" />
+        <DBInstanceClass id="db.m5.24xlarge" />
+        <DBInstanceClass id="db.m5.12xlarge" />
+        <DBInstanceClass id="db.m5.4xlarge" />
+        <DBInstanceClass id="db.m5.2xlarge" />
+        <DBInstanceClass id="db.m5.xlarge" />
+        <DBInstanceClass id="db.m5.large" />
+        <DBInstanceClass id="db.r5.24xlarge" />
+        <DBInstanceClass id="db.r5.12xlarge" />
+        <DBInstanceClass id="db.r5.4xlarge" />
+        <DBInstanceClass id="db.r5.2xlarge" />
+        <DBInstanceClass id="db.r5.xlarge" />
+        <DBInstanceClass id="db.r5.large" />
+        <DBInstanceClass id="db.r4.16xlarge" />
+        <DBInstanceClass id="db.r4.8xlarge" />
+        <DBInstanceClass id="db.r4.4xlarge" />
+        <DBInstanceClass id="db.r4.2xlarge" />
+        <DBInstanceClass id="db.r4.xlarge" />
+        <DBInstanceClass id="db.r4.large" />
+
+        <DBInstanceClass id="db.z1d.12xlarge" />
+        <DBInstanceClass id="db.z1d.6xlarge" />
+        <DBInstanceClass id="db.z1d.3xlarge" />
+        <DBInstanceClass id="db.z1d.2xlarge" />
+        <DBInstanceClass id="db.z1d.xlarge" />
+        <DBInstanceClass id="db.z1d.large" />
+        <DBInstanceClass id="db.x1e.32xlarge" />
+        <DBInstanceClass id="db.x1e.16xlarge" />
+        <DBInstanceClass id="db.x1e.8xlarge" />
+        <DBInstanceClass id="db.x1e.4xlarge" />
+        <DBInstanceClass id="db.x1e.2xlarge" />
+        <DBInstanceClass id="db.x1e.xlarge" />
+
+
         <DBInstanceClass id="db.t1.micro" />
         <DBInstanceClass id="db.m1.small" />
         <DBInstanceClass id="db.m3.medium" />
         <DBInstanceClass id="db.m3.large" />
         <DBInstanceClass id="db.m3.xlarge" />
-		<DBInstanceClass id="db.m3.2xlarge" />
+		    <DBInstanceClass id="db.m3.2xlarge" />
         <DBInstanceClass id="db.m2.xlarge" />
-		<DBInstanceClass id="db.m2.2xlarge" />
-		<DBInstanceClass id="db.m2.4xlarge" />
-		<DBInstanceClass id="db.m1.medium" />
-		<DBInstanceClass id="db.m1.large" />
-		<DBInstanceClass id="db.m1.xlarge" />		
+        <DBInstanceClass id="db.m2.2xlarge" />
+        <DBInstanceClass id="db.m2.4xlarge" />
+        <DBInstanceClass id="db.m1.medium" />
+        <DBInstanceClass id="db.m1.large" />
+        <DBInstanceClass id="db.m1.xlarge" />		
       </DBInstanceClasses>
       <SupportsMultiAZ>true</SupportsMultiAZ>
       <Storage min="10" max="3072" />
@@ -265,14 +663,28 @@
         <LicenseModel id="license-included" />
       </LicenseModels>
       <DBInstanceClasses>
+
+        <DBInstanceClass id="db.m5.24xlarge" />
+        <DBInstanceClass id="db.m5.12xlarge" />
+        <DBInstanceClass id="db.m5.4xlarge" />
+        <DBInstanceClass id="db.m5.2xlarge" />
+        <DBInstanceClass id="db.m5.xlarge" />
+        <DBInstanceClass id="db.m5.large" />
+        <DBInstanceClass id="db.r4.16xlarge" />
+        <DBInstanceClass id="db.r4.8xlarge" />
+        <DBInstanceClass id="db.r4.4xlarge" />
+        <DBInstanceClass id="db.r4.2xlarge" />
+        <DBInstanceClass id="db.r4.xlarge" />
+        <DBInstanceClass id="db.r4.large" />
+
         <DBInstanceClass id="db.m1.small" />
         <DBInstanceClass id="db.m3.medium" />
         <DBInstanceClass id="db.m3.large" />
         <DBInstanceClass id="db.m3.xlarge" />
         <DBInstanceClass id="db.m3.2.xlarge" />
-		<DBInstanceClass id="db.r3.large" />		
-		<DBInstanceClass id="db.r3.xlarge" />		
-		<DBInstanceClass id="db.r3.2xlarge" />		
+        <DBInstanceClass id="db.r3.large" />		
+        <DBInstanceClass id="db.r3.xlarge" />		
+        <DBInstanceClass id="db.r3.2xlarge" />		
         <DBInstanceClass id="db.m2.xlarge" />
         <DBInstanceClass id="db.m2.2xlarge" />
         <DBInstanceClass id="db.m2.4xlarge" />		
@@ -297,7 +709,7 @@
       <DBInstanceClasses>
         <DBInstanceClass id="db.t2.micro" />
         <DBInstanceClass id="db.t2.small" />
-		<DBInstanceClass id="db.t2.medium" />
+        <DBInstanceClass id="db.t2.medium" />
         <DBInstanceClass id="db.m1.small" />
         <DBInstanceClass id="db.t1.micro" />
       </DBInstanceClasses>
@@ -316,18 +728,31 @@
         <LicenseModel id="license-included" />
       </LicenseModels>
       <DBInstanceClasses>
-		<DBInstanceClass id="db.t2.small" />
-		<DBInstanceClass id="db.t2.medium" />
-		<DBInstanceClass id="db.m3.medium" />
-		<DBInstanceClass id="db.m3.large" />
-		<DBInstanceClass id="db.m3.xlarge" />
-		<DBInstanceClass id="db.m3.2xlarge" />
-		<DBInstanceClass id="db.r3.large" />
-		<DBInstanceClass id="db.r3.xlarge" />
-		<DBInstanceClass id="db.r3.2xlarge" />
-		<DBInstanceClass id="db.m2.large" />
-		<DBInstanceClass id="db.m2.xlarge" />
-		<DBInstanceClass id="db.m2.2xlarge" />
+        <DBInstanceClass id="db.m5.24xlarge" />
+        <DBInstanceClass id="db.m5.12xlarge" />
+        <DBInstanceClass id="db.m5.4xlarge" />
+        <DBInstanceClass id="db.m5.2xlarge" />
+        <DBInstanceClass id="db.m5.xlarge" />
+        <DBInstanceClass id="db.m5.large" />
+        <DBInstanceClass id="db.r4.16xlarge" />
+        <DBInstanceClass id="db.r4.8xlarge" />
+        <DBInstanceClass id="db.r4.4xlarge" />
+        <DBInstanceClass id="db.r4.2xlarge" />
+        <DBInstanceClass id="db.r4.xlarge" />
+        <DBInstanceClass id="db.r4.large" />
+
+        <DBInstanceClass id="db.t2.small" />
+        <DBInstanceClass id="db.t2.medium" />
+        <DBInstanceClass id="db.m3.medium" />
+        <DBInstanceClass id="db.m3.large" />
+        <DBInstanceClass id="db.m3.xlarge" />
+        <DBInstanceClass id="db.m3.2xlarge" />
+        <DBInstanceClass id="db.r3.large" />
+        <DBInstanceClass id="db.r3.xlarge" />
+        <DBInstanceClass id="db.r3.2xlarge" />
+        <DBInstanceClass id="db.m2.large" />
+        <DBInstanceClass id="db.m2.xlarge" />
+        <DBInstanceClass id="db.m2.2xlarge" />
         <DBInstanceClass id="db.m1.small" />
         <DBInstanceClass id="db.m1.medium" />
         <DBInstanceClass id="db.m1.large" />
@@ -348,18 +773,30 @@
         <LicenseModel id="bring-your-own-license" />
       </LicenseModels>
       <DBInstanceClasses>
-		<DBInstanceClass id="db.t2.small" />
-		<DBInstanceClass id="db.t2.medium" />
-		<DBInstanceClass id="db.m3.medium" />
-		<DBInstanceClass id="db.m3.large" />
-		<DBInstanceClass id="db.m3.xlarge" />
-		<DBInstanceClass id="db.m3.2xlarge" />
-		<DBInstanceClass id="db.r3.large" />
-		<DBInstanceClass id="db.r3.xlarge" />
-		<DBInstanceClass id="db.r3.2xlarge" />
-		<DBInstanceClass id="db.m2.large" />
-		<DBInstanceClass id="db.m2.xlarge" />
-		<DBInstanceClass id="db.m2.2xlarge" />
+        <DBInstanceClass id="db.m5.24xlarge" />
+        <DBInstanceClass id="db.m5.12xlarge" />
+        <DBInstanceClass id="db.m5.4xlarge" />
+        <DBInstanceClass id="db.m5.2xlarge" />
+        <DBInstanceClass id="db.m5.xlarge" />
+        <DBInstanceClass id="db.m5.large" />
+        <DBInstanceClass id="db.r4.16xlarge" />
+        <DBInstanceClass id="db.r4.8xlarge" />
+        <DBInstanceClass id="db.r4.4xlarge" />
+        <DBInstanceClass id="db.r4.2xlarge" />
+        <DBInstanceClass id="db.r4.xlarge" />
+        <DBInstanceClass id="db.r4.large" />      
+        <DBInstanceClass id="db.t2.small" />
+        <DBInstanceClass id="db.t2.medium" />
+        <DBInstanceClass id="db.m3.medium" />
+        <DBInstanceClass id="db.m3.large" />
+        <DBInstanceClass id="db.m3.xlarge" />
+        <DBInstanceClass id="db.m3.2xlarge" />
+        <DBInstanceClass id="db.r3.large" />
+        <DBInstanceClass id="db.r3.xlarge" />
+        <DBInstanceClass id="db.r3.2xlarge" />
+        <DBInstanceClass id="db.m2.large" />
+        <DBInstanceClass id="db.m2.xlarge" />
+        <DBInstanceClass id="db.m2.2xlarge" />
         <DBInstanceClass id="db.m1.small" />
         <DBInstanceClass id="db.m1.medium" />
         <DBInstanceClass id="db.m1.large" />
