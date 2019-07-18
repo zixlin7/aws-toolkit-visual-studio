@@ -371,6 +371,20 @@
       </HiddenTags>
     </Blueprint>
     <Blueprint>
+      <Name>Simple SNS Function</Name>
+      <Description>A project for responding to SNS Event notifications</Description>
+      <SortOrder>101</SortOrder>
+      <File>SimpleSNSFunction.zip</File>
+      <Tags>
+        <Tag>SNS</Tag>
+        <Tag>Simple</Tag>
+      </Tags>
+      <HiddenTags>
+        <HiddenTag>C#</HiddenTag>
+        <HiddenTag>LambdaProject</HiddenTag>
+      </HiddenTags>
+    </Blueprint>
+    <Blueprint>
       <Name>Simple SQS Function</Name>
       <Description>A project for responding to SQS Event notifications</Description>
       <SortOrder>101</SortOrder>
