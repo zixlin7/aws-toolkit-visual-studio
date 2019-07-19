@@ -29,6 +29,7 @@
 
 		<PushHostedFiles Condition="'$(PushHostedFiles)'==''">true</PushHostedFiles>
         <HostedFilesBucket Condition="'$(HostedFilesBucket)'==''">aws-vs-toolkit</HostedFilesBucket>
+        <HostedFilesBucketRegion Condition="'$(HostedFilesBucketRegion)'==''">us-east-1</HostedFilesBucketRegion>
         <HostedFilesFolder Condition="'$(HostedFilesFolder)'==''">$(BuildRoot)\hostedfiles</HostedFilesFolder>
 
 		<!-- cn-north-1 artifact properties -->
@@ -347,12 +348,14 @@
         <Message Text="Fetching latest endpoints and flags from S3" />
         
         <DownloadFromS3Task
+            RegionValue="$(HostedFilesBucketRegion)"
             S3ObjectKey="ServiceEndPoints.xml"
             LocalPath="$(HostedFilesFolder)"
             Bucket="$(HostedFilesBucket)"
             />
             
         <DownloadFromS3Task
+            RegionValue="$(HostedFilesBucketRegion)"
             S3Path="flags"
             LocalPath="$(HostedFilesFolder)"
             Bucket="$(HostedFilesBucket)"
@@ -370,6 +373,7 @@
         </ItemGroup>
         
         <CompareToS3Task
+			RegionValue="$(HostedFilesBucketRegion)"
             Bucket="$(HostedFilesBucket)"
             S3Path=""
             LocalPath="$(HostedFilesFolder)"
@@ -395,6 +399,7 @@
     <Target Name="upload-hostedfile-ec2-quicklaunch" DependsOnTargets="build-tools" Condition="$(PushHostedFiles)">
 
         <UploadHostedFileTask
+				RegionValue="$(HostedFilesBucketRegion)"
 				Bucket="$(HostedFilesBucket)"
 				S3Key="EC2QuickLaunch.json"
 				LocalFilename="$(HostedFilesFolder)/EC2QuickLaunch.json">
@@ -402,6 +407,7 @@
 		</UploadHostedFileTask>
 
 		<CFInvalidateTask
+			RegionValue="$(HostedFilesBucketRegion)"
 			Condition="!('$(HostedFilesInvalidationKeys)'=='')"
 			Distribution="$(VSToolkitDistribution)"
 			Keys="$(HostedFilesInvalidationKeys)"
@@ -426,6 +432,7 @@
     <Target Name="upload-hostedfiles" DependsOnTargets="build-tools" Condition="$(PushHostedFiles)">
 
         <UploadHostedFilesTask
+				RegionValue="$(HostedFilesBucketRegion)"
 				Bucket="$(HostedFilesBucket)"
 				S3Path=""
 				KeyExceptions="ServiceEndPoints.xml;ServiceEndPoints.json"
@@ -434,6 +441,7 @@
 		</UploadHostedFilesTask>
 
 		<CFInvalidateTask
+			RegionValue="$(HostedFilesBucketRegion)"
 			Condition="!('$(HostedFilesInvalidationKeys)'=='')"
 			Distribution="$(VSToolkitDistribution)"
 			Keys="$(HostedFilesInvalidationKeys)"
