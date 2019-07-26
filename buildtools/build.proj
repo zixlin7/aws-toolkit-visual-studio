@@ -42,25 +42,17 @@
         <BuildVSToolkit2017>true</BuildVSToolkit2017>
     </PropertyGroup>
 
-	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;get-latest-endpoint-data;restore-nuget;update-version;build-awsdeploy;build-vstoolkit;build-vstoolkit-2017;run-tests;keyscan;copy-artifacts;sign-packages;save-build">
+	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;get-latest-endpoint-data;restore-nuget;update-version;build-vstoolkit;build-vstoolkit-2017;run-tests;keyscan;copy-artifacts;sign-packages;save-build">
 		<Message Text="Builds all components of the AWS Toolkit for Visual Studio"/>
 	</Target>
 
     <Target Name="restore-nuget">
         <Message Text="Restoring nuget packages"/>
-        <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSDeploymentHostManager.sln" />
         <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSVisualStudioToolkit.sln" />
         <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSStudioToolkit.sln" />
     </Target>
-    
-    <Target Name="build-awsdeploy">
-		<Message Text="------------------------------------------------------------------------------" />
-		<Message Text="| AWSDeploy - $(Configuration)"/>
-		<Message Text="------------------------------------------------------------------------------" />
-        <MSBuild Projects="..\solutions\AWSDeploymentHostManager.sln" Properties="Configuration=$(Configuration)" />
-    </Target>
 
-    <Target Name="build-vstoolkit" DependsOnTargets="patch-vsixmanifest">
+  <Target Name="build-vstoolkit" DependsOnTargets="patch-vsixmanifest">
 		<Message Text="------------------------------------------------------------------------------" />
         <Message Text="| Visual Studio 2013 Toolkit - $(Configuration)" />
 		<Message Text="------------------------------------------------------------------------------" />

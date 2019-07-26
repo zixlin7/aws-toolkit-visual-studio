@@ -5,7 +5,9 @@ phases:
     commands:
       - cmd /c mklink /J C:\src ${PWD}  # make a junction or we'll hit the path length limit
       - cd C:\src
-      - cmd /k 'C:\BuildTools15\Common7\Tools\VsDevCmd.bat & msbuild .\buildtools\build.proj /t:clean,restore-nuget,build-awsdeploy,build-vstoolkit-2017 /p:DeployExtension=false /p:Configuration=Release'
+      - $Version = Get-Content .\nextVersion | Out-String
+      - $Version = $Version.Trim()
+      - cmd /k "C:\BuildTools15\Common7\Tools\VsDevCmd.bat & msbuild buildtools\build.proj /p:Configuration=Release  /p:DeployExtension=false /p:UpdateVersions=true /p:AWSToolkitVersionNumber=$Version /t:update-version;build-vstoolkit-2017"
 artifacts:
   discard-paths: yes
   files:
