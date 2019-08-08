@@ -51,7 +51,7 @@
         <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSVisualStudioToolkit.sln" />
         <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSStudioToolkit.sln" />
     </Target>
-
+    
   <Target Name="build-vstoolkit" DependsOnTargets="patch-vsixmanifest">
 		<Message Text="------------------------------------------------------------------------------" />
         <Message Text="| Visual Studio 2013 Toolkit - $(Configuration)" />
@@ -209,9 +209,6 @@
 			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\NSch.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\Mono.Security.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\Sharpen.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\YamlDotNet.dll"/>
-			
         </ItemGroup>
         <Copy
             SourceFiles="@(AWSDeployBinaries)"

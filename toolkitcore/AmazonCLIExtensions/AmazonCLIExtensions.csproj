@@ -77,11 +77,6 @@
     </Reference>
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="YamlDotNet">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\thirdparty\YamlDotNet.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -168,6 +163,9 @@
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
       <Version>3.3.100.2</Version>
+    </PackageReference>
+    <PackageReference Include="YamlDotNet">
+      <Version>6.1.1</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
