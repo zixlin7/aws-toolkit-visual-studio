@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using Amazon.Runtime;
 using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.ECS.Tools

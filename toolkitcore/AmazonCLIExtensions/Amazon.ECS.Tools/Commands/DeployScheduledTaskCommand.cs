@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 using Amazon.CloudWatchEvents;
 using Amazon.CloudWatchEvents.Model;
-using Amazon.ECR;
-using Amazon.ECR.Model;
-using Amazon.ECS;
-using Amazon.ECS.Model;
 using ThirdParty.Json.LitJson;
-using System.IO;
 using Amazon.Common.DotNetCli.Tools.Options;
 using Amazon.Common.DotNetCli.Tools;
 

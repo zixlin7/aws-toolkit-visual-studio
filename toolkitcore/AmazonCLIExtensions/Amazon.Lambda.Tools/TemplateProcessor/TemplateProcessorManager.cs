@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Amazon.Common.DotNetCli.Tools;
-using Amazon.Common.DotNetCli.Tools.Commands;
-using Amazon.Runtime;
 using Amazon.S3;
-using Amazon.S3.Transfer;
-using Newtonsoft.Json.Schema;
 using Amazon.Lambda.Tools.Commands;
 
 namespace Amazon.Lambda.Tools.TemplateProcessor

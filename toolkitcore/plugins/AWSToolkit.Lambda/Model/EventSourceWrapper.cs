@@ -13,6 +13,12 @@ namespace Amazon.AWSToolkit.Lambda.Model
     {
         public enum EventSourceType { Push, Pull };
 
+        public EventSourceType Type { get; }
+        public string ServiceName { get; }
+        public string ResourceDisplayName { get; }
+        public string Details { get; }
+        public string UUID { get; }
+
         public const string DYNAMODB_FRIENDLY_NAME = "DynamoDB";
         public const string KINESIS_FRIENDLY_NAME = "Kinesis";
         public const string SNS_FRIENDLY_NAME = "SNS";
@@ -95,38 +101,6 @@ namespace Amazon.AWSToolkit.Lambda.Model
 
             this.Details = "Action: " + statement.Actions[0].ActionName;
         }
-
-        public EventSourceType Type
-        {
-            get;
-            private set;
-        }
-
-
-        public string ServiceName 
-        {
-            get;
-            private set;
-        }
-
-        public string ResourceDisplayName 
-        {
-            get;
-            private set;
-        }
-
-        public string Details
-        {
-            get;
-            private set;
-        }
-        
-        public string UUID
-        {
-            get;
-            private set;
-        }
-
 
         public System.Windows.Media.ImageSource ServiceIcon
         {

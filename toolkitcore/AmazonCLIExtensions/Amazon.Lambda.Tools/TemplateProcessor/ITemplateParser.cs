@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using Amazon.Lambda.Tools.Commands;
-using ThirdParty.Json.LitJson;
-using YamlDotNet.RepresentationModel;
+﻿using System.Collections.Generic;
 
 namespace Amazon.Lambda.Tools.TemplateProcessor
 {

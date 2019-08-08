@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using YamlDotNet.RepresentationModel;
-using YamlDotNet.Serialization;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ThirdParty.Json.LitJson;
@@ -14,7 +11,6 @@ using Amazon.Common.DotNetCli.Tools;
 
 using Amazon.Lambda.Model;
 using Amazon.S3;
-using Amazon.S3.Model;
 using System.Threading.Tasks;
 using System.Xml.XPath;
 using Environment = System.Environment;
@@ -28,7 +24,6 @@ namespace Amazon.Lambda.Tools
         static readonly IReadOnlyDictionary<string, string> _lambdaRuntimeToDotnetFramework = new Dictionary<string, string>()
         {
             {Amazon.Lambda.Runtime.Dotnetcore21.Value, "netcoreapp2.1"},
-            {Amazon.Lambda.Runtime.Dotnetcore20.Value, "netcoreapp2.0"},
             {Amazon.Lambda.Runtime.Dotnetcore10.Value, "netcoreapp1.0"}
         };
 
@@ -98,13 +93,15 @@ namespace Amazon.Lambda.Tools
             }
 
             string manifestFilename = null;
-            if (string.Equals("netcoreapp2.0", targetFramework, StringComparison.OrdinalIgnoreCase))
-                manifestFilename = "LambdaPackageStoreManifest.xml";
-            else if (string.Equals("netcoreapp2.1", targetFramework, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals("netcoreapp2.1", targetFramework, StringComparison.OrdinalIgnoreCase))
+            {
                 manifestFilename = "LambdaPackageStoreManifest-v2.1.xml";
+            }
 
             if (manifestFilename == null)
+            {
                 return null;
+            }
 
             return ToolkitConfigFileFetcher.Instance.GetFileContentAsync(logger, manifestFilename).Result;
         }

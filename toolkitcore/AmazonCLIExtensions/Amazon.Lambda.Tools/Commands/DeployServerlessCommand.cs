@@ -13,7 +13,6 @@ using ThirdParty.Json.LitJson;
 using Amazon.Common.DotNetCli.Tools;
 using Amazon.Common.DotNetCli.Tools.Options;
 using Amazon.Lambda.Tools.TemplateProcessor;
-using Newtonsoft.Json.Linq;
 
 namespace Amazon.Lambda.Tools.Commands
 {

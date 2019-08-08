@@ -1,22 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-
-using Amazon;
-using Amazon.Runtime;
-using Amazon.Runtime.CredentialManagement;
-
 using Amazon.CloudWatchEvents;
 using Amazon.CloudWatchLogs;
 using Amazon.EC2;
 using Amazon.ECR;
-using Amazon.ECS;
-
-using System.Reflection;
-using ThirdParty.Json.LitJson;
-using System.Text;
-using System.IO;
 using Amazon.Common.DotNetCli.Tools.Commands;
 using Amazon.Common.DotNetCli.Tools;
 using Amazon.Common.DotNetCli.Tools.Options;

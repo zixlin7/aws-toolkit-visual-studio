@@ -1,7 +1,5 @@
 ﻿using Amazon.Common.DotNetCli.Tools;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Amazon.ElasticBeanstalk.Tools
 {

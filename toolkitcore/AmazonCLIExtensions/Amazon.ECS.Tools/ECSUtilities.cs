@@ -3,8 +3,6 @@ using Amazon.ECR;
 using Amazon.ECR.Model;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 using Amazon.EC2.Model;

@@ -4,7 +4,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Amazon.ECR.Model;
-using Amazon.ECR;
 using ThirdParty.Json.LitJson;
 using System.IO;
 using Amazon.Common.DotNetCli.Tools.Options;

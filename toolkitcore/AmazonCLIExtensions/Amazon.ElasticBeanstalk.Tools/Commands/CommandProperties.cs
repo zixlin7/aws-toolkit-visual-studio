@@ -2,7 +2,6 @@
 using Amazon.Common.DotNetCli.Tools.Options;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using ThirdParty.Json.LitJson;
 
 namespace Amazon.ElasticBeanstalk.Tools.Commands

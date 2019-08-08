@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Amazon.Common.DotNetCli.Tools;
-using Amazon.Runtime;
 
 namespace Amazon.Lambda.Tools
 {

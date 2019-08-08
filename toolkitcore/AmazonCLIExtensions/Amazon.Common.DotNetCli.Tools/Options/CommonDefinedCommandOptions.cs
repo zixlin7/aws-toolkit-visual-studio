@@ -1,9 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Amazon.Common.DotNetCli.Tools.Options
+﻿namespace Amazon.Common.DotNetCli.Tools.Options
 {
     public static class CommonDefinedCommandOptions
     {

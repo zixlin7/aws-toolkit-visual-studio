@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Amazon.ElasticBeanstalk.Tools
+﻿namespace Amazon.ElasticBeanstalk.Tools
 {
     public static class EBConstants
     {

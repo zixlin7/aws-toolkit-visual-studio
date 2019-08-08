@@ -29,16 +29,18 @@ namespace Amazon.AWSToolkit.Lambda.Model
         {
             get
             {
-                if (Alias != null)
+                if (Alias == null)
                 {
-                    // emulate console and rip off any alias/ prefix
-                    var aliasName = Alias.AliasName;
-                    if (aliasName.StartsWith(AliasPrefix))
-                        return aliasName.Substring(AliasPrefix.Length);
-                    return aliasName;
+                    return string.Empty;
+                }
+                // emulate console and rip off any alias/ prefix
+                var aliasName = Alias.AliasName;
+                if (aliasName.StartsWith(AliasPrefix))
+                {
+                    return aliasName.Substring(AliasPrefix.Length);
                 }
 
-                return string.Empty;
+                return aliasName;
             }
         }
 
@@ -48,13 +50,16 @@ namespace Amazon.AWSToolkit.Lambda.Model
             get
             {
                 var aliasName = AliasName;
-                if (string.IsNullOrEmpty(aliasName))
+                if (string.IsNullOrEmpty(aliasName)) { 
                     return Key.KeyArn;
+                }
 
                 if (string.IsNullOrEmpty(Key.KeyArn))
+                {
                     return aliasName;
+                }
 
-                return string.Format("{0} ({1})", aliasName, Key.KeyArn);
+                return $"{this.AliasName} ({this.Key.KeyArn})";
             }
         }
 
@@ -65,13 +70,11 @@ namespace Amazon.AWSToolkit.Lambda.Model
             GroupCategoryName = groupCategory;
         }
 
-        internal KeyAndAliasWrapper(KeyListEntry key, AliasListEntry alias)
-            : this(key, alias, MyKeysCategoryName)
+        internal KeyAndAliasWrapper(KeyListEntry key, AliasListEntry alias) : this(key, alias, MyKeysCategoryName)
         {
         }
 
-        internal KeyAndAliasWrapper(KeyListEntry key)
-            : this(key, null)
+        internal KeyAndAliasWrapper(KeyListEntry key) : this(key, null)
         {
         }
     }

@@ -7,7 +7,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
     /// Pushes out Success/Failure Metrics related to Publishing a Lambda Function in a consistent manner.
     /// 
     /// When a Publish succeeds or fails, we can determine from the metric how it was published, and runtime or framework was targeted.
-    /// Examples: Publishing a Serverless application: Serverless - netcoreapp2.1, or Publishing a Lambda Function: NetCore - dotnetcore2.0
+    /// Examples: Publishing a Serverless application: Serverless - netcoreapp2.1, or Publishing a Lambda Function: NetCore - dotnetcore2.1
     /// 
     /// When a Publish fails, we can determine the classification of error that occurred.
     /// All error details are in a parseable format [publish method]:[runtime or framework]:[error classification]:[additional error info].
@@ -40,7 +40,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
         private string MetricsTitle => $"{_lambdaPublishMethod.ToString()}:{_platform}";
 
         /// <param name="publishMethod">The way the Lambda function is being published by VS</param>
-        /// <param name="platform">For Serverless, this is the framework (eg: netcoreapp2.1). For NetCore and Generic, this is the runtime (eg: dotnetcore2.0).</param>
+        /// <param name="platform">For Serverless, this is the framework (eg: netcoreapp2.1). For NetCore and Generic, this is the runtime (eg: dotnetcore2.1).</param>
         public LambdaDeploymentMetrics(LambdaPublishMethod publishMethod, string platform)
         {
             _lambdaPublishMethod = publishMethod;

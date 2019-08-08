@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Amazon.Lambda.Tools
+﻿namespace Amazon.Lambda.Tools
 {
     /// <summary>
     /// Is class is serialized as the description of the layer. Space in the description is limited

@@ -100,11 +100,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
             else
             {
-                if(!this.IsVS2015)
-                {
-                    this._ctlFrameworkPicker.Items.Add("netcoreapp2.0");
-                }
                 this._ctlFrameworkPicker.Items.Add("netcoreapp1.0");
+                this._ctlFrameworkPicker.Items.Add("netcoreapp2.1");
             }
 
             this._ctlFrameworkPicker.SelectedIndex = 0;

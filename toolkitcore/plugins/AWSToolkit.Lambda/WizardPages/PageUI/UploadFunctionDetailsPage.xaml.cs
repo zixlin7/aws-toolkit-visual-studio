@@ -60,10 +60,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             this._ctlTypeName.DataContext = this;
             this._ctlMethodName.DataContext = this;
 
-            if(this.IsVS2015)
-                this._ctlRuntime.ItemsSource = RuntimeOption.VS2015_OPTIONS;
-            else
-                this._ctlRuntime.ItemsSource = RuntimeOption.ALL_OPTIONS;
+            this._ctlRuntime.ItemsSource = RuntimeOption.ALL_OPTIONS;
 
             this.ResetToDefaults();
 
@@ -267,12 +264,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
             else
             {
-                if(!this.IsVS2015)
-                {
-                    this._ctlFrameworkPicker.Items.Add("netcoreapp2.1");
-                    this._ctlFrameworkPicker.Items.Add("netcoreapp2.0");
-                }
                 this._ctlFrameworkPicker.Items.Add("netcoreapp1.0");
+                this._ctlFrameworkPicker.Items.Add("netcoreapp2.1");
             }
 
             this._ctlFrameworkPicker.SelectedIndex = 0;
@@ -344,10 +337,6 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                         {
                             _runtime = RuntimeOption.NetCore_v2_1;
                         }
-                        else if (string.Equals(_framework, "netcoreapp2.0", StringComparison.OrdinalIgnoreCase))
-                        {
-                            _runtime = RuntimeOption.NetCore_v2_0;
-                        }
                         else if(string.Equals(_framework, "netcoreapp1.0", StringComparison.OrdinalIgnoreCase))
                         {
                             _runtime = RuntimeOption.NetCore_v1_0;
@@ -380,10 +369,10 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                     try
                     {
                         NotifyPropertyChanged("Runtime");
-                        if (RuntimeOption.NetCore_v2_0 == _runtime && this._ctlFrameworkPicker.Items.Contains("netcoreapp2.0"))
+                        if (RuntimeOption.NetCore_v2_1 == _runtime && this._ctlFrameworkPicker.Items.Contains("netcoreapp2.1"))
                         {
-                            _framework = "netcoreapp2.0";
-                            this._ctlFrameworkPicker.SelectedItem = "netcoreapp2.0";
+                            _framework = "netcoreapp2.1";
+                            this._ctlFrameworkPicker.SelectedItem = "netcoreapp2.1";
                         }
                         else if (RuntimeOption.NetCore_v1_0 == _runtime && this._ctlFrameworkPicker.Items.Contains("netcoreapp1.0"))
                         {
@@ -783,17 +772,6 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
             DeploymentType = runtime.IsNetCore ? DeploymentType.NETCore : DeploymentType.Generic;
             SetPanelsForOriginatorAndType(false);
-        }
-
-        private bool IsVS2015
-        {
-            get
-            {
-                if (string.Equals("2015", ToolkitFactory.Instance.ShellProvider.ShellVersion, StringComparison.Ordinal))
-                    return true;
-
-                return false;
-            }
         }
     }
 }

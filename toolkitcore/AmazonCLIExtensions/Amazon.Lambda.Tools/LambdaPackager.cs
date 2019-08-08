@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.IO.Compression;
-using System.Runtime.InteropServices;
 using System.Text;
 using Amazon.Common.DotNetCli.Tools;
 using ThirdParty.Json.LitJson;
@@ -48,8 +46,6 @@ namespace Amazon.Lambda.Tools
             bool disableVersionCheck, LayerPackageInfo layerPackageInfo,
             out string publishLocation, ref string zipArchivePath)
         {
-            LogDeprecationMessagesIfNecessary(logger, targetFramework);
-
             if (string.IsNullOrEmpty(configuration))
                 configuration = LambdaConstants.DEFAULT_BUILD_CONFIGURATION;
             
@@ -693,37 +689,6 @@ namespace Amazon.Lambda.Tools
                 {
                     logger?.WriteLine(string.Format("Created publish archive ({0}).", zipArchivePath));
                 }
-            }
-        }
-
-        internal static void LogDeprecationMessagesIfNecessary(IToolLogger logger, string targetFramework)
-        {
-            if (targetFramework == "netcoreapp2.0" && logger != null)
-            {
-                logger.WriteLine("--------------------------------------------------------------------------------");
-                logger.WriteLine(".NET Core 2.0 Lambda Function Deprecation Notice");
-                logger.WriteLine("--------------------------------------------------------------------------------");
-                logger.WriteLine("Support for .NET Core 2.0 Lambda functions will soon be deprecated.");
-                logger.WriteLine("");
-                logger.WriteLine("Support for .NET Core 2.0 was discontinued by Microsoft in October 2018.  This");
-                logger.WriteLine("version of the runtime is no longer receiving bug fixes or security updates from");
-                logger.WriteLine("Microsoft.  AWS Lambda has discontinued updates to this runtime as well.");
-                logger.WriteLine("");
-                logger.WriteLine("You can find Lambda's runtime support policy here:");
-                logger.WriteLine("https://docs.aws.amazon.com/lambda/latest/dg/runtime-support-policy.html");
-                logger.WriteLine("");
-                logger.WriteLine("You will notice an initial change 30 days prior to the deprecation.");
-                logger.WriteLine("During the 30 day grace period you will be able to update existing .NET Core 2.0");
-                logger.WriteLine("Lambda functions but you will not be able to create new ones.  After the");
-                logger.WriteLine("deprecation has been finalized you will be unable to create or update .NET Core");
-                logger.WriteLine("2.0 functions.");
-                logger.WriteLine("");
-                logger.WriteLine("However, both during and after the grace period you WILL be able to invoke .NET ");
-                logger.WriteLine("Core 2.0 functions.  Existing .NET Core 2.0 function invocation will continue to");
-                logger.WriteLine("be available, subject to Lambda's runtime support policy.");
-                logger.WriteLine("");
-                logger.WriteLine("--------------------------------------------------------------------------------");
-
             }
         }
     }
