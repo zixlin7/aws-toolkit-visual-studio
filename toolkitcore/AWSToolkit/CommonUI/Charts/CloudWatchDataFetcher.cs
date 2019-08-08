@@ -55,8 +55,8 @@ namespace Amazon.AWSToolkit.CommonUI.Charts
                     Statistics = new List<string>(){ this._stats },
                     Period = periodsInSeconds,
                     Unit = this._units,
-                    EndTime = now.ToUniversalTime(),
-                    StartTime = now.ToUniversalTime().AddHours(-this._hoursToView)
+                    EndTimeUtc = now.ToUniversalTime(),
+                    StartTimeUtc = now.ToUniversalTime().AddHours(-this._hoursToView)
                 });
 
                 List<DataItem> dataPoints = new List<DataItem>();

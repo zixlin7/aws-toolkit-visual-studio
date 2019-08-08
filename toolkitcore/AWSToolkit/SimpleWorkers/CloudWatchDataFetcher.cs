@@ -51,8 +51,8 @@ namespace Amazon.AWSToolkit.SimpleWorkers
                         Statistics = new List<string>() { this._stats },
                         Unit = this._units,
                         Period = determinePeriod(this._hoursToView),
-                        EndTime = DateTime.Now.ToUniversalTime(),
-                        StartTime = DateTime.Now.ToUniversalTime().AddHours(-this._hoursToView)
+                        EndTimeUtc = DateTime.Now.ToUniversalTime(),
+                        StartTimeUtc = DateTime.Now.ToUniversalTime().AddHours(-this._hoursToView)
                     };
 
                 var response = this._cwClient.GetMetricStatistics(request);

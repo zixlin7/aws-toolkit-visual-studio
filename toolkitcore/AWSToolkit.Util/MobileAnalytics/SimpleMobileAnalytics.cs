@@ -109,7 +109,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
             DateTime startTime = DateTime.UtcNow;
             _startSessionDetails = new Session()
             {
-                StartTimestamp = startTime,
+                StartTimestampUtc = startTime,
                 Id = _sessionIdFromGuid
             };
 
@@ -127,7 +127,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         public void StopMainSession()
         {
             DateTime stopTime = DateTime.UtcNow;
-            _startSessionDetails.StopTimestamp = stopTime;
+            _startSessionDetails.StopTimestampUtc = stopTime;
 
             ToolkitEvent stopSessionEvent = new ToolkitEvent(AMAConstants.SessionEventNames.STOP_SESSION, _startSessionDetails);
             QueueEventToBeRecorded(stopSessionEvent);
@@ -162,7 +162,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 return false;
 
             //Ensure event timestamp is populated
-            if (analyticsEvent.Timestamp == DateTime.MinValue)
+            if (analyticsEvent.TimestampUtc == DateTime.MinValue)
                 return false;
 
             //If the session is null, create one and use the main session to populate it
@@ -170,7 +170,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
             {
                 analyticsEvent.Session = new Session();
                 analyticsEvent.Session.Id = _startSessionDetails.Id;
-                analyticsEvent.Session.StartTimestamp = _startSessionDetails.StartTimestamp;
+                analyticsEvent.Session.StartTimestampUtc = _startSessionDetails.StartTimestampUtc;
             }
 
             //Ensure a custom session was populated correctly
@@ -178,7 +178,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 return false;
 
             //Ensure a custom session was populated correctly
-            if (analyticsEvent.Session.StartTimestamp == DateTime.MinValue)
+            if (analyticsEvent.Session.StartTimestampUtc == DateTime.MinValue)
                 return false;
 
             return true;
@@ -192,7 +192,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         public bool QueueEventToBeRecorded(ToolkitEvent toolkitEvent)
         {
             Event analyticsEvent = toolkitEvent.ConvertToMobileAnalyticsEvent();
-            LOGGER.InfoFormat("Queuing analytics event in local queue with timestamp: {0}", analyticsEvent.Timestamp);
+            LOGGER.InfoFormat("Queuing analytics event in local queue with timestamp: {0}", analyticsEvent.TimestampUtc);
 
             if (ValidEvent(analyticsEvent) && _eventQueue.Count < MAX_QUEUE_SIZE)
             {

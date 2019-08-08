@@ -10,7 +10,7 @@ namespace Amazon.AWSToolkit.S3.Model
 {
     public class LifecycleRuleModel : BaseModel, ICloneable
     {
-        Amazon.S3.Model.LifecycleRule _rule;
+        readonly Amazon.S3.Model.LifecycleRule rule;
 
         public LifecycleRuleModel()
             : this(null)
@@ -19,33 +19,27 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public LifecycleRuleModel(Amazon.S3.Model.LifecycleRule rule)
         {
-            this._rule = rule;
-            if (this._rule == null)
-                this._rule = new Amazon.S3.Model.LifecycleRule();
+            this.rule = rule;
+            if (this.rule == null)
+                this.rule = new Amazon.S3.Model.LifecycleRule();
         }
 
         public string RuleId
         {
-            get 
-            {
-                if (this._rule.Id == null)
-                    return "";
-
-                return this._rule.Id; 
-            }
+            get => this.rule.Id ?? "";
             set
             {
-                this._rule.Id = value;
+                this.rule.Id = value;
                 base.NotifyPropertyChanged("RuleId");
             }
         }
 
         public string Prefix
         {
-            get { return this._rule.Prefix; }
+            get => this.rule.Prefix;
             set
             {
-                this._rule.Prefix = value;
+                this.rule.Prefix = value;
                 base.NotifyPropertyChanged("Prefix");
             }
         }
@@ -57,9 +51,11 @@ namespace Amazon.AWSToolkit.S3.Model
                 if (this.ExpirationDays == null && this.ExpirationDate == null)
                     return "";
 
-                var exp = this._rule.Expiration;
-                if (exp.Date != DateTime.MinValue)
-                    return exp.Date.ToString("d");
+                var exp = this.rule.Expiration;
+                if (exp.DateUtc != DateTime.MinValue)
+                {
+                    return exp.DateUtc.ToString("d");
+                }
 
                 return exp.Days.ToString() + " Days";
             }
@@ -69,10 +65,10 @@ namespace Amazon.AWSToolkit.S3.Model
         {
             get
             {
-                if (this._rule.Expiration == null || this._rule.Expiration.Days == 0)
+                if (this.rule.Expiration == null || this.rule.Expiration.Days == 0)
                     return null;
 
-                return this._rule.Expiration.Days;
+                return this.rule.Expiration.Days;
             }
         }
 
@@ -80,10 +76,10 @@ namespace Amazon.AWSToolkit.S3.Model
         {
             get
             {
-                if (this._rule.Expiration == null || this._rule.Expiration.Date == DateTime.MinValue)
+                if (this.rule.Expiration == null || this.rule.Expiration.DateUtc == DateTime.MinValue)
                     return null;
 
-                return this._rule.Expiration.Date;
+                return this.rule.Expiration.DateUtc;
             }
         }
 
@@ -91,18 +87,18 @@ namespace Amazon.AWSToolkit.S3.Model
         {
             if (!days.HasValue && !date.HasValue)
             {
-                this._rule.Expiration = null;
+                this.rule.Expiration = null;
             }
             else
             {
-                this._rule.Expiration = new Amazon.S3.Model.LifecycleRuleExpiration();
+                this.rule.Expiration = new Amazon.S3.Model.LifecycleRuleExpiration();
                 if (days.HasValue)
                 {
-                    this._rule.Expiration.Days = days.GetValueOrDefault();
+                    this.rule.Expiration.Days = days.GetValueOrDefault();
                 }
                 else
                 {
-                    this._rule.Expiration.Date = date.GetValueOrDefault();
+                    this.rule.Expiration.DateUtc = date.GetValueOrDefault();
                 }
             }
 
@@ -115,17 +111,17 @@ namespace Amazon.AWSToolkit.S3.Model
         {
             get
             {
-                if (this._rule.Transition == null)
+                if (this.rule.Transition == null)
                     return "";
 
                 StringBuilder sb = new StringBuilder();
 
-                sb.AppendFormat("Transition to {0}", this._rule.Transition.StorageClass.ToString());
+                sb.AppendFormat("Transition to {0}", this.rule.Transition.StorageClass.ToString());
 
-                if (this._rule.Transition.Days != 0)
-                    sb.AppendFormat(" in {0} days", this._rule.Transition.Days);
-                else if (this._rule.Transition.Date != DateTime.MinValue)
-                    sb.AppendFormat(" on {0}", this._rule.Transition.Date.ToString("d"));
+                if (this.rule.Transition.Days != 0)
+                    sb.AppendFormat(" in {0} days", this.rule.Transition.Days);
+                else if (this.rule.Transition.DateUtc != DateTime.MinValue)
+                    sb.AppendFormat(" on {0}", this.rule.Transition.DateUtc.ToString("d"));
 
                 return sb.ToString();
             }
@@ -135,10 +131,10 @@ namespace Amazon.AWSToolkit.S3.Model
         {
             get
             {
-                if (this._rule.Transition == null || this._rule.Transition.Days == 0)
+                if (this.rule.Transition == null || this.rule.Transition.Days == 0)
                     return null;
 
-                return this._rule.Transition.Days;
+                return this.rule.Transition.Days;
             }
         }
 
@@ -146,10 +142,10 @@ namespace Amazon.AWSToolkit.S3.Model
         {
             get
             {
-                if (this._rule.Transition == null || this._rule.Transition.Date == DateTime.MinValue)
+                if (this.rule.Transition == null || this.rule.Transition.DateUtc == DateTime.MinValue)
                     return null;
 
-                return this._rule.Transition.Date;
+                return this.rule.Transition.DateUtc;
             }
         }
 
@@ -157,21 +153,21 @@ namespace Amazon.AWSToolkit.S3.Model
         {
             if (!days.HasValue && !date.HasValue)
             {
-                this._rule.Transition = null;
+                this.rule.Transition = null;
             }
             else
             {
-                this._rule.Transition = new Amazon.S3.Model.LifecycleTransition();
+                this.rule.Transition = new Amazon.S3.Model.LifecycleTransition();
                 if (days.HasValue)
                 {
-                    this._rule.Transition.Days = days.GetValueOrDefault();
+                    this.rule.Transition.Days = days.GetValueOrDefault();
                 }
                 else
                 {
-                    this._rule.Transition.Date = date.GetValueOrDefault();
+                    this.rule.Transition.DateUtc = date.GetValueOrDefault();
                 }
 
-                this._rule.Transition.StorageClass = S3StorageClass.Glacier;
+                this.rule.Transition.StorageClass = S3StorageClass.Glacier;
             }
 
             base.NotifyPropertyChanged("TransitionDate");
@@ -181,13 +177,13 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public string Status
         {
-            get { return this._rule.Status.ToString(); }
+            get { return this.rule.Status.ToString(); }
             set
             {
                 if (string.Equals("Enabled", value, StringComparison.InvariantCultureIgnoreCase))
-                    this._rule.Status = LifecycleRuleStatus.Enabled;
+                    this.rule.Status = LifecycleRuleStatus.Enabled;
                 else
-                    this._rule.Status = LifecycleRuleStatus.Disabled;
+                    this.rule.Status = LifecycleRuleStatus.Disabled;
 
                 base.NotifyPropertyChanged("Status");
             }
@@ -224,27 +220,27 @@ namespace Amazon.AWSToolkit.S3.Model
         public Amazon.S3.Model.LifecycleRule ConvertToRule()
         {
             var newRule = new Amazon.S3.Model.LifecycleRule();
-            newRule.Id = this._rule.Id;
-            newRule.Prefix = this._rule.Prefix;
-            newRule.Status = this._rule.Status;
+            newRule.Id = this.rule.Id;
+            newRule.Prefix = this.rule.Prefix;
+            newRule.Status = this.rule.Status;
 
-            if (this._rule.Expiration != null)
+            if (this.rule.Expiration != null)
             {
                 newRule.Expiration = new Amazon.S3.Model.LifecycleRuleExpiration();
-                if (this._rule.Expiration.Date != DateTime.MinValue)
-                    newRule.Expiration.Date = this._rule.Expiration.Date;
-                if (this._rule.Expiration.Days != 0)
-                    newRule.Expiration.Days = this._rule.Expiration.Days;
+                if (this.rule.Expiration.DateUtc != DateTime.MinValue)
+                    newRule.Expiration.DateUtc = this.rule.Expiration.DateUtc;
+                if (this.rule.Expiration.Days != 0)
+                    newRule.Expiration.Days = this.rule.Expiration.Days;
             }
 
-            if (this._rule.Transition != null)
+            if (this.rule.Transitions.FirstOrDefault() != null)
             {
-                newRule.Transition = new Amazon.S3.Model.LifecycleTransition();
-                if (this._rule.Transition.Date != DateTime.MinValue)
-                    newRule.Transition.Date = this._rule.Transition.Date;
-                if (this._rule.Transition.Days != 0)
-                    newRule.Transition.Days = this._rule.Transition.Days;
-                newRule.Transition.StorageClass = this._rule.Transition.StorageClass;
+                newRule.Transitions[0] = new Amazon.S3.Model.LifecycleTransition();
+                if (this.rule.Transitions[0].DateUtc != DateTime.MinValue)
+                    newRule.Transitions[0].DateUtc = this.rule.Transitions[0].DateUtc;
+                if (this.rule.Transitions[0].Days != 0)
+                    newRule.Transitions[0].Days = this.rule.Transitions[0].Days;
+                newRule.Transitions[0].StorageClass = this.rule.Transitions[0].StorageClass;
             }
 
             return newRule;

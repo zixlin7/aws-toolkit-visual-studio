@@ -139,12 +139,12 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 //if given customStartSessionDetails and the user marks the custom event as a START_SESSION event
                 //make sure the right timestamps match.
                 if (customEventType.Equals(AMAConstants.SessionEventNames.START_SESSION))
-                    _eventTimestamp = _customStartSessionDetails.StartTimestamp;
+                    _eventTimestamp = _customStartSessionDetails.StartTimestampUtc;
 
                 //if given customStartSessionDetails and the user marks the custom event as a STOP_SESSION event
                 //make sure the right timestamps match.
                 else if (customEventType.Equals(AMAConstants.SessionEventNames.STOP_SESSION))
-                    _eventTimestamp = _customStartSessionDetails.StopTimestamp;
+                    _eventTimestamp = _customStartSessionDetails.StopTimestampUtc;
             }
 
             this.AddProperty(AttributeKeys.ReadableTimestamp, _eventTimestamp.ToString());
@@ -159,7 +159,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
             Event customEvent = new Event();
             customEvent.EventType = _customEventType;
             customEvent.Version = AMAConstants.MOBILE_ANALYTICS_EVENT_VERSION_NUMBER;
-            customEvent.Timestamp = _eventTimestamp;
+            customEvent.TimestampUtc = _eventTimestamp;
 
             //If a custom session was specified, use it, otherwise leave it null
             //all null sessions will be caught by SimpleMobileAnalytics and auto-populated
@@ -167,7 +167,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
             {
                 customEvent.Session = new Session();
                 customEvent.Session.Id = _customStartSessionDetails.Id;
-                customEvent.Session.StartTimestamp = _customStartSessionDetails.StartTimestamp;
+                customEvent.Session.StartTimestampUtc = _customStartSessionDetails.StartTimestampUtc;
             }
 
             //Unload all of the attributes into the event

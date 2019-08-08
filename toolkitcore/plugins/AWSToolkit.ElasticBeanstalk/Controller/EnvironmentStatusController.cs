@@ -300,7 +300,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             var request = new DescribeEventsRequest() { EnvironmentId = this._statusModel.EnvironmentId };
 
             if (this._statusModel.LastEventTimestamp != DateTime.MinValue)
-                request.StartTime = this._statusModel.LastEventTimestamp.ToUniversalTime().AddMilliseconds(10);
+                request.StartTimeUtc = this._statusModel.LastEventTimestamp.ToUniversalTime().AddMilliseconds(10);
 
             var response = this._beanstalkClient.DescribeEvents(request);
 
