@@ -181,8 +181,6 @@
         <ItemGroup>
             <AWSDeployBinaries Include="$(BuildRoot)\awsdeploy\client\AWSDeploymentTool\bin\$(Configuration)\awsdeploy.exe" />
 			<AWSDeployBinaries Include="$(BuildRoot)\awsdeploy\client\AWSDeploymentLib\bin\$(Configuration)\AWSDeploymentLib.dll" />
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSDeploymentCryptoUtility.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSDeploymentHostManagerClientLib.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.Core.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.AutoScaling.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.CloudFormation.dll"/>
@@ -229,8 +227,6 @@
 			<CfMsBuildTargetBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSToolkit.Util.dll"/>
 			<CfMsBuildTargetBinaries Include="$(BuildRoot)\solutions\packages\log4net*\lib\net45-full\log4net.dll"/>
 			<CfMsBuildTargetBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.Core.dll"/>
-			<CfMsBuildTargetBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSDeploymentCryptoUtility.dll"/>
-			<CfMsBuildTargetBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSDeploymentHostManagerClientLib.dll"/>
         </ItemGroup>
         <Copy
             SourceFiles="@(CfMsBuildTargetBinaries)"

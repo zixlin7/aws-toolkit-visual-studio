@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using ThirdParty.Json.LitJson;
 using Amazon.CloudFormation.Model;
 using Amazon.EC2.Model;
-using AWSDeploymentHostManagerClient;
 using Amazon.S3;
 using Amazon.S3.Model;
 using System.IO;
 using AWSDeploymentCryptoUtility;
+using AWSDeploymentHostManagerClient;
 
 namespace Amazon.AWSToolkit.Util
 {

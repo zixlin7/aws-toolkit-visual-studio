@@ -73,8 +73,6 @@
     <CustomExtension Type="Plugins">AWSToolkit.SNS.Interface.dll</CustomExtension>
     <CustomExtension Type="Plugins">AWSToolkit.SQS.dll</CustomExtension>
     <CustomExtension Type="Plugins">AWSToolkit.SQS.Interface.dll</CustomExtension>
-    <CustomExtension Type="Plugins">AWSDeploymentCryptoUtility.dll</CustomExtension>
-    <CustomExtension Type="Plugins">AWSDeploymentHostManagerClientLib.dll</CustomExtension>
     <CustomExtension Type="Plugins">PemToPPKConverter.exe</CustomExtension>
     <CustomExtension Type="Plugins">Mono.Security.dll</CustomExtension>
     <CustomExtension Type="Plugins">NGit.dll</CustomExtension>

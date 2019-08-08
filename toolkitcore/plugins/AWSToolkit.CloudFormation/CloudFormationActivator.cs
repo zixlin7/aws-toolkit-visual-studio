@@ -151,7 +151,10 @@ namespace Amazon.AWSToolkit.CloudFormation
                 stackName = environmentDetails[CloudFormationConstants.DeploymentTargetQueryParam_StackName] as string;
 
             if (string.IsNullOrEmpty(stackName))
-                throw new ArgumentException(string.Format("Expected '{0}' key in environmentDetails"), CloudFormationConstants.DeploymentTargetQueryParam_StackName);
+            {
+                throw new ArgumentException(
+                    $"Expected '${CloudFormationConstants.DeploymentTargetQueryParam_StackName}' key in environmentDetails");
+            }
 
             var config = new AmazonCloudFormationConfig();
             RegionEndPointsManager.GetInstance().GetRegion(region)

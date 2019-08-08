@@ -81,14 +81,6 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>log4net.dll</Link>
     </Content>
-    <Content Include="$(CfMsBuildTargetsOutputPath)\AWSDeploymentCryptoUtility.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Link>AWSDeploymentCryptoUtility.dll</Link>
-    </Content>
-    <Content Include="$(CfMsBuildTargetsOutputPath)\AWSDeploymentHostManagerClientLib.dll">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Link>AWSDeploymentHostManagerClientLib.dll</Link>
-    </Content>
     <Content Include="$(CfMsBuildTargetsOutputPath)\AWSSDK.Core.dll">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>AWSSDK.Core.dll</Link>

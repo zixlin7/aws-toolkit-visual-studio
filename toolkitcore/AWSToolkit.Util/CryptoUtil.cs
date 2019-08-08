@@ -148,8 +148,6 @@ namespace AWSDeploymentCryptoUtility
             return hash.ComputeHash(encoding.GetBytes(toHash));
         }
 
-        #region Task Request Utilities
-
         public const string
             JSON_KEY_IV        = "iv",
             JSON_KEY_TIMESTAMP = "timestamp",
@@ -208,7 +206,5 @@ namespace AWSDeploymentCryptoUtility
 
             return JsonMapper.ToJson(jData);
         }
-
-        #endregion
     }
 }

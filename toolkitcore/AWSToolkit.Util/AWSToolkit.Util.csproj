@@ -39,21 +39,21 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AWSDeploymentCryptoUtility">
-      <HintPath>$(BuildRoot)\awsdeploy\host\AWSDeploymentCryptoUtility\bin\$(Configuration)\AWSDeploymentCryptoUtility.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CryptoUtil.cs" />
     <Compile Include="Exceptions\IamToolkitException.cs" />
     <Compile Include="Exceptions\LambdaToolkitException.cs" />
     <Compile Include="Exceptions\ToolkitException.cs" />
     <Compile Include="HostedFileContentLoader.cs" />
+    <Compile Include="HostManagerClientRequest.cs" />
     <Compile Include="IAMUtilities.cs" />
     <Compile Include="MobileAnalytics\AMAConstants.cs" />
     <Compile Include="MobileAnalytics\AMAServiceCallHandler.cs" />
@@ -315,12 +315,6 @@
     <PackageReference Include="log4net">
       <Version>2.0.8</Version>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\awsdeploy\host\AWSDeploymentHostManagerClient\AWSDeploymentHostManagerClient.csproj">
-      <Project>{e5103b26-6ed2-42eb-a6bb-3bc920751d20}</Project>
-      <Name>AWSDeploymentHostManagerClient</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
