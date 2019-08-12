@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Xml;
 using System.Xml.Linq;
 using log4net;
 
@@ -63,7 +62,7 @@ namespace Amazon.AWSToolkit
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(HostedFileContentLoader));
         private static readonly HostedFileContentLoader _instance = new HostedFileContentLoader();
 
-        public static IHostedFileContentLoader Instance { get { return _instance; } }
+        public static IHostedFileContentLoader Instance => _instance;
 
         public HostedFileContentLoadResult LoadXmlContent(string hostedFilename, S3FileFetcher.CacheMode cacheMode, out XDocument document)
         {

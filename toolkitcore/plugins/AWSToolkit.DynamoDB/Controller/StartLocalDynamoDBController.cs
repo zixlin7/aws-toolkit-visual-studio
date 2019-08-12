@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using Microsoft.Win32;
 
 using Amazon.AWSToolkit.Navigator;
@@ -12,10 +8,6 @@ using Amazon.AWSToolkit.DynamoDB.Nodes;
 using Amazon.AWSToolkit.DynamoDB.View;
 using Amazon.AWSToolkit.DynamoDB.Model;
 using Amazon.AWSToolkit.DynamoDB.Util;
-using Amazon.AWSToolkit;
-
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
 
 namespace Amazon.AWSToolkit.DynamoDB.Controller
 {
@@ -42,10 +34,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
             return this._results;
         }
 
-        public StartLocalDynamoDBModel Model
-        {
-            get { return this._model; }
-        }
+        public StartLocalDynamoDBModel Model => this._model;
 
         public void LoadModel()
         {

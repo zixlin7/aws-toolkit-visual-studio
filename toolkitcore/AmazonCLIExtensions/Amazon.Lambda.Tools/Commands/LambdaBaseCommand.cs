@@ -38,7 +38,7 @@ namespace Amazon.Lambda.Tools.Commands
                 this._lambdaClient = new AmazonLambdaClient(DetermineAWSCredentials(), config);
                 return this._lambdaClient;
             }
-            set { this._lambdaClient = value; }
+            set => this._lambdaClient = value;
         }
 
         IAmazonCloudFormation _cloudFormationClient;
@@ -58,7 +58,7 @@ namespace Amazon.Lambda.Tools.Commands
                 }
                 return this._cloudFormationClient;
             }
-            set { this._cloudFormationClient = value; }
+            set => this._cloudFormationClient = value;
         }
     }
 }

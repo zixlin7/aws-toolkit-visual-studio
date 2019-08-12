@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.ComponentModel;
 
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 using Amazon.AWSToolkit.RDS.Model;
-using Amazon.AWSToolkit.RDS.WizardPages;
 using Amazon.AWSToolkit.RDS.WizardPages.PageUI;
 
 namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
@@ -19,32 +17,17 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
 
         #region IAWSWizardPageController Members
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageTitle
-        {
-            get { return "DB Engine Instance Options"; }
-        }
+        public string PageTitle => "DB Engine Instance Options";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "Configure your DB engine instance."; }
-        }
+        public string PageDescription => "Configure your DB engine instance.";
 
         public void ResetPage()
         {

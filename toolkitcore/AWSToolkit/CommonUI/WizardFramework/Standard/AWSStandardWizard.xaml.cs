@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using log4net;
@@ -187,7 +186,7 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
 
         #region IAWSWizard implementation
 
-        string IAWSWizard.WizardID { get { return _awsBaseWizardImpl.WizardID; } }
+        string IAWSWizard.WizardID => _awsBaseWizardImpl.WizardID;
 
         string IAWSWizard.Title 
         { 
@@ -225,10 +224,7 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
         }
 
         readonly ObservableCollection<TableOfContentEntry> _tableOfContents = new ObservableCollection<TableOfContentEntry>();
-        public ObservableCollection<TableOfContentEntry> TableOfContents
-        {
-            get { return _tableOfContents; }    
-        }
+        public ObservableCollection<TableOfContentEntry> TableOfContents => _tableOfContents;
 
         public TableOfContentEntry ActiveTableOfContentEntry
         {
@@ -254,14 +250,14 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
 
         bool IAWSWizard.DisplayHeader
         {
-            get { return _wizardHeaderContainer.Visibility == Visibility.Visible; }
-            set { _wizardHeaderContainer.Visibility = Visibility.Collapsed; } 
+            get => _wizardHeaderContainer.Visibility == Visibility.Visible;
+            set => _wizardHeaderContainer.Visibility = Visibility.Collapsed;
         }
 
         bool IAWSWizard.AutoPollFinishEnablement
         {
-            get { return this._autoEnableFinish; }
-            set { this._autoEnableFinish = value; }
+            get => this._autoEnableFinish;
+            set => this._autoEnableFinish = value;
         }
 
         void IAWSWizard.RegisterPageGroups(IEnumerable<string> groupNames)
@@ -375,17 +371,11 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
 
         object IAWSWizard.this[string propertyKey]
         {
-            get { return _awsBaseWizardImpl.GetProperty(propertyKey); }
-            set { _awsBaseWizardImpl.SetProperty(propertyKey, value); }
+            get => _awsBaseWizardImpl.GetProperty(propertyKey);
+            set => _awsBaseWizardImpl.SetProperty(propertyKey, value);
         }
 
-        Dictionary<string, object> IAWSWizard.CollectedProperties 
-        {
-            get
-            {
-                return _awsBaseWizardImpl.CopyProperties();
-            }
-        }
+        Dictionary<string, object> IAWSWizard.CollectedProperties => _awsBaseWizardImpl.CopyProperties();
 
         void IAWSWizard.SetNavigationButtonText(AWSWizardConstants.NavigationButtons button, string buttonText)
         {
@@ -422,11 +412,11 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
 
         Func<bool> IAWSWizard.CommitAction
         {
-            get { return this._awsBaseWizardImpl.CommitAction; }
-            set { this._awsBaseWizardImpl.CommitAction = value; }
+            get => this._awsBaseWizardImpl.CommitAction;
+            set => this._awsBaseWizardImpl.CommitAction = value;
         }
 
-        ILog IAWSWizard.Logger { get { return _awsBaseWizardImpl.Logger; } }
+        ILog IAWSWizard.Logger => _awsBaseWizardImpl.Logger;
 
         void IAWSWizard.CancelRun()
         {
@@ -454,13 +444,7 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
 
         #endregion
 
-        public string PageErrorText
-        {
-            get
-            {
-                return _awsBaseWizardImpl?.PageErrorText;
-            }
-        }
+        public string PageErrorText => _awsBaseWizardImpl?.PageErrorText;
 
         public event PropertyChangedEventHandler PropertyChanged;
 

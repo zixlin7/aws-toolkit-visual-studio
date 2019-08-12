@@ -41,13 +41,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             PageController = controller;
         }
 
-        public bool HasErrors
-        {
-            get
-            {
-                return !IsValid(this);
-            }
-        }
+        public bool HasErrors => !IsValid(this);
 
         public void ConfigureForAppVersionRedeployment()
         {
@@ -68,10 +62,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         private readonly ObservableCollection<string> _deployedApplicationNames = new ObservableCollection<string>();
 
-        public ObservableCollection<string> DeployedApplicationNames
-        {
-            get { return _deployedApplicationNames; }
-        }
+        public ObservableCollection<string> DeployedApplicationNames => _deployedApplicationNames;
 
         public void SetAvailableApplicationDeployments(ICollection<DeployedApplicationModel> deployments)
         {
@@ -88,7 +79,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         string _applicationNameValue = string.Empty;
         public string ApplicationName
         {
-            get { return this._applicationNameValue; }
+            get => this._applicationNameValue;
             set
             {
                 _applicationNameValue = value;
@@ -113,15 +104,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         private readonly ObservableCollection<string> _environmentNamePresets = new ObservableCollection<string>();
 
-        public ObservableCollection<string> EnvironmentNamePresets
-        {
-            get { return _environmentNamePresets; }
-        }
+        public ObservableCollection<string> EnvironmentNamePresets => _environmentNamePresets;
 
         string _envNameValue;
         public string EnvironmentName
         {
-            get { return _envNameValue; }
+            get => _envNameValue;
             set 
             {
                 if (this.CName == null || string.Equals(this.CName, TransformToCName(this._envNameValue), StringComparison.InvariantCultureIgnoreCase))
@@ -178,7 +166,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         private string _cnameValue;
         public string CName
         {
-            get { return _cnameValue; }
+            get => _cnameValue;
             set
             {
                 this._cnameValue = value;
@@ -187,10 +175,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             }
         }
 
-        public bool IsCNameValid
-        {
-            get { return ValidateCNameContent(CName) == string.Empty; }
-        }
+        public bool IsCNameValid => ValidateCNameContent(CName) == string.Empty;
 
         public bool CheckCNAMEAvailability()
         {

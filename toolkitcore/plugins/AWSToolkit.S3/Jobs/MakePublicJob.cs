@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.CommonUI.JobTracker;
 
 using Amazon.AWSToolkit.S3.Controller;
 using Amazon.AWSToolkit.S3.Model;
 
 using Amazon.S3;
-using Amazon.S3.IO;
 using Amazon.S3.Model;
 
 namespace Amazon.AWSToolkit.S3.Jobs
@@ -28,10 +22,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
             this.Title = "Make files publicly readable";
         }
 
-        protected override string CurrentStatusPostFix
-        {
-            get { return "Made Publicly Readable"; }
-        }
+        protected override string CurrentStatusPostFix => "Made Publicly Readable";
 
         protected override Queue<QueueProcessingJob.IJobUnit> BuildQueueOfJobUnits()
         {

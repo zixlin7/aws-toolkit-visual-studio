@@ -1,6 +1,4 @@
-using System;
 using System.Runtime.InteropServices;
-using EnvDTE;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {

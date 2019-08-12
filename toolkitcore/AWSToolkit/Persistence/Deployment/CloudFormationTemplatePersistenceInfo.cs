@@ -1,8 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using System.Collections.Generic;
-using System.Globalization;
-
+﻿using System.Collections.Generic;
 using ThirdParty.Json.LitJson;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 
@@ -30,10 +26,7 @@ namespace Amazon.AWSToolkit.Persistence.Deployment
             return null;
         }
 
-        public IDictionary<string, TemplateDeploymentHistory> Deployments
-        {
-            get { return _deploymentHistories; }
-        }
+        public IDictionary<string, TemplateDeploymentHistory> Deployments => _deploymentHistories;
 
         public void AddDeployment(T deploymentHistory)
         {
@@ -61,19 +54,13 @@ namespace Amazon.AWSToolkit.Persistence.Deployment
         const string TEMPLATEFILE = "TemplateFile";
         const string TEMPLATEPROPS = "TemplateProps";
 
-        public override string ServiceOwner { get { return DeploymentServiceIdentifiers.CloudFormationServiceName; } }
+        public override string ServiceOwner => DeploymentServiceIdentifiers.CloudFormationServiceName;
 
-        public override string DeploymentType
-        {
-            get { return DeploymentTypeIdentifiers.CFNTemplateDeployment; }
-        }
+        public override string DeploymentType => DeploymentTypeIdentifiers.CFNTemplateDeployment;
 
         TemplateDeploymentHistories<TemplateDeploymentHistory> _deploymentHistories = new TemplateDeploymentHistories<TemplateDeploymentHistory>();
 
-        public TemplateDeploymentHistories<TemplateDeploymentHistory> PreviousDeployments
-        {
-            get { return _deploymentHistories; }
-        }
+        public TemplateDeploymentHistories<TemplateDeploymentHistory> PreviousDeployments => _deploymentHistories;
 
         /// <summary>
         /// Serializes to existing Json object context

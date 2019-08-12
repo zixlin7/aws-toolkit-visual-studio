@@ -16,7 +16,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
@@ -77,15 +76,9 @@ namespace Microsoft.VisualStudio.Project
             }
         }
 
-        public override Guid ItemTypeGuid
-        {
-            get { return VSConstants.GUID_ItemType_PhysicalFile; }
-        }
+        public override Guid ItemTypeGuid => VSConstants.GUID_ItemType_PhysicalFile;
 
-        public override int MenuCommandId
-        {
-            get { return VsMenus.IDM_VS_CTXT_ITEMNODE; }
-        }
+        public override int MenuCommandId => VsMenus.IDM_VS_CTXT_ITEMNODE;
 
         public override string Url
         {
@@ -652,14 +645,8 @@ namespace Microsoft.VisualStudio.Project
         #region virtual methods
         public virtual string FileName
         {
-            get
-            {
-                return this.Caption;
-            }
-            set
-            {
-                this.SetEditLabel(value);
-            }
+            get => this.Caption;
+            set => this.SetEditLabel(value);
         }
 
         /// <summary>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Net;
 using System.IO;
@@ -23,37 +22,34 @@ namespace AWSDeploymentHostManagerClient
 
         public string Hostname
         {
-            get { return hostname; }
-            set { hostname = value; }
+            get => hostname;
+            set => hostname = value;
         }
 
         public string InstanceId
         {
-            get { return instance_id; }
-            set { instance_id = value; }
+            get => instance_id;
+            set => instance_id = value;
         }
 
         public string ReservationId
         {
-            get { return reservation_id; }
-            set { reservation_id = value; }
+            get => reservation_id;
+            set => reservation_id = value;
         }
 
         public string TaskName
         {
-            get { return taskName; }
-            set { taskName = value; }
+            get => taskName;
+            set => taskName = value;
         }
 
-        public IDictionary<string, string> Parameters
-        {
-            get { return parameters; }
-        }
+        public IDictionary<string, string> Parameters => parameters;
 
         public bool Verbose
         {
-            get { return verbose; }
-            set { verbose = value; }
+            get => verbose;
+            set => verbose = value;
         }
 
         public string SendRequest()

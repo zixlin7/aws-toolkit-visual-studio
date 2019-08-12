@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
-
-using Amazon.AWSToolkit.DynamoDB.Model;
+﻿using Amazon.AWSToolkit.DynamoDB.Model;
 using Amazon.AWSToolkit.DynamoDB.View;
 
 namespace Amazon.AWSToolkit.DynamoDB.Controller
@@ -19,13 +12,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
         }
 
 
-        public AddAttributeModel Model
-        {
-            get
-            {
-                return this._model;
-            }
-        }
+        public AddAttributeModel Model => this._model;
 
         public bool Execute()
         {

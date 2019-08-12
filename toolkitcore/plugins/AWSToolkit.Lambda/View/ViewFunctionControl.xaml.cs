@@ -39,23 +39,11 @@ namespace Amazon.AWSToolkit.Lambda.View
             this._ctlAdvancedSettingsComponent.PropertyChanged += _ctlAdvancedSettingsComponent_PropertyChanged;
         }
 
-        public override string Title
-        {
-            get { return "Function: " + this._controller.Model.FunctionName; }
-        }
+        public override string Title => "Function: " + this._controller.Model.FunctionName;
 
-        public override string UniqueId
-        {
-            get
-            {
-                return this._controller.Model.FunctionArn;
-            }
-        }
+        public override string UniqueId => this._controller.Model.FunctionArn;
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get { return true; }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {
@@ -83,50 +71,20 @@ namespace Amazon.AWSToolkit.Lambda.View
             this._ctlAdvancedSettingsComponent.SetAvailableDLQTargets(topicArns, queueArns, selectedTargetArn);
         }
 
-        public IEnumerable<SubnetWrapper> SelectedSubnets
-        {
-            get
-            {
-                return _ctlAdvancedSettingsComponent.SelectedSubnets;
-            }
-        }
+        public IEnumerable<SubnetWrapper> SelectedSubnets => _ctlAdvancedSettingsComponent.SelectedSubnets;
 
-        public IEnumerable<SecurityGroupWrapper> SelectedSecurityGroups
-        {
-            get
-            {
-                return _ctlAdvancedSettingsComponent.SelectedSecurityGroups;
-            }
-        }
+        public IEnumerable<SecurityGroupWrapper> SelectedSecurityGroups => _ctlAdvancedSettingsComponent.SelectedSecurityGroups;
 
-        public bool SubnetsSpanVPCs
-        {
-            get
-            {
-                return _ctlAdvancedSettingsComponent.SubnetsSpanVPCs;
-            }
-        }
+        public bool SubnetsSpanVPCs => _ctlAdvancedSettingsComponent.SubnetsSpanVPCs;
 
         public void SetAvailableKMSKeys(IEnumerable<KeyListEntry> keys, IEnumerable<AliasListEntry> aliases)
         {
             _ctlAdvancedSettingsComponent.SetAvailableKMSKeys(keys, aliases, _controller.Model.KMSKeyArn);
         }
 
-        public KeyListEntry SelectedKMSKey
-        {
-            get
-            {
-                return _ctlAdvancedSettingsComponent.SelectedKMSKey;
-            }
-        }
+        public KeyListEntry SelectedKMSKey => _ctlAdvancedSettingsComponent.SelectedKMSKey;
 
-        public string SelectedDLQTargetArn
-        {
-            get
-            {
-                return _ctlAdvancedSettingsComponent.SelectedDLQTargetArn;
-            }
-        }
+        public string SelectedDLQTargetArn => _ctlAdvancedSettingsComponent.SelectedDLQTargetArn;
 
         // catches updates in the vpc, security group and envvar controls that have bubbled up
         private void _ctlAdvancedSettingsComponent_PropertyChanged(object sender, PropertyChangedEventArgs e)

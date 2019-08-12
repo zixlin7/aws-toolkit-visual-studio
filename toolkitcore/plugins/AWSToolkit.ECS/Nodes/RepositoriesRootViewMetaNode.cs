@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -11,15 +7,9 @@ namespace Amazon.AWSToolkit.ECS.Nodes
     public class RepositoriesRootViewMetaNode : AbstractMetaNode
     {
 
-        public RepositoryViewMetaNode RepositoryViewMetaNode
-        {
-            get { return this.FindChild<RepositoryViewMetaNode>(); }
-        }
+        public RepositoryViewMetaNode RepositoryViewMetaNode => this.FindChild<RepositoryViewMetaNode>();
 
-        public override bool SupportsRefresh
-        {
-            get { return true; }
-        }
+        public override bool SupportsRefresh => true;
 
         public ActionHandlerWrapper.ActionHandler OnCreateRepository
         {
@@ -27,19 +17,14 @@ namespace Amazon.AWSToolkit.ECS.Nodes
             set;
         }
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList(
-                    new ActionHandlerWrapper("Create Repository...",
-                        OnCreateRepository,
-                        null,
-                        false,
-                        this.GetType().Assembly,
-                        "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.new_repository.png")
-                );
-            }
-        }
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(
+                new ActionHandlerWrapper("Create Repository...",
+                    OnCreateRepository,
+                    null,
+                    false,
+                    this.GetType().Assembly,
+                    "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.new_repository.png")
+            );
     }
 }

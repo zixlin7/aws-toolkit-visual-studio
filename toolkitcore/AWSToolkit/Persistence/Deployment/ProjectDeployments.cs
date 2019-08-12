@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.IO;
-
 using ThirdParty.Json.LitJson;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 using Amazon.AWSToolkit.Account;
@@ -80,7 +77,7 @@ namespace Amazon.AWSToolkit.Persistence.Deployment
             /// PersistedProjectInfoBase-derived instance per service/deployment 
             /// type the project has been deployed to)
             /// </summary>
-            public List<PersistedProjectInfoBase> ProjectDeployments { get; private set; }
+            public List<PersistedProjectInfoBase> ProjectDeployments { get; }
 
             /// <summary>
             /// If we can accurately determine the last service and stack/environment the project
@@ -220,10 +217,7 @@ namespace Amazon.AWSToolkit.Persistence.Deployment
             /// web app/web site deployment. Beanstalk only supports this type; CloudFormation
             /// supports both toolkit and template deployments.
             /// </summary>
-            public virtual string DeploymentType
-            {
-                get { return DeploymentTypeIdentifiers.VSToolkitDeployment; }
-            }
+            public virtual string DeploymentType => DeploymentTypeIdentifiers.VSToolkitDeployment;
 
             /// <summary>
             /// Saves the unique toolkit account id that was used with this deployment service.

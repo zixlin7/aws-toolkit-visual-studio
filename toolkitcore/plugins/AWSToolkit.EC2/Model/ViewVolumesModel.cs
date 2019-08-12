@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
 
@@ -12,21 +8,15 @@ namespace Amazon.AWSToolkit.EC2.Model
     public class ViewVolumesModel : BaseModel
     {
         ObservableCollection<VolumeWrapper> _volumes = new ObservableCollection<VolumeWrapper>();
-        public ObservableCollection<VolumeWrapper> Volumes
-        {
-            get { return _volumes; }
-        }
+        public ObservableCollection<VolumeWrapper> Volumes => _volumes;
 
         IList<VolumeWrapper> _selectedVolumes = new List<VolumeWrapper>();
-        public IList<VolumeWrapper> SelectedVolumes
-        {
-            get { return _selectedVolumes; }
-        }
+        public IList<VolumeWrapper> SelectedVolumes => _selectedVolumes;
 
         VolumeWrapper _focusVolume;
         public VolumeWrapper FocusVolume
         {
-            get { return _focusVolume; }
+            get => _focusVolume;
             set
             {
                 _focusVolume = value;
@@ -63,12 +53,6 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
 
-        public string[] ListVolumeAvailableTags
-        {
-            get
-            {
-                return EC2ColumnDefinition.GetListAvailableTags(this.Volumes);
-            }
-        }
+        public string[] ListVolumeAvailableTags => EC2ColumnDefinition.GetListAvailableTags(this.Volumes);
     }
 }

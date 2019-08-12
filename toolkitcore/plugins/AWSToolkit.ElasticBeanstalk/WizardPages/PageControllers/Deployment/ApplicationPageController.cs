@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Windows.Controls;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
@@ -15,32 +11,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
     {
         private ApplicationPage _pageUI;
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
-        
+        public string PageID => GetType().FullName;
+
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return DeploymentWizardPageGroups.AppTargetGroup; }
-        }
+        public string PageGroup => DeploymentWizardPageGroups.AppTargetGroup;
 
-        public string PageTitle
-        {
-            get { return "Application Environment"; }
-        }
+        public string PageTitle => "Application Environment";
 
-        public string ShortPageTitle
-        {
-            get { return "Environment"; }
-        }
+        public string ShortPageTitle => "Environment";
 
-        public string PageDescription
-        {
-            get { return "Enter the details for your new application environment. To create a new environment for an existing application, select the appropriate application."; }
-        }
+        public string PageDescription => "Enter the details for your new application environment. To create a new environment for an existing application, select the appropriate application.";
 
         public void ResetPage()
         {

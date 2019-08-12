@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Navigation;
 using Microsoft.Win32;
 
@@ -28,10 +26,7 @@ namespace Amazon.AWSToolkit.CommonUI.DeploymentWizard.PageUI
             this._reviewPanelsContainer.ClearPanels();
         }
 
-        public bool OpenStatusOnClose
-        {
-            get { return this._launchStatusWindow.IsChecked == true; }
-        }
+        public bool OpenStatusOnClose => this._launchStatusWindow.IsChecked == true;
 
         public string ConfigFileDestination
         {

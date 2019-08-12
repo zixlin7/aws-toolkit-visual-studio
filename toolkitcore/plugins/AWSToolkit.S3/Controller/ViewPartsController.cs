@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
 using Amazon.S3;
 using Amazon.S3.Model;
 
@@ -22,10 +20,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             this._model = new ViewPartsModel(bucketName, key, uploadId);
         }
 
-        public ViewPartsModel Model
-        {
-            get { return this._model; }
-        }
+        public ViewPartsModel Model => this._model;
 
         public void Execute()
         {

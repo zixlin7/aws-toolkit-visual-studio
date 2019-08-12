@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.RDS.Model
 {
@@ -25,7 +20,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         ConnectionType _type = ConnectionType.CIDR;
         public ConnectionType Type
         {
-            get { return this._type; }
+            get => this._type;
             set
             {
                 this._type = value;
@@ -37,7 +32,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         string _cidr;
         public string CIDR
         {
-            get { return this._cidr; }
+            get => this._cidr;
             set
             {
                 this._cidr = value;
@@ -49,7 +44,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         string _awsUser;
         public string AWSUser
         {
-            get { return this._awsUser; }
+            get => this._awsUser;
             set
             {
                 this._awsUser = value;
@@ -61,7 +56,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         string _ec2SecurityGroup;
         public string EC2SecurityGroup
         {
-            get { return this._ec2SecurityGroup; }
+            get => this._ec2SecurityGroup;
             set
             {
                 this._ec2SecurityGroup = value;
@@ -98,7 +93,6 @@ namespace Amazon.AWSToolkit.RDS.Model
             public string Name
             {
                 get;
-                private set;
             }
 
             public override string ToString()

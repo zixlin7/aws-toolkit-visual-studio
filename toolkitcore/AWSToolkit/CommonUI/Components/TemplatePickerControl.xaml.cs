@@ -1,20 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 
 namespace Amazon.AWSToolkit.CommonUI.Components
@@ -60,15 +48,9 @@ namespace Amazon.AWSToolkit.CommonUI.Components
             }
         }
 
-        public DeploymentTemplateWrapperBase SelectedTemplate
-        {
-            get
-            {
-                return this._templateList.SelectedItem as DeploymentTemplateWrapperBase;
-            }
-        }
+        public DeploymentTemplateWrapperBase SelectedTemplate => this._templateList.SelectedItem as DeploymentTemplateWrapperBase;
 
-        ObservableCollection<DeploymentTemplateWrapperBase> BoundTemplates { get { return _wrappedTemplates; } }
+        ObservableCollection<DeploymentTemplateWrapperBase> BoundTemplates => _wrappedTemplates;
 
         private void _templateList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Threading;
-
-using Amazon;
+﻿using System.Windows;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
-
-
-using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
 
@@ -30,20 +20,11 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             this._group = group;
         }
 
-        public IAMGroupRootViewModel IAMGroupRootViewModel
-        {
-            get { return this._serviceModel; }
-        }
+        public IAMGroupRootViewModel IAMGroupRootViewModel => this._serviceModel;
 
-        public IAmazonIdentityManagementService IAMClient
-        {
-            get { return this._serviceModel.IAMClient; }
-        }
+        public IAmazonIdentityManagementService IAMClient => this._serviceModel.IAMClient;
 
-        public Group Group
-        {
-            get { return this._group; }
-        }
+        public Group Group => this._group;
 
         public void UpdateGroup(string groupName)
         {
@@ -52,13 +33,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
         }
 
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.group-service-root.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.group-service-root.png";
 
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {

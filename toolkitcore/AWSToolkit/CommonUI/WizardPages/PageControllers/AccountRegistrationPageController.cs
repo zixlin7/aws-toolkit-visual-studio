@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Controls;
-
-using Amazon.AWSToolkit.Account;
+﻿using System.Windows.Controls;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CommonUI.WizardPages.PageUI;
 
@@ -19,35 +13,18 @@ namespace Amazon.AWSToolkit.CommonUI.WizardPages.PageControllers
     public class AccountRegistrationPageController : IAWSWizardPageController
     {
         AccountRegistrationPage _pageUI;
-     
-        #region IAWSWizardPageController Members
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageTitle
-        {
-            get { return "Profile Registration"; }
-        }
+        public string PageTitle => "Profile Registration";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "Please create a profile to register an AWS account with the toolkit before proceeding. You can publish using this account profile or register and use more accounts on the next page."; }
-        }
+        public string PageDescription => "Please create a profile to register an AWS account with the toolkit before proceeding. You can publish using this account profile or register and use more accounts on the next page.";
 
         public bool QueryPageActivation(AWSWizardConstants.NavigationReason navigationReason)
         {
@@ -104,15 +81,7 @@ namespace Amazon.AWSToolkit.CommonUI.WizardPages.PageControllers
 
         }
 
-        #endregion
-
-        bool IsForwardsNavigationAllowed
-        {
-            get
-            {
-                // todo: come back and fix up when we have fields
-                return true;
-            }
-        }
+        // todo: come back and fix up when we have fields
+        bool IsForwardsNavigationAllowed => true;
     }
 }

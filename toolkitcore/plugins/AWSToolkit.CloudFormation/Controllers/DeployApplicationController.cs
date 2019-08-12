@@ -3,13 +3,7 @@ using System.Collections.Generic;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
-
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CloudFormation.Model;
 using Amazon.AWSToolkit.CloudFormation.View.Components;
-
-using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 

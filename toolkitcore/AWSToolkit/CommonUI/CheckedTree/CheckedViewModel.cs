@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 
 namespace Amazon.AWSToolkit.CommonUI.CheckedTree
 {
@@ -28,15 +24,9 @@ namespace Amazon.AWSToolkit.CommonUI.CheckedTree
             this._parent = parent;
         }
 
-        public CheckedViewModel<T> Parent
-        {
-            get { return this._parent; }
-        }
+        public CheckedViewModel<T> Parent => this._parent;
 
-        public List<CheckedViewModel<T>> Children 
-        {
-            get { return this._children; }
-        }
+        public List<CheckedViewModel<T>> Children => this._children;
 
         public bool IsInitiallyExpanded
         {
@@ -50,18 +40,9 @@ namespace Amazon.AWSToolkit.CommonUI.CheckedTree
             private set; 
         }
 
-        public string Name 
-        {
-            get { return this._data.ToString(); }
-        }
+        public string Name => this._data.ToString();
 
-        public T Data
-        {
-            get
-            {
-                return this._data;
-            }
-        }
+        public T Data => this._data;
 
         /// <summary>
         /// Gets/sets the state of the associated UI toggle (ex. CheckBox).
@@ -72,8 +53,8 @@ namespace Amazon.AWSToolkit.CommonUI.CheckedTree
         /// </summary>
         public bool? IsChecked
         {
-            get { return _isChecked; }
-            set { this.SetIsChecked(value, true, true); }
+            get => _isChecked;
+            set => this.SetIsChecked(value, true, true);
         }
 
         public void VerifyChildrenState()

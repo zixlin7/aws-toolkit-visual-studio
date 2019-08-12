@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.EC2.Model
 {
@@ -18,7 +13,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _enteredUsername;
         public string EnteredUsername
         {
-            get { return this._enteredUsername; }
+            get => this._enteredUsername;
             set
             {
                 this._enteredUsername = value;
@@ -29,7 +24,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _privateKey;
         public string PrivateKey
         {
-            get { return this._privateKey; }
+            get => this._privateKey;
             set
             {
                 this._privateKey = value;
@@ -40,7 +35,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         bool _mapDrives = true;
         public bool MapDrives
         {
-            get { return this._mapDrives; }
+            get => this._mapDrives;
             set
             {
                 this._mapDrives = value;
@@ -51,7 +46,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         bool _saveCredentials = true;
         public bool SaveCredentials
         {
-            get { return this._saveCredentials; }
+            get => this._saveCredentials;
             set
             {
                 this._saveCredentials = value;
@@ -62,7 +57,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         bool _savePrivateKey = true;
         public bool SavePrivateKey
         {
-            get { return this._savePrivateKey; }
+            get => this._savePrivateKey;
             set
             {
                 this._savePrivateKey = value;

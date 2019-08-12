@@ -4,15 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text;
-using System.ComponentModel.Design;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Threading;
-using System.Globalization;
 using Amazon.AWSToolkit.MobileAnalytics;
-using Amazon.Util;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Shared;
@@ -138,30 +130,15 @@ namespace Amazon.AWSToolkit
         }
 
 
-        public static ToolkitFactory Instance
-        {
-            get { return INSTANCE; }
-        }
+        public static ToolkitFactory Instance => INSTANCE;
 
-        public NavigatorControl Navigator
-        {
-            get { return this._navigator; }
-        }
+        public NavigatorControl Navigator => this._navigator;
 
-        public IAWSToolkitShellProvider ShellProvider
-        {
-            get { return this._shellProvider; }
-        }
+        public IAWSToolkitShellProvider ShellProvider => this._shellProvider;
 
-        public AWSViewMetaNode RootViewMetaNode
-        {
-            get { return this._rootViewMetaNode; }
-        }
+        public AWSViewMetaNode RootViewMetaNode => this._rootViewMetaNode;
 
-        public AWSViewModel RootViewModel
-        {
-            get { return this._rootViewModel; }
-        }
+        public AWSViewModel RootViewModel => this._rootViewModel;
 
         public object QueryPluginService(Type serviceType)
         {

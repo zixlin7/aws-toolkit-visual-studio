@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Controls;
 using System.Threading;
 
@@ -13,7 +11,6 @@ using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.EC2.LaunchWizard.PageUI;
 using Amazon.AWSToolkit.EC2.LaunchWizard.PageWorkers;
 using Amazon.AWSToolkit.EC2.Nodes;
-using Amazon.AWSToolkit.EC2.Utils;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.Workers;
 
@@ -21,8 +18,6 @@ using Amazon.AWSToolkit.SimpleWorkers;
 
 using Amazon.EC2;
 using Amazon.EC2.Model;
-using Amazon.EC2.Util;
-
 using Amazon.IdentityManagement.Model;
 
 namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
@@ -49,32 +44,17 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
 
         #region IAWSWizardPageController Members
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageTitle
-        {
-            get { return "AMI Options"; }
-        }
+        public string PageTitle => "AMI Options";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "Additional options for controlling your AMI instance."; }
-        }
+        public string PageDescription => "Additional options for controlling your AMI instance.";
 
         public void ResetPage()
         {

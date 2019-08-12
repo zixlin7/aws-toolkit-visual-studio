@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.ObjectModel;
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -18,7 +13,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _instanceId;
         public string InstanceId
         {
-            get { return this._instanceId; }
+            get => this._instanceId;
             set
             {
                 this._instanceId = value;
@@ -27,15 +22,12 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         ObservableCollection<InstanceType> _instanceTypes = new ObservableCollection<InstanceType>();
-        public ObservableCollection<InstanceType> InstanceTypes
-        {
-            get { return this._instanceTypes; }
-        }
+        public ObservableCollection<InstanceType> InstanceTypes => this._instanceTypes;
 
         InstanceType _selectedInstanceType;
         public InstanceType SelectedInstanceType
         {
-            get { return this._selectedInstanceType; }
+            get => this._selectedInstanceType;
             set
             {
                 this._selectedInstanceType = value;

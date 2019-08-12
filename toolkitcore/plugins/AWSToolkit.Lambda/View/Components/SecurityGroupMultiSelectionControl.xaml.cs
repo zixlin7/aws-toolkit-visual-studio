@@ -32,7 +32,7 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
             this._ctlGroups.Loaded += _ctlGroups_Loaded;
         }
 
-        public ObservableCollection<SelectableItem<SecurityGroupWrapper>> AvailableSecurityGroups { get; private set; }
+        public ObservableCollection<SelectableItem<SecurityGroupWrapper>> AvailableSecurityGroups { get; }
 
         public void SetAvailableSecurityGroups(IEnumerable<SecurityGroup> existingGroups, string autoSelectGroup, IEnumerable<string> selectedSecurityGroupIds)
         {

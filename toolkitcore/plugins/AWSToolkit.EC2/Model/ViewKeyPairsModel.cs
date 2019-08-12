@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -12,22 +8,16 @@ namespace Amazon.AWSToolkit.EC2.Model
     {
 
         ObservableCollection<KeyPairWrapper> _keyPairs = new ObservableCollection<KeyPairWrapper>();
-        public ObservableCollection<KeyPairWrapper> KeyPairs
-        {
-            get { return this._keyPairs; }
-        }
+        public ObservableCollection<KeyPairWrapper> KeyPairs => this._keyPairs;
 
         IList<KeyPairWrapper> _selectedKeys = new List<KeyPairWrapper>();
-        public IList<KeyPairWrapper> SelectedKeys
-        {
-            get { return this._selectedKeys; }
-        }
+        public IList<KeyPairWrapper> SelectedKeys => this._selectedKeys;
 
 
         string _selectedKeyNames;
         public string SelectedKeyNames
         {
-            get { return this._selectedKeyNames; }
+            get => this._selectedKeyNames;
             set
             {
                 this._selectedKeyNames = value;

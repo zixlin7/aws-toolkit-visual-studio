@@ -16,7 +16,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -37,15 +36,9 @@ namespace Microsoft.VisualStudio.Project
 			this.browsable = browsable;
 		}
 
-		public bool Browsable
-		{
-			get
-			{
-				return this.browsable;
-			}
-		}
+		public bool Browsable => this.browsable;
 
-		private bool browsable;
+        private bool browsable;
 	}
 
 	/// <summary>
@@ -67,22 +60,16 @@ namespace Microsoft.VisualStudio.Project
 		#region properties
 		[Browsable(false)]
 		[AutomationBrowsable(false)]
-		public HierarchyNode Node
-		{
-			get { return this.node; }
-		}
+		public HierarchyNode Node => this.node;
 
-		/// <summary>
+        /// <summary>
 		/// Used by Property Pages Frame to set it's title bar. The Caption of the Hierarchy Node is returned.
 		/// </summary>
 		[Browsable(false)]
 		[AutomationBrowsable(false)]
-		public virtual string Name
-		{
-			get { return this.node.Caption; }
-		}
+		public virtual string Name => this.node.Caption;
 
-		#endregion
+        #endregion
 
 		#region ctors
 		public NodeProperties(HierarchyNode node)
@@ -324,48 +311,28 @@ namespace Microsoft.VisualStudio.Project
 				}
 				return (BuildAction)Enum.Parse(typeof(BuildAction), value);
 			}
-			set
-			{
-				this.Node.ItemNode.ItemName = value.ToString();
-			}
-		}
+			set => this.Node.ItemNode.ItemName = value.ToString();
+        }
 
 		[SRCategoryAttribute(SR.Misc)]
 		[LocDisplayName(SR.FileName)]
 		[SRDescriptionAttribute(SR.FileNameDescription)]
 		public string FileName
 		{
-			get
-			{
-				return this.Node.Caption;
-			}
-			set
-			{
-				this.Node.SetEditLabel(value);
-			}
-		}
+			get => this.Node.Caption;
+            set => this.Node.SetEditLabel(value);
+        }
 
 		[SRCategoryAttribute(SR.Misc)]
 		[LocDisplayName(SR.FullPath)]
 		[SRDescriptionAttribute(SR.FullPathDescription)]
-		public string FullPath
-		{
-			get
-			{
-				return this.Node.Url;
-			}
-		}
+		public string FullPath => this.Node.Url;
 
-		#region non-browsable properties - used for automation only
+        #region non-browsable properties - used for automation only
 		[Browsable(false)]
-		public string Extension
-		{
-			get
-			{
-				return Path.GetExtension(this.Node.Caption);
-			}
-		}
-		#endregion
+		public string Extension => Path.GetExtension(this.Node.Caption);
+
+        #endregion
 
 		#endregion
 
@@ -402,34 +369,20 @@ namespace Microsoft.VisualStudio.Project
 				}
 				return (BuildAction)Enum.Parse(typeof(BuildAction), value);
 			}
-			set
-			{
-				this.Node.ItemNode.ItemName = value.ToString();
-			}
-		}
+			set => this.Node.ItemNode.ItemName = value.ToString();
+        }
 
 		[SRCategoryAttribute(SR.Misc)]
 		[LocDisplayName(SR.FileName)]
 		[SRDescriptionAttribute(SR.FileNameDescription)]
-		public virtual string FileName
-		{
-			get
-			{
-				return this.Node.Caption;
-			}
-		}
+		public virtual string FileName => this.Node.Caption;
 
-		[SRCategoryAttribute(SR.Misc)]
+        [SRCategoryAttribute(SR.Misc)]
 		[LocDisplayName(SR.FullPath)]
 		[SRDescriptionAttribute(SR.FullPathDescription)]
-		public string FullPath
-		{
-			get
-			{
-				return this.Node.Url;
-			}
-		}
-		#endregion
+		public string FullPath => this.Node.Url;
+
+        #endregion
 
 		#region ctors
 		public DependentFileNodeProperties(HierarchyNode node)
@@ -458,15 +411,15 @@ namespace Microsoft.VisualStudio.Project
 		#region custom tool events
 		internal event EventHandler<HierarchyNodeEventArgs> OnCustomToolChanged
 		{
-			add { onCustomToolChanged += value; }
-			remove { onCustomToolChanged -= value; }
-		}
+			add => onCustomToolChanged += value;
+            remove => onCustomToolChanged -= value;
+        }
 
 		internal event EventHandler<HierarchyNodeEventArgs> OnCustomToolNameSpaceChanged
 		{
-			add { onCustomToolNameSpaceChanged += value; }
-			remove { onCustomToolNameSpaceChanged -= value; }
-		}
+			add => onCustomToolNameSpaceChanged += value;
+            remove => onCustomToolNameSpaceChanged -= value;
+        }
 
 		#endregion
 
@@ -476,11 +429,8 @@ namespace Microsoft.VisualStudio.Project
 		[SRDescriptionAttribute(SR.CustomToolDescription)]
 		public virtual string CustomTool
 		{
-			get
-			{
-				return this.Node.ItemNode.GetMetadata(ProjectFileConstants.Generator);
-			}
-			set
+			get => this.Node.ItemNode.GetMetadata(ProjectFileConstants.Generator);
+            set
 			{
 				if (CustomTool != value)
 				{
@@ -499,11 +449,8 @@ namespace Microsoft.VisualStudio.Project
 		[SRDescriptionAttribute(SR.CustomToolNamespaceDescription)]
 		public virtual string CustomToolNamespace
 		{
-			get
-			{
-				return this.Node.ItemNode.GetMetadata(ProjectFileConstants.CustomToolNamespace);
-			}
-			set
+			get => this.Node.ItemNode.GetMetadata(ProjectFileConstants.CustomToolNamespace);
+            set
 			{
 				if (CustomToolNamespace != value)
 				{
@@ -534,43 +481,25 @@ namespace Microsoft.VisualStudio.Project
 		[LocDisplayName(SR.ProjectFolder)]
 		[SRDescriptionAttribute(SR.ProjectFolderDescription)]
 		[AutomationBrowsable(false)]
-		public string ProjectFolder
-		{
-			get
-			{
-				return this.Node.ProjectMgr.ProjectFolder;
-			}
-		}
+		public string ProjectFolder => this.Node.ProjectMgr.ProjectFolder;
 
-		[SRCategoryAttribute(SR.Misc)]
+        [SRCategoryAttribute(SR.Misc)]
 		[LocDisplayName(SR.ProjectFile)]
 		[SRDescriptionAttribute(SR.ProjectFileDescription)]
 		[AutomationBrowsable(false)]
 		public string ProjectFile
 		{
-			get
-			{
-				return this.Node.ProjectMgr.ProjectFile;
-			}
-			set
-			{
-				this.Node.ProjectMgr.ProjectFile = value;
-			}
-		}
+			get => this.Node.ProjectMgr.ProjectFile;
+            set => this.Node.ProjectMgr.ProjectFile = value;
+        }
 
 		#region non-browsable properties - used for automation only
 		[Browsable(false)]
 		public string FileName
 		{
-			get
-			{
-				return this.Node.ProjectMgr.ProjectFile;
-			}
-			set
-			{
-				this.Node.ProjectMgr.ProjectFile = value;
-			}
-		}
+			get => this.Node.ProjectMgr.ProjectFile;
+            set => this.Node.ProjectMgr.ProjectFile = value;
+        }
 
 
 		[Browsable(false)]
@@ -652,11 +581,8 @@ namespace Microsoft.VisualStudio.Project
 		[AutomationBrowsable(false)]
 		public string FolderName
 		{
-			get
-			{
-				return this.Node.Caption;
-			}
-			set
+			get => this.Node.Caption;
+            set
 			{
 				this.Node.SetEditLabel(value);
 				this.Node.ReDraw(UIHierarchyElement.Caption);
@@ -668,15 +594,9 @@ namespace Microsoft.VisualStudio.Project
 		[AutomationBrowsable(true)]
 		public string FileName
 		{
-			get
-			{
-				return this.Node.Caption;
-			}
-			set
-			{
-				this.Node.SetEditLabel(value);
-			}
-		}
+			get => this.Node.Caption;
+            set => this.Node.SetEditLabel(value);
+        }
 
 		[Browsable(false)]
 		[AutomationBrowsable(true)]
@@ -723,15 +643,9 @@ namespace Microsoft.VisualStudio.Project
 		[SRDescriptionAttribute(SR.RefNameDescription)]
 		[Browsable(true)]
 		[AutomationBrowsable(true)]
-		public override string Name
-		{
-			get
-			{
-				return this.Node.Caption;
-			}
-		}
+		public override string Name => this.Node.Caption;
 
-		[SRCategoryAttribute(SR.Misc)]
+        [SRCategoryAttribute(SR.Misc)]
 		[LocDisplayName(SR.CopyToLocal)]
 		[SRDescriptionAttribute(SR.CopyToLocalDescription)]
 		public bool CopyToLocal
@@ -743,23 +657,15 @@ namespace Microsoft.VisualStudio.Project
 					return true;
 				return bool.Parse(copyLocal);
 			}
-			set
-			{
-				this.SetProperty(ProjectFileConstants.Private, value.ToString());
-			}
-		}
+			set => this.SetProperty(ProjectFileConstants.Private, value.ToString());
+        }
 
 		[SRCategoryAttribute(SR.Misc)]
 		[LocDisplayName(SR.FullPath)]
 		[SRDescriptionAttribute(SR.FullPathDescription)]
-		public virtual string FullPath
-		{
-			get
-			{
-				return this.Node.Url;
-			}
-		}
-		#endregion
+		public virtual string FullPath => this.Node.Url;
+
+        #endregion
 
 		#region ctors
 		public ReferenceNodeProperties(HierarchyNode node)
@@ -787,14 +693,9 @@ namespace Microsoft.VisualStudio.Project
 		#endregion
 
 		#region overriden methods
-		public override string FullPath
-		{
-			get
-			{
-				return ((ProjectReferenceNode)Node).ReferencedProjectOutputPath;
-			}
-		}
-		#endregion
+		public override string FullPath => ((ProjectReferenceNode)Node).ReferencedProjectOutputPath;
+
+        #endregion
 	}
 
     [ComVisible(true)]
@@ -810,8 +711,8 @@ namespace Microsoft.VisualStudio.Project
         [SRDescription(SR.EmbedInteropTypesDescription)]
         public virtual bool EmbedInteropTypes
         {
-            get { return ((ComReferenceNode)this.Node).EmbedInteropTypes; }
-            set { ((ComReferenceNode)this.Node).EmbedInteropTypes = value; }
+            get => ((ComReferenceNode)this.Node).EmbedInteropTypes;
+            set => ((ComReferenceNode)this.Node).EmbedInteropTypes = value;
         }
     }
 }

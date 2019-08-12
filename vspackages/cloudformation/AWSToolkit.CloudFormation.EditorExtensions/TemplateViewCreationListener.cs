@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.Utilities;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Text.Adornments;
-using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Shell;
 
 using log4net;
@@ -135,10 +131,7 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
                 errorListProvider.ProviderName = "CloudFormation Template Validation";
             }
 
-            public TaskProvider.TaskCollection Tasks
-            {
-                get { return errorListProvider.Tasks; }
-            }
+            public TaskProvider.TaskCollection Tasks => errorListProvider.Tasks;
 
             public bool Navigate(Microsoft.VisualStudio.Shell.Task task, Guid logicalView)
             {

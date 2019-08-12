@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.Runtime.Internal.Settings;
 
@@ -34,7 +30,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Model
         string _accessKey;
         public string AccessKey
         {
-            get { return this._accessKey; }
+            get => this._accessKey;
             set
             {
                 this._accessKey = value;
@@ -45,7 +41,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Model
         string _status;
         public string Status
         {
-            get { return this._status; }
+            get => this._status;
             set
             {
                 this._status = value;
@@ -67,7 +63,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Model
         DateTime _createDate;
         public DateTime CreateDate
         {
-            get { return this._createDate; }
+            get => this._createDate;
             set
             {
                 this._createDate = value;
@@ -79,7 +75,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Model
         bool _persistSecretKeyLocal;
         public bool PersistSecretKeyLocal
         {
-            get { return this._persistSecretKeyLocal; }
+            get => this._persistSecretKeyLocal;
             set
             {
                 if (this._persistSecretKeyLocal != value)
@@ -94,7 +90,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Model
         string _secretKey;
         public string SecretKey
         {
-            get { return this._secretKey; }
+            get => this._secretKey;
             set
             {
                 this._secretKey = value;

@@ -1,39 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Util;
 
 using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
 using Amazon.AWSToolkit.ElasticBeanstalk.View.Components;
 using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
-
-using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages;
-using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers;
-using Amazon.AWSToolkit.S3.Nodes;
-using Amazon.AWSToolkit.EC2;
 using Amazon.AWSToolkit.EC2.Nodes;
 
 using Amazon.EC2;
 using Amazon.EC2.Model;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
-using Amazon.S3;
-using Amazon.S3.Model;
-using Amazon.S3.Transfer;
-
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 

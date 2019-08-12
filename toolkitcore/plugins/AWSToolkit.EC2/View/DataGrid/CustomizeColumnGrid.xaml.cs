@@ -1,21 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-
 using Amazon.Runtime.Internal.Settings;
 using Amazon.AWSToolkit.CommonUI;
 
@@ -195,10 +185,7 @@ namespace Amazon.AWSToolkit.EC2.View.DataGrid
 
         public EC2ColumnDefinition[] ColumnDefinitions
         {
-            get
-            {
-                return this._definitions;
-            }
+            get => this._definitions;
 
             set
             {
@@ -266,15 +253,9 @@ namespace Amazon.AWSToolkit.EC2.View.DataGrid
             e.Row.Header = (e.Row.GetIndex() + 1).ToString();
         }
 
-        public System.Collections.IList SelectedItems 
-        {
-            get { return this._ctlDataGrid.SelectedItems; }
-        }
+        public System.Collections.IList SelectedItems => this._ctlDataGrid.SelectedItems;
 
-        public object SelectedItem
-        {
-            get { return this._ctlDataGrid.SelectedItem; }
-        }
+        public object SelectedItem => this._ctlDataGrid.SelectedItem;
 
         public IList<T> GetSelectedItems<T>()
         {
@@ -394,14 +375,8 @@ namespace Amazon.AWSToolkit.EC2.View.DataGrid
 
         public event RoutedEventHandler GridContextMenuOpening
         {
-            add
-            {
-                AddHandler(GridContextMenuOpeningEvent, value);
-            }
-            remove
-            {
-                RemoveHandler(GridContextMenuOpeningEvent, value);
-            }
+            add => AddHandler(GridContextMenuOpeningEvent, value);
+            remove => RemoveHandler(GridContextMenuOpeningEvent, value);
         }
 
         void onContextMenuOpening(object sender, ContextMenuEventArgs e)
@@ -419,14 +394,8 @@ namespace Amazon.AWSToolkit.EC2.View.DataGrid
 
         public event RoutedEventHandler GridSelectionChanged
         {
-            add
-            {
-                AddHandler(GridSelectionChangedEvent, value);
-            }
-            remove
-            {
-                RemoveHandler(GridSelectionChangedEvent, value);
-            }
+            add => AddHandler(GridSelectionChangedEvent, value);
+            remove => RemoveHandler(GridSelectionChangedEvent, value);
         }
 
         void onSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -445,14 +414,8 @@ namespace Amazon.AWSToolkit.EC2.View.DataGrid
 
         public string KeyField
         {
-            get
-            {
-                return (string)GetValue(KeyFieldProperty);
-            }
-            set
-            {
-                SetValue(KeyFieldProperty, value);
-            }
+            get => (string)GetValue(KeyFieldProperty);
+            set => SetValue(KeyFieldProperty, value);
         }
 
         public static readonly DependencyProperty ItemsSourceProperty =
@@ -463,14 +426,8 @@ namespace Amazon.AWSToolkit.EC2.View.DataGrid
 
         public System.Collections.IEnumerable ItemsSource
         {
-            get
-            {
-                return (System.Collections.IEnumerable)GetValue(ItemsSourceProperty);
-            }
-            set
-            {
-                SetValue(ItemsSourceProperty, value);
-            }
+            get => (System.Collections.IEnumerable)GetValue(ItemsSourceProperty);
+            set => SetValue(ItemsSourceProperty, value);
         }
 
         private static void ItemsSourceChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
@@ -486,14 +443,8 @@ namespace Amazon.AWSToolkit.EC2.View.DataGrid
 
         public bool IsReadOnly
         {
-            get
-            {
-                return (bool)GetValue(IsReadOnlyProperty);
-            }
-            set
-            {
-                SetValue(IsReadOnlyProperty, value);
-            }
+            get => (bool)GetValue(IsReadOnlyProperty);
+            set => SetValue(IsReadOnlyProperty, value);
         }
 
         private static void IsReadOnlyChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)

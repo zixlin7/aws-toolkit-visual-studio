@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
-using System.Windows.Baml2006;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.PluginServices.Deployment;
 using AWSDeployment;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deployment
@@ -24,32 +21,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
     /// </summary>
     internal class PseudoReviewPageController : IAWSWizardPageController
     {
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return DeploymentWizardPageGroups.ReviewGroup; }
-        }
+        public string PageGroup => DeploymentWizardPageGroups.ReviewGroup;
 
-        public string PageTitle
-        {
-            get { return string.Empty; }
-        }
+        public string PageTitle => string.Empty;
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return string.Empty; }
-        }
+        public string PageDescription => string.Empty;
 
         public void ResetPage()
         {

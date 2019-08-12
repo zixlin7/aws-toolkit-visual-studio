@@ -36,36 +36,19 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Defines the NodeProperties object that contains the defines the properties.
 		/// </summary>
-		public NodeProperties Target
-		{
-			get
-			{
-				return this.target;
-			}
-		}
+		public NodeProperties Target => this.target;
 
-		/// <summary>
+        /// <summary>
 		/// The hierarchy node for the object which properties this item represent
 		/// </summary>
-		public HierarchyNode Node
-		{
-			get
-			{
-				return this.Target.Node;
-			}
-		}
+		public HierarchyNode Node => this.Target.Node;
 
-		/// <summary>
+        /// <summary>
 		/// Defines a dictionary of the properties contained.
 		/// </summary>
-		public Dictionary<string, EnvDTE.Property> Properties
-		{
-			get
-			{
-				return this.properties;
-			}
-		}
-		#endregion
+		public Dictionary<string, EnvDTE.Property> Properties => this.properties;
+
+        #endregion
 
 		#region ctor
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -87,20 +70,14 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Microsoft Internal Use Only.
 		/// </summary>
-		public virtual object Application
-		{
-			get { return null; }
-		}
+		public virtual object Application => null;
 
-		/// <summary>
+        /// <summary>
 		/// Gets a value indicating the number of objects in the collection.
 		/// </summary>
-		public int Count
-		{
-			get { return properties.Count; }
-		}
+		public int Count => properties.Count;
 
-		/// <summary>
+        /// <summary>
 		/// Gets the top-level extensibility object.
 		/// </summary>
 		public virtual EnvDTE.DTE DTE
@@ -180,11 +157,9 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Gets the immediate parent object of a Properties collection.
 		/// </summary>
-		public virtual object Parent
-		{
-			get { return null; }
-		}
-		#endregion
+		public virtual object Parent => null;
+
+        #endregion
 
 		#region methods
 		/// <summary>

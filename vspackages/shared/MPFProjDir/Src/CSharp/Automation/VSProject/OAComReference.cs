@@ -47,33 +47,17 @@ namespace Microsoft.VisualStudio.Project.Automation
 				return culture.Name;
 			}
 		}
-		public override string Identity
-		{
-			get
-			{
-				return string.Format(CultureInfo.InvariantCulture, "{0}\\{1}", BaseReferenceNode.TypeGuid.ToString("B"), this.Version);
-			}
-		}
-		public override int MajorVersion
-		{
-			get { return BaseReferenceNode.MajorVersionNumber; }
-		}
-		public override int MinorVersion
-		{
-			get { return BaseReferenceNode.MinorVersionNumber; }
-		}
-		public override string Name
-		{
-			get { return BaseReferenceNode.Caption; }
-		}
-		public override VSLangProj.prjReferenceType Type
-		{
-			get
-			{
-				return VSLangProj.prjReferenceType.prjReferenceTypeActiveX;
-			}
-		}
-		public override string Version
+		public override string Identity => string.Format(CultureInfo.InvariantCulture, "{0}\\{1}", BaseReferenceNode.TypeGuid.ToString("B"), this.Version);
+
+        public override int MajorVersion => BaseReferenceNode.MajorVersionNumber;
+
+        public override int MinorVersion => BaseReferenceNode.MinorVersionNumber;
+
+        public override string Name => BaseReferenceNode.Caption;
+
+        public override VSLangProj.prjReferenceType Type => VSLangProj.prjReferenceType.prjReferenceTypeActiveX;
+
+        public override string Version
 		{
 			get
 			{

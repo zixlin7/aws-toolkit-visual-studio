@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.DynamoDB.Nodes;
-using Amazon.AWSToolkit;
-
-using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 
 namespace Amazon.AWSToolkit.DynamoDB.Controller

@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI.JobTracker;
 
 using Amazon.AWSToolkit.S3.Controller;
 using Amazon.AWSToolkit.S3.Model;
-
-using Amazon.S3;
-using Amazon.S3.IO;
 using Amazon.S3.Model;
 
 
@@ -33,18 +26,9 @@ namespace Amazon.AWSToolkit.S3.Jobs
             this.Title = "Delete Files";
         }
 
-        protected override int NumberActiveThreads
-        {
-            get
-            {
-                return 2;
-            }
-        }
+        protected override int NumberActiveThreads => 2;
 
-        protected override string CurrentStatusPostFix
-        {
-            get { return "Deleted files"; }
-        }
+        protected override string CurrentStatusPostFix => "Deleted files";
 
         protected override Queue<QueueProcessingJob.IJobUnit> BuildQueueOfJobUnits()
         {
@@ -90,21 +74,9 @@ namespace Amazon.AWSToolkit.S3.Jobs
         }
 
 
-        protected override int TotalUnits
-        {
-            get
-            {
-                return this._numberOfToDeleteKeys;
-            }
-        }
+        protected override int TotalUnits => this._numberOfToDeleteKeys;
 
-        protected override int CompletedUnits
-        {
-            get
-            {
-                return this._numberOfDeletedKeys;
-            }
-        }
+        protected override int CompletedUnits => this._numberOfDeletedKeys;
 
         protected override void PostExecuteJob(Exception exception)
         {

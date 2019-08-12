@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.Runtime.Internal.Settings;
 using Amazon.AWSToolkit.Account.View;
@@ -26,10 +22,7 @@ namespace Amazon.AWSToolkit.Account.Controller
             this._model = new RegisterAccountModel();
         }
 
-        public RegisterAccountModel Model
-        {
-            get { return this._model; }
-        }
+        public RegisterAccountModel Model => this._model;
 
         public virtual ActionResults Execute()
         {
@@ -71,10 +64,7 @@ namespace Amazon.AWSToolkit.Account.Controller
             }
         }
 
-        public bool PromptToUseDefaultName
-        {
-            get { return !DefaultProfileNameInUse; }
-        }
+        public bool PromptToUseDefaultName => !DefaultProfileNameInUse;
 
         public virtual void Persist()
         {

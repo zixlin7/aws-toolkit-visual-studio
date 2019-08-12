@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.IdentityManagement.Model
 {
@@ -30,7 +25,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Model
         ObservableCollection<string> _availableGroups = new ObservableCollection<string>();
         public ObservableCollection<string> AvailableGroups
         {
-            get { return this._availableGroups; }
+            get => this._availableGroups;
             set
             {
                 this._availableGroups = value;
@@ -41,7 +36,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Model
         ObservableCollection<string> _assignedGroups = new ObservableCollection<string>();
         public ObservableCollection<string> AssignedGroups
         {
-            get { return this._assignedGroups; }
+            get => this._assignedGroups;
             set
             {
                 this._assignedGroups = value;
@@ -52,7 +47,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Model
         ObservableCollection<AccessKeyModel> _accessKeys = new ObservableCollection<AccessKeyModel>();
         public ObservableCollection<AccessKeyModel> AccessKeys
         {
-            get { return this._accessKeys; }
+            get => this._accessKeys;
             set
             {
                 this._accessKeys = value;

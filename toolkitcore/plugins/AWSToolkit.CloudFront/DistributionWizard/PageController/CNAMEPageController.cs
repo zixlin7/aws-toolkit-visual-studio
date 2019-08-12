@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Controls;
-
-using Amazon.AWSToolkit.CloudFront.Model;
+﻿using System.Windows.Controls;
 using Amazon.AWSToolkit.CloudFront.Controller;
 
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
@@ -25,32 +19,18 @@ namespace Amazon.AWSToolkit.CloudFront.DistributionWizard.PageController
 
         #region IAWSWizardPageController Members
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageTitle
-        {
-            get { return "CNAMEs"; }
-        }
+        public string PageTitle => "CNAMEs";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "Set the CNAMEs associated with the distribution."; }
-        }
+        public string PageDescription => "Set the CNAMEs associated with the distribution.";
+
         public void ResetPage()
         {
 
@@ -117,12 +97,6 @@ namespace Amazon.AWSToolkit.CloudFront.DistributionWizard.PageController
         {
         }
 
-        bool IsForwardsNavigationAllowed
-        {
-            get
-            {
-                return true;
-            }
-        }
+        bool IsForwardsNavigationAllowed => true;
     }
 }

@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Drawing;
 using System.Diagnostics;
-using System.ComponentModel.Design;
-using System.Windows.Forms;
-using System.Resources;
-using System.Runtime.InteropServices;
-using System.Collections.Generic;
-
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.OLE.Interop;
-
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 

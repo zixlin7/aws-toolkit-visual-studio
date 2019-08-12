@@ -11,13 +11,10 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
 using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Text;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
 using VsCommands2K = Microsoft.VisualStudio.VSConstants.VSStd2KCmdID;
@@ -51,32 +48,15 @@ namespace Microsoft.VisualStudio.Project
 		#endregion
 
 		#region overridden properties
-		public override int MenuCommandId
-		{
-			get { return VsMenus.IDM_VS_CTXT_REFERENCE; }
-		}
+		public override int MenuCommandId => VsMenus.IDM_VS_CTXT_REFERENCE;
 
-		public override Guid ItemTypeGuid
-		{
-			get { return Guid.Empty; }
-		}
+        public override Guid ItemTypeGuid => Guid.Empty;
 
-		public override string Url
-		{
-			get
-			{
-				return String.Empty;
-			}
-		}
+        public override string Url => String.Empty;
 
-		public override string Caption
-		{
-			get
-			{
-				return String.Empty;
-			}
-		}
-		#endregion
+        public override string Caption => String.Empty;
+
+        #endregion
 
 		#region overridden methods
 		protected override NodeProperties CreatePropertiesObject()

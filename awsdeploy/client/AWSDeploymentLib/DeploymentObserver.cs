@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace AWSDeployment
+﻿namespace AWSDeployment
 {
     /// <summary>
     /// Simple deployment observer. Drops all messages on the floor. This class is

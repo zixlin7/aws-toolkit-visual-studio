@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.VisualStudio.Services;
-using Amazon.AWSToolkit.Shared;
+﻿using Amazon.AWSToolkit.Shared;
 
 namespace Amazon.AWSToolkit.VisualStudio.Loggers
 {

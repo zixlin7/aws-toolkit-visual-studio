@@ -2,28 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Microsoft.VisualStudio.TemplateWizard;
 using Microsoft.VisualStudio;
 using EnvDTE;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-
-using Microsoft.Win32;
-
 using Amazon.Lambda;
-using Amazon.Lambda.Model;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages;
 using Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageControllers;
 using Amazon.AWSToolkit.SimpleWorkers;
 using Amazon.AWSToolkit.MobileAnalytics;
-
-using ICSharpCode.SharpZipLib.Zip;
 
 namespace Amazon.AWSToolkit.Lambda.TemplateWizards
 {

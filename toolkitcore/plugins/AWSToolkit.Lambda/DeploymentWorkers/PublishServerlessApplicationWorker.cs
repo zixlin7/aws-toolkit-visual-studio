@@ -1,21 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Amazon.S3;
 using Amazon.CloudFormation;
 
 using log4net;
 
 using Amazon.Common.DotNetCli.Tools;
-
-using Amazon.Lambda.Tools;
 using Amazon.Lambda.Tools.Commands;
 
 using Amazon.AWSToolkit.Exceptions;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Account;
 using System.IO;
 using Amazon.AWSToolkit.Lambda.Util;

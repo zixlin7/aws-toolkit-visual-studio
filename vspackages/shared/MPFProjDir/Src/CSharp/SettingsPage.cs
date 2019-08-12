@@ -52,38 +52,20 @@ namespace Microsoft.VisualStudio.Project
 		[AutomationBrowsable(false)]
 		public string Name
 		{
-			get
-			{
-				return this.name;
-			}
-			set
-			{
-				this.name = value;
-			}
-		}
+			get => this.name;
+            set => this.name = value;
+        }
 
 		[Browsable(false)]
 		[AutomationBrowsable(false)]
-		public ProjectNode ProjectMgr
-		{
-			get
-			{
-				return this.project;
-			}
-		}
+		public ProjectNode ProjectMgr => this.project;
 
-		protected IVSMDPropertyGrid Grid
-		{
-			get { return this.grid; }
-		}
+        protected IVSMDPropertyGrid Grid => this.grid;
 
-		protected bool IsDirty
+        protected bool IsDirty
 		{
-			get
-			{
-				return this.dirty;
-			}
-			set
+			get => this.dirty;
+            set
 			{
 				if(this.dirty != value)
 				{
@@ -93,14 +75,9 @@ namespace Microsoft.VisualStudio.Project
 				}
 			}
 		}
-		protected Panel ThePanel
-		{
-			get
-			{
-				return this.panel;
-			}
-		}
-		#endregion		
+		protected Panel ThePanel => this.panel;
+
+        #endregion		
 
 		#region abstract methods
 		protected abstract void BindProperties();

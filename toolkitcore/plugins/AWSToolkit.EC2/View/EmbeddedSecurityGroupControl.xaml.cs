@@ -3,22 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.Model;
-
-using Amazon.EC2;
-using Amazon.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.View
 {
@@ -43,19 +30,13 @@ namespace Amazon.AWSToolkit.EC2.View
             this._addPermission.IsEnabled = AddPermissionEnabler;
         }
 
-        public string GroupName
-        {
-            get { return this._groupName.Text; }
-        }
+        public string GroupName => this._groupName.Text;
 
-        public string GroupDescription
-        {
-            get { return this._groupDescription.Text; }
-        }
+        public string GroupDescription => this._groupDescription.Text;
 
         public ICollection<IPPermissionWrapper> GroupPermissions
         {
-            get { return _rulePermissions as ICollection<IPPermissionWrapper>; }
+            get => _rulePermissions as ICollection<IPPermissionWrapper>;
 
             set
             {

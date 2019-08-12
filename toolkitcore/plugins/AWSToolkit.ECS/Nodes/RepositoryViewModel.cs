@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Amazon.AWSToolkit.ECS.Model;
+﻿using Amazon.AWSToolkit.ECS.Model;
 using Amazon.ECR;
 using log4net;
 
@@ -25,27 +20,12 @@ namespace Amazon.AWSToolkit.ECS.Nodes
             this._ecrClient = rootViewModel.ECRClient;
         }
 
-        public RepositoriesRootViewModel RootViewModel
-        {
-            get { return this._rootViewModel; }
-        }
+        public RepositoriesRootViewModel RootViewModel => this._rootViewModel;
 
-        public RepositoryWrapper Repository
-        {
-            get { return this._repository; }
-        }
+        public RepositoryWrapper Repository => this._repository;
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.repository.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.repository.png";
 
-        public string RepositoryName
-        {
-            get { return _repository.Name; }
-        }
+        public string RepositoryName => _repository.Name;
     }
 }

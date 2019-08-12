@@ -1,18 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using System.Windows.Controls.DataVisualization.Charting;
 
 using Amazon.CloudWatch;
@@ -37,10 +25,7 @@ namespace Amazon.AWSToolkit.CommonUI.Charts
 
         public string Status
         {
-            get
-            {
-                return GetValue(StatusProperty) as string;
-            }
+            get => GetValue(StatusProperty) as string;
             set
             {
                 SetValue(StatusProperty, value);
@@ -55,10 +40,7 @@ namespace Amazon.AWSToolkit.CommonUI.Charts
 
         public string Title
         {
-            get
-            {
-                return GetValue(TitleProperty) as string;
-            }
+            get => GetValue(TitleProperty) as string;
             set
             {
                 SetValue(TitleProperty, value);
@@ -70,13 +52,7 @@ namespace Amazon.AWSToolkit.CommonUI.Charts
             DependencyProperty.Register("FullTitleBar", typeof(string), typeof(CloudWatchChart),
             new PropertyMetadata(string.Empty));
 
-        public string FullTitleBar
-        {
-            get
-            {
-                return GetValue(FullTitleBarProperty) as string;
-            }
-        }
+        public string FullTitleBar => GetValue(FullTitleBarProperty) as string;
 
         void updateFullTitlebar()
         {
@@ -96,9 +72,6 @@ namespace Amazon.AWSToolkit.CommonUI.Charts
             ThreadPool.QueueUserWorkItem(fetcher.Execute);
         }
 
-        internal LineSeries LineSeries
-        {
-            get { return this._ctlLineSeries; }
-        }
+        internal LineSeries LineSeries => this._ctlLineSeries;
     }
 }

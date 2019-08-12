@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Amazon.S3;
 using Amazon.S3.Model;
-
-using Amazon.AWSToolkit.S3.Nodes;
 
 namespace Amazon.AWSToolkit.S3
 {

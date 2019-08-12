@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Amazon.AWSToolkit.EC2
 {
@@ -63,15 +61,9 @@ namespace Amazon.AWSToolkit.EC2
         }
 
 
-        public static IEnumerable<NetworkProtocol> AllProtocols
-        {
-            get { return _allProtocols; }
-        }
+        public static IEnumerable<NetworkProtocol> AllProtocols => _allProtocols;
 
-        public static IEnumerable<NetworkProtocol> AllProtocolsWithWildCard
-        {
-            get { return _allProtocolsWithWildCard; }
-        }
+        public static IEnumerable<NetworkProtocol> AllProtocolsWithWildCard => _allProtocolsWithWildCard;
 
         public static NetworkProtocol Find(string protocol, int port)
         {
@@ -96,25 +88,21 @@ namespace Amazon.AWSToolkit.EC2
         public string DisplayName
         {
             get;
-            private set;
         }
 
         public NetworkProtocol.Protocol UnderlyingProtocol
         {
             get;
-            private set;
         }
 
         public bool SupportsPortRange
         {
             get;
-            private set;
         }
 
         public int? DefaultPort
         {
             get;
-            private set;
         }
     }
 }

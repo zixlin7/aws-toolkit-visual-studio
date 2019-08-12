@@ -1,10 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Windows;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.DynamoDB.Controller;
-using Amazon.AWSToolkit.DynamoDB.Model;
 
 namespace Amazon.AWSToolkit.DynamoDB.View
 {
@@ -23,10 +18,7 @@ namespace Amazon.AWSToolkit.DynamoDB.View
             this._ctlGlobalIndexes.Mode = Components.TableIndexesControl.EditingMode.GlobalModified;
         }
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get { return true; }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {   
@@ -38,13 +30,7 @@ namespace Amazon.AWSToolkit.DynamoDB.View
             _controller.LoadModel();
         }
 
-        public override string Title
-        {
-            get
-            {
-                return string.Format("Properties: {0}", this._controller.Model.TableName);
-            }
-        }
+        public override string Title => string.Format("Properties: {0}", this._controller.Model.TableName);
 
         public override bool Validated()
         {

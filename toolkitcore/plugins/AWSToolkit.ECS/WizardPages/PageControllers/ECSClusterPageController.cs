@@ -1,13 +1,7 @@
-﻿using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
+﻿using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
-using log4net;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 using Amazon.ECS.Model;
@@ -22,36 +16,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageDescription
-        {
-            get
-            {
-                return "Choose how to provide compute capacity to your application.";
-            }
-        }
+        public string PageDescription => "Choose how to provide compute capacity to your application.";
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
-        public string PageTitle
-        {
-            get
-            {
-                return "Launch Configuration";
-            }
-        }
+        public string PageTitle => "Launch Configuration";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
         public bool AllowShortCircuit()
         {

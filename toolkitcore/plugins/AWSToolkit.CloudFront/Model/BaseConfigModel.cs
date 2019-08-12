@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Windows;
 
 using Amazon.AWSToolkit.Util;
@@ -25,10 +23,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
             }
         }
 
-        public bool IsNew
-        {
-            get { return this.CallerReference == null; }
-        }
+        public bool IsNew => this.CallerReference == null;
 
         public Visibility IsExistingVisiblity
         {
@@ -41,15 +36,12 @@ namespace Amazon.AWSToolkit.CloudFront.Model
             }
         }
 
-        public bool IsExisting
-        {
-            get { return this.CallerReference != null; }
-        }
+        public bool IsExisting => this.CallerReference != null;
 
         string _callerReference;
         public string CallerReference
         {
-            get { return this._callerReference; }
+            get => this._callerReference;
             set
             {
                 this._callerReference = value;
@@ -62,7 +54,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         string _comment;
         public string Comment
         {
-            get { return this._comment; }
+            get => this._comment;
             set
             {
                 this._comment = value;
@@ -73,7 +65,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         bool _enabled = true;
         public bool Enabled
         {
-            get { return this._enabled; }
+            get => this._enabled;
             set
             {
                 this._enabled = value;
@@ -84,7 +76,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         PriceClass _priceClass = PriceClass.PriceClassAll;
         public PriceClass SelectedPriceClass
         {
-            get { return this._priceClass; }
+            get => this._priceClass;
             set
             {
                 this._priceClass = value;
@@ -92,15 +84,12 @@ namespace Amazon.AWSToolkit.CloudFront.Model
             }
         }
 
-        public IEnumerable<PriceClass> AllAvailablePriceClasses
-        {
-            get { return PriceClass.AllPriceClass; }
-        }
+        public IEnumerable<PriceClass> AllAvailablePriceClasses => PriceClass.AllPriceClass;
 
         string _s3BucketOrigin;
         public string S3BucketOrigin
         {
-            get { return this._s3BucketOrigin; }
+            get => this._s3BucketOrigin;
             set
             {
                 this._s3BucketOrigin = value;
@@ -111,7 +100,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         string _canonicalUserId;
         public string CanonicalUserId
         {
-            get { return this._canonicalUserId; }
+            get => this._canonicalUserId;
             set
             {
                 this._canonicalUserId = value;
@@ -122,7 +111,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         bool _isPrivateDistributionEnabled;
         public bool IsPrivateDistributionEnabled
         {
-            get { return this._isPrivateDistributionEnabled; }
+            get => this._isPrivateDistributionEnabled;
             set
             {
                 this._isPrivateDistributionEnabled = value;
@@ -133,7 +122,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         OriginAccessIdentitiesWrapper _originAccessIdentityWrapper;
         public OriginAccessIdentitiesWrapper SelectedOriginAccessIdentityWrapper
         {
-            get { return this._originAccessIdentityWrapper; }
+            get => this._originAccessIdentityWrapper;
             set
             {
                 if (value == null)
@@ -179,7 +168,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         bool _trustedSignerSelf;
         public bool TrustedSignerSelf
         {
-            get { return this._trustedSignerSelf; }
+            get => this._trustedSignerSelf;
             set
             {
                 this._trustedSignerSelf = value;
@@ -190,7 +179,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         ObservableCollection<MutableString> _trustedSignerAWSAccountIds = new ObservableCollection<MutableString>();
         public ObservableCollection<MutableString> TrustedSignerAWSAccountIds
         {
-            get { return this._trustedSignerAWSAccountIds; }
+            get => this._trustedSignerAWSAccountIds;
             set
             {
                 this._trustedSignerAWSAccountIds = value;
@@ -201,7 +190,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         ObservableCollection<MutableString> _cnames = new ObservableCollection<MutableString>();
         public ObservableCollection<MutableString> CNAMEs
         {
-            get { return this._cnames; }
+            get => this._cnames;
             set
             {
                 this._cnames = value;
@@ -212,7 +201,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         bool _isLoggingEnabled;
         public bool IsLoggingEnabled
         {
-            get { return this._isLoggingEnabled; }
+            get => this._isLoggingEnabled;
             set
             {
                 this._isLoggingEnabled = value;
@@ -223,7 +212,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         string _loggingTargetBucket;
         public string LoggingTargetBucket
         {
-            get { return this._loggingTargetBucket; }
+            get => this._loggingTargetBucket;
             set
             {
                 this._loggingTargetBucket = value;
@@ -246,7 +235,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         string _loggingTargetPrefix;
         public string LoggingTargetPrefix
         {
-            get { return this._loggingTargetPrefix; }
+            get => this._loggingTargetPrefix;
             set
             {
                 this._loggingTargetPrefix = value;
@@ -257,7 +246,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         bool _isLoggingCookiesEnabled;
         public bool IsLoggingCookiesEnabled
         {
-            get { return this._isLoggingCookiesEnabled; }
+            get => this._isLoggingCookiesEnabled;
             set
             {
                 this._isLoggingCookiesEnabled = value;
@@ -268,7 +257,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         ObservableCollection<string> _allBucketNames = new ObservableCollection<string>();
         public ObservableCollection<string> AllBucketNames
         {
-            get { return this._allBucketNames; }
+            get => this._allBucketNames;
             set
             {
                 this._allBucketNames = value;
@@ -279,7 +268,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         ObservableCollection<string> _allCanonicalUserIds = new ObservableCollection<string>();
         public ObservableCollection<string> AllCanonicalUserIds
         {
-            get { return this._allCanonicalUserIds; }
+            get => this._allCanonicalUserIds;
             private set
             {
                 this._allCanonicalUserIds = value;
@@ -290,7 +279,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         ObservableCollection<OriginAccessIdentitiesWrapper> _allOriginAccessIdentities = new ObservableCollection<OriginAccessIdentitiesWrapper>();
         public ObservableCollection<OriginAccessIdentitiesWrapper> AllOriginAccessIdentities
         {
-            get { return this._allOriginAccessIdentities; }
+            get => this._allOriginAccessIdentities;
             private set
             {
                 this._allOriginAccessIdentities = value;
@@ -311,10 +300,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
             public static readonly PriceClass PriceClass100 = new PriceClass("PriceClass_100", "Use Only US and Europe");
             public static readonly PriceClass PriceClass200 = new PriceClass("PriceClass_200", "Use Only US, Europe and Asia");
 
-            public static IEnumerable<PriceClass> AllPriceClass
-            {
-                get { return new PriceClass[] { PriceClassAll, PriceClass200, PriceClass100 }; }
-            }
+            public static IEnumerable<PriceClass> AllPriceClass => new PriceClass[] { PriceClassAll, PriceClass200, PriceClass100 };
 
 
             private PriceClass(string value, string displayName)
@@ -326,13 +312,11 @@ namespace Amazon.AWSToolkit.CloudFront.Model
             public string DisplayName
             {
                 get;
-                private set;
             }
 
             public string Value
             {
                 get;
-                private set;
             }
 
             public static PriceClass FindPriceClass(string value)

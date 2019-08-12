@@ -1,15 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-
-using Amazon;
-using Amazon.MobileAnalytics;
 using Amazon.MobileAnalytics.Model;
-using Amazon.CognitoIdentity;
-using System.ComponentModel;
-using Amazon.Runtime.Internal.Settings;
 using log4net;
 
 namespace Amazon.AWSToolkit.MobileAnalytics
@@ -209,6 +200,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// <summary>
         /// Returns the _eventQueue storing any events that occured.
         /// </summary>
-        public Queue<Event> EventQueue { get { return _eventQueue; }  }
+        public Queue<Event> EventQueue => _eventQueue;
     }
 }

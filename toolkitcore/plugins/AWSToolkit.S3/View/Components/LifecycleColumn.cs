@@ -1,23 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 
 using Amazon.AWSToolkit.S3.Model;
-using Amazon.S3.Model;
-using Amazon.AWSToolkit.Util;
-using Amazon.AWSToolkit.CommonUI;
-
-using System.Windows.Media;
 using System.Windows.Input;
-using System.Windows.Controls.Primitives;
-using System.Windows.Threading;
 
 
 namespace Amazon.AWSToolkit.S3.View.Components

@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.S3.Nodes;
 using Amazon.AWSToolkit.S3.View;
 using Amazon.AWSToolkit.S3.Model;
-using Amazon.AWSToolkit;
-
-using Amazon.S3;
 using Amazon.S3.Model;
 
 namespace Amazon.AWSToolkit.S3.Controller
@@ -38,10 +30,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             return this._results;
         }
 
-        public CreateBucketModel Model
-        {
-            get { return this._model; }
-        }
+        public CreateBucketModel Model => this._model;
 
         public bool Persist()
         {

@@ -4,15 +4,11 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.SimpleDB.Nodes;
 using Amazon.AWSToolkit.SimpleDB.View;
 using Amazon.AWSToolkit.SimpleDB.Model;
-using Amazon.AWSToolkit;
-
 using Amazon.SimpleDB;
 using Amazon.SimpleDB.Model;
 using Attribute = Amazon.SimpleDB.Model.Attribute;
@@ -42,10 +38,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Controller
             this._model.Domain = domain;
         }
 
-        public IAmazonSimpleDB SimpleDBClient
-        {
-            get { return this._sdbClient; }
-        }
+        public IAmazonSimpleDB SimpleDBClient => this._sdbClient;
 
         public override ActionResults Execute(IViewModel model)
         {
@@ -63,10 +56,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Controller
             return new ActionResults().WithSuccess(true);
         }
 
-        public QueryBrowserModel Model
-        {
-            get { return this._model; }
-        }
+        public QueryBrowserModel Model => this._model;
 
         public string AddAttribute()
         {

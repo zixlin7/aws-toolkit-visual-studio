@@ -29,10 +29,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls
             InitializeAccounts();
         }
 
-        public override string Title
-        {
-            get { return "Connect to AWS CodeCommit"; }
-        }
+        public override string Title => "Connect to AWS CodeCommit";
 
         public override bool Validated()
         {
@@ -87,7 +84,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls
 
         public AccountViewModel SelectedAccount
         {
-            get { return _accountSelector.SelectedAccount; }
+            get => _accountSelector.SelectedAccount;
             set
             {
                 if (IsInitialized)

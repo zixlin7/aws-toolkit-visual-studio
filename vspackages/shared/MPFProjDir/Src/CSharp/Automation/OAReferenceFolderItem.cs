@@ -35,16 +35,9 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Returns the project items collection of all the references defined for this project.
 		/// </summary>
-		public override EnvDTE.ProjectItems ProjectItems
-		{
-			get
-			{
-				return new OANavigableProjectItems(this.Project, this.GetListOfProjectItems(), this.Node);
-			}
-		}
+		public override EnvDTE.ProjectItems ProjectItems => new OANavigableProjectItems(this.Project, this.GetListOfProjectItems(), this.Node);
 
-
-		#endregion
+        #endregion
 
 		#region Helper methods
 		private List<EnvDTE.ProjectItem> GetListOfProjectItems()

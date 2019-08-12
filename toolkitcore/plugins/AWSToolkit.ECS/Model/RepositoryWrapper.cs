@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Util;
-using Amazon.ECR;
 using Amazon.ECR.Model;
 
 namespace Amazon.AWSToolkit.ECS.Model
@@ -33,10 +29,7 @@ namespace Amazon.AWSToolkit.ECS.Model
             _repository = repository;
         }
 
-        public bool IsLoaded
-        {
-            get { return _repository != null; }
-        }
+        public bool IsLoaded => _repository != null;
 
         public override void GetPropertyNames(out string className, out string componentName)
         {
@@ -46,46 +39,22 @@ namespace Amazon.AWSToolkit.ECS.Model
 
         [DisplayName("Name")]
         [AssociatedIcon(true, "RepositoryIcon")]
-        public string Name
-        {
-            get
-            {
-                return _repository != null ? _repository.RepositoryName : _repositoryArn.Split('/').LastOrDefault();
-            }
-        }
+        public string Name => _repository != null ? _repository.RepositoryName : _repositoryArn.Split('/').LastOrDefault();
 
         [DisplayName("ARN")]
-        public string RepositoryArn
-        {
-            get { return _repositoryArn; }
-        }
+        public string RepositoryArn => _repositoryArn;
 
         [DisplayName("URI")]
-        public string RepositoryUri
-        {
-            get { return _repository.RepositoryUri; }
-        }
+        public string RepositoryUri => _repository.RepositoryUri;
 
         [DisplayName("Creation Date")]
-        public string CreationDate
-        {
-            get { return _repository.CreatedAt.ToString(); }
-        }
+        public string CreationDate => _repository.CreatedAt.ToString();
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "Repository"; }
-        }
+        public string TypeName => "Repository";
 
         [Browsable(false)]
-        public string DisplayName
-        {
-            get
-            {
-                return string.Format("{0} ({1})", Name, _repositoryArn);
-            }
-        }
+        public string DisplayName => string.Format("{0} ({1})", Name, _repositoryArn);
 
         [Browsable(false)]
         public System.Windows.Media.ImageSource RepositoryIcon
@@ -97,20 +66,11 @@ namespace Amazon.AWSToolkit.ECS.Model
             }
         }
 
-        public string Region
-        {
-            get
-            {
-                return _repositoryArn.Split(':')[3];
-            }
-        }
+        public string Region => _repositoryArn.Split(':')[3];
 
         private readonly RangeObservableCollection<ImageDetailWrapper> _images = new RangeObservableCollection<ImageDetailWrapper>();
 
-        public ObservableCollection<ImageDetailWrapper> Images
-        {
-            get { return _images; }
-        }
+        public ObservableCollection<ImageDetailWrapper> Images => _images;
 
         public void SetImages(ICollection<ImageDetailWrapper> images)
         {

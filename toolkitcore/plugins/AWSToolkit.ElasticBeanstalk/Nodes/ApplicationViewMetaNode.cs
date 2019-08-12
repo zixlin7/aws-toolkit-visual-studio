@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -10,10 +6,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
 {
     public class ApplicationViewMetaNode : AbstractMetaNode, IApplicationViewMetaNode
     {
-        public EnvironmentViewMetaNode EnvironmentViewMetaNode
-        {
-            get { return this.FindChild<EnvironmentViewMetaNode>(); }
-        }
+        public EnvironmentViewMetaNode EnvironmentViewMetaNode => this.FindChild<EnvironmentViewMetaNode>();
 
         public ActionHandlerWrapper.ActionHandler OnApplicationStatus
         {
@@ -27,13 +20,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
             set;
         }
 
-        public override bool SupportsRefresh
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool SupportsRefresh => true;
 
         private void OnDeleteApplicationResponse(IViewModel focus, ActionResults results)
         {
@@ -44,16 +31,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
             }
         }
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList(
-                    new ActionHandlerWrapper("View Status", OnApplicationStatus, null, true, this.GetType().Assembly, "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.application_view.png"),
-                    null,
-                    new ActionHandlerWrapper("Delete", OnDeleteApplication, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteApplicationResponse), false, null, "delete.png")
-                    );
-            }
-        }
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(
+                new ActionHandlerWrapper("View Status", OnApplicationStatus, null, true, this.GetType().Assembly, "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.application_view.png"),
+                null,
+                new ActionHandlerWrapper("Delete", OnDeleteApplication, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteApplicationResponse), false, null, "delete.png")
+            );
     }
 }

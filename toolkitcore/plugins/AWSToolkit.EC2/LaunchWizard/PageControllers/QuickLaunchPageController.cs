@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows.Controls;
 
@@ -62,40 +61,21 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
 
         #region IAWSWizardPageController Members
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageTitle
-        {
-            get 
-            {
-                return HostingWizard.IsPropertySet(LaunchWizardProperties.AMIOptions.propkey_SeedAMI) 
-                    ? "Launch AMI" : "Quick Launch";
-            }
-        }
+        public string PageTitle =>
+            HostingWizard.IsPropertySet(LaunchWizardProperties.AMIOptions.propkey_SeedAMI) 
+                ? "Launch AMI" : "Quick Launch";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get 
-            {
-                return HostingWizard.IsPropertySet(LaunchWizardProperties.AMIOptions.propkey_SeedAMI) 
-                    ? "Select the instance type and other options to launch one instance of the selected AMI." : "Select the Amazon Machine Image (AMI), instance type and other options to launch a single instance.";
-            }
-        }
+        public string PageDescription =>
+            HostingWizard.IsPropertySet(LaunchWizardProperties.AMIOptions.propkey_SeedAMI) 
+                ? "Select the instance type and other options to launch one instance of the selected AMI." : "Select the Amazon Machine Image (AMI), instance type and other options to launch a single instance.";
 
         public void ResetPage()
         {
@@ -279,10 +259,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
 
         // used to ensure 'Advanced' (aka Next) is always enabled; for Launch (aka Finish) depends on
         // page control population
-        bool IsForwardsNavigationAllowed
-        {
-            get { return true; }
-        }
+        bool IsForwardsNavigationAllowed => true;
 
         // used to enable the Launch button as soon as the bare minimum of data is available from the user
         bool CanQuickLaunch

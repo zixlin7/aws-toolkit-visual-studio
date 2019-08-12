@@ -1,35 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Microsoft.Win32;
-
-using System.Windows.Controls.DataVisualization.Charting;
-
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.CommonUI.Notifications;
-using Amazon.AWSToolkit.CommonUI.Notifications.ToasterPanels;
-using Amazon.AWSToolkit.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
-using Amazon.AWSToolkit.ElasticBeanstalk.View.Components;
-
-using Amazon.CloudWatch;
-using Amazon.CloudWatch.Model;
-
 using log4net;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.View
@@ -58,8 +34,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View
         bool _displayNotificationOnReady = false;
         public bool DisplayNotificationOnReady
         {
-            get { return _displayNotificationOnReady; }
-            set { _displayNotificationOnReady = value; }
+            get => _displayNotificationOnReady;
+            set => _displayNotificationOnReady = value;
         }
 
         public EnvironmentStatusControl(EnvironmentStatusController controller)
@@ -120,10 +96,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View
             menuItem.Style = s;
         }
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get { return true; }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {
@@ -133,15 +106,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View
             return this._controller.Model;
         }
 
-        public override string Title
-        {
-            get { return "Env: " + this._controller.Model.EnvironmentName; }
-        }
+        public override string Title => "Env: " + this._controller.Model.EnvironmentName;
 
-        public override string UniqueId
-        {
-            get { return "EnvStatus" + this._controller.Model.EnvironmentId; }
-        }
+        public override string UniqueId => "EnvStatus" + this._controller.Model.EnvironmentId;
 
         public void CustomizeTabsForEnvironmentType(bool changingEnvironmentType)
         {

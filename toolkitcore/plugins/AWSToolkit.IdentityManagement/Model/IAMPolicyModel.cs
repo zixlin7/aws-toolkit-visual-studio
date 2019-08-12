@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.Auth.AccessControlPolicy;
+﻿using Amazon.Auth.AccessControlPolicy;
 
 using Amazon.AWSToolkit.CommonUI;
 
@@ -25,7 +20,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Model
         string _name;
         public string Name
         {
-            get { return this._name; }
+            get => this._name;
             set
             {
                 this._name = value;
@@ -36,7 +31,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Model
         Policy _policy;
         public Policy Policy
         {
-            get { return this._policy; }
+            get => this._policy;
             set
             {
                 this._policy = value;
@@ -49,12 +44,6 @@ namespace Amazon.AWSToolkit.IdentityManagement.Model
             this._originalJson = this.Policy.ToJson();
         }
 
-        public bool HasChanged
-        {
-            get
-            {
-                return !this.Policy.ToJson().Equals(this._originalJson);
-            }
-        }
+        public bool HasChanged => !this.Policy.ToJson().Equals(this._originalJson);
     }
 }

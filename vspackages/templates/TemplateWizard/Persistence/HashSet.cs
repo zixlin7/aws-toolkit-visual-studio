@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Amazon.AWSToolkit.Persistence
 {
@@ -35,15 +33,9 @@ namespace Amazon.AWSToolkit.Persistence
             _data.Keys.CopyTo(array, arrayIndex);
         }
 
-        public int Count
-        {
-            get { return _data.Keys.Count; }
-        }
+        public int Count => _data.Keys.Count;
 
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         public bool Remove(T item)
         {

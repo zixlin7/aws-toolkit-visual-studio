@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.IdentityManagement.Model
 {
@@ -12,7 +7,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Model
         string _groupName;
         public string GroupName
         {
-            get { return this._groupName; }
+            get => this._groupName;
             set
             {
                 this._groupName = value;

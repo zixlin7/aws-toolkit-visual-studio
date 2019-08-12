@@ -4,9 +4,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
 
 using Amazon.ECS;
-using Amazon.ECS.Model;
 using Amazon.ECR;
-using Amazon.ECR.Model;
 using Amazon.Runtime;
 using log4net;
 
@@ -28,15 +26,9 @@ namespace Amazon.AWSToolkit.ECS.Nodes
             this._accountViewModel = accountViewModel;
         }
 
-        public IAmazonECS ECSClient
-        {
-            get { return this._ecsClient; }
-        }
+        public IAmazonECS ECSClient => this._ecsClient;
 
-        public IAmazonECR ECRClient
-        {
-            get { return this._ecrClient; }
-        }
+        public IAmazonECR ECRClient => this._ecrClient;
 
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
@@ -51,23 +43,12 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 
         }
 
-        public override string ToolTip
-        {
-            get
-            {
-                return "Amazon Elastic Container Service (Amazon ECS) is a highly scalable, fast, container management service that makes it easy to run, stop, "
-                        + "and manage Docker containers. Images may be managed using Amazon Elastic Container Registry (Amazon ECR), "
-                        + "a managed AWS Docker registry service";
-            }
-        }
+        public override string ToolTip =>
+            "Amazon Elastic Container Service (Amazon ECS) is a highly scalable, fast, container management service that makes it easy to run, stop, "
+            + "and manage Docker containers. Images may be managed using Amazon Elastic Container Registry (Amazon ECR), "
+            + "a managed AWS Docker registry service";
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.service-root-icon.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.service-root-icon.png";
 
 
         protected override void LoadChildren()

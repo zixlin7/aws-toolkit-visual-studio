@@ -1,20 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.Controller;
@@ -45,10 +34,7 @@ namespace Amazon.AWSToolkit.S3.View
             this._ctlAccessIcon.DataContext = this;
         }
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get { return true; }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {
@@ -83,10 +69,7 @@ namespace Amazon.AWSToolkit.S3.View
             }
         }
 
-        public ObjectPropertiesModel Model
-        {
-            get { return this._model; }
-        }
+        public ObjectPropertiesModel Model => this._model;
 
         public object FileIcon
         {
@@ -133,21 +116,9 @@ namespace Amazon.AWSToolkit.S3.View
             }
         }
 
-        public override string Title
-        {
-            get
-            {
-                return string.Format("Properties: {0}", this._model.Name);
-            }
-        }
+        public override string Title => string.Format("Properties: {0}", this._model.Name);
 
-        public override string UniqueId
-        {
-            get
-            {
-                return string.Format("ObjectProperties:{0}:{1}", this._model.BucketName, this._model.Key);
-            }
-        }
+        public override string UniqueId => string.Format("ObjectProperties:{0}:{1}", this._model.BucketName, this._model.Key);
 
         public override bool OnCommit()
         {

@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.DynamoDB.Nodes;
 using Amazon.AWSToolkit.DynamoDB.View;
 using Amazon.AWSToolkit.DynamoDB.View.Columns;
 using Amazon.AWSToolkit.DynamoDB.Model;
-using Amazon.AWSToolkit;
-
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Amazon.DynamoDBv2.DocumentModel;
@@ -47,10 +43,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
             return new ActionResults().WithSuccess(true);
         }
 
-        public TableBrowserModel Model
-        {
-            get { return this._model; }
-        }
+        public TableBrowserModel Model => this._model;
 
         public void LoadModel()
         {

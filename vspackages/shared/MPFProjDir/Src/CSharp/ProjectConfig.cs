@@ -16,7 +16,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 //#define ConfigTrace
@@ -55,24 +54,12 @@ namespace Microsoft.VisualStudio.Project
         #endregion
 
         #region properties
-        public ProjectNode ProjectMgr
-        {
-            get
-            {
-                return this.project;
-            }
-        }
+        public ProjectNode ProjectMgr => this.project;
 
         public string ConfigName
         {
-            get
-            {
-                return this.configName;
-            }
-            set
-            {
-                this.configName = value;
-            }
+            get => this.configName;
+            set => this.configName = value;
         }
 
         public virtual object ConfigurationProperties

@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Windows;
-using System.Windows.Threading;
-
-using Amazon;
+﻿using System.Collections.Generic;
 using Amazon.CloudFront;
 using Amazon.CloudFront.Model;
 
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.Runtime;
 //using Amazon.AWSToolkit.CloudFront.Controller;
@@ -35,23 +24,12 @@ namespace Amazon.AWSToolkit.CloudFront.Nodes
             this._accountViewModel = accountViewModel;            
         }
 
-        public override string ToolTip
-        {
-            get
-            {
-                return "Amazon CloudFront is a web service for content delivery. " +
-                    "It integrates with other AWS services to give you an easy way to " +
-                    "distribute content to end users with low latency and high data transfer speeds.";
-            }
-        }
+        public override string ToolTip =>
+            "Amazon CloudFront is a web service for content delivery. " +
+            "It integrates with other AWS services to give you an easy way to " +
+            "distribute content to end users with low latency and high data transfer speeds.";
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.CloudFront.Resources.EmbeddedImages.service-root.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.CloudFront.Resources.EmbeddedImages.service-root.png";
 
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
@@ -60,10 +38,7 @@ namespace Amazon.AWSToolkit.CloudFront.Nodes
             this._cfClient = new Amazon.CloudFront.AmazonCloudFrontClient(awsCredentials, config);
         }
 
-        public IAmazonCloudFront CFClient
-        {
-            get {return this._cfClient;}
-        }
+        public IAmazonCloudFront CFClient => this._cfClient;
 
         public ICloudFrontBaseDistributionViewModel AddDistribution(StreamingDistribution distribution)
         {

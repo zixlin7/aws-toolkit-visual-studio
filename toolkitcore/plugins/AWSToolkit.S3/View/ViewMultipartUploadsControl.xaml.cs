@@ -1,17 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.Controller;
@@ -34,26 +25,11 @@ namespace Amazon.AWSToolkit.S3.View
             InitializeComponent();
         }
 
-        public override string Title
-        {
-            get
-            {
-                return string.Format("Multiparts: {0}", this._controller.Model.BucketName);
-            }
-        }
+        public override string Title => string.Format("Multiparts: {0}", this._controller.Model.BucketName);
 
-        public override string UniqueId
-        {
-            get
-            {
-                return "multipart." + this._controller.Model.BucketName;
-            }
-        }
+        public override string UniqueId => "multipart." + this._controller.Model.BucketName;
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get { return true; }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         void onRefreshClick(object sender, RoutedEventArgs e)
         {

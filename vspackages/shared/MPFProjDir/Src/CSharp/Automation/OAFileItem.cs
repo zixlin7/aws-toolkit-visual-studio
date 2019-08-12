@@ -16,11 +16,8 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using EnvDTE;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using IServiceProvider = System.IServiceProvider;
-using VSConstants = Microsoft.VisualStudio.VSConstants;
 
 namespace Microsoft.VisualStudio.Project.Automation
 {

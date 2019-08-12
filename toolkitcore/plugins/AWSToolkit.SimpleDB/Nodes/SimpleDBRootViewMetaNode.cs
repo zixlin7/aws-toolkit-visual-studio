@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
 
 using Amazon.AWSToolkit.Navigator;
@@ -14,20 +10,14 @@ namespace Amazon.AWSToolkit.SimpleDB.Nodes
     {
         public const string SIMPLEDB_ENDPOINT_LOOKUP = "SimpleDB";
 
-        public override string EndPointSystemName
-        {
-            get { return SIMPLEDB_ENDPOINT_LOOKUP; }
-        }
+        public override string EndPointSystemName => SIMPLEDB_ENDPOINT_LOOKUP;
 
         public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
         {
             return new SimpleDBRootViewModel(account);
         }
 
-        public SimpleDBDomainViewMetaNode SimpleDBDomainViewMetaNode
-        {
-            get { return this.FindChild<SimpleDBDomainViewMetaNode>(); }
-        }
+        public SimpleDBDomainViewMetaNode SimpleDBDomainViewMetaNode => this.FindChild<SimpleDBDomainViewMetaNode>();
 
         public ActionHandlerWrapper.ActionHandler OnDomainCreate
         {
@@ -41,21 +31,10 @@ namespace Amazon.AWSToolkit.SimpleDB.Nodes
             rootModel.AddDomain(results.FocalName as string);
         }
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList(new ActionHandlerWrapper("Create Domain...",
-                    OnDomainCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnDomainCreateResponse), false, this.GetType().Assembly, "Amazon.AWSToolkit.SimpleDB.Resources.EmbeddedImages.domain-create.png"));
-            }
-        }
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(new ActionHandlerWrapper("Create Domain...",
+                OnDomainCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnDomainCreateResponse), false, this.GetType().Assembly, "Amazon.AWSToolkit.SimpleDB.Resources.EmbeddedImages.domain-create.png"));
 
-        public override string MarketingWebSite
-        {
-            get
-            {
-                return "http://aws.amazon.com/simpledb/";
-            }
-        }
+        public override string MarketingWebSite => "http://aws.amazon.com/simpledb/";
     }
 }

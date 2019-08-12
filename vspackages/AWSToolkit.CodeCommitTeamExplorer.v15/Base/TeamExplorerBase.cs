@@ -5,7 +5,6 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Amazon.AWSToolkit.CodeCommit.Interface;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.Base
 {

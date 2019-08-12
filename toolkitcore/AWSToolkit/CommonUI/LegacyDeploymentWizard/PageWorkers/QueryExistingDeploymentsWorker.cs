@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
-
-using Amazon.CloudFormation;
-using Amazon.CloudFormation.Model;
-
-using Amazon.ElasticBeanstalk;
-using Amazon.ElasticBeanstalk.Model;
-
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
-
 using log4net;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 

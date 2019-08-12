@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.SNS.Model
 {
@@ -18,14 +13,11 @@ namespace Amazon.AWSToolkit.SNS.Model
             this._topicARN = topicARN;
         }
 
-        public string TopicARN
-        {
-            get { return this._topicARN; }
-        }
+        public string TopicARN => this._topicARN;
 
         public string Subject
         {
-            get { return this._subject; }
+            get => this._subject;
             set
             {
                 this._subject = value;
@@ -35,7 +27,7 @@ namespace Amazon.AWSToolkit.SNS.Model
 
         public string Message
         {
-            get { return this._message; }
+            get => this._message;
             set
             {
                 this._message = value;

@@ -37,7 +37,7 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
                 }
                 return this._ebClient;
             }
-            set { this._ebClient = value; }
+            set => this._ebClient = value;
         }
 
         public string GetSolutionStackOrDefault(string propertyValue, CommandOption option, bool required)

@@ -10,13 +10,10 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 ***************************************************************************/
 
 using System;
-using System.Reflection;
 using System.Globalization;
 using System.Resources;
-using System.Text;
 using System.Threading;
 using System.ComponentModel;
-using System.Security.Permissions;
 
 namespace Microsoft.VisualStudio.Project
 {
@@ -212,21 +209,12 @@ namespace Microsoft.VisualStudio.Project
 			return loader;
 		}
 
-		private static CultureInfo Culture
-		{
-			get { return null/*use ResourceManager default, CultureInfo.CurrentUICulture*/; }
-		}
+		private static CultureInfo Culture => null;
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		public static ResourceManager Resources
-		{
-			get
-			{
-				return GetLoader().resources;
-			}
-		}
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		public static ResourceManager Resources => GetLoader().resources;
 
-		public static string GetString(string name, params object[] args)
+        public static string GetString(string name, params object[] args)
 		{
 			SR sys = GetLoader();
 			if(sys == null)

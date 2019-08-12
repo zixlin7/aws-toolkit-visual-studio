@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Threading;
-
-using Amazon;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit;
 
 namespace Amazon.AWSToolkit.CloudFormation.Nodes
 {
@@ -30,34 +23,13 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
             this._cloudFormationClient = this._serviceModel.CloudFormationClient;
         }
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.CloudFormation.Resources.EmbeddedImages.stack-node.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.CloudFormation.Resources.EmbeddedImages.stack-node.png";
 
-        public IAmazonCloudFormation CloudFormationClient
-        {
-            get
-            {
-                return this._cloudFormationClient;
-            }
-        }
+        public IAmazonCloudFormation CloudFormationClient => this._cloudFormationClient;
 
-        public string StackName
-        {
-            get { return this._stackName; }
-        }
+        public string StackName => this._stackName;
 
-        public CloudFormationRootViewModel CloudFormationRootViewModel
-        {
-            get
-            {
-                return this._serviceModel;
-            }
-        }
+        public CloudFormationRootViewModel CloudFormationRootViewModel => this._serviceModel;
 
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {

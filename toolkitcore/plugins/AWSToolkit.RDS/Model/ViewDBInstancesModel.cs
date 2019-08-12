@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
 using Amazon.RDS.Model;
 
 using Amazon.AWSToolkit.CommonUI;
@@ -14,16 +10,10 @@ namespace Amazon.AWSToolkit.RDS.Model
     public class ViewDBInstancesModel : BaseModel
     {
         ObservableCollection<DBInstanceWrapper> _instances = new ObservableCollection<DBInstanceWrapper>();
-        public ObservableCollection<DBInstanceWrapper> DBInstances
-        {
-            get { return this._instances; }
-        }
+        public ObservableCollection<DBInstanceWrapper> DBInstances => this._instances;
 
         IList<DBInstanceWrapper> _selectedDBInstances = new List<DBInstanceWrapper>();
-        public IList<DBInstanceWrapper> SelectedDBInstances
-        {
-            get { return _selectedDBInstances; }
-        }
+        public IList<DBInstanceWrapper> SelectedDBInstances => _selectedDBInstances;
 
         EC2ColumnDefinition[] _instancePropertytColumnDefinitions;
         public EC2ColumnDefinition[] PropertyColumnDefinitions
@@ -42,7 +32,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         ObservableCollection<Event> _selectedEvents = new ObservableCollection<Event>();
         public ObservableCollection<Event> SelectedEvents
         {
-            get { return _selectedEvents; }
+            get => _selectedEvents;
             set
             {
                 _selectedEvents = value;

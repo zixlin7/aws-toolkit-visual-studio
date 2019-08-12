@@ -34,47 +34,26 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
         public IAmazonECS ECSClient
         {
-            get { return this._ecsClient; }
-            protected set { this._ecsClient = value; }
+            get => this._ecsClient;
+            protected set => this._ecsClient = value;
         }
 
         public IAmazonECR ECRClient
         {
-            get { return this._ecrClient; }
-            protected set { this._ecrClient = value; }
+            get => this._ecrClient;
+            protected set => this._ecrClient = value;
         }
 
-        public FeatureViewModel FeatureViewModel
-        {
-            get { return this._featureViewModel; }
-        }
+        public FeatureViewModel FeatureViewModel => this._featureViewModel;
 
-        public M Model
-        {
-            get { return this._model; }
-        }
+        public M Model => this._model;
 
-        public string EndPointUniqueIdentifier
-        {
-            get
-            {
-                return this._endpointUniqueIdentifier;
-            }
-        }
+        public string EndPointUniqueIdentifier => this._endpointUniqueIdentifier;
 
-        public AccountViewModel Account
-        {
-            get { return this._featureViewModel.AccountViewModel; }
-        }
+        public AccountViewModel Account => this._featureViewModel.AccountViewModel;
 
-        public string RegionDisplayName
-        {
-            get { return this._featureViewModel.RegionDisplayName; }
-        }
+        public string RegionDisplayName => this._featureViewModel.RegionDisplayName;
 
-        public string RegionSystemName
-        {
-            get { return this.FeatureViewModel.RegionSystemName; }
-        }
+        public string RegionSystemName => this.FeatureViewModel.RegionSystemName;
     }
 }

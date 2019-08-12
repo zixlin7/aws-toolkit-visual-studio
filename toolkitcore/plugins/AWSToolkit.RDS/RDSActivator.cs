@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit;
-using Amazon.AWSToolkit.Account;
+﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 
 using Amazon.AWSToolkit.RDS.Nodes;
@@ -15,10 +9,7 @@ namespace Amazon.AWSToolkit.RDS
 {
     public class RDSActivator : AbstractPluginActivator
     {
-        public override string PluginName
-        {
-            get { return "RDS"; }
-        }
+        public override string PluginName => "RDS";
 
         public override void RegisterMetaNodes()
         {

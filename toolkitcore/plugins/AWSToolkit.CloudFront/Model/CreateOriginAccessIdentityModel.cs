@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
-
-using Amazon.CloudFront;
+﻿using Amazon.AWSToolkit.CommonUI;
 using Amazon.CloudFront.Model;
 
 namespace Amazon.AWSToolkit.CloudFront.Model
@@ -15,7 +8,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         string _comment;
         public string Comment
         {
-            get{return this._comment;}
+            get => this._comment;
             set
             {
                 this._comment = value;
@@ -26,7 +19,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         CloudFrontOriginAccessIdentity _originAccessIdentity;
         public CloudFrontOriginAccessIdentity OriginAccessIdentity
         {
-            get { return this._originAccessIdentity; }
+            get => this._originAccessIdentity;
             set
             {
                 this._originAccessIdentity = value;

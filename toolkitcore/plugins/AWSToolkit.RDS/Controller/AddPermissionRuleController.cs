@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Util;
 
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
-
 using Amazon.AWSToolkit.RDS.Model;
 using Amazon.AWSToolkit.RDS.Nodes;
 using Amazon.AWSToolkit.RDS.View;
@@ -50,20 +43,11 @@ namespace Amazon.AWSToolkit.RDS.Controller
             return new ActionResults().WithSuccess(false);
         }
 
-        public DBSecurityGroupWrapper SecurityGroup
-        {
-            get { return this._dbSecurityGroup; }
-        }
+        public DBSecurityGroupWrapper SecurityGroup => this._dbSecurityGroup;
 
-        public AccountViewModel CurrentAccount
-        {
-            get{return this._securityRootViewModel.AccountViewModel;}
-        }
+        public AccountViewModel CurrentAccount => this._securityRootViewModel.AccountViewModel;
 
-        public AddPermissionRuleModel Model
-        {
-            get { return this._model; }
-        }
+        public AddPermissionRuleModel Model => this._model;
 
         public void AuthorizeRule()
         {

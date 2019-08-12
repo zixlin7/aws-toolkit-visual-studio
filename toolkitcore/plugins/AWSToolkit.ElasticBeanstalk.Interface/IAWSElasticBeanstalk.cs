@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
-
-using log4net;
-using Amazon.AWSToolkit.PluginServices.Deployment;
+﻿using Amazon.AWSToolkit.PluginServices.Deployment;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk
 {

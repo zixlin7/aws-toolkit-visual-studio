@@ -8,9 +8,6 @@ using Amazon.AWSToolkit.Navigator.Node;
 
 using Amazon.AWSToolkit.EC2.Model;
 
-using Amazon.EC2;
-using Amazon.EC2.Model;
-
 namespace Amazon.AWSToolkit.EC2.Controller
 {
     public abstract class BulkChangeController<C,T> : BaseContextCommand where T : IWrapper

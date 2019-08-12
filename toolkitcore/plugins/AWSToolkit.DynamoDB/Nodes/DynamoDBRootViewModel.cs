@@ -6,8 +6,6 @@ using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
-
-using Amazon.AWSToolkit.DynamoDB.Controller;
 using Amazon.AWSToolkit.DynamoDB.Util;
 using Amazon.Runtime;
 
@@ -37,21 +35,9 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
             }
         }
 
-        public override string ToolTip
-        {
-            get
-            {
-                return "Amazon DynamoDB is a fast, highly scalable, highly available, cost-effective, non-relational database service.";
-            }
-        }
+        public override string ToolTip => "Amazon DynamoDB is a fast, highly scalable, highly available, cost-effective, non-relational database service.";
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.DynamoDB.Resources.EmbeddedImages.table.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.DynamoDB.Resources.EmbeddedImages.table.png";
 
         public override string Name
         {
@@ -120,13 +106,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
             return actions;
         }
 
-        public IAmazonDynamoDB DynamoDBClient
-        {
-            get
-            {
-                return this._ddbClient;
-            }
-        }
+        public IAmazonDynamoDB DynamoDBClient => this._ddbClient;
 
         protected override void LoadChildren()
         {

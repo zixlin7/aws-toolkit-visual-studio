@@ -16,21 +16,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
 
         public string SelectedEnvironmentName { get; set; }
 
-        public Stream ApplicationIcon
-        {
-            get
-            {
-                return Assembly.GetExecutingAssembly().GetManifestResourceStream("Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.application.png");
-            }
-        }
+        public Stream ApplicationIcon => Assembly.GetExecutingAssembly().GetManifestResourceStream("Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.application.png");
 
-        public Stream EnvironmentIcon
-        {
-            get
-            {
-                return Assembly.GetExecutingAssembly().GetManifestResourceStream("Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.environment.png");
-            }
-        }
+        public Stream EnvironmentIcon => Assembly.GetExecutingAssembly().GetManifestResourceStream("Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.environment.png");
 
         internal DeployedApplicationModel(string applicationName)
         {

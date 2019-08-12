@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Media;
 
 using Amazon.ElasticBeanstalk.Model;
@@ -17,10 +14,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
             this._originalEvent = originalEvent;
         }
 
-        public string Severity
-        {
-            get { return this._originalEvent.Severity; }
-        }
+        public string Severity => this._originalEvent.Severity;
 
         public SolidColorBrush SeverityColor
         {
@@ -49,25 +43,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
             }
         }
 
-        public string Message
-        {
-            get { return this._originalEvent.Message; }
-        }
+        public string Message => this._originalEvent.Message;
 
-        public string VersionLabel
-        {
-            get { return this._originalEvent.VersionLabel; }
-        }
+        public string VersionLabel => this._originalEvent.VersionLabel;
 
-        public DateTime EventDate
-        {
-            get { return this._originalEvent.EventDate; }
-        }
+        public DateTime EventDate => this._originalEvent.EventDate;
 
-        public string EnvironmentName
-        {
-            get { return this._originalEvent.EnvironmentName; }
-        }
+        public string EnvironmentName => this._originalEvent.EnvironmentName;
 
         public bool PassClientFilter(string filter, bool includeEnvironmentName)
         {

@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using System.ComponentModel;
 using Amazon.EC2.Model;
-using Amazon.AWSToolkit.EC2.View.DataGrid;
 
 namespace Amazon.AWSToolkit.EC2.Model
 {
@@ -22,32 +13,17 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public Route NativeRoute
-        {
-            get { return this._route; }
-        }
+        public Route NativeRoute => this._route;
 
         [Browsable(false)]
-        public string DisplayName
-        {
-            get { return this.NativeRoute.DestinationCidrBlock; }
-        }
+        public string DisplayName => this.NativeRoute.DestinationCidrBlock;
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "Route"; }
-        }
+        public string TypeName => "Route";
 
-        public bool CanDelete
-        {
-            get { return !string.Equals(this._route.GatewayId, "local"); }
-        }
+        public bool CanDelete => !string.Equals(this._route.GatewayId, "local");
 
-        public string DestinationCidrBlock
-        {
-            get { return this._route.DestinationCidrBlock; }
-        }
+        public string DestinationCidrBlock => this._route.DestinationCidrBlock;
 
         public string FormattedTarget
         {
@@ -64,10 +40,6 @@ namespace Amazon.AWSToolkit.EC2.Model
             }
         }
 
-        public string State
-        {
-            get { return this._route.State; }
-        }
-
+        public string State => this._route.State;
     }
 }

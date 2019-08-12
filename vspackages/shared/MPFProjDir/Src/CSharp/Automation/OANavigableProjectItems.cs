@@ -34,36 +34,19 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Defines an internal list of project items
 		/// </summary>
-		internal IList<EnvDTE.ProjectItem> Items
-		{
-			get
-			{
-				return this.items;
-			}
-		}
+		internal IList<EnvDTE.ProjectItem> Items => this.items;
 
-		/// <summary>
+        /// <summary>
 		/// Defines a relationship to the associated project.
 		/// </summary>
-		internal OAProject Project
-		{
-			get
-			{
-				return this.project;
-			}
-		}
+		internal OAProject Project => this.project;
 
-		/// <summary>
+        /// <summary>
 		/// Defines the node that contains the items
 		/// </summary>
-		internal HierarchyNode NodeWithItems
-		{
-			get
-			{
-				return this.nodeWithItems;
-			}
-		}
-		#endregion
+		internal HierarchyNode NodeWithItems => this.nodeWithItems;
+
+        #endregion
 
 		#region ctor
 		/// <summary>
@@ -97,60 +80,30 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Gets a value indicating the number of objects in the collection.
 		/// </summary>
-		public virtual int Count
-		{
-			get
-			{
-				return items.Count;
-			}
-		}
+		public virtual int Count => items.Count;
 
-		/// <summary>
+        /// <summary>
 		/// Gets the immediate parent object of a ProjectItems collection.
 		/// </summary>
-		public virtual object Parent
-		{
-			get
-			{
-				return this.nodeWithItems.GetAutomationObject();
-			}
-		}
+		public virtual object Parent => this.nodeWithItems.GetAutomationObject();
 
-		/// <summary>
+        // TODO:  Add OAProjectItems.Kind getter implementation
+        /// <summary>
 		/// Gets an enumeration indicating the type of object.
 		/// </summary>
-		public virtual string Kind
-		{
-			get
-			{
-				// TODO:  Add OAProjectItems.Kind getter implementation
-				return null;
-			}
-		}
+		public virtual string Kind => null;
 
-		/// <summary>
+        /// <summary>
 		/// Gets the top-level extensibility object.
 		/// </summary>
-		public virtual EnvDTE.DTE DTE
-		{
-			get
-			{
-				return (EnvDTE.DTE)this.project.DTE;
-			}
-		}
+		public virtual EnvDTE.DTE DTE => (EnvDTE.DTE)this.project.DTE;
 
-		/// <summary>
+        /// <summary>
 		/// Gets the project hosting the project item or items.
 		/// </summary>
-		public virtual EnvDTE.Project ContainingProject
-		{
-			get
-			{
-				return this.project;
-			}
-		}
+		public virtual EnvDTE.Project ContainingProject => this.project;
 
-		/// <summary>
+        /// <summary>
 		/// Adds one or more ProjectItem objects from a directory to the ProjectItems collection. 
 		/// </summary>
 		/// <param name="directory">The directory from which to add the project item.</param>

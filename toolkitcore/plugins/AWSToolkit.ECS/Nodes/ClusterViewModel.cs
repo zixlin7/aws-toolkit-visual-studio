@@ -1,5 +1,4 @@
 ﻿using Amazon.AWSToolkit.ECS.Model;
-using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.ECS;
 using log4net;
 
@@ -21,22 +20,10 @@ namespace Amazon.AWSToolkit.ECS.Nodes
             this._ecsClient = rootViewModel.ECSClient;
         }
 
-        public ClustersRootViewModel RootViewModel
-        {
-            get { return this._rootViewModel; }
-        }
+        public ClustersRootViewModel RootViewModel => this._rootViewModel;
 
-        public ClusterWrapper Cluster
-        {
-            get { return this._cluster; }
-        }
+        public ClusterWrapper Cluster => this._cluster;
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.clusters.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.clusters.png";
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -23,7 +19,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         bool _actionSelectedAddress;
         public bool ActionSelectedAddress
         {
-            get { return this._actionSelectedAddress; }
+            get => this._actionSelectedAddress;
             set
             {
                 this._actionSelectedAddress = value;
@@ -33,7 +29,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public bool ActionCreateNewAddress
         {
-            get { return !this._actionSelectedAddress; }
+            get => !this._actionSelectedAddress;
             set
             {
                 this._actionSelectedAddress = !value;
@@ -44,10 +40,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         AddressWrapper _selectedAdress;
         public AddressWrapper SelectedAddress
         {
-            get
-            {
-                return this._selectedAdress;
-            }
+            get => this._selectedAdress;
             set
             {
                 this._selectedAdress = value;

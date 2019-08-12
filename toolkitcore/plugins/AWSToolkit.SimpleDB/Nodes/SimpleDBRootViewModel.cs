@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Windows;
-using System.Windows.Threading;
-
 using Amazon.SimpleDB;
 using Amazon.SimpleDB.Model;
 
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.Runtime;
 
@@ -30,21 +23,9 @@ namespace Amazon.AWSToolkit.SimpleDB.Nodes
             this._accountViewModel = accountViewModel;
         }
 
-        public override string ToolTip
-        {
-            get
-            {
-                return "Amazon SimpleDB is a highly available, scalable, and flexible non-relational data store that offloads the work of database administration. Developers simply store and query data items via web services requests, and Amazon SimpleDB does the rest.";
-            }
-        }
+        public override string ToolTip => "Amazon SimpleDB is a highly available, scalable, and flexible non-relational data store that offloads the work of database administration. Developers simply store and query data items via web services requests, and Amazon SimpleDB does the rest.";
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.SimpleDB.Resources.EmbeddedImages.service-root-icon.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.SimpleDB.Resources.EmbeddedImages.service-root-icon.png";
 
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
@@ -53,13 +34,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Nodes
             this._sdbClient = new AmazonSimpleDBClient(awsCredentials, config);
         }
 
-        public IAmazonSimpleDB SimpleDBClient
-        {
-            get
-            {
-                return this._sdbClient;
-            }
-        }
+        public IAmazonSimpleDB SimpleDBClient => this._sdbClient;
 
         protected override void LoadChildren()
         {

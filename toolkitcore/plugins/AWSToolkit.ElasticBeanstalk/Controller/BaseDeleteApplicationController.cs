@@ -1,24 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Threading;
-using System.Windows;
-using System.Windows.Threading;
-
-using System.Windows.Controls.DataVisualization.Charting;
-
-using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
-using Amazon.AWSToolkit.ElasticBeanstalk.View;
-using Amazon.AWSToolkit.ElasticBeanstalk.Model;
-using Amazon.AWSToolkit;
-
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 

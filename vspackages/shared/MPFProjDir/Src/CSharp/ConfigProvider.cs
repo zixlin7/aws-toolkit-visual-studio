@@ -10,14 +10,12 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 ***************************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using MSBuild = Microsoft.Build.Evaluation;
@@ -51,13 +49,8 @@ namespace Microsoft.VisualStudio.Project
         /// <summary>
         /// The associated project.
         /// </summary>
-        protected ProjectNode ProjectMgr
-        {
-            get
-            {
-                return this.project;
-            }
-        }
+        protected ProjectNode ProjectMgr => this.project;
+
         /// <summary>
         /// If the project system wants to add custom properties to the property group then 
         /// they provide us with this data.
@@ -66,14 +59,8 @@ namespace Microsoft.VisualStudio.Project
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual List<KeyValuePair<KeyValuePair<string, string>, string>> NewConfigProperties
         {
-            get
-            {
-                return newCfgProps;
-            }
-            set
-            {
-                newCfgProps = value;
-            }
+            get => newCfgProps;
+            set => newCfgProps = value;
         }
 
         #endregion

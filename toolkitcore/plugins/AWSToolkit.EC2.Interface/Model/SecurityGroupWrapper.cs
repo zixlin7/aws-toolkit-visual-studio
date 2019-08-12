@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.EC2.Model;
 
@@ -65,10 +63,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public SecurityGroup NativeSecurityGroup
-        {
-            get { return this._securityGroup; }
-        }
+        public SecurityGroup NativeSecurityGroup => this._securityGroup;
 
         [DisplayName("Name")]
         public string DisplayName
@@ -85,41 +80,23 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         [DisplayName("Group ID")]
         [AssociatedIcon(false, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.security-groups.png")]
-        public string GroupId
-        {
-            get { return _securityGroup.GroupId; }
-        }
+        public string GroupId => _securityGroup.GroupId;
 
         [DisplayName("Description")]
-        public string GroupDescription
-        {
-            get { return _securityGroup.Description; }
-        }
+        public string GroupDescription => _securityGroup.Description;
 
         [DisplayName("VPC")]
-        public string VpcId
-        {
-            get { return _securityGroup.VpcId; }
-        }
+        public string VpcId => _securityGroup.VpcId;
 
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "Security Group"; }
-        }
+        public string TypeName => "Security Group";
 
         [Browsable(false)]
-        public ObservableCollection<IPPermissionWrapper> IpIngressPermissions
-        {
-            get { return this._ipIngressPermissions; }
-        }
+        public ObservableCollection<IPPermissionWrapper> IpIngressPermissions => this._ipIngressPermissions;
 
         [Browsable(false)]
-        public ObservableCollection<IPPermissionWrapper> IpEgressPermissions
-        {
-            get { return this._ipEgressPermissions; }
-        }
+        public ObservableCollection<IPPermissionWrapper> IpEgressPermissions => this._ipEgressPermissions;
 
         [Browsable(false)]
         public System.Windows.Media.ImageSource SecurityGroupIcon
@@ -158,10 +135,6 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public List<Tag> Tags
-        {
-            get { return this.NativeSecurityGroup.Tags; }
-        }
-
+        public List<Tag> Tags => this.NativeSecurityGroup.Tags;
     }
 }

@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.CommonUI.JobTracker;
 
 using Amazon.AWSToolkit.S3.Controller;
 using Amazon.AWSToolkit.S3.Model;
 
 using Amazon.S3;
-using Amazon.S3.IO;
-using Amazon.S3.Model;
 using Amazon.S3.Util;
 
 namespace Amazon.AWSToolkit.S3.Jobs
@@ -31,10 +24,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
             this.Title = string.Format("Change Server Side Encryption");
         }
 
-        protected override string CurrentStatusPostFix
-        {
-            get { return "Change Server Side Encryption"; }
-        }
+        protected override string CurrentStatusPostFix => "Change Server Side Encryption";
 
         protected override Queue<QueueProcessingJob.IJobUnit> BuildQueueOfJobUnits()
         {

@@ -1,31 +1,10 @@
 ﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Reflection;
-
-
-using Amazon.SQS;
-using Amazon.SQS.Model;
-
-using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.SQS.Model;
 using Amazon.AWSToolkit.SQS.Controller;
-using Amazon.AWSToolkit.SQS.Nodes;
-using Amazon.AWSToolkit.Navigator.Node;
-
 using log4net;
 
 namespace Amazon.AWSToolkit.SQS.View
@@ -59,27 +38,12 @@ namespace Amazon.AWSToolkit.SQS.View
             this._ctlSave.IsEnabled = this._controller.Model.IsDirty();
         }
 
-        public override string Title
-        {
-            get
-            {
-                return "Queue: " + this._controller.Model.Name;
-            }
-        }
+        public override string Title => "Queue: " + this._controller.Model.Name;
 
-        public override string UniqueId
-        {
-            get
-            {
-                return string.Format("SQSSampleWindow.{0}", this._controller.Model.QueueURL);
-            }
-        }
+        public override string UniqueId => string.Format("SQSSampleWindow.{0}", this._controller.Model.QueueURL);
 
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get { return true; }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {

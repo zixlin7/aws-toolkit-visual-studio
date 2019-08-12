@@ -15,17 +15,11 @@ namespace Amazon.AWSToolkit.CloudFormation.View.Components
 
         public string SuccessFailMsg 
         {
-            set { _msg.Text = value; }
+            set => _msg.Text = value;
         }
 
         public bool OpenFileForEdit { get; set; }
 
-        public override string Title
-        {
-            get
-            {
-                return "Stack Configuration Saved";
-            }
-        }
+        public override string Title => "Stack Configuration Saved";
     }
 }

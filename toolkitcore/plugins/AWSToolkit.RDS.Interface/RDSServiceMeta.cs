@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml.Linq;
-
-using Amazon.AWSToolkit;
-
 using log4net;
 
 namespace Amazon.AWSToolkit.RDS
@@ -89,13 +85,7 @@ namespace Amazon.AWSToolkit.RDS
         /// <summary>
         /// Convenience property to return all defined DB instance classes
         /// </summary>
-        public static IEnumerable<DBInstanceClass> ALL
-        {
-            get
-            {
-                return RDSServiceMeta.Instance.MetaForDBInstancesClasses(null);
-            }
-        }
+        public static IEnumerable<DBInstanceClass> ALL => RDSServiceMeta.Instance.MetaForDBInstancesClasses(null);
 
         /// <summary>
         /// Returns collection of instance class metadata matching the supplied instance class ids.

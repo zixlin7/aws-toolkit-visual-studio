@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
+﻿namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
 {
     public class IntrinsicFunction
     {
@@ -20,31 +15,26 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
         public string Name
         {
             get;
-            private set;
         }
 
         public string Parameter
         {
             get;
-            private set;
         }
 
         public string ReturnType
         {
             get;
-            private set;
         }
 
         public string Description
         {
             get;
-            private set;
         }
 
         public string Skeleton
         {
             get;
-            private set;
         }
 
         public override string ToString()

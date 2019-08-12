@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.CloudFormation.Model;
@@ -18,10 +14,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
             this._event = evnt;
         }
 
-        public StackEvent NativeStackEvent
-        {
-            get { return this._event; }
-        }
+        public StackEvent NativeStackEvent => this._event;
 
 
         public System.Windows.Media.ImageSource StatusImage

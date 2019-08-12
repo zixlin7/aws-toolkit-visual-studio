@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.CloudFormation.Model
@@ -13,7 +9,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         string _stackName;
         public string StackName
         {
-            get { return this._stackName; }
+            get => this._stackName;
             set
             {
                 this._stackName = value;
@@ -24,7 +20,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         bool _useLocalFile = true;
         public bool UseLocalFile
         {
-            get { return this._useLocalFile; }
+            get => this._useLocalFile;
             set
             {
                 this._useLocalFile = value;
@@ -37,7 +33,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         string _localFile;
         public string LocalFile
         {
-            get { return this._localFile; }
+            get => this._localFile;
             set
             {
                 this._localFile = value;
@@ -48,7 +44,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         bool _useSampleTemplate;
         public bool UseSampleTemplate
         {
-            get { return this._useSampleTemplate; }
+            get => this._useSampleTemplate;
             set
             {
                 this._useSampleTemplate = value;
@@ -61,7 +57,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         TemplateLocation _sampleTemplate;
         public TemplateLocation SampleTemplate
         {
-            get { return this._sampleTemplate; }
+            get => this._sampleTemplate;
             set
             {
                 this._sampleTemplate = value;
@@ -72,7 +68,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         string _snsTopic;
         public string SNSTopic
         {
-            get { return this._snsTopic; }
+            get => this._snsTopic;
             set
             {
                 this._snsTopic = value;
@@ -100,7 +96,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         bool _rollbackOnFailure = true;
         public bool RollbackOnFailure
         {
-            get { return this._rollbackOnFailure; }
+            get => this._rollbackOnFailure;
             set
             {
                 this._rollbackOnFailure = value;
@@ -109,13 +105,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         }
 
 
-        public bool HasValidStackName
-        {
-            get
-            {
-                return IsValidStackName(this.StackName);
-            }
-        }
+        public bool HasValidStackName => IsValidStackName(this.StackName);
 
 
         public static bool IsValidStackName(string name)

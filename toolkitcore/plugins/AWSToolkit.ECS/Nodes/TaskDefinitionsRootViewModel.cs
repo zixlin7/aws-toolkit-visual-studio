@@ -22,18 +22,9 @@ namespace Amazon.AWSToolkit.ECS.Nodes
             this._ecsClient = viewModel.ECSClient;
         }
 
-        public IAmazonECS ECSClient
-        {
-            get { return this._ecsClient; }
-        }
+        public IAmazonECS ECSClient => this._ecsClient;
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.taskdef.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.taskdef.png";
 
         protected override void LoadChildren()
         {

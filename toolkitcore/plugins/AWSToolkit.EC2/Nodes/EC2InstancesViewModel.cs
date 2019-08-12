@@ -1,17 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Windows.Threading;
-
-using Amazon.EC2;
 using Amazon.EC2.Model;
 
 using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Model;
-using Amazon.AWSToolkit.Navigator.Node;
-
 using log4net;
 
 namespace Amazon.AWSToolkit.EC2.Nodes
@@ -25,21 +17,9 @@ namespace Amazon.AWSToolkit.EC2.Nodes
         {
         }
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.instance.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.instance.png";
 
-        public override string ToolTip
-        {
-            get
-            {
-                return "Manage EC2 instances and launch new EC2 instances";
-            }
-        }
+        public override string ToolTip => "Manage EC2 instances and launch new EC2 instances";
 
         public void ConnectToInstance(IList<string> instanceIds)
         {

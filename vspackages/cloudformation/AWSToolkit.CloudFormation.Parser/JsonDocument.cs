@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 
 using Amazon.AWSToolkit.Util;
@@ -40,15 +39,9 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
             return value;
         }
 
-        public JsonToken CurrentToken
-        {
-            get { return this._current; }
-        }
+        public JsonToken CurrentToken => this._current;
 
-        public List<ErrorToken> ErrorTokens
-        {
-            get { return this._errorTokens; }
-        }
+        public List<ErrorToken> ErrorTokens => this._errorTokens;
 
         public string KeyChainString
         {
@@ -67,20 +60,14 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
             }
         }
 
-        public IndexableStack<string> KeyChain
-        {
-            get { return this._keyChain; }
-        }
+        public IndexableStack<string> KeyChain => this._keyChain;
 
         public int Peek()
         {
             return this._reader.Peek();
         }
 
-        public bool EndOfStream
-        {
-            get { return this._document.Length <= this._position; }
-        }
+        public bool EndOfStream => this._document.Length <= this._position;
 
         private int ReadStream(char[] buffer, int index, int count)
         {
@@ -89,26 +76,15 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
             return bytesRead;
         }
 
-        public int Position
-        {
-            get { return this._position; }
-        }
+        public int Position => this._position;
 
-        public string OriginalDocument
-        {
-            get { return this._document; }
-        }
+        public string OriginalDocument => this._document;
 
-        public bool IsCurrentScalerValue
-        {
-            get
-            {
-                return this._current.Type == JsonTokenType.Text ||
-                        this._current.Type == JsonTokenType.Number ||
-                        this._current.Type == JsonTokenType.Boolean ||
-                        this._current.Type == JsonTokenType.Null;
-            }
-        }
+        public bool IsCurrentScalerValue =>
+            this._current.Type == JsonTokenType.Text ||
+            this._current.Type == JsonTokenType.Number ||
+            this._current.Type == JsonTokenType.Boolean ||
+            this._current.Type == JsonTokenType.Null;
 
         public bool ReadToNextKey()
         {

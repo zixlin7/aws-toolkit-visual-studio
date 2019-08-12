@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.Account;
+﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.CloudFront.Nodes;
 using Amazon.AWSToolkit.CloudFront.Controller;
@@ -12,10 +7,7 @@ namespace Amazon.AWSToolkit.CloudFront
 {
     public class CloudFrontActivator : AbstractPluginActivator
     {
-        public override string PluginName
-        {
-            get { return "CloudFront"; }
-        }
+        public override string PluginName => "CloudFront";
 
         public override void RegisterMetaNodes()
         {

@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows.Controls;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
-
-using Amazon.AWSToolkit.CloudFormation.Model;
 using Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 
@@ -29,32 +24,17 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
 
         #region IAWSWizardPageController Members
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageTitle
-        {
-            get { return "Edit Template Parameters"; }
-        }
+        public string PageTitle => "Edit Template Parameters";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "These are parameters associated with your AWS CloudFormation template. You may review and proceed with the default parameters or make customizations as needed."; }
-        }
+        public string PageDescription => "These are parameters associated with your AWS CloudFormation template. You may review and proceed with the default parameters or make customizations as needed.";
 
         public void ResetPage()
         {

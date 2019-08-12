@@ -1,23 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CloudFormation.Controllers;
-using Amazon.AWSToolkit.CloudFormation.Model;
 using Amazon.AWSToolkit.CloudFormation.View.Components;
 
 using log4net;
@@ -75,10 +65,7 @@ namespace Amazon.AWSToolkit.CloudFormation.View
             }
         }
 
-        internal ViewStackController Controller
-        {
-            get { return this._controller; }
-        }
+        internal ViewStackController Controller => this._controller;
 
         void onDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
@@ -94,15 +81,9 @@ namespace Amazon.AWSToolkit.CloudFormation.View
             this._ctlServerlessApplicationURL.DataContext = dataContext;
         }
 
-        public override string Title
-        {
-            get { return string.Format("Stack: {0}", this._controller.StackName); }
-        }
+        public override string Title => string.Format("Stack: {0}", this._controller.StackName);
 
-        public override string UniqueId
-        {
-            get { return string.Format("CloudFormation-Stack-{0}", this._controller.StackName); }
-        }
+        public override string UniqueId => string.Format("CloudFormation-Stack-{0}", this._controller.StackName);
 
         public Visibility VSToolkitDeployedFieldsVisibility
         {
@@ -115,10 +96,7 @@ namespace Amazon.AWSToolkit.CloudFormation.View
             }
         }
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get {return true; }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {

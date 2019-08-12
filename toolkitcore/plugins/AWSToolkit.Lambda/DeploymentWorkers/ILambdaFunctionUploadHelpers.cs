@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Amazon.AWSToolkit.Lambda.DeploymentWorkers;
-using Amazon.AWSToolkit.Account;
+﻿using Amazon.AWSToolkit.Account;
 using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
 using Amazon.Lambda.Model;
 using Amazon.Lambda;

@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
 
 namespace Amazon.AWSToolkit.CloudFront.Nodes
 {
@@ -17,15 +12,10 @@ namespace Amazon.AWSToolkit.CloudFront.Nodes
         }
 
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList(
-                    new ActionHandlerWrapper("View Invalidation Requests", OnViewInvalidationRequests, null, false, null, null),
-                    new ActionHandlerWrapper("Properties", OnProperties, null, true, null, "properties.png"),
-                    new ActionHandlerWrapper("Delete Distribution", OnDeleteDistribution, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false, null, "delete.png"));
-            }
-        }
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(
+                new ActionHandlerWrapper("View Invalidation Requests", OnViewInvalidationRequests, null, false, null, null),
+                new ActionHandlerWrapper("Properties", OnProperties, null, true, null, "properties.png"),
+                new ActionHandlerWrapper("Delete Distribution", OnDeleteDistribution, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false, null, "delete.png"));
     }
 }

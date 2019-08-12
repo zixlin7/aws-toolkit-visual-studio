@@ -4,13 +4,9 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
-
-
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Shared;
 
 namespace Amazon.AWSToolkit.VisualStudio.HostedEditor

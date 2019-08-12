@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 
 using log4net;
-using Amazon.AWSToolkit.Account;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 

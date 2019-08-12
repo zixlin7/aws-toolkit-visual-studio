@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Windows.Threading;
-
-using Amazon.RDS;
-using Amazon.RDS.Model;
+﻿using Amazon.RDS;
 
 //using Amazon.AWSToolkit.RDS.Controller;
 using Amazon.AWSToolkit.RDS.Model;
@@ -30,22 +22,10 @@ namespace Amazon.AWSToolkit.RDS.Nodes
             this._rdsClient = viewModel.RDSClient;
         }
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.SecurityGroup.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.SecurityGroup.png";
 
-        public IAmazonRDS RDSClient
-        {
-            get { return this._rdsClient; }
-        }
+        public IAmazonRDS RDSClient => this._rdsClient;
 
-        public DBSecurityGroupWrapper DBGroup
-        {
-            get { return this._group; }
-        }
+        public DBSecurityGroupWrapper DBGroup => this._group;
     }
 }

@@ -1,33 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Windows.Controls;
 using System.ComponentModel;
-
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageWorkers;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.SimpleWorkers;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.Runtime.Internal.Settings;
-
-using Amazon.EC2;
-using Amazon.EC2.Model;
-
-using Amazon.IdentityManagement;
-using Amazon.IdentityManagement.Model;
-
-using Amazon.AWSToolkit.PluginServices.Deployment;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI;
-
-using ThirdParty.Json.LitJson;
 using log4net;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers;
 
 namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
 {
@@ -72,32 +52,17 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
 
         #region IAWSWizardPageController Members
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageTitle
-        {
-            get { return "Application Options"; }
-        }
+        public string PageTitle => "Application Options";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "Set additional options and credentials for the deployed application."; }
-        }
+        public string PageDescription => "Set additional options and credentials for the deployed application.";
 
         public void ResetPage()
         {
@@ -190,7 +155,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
         #endregion
 
         // only called if all tests on the common base have succeeded
-        protected virtual bool OnQueryForwardsNavigationAllowed { get { return true; } }
+        protected virtual bool OnQueryForwardsNavigationAllowed => true;
 
         bool IsForwardsNavigationAllowed
         {

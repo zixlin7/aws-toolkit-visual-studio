@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using System.ComponentModel;
 using Amazon.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -23,45 +15,24 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public RouteTableAssociation NativeRouteTableAssociation
-        {
-            get { return this._routeTableAssociation; }
-        }
+        public RouteTableAssociation NativeRouteTableAssociation => this._routeTableAssociation;
 
         [Browsable(false)]
-        public string DisplayName
-        {
-            get { return this.NativeRouteTableAssociation.RouteTableAssociationId; }
-        }
+        public string DisplayName => this.NativeRouteTableAssociation.RouteTableAssociationId;
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "Route Table Association"; }
-        }
+        public string TypeName => "Route Table Association";
 
         [Browsable(false)]
-        public string AssocationId
-        {
-            get { return this.RouteTableAssociationId; }
-        }
+        public string AssocationId => this.RouteTableAssociationId;
 
         [DisplayName("Route Table Assocation ID")]
-        public string RouteTableAssociationId
-        {
-            get { return this.NativeRouteTableAssociation.RouteTableAssociationId; }
-        }
+        public string RouteTableAssociationId => this.NativeRouteTableAssociation.RouteTableAssociationId;
 
         [DisplayName("Subnet ID")]
-        public string SubnetId
-        {
-            get { return this.NativeRouteTableAssociation.SubnetId; }
-        }
+        public string SubnetId => this.NativeRouteTableAssociation.SubnetId;
 
         [DisplayName("CIDR")]
-        public string CidrBlock
-        {
-            get { return this._subnet != null ? this._subnet.CidrBlock : null; }
-        }
+        public string CidrBlock => this._subnet != null ? this._subnet.CidrBlock : null;
     }
 }

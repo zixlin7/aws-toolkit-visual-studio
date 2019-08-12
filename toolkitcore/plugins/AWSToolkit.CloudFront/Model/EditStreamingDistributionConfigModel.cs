@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Specialized;
 
 namespace Amazon.AWSToolkit.CloudFront.Model
 {
@@ -32,7 +28,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         string _id;
         public string Id
         {
-            get { return this._id; }
+            get => this._id;
             set
             {
                 this._id = value;
@@ -43,7 +39,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         string _etag;
         public string ETag
         {
-            get { return this._etag; }
+            get => this._etag;
             set
             {
                 this._etag = value;
@@ -54,7 +50,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         string _domainName;
         public string DomainName
         {
-            get { return this._domainName; }
+            get => this._domainName;
             set
             {
                 this._domainName = value;
@@ -65,7 +61,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         string _status;
         public string Status
         {
-            get { return this._status; }
+            get => this._status;
             set
             {
                 this._status = value;
@@ -76,7 +72,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         string _lastModifedDate;
         public string LastModifedDate
         {
-            get { return this._lastModifedDate; }
+            get => this._lastModifedDate;
             set
             {
                 this._lastModifedDate = value;
@@ -87,7 +83,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         bool _isDirty;
         public bool IsDirty
         {
-            get { return this._isDirty; }
+            get => this._isDirty;
             set
             {
                 this._isDirty = value;

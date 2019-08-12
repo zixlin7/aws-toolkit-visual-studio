@@ -1,34 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Controls;
 using System.ComponentModel;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.SimpleWorkers;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Persistence.Deployment;
 using Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI;
-
-using Amazon.AWSToolkit.CloudFormation;
-using Amazon.AWSToolkit.CloudFormation.Model;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
-
-using Amazon.AWSToolkit.EC2;
-using Amazon.EC2;
-using Amazon.EC2.Model;
-
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageWorkers;
-
 using log4net;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 using Amazon.AWSToolkit.CloudFormation.WizardPages.PageWorkers;
@@ -88,32 +72,17 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
 
         #region IAWSWizardPageController Members
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageTitle
-        {
-            get { return "Republish"; }
-        }
+        public string PageTitle => "Republish";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "Verify the details of the last deployment."; }
-        }
+        public string PageDescription => "Verify the details of the last deployment.";
 
         public void ResetPage()
         {

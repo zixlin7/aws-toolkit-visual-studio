@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.S3.Model
 {
@@ -25,19 +20,13 @@ namespace Amazon.AWSToolkit.S3.Model
                 this.NewFileName = fullPath;
         }
 
-        public string BucketName
-        {
-            get { return this._bucketName; }
-        }
+        public string BucketName => this._bucketName;
 
-        public string OrignalFullPathKey
-        {
-            get { return this._orignalFullPathKey; }
-        }
+        public string OrignalFullPathKey => this._orignalFullPathKey;
 
         public string NewFileName
         {
-            get { return this._newFileName; }
+            get => this._newFileName;
             set
             {
                 this._newFileName = value;

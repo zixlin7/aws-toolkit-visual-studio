@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.CommonUI;
 
 
@@ -14,7 +10,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         IList<string> _instanceIds;
         public IList<string> InstanceIds
         {
-            get { return this._instanceIds; }
+            get => this._instanceIds;
             set
             {
                 this._instanceIds = value;
@@ -25,7 +21,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _selectedInstance;
         public string SelectedInstance
         {
-            get { return this._selectedInstance; }
+            get => this._selectedInstance;
             set
             {
                 this._selectedInstance = value;

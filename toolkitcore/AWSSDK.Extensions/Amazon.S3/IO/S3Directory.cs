@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-
-using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
 

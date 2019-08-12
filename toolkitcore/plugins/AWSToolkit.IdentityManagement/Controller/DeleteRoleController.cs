@@ -1,17 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
-using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.IdentityManagement.View;
-using Amazon.AWSToolkit.IdentityManagement.Model;
 using Amazon.AWSToolkit.IdentityManagement.Nodes;
-
-using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 
 namespace Amazon.AWSToolkit.IdentityManagement.Controller

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.ObjectModel;
 using Amazon.AWSToolkit.CommonUI;
 
 
@@ -19,7 +14,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _instanceId;
         public string InstanceId
         {
-            get { return this._instanceId; }
+            get => this._instanceId;
             set
             {
                 this._instanceId = value;
@@ -44,7 +39,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _selectedOption;
         public string SelectedOption
         {
-            get { return this._selectedOption; }
+            get => this._selectedOption;
             set
             {
                 this._selectedOption = value;
@@ -55,7 +50,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _initialOption;
         public string InitialOption
         {
-            get { return this._initialOption; }
+            get => this._initialOption;
             set
             {
                 this._initialOption = value;

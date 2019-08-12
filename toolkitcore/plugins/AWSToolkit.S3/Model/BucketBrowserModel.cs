@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
-
 using Amazon.AWSToolkit.CommonUI;
 
 using Amazon.S3;
-using Amazon.S3.Model;
 
 namespace Amazon.AWSToolkit.S3.Model
 {
@@ -36,7 +29,7 @@ namespace Amazon.AWSToolkit.S3.Model
         bool _loading;
         public bool Loading
         {
-            get { return this._loading; }
+            get => this._loading;
             set
             {
                 this._loading = value;
@@ -44,14 +37,11 @@ namespace Amazon.AWSToolkit.S3.Model
             }
         }
 
-        public string BucketName
-        {
-            get { return this._bucketName; }
-        }
+        public string BucketName => this._bucketName;
 
         public string Path
         {
-            get { return this._path; }
+            get => this._path;
             set 
             { 
                 this._path = value;
@@ -61,7 +51,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public ChildItem SelectedItem
         {
-            get { return this._selectedItem; }
+            get => this._selectedItem;
             set
             {
                 this._selectedItem = value;
@@ -73,7 +63,7 @@ namespace Amazon.AWSToolkit.S3.Model
         string _textFilter;
         public string TextFilter
         {
-            get { return this._textFilter; }
+            get => this._textFilter;
             set
             {
                 this._textFilter = value;
@@ -87,10 +77,7 @@ namespace Amazon.AWSToolkit.S3.Model
                 NewItems(this, new EventArgs());
         }
 
-        public ChildItemCollection ChildItems
-        {
-            get { return this._childItemCollection; }
-        }
+        public ChildItemCollection ChildItems => this._childItemCollection;
 
         public class ChildItemCollection
         {
@@ -103,18 +90,9 @@ namespace Amazon.AWSToolkit.S3.Model
                 this._model = model;
             }
 
-            public ObservableCollection<ChildItem> DisplayedChildItems
-            {
-                get
-                {
-                    return this._displayedChildItems;
-                }
-            }
+            public ObservableCollection<ChildItem> DisplayedChildItems => this._displayedChildItems;
 
-            public int LoadItemsCount
-            {
-                get { return this._fullListByPath.Count; }
-            }
+            public int LoadItemsCount => this._fullListByPath.Count;
 
             public void SortDisplayedChildItems(IComparer<BucketBrowserModel.ChildItem> comparer)
             {
@@ -330,10 +308,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
             public string FullPath
             {
-                get
-                {
-                    return this._fullPath;
-                }
+                get => this._fullPath;
                 set
                 {
                     this._title = null;
@@ -358,7 +333,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
             public S3StorageClass StorageClass
             {
-                get { return this._storageClass; }
+                get => this._storageClass;
                 set
                 {
                     this._storageClass = value;
@@ -378,13 +353,7 @@ namespace Amazon.AWSToolkit.S3.Model
                 }
             }
 
-            public ChildType ChildType
-            {
-                get
-                {
-                    return this._childType;
-                }
-            }
+            public ChildType ChildType => this._childType;
 
             public object Icon
             {
@@ -433,7 +402,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
             public long Size
             {
-                get { return this._size; }
+                get => this._size;
                 set
                 {
                     this._size = value;
@@ -444,7 +413,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
             public DateTime? LastModifiedDate
             {
-                get { return this._lastModifiedDate; }
+                get => this._lastModifiedDate;
                 set
                 {
                     this._lastModifiedDate = value;

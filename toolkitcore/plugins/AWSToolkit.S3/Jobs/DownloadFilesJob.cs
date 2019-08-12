@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI.JobTracker;
 
 using Amazon.AWSToolkit.S3.Controller;
 using Amazon.AWSToolkit.S3.Model;
 
 using Amazon.S3;
-using Amazon.S3.IO;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 
@@ -53,10 +48,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
 
         public virtual long CurrentFileProgressMin
         {
-            get
-            {
-                return this._currentFileProgressMin;
-            }
+            get => this._currentFileProgressMin;
             set
             {
                 this._currentFileProgressMin = value;
@@ -66,10 +58,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
 
         public virtual long CurrentFileProgressMax
         {
-            get
-            {
-                return this._currentFileProgressMax;
-            }
+            get => this._currentFileProgressMax;
             set
             {
                 this._currentFileProgressMax = value;
@@ -79,10 +68,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
 
         public virtual long CurrentFileProgressValue
         {
-            get
-            {
-                return this._currentFileProgressValue;
-            }
+            get => this._currentFileProgressValue;
             set
             {
                 this._currentFileProgressValue = value;

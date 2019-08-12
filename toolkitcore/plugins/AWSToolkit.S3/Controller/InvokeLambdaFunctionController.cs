@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 
 using Amazon.S3;
-using Amazon.S3.Model;
-
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 
@@ -107,10 +104,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             return client;
         }
 
-        public InvokeLambdaFunctionModel Model
-        {
-            get { return this._model; }
-        }
+        public InvokeLambdaFunctionModel Model => this._model;
 
         public void InvokeFunction()
         {

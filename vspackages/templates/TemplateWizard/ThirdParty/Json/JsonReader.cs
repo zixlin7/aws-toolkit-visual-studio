@@ -13,7 +13,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 
 namespace TemplateWizard.ThirdParty.Json.LitJson
@@ -63,30 +62,23 @@ namespace TemplateWizard.ThirdParty.Json.LitJson
 
         #region Public Properties
         public bool AllowComments {
-            get { return lexer.AllowComments; }
-            set { lexer.AllowComments = value; }
+            get => lexer.AllowComments;
+            set => lexer.AllowComments = value;
         }
 
         public bool AllowSingleQuotedStrings {
-            get { return lexer.AllowSingleQuotedStrings; }
-            set { lexer.AllowSingleQuotedStrings = value; }
+            get => lexer.AllowSingleQuotedStrings;
+            set => lexer.AllowSingleQuotedStrings = value;
         }
 
-        public bool EndOfInput {
-            get { return end_of_input; }
-        }
+        public bool EndOfInput => end_of_input;
 
-        public bool EndOfJson {
-            get { return end_of_json; }
-        }
+        public bool EndOfJson => end_of_json;
 
-        public JsonToken Token {
-            get { return token; }
-        }
+        public JsonToken Token => token;
 
-        public object Value {
-            get { return token_value; }
-        }
+        public object Value => token_value;
+
         #endregion
 
 

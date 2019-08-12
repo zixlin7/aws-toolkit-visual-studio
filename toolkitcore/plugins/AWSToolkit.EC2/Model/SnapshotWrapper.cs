@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.EC2.Model;
 
@@ -19,52 +17,28 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public Snapshot NativeSnapshot
-        {
-            get { return _snapshot; }
-        }
+        public Snapshot NativeSnapshot => _snapshot;
 
         [DisplayName("Start Time")]
-        public DateTime Started
-        {
-            get { return Convert.ToDateTime(NativeSnapshot.StartTime); }
-        }
+        public DateTime Started => Convert.ToDateTime(NativeSnapshot.StartTime);
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "Snapshot"; }
-        }
+        public string TypeName => "Snapshot";
 
         [Browsable(false)]
-        public string DisplayName
-        {
-            get { return NativeSnapshot.SnapshotId; }
-        }
+        public string DisplayName => NativeSnapshot.SnapshotId;
 
         [DisplayName("Snapshot ID")]
-        public string SnapshotId
-        {
-            get { return NativeSnapshot.SnapshotId; }
-        }
+        public string SnapshotId => NativeSnapshot.SnapshotId;
 
         [DisplayName("Owner ID")]
-        public string OwnerId
-        {
-            get { return NativeSnapshot.OwnerId; }
-        }
+        public string OwnerId => NativeSnapshot.OwnerId;
 
         [DisplayName("Volume Size")]
-        public int VolumeSize
-        {
-            get { return NativeSnapshot.VolumeSize; }
-        }
+        public int VolumeSize => NativeSnapshot.VolumeSize;
 
         [DisplayName("Description")]
-        public string Description
-        {
-            get { return NativeSnapshot.Description; }
-        }
+        public string Description => NativeSnapshot.Description;
 
         [DisplayName("Name")]
         public string Name
@@ -81,17 +55,11 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [DisplayName("Progress")]
-        public string Progress
-        {
-            get { return this.NativeSnapshot.Progress; }
-        }
+        public string Progress => this.NativeSnapshot.Progress;
 
         [DisplayName("Name")]
         [AssociatedIcon(true, "StatusIcon")]
-        public string Status
-        {
-            get { return this.NativeSnapshot.State; }
-        }
+        public string Status => this.NativeSnapshot.State;
 
         [Browsable(false)]
         public System.Windows.Media.ImageSource StatusIcon
@@ -148,9 +116,6 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public List<Tag> Tags
-        {
-            get { return this.NativeSnapshot.Tags; }
-        }
+        public List<Tag> Tags => this.NativeSnapshot.Tags;
     }
 }

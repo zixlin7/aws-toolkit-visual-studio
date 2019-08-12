@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.Navigator;
+﻿using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
 using Amazon.AWSToolkit.RDS.Model;
@@ -31,10 +26,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
         {
         }
 
-        public CreateSecurityGroupModel Model
-        {
-            get { return _model; }
-        }
+        public CreateSecurityGroupModel Model => _model;
 
         public override ActionResults Execute(IViewModel model)
         {

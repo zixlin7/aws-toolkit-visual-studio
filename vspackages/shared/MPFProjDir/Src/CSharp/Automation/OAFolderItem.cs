@@ -41,13 +41,8 @@ namespace Microsoft.VisualStudio.Project.Automation
 			}
 		}
 
-		public override ProjectItems ProjectItems
-		{
-			get
-			{
-				return this.Collection;
-			}
-		}
-		#endregion
+		public override ProjectItems ProjectItems => this.Collection;
+
+        #endregion
 	}
 }

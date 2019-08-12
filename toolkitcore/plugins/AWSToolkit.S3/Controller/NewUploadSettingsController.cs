@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.S3.View;
+﻿using Amazon.AWSToolkit.S3.View;
 using Amazon.AWSToolkit.S3.Model;
 
 namespace Amazon.AWSToolkit.S3.Controller
@@ -18,9 +13,6 @@ namespace Amazon.AWSToolkit.S3.Controller
             return ToolkitFactory.Instance.ShellProvider.ShowModal(control);
         }
 
-        public NewUploadSettingsModel Model
-        {
-            get { return this._model; }
-        }
+        public NewUploadSettingsModel Model => this._model;
     }
 }

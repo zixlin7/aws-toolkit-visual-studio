@@ -18,10 +18,7 @@ namespace Amazon.AWSToolkit.DynamoDB.View
             InitializeComponent();
         }
 
-        public override string Title
-        {
-            get { return "Add Attribute"; }
-        }
+        public override string Title => "Add Attribute";
 
         public override bool Validated()
         {

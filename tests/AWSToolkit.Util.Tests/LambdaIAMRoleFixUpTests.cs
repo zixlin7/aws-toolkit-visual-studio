@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Net;
-using Amazon.AWSToolkit;
-using Xunit;
+﻿using Xunit;
 
 using Amazon.AWSToolkit.Lambda;
 using ThirdParty.Json.LitJson;

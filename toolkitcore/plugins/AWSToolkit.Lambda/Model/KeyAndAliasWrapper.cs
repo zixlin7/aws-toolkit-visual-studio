@@ -14,9 +14,9 @@ namespace Amazon.AWSToolkit.Lambda.Model
                                      new AliasListEntry { AliasName = "(default) aws/lambda" },
                                      ServiceKeysCategoryName);
 
-        public KeyListEntry Key { get; private set; }
+        public KeyListEntry Key { get; }
 
-        public AliasListEntry Alias { get; private set; }
+        public AliasListEntry Alias { get; }
 
         public string GroupCategoryName { get; set; }
 

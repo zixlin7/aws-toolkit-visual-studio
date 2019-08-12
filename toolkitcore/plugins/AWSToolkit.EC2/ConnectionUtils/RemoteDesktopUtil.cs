@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Text;
-using System.Threading;
-
 using log4net;
 
 namespace Amazon.AWSToolkit.EC2.ConnectionUtils

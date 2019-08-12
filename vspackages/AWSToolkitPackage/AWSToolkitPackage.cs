@@ -21,8 +21,6 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.Shared;
-using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
-
 using Amazon.AWSToolkit.CloudFormation;
 using Amazon.AWSToolkit.ElasticBeanstalk;
 using Amazon.AWSToolkit.ECS;
@@ -51,12 +49,9 @@ using Amazon.AWSToolkit.Lambda;
 
 using ThirdParty.Json.LitJson;
 using Amazon.AWSToolkit.Lambda.WizardPages;
-using System.Xml;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 using System.Threading;
-
-using Task = System.Threading.Tasks.Task;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -169,20 +164,14 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         EnvDTE.DebuggerEvents _debuggerEvents;
 
-        internal SimpleMobileAnalytics AnalyticsRecorder { get; private set; }
+        internal SimpleMobileAnalytics AnalyticsRecorder { get; }
 
         /// <summary>
         /// UI dispatcher
         /// </summary>
-        internal Dispatcher ShellDispatcher { get; private set; }
+        internal Dispatcher ShellDispatcher { get; }
 
-        public override string ProductUserContext
-        {
-            get
-            {
-                return null;
-            }
-        }
+        public override string ProductUserContext => null;
 
         /// <summary>
         /// Default constructor of the package.
@@ -227,7 +216,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             AnalyticsRecorder = SimpleMobileAnalytics.Instance;
         }
 
-        public ILog Logger { get { return LOGGER; } }
+        public ILog Logger => LOGGER;
 
         // works around GetService being protected, and we want access to it from our
         // own service handlers
@@ -281,10 +270,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             });
         }
 
-        internal ProjectDeploymentsPersistenceManager LegacyDeploymentsPersistenceManager
-        {
-            get { return _projectDeployments; }
-        }
+        internal ProjectDeploymentsPersistenceManager LegacyDeploymentsPersistenceManager => _projectDeployments;
 
         internal IAWSCloudFormation AWSCloudFormationPlugin
         {
@@ -303,13 +289,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        internal bool CloudFormationPluginAvailable
-        {
-            get
-            {
-                return AWSCloudFormationPlugin != null;
-            }
-        }
+        internal bool CloudFormationPluginAvailable => AWSCloudFormationPlugin != null;
 
         private IAWSECS _awsECSPlugin;
         internal IAWSECS AWSECSPlugin
@@ -350,13 +330,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        internal bool BeanstalkPluginAvailable
-        {
-            get
-            {
-                return AWSBeanstalkPlugin != null;
-            }
-        }
+        internal bool BeanstalkPluginAvailable => AWSBeanstalkPlugin != null;
 
         IAWSLambda LambdaPlugin
         {
@@ -382,13 +356,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        bool LambdaPluginAvailable
-        {
-            get
-            {
-                return LambdaPlugin != null;
-            }
-        }
+        bool LambdaPluginAvailable => LambdaPlugin != null;
 
         IAWSCodeCommit CodeCommitPlugin
         {
@@ -414,13 +382,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        bool CodeCommitPluginAvailable
-        {
-            get
-            {
-                return CodeCommitPlugin != null;
-            }
-        }
+        bool CodeCommitPluginAvailable => CodeCommitPlugin != null;
 
         private object CreateService(IServiceContainer container, Type serviceType)
         {
@@ -2425,112 +2387,39 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        public object CaptionFontFamilyKey { get { return ThemeFontResources.CaptionFontFamilyKey; } }
-        public object CaptionFontSizeKey { get { return ThemeFontResources.CaptionFontSizeKey; } }
-        public object CaptionFontWeightKey { get { return ThemeFontResources.CaptionFontWeightKey; } }
+        public object CaptionFontFamilyKey => ThemeFontResources.CaptionFontFamilyKey;
+        public object CaptionFontSizeKey => ThemeFontResources.CaptionFontSizeKey;
+        public object CaptionFontWeightKey => ThemeFontResources.CaptionFontWeightKey;
 
-        public object EnvironmentBoldFontWeightKey { get { return ThemeFontResources.EnvironmentBoldFontWeightKey; } }
-        public object EnvironmentFontFamilyKey { get { return ThemeFontResources.EnvironmentFontFamilyKey; } }
-        public object EnvironmentFontSizeKey { get { return ThemeFontResources.EnvironmentFontSizeKey; } }
+        public object EnvironmentBoldFontWeightKey => ThemeFontResources.EnvironmentBoldFontWeightKey;
+        public object EnvironmentFontFamilyKey => ThemeFontResources.EnvironmentFontFamilyKey;
+        public object EnvironmentFontSizeKey => ThemeFontResources.EnvironmentFontSizeKey;
 
-        public object Environment122PercentFontSizeKey
-        {
-            get
-            {
-                return ThemeFontResources.Environment122PercentFontSizeKey;
-            }
-        }
+        public object Environment122PercentFontSizeKey => ThemeFontResources.Environment122PercentFontSizeKey;
 
-        public object Environment122PercentFontWeightKey
-        {
-            get
-            {
-                return ThemeFontResources.Environment122PercentFontWeightKey;
-            }
-        }
+        public object Environment122PercentFontWeightKey => ThemeFontResources.Environment122PercentFontWeightKey;
 
-        public object Environment133PercentFontSizeKey
-        {
-            get
-            {
-                return ThemeFontResources.Environment133PercentFontSizeKey;
-            }
-        }
+        public object Environment133PercentFontSizeKey => ThemeFontResources.Environment133PercentFontSizeKey;
 
-        public object Environment133PercentFontWeightKey
-        {
-            get
-            {
-                return ThemeFontResources.Environment133PercentFontWeightKey;
-            }
-        }
+        public object Environment133PercentFontWeightKey => ThemeFontResources.Environment133PercentFontWeightKey;
 
-        public object Environment155PercentFontSizeKey
-        {
-            get
-            {
-                return ThemeFontResources.Environment155PercentFontSizeKey;
-            }
-        }
+        public object Environment155PercentFontSizeKey => ThemeFontResources.Environment155PercentFontSizeKey;
 
-        public object Environment155PercentFontWeightKey
-        {
-            get
-            {
-                return ThemeFontResources.Environment155PercentFontWeightKey;
-            }
-        }
+        public object Environment155PercentFontWeightKey => ThemeFontResources.Environment155PercentFontWeightKey;
 
-        public object Environment200PercentFontSizeKey
-        {
-            get
-            {
-                return ThemeFontResources.Environment200PercentFontSizeKey;
-            }
-        }
+        public object Environment200PercentFontSizeKey => ThemeFontResources.Environment200PercentFontSizeKey;
 
-        public object Environment200PercentFontWeightKey
-        {
-            get
-            {
-                return ThemeFontResources.Environment200PercentFontWeightKey;
-            }
-        }
+        public object Environment200PercentFontWeightKey => ThemeFontResources.Environment200PercentFontWeightKey;
 
-        public object Environment310PercentFontSizeKey
-        {
-            get
-            {
-                return ThemeFontResources.Environment310PercentFontSizeKey;
-            }
-        }
+        public object Environment310PercentFontSizeKey => ThemeFontResources.Environment310PercentFontSizeKey;
 
-        public object Environment310PercentFontWeightKey
-        {
-            get
-            {
-                return ThemeFontResources.Environment310PercentFontWeightKey;
-            }
-        }
+        public object Environment310PercentFontWeightKey => ThemeFontResources.Environment310PercentFontWeightKey;
 
-        public object Environment375PercentFontSizeKey
-        {
-            get
-            {
-                return ThemeFontResources.Environment375PercentFontSizeKey;
-            }
-        }
+        public object Environment375PercentFontSizeKey => ThemeFontResources.Environment375PercentFontSizeKey;
 
-        public object Environment375PercentFontWeightKey
-        {
-            get
-            {
-                return ThemeFontResources.Environment375PercentFontWeightKey;
-            }
-        }
+        public object Environment375PercentFontWeightKey => ThemeFontResources.Environment375PercentFontWeightKey;
 
-
-#endregion
+        #endregion
 
 #region IRegisterDataConnectionService
 

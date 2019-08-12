@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -37,29 +36,17 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         [DisplayName("Instance ID")]
         [AssociatedIcon(true, "InstanceIcon")]
-        public string InstanceId
-        {
-            get { return this._instance.InstanceId; }
-        }
+        public string InstanceId => this._instance.InstanceId;
 
         [DisplayName("AMI ID")]
-        public string ImageId
-        {
-            get { return this._instance.ImageId; }
-        }
+        public string ImageId => this._instance.ImageId;
 
         [DisplayName("Status")]
         [AssociatedIcon(true, "StatusIcon")]
-        public string Status
-        {
-            get { return this._instance.State.Name; }
-        }
+        public string Status => this._instance.State.Name;
 
         [DisplayName("VPC ID")]
-        public string VpcId
-        {
-            get { return this._instance.VpcId; }
-        }
+        public string VpcId => this._instance.VpcId;
 
         [DisplayName("Instance Profile")]
         public string FormattedInstanceProfile
@@ -89,46 +76,25 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [DisplayName("Source/Dest. Check")]
-        public bool SourceDestCheck
-        {
-            get { return this._instance.SourceDestCheck; }
-        }
+        public bool SourceDestCheck => this._instance.SourceDestCheck;
 
         [DisplayName("Placement Group")]
-        public string PlacementGroup
-        {
-            get { return this._instance.Placement.GroupName; }
-        }
+        public string PlacementGroup => this._instance.Placement.GroupName;
 
         [DisplayName("RAM Disk ID")]
-        public string RAMDiskId
-        {
-            get { return this._instance.RamdiskId; }
-        }
+        public string RAMDiskId => this._instance.RamdiskId;
 
         [DisplayName("Key Pair Name")]
-        public string KeyPairName
-        {
-            get { return this._instance.KeyName; }
-        }
+        public string KeyPairName => this._instance.KeyName;
 
         [DisplayName("Root Device Type")]
-        public string RootDeviceType
-        {
-            get { return this._instance.RootDeviceType; }
-        }
+        public string RootDeviceType => this._instance.RootDeviceType;
 
         [DisplayName("Root Device")]
-        public string RootDeviceName
-        {
-            get { return this._instance.RootDeviceName; }
-        }
+        public string RootDeviceName => this._instance.RootDeviceName;
 
         [DisplayName("Lifecycle")]
-        public string InstanceLifecycle
-        {
-            get { return this._instance.InstanceLifecycle; }
-        }
+        public string InstanceLifecycle => this._instance.InstanceLifecycle;
 
         [DisplayName("Security Groups")]
         public string FormattedSecurityGroups
@@ -166,16 +132,10 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [DisplayName("Public DNS")]
-        public string PublicDnsName
-        {
-            get { return this._instance.PublicDnsName; }
-        }
+        public string PublicDnsName => this._instance.PublicDnsName;
 
         [DisplayName("Private DNS")]
-        public string PrivateDnsName
-        {
-            get { return this._instance.PrivateDnsName; }
-        }
+        public string PrivateDnsName => this._instance.PrivateDnsName;
 
         [DisplayName("Elastic IP")]
         public string ElasticIPAddress
@@ -190,10 +150,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [DisplayName("Private IP Address")]
-        public string PrivateIPAddress
-        {
-            get { return this._instance.PrivateIpAddress; }
-        }
+        public string PrivateIPAddress => this._instance.PrivateIpAddress;
 
         [DisplayName("State Transition Reason")]
         public string StateTransitionReason
@@ -243,52 +200,27 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [DisplayName("Zone")]
-        public string AvailabilityZone
-        {
-            get { return this._instance.Placement.AvailabilityZone; }
-        }
+        public string AvailabilityZone => this._instance.Placement.AvailabilityZone;
 
         [DisplayName("Subnet ID")]
-        public string SubnetId
-        {
-            get { return this._instance.SubnetId; }
-        }
+        public string SubnetId => this._instance.SubnetId;
 
         [DisplayName("Owner")]
-        public string Owner
-        {
-            get { return this.NativeReservation.OwnerId; }
-        }
+        public string Owner => this.NativeReservation.OwnerId;
 
         [DisplayName("Virtualization")]
-        public string Virtualization
-        {
-            get { return this._instance.VirtualizationType; }
-        }
+        public string Virtualization => this._instance.VirtualizationType;
 
         [DisplayName("Reservation")]
-        public string ReservationId
-        {
-            get { return this._reservation.ReservationId; }
-        }
+        public string ReservationId => this._reservation.ReservationId;
 
         [DisplayName("Platform")]
-        public string Platform
-        {
-            get { return this._instance.Platform; }
-        }
+        public string Platform => this._instance.Platform;
 
-        internal bool IsWindowsPlatform
-        {
-            // have seen EC2 use both 'windows' and 'Windows'
-            get { return EC2Constants.PLATFORM_WINDOWS.Equals(this.NativeInstance.Platform, StringComparison.OrdinalIgnoreCase); }            
-        }
+        internal bool IsWindowsPlatform => EC2Constants.PLATFORM_WINDOWS.Equals(this.NativeInstance.Platform, StringComparison.OrdinalIgnoreCase);
 
         [DisplayName("Kernel ID")]
-        public string KernelId
-        {
-            get { return this._instance.KernelId; }
-        }
+        public string KernelId => this._instance.KernelId;
 
         public string Name
         {
@@ -308,7 +240,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         [ReadOnly(true)]
         public string InstanceType
         {
-            get { return this.NativeInstance.InstanceType; }
+            get => this.NativeInstance.InstanceType;
             set
             {
                 this.NativeInstance.InstanceType = value;
@@ -317,16 +249,10 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public Reservation NativeReservation
-        {
-            get { return this._reservation; }
-        }
+        public Reservation NativeReservation => this._reservation;
 
         [Browsable(false)]
-        public Instance NativeInstance
-        {
-            get { return this._instance; }
-        }
+        public Instance NativeInstance => this._instance;
 
         [Browsable(false)]
         public string DisplayName
@@ -341,16 +267,10 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "Instance"; }          
-        }
+        public string TypeName => "Instance";
 
         [DisplayName("Launch Time")]
-        public DateTime LaunchTime
-        {
-            get { return this._instance.LaunchTime; }
-        }
+        public DateTime LaunchTime => this._instance.LaunchTime;
 
         [Browsable(false)]
         public string SecurityGroups
@@ -405,16 +325,13 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public bool IsVolumesReady
-        {
-            get { return this.Volumes != null; }
-        }
+        public bool IsVolumesReady => this.Volumes != null;
 
         ObservableCollection<VolumeWrapper> _volumes;
         [Browsable(false)]
         public ObservableCollection<VolumeWrapper> Volumes
         {
-            get { return this._volumes; }
+            get => this._volumes;
             set
             {
                 this._volumes = value;
@@ -424,13 +341,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public string[] ListVolumeAvailableTags
-        {
-            get
-            {
-                return EC2ColumnDefinition.GetListAvailableTags(this.Volumes);
-            }
-        }
+        public string[] ListVolumeAvailableTags => EC2ColumnDefinition.GetListAvailableTags(this.Volumes);
 
         [Browsable(false)]
         public IList<string> UnmappedDeviceSlots
@@ -484,9 +395,6 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public List<Tag> Tags
-        {
-            get { return this.NativeInstance.Tags; }
-        }
+        public List<Tag> Tags => this.NativeInstance.Tags;
     }
 }

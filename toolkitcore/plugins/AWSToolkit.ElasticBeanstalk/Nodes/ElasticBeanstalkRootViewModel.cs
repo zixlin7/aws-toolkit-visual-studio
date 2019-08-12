@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon;
+﻿using System.Collections.Generic;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.Runtime;
 
@@ -28,25 +22,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
             this._accountViewModel = accountViewModel;            
         }
 
-        public override string ToolTip
-        {
-            get
-            {
-                return "AWS Elastic Beanstalk is an even easier way for you to quickly deploy " +
-                       "and manage applications in the AWS cloud. You can right click web applications " +
-                       "and web site projects and publish to beanstalk. " +
-                       "Elastic Beanstalk will automatically handle the deployment details of capacity " +
-                       "provisioning, load balancing, auto-scaling, and application health monitoring.";
-            }
-        }
+        public override string ToolTip =>
+            "AWS Elastic Beanstalk is an even easier way for you to quickly deploy " +
+            "and manage applications in the AWS cloud. You can right click web applications " +
+            "and web site projects and publish to beanstalk. " +
+            "Elastic Beanstalk will automatically handle the deployment details of capacity " +
+            "provisioning, load balancing, auto-scaling, and application health monitoring.";
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.rootviewnode.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.rootviewnode.png";
 
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
@@ -55,10 +38,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
             this._beanstalkClient = new AmazonElasticBeanstalkClient(awsCredentials, config);
         }
 
-        public IAmazonElasticBeanstalk BeanstalkClient
-        {
-            get {return this._beanstalkClient;}
-        }
+        public IAmazonElasticBeanstalk BeanstalkClient => this._beanstalkClient;
 
 
         protected override void LoadChildren()

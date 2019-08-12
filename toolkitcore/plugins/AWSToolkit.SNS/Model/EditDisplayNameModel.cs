@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.SNS.Model
 {
@@ -24,7 +19,7 @@ namespace Amazon.AWSToolkit.SNS.Model
 
         public string TopicARN
         {
-            get { return this._topicARN; }
+            get => this._topicARN;
             set
             {
                 this._topicARN = value;
@@ -34,7 +29,7 @@ namespace Amazon.AWSToolkit.SNS.Model
 
         public string DisplayName
         {
-            get { return this._displayName; }
+            get => this._displayName;
             set
             {
                 this._displayName = value;

@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Linq;
-using System.Reflection;
 using Amazon.Lambda.Tools;
 using ThirdParty.Json.LitJson;
 using Xunit;

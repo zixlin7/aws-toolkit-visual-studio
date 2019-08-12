@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI.JobTracker;
 
 using Amazon.AWSToolkit.S3.Clipboard;
 using Amazon.AWSToolkit.S3.Controller;
 using Amazon.AWSToolkit.S3.Model;
-using Amazon.AWSToolkit.S3.View;
-
 using Amazon.S3;
 using Amazon.S3.IO;
-using Amazon.S3.Model;
 
 namespace Amazon.AWSToolkit.S3.Jobs
 {
@@ -67,21 +61,9 @@ namespace Amazon.AWSToolkit.S3.Jobs
             }
         }
 
-        protected override int TotalUnits
-        {
-            get
-            {
-                return this._numberOfToCopiedKeys;
-            }
-        }
+        protected override int TotalUnits => this._numberOfToCopiedKeys;
 
-        protected override int CompletedUnits
-        {
-            get
-            {
-                return this._numberOfCopiedKeys;
-            }
-        }
+        protected override int CompletedUnits => this._numberOfCopiedKeys;
 
         protected override void PostExecuteJob(Exception exception)
         {
@@ -126,10 +108,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
                 this._keysToBeCopied = this._controller.GetListOfKeys(childItems, true);
             }
 
-            public int CountOfKeys
-            {
-                get { return this._keysToBeCopied.Count; }
-            }
+            public int CountOfKeys => this._keysToBeCopied.Count;
 
             public void Execute()
             {

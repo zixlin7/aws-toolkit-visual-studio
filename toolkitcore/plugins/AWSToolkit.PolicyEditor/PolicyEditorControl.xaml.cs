@@ -1,24 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Microsoft.Win32;
-
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.PolicyEditor.Model;
-using Amazon.AWSToolkit.Util;
-
 using Amazon.Auth.AccessControlPolicy;
 
 using log4net;
@@ -42,21 +28,12 @@ namespace Amazon.AWSToolkit.PolicyEditor
 
         public event EventHandler OnChange;
 
-        public ToolBar MainToolBar
-        {
-            get { return this._ctlToolBar; }
-        }
+        public ToolBar MainToolBar => this._ctlToolBar;
 
         public Policy Policy
         {
-            get
-            {
-                return (Policy)GetValue(PolicyProperty);
-            }
-            set
-            {
-                SetValue(PolicyProperty, value);
-            }
+            get => (Policy)GetValue(PolicyProperty);
+            set => SetValue(PolicyProperty, value);
         }
 
         public static readonly DependencyProperty PolicyProperty =
@@ -89,14 +66,8 @@ namespace Amazon.AWSToolkit.PolicyEditor
 
         public string PolicyMode
         {
-            get
-            {
-                return (string)GetValue(PolicyModeProperty);
-            }
-            set
-            {
-                SetValue(PolicyModeProperty, value);
-            }
+            get => (string)GetValue(PolicyModeProperty);
+            set => SetValue(PolicyModeProperty, value);
         }
 
         public static readonly DependencyProperty PolicyModeProperty =

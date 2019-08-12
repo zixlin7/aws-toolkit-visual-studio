@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.RDS.Model
 {
@@ -18,13 +13,12 @@ namespace Amazon.AWSToolkit.RDS.Model
         public string DBIdentifier
         {
             get;
-            private set;
         }
 
         bool _createFinalSnapshot = true;
         public bool CreateFinalSnapshot
         {
-            get { return this._createFinalSnapshot; }
+            get => this._createFinalSnapshot;
             set
             {
                 this._createFinalSnapshot = value;
@@ -35,7 +29,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         string _finalSnapshotName;
         public string FinalSnapshotName
         {
-            get { return this._finalSnapshotName; }
+            get => this._finalSnapshotName;
             set
             {
                 this._finalSnapshotName = value;

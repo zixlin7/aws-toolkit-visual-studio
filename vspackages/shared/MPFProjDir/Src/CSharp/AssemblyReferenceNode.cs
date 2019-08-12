@@ -10,19 +10,15 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 ***************************************************************************/
 
 using System;
-using System.Collections;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using MSBuild = Microsoft.Build.Evaluation;
 using MSBuildExecution = Microsoft.Build.Execution;
-using Microsoft.Build.Evaluation;
-using Microsoft.Build.Framework;
 
 namespace Microsoft.VisualStudio.Project
 {
@@ -55,41 +51,20 @@ namespace Microsoft.VisualStudio.Project
 		/// The name of the assembly this reference represents.
 		/// </summary>
 		/// <value></value>
-		internal System.Reflection.AssemblyName AssemblyName
-		{
-			get
-			{
-				return this.assemblyName;
-			}
-		}
+		internal System.Reflection.AssemblyName AssemblyName => this.assemblyName;
 
-		/// <summary>
+        /// <summary>
 		/// Returns the name of the assembly this reference refers to on this specific
 		/// machine. It can be different from the AssemblyName property because it can
 		/// be more specific.
 		/// </summary>
-		internal System.Reflection.AssemblyName ResolvedAssembly
-		{
-			get { return resolvedAssemblyName; }
-		}
+		internal System.Reflection.AssemblyName ResolvedAssembly => resolvedAssemblyName;
 
-		public override string Url
-		{
-			get
-			{
-				return this.assemblyPath;
-			}
-		}
+        public override string Url => this.assemblyPath;
 
-		public override string Caption
-		{
-			get
-			{
-				return this.assemblyName.Name;
-			}
-		}
+        public override string Caption => this.assemblyName.Name;
 
-		private Automation.OAAssemblyReference assemblyRef;
+        private Automation.OAAssemblyReference assemblyRef;
 		internal override object Object
 		{
 			get

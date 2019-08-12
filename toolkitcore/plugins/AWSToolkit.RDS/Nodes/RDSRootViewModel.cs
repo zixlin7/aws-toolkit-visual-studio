@@ -1,17 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Windows;
-using System.Windows.Threading;
-
-using Amazon;
 using Amazon.RDS;
-using Amazon.RDS.Model;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.Runtime;
@@ -33,26 +22,11 @@ namespace Amazon.AWSToolkit.RDS.Nodes
             this._accountViewModel = accountViewModel;
         }
 
-        public override string ToolTip
-        {
-            get
-            {
-                return "Amazon Relational Database Service (Amazon RDS) makes it easy to set up, operate, and scale a relational database in the cloud.";
-            }
-        }
+        public override string ToolTip => "Amazon Relational Database Service (Amazon RDS) makes it easy to set up, operate, and scale a relational database in the cloud.";
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.ServiceIcon.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.ServiceIcon.png";
 
-        public IAmazonRDS RDSClient
-        {
-            get { return this._rdsClient; }
-        }
+        public IAmazonRDS RDSClient => this._rdsClient;
 
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
@@ -81,12 +55,6 @@ namespace Amazon.AWSToolkit.RDS.Nodes
             }
         }
 
-        public override bool FailedToLoadChildren
-        {
-            get
-            {
-                return this.Children[0].FailedToLoadChildren;
-            }
-        }
+        public override bool FailedToLoadChildren => this.Children[0].FailedToLoadChildren;
     }
 }

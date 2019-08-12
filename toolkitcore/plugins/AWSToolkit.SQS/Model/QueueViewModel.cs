@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 using ThirdParty.Json.LitJson;
 
@@ -18,7 +16,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         string _name;
         public string Name
         {
-            get { return this._name; }
+            get => this._name;
             set
             {
                 this._name = value;
@@ -29,7 +27,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         string _queueARN;
         public string QueueARN
         {
-            get { return this._queueARN; }
+            get => this._queueARN;
             set
             {
                 this._queueARN = value;
@@ -40,7 +38,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         string _queueURL;
         public string QueueURL
         {
-            get { return this._queueURL; }
+            get => this._queueURL;
             set
             {
                 this._queueURL = value;
@@ -53,10 +51,7 @@ namespace Amazon.AWSToolkit.SQS.Model
     public class QueueViewModel : QueueViewBaseModel
     {
         readonly ObservableCollection<MessageWrapper> _messages = new ObservableCollection<MessageWrapper>();
-        public ObservableCollection<MessageWrapper> Messages
-        {
-            get { return this._messages; }
-        }
+        public ObservableCollection<MessageWrapper> Messages => this._messages;
 
         public bool IsDirty()
         {
@@ -75,7 +70,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         int _visibilityTimeout;
         public int VisibilityTimeout 
         {
-            get { return this._visibilityTimeout; }
+            get => this._visibilityTimeout;
             set
             {
                 this._visibilityTimeout = value;
@@ -88,7 +83,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         int _delaySeconds;
         public int DelaySeconds
         {
-            get { return this._delaySeconds; }
+            get => this._delaySeconds;
             set
             {
                 this._delaySeconds = value;
@@ -102,7 +97,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         int _maximumMessageSize;
         public int MaximumMessageSize
         {
-            get { return this._maximumMessageSize; }
+            get => this._maximumMessageSize;
             set
             {
                 this._maximumMessageSize = value;
@@ -115,7 +110,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         int _messageRetentionPeriod;
         public int MessageRetentionPeriod
         {
-            get { return this._messageRetentionPeriod; }
+            get => this._messageRetentionPeriod;
             set
             {
                 this._messageRetentionPeriod = value;
@@ -128,7 +123,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         int _approximateNumberOfMessages;
         public int ApproximateNumberOfMessages
         {
-            get { return this._approximateNumberOfMessages; }
+            get => this._approximateNumberOfMessages;
             set
             {
                 this._approximateNumberOfMessages = value;
@@ -139,7 +134,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         int _approximateNumberOfMessagesNotVisible;
         public int ApproximateNumberOfMessagesNotVisible
         {
-            get { return this._approximateNumberOfMessagesNotVisible; }
+            get => this._approximateNumberOfMessagesNotVisible;
             set
             {
                 this._approximateNumberOfMessagesNotVisible = value;
@@ -150,7 +145,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         DateTime _createTimestamp;
         public DateTime CreatedTimestamp
         {
-            get { return this._createTimestamp; }
+            get => this._createTimestamp;
             set
             {
                 this._createTimestamp = value;
@@ -161,7 +156,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         DateTime _lastModifiedTimestamp;
         public DateTime LastModifiedTimestamp
         {
-            get { return this._lastModifiedTimestamp; }
+            get => this._lastModifiedTimestamp;
             set
             {
                 this._lastModifiedTimestamp = value;
@@ -185,7 +180,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         int _maximumReceives;
         public int MaximumReceives
         {
-            get { return HasRedrivePolicy ? _maximumReceives : 0; }    
+            get => HasRedrivePolicy ? _maximumReceives : 0;
             private set
             {
                 _maximumReceives = value;
@@ -196,7 +191,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         string _deadLetterQueue;
         public string DeadLetterQueue
         {
-            get { return HasRedrivePolicy ? _deadLetterQueue : string.Empty; } 
+            get => HasRedrivePolicy ? _deadLetterQueue : string.Empty;
             private set
             {
                 _deadLetterQueue = value;
@@ -216,7 +211,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         bool _isRedriveTarget = false;
         public bool IsRedriveTarget
         {
-            get { return _isRedriveTarget; }
+            get => _isRedriveTarget;
             set
             {
                 this._isRedriveTarget = value;
@@ -227,7 +222,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         IEnumerable<QueueViewBaseModel> _deadLetterSourceQueues;
         public IEnumerable<QueueViewBaseModel> DeadLetterSourceQueues
         {
-            get { return _deadLetterSourceQueues; }
+            get => _deadLetterSourceQueues;
             private set
             {
                 _deadLetterSourceQueues = value;

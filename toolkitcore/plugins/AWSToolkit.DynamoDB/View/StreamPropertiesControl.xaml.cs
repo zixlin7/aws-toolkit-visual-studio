@@ -1,24 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.DynamoDBv2;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.DynamoDB.Controller;
-using Amazon.AWSToolkit.DynamoDB.Model;
-using Amazon.AWSToolkit.DynamoDB.Util;
-
 using log4net;
 
 namespace Amazon.AWSToolkit.DynamoDB.View
@@ -39,10 +24,7 @@ namespace Amazon.AWSToolkit.DynamoDB.View
             this._controller = controller;
         }
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get { return true; }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {
@@ -50,13 +32,7 @@ namespace Amazon.AWSToolkit.DynamoDB.View
             return this._controller.Model;
         }
 
-        public override string Title
-        {
-            get
-            {
-                return "Stream Properties";
-            }
-        }
+        public override string Title => "Stream Properties";
 
         private void _ctlEnabled_Checked(object sender, RoutedEventArgs e)
         {

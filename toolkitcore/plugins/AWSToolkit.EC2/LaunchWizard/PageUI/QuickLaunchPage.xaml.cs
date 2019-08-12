@@ -80,7 +80,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
             _keyPairs.Cursor = Cursors.Arrow;
         }
 
-        public ObservableCollection<SecurityGroupWrapper> AvailableSecurityGroups { get; private set; }
+        public ObservableCollection<SecurityGroupWrapper> AvailableSecurityGroups { get; }
 
         public void SetAvailableSecurityGroups(ICollection<SecurityGroup> existingGroups, string autoSelectGroup)
         {
@@ -116,7 +116,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
             NotifyPropertyChanged("HasSecurityGroupsAndAMI");
         }
 
-        public ObservableCollection<VpcAndSubnetWrapper> AvailableVpcSubnets { get; private set; }
+        public ObservableCollection<VpcAndSubnetWrapper> AvailableVpcSubnets { get; }
 
         public void SetAvailableVpcSubnets(ICollection<Vpc> vpcs, ICollection<Subnet> subnets, bool isVpcOnlyEnvironment)
         {
@@ -218,10 +218,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
 
         public string InstanceName { get; set; }
 
-        public IEnumerable<EBSVolumeType> VolumeTypes
-        {
-            get { return _volumeTypes; }
-        }
+        public IEnumerable<EBSVolumeType> VolumeTypes => _volumeTypes;
 
         public int VolumeSize { get; set; }
 
@@ -242,28 +239,19 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
             }
         }
 
-        public string SelectedAMIID
-        {
-            get { return _amiSelector.SelectedAMIID; }
-        }
+        public string SelectedAMIID => _amiSelector.SelectedAMIID;
 
         public EC2QuickLaunchImage SelectedAMI
         {
-            get { return _amiSelector.SelectedAMI; }
-            set { _amiSelector.SelectedAMI = value; }
+            get => _amiSelector.SelectedAMI;
+            set => _amiSelector.SelectedAMI = value;
         }
 
-        public bool HasSelectedAMI
-        {
-            get { return _amiSelector != null && SelectedAMI != null; }    
-        }
+        public bool HasSelectedAMI => _amiSelector != null && SelectedAMI != null;
 
-        public bool HasSecurityGroupsAndAMI
-        {
-            get { return HasSelectedAMI && _securityGroups.HasItems; }
-        }
+        public bool HasSecurityGroupsAndAMI => HasSelectedAMI && _securityGroups.HasItems;
 
-        public ObservableCollection<InstanceType> InstanceTypes { get; private set; }
+        public ObservableCollection<InstanceType> InstanceTypes { get; }
 
         public void SetInstanceTypes(IEnumerable<InstanceType> instanceTypes)
         {
@@ -280,25 +268,13 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
             }
         }
 
-        public InstanceType SelectedInstanceType
-        {
-            get { return _instanceTypeSelector.SelectedItem as InstanceType; }
-        }
+        public InstanceType SelectedInstanceType => _instanceTypeSelector.SelectedItem as InstanceType;
 
-        public string SelectedKeyPairName
-        {
-            get { return _keyPairs.SelectedKeyPairName; }
-        }
+        public string SelectedKeyPairName => _keyPairs.SelectedKeyPairName;
 
-        public bool IsExistingKeyPairNameSelected
-        {
-            get { return _keyPairs.IsExistingKeyPairSelected; }
-        }
+        public bool IsExistingKeyPairNameSelected => _keyPairs.IsExistingKeyPairSelected;
 
-        public SecurityGroupWrapper SelectedSecurityGroup
-        {
-            get { return _securityGroups.SelectedItem as SecurityGroupWrapper; }
-        }
+        public SecurityGroupWrapper SelectedSecurityGroup => _securityGroups.SelectedItem as SecurityGroupWrapper;
 
         public bool InstanceNameIsValid
         {
@@ -313,19 +289,16 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
 
         public bool AllowFiltering
         {
-            get { return _amiSelector.AllowFiltering; }
-            set { _amiSelector.AllowFiltering = value; }
+            get => _amiSelector.AllowFiltering;
+            set => _amiSelector.AllowFiltering = value;
         }
 
         public bool AllowCreateKeyPairSelection
         {
-            set
-            {
-                _keyPairs.AllowCreateKeyPairSelection = value;
-            }
+            set => _keyPairs.AllowCreateKeyPairSelection = value;
         }
 
-        public ObservableCollection<InstanceProfile> IAMInstanceProfiles { get; private set; }
+        public ObservableCollection<InstanceProfile> IAMInstanceProfiles { get; }
 
         public void SetIAMInstanceProfiles(ICollection<InstanceProfile> profiles)
         {

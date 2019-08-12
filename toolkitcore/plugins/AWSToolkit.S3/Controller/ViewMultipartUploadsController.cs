@@ -1,23 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Windows;
-using System.Windows.Threading;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.S3.Nodes;
 using Amazon.AWSToolkit.S3.View;
 using Amazon.AWSToolkit.S3.Model;
-using Amazon.AWSToolkit;
-
 using Amazon.S3;
 using Amazon.S3.Model;
 
@@ -35,10 +23,7 @@ namespace Amazon.AWSToolkit.S3.Controller
         ViewMultipartUploadsControl _control;
         ViewMultipartUploadsModel _model;
 
-        public ViewMultipartUploadsModel Model
-        {
-            get { return this._model; }
-        }
+        public ViewMultipartUploadsModel Model => this._model;
 
         public override ActionResults Execute(IViewModel model)
         {

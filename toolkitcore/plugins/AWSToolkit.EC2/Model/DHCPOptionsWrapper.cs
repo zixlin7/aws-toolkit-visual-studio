@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.EC2.Model;
-using Amazon.AWSToolkit.EC2.View.DataGrid;
 
 namespace Amazon.AWSToolkit.EC2.Model
 {
@@ -29,21 +25,12 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public string DisplayName
-        {
-            get { return this._dhcpOptions.DhcpOptionsId; }
-        }
+        public string DisplayName => this._dhcpOptions.DhcpOptionsId;
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "DHCP Options"; }
-        }
+        public string TypeName => "DHCP Options";
 
-        public DhcpOptions NativeDHCPOptions
-        {
-            get { return this._dhcpOptions; }
-        }
+        public DhcpOptions NativeDHCPOptions => this._dhcpOptions;
 
         [Browsable(false)]
         public string FormattedLabel
@@ -84,43 +71,43 @@ namespace Amazon.AWSToolkit.EC2.Model
         [DisplayName("DHCP Options Set ID")]
         public string DhcpOptionsId
         {
-            get { return this._dhcpOptions.DhcpOptionsId; }
-            set { this._dhcpOptions.DhcpOptionsId = value; }
+            get => this._dhcpOptions.DhcpOptionsId;
+            set => this._dhcpOptions.DhcpOptionsId = value;
         }
 
         [DisplayName("Domain Name")]
         public string DomainName
         {
-            get { return this.getValue("domain-name"); }
-            set { this.setValue("domain-name", value); }
+            get => this.getValue("domain-name");
+            set => this.setValue("domain-name", value);
         }
 
         [DisplayName("Domain Name Services")]
         public string DomainNameServices
         {
-            get { return this.getValue("domain-name-servers"); }
-            set { this.setValue("domain-name-servers", value); }
+            get => this.getValue("domain-name-servers");
+            set => this.setValue("domain-name-servers", value);
         }
 
         [DisplayName("NTP Servers")]
         public string NTPServers
         {
-            get { return this.getValue("ntp-servers"); }
-            set { this.setValue("ntp-servers", value); }
+            get => this.getValue("ntp-servers");
+            set => this.setValue("ntp-servers", value);
         }
 
         [DisplayName("Netbios Name Servers")]
         public string NetbiosNameServers
         {
-            get { return this.getValue("netbios-name-servers"); }
-            set { this.setValue("netbios-name-servers", value); }
+            get => this.getValue("netbios-name-servers");
+            set => this.setValue("netbios-name-servers", value);
         }
 
         [DisplayName("Netbios Node Type")]
         public string NetbiosNodeType
         {
-            get { return this.getValue("netbios-node-type"); }
-            set { this.setValue("netbios-node-type", value); }
+            get => this.getValue("netbios-node-type");
+            set => this.setValue("netbios-node-type", value);
         }
 
         private string getValue(string name)
@@ -172,9 +159,6 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public List<Tag> Tags
-        {
-            get { return this.NativeDHCPOptions.Tags; }
-        }
+        public List<Tag> Tags => this.NativeDHCPOptions.Tags;
     }
 }

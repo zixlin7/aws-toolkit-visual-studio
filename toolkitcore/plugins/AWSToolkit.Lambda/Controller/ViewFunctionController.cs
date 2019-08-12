@@ -243,10 +243,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             }
         }
 
-        public ViewFunctionModel Model
-        {
-            get { return this._model; }
-        }
+        public ViewFunctionModel Model => this._model;
 
         public void LoadModel()
         {
@@ -477,13 +474,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             }
         }
 
-        private string CloudWatchLogGroup
-        {
-            get
-            {
-                return string.Format("/aws/lambda/{0}", this._model.FunctionName);
-            }
-        }
+        private string CloudWatchLogGroup => string.Format("/aws/lambda/{0}", this._model.FunctionName);
 
         public void RefreshLogs()
         {

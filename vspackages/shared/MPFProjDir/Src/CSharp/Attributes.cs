@@ -36,14 +36,9 @@ namespace Microsoft.VisualStudio.Project
 		#endregion
 
 		#region properties
-		public Type ConverterType
-		{
-			get
-			{
-				return this.converterType;
-			}
-		}
-		#endregion
+		public Type ConverterType => this.converterType;
+
+        #endregion
 	}
 
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]

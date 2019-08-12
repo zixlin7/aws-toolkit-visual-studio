@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.IdentityManagement.Model;
-
-using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -14,15 +8,9 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
 {
     public class IAMUserRootViewMetaNode : AbstractMetaNode
     {
-        public IAMUserViewMetaNode IAMUserViewMetaNode
-        {
-            get { return this.FindChild<IAMUserViewMetaNode>(); }
-        }
+        public IAMUserViewMetaNode IAMUserViewMetaNode => this.FindChild<IAMUserViewMetaNode>();
 
-        public override bool SupportsRefresh
-        {
-            get { return true; }
-        }
+        public override bool SupportsRefresh => true;
 
         public ActionHandlerWrapper.ActionHandler OnCreateUser
         {
@@ -40,12 +28,6 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             }
         }
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList(new ActionHandlerWrapper("Create User...", OnCreateUser, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateUserResponse), false, this.GetType().Assembly, "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.user_add.png"));
-            }
-        }
+        public override IList<ActionHandlerWrapper> Actions => BuildActionHandlerList(new ActionHandlerWrapper("Create User...", OnCreateUser, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateUserResponse), false, this.GetType().Assembly, "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.user_add.png"));
     }
 }

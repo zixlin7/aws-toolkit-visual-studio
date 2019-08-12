@@ -1,21 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.Util;
-using Amazon.AWSToolkit.SimpleDB.Model;
 using Amazon.AWSToolkit.SimpleDB.Controller;
 using Amazon.AWSToolkit.CommonUI;
 
@@ -35,10 +20,7 @@ namespace Amazon.AWSToolkit.SimpleDB.View
             InitializeComponent();
         }
 
-        public override string Title
-        {
-            get { return string.Format("Edit {0}", this._controller.Model.AttributeName); }
-        }
+        public override string Title => string.Format("Edit {0}", this._controller.Model.AttributeName);
 
         private void OnAdd(object sender, RoutedEventArgs args)
         {

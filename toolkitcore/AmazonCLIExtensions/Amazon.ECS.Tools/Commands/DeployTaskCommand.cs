@@ -50,7 +50,7 @@ namespace Amazon.ECS.Tools.Commands
 
                 return this._deployTaskProperties;
             }
-            set { this._deployTaskProperties = value; }
+            set => this._deployTaskProperties = value;
         }
 
         public DeployTaskCommand(IToolLogger logger, string workingDirectory, string[] args)

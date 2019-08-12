@@ -2,8 +2,6 @@
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Reflection;
 using Microsoft.Build.Utilities;
 using Microsoft.Build.Framework;
 
@@ -21,8 +19,8 @@ namespace Amazon.AWSToolkit.CloudFormation.MSBuildTasks
         [Required()]
         public string[] SourceFiles
         {
-            get { return sourceFiles; }
-            set { sourceFiles = value; }
+            get => sourceFiles;
+            set => sourceFiles = value;
         }
 
         private string projectPath = null;
@@ -32,8 +30,8 @@ namespace Amazon.AWSToolkit.CloudFormation.MSBuildTasks
         [Required()]
         public string ProjectPath
         {
-            get { return projectPath; }
-            set { projectPath = value; }
+            get => projectPath;
+            set => projectPath = value;
         }
 
         public override bool Execute()

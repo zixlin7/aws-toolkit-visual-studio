@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Threading;
-
 using Amazon.AWSToolkit.Shared;
 using log4net;
 using Amazon.AWSToolkit.Themes;
@@ -16,13 +12,7 @@ namespace Amazon.AWSToolkit.CommonUI
 {
     public class BaseAWSUserControl : UserControl
     {
-        public UserControl UserControl
-        {
-            get
-            {
-                return this;
-            }
-        }
+        public UserControl UserControl => this;
 
         protected T FindHost<T>() where T : FrameworkElement
         {
@@ -77,26 +67,11 @@ namespace Amazon.AWSToolkit.CommonUI
             SetResourceReference(Window.FontSizeProperty, ShellProviderThemeResources.EnvironmentFontSizeKey);
         }
 
-        public virtual string Title 
-        {
-            get
-            {
-                return "Undefined";
-            }
-        }
+        public virtual string Title => "Undefined";
 
-        public virtual string UniqueId 
-        {
-            get
-            {
-                return Guid.NewGuid().ToString();
-            }
-        }
+        public virtual string UniqueId => Guid.NewGuid().ToString();
 
-        public virtual string MetricId
-        {
-            get { return this.GetType().FullName; }
-        }
+        public virtual string MetricId => this.GetType().FullName;
 
         public virtual bool Validated()
         {
@@ -117,10 +92,7 @@ namespace Amazon.AWSToolkit.CommonUI
             return null;
         }
 
-        public virtual bool SupportsBackGroundDataLoad
-        {
-            get { return false; }
-        }
+        public virtual bool SupportsBackGroundDataLoad => false;
 
         public void ExecuteBackGroundLoadDataLoad()
         {
@@ -130,10 +102,7 @@ namespace Amazon.AWSToolkit.CommonUI
             }
         }
 
-        public virtual bool SupportsDynamicOKEnablement
-        {
-            get { return false; }
-        }
+        public virtual bool SupportsDynamicOKEnablement => false;
 
         private void executeBackGroundLoadDataLoad(object state)
         {

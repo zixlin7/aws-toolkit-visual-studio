@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.S3;
+﻿using Amazon.S3;
 using Amazon.S3.IO;
 
 using Amazon.AWSToolkit.S3.Model;
@@ -27,13 +22,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             this._model = model;
         }
 
-        public RenameFileModel Model
-        {
-            get
-            {
-                return this._model;
-            }
-        }
+        public RenameFileModel Model => this._model;
 
         public bool Execute()
         {

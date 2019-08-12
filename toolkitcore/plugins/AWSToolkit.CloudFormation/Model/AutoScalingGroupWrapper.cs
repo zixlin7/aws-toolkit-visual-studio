@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Util;
 
 using Amazon.AutoScaling.Model;
@@ -18,20 +14,11 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
             this._group = group;
         }
 
-        public AutoScalingGroup NativeAutoScalingGroup
-        {
-            get { return this._group; }
-        }
+        public AutoScalingGroup NativeAutoScalingGroup => this._group;
 
-        public string FormattedAvailabilityZones
-        {
-            get { return StringUtils.CreateCommaDelimitedList(this._group.AvailabilityZones); }
-        }
+        public string FormattedAvailabilityZones => StringUtils.CreateCommaDelimitedList(this._group.AvailabilityZones);
 
-        public string FormattedLoadBalancerNames
-        {
-            get { return StringUtils.CreateCommaDelimitedList(this._group.LoadBalancerNames); }
-        }
+        public string FormattedLoadBalancerNames => StringUtils.CreateCommaDelimitedList(this._group.LoadBalancerNames);
 
         public string FormattedEnabledMetrics
         {

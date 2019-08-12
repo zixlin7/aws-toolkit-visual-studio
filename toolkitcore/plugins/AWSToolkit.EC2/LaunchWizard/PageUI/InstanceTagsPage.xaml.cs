@@ -1,19 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 using Amazon.EC2.Model;
@@ -40,8 +25,8 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
 
         public ICollection<Tag> InstanceTags 
         {
-            get { return _instanceTagsEditor.InstanceTags; }
-            set { _instanceTagsEditor.InstanceTags = value; } 
+            get => _instanceTagsEditor.InstanceTags;
+            set => _instanceTagsEditor.InstanceTags = value;
         }
 
     }

@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.ECS.Controller;
 using Amazon.AWSToolkit.ECS.WizardPages.PageControllers;
 using log4net;
 using System;
@@ -26,7 +25,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(PushImageToECRPage));
 
         bool _initialLoad = true;
-        public PushImageToECRPageController PageController { get; private set; }
+        public PushImageToECRPageController PageController { get; }
 
         IAmazonECR _ecrClient;
 
@@ -253,26 +252,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
-        public bool PersistSettingsToConfigFile
-        {
-            get { return this._ctlPersistSettings.IsChecked.GetValueOrDefault(); }
-        }
+        public bool PersistSettingsToConfigFile => this._ctlPersistSettings.IsChecked.GetValueOrDefault();
 
-        public AccountViewModel SelectedAccount
-        {
-            get
-            {
-                return _ctlAccountAndRegion.SelectedAccount;
-            }
-        }
+        public AccountViewModel SelectedAccount => _ctlAccountAndRegion.SelectedAccount;
 
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion
-        {
-            get
-            {
-                return _ctlAccountAndRegion.SelectedRegion;
-            }
-        }
+        public RegionEndPointsManager.RegionEndPoints SelectedRegion => _ctlAccountAndRegion.SelectedRegion;
 
         void _ctlAccountAndRegion_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
@@ -288,7 +272,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         string _configuration;
         public string Configuration
         {
-            get { return _configuration; }
+            get => _configuration;
             set
             {
                 _configuration = value;
@@ -298,8 +282,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string DockerRepository
         {
-            get { return this._ctlDockerRepositoryPicker.Text; }
-            set { this._ctlDockerRepositoryPicker.Text = value; }
+            get => this._ctlDockerRepositoryPicker.Text;
+            set => this._ctlDockerRepositoryPicker.Text = value;
         }
 
         private void _ctlDockerRepositoryPicker_TextChanged(object sender, RoutedEventArgs e)
@@ -315,8 +299,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string DockerTag
         {
-            get { return this._ctlDockerTagPicker.Text; }
-            set { this._ctlDockerTagPicker.Text = value; }
+            get => this._ctlDockerTagPicker.Text;
+            set => this._ctlDockerTagPicker.Text = value;
         }
 
         private void _ctlDockerTagPicker_TextChanged(object sender, RoutedEventArgs e)
@@ -326,8 +310,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string DockerBuildWorkingDirectory
         {
-            get { return this._ctlWorkingDirectory.Text; }
-            set { this._ctlWorkingDirectory.Text = value; }
+            get => this._ctlWorkingDirectory.Text;
+            set => this._ctlWorkingDirectory.Text = value;
         }
 
         private void _ctlDockerTagPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -337,8 +321,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public DeploymentOptionItem DeploymentOption
         {
-            get { return this._ctlDeploymentOptionPicker.SelectedItem as DeploymentOptionItem; }
-            set { this._ctlDeploymentOptionPicker.SelectedItem = value; }
+            get => this._ctlDeploymentOptionPicker.SelectedItem as DeploymentOptionItem;
+            set => this._ctlDeploymentOptionPicker.SelectedItem = value;
         }
 
         private void _ctlDeploymentOptionPicker_SelectionChanged(object sender, SelectionChangedEventArgs e)

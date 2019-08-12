@@ -12,20 +12,14 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
     {
         public const string DYNAMODB_ENDPOINT_LOOKUP = "DynamoDB";
 
-        public override string EndPointSystemName
-        {
-            get { return DYNAMODB_ENDPOINT_LOOKUP; }
-        }
+        public override string EndPointSystemName => DYNAMODB_ENDPOINT_LOOKUP;
 
         public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
         {
             return new DynamoDBRootViewModel(account);
         }
 
-        public DynamoDBTableViewMetaNode DynamoDBTableViewMetaNode
-        {
-            get { return this.FindChild<DynamoDBTableViewMetaNode>(); }
-        }
+        public DynamoDBTableViewMetaNode DynamoDBTableViewMetaNode => this.FindChild<DynamoDBTableViewMetaNode>();
 
         public ActionHandlerWrapper.ActionHandler OnTableCreate
         {
@@ -65,23 +59,12 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
             rootModel.UpdateDynamoDBLocalState();
         }
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList(
-                    new ActionHandlerWrapper("Create Table...", OnTableCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnTableCreateResponse), false, this.GetType().Assembly, "Amazon.AWSToolkit.DynamoDB.Resources.EmbeddedImages.table_add.png"),
-                    new ActionHandlerWrapper("Connect to DynamoDB Local", OnStartLocal, new ActionHandlerWrapper.ActionResponseHandler(this.OnDynamoDBLocalStartResponse), false, null, null),
-                    new ActionHandlerWrapper("Stop DynamoDB Local", OnStopLocal, new ActionHandlerWrapper.ActionResponseHandler(this.OnDynamoDBLocalStopResponse), false, null, null));
-            }
-        }
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(
+                new ActionHandlerWrapper("Create Table...", OnTableCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnTableCreateResponse), false, this.GetType().Assembly, "Amazon.AWSToolkit.DynamoDB.Resources.EmbeddedImages.table_add.png"),
+                new ActionHandlerWrapper("Connect to DynamoDB Local", OnStartLocal, new ActionHandlerWrapper.ActionResponseHandler(this.OnDynamoDBLocalStartResponse), false, null, null),
+                new ActionHandlerWrapper("Stop DynamoDB Local", OnStopLocal, new ActionHandlerWrapper.ActionResponseHandler(this.OnDynamoDBLocalStopResponse), false, null, null));
 
-        public override string MarketingWebSite
-        {
-            get
-            {
-                return "http://aws.amazon.com/";
-            }
-        }
+        public override string MarketingWebSite => "http://aws.amazon.com/";
     }
 }

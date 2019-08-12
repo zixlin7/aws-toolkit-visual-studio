@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Windows;
 using System.Windows.Controls;
 using log4net;
@@ -124,36 +123,18 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
 
         public string WizardID { get; protected set; }
 
-        public IAWSWizardPageController ActivePageController
-        {
-            get
-            {
-                return ActivePageReference == null ? null : PageFromIndexes(ActivePageReference);
-            }
-        }
+        public IAWSWizardPageController ActivePageController => ActivePageReference == null ? null : PageFromIndexes(ActivePageReference);
 
         /// <summary>
         /// The page reference to the page the wizard is currently displaying
         /// </summary>
         public PageReference ActivePageReference { get; protected set; }
 
-        public PageGroup ActivePageGroup
-        {
-            get
-            {
-                return ActivePageReference == null ? null : RegisteredPageGroups[ActivePageReference.GroupIndex];
-            }
-        }
+        public PageGroup ActivePageGroup => ActivePageReference == null ? null : RegisteredPageGroups[ActivePageReference.GroupIndex];
 
-        public int PageGroupCount
-        {
-            get { return RegisteredPageGroups.Count; }
-        }
+        public int PageGroupCount => RegisteredPageGroups.Count;
 
-        public bool HasPageGroups
-        {
-            get { return PageGroupCount > 1; }    
-        }
+        public bool HasPageGroups => PageGroupCount > 1;
 
         public int TotalPageCount
         {
@@ -228,13 +209,7 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
                 throw new InvalidOperationException("No pages have been registered with the wizard");
         }
 
-        internal bool PreviousPagesExist
-        {
-            get
-            {
-                return ActivePageReference != null && ActivePageReference.PriorPagesExist;
-            }
-        }
+        internal bool PreviousPagesExist => ActivePageReference != null && ActivePageReference.PriorPagesExist;
 
         internal bool FurtherPagesExist
         {
@@ -252,14 +227,9 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
             }
         }
 
-        internal bool ActivePageIsFinal
-        {
-            get
-            {
-                return ActivePageReference.GroupIndex == PageGroupCount - 1 
-                    && ActivePageReference.PageIndex == RegisteredPageGroups[ActivePageReference.GroupIndex].Pages.Count - 1;
-            }
-        }
+        internal bool ActivePageIsFinal =>
+            ActivePageReference.GroupIndex == PageGroupCount - 1 
+            && ActivePageReference.PageIndex == RegisteredPageGroups[ActivePageReference.GroupIndex].Pages.Count - 1;
 
         /// <summary>
         /// Inserts/appends a batch of one or more page controllers based on priority. If group names
@@ -314,7 +284,7 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
                     select @group).FirstOrDefault();
         }
 
-        internal ILog Logger { get { return LOGGER; } }
+        internal ILog Logger => LOGGER;
 
         internal string PageErrorText { get; set; }
 
@@ -912,24 +882,15 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework
         internal string GroupName { get; set; }
         internal string PageName { get; set; }
 
-        public string DisplayName
-        {
-            get
-            {
-                return string.IsNullOrEmpty(PageName) ? GroupName : PageName;
-            }
-        }
+        public string DisplayName => string.IsNullOrEmpty(PageName) ? GroupName : PageName;
 
-        public bool IsIndented
-        {
-            get { return !string.IsNullOrEmpty(PageName); }
-        }
+        public bool IsIndented => !string.IsNullOrEmpty(PageName);
 
         private bool _isActive = false;
 
         public bool IsActive
         {
-            get { return _isActive; }
+            get => _isActive;
             set
             {
                 _isActive = value;

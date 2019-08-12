@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.Shared;
 
 namespace Amazon.AWSToolkit.CommonUI
@@ -34,10 +23,7 @@ namespace Amazon.AWSToolkit.CommonUI
             MouseDown += delegate { DragMove(); };
         }
 
-        public IAWSToolkitControl HostedControl
-        {
-            get { return this._hostedControl; }
-        }
+        public IAWSToolkitControl HostedControl => this._hostedControl;
 
         private void addHostedControl()
         {

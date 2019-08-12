@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -17,10 +13,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         VPCWrapper _vpc;
         public VPCWrapper VPC
         {
-            get
-            {
-                return this._vpc;
-            }
+            get => this._vpc;
             set
             {
                 this._vpc = value;

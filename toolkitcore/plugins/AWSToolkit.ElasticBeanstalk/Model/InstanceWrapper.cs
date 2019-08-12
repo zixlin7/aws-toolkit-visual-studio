@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Windows.Media;
-
-using Amazon.ElasticBeanstalk.Model;
 using Amazon.EC2.Model;
 
 using Amazon.AWSToolkit.CommonUI;
@@ -21,15 +17,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
             this._originalInstance = originalInstance;
         }
 
-        public Amazon.EC2.Model.Instance NativeInstance
-        {
-            get { return this._originalInstance; }
-        }
+        public Amazon.EC2.Model.Instance NativeInstance => this._originalInstance;
 
-        public string Id
-        {
-            get { return this._originalInstance.InstanceId; }
-        }
+        public string Id => this._originalInstance.InstanceId;
 
         public System.Windows.Media.ImageSource InstanceIcon
         {
@@ -41,35 +31,21 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
             }
         }
 
-        public string State
-        {
-            get { return this._originalInstance.State.Name; }
-        }
-        public string KeyName
-        {
-            get { return this._originalInstance.KeyName; }
-        }
-        public string AMI
-        {
-            get { return this._originalInstance.ImageId; }
-        }
-        public string Platform
-        {
-            get { return this._originalInstance.Platform; }
-        }
+        public string State => this._originalInstance.State.Name;
+
+        public string KeyName => this._originalInstance.KeyName;
+
+        public string AMI => this._originalInstance.ImageId;
+
+        public string Platform => this._originalInstance.Platform;
+
         // ec2 api shows 'windows' as platform label but have seen 'Windows' used
-        public bool IsWindowsPlatform
-        {
-            get { return EC2Constants.PLATFORM_WINDOWS.Equals(this.NativeInstance.Platform, StringComparison.OrdinalIgnoreCase); }
-        }
-        public string Architecture
-        {
-            get { return this._originalInstance.Architecture; }
-        }
-        public string Type
-        {
-            get { return this._originalInstance.InstanceType; }
-        }
+        public bool IsWindowsPlatform => EC2Constants.PLATFORM_WINDOWS.Equals(this.NativeInstance.Platform, StringComparison.OrdinalIgnoreCase);
+
+        public string Architecture => this._originalInstance.Architecture;
+
+        public string Type => this._originalInstance.InstanceType;
+
         public string SecurityGroups
         {
             get 
@@ -88,17 +64,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
             }
         }
 
-        public string AvailabilityZone
-        {
-            get { return this._originalInstance.Placement.AvailabilityZone; }
-        }
+        public string AvailabilityZone => this._originalInstance.Placement.AvailabilityZone;
 
 
         //Properties below here currently not displayed
-        public int AMILaunchIndex
-        {
-            get { return this._originalInstance.AmiLaunchIndex; }
-        }
+        public int AMILaunchIndex => this._originalInstance.AmiLaunchIndex;
+
         public string ProductCodes
         {
             get 
@@ -115,30 +86,18 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
                 return sb.ToString();
             }
         }
-        public string GroupName
-        {
-            get { return this._originalInstance.Placement.GroupName; }
-        }
-        public string Tenancy
-        {
-            get { return this._originalInstance.Placement.Tenancy; }
-        }
-        public string Monitoring
-        {
-            get { return this._originalInstance.Monitoring.State; }
-        }
-        public string Subnet
-        {
-            get { return this._originalInstance.SubnetId; }
-        }
-        public string VPC
-        {
-            get { return this._originalInstance.VpcId; }
-        }
-        public string SourceDestCheck
-        {
-            get { return this._originalInstance.SourceDestCheck.ToString(); }
-        }
+        public string GroupName => this._originalInstance.Placement.GroupName;
+
+        public string Tenancy => this._originalInstance.Placement.Tenancy;
+
+        public string Monitoring => this._originalInstance.Monitoring.State;
+
+        public string Subnet => this._originalInstance.SubnetId;
+
+        public string VPC => this._originalInstance.VpcId;
+
+        public string SourceDestCheck => this._originalInstance.SourceDestCheck.ToString();
+
         public string SecurityGroupsIds
         {
             get
@@ -156,14 +115,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
                 return sb.ToString();
             }
         }
-        public string RootDeviceType
-        {
-            get { return this._originalInstance.RootDeviceType; }
-        }
-        public string RootDeviceName
-        {
-            get { return this._originalInstance.RootDeviceName; }
-        }
+        public string RootDeviceType => this._originalInstance.RootDeviceType;
+
+        public string RootDeviceName => this._originalInstance.RootDeviceName;
+
         public string BlockDeviceMapping
         {
             get
@@ -176,23 +131,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
                 return String.Join("\n", mappings.ToArray());
             }
         }
-        public string Lifecycle
-        {
-            get { return this._originalInstance.InstanceLifecycle; }
-        }
-        public string SpotInstanceRequest
-        {
-            get { return this._originalInstance.SpotInstanceRequestId; }
-        }
+        public string Lifecycle => this._originalInstance.InstanceLifecycle;
 
-        public string VirtualaizationType
-        {
-            get { return this._originalInstance.VirtualizationType; }
-        }
-        public string ClientToken
-        {
-            get { return this._originalInstance.ClientToken; }
-        }
+        public string SpotInstanceRequest => this._originalInstance.SpotInstanceRequestId;
+
+        public string VirtualaizationType => this._originalInstance.VirtualizationType;
+
+        public string ClientToken => this._originalInstance.ClientToken;
+
         public string Tags
         {
             get 
@@ -205,34 +151,18 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
                 return String.Join(", ", tags.ToArray()); 
             }
         }
-        public DateTime Launched
-        {
-            get { return this._originalInstance.LaunchTime; }
-        }
+        public DateTime Launched => this._originalInstance.LaunchTime;
 
-        public string Kernal
-        {
-            get { return this._originalInstance.KernelId; }
-        }
-        public string RamDisk
-        {
-            get { return this._originalInstance.RamdiskId; }
-        }
-        public string PrivateDNS
-        {
-            get { return this._originalInstance.PrivateDnsName; }
-        }
-        public string PrivateIp
-        {
-            get { return this._originalInstance.PrivateIpAddress; }
-        }
-        public string PublicDNS
-        {
-            get { return this._originalInstance.PublicDnsName; }
-        }
-        public string PublicIp
-        {
-            get { return this._originalInstance.PublicIpAddress; }
-        }
+        public string Kernal => this._originalInstance.KernelId;
+
+        public string RamDisk => this._originalInstance.RamdiskId;
+
+        public string PrivateDNS => this._originalInstance.PrivateDnsName;
+
+        public string PrivateIp => this._originalInstance.PrivateIpAddress;
+
+        public string PublicDNS => this._originalInstance.PublicDnsName;
+
+        public string PublicIp => this._originalInstance.PublicIpAddress;
     }
 }

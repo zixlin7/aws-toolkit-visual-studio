@@ -56,15 +56,9 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// </summary>
 		public override string Name
 		{
-			get
-			{
-				return base.Name;
-			}
-			set
-			{
-				throw new InvalidOperationException();
-			}
-		}
+			get => base.Name;
+            set => throw new InvalidOperationException();
+        }
 
 		/// <summary>
 		/// Gets the ProjectItems collection containing the ProjectItem object supporting this property.

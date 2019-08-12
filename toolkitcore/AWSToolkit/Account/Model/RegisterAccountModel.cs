@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using Amazon.AWSToolkit.Util;
 using log4net;
 
@@ -31,14 +29,14 @@ namespace Amazon.AWSToolkit.Account.Model
         private string _accessKey;
         public string AccessKey
         {
-            get { return _accessKey; }
+            get => _accessKey;
             set { _accessKey = value; OnPropertyChanged(); }
         }
 
         private string _secretKey;
         public string SecretKey
         {
-            get { return _secretKey; }
+            get => _secretKey;
             set { _secretKey = value; OnPropertyChanged(); }
         }
 
@@ -74,19 +72,10 @@ namespace Amazon.AWSToolkit.Account.Model
                     selectedAccountType = AllAccountTypes[0];
                 return selectedAccountType;
             }
-            set
-            {
-                selectedAccountType = value;
-            }
+            set => selectedAccountType = value;
         }
 
-        public IList<AccountTypes.AccountType> AllAccountTypes
-        {
-            get
-            {
-                return AccountTypes.AllAccountTypes;
-            }
-        }
+        public IList<AccountTypes.AccountType> AllAccountTypes => AccountTypes.AllAccountTypes;
 
         public System.Windows.Visibility StorageLocationVisibility
         {
@@ -110,13 +99,7 @@ namespace Amazon.AWSToolkit.Account.Model
             }
         }
 
-        public IList<StorageTypes.StorageType> AllStorageTypes
-        {
-            get
-            {
-                return StorageTypes.AllStorageTypes;
-            }
-        }
+        public IList<StorageTypes.StorageType> AllStorageTypes => StorageTypes.AllStorageTypes;
 
 
         public void LoadAWSCredentialsFromCSV(string csvFilename)

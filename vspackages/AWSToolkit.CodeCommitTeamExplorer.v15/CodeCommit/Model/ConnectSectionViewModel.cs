@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Windows.Input;
 using Microsoft.TeamFoundation.Controls.WPF.TeamExplorer;
 
@@ -57,56 +56,33 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
             RaisePropertyChanged(propertyChangedEventArgs.PropertyName);
         }
 
-        public string SignoutLabel
-        {
-            get
-            {
-                return
-                    TeamExplorerConnection.ActiveConnection == null
-                        ? "Sign out"
-                        : string.Concat("Sign out ", TeamExplorerConnection.ActiveConnection.Account.DisplayName);
-            }
-        }
+        public string SignoutLabel =>
+            TeamExplorerConnection.ActiveConnection == null
+                ? "Sign out"
+                : string.Concat("Sign out ", TeamExplorerConnection.ActiveConnection.Account.DisplayName);
 
         private readonly CommandHandler _signoutCommand;
 
-        public ICommand SignoutCommand
-        {
-            get { return _signoutCommand; }
-        }
+        public ICommand SignoutCommand => _signoutCommand;
 
         private readonly CommandHandler _cloneCommand;
 
-        public ICommand CloneCommand
-        {
-            get { return _cloneCommand; }
-        }
+        public ICommand CloneCommand => _cloneCommand;
 
         private readonly CommandHandler _createCommand;
 
-        public ICommand CreateCommand
-        {
-            get { return _createCommand; }
-        }
+        public ICommand CreateCommand => _createCommand;
 
-        public ObservableCollection<ICodeCommitRepository> Repositories
-        {
-            get
-            {
-                return TeamExplorerConnection.ActiveConnection != null
-                    ? TeamExplorerConnection.ActiveConnection.Repositories
-                    : null;
-            }
-        }
+        public ObservableCollection<ICodeCommitRepository> Repositories =>
+            TeamExplorerConnection.ActiveConnection != null
+                ? TeamExplorerConnection.ActiveConnection.Repositories
+                : null;
 
         public ICodeCommitRepository SelectedRepository { get; set; }
 
         // enable access to the account here, so that if we ever need to support
         // multiple connections each panel can have its own without a larger refactor
-        public AccountViewModel Account
-        {
-            get { return TeamExplorerConnection.ActiveConnection?.Account; }
-        }
+        public AccountViewModel Account => TeamExplorerConnection.ActiveConnection?.Account;
 
         private void OnClone()
         {

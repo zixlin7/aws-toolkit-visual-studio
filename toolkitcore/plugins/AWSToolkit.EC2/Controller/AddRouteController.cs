@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.EC2.View;
 using Amazon.AWSToolkit.EC2.Model;
@@ -44,10 +42,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             return this._result;
         }
 
-        public AddRouteModel Model
-        {
-            get { return this._model; }
-        }
+        public AddRouteModel Model => this._model;
 
         void addPossibleInstances(IList<AddRouteModel.Target> targets)
         {

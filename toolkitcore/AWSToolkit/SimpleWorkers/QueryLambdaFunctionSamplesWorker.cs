@@ -4,9 +4,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using System.Text;
-
-
 using log4net;
 
 namespace Amazon.AWSToolkit.SimpleWorkers

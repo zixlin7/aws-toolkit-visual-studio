@@ -1,23 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using System.Text.RegularExpressions;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
@@ -69,8 +58,8 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
                 this.AccessKey = accessKey;
             }
 
-            public string UserName { get; private set; }
-            public string AccessKey { get; private set; }
+            public string UserName { get; }
+            public string AccessKey { get; }
         }
 
         public CommonAppOptionsPage()
@@ -116,10 +105,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
             }
         }
 
-        public bool Enable32BitApplications
-        {
-            get { return _enable32BitApplications.IsChecked == true; }
-        }
+        public bool Enable32BitApplications => _enable32BitApplications.IsChecked == true;
 
         public void SetAppPoolSettings(string targetFramework, bool enable32BitApps)
         {
@@ -155,10 +141,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
             }
         }
 
-        public string HealthCheckURL
-        {
-            get { return _healthCheckURL.Text.Trim(); }
-        }
+        public string HealthCheckURL => _healthCheckURL.Text.Trim();
 
         public bool HealthCheckUrlIsValid
         {
@@ -226,30 +209,18 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
             throw new ArgumentException("Unknown app parameter key - " + appParamKey);
         }
 
-        public string AccessKey
-        {
-            get { return _accessKey.Text; }
-        }
+        public string AccessKey => _accessKey.Text;
 
-        public string SecretKey
-        {
-            get { return _secretKey.Text; }
-        }
+        public string SecretKey => _secretKey.Text;
 
         public string SelectedAccountName
         {
-            set
-            {
-                btnUseMyCredentials.Content = string.Format("_Use credentials from profile '{0}'", value);
-            }
+            set => btnUseMyCredentials.Content = string.Format("_Use credentials from profile '{0}'", value);
         }
 
         public bool IsRedeploying 
         {
-            set
-            {
-                this.btnReUseCredentials.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
-            }
+            set => this.btnReUseCredentials.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public void SetAppParams(Dictionary<string, string> appParams, 
@@ -362,10 +333,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
         /// </summary>
         public bool IAMSelectionAvailable
         {
-            set
-            {
-                btnUseIAMUserCredentials.IsEnabled = value;
-            }
+            set => btnUseIAMUserCredentials.IsEnabled = value;
         }
 
         public Dictionary<string, List<string>> IAMUserAccounts
@@ -391,10 +359,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
 
         public bool EmailControlsVisible
         {
-            set
-            {
-                this._emailControlsGrid.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
-            }
+            set => this._emailControlsGrid.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
         }
 
         void SetParamField(Dictionary<string, string> appParams, string paramKey, TextBox paramField)

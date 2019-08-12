@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
-using Amazon.ECS.Model;
-
 using Task = Amazon.ECS.Model.Task;
 using Amazon.AWSToolkit.CommonUI;
 using System.Windows;
@@ -21,10 +15,7 @@ namespace Amazon.AWSToolkit.ECS.Model
             this._nativeTask = nativeTask;
         }
 
-        public Task NativeTask
-        {
-            get { return this._nativeTask; }
-        }
+        public Task NativeTask => this._nativeTask;
 
         public string TaskId
         {
@@ -44,13 +35,7 @@ namespace Amazon.AWSToolkit.ECS.Model
             }
         }
 
-        public string LaunchType
-        {
-            get
-            {
-                return this._nativeTask.LaunchType;
-            }
-        }
+        public string LaunchType => this._nativeTask.LaunchType;
 
         public string StartedAt
         {
@@ -148,18 +133,9 @@ namespace Amazon.AWSToolkit.ECS.Model
         }
 
 
-        public Visibility StoppedVisibility
-        {
-            get
-            {
-                return string.Equals(this._nativeTask.DesiredStatus, "STOPPED", StringComparison.OrdinalIgnoreCase) ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
+        public Visibility StoppedVisibility => string.Equals(this._nativeTask.DesiredStatus, "STOPPED", StringComparison.OrdinalIgnoreCase) ? Visibility.Visible : Visibility.Collapsed;
 
-        public Visibility RunningVisibility
-        {
-            get { return this.StoppedVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible; }
-        }
+        public Visibility RunningVisibility => this.StoppedVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
 
         public override void GetPropertyNames(out string className, out string componentName)
         {

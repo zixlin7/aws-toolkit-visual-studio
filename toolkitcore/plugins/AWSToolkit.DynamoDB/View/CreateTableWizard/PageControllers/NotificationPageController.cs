@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Controls;
-using System.Threading;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using System.Windows.Controls;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 using Amazon.AWSToolkit.DynamoDB.View.CreateTableWizard.PageUI;
@@ -16,25 +9,13 @@ namespace Amazon.AWSToolkit.DynamoDB.View.CreateTableWizard.PageControllers
     {
         NotificationPage _pageUI;
 
-        public override string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public override string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public override string PageTitle
-        {
-            get { return "Notifications"; }
-        }
+        public override string PageTitle => "Notifications";
 
-        public override string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public override string ShortPageTitle => null;
 
-        public override string PageDescription
-        {
-            get { return "Setup basic alarms and notifications."; }
-        }
+        public override string PageDescription => "Setup basic alarms and notifications.";
 
         public override UserControl PageActivating(AWSWizardConstants.NavigationReason navigationReason)
         {
@@ -46,12 +27,6 @@ namespace Amazon.AWSToolkit.DynamoDB.View.CreateTableWizard.PageControllers
             return _pageUI;
         }
 
-        protected override bool IsForwardsNavigationAllowed
-        {
-            get
-            {
-                return !this.DataContext.UseBasicAlarms || (this.DataContext.UseBasicAlarms && !string.IsNullOrWhiteSpace(this.DataContext.AlarmEmail));
-            }
-        }
+        protected override bool IsForwardsNavigationAllowed => !this.DataContext.UseBasicAlarms || (this.DataContext.UseBasicAlarms && !string.IsNullOrWhiteSpace(this.DataContext.AlarmEmail));
     }
 }

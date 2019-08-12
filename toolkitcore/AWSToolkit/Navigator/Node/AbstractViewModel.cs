@@ -1,16 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Windows.Controls;
 using System.ComponentModel;
-using System.Reflection;
 using System.Windows;
-using System.Windows.Threading;
-
 using Amazon.AWSToolkit.Account;
 
 namespace Amazon.AWSToolkit.Navigator.Node
@@ -28,13 +22,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
             this._name = name;
         }
 
-        public virtual string Name 
-        {
-            get
-            {
-                return this._name;
-            }
-        }
+        public virtual string Name => this._name;
 
         public Stream Icon
         {
@@ -50,47 +38,20 @@ namespace Amazon.AWSToolkit.Navigator.Node
             }
         }
 
-        public virtual string ToolTip
-        {
-            get { return this.Name; }
-        }
+        public virtual string ToolTip => this.Name;
 
-        protected virtual string IconName
-        {
-            get
-            {
-                return null;
-            }
-        }
+        protected virtual string IconName => null;
 
-        public IViewModel Parent
-        {
-            get
-            {
-                return this._parent;
-            }
-        }
+        public IViewModel Parent => this._parent;
 
-        public virtual ObservableCollection<IViewModel> Children
-        { 
-            get
-            {
-                return AccountViewModel.NO_CHILDREN;
-            }
-        }
+        public virtual ObservableCollection<IViewModel> Children => AccountViewModel.NO_CHILDREN;
 
         protected virtual void InitializeChildrensCollection()
         {
             this.Children.Clear();
         }
 
-        public IMetaNode MetaNode
-        {
-            get
-            {
-                return this._metaNode;
-            }
-        }
+        public IMetaNode MetaNode => this._metaNode;
 
         public virtual IList<ActionHandlerWrapper> GetVisibleActions()
         {
@@ -206,10 +167,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
             }
         }
 
-        protected virtual bool IsLink
-        {
-            get { return false; }
-        }
+        protected virtual bool IsLink => false;
 
         public virtual void Refresh(bool async)
         {
@@ -244,10 +202,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
         bool _isSelected;
         bool ITreeNodeProperties.IsSelected
         {
-            get
-            {
-                return this._isSelected;
-            }
+            get => this._isSelected;
             set
             {
                 if (this._isSelected == value)
@@ -261,10 +216,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
         bool _isExpanded;
         bool ITreeNodeProperties.IsExpanded
         {
-            get
-            {
-                return this._isExpanded;
-            }
+            get => this._isExpanded;
             set
             {
                 if (this._isExpanded == value)

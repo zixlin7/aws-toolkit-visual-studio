@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Windows;
-using System.Windows.Threading;
-
-using Amazon;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 
@@ -31,21 +25,9 @@ namespace Amazon.AWSToolkit.SQS.Nodes
             this._accountViewModel = accountViewModel;
         }
 
-        public override string ToolTip
-        {
-            get
-            {
-                return "Amazon Simple Queue Service (Amazon SQS) offers a reliable, highly scalable, hosted queue for storing messages as they travel between computers. By using Amazon SQS, developers can simply move data between distributed components of their applications that perform different tasks, without losing messages or requiring each component to be always available.";
-            }
-        }
+        public override string ToolTip => "Amazon Simple Queue Service (Amazon SQS) offers a reliable, highly scalable, hosted queue for storing messages as they travel between computers. By using Amazon SQS, developers can simply move data between distributed components of their applications that perform different tasks, without losing messages or requiring each component to be always available.";
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.SQS.Resources.EmbeddedImages.service-root-icon.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.SQS.Resources.EmbeddedImages.service-root-icon.png";
 
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
@@ -54,13 +36,7 @@ namespace Amazon.AWSToolkit.SQS.Nodes
             this._sqsClient = new AmazonSQSClient(awsCredentials, config);
         }
 
-        public IAmazonSQS SQSClient
-        {
-            get
-            {
-                return this._sqsClient;
-            }
-        }
+        public IAmazonSQS SQSClient => this._sqsClient;
 
         protected override void LoadChildren()
         {

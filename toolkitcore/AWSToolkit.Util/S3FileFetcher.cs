@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-
 using Microsoft.Win32;
 
 using log4net;
@@ -64,11 +61,8 @@ namespace Amazon.AWSToolkit
                 return null;
             }
 
-            set
-            {
-                // for testing purposes only
-                _testHostingFilesLocation = value;
-            }
+            // for testing purposes only
+            set => _testHostingFilesLocation = value;
         }
 
         public string GetLocalCachePath(string filename)
@@ -195,10 +189,7 @@ namespace Amazon.AWSToolkit
             _simpleMobileAnalytics = simpleMobileAnalytics;
         }
 
-        public static S3FileFetcher Instance
-        {
-            get { return _Instance; }
-        }
+        public static S3FileFetcher Instance => _Instance;
 
         public string GetFileContent(string filename)
         {

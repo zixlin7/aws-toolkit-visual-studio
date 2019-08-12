@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.ECS.Model
 {
@@ -17,7 +12,7 @@ namespace Amazon.AWSToolkit.ECS.Model
 
         public string RepositoryName
         {
-            get { return this._repositoryName; }
+            get => this._repositoryName;
             set
             {
                 this._repositoryName = value;

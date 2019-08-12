@@ -1,22 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Windows;
-using System.Windows.Threading;
-
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
 using Amazon.AWSToolkit.ElasticBeanstalk.View;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
-using Amazon.AWSToolkit;
-
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
@@ -53,10 +42,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
                     .WithSuccess(true);
         }
 
-        public ApplicationStatusModel Model
-        {
-            get { return this._statusModel; }
-        }
+        public ApplicationStatusModel Model => this._statusModel;
 
         public void LoadModel()
         {

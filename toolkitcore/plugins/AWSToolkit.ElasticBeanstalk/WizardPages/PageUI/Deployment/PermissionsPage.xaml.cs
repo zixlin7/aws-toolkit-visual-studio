@@ -1,7 +1,6 @@
 ﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using AWSDeployment;
 using System;
@@ -46,17 +45,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             }
         }
 
-        public IAMCapabilityPicker.PolicyTemplate[] SelectedPolicyTemplates
-        {
-            get { return this._iamPicker.SelectedPolicyTemplates; }
-        }
+        public IAMCapabilityPicker.PolicyTemplate[] SelectedPolicyTemplates => this._iamPicker.SelectedPolicyTemplates;
 
         private ObservableCollection<string> _servicePermissionRoles = new ObservableCollection<string>();
 
-        public ObservableCollection<string> ServicePermissionRoles
-        {
-            get { return _servicePermissionRoles; }
-        }
+        public ObservableCollection<string> ServicePermissionRoles => _servicePermissionRoles;
 
         public void SetServicePermissionRoles(IEnumerable<Role> roles)
         {

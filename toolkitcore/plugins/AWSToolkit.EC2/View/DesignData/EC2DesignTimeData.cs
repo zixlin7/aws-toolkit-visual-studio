@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.EC2.Model;
-using Amazon.CloudFormation.Model;
 using Amazon.EC2;
-using Amazon.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.View.DesignData
 {
@@ -59,10 +57,7 @@ namespace Amazon.AWSToolkit.EC2.View.DesignData
             this.Add(device2);
         }
 
-        public ICollection<InstanceLaunchStorageVolume> StorageVolumes
-        {
-            get { return this; }
-        }
+        public ICollection<InstanceLaunchStorageVolume> StorageVolumes => this;
 
         public InstanceLaunchStorageVolume SelectedVolume { get; set; }
     }

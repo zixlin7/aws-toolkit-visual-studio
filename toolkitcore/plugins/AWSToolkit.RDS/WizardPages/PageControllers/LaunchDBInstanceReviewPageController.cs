@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
@@ -18,32 +17,17 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
 
         #region IAWSWizardPageController Members
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageTitle
-        {
-            get { return "Review"; }
-        }
+        public string PageTitle => "Review";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "Review the information below, then click Finish to start instance creation."; }
-        }
+        public string PageDescription => "Review the information below, then click Finish to start instance creation.";
 
         public void ResetPage()
         {

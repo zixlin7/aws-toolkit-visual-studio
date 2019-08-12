@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Windows;
-using System.Windows.Threading;
-
-using Amazon;
+﻿using System.Collections.Generic;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 
@@ -33,13 +23,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
             this._accountViewModel = accountViewModel;            
         }
 
-        public override string ToolTip
-        {
-            get
-            {
-                return "AWS CloudFormation gives you an easier way to create a collection of related AWS resources (a stack) by describing your requirements in a template.";
-            }
-        }
+        public override string ToolTip => "AWS CloudFormation gives you an easier way to create a collection of related AWS resources (a stack) by describing your requirements in a template.";
 
         public void RemoveStack(string stackName)
         {
@@ -53,18 +37,9 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
             return model;
         }
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.CloudFormation.Resources.EmbeddedImages.service-root-node.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.CloudFormation.Resources.EmbeddedImages.service-root-node.png";
 
-        public IAmazonCloudFormation CloudFormationClient
-        {
-            get { return this._cloudFormationClient; }
-        }
+        public IAmazonCloudFormation CloudFormationClient => this._cloudFormationClient;
 
         protected override void BuildClient(AWSCredentials awsCredentials)
         {

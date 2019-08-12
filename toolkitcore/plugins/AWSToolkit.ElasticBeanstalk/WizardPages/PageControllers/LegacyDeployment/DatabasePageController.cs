@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment;
-using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
-
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
-
 using log4net;
 using Amazon.RDS.Model;
 using Amazon.AWSToolkit.CommonUI;
@@ -33,32 +27,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyD
 
         #region IAWSWizardPageController Members
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageTitle
-        {
-            get { return "Amazon RDS Database Security Group"; }
-        }
+        public string PageTitle => "Amazon RDS Database Security Group";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "Connect your AWS Elastic Beanstalk environment to your RDS DB instance."; }
-        }
+        public string PageDescription => "Connect your AWS Elastic Beanstalk environment to your RDS DB instance.";
 
         public void ResetPage()
         {
@@ -172,13 +151,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyD
             }
         }
 
-        bool IsForwardsNavigationAllowed
-        {
-            get
-            {
-                return true;
-            }
-        }
+        bool IsForwardsNavigationAllowed => true;
 
         void StorePageData()
         {

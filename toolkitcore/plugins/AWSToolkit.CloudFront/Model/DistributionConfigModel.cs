@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Util;
 using Amazon.CloudFront;
 using Amazon.CloudFront.Model;
@@ -19,7 +13,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         bool _requireHTTPS;
         public bool RequireHTTPS
         {
-            get { return this._requireHTTPS; }
+            get => this._requireHTTPS;
             set
             {
                 this._requireHTTPS = value;
@@ -30,7 +24,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         string _defaultRootObject;
         public string DefaultRootObject
         {
-            get { return this._defaultRootObject; }
+            get => this._defaultRootObject;
             set
             {
                 this._defaultRootObject = value;
@@ -41,7 +35,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         bool _s3OriginSelected = true;
         public bool S3OriginSelected
         {
-            get { return this._s3OriginSelected; }
+            get => this._s3OriginSelected;
             set
             {
                 this._s3OriginSelected = value;
@@ -54,7 +48,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         bool _customOriginSelected;
         public bool CustomOriginSelected
         {
-            get { return this._customOriginSelected; }
+            get => this._customOriginSelected;
             set
             {
                 this._customOriginSelected = value;
@@ -68,7 +62,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         string _customOriginDNSName;
         public string CustomOriginDNSName
         {
-            get { return this._customOriginDNSName; }
+            get => this._customOriginDNSName;
             set
             {
                 this._customOriginDNSName = value;
@@ -79,7 +73,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         string _httpPort = "80";
         public string HttpPort
         {
-            get { return this._httpPort; }
+            get => this._httpPort;
             set
             {
                 this._httpPort = value;
@@ -90,7 +84,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         string _httpsPort = "443";
         public string HttpsPort
         {
-            get { return this._httpsPort; }
+            get => this._httpsPort;
             set
             {
                 this._httpsPort = value;
@@ -101,7 +95,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         bool _httpOnly;
         public bool HttpOnly
         {
-            get { return this._httpOnly; }
+            get => this._httpOnly;
             set
             {
                 if (this._httpOnly == value)
@@ -117,7 +111,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         bool _matchViewer = true;
         public bool MatchViewer
         {
-            get { return this._matchViewer; }
+            get => this._matchViewer;
             set
             {
                 if (this._matchViewer == value)

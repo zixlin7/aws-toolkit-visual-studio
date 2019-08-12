@@ -1,22 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Management;
-using System.Text;
 using System.Threading;
 
 using Amazon.S3;
-using Amazon.S3.Model;
-using Amazon.S3.Transfer;
-
-using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.Runtime.Internal.Settings;
 using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.Jobs;
 using Amazon.AWSToolkit.S3.View;
-using Amazon.AWSToolkit.S3.Nodes;
-
 using log4net;
 
 namespace Amazon.AWSToolkit.S3.Controller
@@ -38,13 +29,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             this._tempPath = Path.GetTempPath();            
         }
 
-        public static ManifestWatcher Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
+        public static ManifestWatcher Instance => _instance;
 
         public void Start()
         {

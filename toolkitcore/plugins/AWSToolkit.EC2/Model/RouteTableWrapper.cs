@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.EC2.Model;
-using Amazon.AWSToolkit.EC2.View.DataGrid;
 
 namespace Amazon.AWSToolkit.EC2.Model
 {
@@ -30,29 +25,17 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public RouteTable NativeRouteTable
-        {
-            get { return this._routeTable; }
-        }
+        public RouteTable NativeRouteTable => this._routeTable;
 
         [Browsable(false)]
-        public string DisplayName
-        {
-            get { return this.NativeRouteTable.RouteTableId; }
-        }
+        public string DisplayName => this.NativeRouteTable.RouteTableId;
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "Route Table"; }
-        }
+        public string TypeName => "Route Table";
 
         [DisplayName("Route Table ID")]
         [AssociatedIcon(false, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.route-table.png")]
-        public string RouteTableId
-        {
-            get { return this._routeTable.RouteTableId; }
-        }
+        public string RouteTableId => this._routeTable.RouteTableId;
 
         // TODO: Hiding this for now since I don't have a good method for refreshing it
         //[DisplayName("Associated With")]
@@ -71,22 +54,10 @@ namespace Amazon.AWSToolkit.EC2.Model
         //}
 
         [Browsable(false)]
-        public bool CanDelete
-        {
-            get
-            {
-                return this.NativeRouteTable.Associations.Count == 0;
-            }
-        }
+        public bool CanDelete => this.NativeRouteTable.Associations.Count == 0;
 
         [DisplayName("VPC")]
-        public string VpcId
-        {
-            get
-            {
-                return this._routeTable.VpcId; 
-            }
-        }
+        public string VpcId => this._routeTable.VpcId;
 
         [DisplayName("Main")]
         public string IsMain
@@ -124,10 +95,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public bool CanDisassociate
-        {
-            get { return true; }
-        }
+        public bool CanDisassociate => true;
 
 
         ObservableCollection<RouteTableAssociationWrapper> _associations;
@@ -178,9 +146,6 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public List<Tag> Tags
-        {
-            get { return this.NativeRouteTable.Tags; }
-        }
+        public List<Tag> Tags => this.NativeRouteTable.Tags;
     }
 }

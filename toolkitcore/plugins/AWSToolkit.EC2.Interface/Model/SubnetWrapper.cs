@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.EC2.Model;
-using Image = System.Windows.Controls.Image;
 
 namespace Amazon.AWSToolkit.EC2.Model
 {
@@ -44,22 +41,13 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public Subnet NativeSubnet
-        {
-            get { return this._subnet; }
-        }
+        public Subnet NativeSubnet => this._subnet;
 
         [Browsable(false)]
-        public string DisplayName
-        {
-            get { return this.SubnetId; }
-        }
+        public string DisplayName => this.SubnetId;
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "Subnet"; }
-        }
+        public string TypeName => "Subnet";
 
         [Browsable(false)]
         public string ShortDisplayDetails
@@ -104,54 +92,30 @@ namespace Amazon.AWSToolkit.EC2.Model
             }
         }
 
-        public string PseudoId { get; private set; }
+        public string PseudoId { get; }
 
-        public bool IsNoPreferencePseudoId
-        {
-            get { return this.SubnetId.Equals(NoPreferenceSubnetPseudoId, StringComparison.Ordinal); }    
-        }
+        public bool IsNoPreferencePseudoId => this.SubnetId.Equals(NoPreferenceSubnetPseudoId, StringComparison.Ordinal);
 
-        public bool IsNoSubnetPseudoId
-        {
-            get { return this.SubnetId.Equals(NoVpcSubnetPseudoId, StringComparison.Ordinal); }    
-        }
+        public bool IsNoSubnetPseudoId => this.SubnetId.Equals(NoVpcSubnetPseudoId, StringComparison.Ordinal);
 
         [DisplayName("Availability Zone")]
-        public string AvailabilityZone
-        {
-            get { return NativeSubnet != null ? this.NativeSubnet.AvailabilityZone : string.Empty; }
-        }
+        public string AvailabilityZone => NativeSubnet != null ? this.NativeSubnet.AvailabilityZone : string.Empty;
 
         [DisplayName("Available IPs")]
-        public string FormattedAvailableIpAddressCount
-        {
-            get { return NativeSubnet != null ? this.NativeSubnet.AvailableIpAddressCount.ToString() : string.Empty; }
-        }
+        public string FormattedAvailableIpAddressCount => NativeSubnet != null ? this.NativeSubnet.AvailableIpAddressCount.ToString() : string.Empty;
 
         [DisplayName("CIDR")]
-        public string CidrBlock
-        {
-            get { return NativeSubnet != null ? this.NativeSubnet.CidrBlock : string.Empty; }
-        }
+        public string CidrBlock => NativeSubnet != null ? this.NativeSubnet.CidrBlock : string.Empty;
 
         [DisplayName("Default For Zone")]
-        public string FormattedDefaultForAz
-        {
-            get { return NativeSubnet != null ? this.NativeSubnet.DefaultForAz.ToString() : string.Empty; }
-        }
+        public string FormattedDefaultForAz => NativeSubnet != null ? this.NativeSubnet.DefaultForAz.ToString() : string.Empty;
 
         [DisplayName("Map Public IP on Launch")]
-        public string FormattedMapPublicIpOnLaunch
-        {
-            get { return NativeSubnet != null ? this.NativeSubnet.MapPublicIpOnLaunch.ToString() : string.Empty; }
-        }
+        public string FormattedMapPublicIpOnLaunch => NativeSubnet != null ? this.NativeSubnet.MapPublicIpOnLaunch.ToString() : string.Empty;
 
         [DisplayName("State")]
         [AssociatedIcon(true, "SubnetStateIcon")]
-        public string SubnetState
-        {
-            get { return NativeSubnet != null ? this.NativeSubnet.State : null; }
-        }
+        public string SubnetState => NativeSubnet != null ? this.NativeSubnet.State : null;
 
         [Browsable(false)]
         public System.Windows.Media.ImageSource SubnetStateIcon
@@ -181,10 +145,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [DisplayName("VPC")]
-        public string VpcId
-        {
-            get { return NativeSubnet != null ? this.NativeSubnet.VpcId : string.Empty; }
-        }
+        public string VpcId => NativeSubnet != null ? this.NativeSubnet.VpcId : string.Empty;
 
         [DisplayName("Route Table")]
         public string RouteTableId
@@ -236,10 +197,6 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public List<Tag> Tags
-        {
-            get { return this.NativeSubnet.Tags; }
-        }
-
+        public List<Tag> Tags => this.NativeSubnet.Tags;
     }
 }

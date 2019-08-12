@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.CommonUI.JobTracker;
 
 using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.Controller;
 
 using Amazon.S3;
-using Amazon.S3.Util;
 using Amazon.S3.Model;
-using Amazon.S3.Transfer;
-
 using log4net;
 
 
@@ -38,10 +29,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
             this.Title = "Restore Files";
         }
 
-        protected override string CurrentStatusPostFix
-        {
-            get { return "Restored files"; }
-        }
+        protected override string CurrentStatusPostFix => "Restored files";
 
         protected override Queue<QueueProcessingJob.IJobUnit> BuildQueueOfJobUnits()
         {

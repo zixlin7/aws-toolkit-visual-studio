@@ -1,20 +1,9 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Amazon.AWSToolkit.Primitives
 {
@@ -45,10 +34,7 @@ namespace Amazon.AWSToolkit.Primitives
 
         public IList AvailableItems
         {
-            get 
-            {
-                return (IList)GetValue(AvailableItemsProperty); 
-            }
+            get => (IList)GetValue(AvailableItemsProperty);
             set 
             { 
                 SetValue(AvailableItemsProperty, value);
@@ -74,14 +60,8 @@ namespace Amazon.AWSToolkit.Primitives
 
         public string AvailableItemsLabel
         {
-            get
-            {
-                return (string)GetValue(AvailableItemsLabelProperty);
-            }
-            set
-            {
-                SetValue(AvailableItemsLabelProperty, value);
-            }
+            get => (string)GetValue(AvailableItemsLabelProperty);
+            set => SetValue(AvailableItemsLabelProperty, value);
         }
 
         public static readonly DependencyProperty AvailableItemsLabelProperty =
@@ -92,10 +72,7 @@ namespace Amazon.AWSToolkit.Primitives
 
         public IList AssignedItems
         {
-            get 
-            {
-                return (IList)GetValue(AssignedItemsProperty); 
-            }
+            get => (IList)GetValue(AssignedItemsProperty);
             set 
             { 
                 SetValue(AssignedItemsProperty, value);
@@ -121,14 +98,8 @@ namespace Amazon.AWSToolkit.Primitives
 
         public string AssignedItemsLabel
         {
-            get
-            {
-                return (string)GetValue(AssignedItemsLabelProperty);
-            }
-            set
-            {
-                SetValue(AssignedItemsLabelProperty, value);
-            }
+            get => (string)GetValue(AssignedItemsLabelProperty);
+            set => SetValue(AssignedItemsLabelProperty, value);
         }
 
         public static readonly DependencyProperty AssignedItemsLabelProperty =
@@ -139,7 +110,7 @@ namespace Amazon.AWSToolkit.Primitives
 
         public ObservableCollection<object> SortedAvailable
         {
-            get { return this._sortedAvailable; }
+            get => this._sortedAvailable;
             set
             {
                 this._sortedAvailable = value;
@@ -149,7 +120,7 @@ namespace Amazon.AWSToolkit.Primitives
 
         public ObservableCollection<object> SortedAssigned
         {
-            get { return this._sortedAssigned; }
+            get => this._sortedAssigned;
             set
             {
                 this._sortedAssigned = value;

@@ -1,10 +1,7 @@
 ﻿using log4net;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
 using Amazon.ECS.Tools.Commands;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
@@ -23,7 +20,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
     {
         protected ILog LOGGER = LogManager.GetLogger(typeof(BaseWorker));
 
-        protected IDockerDeploymentHelper Helper { get; private set; }
+        protected IDockerDeploymentHelper Helper { get; }
 
         protected IAmazonIdentityManagementService _iamClient;
 

@@ -26,10 +26,7 @@ namespace Amazon.AWSToolkit.ECS.Model
             _taskDefinition = taskDefinition;
         }
 
-        public bool IsLoaded
-        {
-            get { return _taskDefinition != null; }
-        }
+        public bool IsLoaded => _taskDefinition != null;
 
         public override void GetPropertyNames(out string className, out string componentName)
         {
@@ -39,35 +36,17 @@ namespace Amazon.AWSToolkit.ECS.Model
 
         [DisplayName("Family")]
         [AssociatedIcon(true, "TaskDefinitionIcon")]
-        public string Family
-        {
-            get
-            {
-                return _taskDefinition != null ? _taskDefinition.Family : _taskDefinitionArn.Split('/').LastOrDefault();
-            }
-        }
+        public string Family => _taskDefinition != null ? _taskDefinition.Family : _taskDefinitionArn.Split('/').LastOrDefault();
 
         [DisplayName("ARN")]
-        public string TaskDefinitionArn
-        {
-            get { return _taskDefinitionArn; }
-        }
+        public string TaskDefinitionArn => _taskDefinitionArn;
 
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "TaskDefinition"; }
-        }
+        public string TypeName => "TaskDefinition";
 
         [Browsable(false)]
-        public string DisplayName
-        {
-            get
-            {
-                return string.Format("{0} ({1})", Family, _taskDefinitionArn);
-            }
-        }
+        public string DisplayName => string.Format("{0} ({1})", Family, _taskDefinitionArn);
 
         [Browsable(false)]
         public System.Windows.Media.ImageSource TaskDefinitionIcon

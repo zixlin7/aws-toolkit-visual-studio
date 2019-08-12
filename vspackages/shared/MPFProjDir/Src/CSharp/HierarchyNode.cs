@@ -10,7 +10,6 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 ***************************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -19,7 +18,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 //#define CCI_TRACING
@@ -63,14 +61,14 @@ namespace Microsoft.VisualStudio.Project
 		#region Events
 		internal event EventHandler<HierarchyNodeEventArgs> OnChildAdded
 		{
-			add { onChildAdded += value; }
-			remove { onChildAdded -= value; }
-		}
+			add => onChildAdded += value;
+            remove => onChildAdded -= value;
+        }
 		internal event EventHandler<HierarchyNodeEventArgs> OnChildRemoved
 		{
-			add { onChildRemoved += value; }
-			remove { onChildRemoved -= value; }
-		}
+			add => onChildRemoved += value;
+            remove => onChildRemoved -= value;
+        }
 		#endregion
 
 		#region static/const fields
@@ -147,31 +145,19 @@ namespace Microsoft.VisualStudio.Project
 		/// <summary>
 		/// Defines a string that is used to separate the name relation from the extension
 		/// </summary>
-		public virtual string NameRelationSeparator
-		{
-			get
-			{
-				return ".";
-			}
-		}
+		public virtual string NameRelationSeparator => ".";
 
 
-		public virtual int MenuCommandId
-		{
-			get { return VsMenus.IDM_VS_CTXT_NOCOMMANDS; }
-		}
+        public virtual int MenuCommandId => VsMenus.IDM_VS_CTXT_NOCOMMANDS;
 
 
-		/// <summary>
+        /// <summary>
 		/// Return an imageindex
 		/// </summary>
 		/// <returns></returns>
-		public virtual int ImageIndex
-		{
-			get { return NoImage; }
-		}
+		public virtual int ImageIndex => NoImage;
 
-		/// <summary>
+        /// <summary>
 		/// Return an state icon index
 		/// </summary>
 		/// <returns></returns>
@@ -206,25 +192,16 @@ namespace Microsoft.VisualStudio.Project
 		/// <summary>
 		/// Defines whether a node can execute a command if in selection.
 		/// </summary>
-		public virtual bool CanExecuteCommand
-		{
-			get
-			{
-				return true;
-			}
-		}
+		public virtual bool CanExecuteCommand => true;
 
-		/// <summary>
+        /// <summary>
 		/// Used to determine the sort order of different node types
 		/// in the solution explorer window.
 		/// Nodes with the same priorities are sorted based on their captions.
 		/// </summary>
-		public virtual int SortPriority
-		{
-			get { return DefaultSortOrderNode.HierarchyNode; }
-		}
+		public virtual int SortPriority => DefaultSortOrderNode.HierarchyNode;
 
-		/// <summary>
+        /// <summary>
 		/// Defines the properties attached to this node.
 		/// </summary>
 		public virtual NodeProperties NodeProperties
@@ -244,152 +221,90 @@ namespace Microsoft.VisualStudio.Project
 		/// Returns an object that is a special view over this object; this is the value
 		/// returned by the Object property of the automation objects.
 		/// </summary>
-		internal virtual object Object
-		{
-			get { return this; }
-		}
-		#endregion
+		internal virtual object Object => this;
+
+        #endregion
 
 		#region properties
 
-		public OleServiceProvider OleServiceProvider
-		{
-			get
-			{
-				return this.oleServiceProvider;
-			}
-		}
+		public OleServiceProvider OleServiceProvider => this.oleServiceProvider;
 
-		[System.ComponentModel.BrowsableAttribute(false)]
+        [System.ComponentModel.BrowsableAttribute(false)]
 		public ProjectNode ProjectMgr
 		{
-			get
-			{
-				return this.projectMgr;
-			}
-			set
-			{
-				this.projectMgr = value;
-			}
-		}
+			get => this.projectMgr;
+            set => this.projectMgr = value;
+        }
 
 
 		[System.ComponentModel.BrowsableAttribute(false)]
 		public HierarchyNode NextSibling
 		{
-			get
-			{
-				return this.nextSibling;
-			}
-			set
-			{
-				this.nextSibling = value;
-			}
-		}
+			get => this.nextSibling;
+            set => this.nextSibling = value;
+        }
 
 
 		[System.ComponentModel.BrowsableAttribute(false)]
 		public HierarchyNode FirstChild
 		{
-			get
-			{
-				return this.firstChild;
-			}
-			set
-			{
-				this.firstChild = value;
-			}
-		}
+			get => this.firstChild;
+            set => this.firstChild = value;
+        }
 
 		[System.ComponentModel.BrowsableAttribute(false)]
 		public HierarchyNode LastChild
 		{
-			get
-			{
-				return this.lastChild;
-			}
-			set
-			{
-				this.lastChild = value;
-			}
-		}
+			get => this.lastChild;
+            set => this.lastChild = value;
+        }
 
 
 		[System.ComponentModel.BrowsableAttribute(false)]
 		public HierarchyNode Parent
 		{
-			get
-			{
-				return this.parentNode;
-			}
-			set
-			{
-				this.parentNode = value;
-			}
-		}
+			get => this.parentNode;
+            set => this.parentNode = value;
+        }
 
 
 		[System.ComponentModel.BrowsableAttribute(false)]
 		[SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "ID")]
 		public uint ID
 		{
-			get
-			{
-				return this.hierarchyId;
-			}
-			internal set
-			{
-				this.hierarchyId = value;
-			}
-		}
+			get => this.hierarchyId;
+            internal set => this.hierarchyId = value;
+        }
 
 
 		[System.ComponentModel.BrowsableAttribute(false)]
 		public ProjectElement ItemNode
 		{
-			get
-			{
-				return itemNode;
-			}
-			set
-			{
-				itemNode = value;
-			}
-		}
+			get => itemNode;
+            set => itemNode = value;
+        }
 
 
 		[System.ComponentModel.BrowsableAttribute(false)]
 		public bool HasDesigner
 		{
-			get
-			{
-				return this.hasDesigner;
-			}
-			set { this.hasDesigner = value; }
-		}
+			get => this.hasDesigner;
+            set => this.hasDesigner = value;
+        }
 
 
 		[System.ComponentModel.BrowsableAttribute(false)]
 		public bool IsExpanded
 		{
-			get
-			{
-				return this.isExpanded;
-			}
-			set { this.isExpanded = value; }
-		}
+			get => this.isExpanded;
+            set => this.isExpanded = value;
+        }
 
 		public string VirtualNodeName
 		{
-			get
-			{
-				return this.virtualNodeName;
-			}
-			set
-			{
-				this.virtualNodeName = value;
-			}
-		}
+			get => this.virtualNodeName;
+            set => this.virtualNodeName = value;
+        }
 
 
 		[System.ComponentModel.BrowsableAttribute(false)]
@@ -411,15 +326,9 @@ namespace Microsoft.VisualStudio.Project
 
 		public uint DocCookie
 		{
-			get
-			{
-				return this.docCookie;
-			}
-			set
-			{
-				this.docCookie = value;
-			}
-		}
+			get => this.docCookie;
+            set => this.docCookie = value;
+        }
 
 		/// <summary>
 		/// Specifies if a Node is under source control.
@@ -427,15 +336,9 @@ namespace Microsoft.VisualStudio.Project
 		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Scc")]
 		public bool ExcludeNodeFromScc
 		{
-			get
-			{
-				return this.excludeNodeFromScc;
-			}
-			set
-			{
-				this.excludeNodeFromScc = value;
-			}
-		}
+			get => this.excludeNodeFromScc;
+            set => this.excludeNodeFromScc = value;
+        }
 
 		/// <summary>
 		/// Defines if a node a name relation to its parent node
@@ -443,36 +346,19 @@ namespace Microsoft.VisualStudio.Project
 		/// </summary>
 		public bool HasParentNodeNameRelation
 		{
-			get
-			{
-				return this.hasParentNodeNameRelation;
-			}
-			set
-			{
-				this.hasParentNodeNameRelation = value;
-			}
-		}
+			get => this.hasParentNodeNameRelation;
+            set => this.hasParentNodeNameRelation = value;
+        }
 
 		protected bool SourceDraggedOrCutOrCopied
 		{
-			get
-			{
-				return this.sourceDraggedOrCutOrCopied;
-			}
-			set
-			{
-				this.sourceDraggedOrCutOrCopied = value;
-			}
-		}
+			get => this.sourceDraggedOrCutOrCopied;
+            set => this.sourceDraggedOrCutOrCopied = value;
+        }
 
-		protected IList<HierarchyNode> ItemsDraggedOrCutOrCopied
-		{
-			get
-			{
-				return this.itemsDraggedOrCutOrCopied;
-			}
-		}
-		#endregion
+		protected IList<HierarchyNode> ItemsDraggedOrCutOrCopied => this.itemsDraggedOrCutOrCopied;
+
+        #endregion
 
 		#region ctors
 

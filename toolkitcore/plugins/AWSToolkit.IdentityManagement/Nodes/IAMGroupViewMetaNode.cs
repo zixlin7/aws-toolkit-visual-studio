@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -29,16 +25,10 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             groupModel.IAMGroupRootViewModel.RemoveGroup(focus.Name);
         }
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList(
-                    new ActionHandlerWrapper("Edit", OnEdit, null, true, this.GetType().Assembly, "IdentityManagement.group-service-root.png"),
-                    new ActionHandlerWrapper("Delete", OnDelete, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false, null, "delete.png")
-                    );
-            }
-        }
-
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(
+                new ActionHandlerWrapper("Edit", OnEdit, null, true, this.GetType().Assembly, "IdentityManagement.group-service-root.png"),
+                new ActionHandlerWrapper("Delete", OnDelete, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false, null, "delete.png")
+            );
     }
 }

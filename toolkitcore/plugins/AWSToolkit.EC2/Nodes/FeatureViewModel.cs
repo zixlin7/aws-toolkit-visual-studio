@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Windows.Threading;
-
-using Amazon.EC2;
-using Amazon.EC2.Model;
-
+﻿using Amazon.EC2;
 using Amazon.AWSToolkit.Navigator.Node;
 
 namespace Amazon.AWSToolkit.EC2.Nodes
@@ -22,10 +13,7 @@ namespace Amazon.AWSToolkit.EC2.Nodes
             this._ec2Client = viewModel.EC2Client;
         }
 
-        public IAmazonEC2 EC2Client
-        {
-            get { return this._ec2Client; }
-        }
+        public IAmazonEC2 EC2Client => this._ec2Client;
 
         public string RegionSystemName
         {

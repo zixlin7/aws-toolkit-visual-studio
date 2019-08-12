@@ -1,18 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.Controller;
@@ -41,10 +28,7 @@ namespace Amazon.AWSToolkit.S3.View.Components
             this._ctlDataGrid.CommitEdit();
         }
 
-        public BucketPropertiesModel Model
-        {
-            get { return this.DataContext as BucketPropertiesModel; }
-        }
+        public BucketPropertiesModel Model => this.DataContext as BucketPropertiesModel;
 
         private void OnAddRule(object sender, RoutedEventArgs args)
         {

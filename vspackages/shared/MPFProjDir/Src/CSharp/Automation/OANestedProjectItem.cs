@@ -12,7 +12,6 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Project.Automation
@@ -62,13 +61,8 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Returns the nested project.
 		/// </summary>
-		public override EnvDTE.Project SubProject
-		{
-			get
-			{
-				return this.nestedProject;
-			}
-		}
-		#endregion
+		public override EnvDTE.Project SubProject => this.nestedProject;
+
+        #endregion
 	}
 }

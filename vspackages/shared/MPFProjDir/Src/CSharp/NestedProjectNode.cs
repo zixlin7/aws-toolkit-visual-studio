@@ -15,11 +15,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using ErrorHandler = Microsoft.VisualStudio.ErrorHandler;
 using ShellConstants = Microsoft.VisualStudio.Shell.Interop.Constants;
 
 namespace Microsoft.VisualStudio.Project
@@ -53,77 +51,43 @@ namespace Microsoft.VisualStudio.Project
         #endregion
 
         #region properties
-        internal IVsHierarchy NestedHierarchy
-        {
-            get
-            {
-                return this.nestedHierarchy;
-            }
-        }
+        internal IVsHierarchy NestedHierarchy => this.nestedHierarchy;
+
         #endregion
 
         #region virtual properties
         /// <summary>
         /// Returns the __VSADDVPFLAGS that will be passed in when calling AddVirtualProjectEx
         /// </summary>
-        protected virtual uint VirtualProjectFlags
-        {
-            get { return 0; }
-        }
+        protected virtual uint VirtualProjectFlags => 0;
+
         #endregion
 
         #region overridden properties
         /// <summary>
         /// The path of the nested project.
         /// </summary>
-        public override string Url
-        {
-            get
-            {
-                return this.projectPath;
-            }
-        }
+        public override string Url => this.projectPath;
 
         /// <summary>
         /// The Caption of the nested project.
         /// </summary>
-        public override string Caption
-        {
-            get
-            {
-                return Path.GetFileNameWithoutExtension(this.projectName);
-            }
-        }
+        public override string Caption => Path.GetFileNameWithoutExtension(this.projectName);
 
-        public override Guid ItemTypeGuid
-        {
-            get
-            {
-                return VSConstants.GUID_ItemType_SubProject;
-            }
-        }
+        public override Guid ItemTypeGuid => VSConstants.GUID_ItemType_SubProject;
 
         /// <summary>
         /// Defines whether a node can execute a command if in selection.
         /// We do this in order to let the nested project to handle the execution of its own commands.
         /// </summary>
-        public override bool CanExecuteCommand
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool CanExecuteCommand => false;
 
-        public override int SortPriority
-        {
-            get { return DefaultSortOrderNode.NestedProjectNode; }
-        }
+        public override int SortPriority => DefaultSortOrderNode.NestedProjectNode;
 
         protected bool IsDisposed
         {
-            get { return this.isDisposed; }
-            set { this.isDisposed = value; }
+            get => this.isDisposed;
+            set => this.isDisposed = value;
         }
 
 

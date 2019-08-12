@@ -1,13 +1,6 @@
-﻿using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
+﻿using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
-using log4net;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 
@@ -19,36 +12,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageDescription
-        {
-            get
-            {
-                return "Task Definition defines the parameters for how the application will run within its Docker container.";
-            }
-        }
+        public string PageDescription => "Task Definition defines the parameters for how the application will run within its Docker container.";
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
-        public string PageTitle
-        {
-            get
-            {
-                return "Task Definition";
-            }
-        }
+        public string PageTitle => "Task Definition";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
         public bool AllowShortCircuit()
         {

@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Windows.Media;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
-using Amazon.AWSToolkit.EC2.Model;
-using Amazon.KeyManagementService.Model;
 using Amazon.Lambda.Model;
-using Amazon.EC2.Model;
 
 namespace Amazon.AWSToolkit.Lambda.Model
 {
@@ -25,7 +18,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         bool _isDirty;
         public bool IsDirty
         {
-            get { return this._isDirty; }
+            get => this._isDirty;
             set
             {
                 this._isDirty = value;
@@ -44,7 +37,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         string _functionName;
         public string FunctionName
         {
-            get { return this._functionName; }
+            get => this._functionName;
             set
             {
                 this._functionName = value;
@@ -55,7 +48,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         long _codeSize;
         public long CodeSize
         {
-            get { return this._codeSize; }
+            get => this._codeSize;
             set
             {
                 this._codeSize = value;
@@ -67,7 +60,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         bool _isEnabledActiveTracing;
         public bool IsEnabledActiveTracing
         {
-            get { return this._isEnabledActiveTracing; }
+            get => this._isEnabledActiveTracing;
             set
             {
                 this._isEnabledActiveTracing = value;
@@ -78,7 +71,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         string _dlqTargetArn;
         public string DLQTargetArn
         {
-            get { return this._dlqTargetArn; }
+            get => this._dlqTargetArn;
             set
             {
                 this._dlqTargetArn = value;
@@ -86,15 +79,12 @@ namespace Amazon.AWSToolkit.Lambda.Model
             }
         }
 
-        public string CodeSizeFormatted
-        {
-            get { return string.Format("{0} bytes", this.CodeSize.ToString("0,0.")); }
-        }
+        public string CodeSizeFormatted => string.Format("{0} bytes", this.CodeSize.ToString("0,0."));
 
         string _description;
         public string Description
         {
-            get { return this._description; }
+            get => this._description;
             set
             {
                 this._description = value;
@@ -105,7 +95,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         string _functionArn;
         public string FunctionArn
         {
-            get { return this._functionArn; }
+            get => this._functionArn;
             set
             {
                 this._functionArn = value;
@@ -116,7 +106,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         string _handler;
         public string Handler
         {
-            get { return this._handler; }
+            get => this._handler;
             set
             {
                 this._handler = value;
@@ -130,7 +120,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         Amazon.Lambda.Runtime _runtime;
         public Amazon.Lambda.Runtime Runtime
         {
-            get { return this._runtime; }
+            get => this._runtime;
             set
             {
                 this._runtime = value;
@@ -160,7 +150,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         DateTime _lastModified;
         public DateTime LastModified
         {
-            get { return this._lastModified; }
+            get => this._lastModified;
             set
             {
                 this._lastModified = value;
@@ -171,7 +161,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         int _memorySize;
         public int MemorySize
         {
-            get { return this._memorySize; }
+            get => this._memorySize;
             set
             {
                 this._memorySize = value;
@@ -182,7 +172,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         string _role;
         public string Role
         {
-            get { return this._role; }
+            get => this._role;
             set
             {
                 this._role = value;
@@ -193,7 +183,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         int _timeout;
         public int Timeout
         {
-            get { return this._timeout; }
+            get => this._timeout;
             set
             {
                 this._timeout = value;
@@ -202,15 +192,12 @@ namespace Amazon.AWSToolkit.Lambda.Model
         }
 
         ObservableCollection<EventSourceWrapper> _eventSources = new ObservableCollection<EventSourceWrapper>();
-        public ICollection<EventSourceWrapper> EventSources
-        {
-            get { return this._eventSources; }
-        }
+        public ICollection<EventSourceWrapper> EventSources => this._eventSources;
 
         EventSourceWrapper _selectedEventSource;
         public EventSourceWrapper SelectedEventSource 
         {
-            get { return this._selectedEventSource; }
+            get => this._selectedEventSource;
             set
             {
                 this._selectedEventSource = value;
@@ -219,16 +206,10 @@ namespace Amazon.AWSToolkit.Lambda.Model
         }
 
         ObservableCollection<LogStreamWrapper> _logs = new ObservableCollection<LogStreamWrapper>();
-        public ObservableCollection<LogStreamWrapper> Logs
-        {
-            get { return this._logs; }
-        }
+        public ObservableCollection<LogStreamWrapper> Logs => this._logs;
 
         ObservableCollection<EnvironmentVariable> _environmentVariables = new ObservableCollection<EnvironmentVariable>();
-        public ObservableCollection<EnvironmentVariable> EnvironmentVariables
-        {
-            get { return this._environmentVariables; }
-        }
+        public ObservableCollection<EnvironmentVariable> EnvironmentVariables => this._environmentVariables;
 
         public VpcConfigDetail VpcConfig { get; internal set; }
 

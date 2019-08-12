@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Media;
-
-using Amazon.ElasticBeanstalk.Model;
 using Amazon.CloudWatch.Model;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
@@ -18,54 +13,30 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
             this._originalMetricAlarm = originalMetricAlarm;
         }
 
-        public string AlarmName
-        {
-            get { return this._originalMetricAlarm.AlarmName; }
-        }
-        public string MetricName
-        {
-            get { return this._originalMetricAlarm.MetricName; }
-        }
-        public string State
-        {
-            get { return this._originalMetricAlarm.StateValue; }
-        }
+        public string AlarmName => this._originalMetricAlarm.AlarmName;
 
-        public string Statistic
-        {
-            get { return this._originalMetricAlarm.Statistic; }
-        }
-        public string Threshold
-        {
-            get { return this._originalMetricAlarm.Threshold.ToString(); }
-        }
-        public string Unit
-        {
-            get { return this._originalMetricAlarm.Unit; }
-        }
-        public string ComparisonOperator
-        {
-            get { return this._originalMetricAlarm.ComparisonOperator; }
-        }
+        public string MetricName => this._originalMetricAlarm.MetricName;
 
-        
+        public string State => this._originalMetricAlarm.StateValue;
+
+        public string Statistic => this._originalMetricAlarm.Statistic;
+
+        public string Threshold => this._originalMetricAlarm.Threshold.ToString();
+
+        public string Unit => this._originalMetricAlarm.Unit;
+
+        public string ComparisonOperator => this._originalMetricAlarm.ComparisonOperator;
+
+
         //Properites below here are not shown
-        public string ActionsEnabled
-        {
-            get { return this._originalMetricAlarm.ActionsEnabled.ToString(); }
-        }
-        public string Namespace
-        {
-            get { return this._originalMetricAlarm.Namespace; }
-        }
-        public string AlarmLastUpdated
-        {
-            get { return this._originalMetricAlarm.AlarmConfigurationUpdatedTimestamp.ToString(); }
-        }
-        public string StateLastUpdated
-        {
-            get { return this._originalMetricAlarm.StateUpdatedTimestamp.ToString(); }
-        }
+        public string ActionsEnabled => this._originalMetricAlarm.ActionsEnabled.ToString();
+
+        public string Namespace => this._originalMetricAlarm.Namespace;
+
+        public string AlarmLastUpdated => this._originalMetricAlarm.AlarmConfigurationUpdatedTimestamp.ToString();
+
+        public string StateLastUpdated => this._originalMetricAlarm.StateUpdatedTimestamp.ToString();
+
         public string Dimensions
         {
             get
@@ -78,44 +49,22 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
                 return String.Join(", ", dimensions.ToArray());
             }
         }
-        public string Period
-        {
-            get { return this._originalMetricAlarm.Period.ToString(); }
-        }
-        public string EvaluationPeriods
-        {
-            get { return this._originalMetricAlarm.EvaluationPeriods.ToString(); }
-        }
+        public string Period => this._originalMetricAlarm.Period.ToString();
 
-        public string StateReason
-        {
-            get { return this._originalMetricAlarm.StateReason; }
-        }
-        public string StateReasonData
-        {
-            get { return this._originalMetricAlarm.StateReasonData; }
-        }
+        public string EvaluationPeriods => this._originalMetricAlarm.EvaluationPeriods.ToString();
 
-        public string AlarmARN
-        {
-            get { return this._originalMetricAlarm.AlarmArn; }
-        }
-        public string AlarmDescription
-        {
-            get { return this._originalMetricAlarm.AlarmDescription; }
-        }
+        public string StateReason => this._originalMetricAlarm.StateReason;
 
-        public string OKActions
-        {
-            get { return String.Join(", ", this._originalMetricAlarm.OKActions.ToArray()); }
-        }
-        public string AlarmActions
-        {
-            get { return String.Join(", ", this._originalMetricAlarm.AlarmActions.ToArray()); }
-        }
-        public string InsufficientDataActions
-        {
-            get { return String.Join(", ", this._originalMetricAlarm.InsufficientDataActions.ToArray()); }
-        }
+        public string StateReasonData => this._originalMetricAlarm.StateReasonData;
+
+        public string AlarmARN => this._originalMetricAlarm.AlarmArn;
+
+        public string AlarmDescription => this._originalMetricAlarm.AlarmDescription;
+
+        public string OKActions => String.Join(", ", this._originalMetricAlarm.OKActions.ToArray());
+
+        public string AlarmActions => String.Join(", ", this._originalMetricAlarm.AlarmActions.ToArray());
+
+        public string InsufficientDataActions => String.Join(", ", this._originalMetricAlarm.InsufficientDataActions.ToArray());
     }
 }

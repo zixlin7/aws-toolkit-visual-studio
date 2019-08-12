@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Amazon.AWSToolkit.EC2.View.DataGrid
+﻿namespace Amazon.AWSToolkit.EC2.View.DataGrid
 {
     public interface IEC2Column : System.Collections.IComparer
     {

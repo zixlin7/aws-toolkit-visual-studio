@@ -1,6 +1,5 @@
 ﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
 using Amazon.EC2;
 using Amazon.EC2.Model;
 using Amazon.ECR;

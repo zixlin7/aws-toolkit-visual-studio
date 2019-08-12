@@ -1,21 +1,13 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Threading;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.DynamoDB.Controller;
 using Amazon.AWSToolkit.DynamoDB.Model;
-using Amazon.AWSToolkit.DynamoDB.View.Columns;
-using Amazon.AWSToolkit.Util;
 using Amazon.DynamoDBv2;
 
 namespace Amazon.AWSToolkit.DynamoDB.View.Components
@@ -52,7 +44,7 @@ namespace Amazon.AWSToolkit.DynamoDB.View.Components
         EditingMode _mode;
         public EditingMode Mode
         {
-            get { return this._mode; }
+            get => this._mode;
             set
             {
                 this._mode = value;
@@ -95,13 +87,7 @@ namespace Amazon.AWSToolkit.DynamoDB.View.Components
             }
         }
 
-        private ObservableCollection<SecondaryIndex> BoundIndexes
-        {
-            get
-            {
-                return this.DataContext as ObservableCollection<SecondaryIndex>;
-            }
-        }
+        private ObservableCollection<SecondaryIndex> BoundIndexes => this.DataContext as ObservableCollection<SecondaryIndex>;
 
         private int MaxIndex
         {

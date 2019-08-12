@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
-using Amazon;
+﻿using System.Collections.ObjectModel;
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.S3.Model
@@ -23,10 +17,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         private string _selectedFunction;
         public string SelectedFunction { 
-            get
-            {
-                return this._selectedFunction;
-            }
+            get => this._selectedFunction;
             set
             {
                 this._selectedFunction = value;

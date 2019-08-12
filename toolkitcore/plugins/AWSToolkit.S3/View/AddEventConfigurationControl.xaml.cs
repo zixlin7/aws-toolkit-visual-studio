@@ -1,17 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.S3.Controller;
 
 using log4net;
@@ -41,13 +31,7 @@ namespace Amazon.AWSToolkit.S3.View
             SendTo_SelectionChanged(this, null);
         }
 
-        public override string Title
-        {
-            get
-            {
-                return "Add Event Configuration";
-            }
-        }
+        public override string Title => "Add Event Configuration";
 
         public override bool Validated()
         {
@@ -161,25 +145,13 @@ namespace Amazon.AWSToolkit.S3.View
         }
 
 
-        public string Prefix
-        {
-            get { return this._ctlPrefix.Text; }
-        }
+        public string Prefix => this._ctlPrefix.Text;
 
-        public string Suffix
-        {
-            get { return this._ctlSuffix.Text; }
-        }
+        public string Suffix => this._ctlSuffix.Text;
 
-        public string ResourceArn
-        {
-            get { return this._ctlResources.SelectedItem as string; }
-        }
+        public string ResourceArn => this._ctlResources.SelectedItem as string;
 
-        public bool AddPermissions
-        {
-            get { return this._ctlAlterPolicy.IsChecked.GetValueOrDefault(); }
-        }
+        public bool AddPermissions => this._ctlAlterPolicy.IsChecked.GetValueOrDefault();
 
         public string Event
         {

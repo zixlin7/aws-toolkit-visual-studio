@@ -16,35 +16,17 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
 {
     public class FirstRunModel : INotifyPropertyChanged
     {
-        public string IamConsoleEndpoint
-        {
-            get { return "https://console.aws.amazon.com/iam/home?region=us-east-1#/users"; }
-        }
+        public string IamConsoleEndpoint => "https://console.aws.amazon.com/iam/home?region=us-east-1#/users";
 
-        public string PrivacyPolicyEndpoint
-        {
-            get { return "https://aws.amazon.com/privacy/"; }
-        }
+        public string PrivacyPolicyEndpoint => "https://aws.amazon.com/privacy/";
 
-        public string UsingToolkitEndpoint
-        {
-            get { return "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html"; }
-        }
+        public string UsingToolkitEndpoint => "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html";
 
-        public string DeveloperBlogEndpoint
-        {
-            get { return "https://aws.amazon.com/blogs/developer/category/net/"; }
-        }
+        public string DeveloperBlogEndpoint => "https://aws.amazon.com/blogs/developer/category/net/";
 
-        public string DeployingLambdaEndpoint
-        {
-            get { return "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/lambda.html"; }
-        }
+        public string DeployingLambdaEndpoint => "https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/lambda.html";
 
-        public string DeployingBeanstalkEndpoint
-        {
-            get { return "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_NET.html"; }
-        }
+        public string DeployingBeanstalkEndpoint => "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_NET.html";
 
         public FirstRunModel()
         {
@@ -53,52 +35,49 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
 
         public string ProfileName
         {
-            get { return _profileName; }
+            get => _profileName;
             set { _profileName = value; OnPropertyChanged(); }
         }
 
         public string AccessKey
         {
-            get { return _accessKey; }
+            get => _accessKey;
             set { _accessKey = value; OnPropertyChanged(); }
         }
 
         public string SecretKey
         {
-            get { return _secretKey; }
+            get => _secretKey;
             set { _secretKey = value; OnPropertyChanged(); }
         }
 
         public string AccountNumber
         {
-            get { return _accountNumber; }
+            get => _accountNumber;
             set { _accountNumber = value; OnPropertyChanged(); }
         }
 
         public bool IsValid
         {
-            get { return _isValid; }
+            get => _isValid;
             set { _isValid = value; OnPropertyChanged(); }
         }
 
         public AccountTypes.AccountType SelectedAccountType
         {
-            get { return _selectedAccountType ?? (_selectedAccountType = AllAccountTypes[0]); }
-            set
-            {
-                _selectedAccountType = value;
-            }
+            get => _selectedAccountType ?? (_selectedAccountType = AllAccountTypes[0]);
+            set => _selectedAccountType = value;
         }
 
         public bool CollectAnalytics
         {
-            get { return _collectAnalytics; }
+            get => _collectAnalytics;
             set { _collectAnalytics = value;OnPropertyChanged(); }
         }
 
         public bool OpenAWSExplorerOnClosing
         {
-            get { return _openAwsExplorerOnClose; }
+            get => _openAwsExplorerOnClose;
             set { _openAwsExplorerOnClose = value; OnPropertyChanged(); }
         }
 
@@ -124,10 +103,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
             WriteAnalyticsCollectionPermission();
         }
 
-        public IList<AccountTypes.AccountType> AllAccountTypes
-        {
-            get { return AccountTypes.AllAccountTypes; }
-        }
+        public IList<AccountTypes.AccountType> AllAccountTypes => AccountTypes.AllAccountTypes;
 
         public List<ShowMeHowToListItem> ShowMeHowToListItems
         {
@@ -305,20 +281,12 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
 
         public string HintGraphicResourceName { get; internal set; }
 
-        public ImageSource HintGraphic
-        {
-            get { return IconHelper.GetIcon(this.GetType().Assembly, HintGraphicResourceName).Source; }
-        }
+        public ImageSource HintGraphic => IconHelper.GetIcon(this.GetType().Assembly, HintGraphicResourceName).Source;
 
-        public ImageSource Arrow
-        {
-            get
-            {
-                return IconHelper.GetIcon(this.GetType().Assembly,
-                        "Amazon.AWSToolkit.VisualStudio.Resources.FirstRun.rightbluearrow.png")
-                    .Source;
-            }
-        }
+        public ImageSource Arrow =>
+            IconHelper.GetIcon(this.GetType().Assembly,
+                    "Amazon.AWSToolkit.VisualStudio.Resources.FirstRun.rightbluearrow.png")
+                .Source;
     }
 
 }

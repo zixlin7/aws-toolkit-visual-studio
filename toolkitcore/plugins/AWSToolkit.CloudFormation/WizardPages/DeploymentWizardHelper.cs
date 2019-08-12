@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
-
+﻿using Amazon.AWSToolkit.Account;
 using Amazon.CloudFormation;
 using Amazon.AWSToolkit.CloudFormation.Nodes;
-
-using Amazon.AWSToolkit.EC2.Nodes;
-using Amazon.EC2;
 
 namespace Amazon.AWSToolkit.CloudFormation.WizardPages
 {

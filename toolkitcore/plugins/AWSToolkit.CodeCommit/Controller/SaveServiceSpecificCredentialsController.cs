@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using Amazon.AWSToolkit.CodeCommit.Model;
 using Amazon.AWSToolkit.CodeCommit.View;
 using Amazon.AWSToolkit.Navigator;
@@ -20,10 +15,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Controller
 
         public SaveServiceSpecificCredentialsControl View { get; }
 
-        public string SelectedFilename
-        {
-            get { return Model.Filename; }
-        }
+        public string SelectedFilename => Model.Filename;
 
         public SaveServiceSpecificCredentialsController(ServiceSpecificCredential generatedCredentials, string msg = null)
         {

@@ -1,14 +1,7 @@
 ﻿using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
 using log4net;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
-using ThirdParty.Json.LitJson;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 {
@@ -25,20 +18,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageDescription
-        {
-            get { return "Enter the details about the function you want to upload."; }
-        }
+        public string PageDescription => "Enter the details about the function you want to upload.";
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public string PageTitle
         {
@@ -58,10 +42,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             }
         }
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
         public bool AllowShortCircuit()
         {

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Linq;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
-
-using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
 
@@ -24,10 +18,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             this._serviceModel = viewModel;
         }
 
-        public IAmazonIdentityManagementService IAMClient
-        {
-            get { return this._serviceModel.IAMClient; }
-        }
+        public IAmazonIdentityManagementService IAMClient => this._serviceModel.IAMClient;
 
         public void AddGroup(Group group)
         {
@@ -40,13 +31,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             base.RemoveChild(groupName);
         }
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.group-service-root.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.group-service-root.png";
 
         protected override void LoadChildren()
         {

@@ -2,17 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Windows.Threading;
-
 using Amazon.S3;
 using Amazon.S3.Model;
-using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.S3.View;
 using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.Nodes;
-using Amazon.AWSToolkit.SNS.Nodes;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.PolicyEditor.Model;
@@ -41,15 +35,9 @@ namespace Amazon.AWSToolkit.S3.Controller
             this._model = model;
         }
 
-        public IAmazonS3 S3Client
-        {
-            get { return this._s3Client; }
-        }
+        public IAmazonS3 S3Client => this._s3Client;
 
-        public BucketPropertiesModel Model
-        {
-            get { return this._model; }
-        }
+        public BucketPropertiesModel Model => this._model;
 
         public override ActionResults Execute(IViewModel model)
         {

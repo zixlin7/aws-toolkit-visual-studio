@@ -1,18 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.SQS.View;
 using Amazon.AWSToolkit.SQS.Model;
 using Amazon.AWSToolkit.SQS.Nodes;
-using Amazon.AWSToolkit.SQS.Workers;
-
-
 using Amazon.SQS;
 using Amazon.SQS.Model;
 

@@ -1,21 +1,15 @@
 ﻿using System.Windows;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.ECS.Controller;
 using Amazon.AWSToolkit.ECS.WizardPages.PageControllers;
 using log4net;
 using System;
-using Amazon.AWSToolkit.Account;
 using System.ComponentModel;
 using System.Windows.Controls;
 
 using Task = System.Threading.Tasks.Task;
-
-using Amazon.ECS;
 using Amazon.ECS.Model;
 using System.Collections.Generic;
 using System.Linq;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
-
 using static Amazon.AWSToolkit.ECS.WizardPages.ECSWizardUtils;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
@@ -27,7 +21,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ECSServicePage));
 
-        public ECSServicePageController PageController { get; private set; }
+        public ECSServicePageController PageController { get; }
 
         public ECSServicePage()
         {
@@ -75,16 +69,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             UpdatePlacementEditableState();
         }
 
-        public bool CreateNewService
-        {
-            get { return this._ctlServicePicker.SelectedIndex == 0; }
-        }
+        public bool CreateNewService => this._ctlServicePicker.SelectedIndex == 0;
 
 
         public string Service
         {
-            get { return this._ctlServicePicker.Text; }
-            set { this._ctlServicePicker.Text = value; }
+            get => this._ctlServicePicker.Text;
+            set => this._ctlServicePicker.Text = value;
         }
 
         private void _ctlServicePicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -161,7 +152,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         string _newServiceName;
         public string NewServiceName
         {
-            get { return _newServiceName; }
+            get => _newServiceName;
             set
             {
                 _newServiceName = value;
@@ -172,7 +163,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         int? _desiredCount;
         public int? DesiredCount
         {
-            get { return _desiredCount; }
+            get => _desiredCount;
             set
             {
                 _desiredCount = value;
@@ -183,7 +174,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         int? _minimumHealthy;
         public int? MinimumHealthy
         {
-            get { return _minimumHealthy; }
+            get => _minimumHealthy;
             set
             {
                 _minimumHealthy = value;
@@ -194,7 +185,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         int? _maximumPercent;
         public int? MaximumPercent
         {
-            get { return _maximumPercent; }
+            get => _maximumPercent;
             set
             {
                 _maximumPercent = value;
@@ -202,15 +193,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
-        public ECSWizardUtils.PlacementTemplates PlacementTemplate
-        {
-            get { return this._ctlPlacementTemplate.SelectedItem as ECSWizardUtils.PlacementTemplates; }
-        }
+        public ECSWizardUtils.PlacementTemplates PlacementTemplate => this._ctlPlacementTemplate.SelectedItem as ECSWizardUtils.PlacementTemplates;
 
         public bool IsPlacementTemplateEnabled
         {
-            get { return this._ctlPlacementTemplate.IsEnabled; }
-            set { this._ctlPlacementTemplate.IsEnabled = value; }
+            get => this._ctlPlacementTemplate.IsEnabled;
+            set => this._ctlPlacementTemplate.IsEnabled = value;
         }
 
 

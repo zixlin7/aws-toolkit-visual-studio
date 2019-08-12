@@ -3,23 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using System.Threading;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers;
 
 using Amazon.AWSToolkit.ElasticBeanstalk.Commands;
-using Amazon.AWSToolkit.ElasticBeanstalk.Model;
-using Amazon.AWSToolkit.ElasticBeanstalk.View;
 using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
-using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyDeployment;
-
 using Amazon.ElasticBeanstalk;
-using Amazon.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 
 

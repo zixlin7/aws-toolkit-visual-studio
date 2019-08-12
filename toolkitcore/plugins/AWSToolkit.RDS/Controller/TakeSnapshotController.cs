@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
-using Amazon.AWSToolkit.Navigator;
+﻿using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.RDS.Nodes;
 using Amazon.AWSToolkit.RDS.View;
 using Amazon.AWSToolkit.RDS.Model;
-using Amazon.AWSToolkit;
-
 using Amazon.RDS;
 using Amazon.RDS.Model;
 
@@ -46,10 +38,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
             return new ActionResults().WithSuccess(false);
         }
 
-        public TakeSnapshotModel Model
-        {
-            get { return this._model; }
-        }
+        public TakeSnapshotModel Model => this._model;
 
         public void TakeSnapshot()
         {

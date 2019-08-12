@@ -12,7 +12,6 @@ using Amazon.IdentityManagement.Model;
 
 using log4net;
 using Amazon.AWSToolkit.Account;
-using System.Threading.Tasks;
 
 namespace Amazon.AWSToolkit.CommonUI.Components
 {
@@ -320,13 +319,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
             public string Description { get; set; }
             public string Body { get; set; }
 
-            public string IAMCompatibleName
-            {
-                get
-                {
-                    return this.Name.Replace(' ', '-');
-                }
-            }
+            public string IAMCompatibleName => this.Name.Replace(' ', '-');
         }
 
         public class IAMPickerChangedEventArgs
@@ -356,18 +349,12 @@ namespace Amazon.AWSToolkit.CommonUI.Components
             }
             #endregion
 
-            public bool IsSelectable
-            {
-                get
-                {
-                    return string.IsNullOrEmpty(this.Description);
-                }
-            }
+            public bool IsSelectable => string.IsNullOrEmpty(this.Description);
 
             bool _isSelected;
             public bool IsSelected
             {
-                get { return this._isSelected; }
+                get => this._isSelected;
                 set
                 {
                     this._isSelected = value;

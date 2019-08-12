@@ -1,25 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows.Controls;
 using System.ComponentModel;
 using System.Xml.Linq;
 using System.Threading;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.CloudFormation;
-using Amazon.CloudFormation.Model;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
 using Amazon.Runtime.Internal.Settings;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Account;
-
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Persistence.Deployment;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageWorkers;
@@ -54,32 +49,17 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
 
         #region IAWSWizardPageController Members
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageTitle
-        {
-            get { return "Template"; }
-        }
+        public string PageTitle => "Template";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "Select a template to deploy your application against."; }
-        }
+        public string PageDescription => "Select a template to deploy your application against.";
 
         public void ResetPage()
         {

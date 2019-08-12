@@ -10,10 +10,7 @@ using Amazon.ElasticLoadBalancingV2.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-
 using LoadBalancer = Amazon.ElasticLoadBalancingV2.Model.LoadBalancer;
 using TargetGroup = Amazon.ElasticLoadBalancingV2.Model.TargetGroup;
 

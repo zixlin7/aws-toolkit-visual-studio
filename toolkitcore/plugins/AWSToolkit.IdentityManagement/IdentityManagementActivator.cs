@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit;
-using Amazon.AWSToolkit.Account;
+﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 
 using Amazon.AWSToolkit.IdentityManagement.Controller;
@@ -14,10 +8,7 @@ namespace Amazon.AWSToolkit.IdentityManagement
 {
     public class IdentityManagementActivator : AbstractPluginActivator
     {
-        public override string PluginName 
-        {
-            get { return "IdentityManagement"; }
-        }
+        public override string PluginName => "IdentityManagement";
 
         public override void RegisterMetaNodes()
         {

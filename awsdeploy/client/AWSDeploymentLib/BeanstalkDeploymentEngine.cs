@@ -5,10 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-
-using Amazon;
 using Amazon.AWSToolkit;
-using Amazon.DevTools;
 using Amazon.EC2.Model;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
@@ -20,16 +17,12 @@ using ICSharpCode.SharpZipLib.Zip;
 using NGit;
 using NGit.Api;
 using NGit.Revwalk;
-using NGit.Storage.File;
 using NGit.Treewalk;
 using Sharpen;
 using Amazon.EC2;
 
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
-using Amazon.Auth.AccessControlPolicy;
-using Amazon.S3.Model;
-using Amazon.Auth.AccessControlPolicy.ActionIdentifiers;
 using S3Location = Amazon.ElasticBeanstalk.Model.S3Location;
 
 namespace AWSDeployment
@@ -78,14 +71,9 @@ namespace AWSDeployment
         /// </summary>
         public string EnvironmentType { get; set; }
 
-        bool IsSingleInstanceEnvironmentType
-        {
-            get
-            {
-                return EnvironmentType != null 
-                    && EnvironmentType.Equals("SingleInstance", StringComparison.Ordinal);
-            }
-        }
+        bool IsSingleInstanceEnvironmentType =>
+            EnvironmentType != null 
+            && EnvironmentType.Equals("SingleInstance", StringComparison.Ordinal);
 
         /// <summary>
         /// If true, deployment will be to a new environment of the specified name

@@ -1,13 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Windows.Threading;
-
-using Amazon.EC2;
-using Amazon.EC2.Model;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -25,21 +17,9 @@ namespace Amazon.AWSToolkit.EC2.Nodes
             this._accountViewModel = accountViewModel;
         }
 
-        public override string ToolTip
-        {
-            get
-            {
-                return "Amazon Virtual Private Cloud (Amazon VPC) lets you provision a private, isolated section of the Amazon Web Services (AWS) Cloud where you can launch AWS resources in a virtual network that you define.";
-            }
-        }
+        public override string ToolTip => "Amazon Virtual Private Cloud (Amazon VPC) lets you provision a private, isolated section of the Amazon Web Services (AWS) Cloud where you can launch AWS resources in a virtual network that you define.";
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.vpc_service_root.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.vpc_service_root.png";
 
         protected override void LoadChildren()
         {

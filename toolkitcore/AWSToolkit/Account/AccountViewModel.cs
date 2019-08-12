@@ -91,13 +91,7 @@ namespace Amazon.AWSToolkit.Account
             }
         }
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.Controls.Resources.Accounts.tree-node.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.Controls.Resources.Accounts.tree-node.png";
 
         public string SettingsUniqueKey
         {
@@ -108,14 +102,11 @@ namespace Amazon.AWSToolkit.Account
             }
         }
 
-        public override string Name
-        {
-            get { return this.DisplayName; }
-        }
+        public override string Name => this.DisplayName;
 
         public string DisplayName
         {
-            get { return this._profile.Name; }
+            get => this._profile.Name;
             set
             {
                 this._displayName = value;
@@ -139,15 +130,9 @@ namespace Amazon.AWSToolkit.Account
             }
         }
 
-        public ICredentialProfileStore ProfileStore
-        {
-            get { return this._profileStore; }
-        }
+        public ICredentialProfileStore ProfileStore => this._profileStore;
 
-        public CredentialProfile Profile
-        {
-            get { return this._profile; }
-        }
+        public CredentialProfile Profile => this._profile;
 
         public string AccountNumber
         {
@@ -188,18 +173,9 @@ namespace Amazon.AWSToolkit.Account
             }
         }
 
-        public bool HasRestrictions
-        {
-            get { return GetRestrictions()?.Count > 0; }
-        }
-        
-        public HashSet<string> Restrictions
-        {
-            get
-            {
-                return GetRestrictions();
-            }
-        }
+        public bool HasRestrictions => GetRestrictions()?.Count > 0;
+
+        public HashSet<string> Restrictions => GetRestrictions();
 
         /// <summary>
         /// Returns any service specific credentials persisted for a service.
@@ -265,13 +241,7 @@ namespace Amazon.AWSToolkit.Account
         }
 
 
-        public override ObservableCollection<IViewModel> Children
-        {
-            get
-            {
-                return this._serviceViewModels;
-            }
-        }
+        public override ObservableCollection<IViewModel> Children => this._serviceViewModels;
 
         public void FullReload(bool async)
         {

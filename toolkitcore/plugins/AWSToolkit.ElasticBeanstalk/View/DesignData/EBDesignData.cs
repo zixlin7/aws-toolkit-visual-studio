@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
-using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
-using Amazon.RDS.Model;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.View.DesignData
 {
@@ -16,10 +10,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.DesignData
     {
         readonly ObservableCollection<DeployedApplicationModel> _deployedApplications = new ObservableCollection<DeployedApplicationModel>();
 
-        public ICollection<DeployedApplicationModel> ExistingDeployments
-        {
-            get { return _deployedApplications; }
-        }
+        public ICollection<DeployedApplicationModel> ExistingDeployments => _deployedApplications;
 
         public ApplicationEnvironmentsDesignTimeContext()
         {

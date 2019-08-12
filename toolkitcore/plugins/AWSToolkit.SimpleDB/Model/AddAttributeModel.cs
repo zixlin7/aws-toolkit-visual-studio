@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
-
-namespace Amazon.AWSToolkit.SimpleDB.Model
+﻿namespace Amazon.AWSToolkit.SimpleDB.Model
 {
     public class AddAttributeModel
     {
@@ -13,8 +6,8 @@ namespace Amazon.AWSToolkit.SimpleDB.Model
 
         public string AttributeName
         {
-            get { return this._attributeName; }
-            set { this._attributeName = value; }
+            get => this._attributeName;
+            set => this._attributeName = value;
         }
     }
 }

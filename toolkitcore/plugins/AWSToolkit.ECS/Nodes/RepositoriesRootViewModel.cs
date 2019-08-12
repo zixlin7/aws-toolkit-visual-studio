@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Amazon.AWSToolkit.ECS.Model;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.ECR;
@@ -26,18 +23,9 @@ namespace Amazon.AWSToolkit.ECS.Nodes
             this._ecrClient = viewModel.ECRClient;
         }
 
-        public IAmazonECR ECRClient
-        {
-            get { return this._ecrClient; }
-        }
+        public IAmazonECR ECRClient => this._ecrClient;
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.repository.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.repository.png";
 
         protected override void LoadChildren()
         {

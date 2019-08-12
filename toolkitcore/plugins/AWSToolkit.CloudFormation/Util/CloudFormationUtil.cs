@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -18,8 +17,6 @@ using Amazon.S3.Model;
 
 using Amazon.AWSToolkit.CloudFormation.Nodes;
 using Amazon.AWSToolkit.CloudFormation.Model;
-using Amazon.AWSToolkit.Navigator.Node;
-
 using AWSDeploymentCryptoUtility;
 
 namespace Amazon.AWSToolkit.CloudFormation.Util

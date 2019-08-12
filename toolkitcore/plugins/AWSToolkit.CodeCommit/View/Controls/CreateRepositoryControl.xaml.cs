@@ -31,15 +31,9 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
 
         public CreateRepositoryController Controller { get; }
 
-        public override string Title
-        {
-            get { return "Create a New AWS CodeCommit Repository"; }
-        }
+        public override string Title => "Create a New AWS CodeCommit Repository";
 
-        public override bool SupportsDynamicOKEnablement
-        {
-            get { return true; }
-        }
+        public override bool SupportsDynamicOKEnablement => true;
 
         public override bool Validated()
         {

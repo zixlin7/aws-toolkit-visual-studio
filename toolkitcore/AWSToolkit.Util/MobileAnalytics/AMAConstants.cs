@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Amazon.AWSToolkit.MobileAnalytics
+﻿namespace Amazon.AWSToolkit.MobileAnalytics
 {
     /// <summary>
     /// These event standards are used universally across the various Mobile Analytics Events

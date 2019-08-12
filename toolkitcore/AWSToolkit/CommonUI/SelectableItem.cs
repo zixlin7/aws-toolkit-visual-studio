@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Amazon.AWSToolkit.CommonUI
+﻿namespace Amazon.AWSToolkit.CommonUI
 {
     /// <summary>
     /// Used to wrap objects bound to lists etc to allow multi-select.

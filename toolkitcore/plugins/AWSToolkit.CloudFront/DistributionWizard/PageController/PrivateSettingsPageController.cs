@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 using Amazon.AWSToolkit.CloudFront.Model;
 using Amazon.AWSToolkit.CloudFront.Controller;
@@ -24,32 +20,17 @@ namespace Amazon.AWSToolkit.CloudFront.DistributionWizard.PageController
 
         #region IAWSWizardPageController Members
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageTitle
-        {
-            get { return "Private Distribution Settings"; }
-        }
+        public string PageTitle => "Private Distribution Settings";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "Additional settings for setting up a private distribution."; }
-        }
+        public string PageDescription => "Additional settings for setting up a private distribution.";
 
         public void ResetPage()
         {
@@ -126,10 +107,7 @@ namespace Amazon.AWSToolkit.CloudFront.DistributionWizard.PageController
             }
         }
 
-        public BaseDistributionConfigEditorController EditorController
-        {
-            get { return this._controller; }
-        }
+        public BaseDistributionConfigEditorController EditorController => this._controller;
 
         void onPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {

@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.SQS.View;
-using Amazon.AWSToolkit.SQS.Model;
 using Amazon.AWSToolkit.SQS.Nodes;
 using Amazon.AWSToolkit.PolicyEditor;
 using Amazon.AWSToolkit.PolicyEditor.Model;
@@ -43,15 +37,9 @@ namespace Amazon.AWSToolkit.SQS.Controller
             }
         }
 
-        public string Title
-        {
-            get { return string.Format("SQS Policy: {0}", this._rootModel.Name); }
-        }
+        public string Title => string.Format("SQS Policy: {0}", this._rootModel.Name);
 
-        public PolicyModel.PolicyModelMode PolicyMode
-        {
-            get { return PolicyModel.PolicyModelMode.SQS; }
-        }
+        public PolicyModel.PolicyModelMode PolicyMode => PolicyModel.PolicyModelMode.SQS;
 
         public string GetPolicyDocument()
         {

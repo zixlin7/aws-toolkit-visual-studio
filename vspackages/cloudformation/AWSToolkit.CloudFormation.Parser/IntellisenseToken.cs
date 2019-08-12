@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CloudFormation.Parser.Schema;
+﻿using Amazon.AWSToolkit.CloudFormation.Parser.Schema;
 
 namespace Amazon.AWSToolkit.CloudFormation.Parser
 {
@@ -28,31 +23,26 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
         public SchemaObject Schema
         {
             get;
-            private set;
         }
 
         public IntellisenseTokenType Type
         {
             get;
-            private set;
         }
 
         public string DisplayName
         {
             get;
-            private set;
         }
 
         public string Code
         {
             get;
-            private set;
         }
 
         public string Description
         {
             get;
-            private set;
         }
     }
 }

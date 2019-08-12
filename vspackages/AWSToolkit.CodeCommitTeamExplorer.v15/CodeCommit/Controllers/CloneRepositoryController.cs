@@ -1,6 +1,5 @@
 ﻿using System;
 using Amazon.AWSToolkit.CodeCommit.Interface;
-using Amazon.AWSToolkit.Shared;
 using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers

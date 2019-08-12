@@ -1,33 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Account.Controller;
-using Amazon.AWSToolkit.Account.Model;
-using Amazon.AWSToolkit.Account.View;
 using Amazon.AWSToolkit.CloudFormation.Model;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageWorkers;
-using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.AWSToolkit.SNS.Nodes;
-
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
-
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 using Amazon.AWSToolkit.PluginServices.Deployment;
@@ -90,20 +68,11 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
             }
         }
 
-        public bool CreateStackMode
-        {
-            get { return this._ctlCreateStack.IsChecked.GetValueOrDefault(); }
-        }
+        public bool CreateStackMode => this._ctlCreateStack.IsChecked.GetValueOrDefault();
 
-        public AccountViewModel SelectedAccount
-        {
-            get { return this._ctlAccountAndRegionPicker.SelectedAccount; }
-        }
+        public AccountViewModel SelectedAccount => this._ctlAccountAndRegionPicker.SelectedAccount;
 
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion
-        {
-            get { return this._ctlAccountAndRegionPicker.SelectedRegion; }
-        }
+        public RegionEndPointsManager.RegionEndPoints SelectedRegion => this._ctlAccountAndRegionPicker.SelectedRegion;
 
         public int CreationTimeout
         {
@@ -117,13 +86,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
             }
         }
 
-        public bool RollbackOnFailure
-        {
-            get
-            {
-                return this._ctlRollbackOnFailure.IsChecked.GetValueOrDefault();
-            }
-        }
+        public bool RollbackOnFailure => this._ctlRollbackOnFailure.IsChecked.GetValueOrDefault();
 
         private void loadTopicList()
         {

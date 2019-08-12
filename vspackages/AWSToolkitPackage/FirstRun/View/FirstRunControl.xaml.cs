@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Navigation;
 using System.Windows.Input;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Model;
 using log4net;
-using Microsoft.VisualStudio.Shell;
 using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
@@ -55,17 +51,11 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
             }
         }
 
-        public override string Title
-        {
-            get { return "AWS Getting Started"; }    
-        }
+        public override string Title => "AWS Getting Started";
 
-        public override string UniqueId
-        {
-            get { return "AWSGettingStarted"; }
-        }
+        public override string UniqueId => "AWSGettingStarted";
 
-        private FirstRunModel Model { get { return _controller.Model; } }
+        private FirstRunModel Model => _controller.Model;
 
         private void OnClickSaveAndClose(object sender, RoutedEventArgs e)
         {

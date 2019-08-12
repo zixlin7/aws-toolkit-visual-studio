@@ -1,18 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-
 using Amazon.AWSToolkit.RDS.Controller;
 using Amazon.AWSToolkit.RDS.Model;
 
@@ -35,10 +24,7 @@ namespace Amazon.AWSToolkit.RDS.View.Components
             this.DataContextChanged += onDataContextChanged;
         }
 
-        public DBSecurityGroupWrapper DBSecurityGroup
-        {
-            get { return this.DataContext as DBSecurityGroupWrapper; }
-        }
+        public DBSecurityGroupWrapper DBSecurityGroup => this.DataContext as DBSecurityGroupWrapper;
 
         void onDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {

@@ -1,12 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.EC2.Nodes;
 using Amazon.AWSToolkit.EC2.Model;
 
 using Amazon.EC2;
@@ -28,15 +20,9 @@ namespace Amazon.AWSToolkit.EC2.Controller
             _account = account;
         }
 
-        protected override string Action
-        {
-            get { return "Copy to Region"; }
-        }
+        protected override string Action => "Copy to Region";
 
-        protected override string ConfirmMessage
-        {
-            get { return string.Format("Are you sure you want to copy this image to {0}: ",_destinationRegion.DisplayName); }
-        }
+        protected override string ConfirmMessage => string.Format("Are you sure you want to copy this image to {0}: ",_destinationRegion.DisplayName);
 
         protected override void PerformAction(IAmazonEC2 client, ImageWrapper instance)
         {

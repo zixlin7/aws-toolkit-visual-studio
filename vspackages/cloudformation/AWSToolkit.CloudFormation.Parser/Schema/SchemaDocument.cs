@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
 {
@@ -20,7 +17,6 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
         public SchemaObject RootSchemaObject
         {
             get;
-            private set;
         }
 
         public static SchemaObject DefaultJSONSchema { get; } = DefaultJSONSchema = new SchemaObject(SchemaType.Json, null, null, null, false, null, false, false);
@@ -32,10 +28,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
             return func;
         }
 
-        public IEnumerable<IntrinsicFunction> IntrinsicFunctions
-        {
-            get { return this._intrinsicFunctions.Values; }
-        }
+        public IEnumerable<IntrinsicFunction> IntrinsicFunctions => this._intrinsicFunctions.Values;
 
         public PseudoParameter GetPseudoParameter(string name)
         {
@@ -44,10 +37,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
             return val;
         }
 
-        public IEnumerable<PseudoParameter> PseudoParameters
-        {
-            get { return this._pseudoParameters.Values; }
-        }
+        public IEnumerable<PseudoParameter> PseudoParameters => this._pseudoParameters.Values;
 
 
         HashSet<string> _awsCustomParameterTypes;

@@ -56,10 +56,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         }
 
         readonly ObservableCollection<QueueViewBaseModel> _existingQueues = new ObservableCollection<QueueViewBaseModel>();
-        internal ObservableCollection<QueueViewBaseModel> ExistingQueues
-        {
-            get { return _existingQueues; }
-        }
+        internal ObservableCollection<QueueViewBaseModel> ExistingQueues => _existingQueues;
 
         public int MaxReceives
         {

@@ -1,19 +1,12 @@
 ﻿using System.Windows;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.ECS.Controller;
 using Amazon.AWSToolkit.ECS.WizardPages.PageControllers;
 using log4net;
 using System;
-using Amazon.AWSToolkit.Account;
 using System.ComponentModel;
 using System.Windows.Controls;
 
 using Task = System.Threading.Tasks.Task;
-
-using Amazon.ECS;
-using Amazon.ECS.Model;
-
-using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 
 using Amazon.ElasticLoadBalancingV2;
@@ -21,8 +14,6 @@ using Amazon.ElasticLoadBalancingV2.Model;
 
 using System.Collections.Generic;
 using System.Linq;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
-
 using static Amazon.AWSToolkit.ECS.WizardPages.ECSWizardUtils;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
@@ -34,7 +25,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ECSServicePage));
 
-        public ConfigureLoadBalancerPageController PageController { get; private set; }
+        public ConfigureLoadBalancerPageController PageController { get; }
 
         public ConfigureLoadBalancerPage()
         {
@@ -91,7 +82,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         bool _shouldConfigureELB;
         public bool ShouldConfigureELB
         {
-            get { return this._shouldConfigureELB; }
+            get => this._shouldConfigureELB;
             set
             {
                 this._shouldConfigureELB = value;
@@ -114,14 +105,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
                 return this._ctlServiceIAMRole.SelectedValue as Role;
             }
-            set { this._ctlServiceIAMRole.SelectedValue = value; }
+            set => this._ctlServiceIAMRole.SelectedValue = value;
         }
 
         public bool EnableServiceIAMRole
         {
-            get
-            {
-                return this._ctlServiceIAMRole.Visibility == Visibility.Visible; }
+            get => this._ctlServiceIAMRole.Visibility == Visibility.Visible;
             set
             {
                 Visibility vis = value ? Visibility.Visible : Visibility.Collapsed;
@@ -136,10 +125,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             NotifyPropertyChanged("ServiceIAMRole");
         }
 
-        public bool CreateNewIAMRole
-        {
-            get { return this.ShouldConfigureELB && this._ctlServiceIAMRole.SelectedIndex == 0; }            
-        }
+        public bool CreateNewIAMRole => this.ShouldConfigureELB && this._ctlServiceIAMRole.SelectedIndex == 0;
 
         public void SetCreateNewIAMRole()
         {
@@ -148,8 +134,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string LoadBalancer
         {
-            get { return this._ctlLoadBalancer.SelectedItem as string; }
-            set { this._ctlLoadBalancer.SelectedItem = value; }
+            get => this._ctlLoadBalancer.SelectedItem as string;
+            set => this._ctlLoadBalancer.SelectedItem = value;
         }
 
         public string LoadBalancerArn
@@ -201,15 +187,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
-        public bool CreateNewLoadBalancer
-        {
-            get { return this._ctlLoadBalancer.SelectedIndex == 0; }
-        }
+        public bool CreateNewLoadBalancer => this._ctlLoadBalancer.SelectedIndex == 0;
 
         string _newLoadBalancerName;
         public string NewLoadBalancerName
         {
-            get { return this._newLoadBalancerName; }
+            get => this._newLoadBalancerName;
             set
             {
                 this._newLoadBalancerName = value;
@@ -219,8 +202,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string ListenerPort
         {
-            get { return this._ctlListenerPorts.SelectedItem as string; }
-            set { this._ctlListenerPorts.SelectedItem = value; }
+            get => this._ctlListenerPorts.SelectedItem as string;
+            set => this._ctlListenerPorts.SelectedItem = value;
         }
 
         public string ListenerArn
@@ -263,15 +246,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
-        public bool CreateNewListenerPort
-        {
-            get { return this._ctlListenerPorts.SelectedIndex == 0; }
-        }
+        public bool CreateNewListenerPort => this._ctlListenerPorts.SelectedIndex == 0;
 
         int? _newListenerPort;
         public int? NewListenerPort
         {
-            get { return this._newListenerPort; }
+            get => this._newListenerPort;
             set
             {
                 this._newListenerPort = value;
@@ -281,8 +261,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string TargetGroup
         {
-            get { return this._ctlTargetGroup.SelectedItem as string; }
-            set { this._ctlTargetGroup.SelectedItem = value; }
+            get => this._ctlTargetGroup.SelectedItem as string;
+            set => this._ctlTargetGroup.SelectedItem = value;
         }
 
         public string TargetGroupArn
@@ -340,7 +320,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         string _newTargetGroupName;
         public string NewTargetGroupName
         {
-            get { return this._newTargetGroupName; }
+            get => this._newTargetGroupName;
             set
             {
                 this._newTargetGroupName = value;
@@ -348,15 +328,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
-        public bool CreateNewTargetGroup
-        {
-            get { return this._ctlTargetGroup.SelectedIndex == 0; }
-        }
+        public bool CreateNewTargetGroup => this._ctlTargetGroup.SelectedIndex == 0;
 
         string _pathPattern;
         public string PathPattern
         {
-            get { return this._pathPattern; }
+            get => this._pathPattern;
             set
             {
                 this._pathPattern = value;
@@ -367,7 +344,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         string _healthCheckPath;
         public string HealthCheckPath
         {
-            get { return this._healthCheckPath; }
+            get => this._healthCheckPath;
             set
             {
                 this._healthCheckPath = value;

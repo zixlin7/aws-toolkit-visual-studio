@@ -48,7 +48,7 @@ namespace Amazon.ECS.Tools.Commands
                 }
                 return this._cweClient;
             }
-            set { this._cweClient = value; }
+            set => this._cweClient = value;
         }
 
         IAmazonCloudWatchLogs _cwlClient;
@@ -67,7 +67,7 @@ namespace Amazon.ECS.Tools.Commands
                 }
                 return this._cwlClient;
             }
-            set { this._cwlClient = value; }
+            set => this._cwlClient = value;
         }
 
         IAmazonECR _ecrClient;
@@ -86,7 +86,7 @@ namespace Amazon.ECS.Tools.Commands
                 }
                 return this._ecrClient;
             }
-            set { this._ecrClient = value; }
+            set => this._ecrClient = value;
         }
 
         IAmazonECS _ecsClient;
@@ -105,7 +105,7 @@ namespace Amazon.ECS.Tools.Commands
                 }
                 return this._ecsClient;
             }
-            set { this._ecsClient = value; }
+            set => this._ecsClient = value;
         }
 
         IAmazonEC2 _ec2Client;
@@ -124,7 +124,7 @@ namespace Amazon.ECS.Tools.Commands
                 }
                 return this._ec2Client;
             }
-            set { this._ec2Client = value; }
+            set => this._ec2Client = value;
         }
 
         public bool IsFargateLaunch(string property)

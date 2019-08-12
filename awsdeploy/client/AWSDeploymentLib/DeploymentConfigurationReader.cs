@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.IO;
 using Amazon.Runtime.CredentialManagement;
 
@@ -316,20 +315,9 @@ namespace AWSDeployment
                 setParameters.Add(paramName, new ConfigurationParameter{ LineNumber = lineNumber, Value = paramValue});
         }
 
-        public string[] ParameterSetNames
-        {
-            get
-            {
-                return parameterSets.Keys.ToArray<string>();
-            }
-        }
+        public string[] ParameterSetNames => parameterSets.Keys.ToArray<string>();
 
-        public Dictionary<string, ConfigurationParameter> this[string setName]
-        {
-            get {
-                return parameterSets.ContainsKey(setName) ? parameterSets[setName] : null;
-            }
-        }
+        public Dictionary<string, ConfigurationParameter> this[string setName] => parameterSets.ContainsKey(setName) ? parameterSets[setName] : null;
 
         void ParseKey(string paramKey, out string paramSection, out string paramName)
         {

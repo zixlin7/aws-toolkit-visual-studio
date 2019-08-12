@@ -87,7 +87,7 @@ namespace Amazon.AWSToolkit.DynamoDB.View.Columns
             return !_schemaElement.IsPrimaryKeyElement;
         }
 
-        private bool IsKeyBinary { get { return this._schemaElement.AttributeType == DynamoDBConstants.TYPE_BINARY; } }
+        private bool IsKeyBinary => this._schemaElement.AttributeType == DynamoDBConstants.TYPE_BINARY;
 
         protected override bool CommitCellEdit(FrameworkElement editingElement)
         {

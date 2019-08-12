@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Linq;
 using System.Reflection;
-using System.IO;
-using System.Text;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Controls;
 
 using Amazon.AWSToolkit.Util;
@@ -42,10 +36,7 @@ namespace Amazon.AWSToolkit.EC2.View.DataGrid
             this._parentGrid.BeginPersistingPreferences();            
         }
 
-        public EC2ColumnDefinition Definition
-        {
-            get { return this._definition; }
-        }
+        public EC2ColumnDefinition Definition => this._definition;
 
         public string GetTextValue(object dataItem)
         {

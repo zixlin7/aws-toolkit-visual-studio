@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Windows.Threading;
-
+﻿using System.Linq;
 using Amazon.RDS;
 using Amazon.RDS.Model;
 
@@ -29,18 +23,9 @@ namespace Amazon.AWSToolkit.RDS.Nodes
             this._rdsClient = viewModel.RDSClient;
         }
 
-        public IAmazonRDS RDSClient
-        {
-            get { return this._rdsClient; }
-        }
+        public IAmazonRDS RDSClient => this._rdsClient;
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.DBInstances.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.DBInstances.png";
 
         protected override void LoadChildren()
         {
@@ -53,10 +38,7 @@ namespace Amazon.AWSToolkit.RDS.Nodes
             BeginCopingChildren(items);
         }
 
-        public RegionEndPointsManager.EndPoint CurrentEndPoint
-        {
-            get { return this._rootViewModel.CurrentEndPoint; }
-        }
+        public RegionEndPointsManager.EndPoint CurrentEndPoint => this._rootViewModel.CurrentEndPoint;
 
         public void RemoveDBInstance(string dbIdentifier)
         {

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Text;
-
 using TemplateWizard.ThirdParty.Json.LitJson;
 
 namespace Amazon.AWSToolkit.Persistence
@@ -32,10 +30,7 @@ namespace Amazon.AWSToolkit.Persistence
 
         #region Public methods
 
-        public static PersistenceManager Instance
-        {
-            get { return INSTANCE; }
-        }
+        public static PersistenceManager Instance => INSTANCE;
 
         public SettingsCollection GetSettings(string type)
         {

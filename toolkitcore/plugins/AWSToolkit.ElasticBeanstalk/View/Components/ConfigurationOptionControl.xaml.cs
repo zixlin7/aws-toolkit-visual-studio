@@ -27,21 +27,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
     {
         #region Properties
 
-        private bool IsDesignMode
-        {
-            get
-            {
-                return System.ComponentModel.DesignerProperties.GetIsInDesignMode(this);
-            }
-        }
+        private bool IsDesignMode => System.ComponentModel.DesignerProperties.GetIsInDesignMode(this);
 
-        public EnvironmentConfigModel ConfigModel
-        {
-            get
-            {
-                return this.DataContext as EnvironmentConfigModel;
-            }
-        }
+        public EnvironmentConfigModel ConfigModel => this.DataContext as EnvironmentConfigModel;
 
         public ConfigurationOptionDescription OptionDescription
         {
@@ -392,7 +380,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
     {
         #region Properties
 
-        public ConfigurationOptionDescription OptionDescription { get; private set; }
+        public ConfigurationOptionDescription OptionDescription { get; }
 
         #endregion
 

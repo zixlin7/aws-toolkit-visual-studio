@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Text;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -56,10 +51,7 @@ namespace Amazon.AWSToolkit.EC2.View.DataGrid
             this._parentGrid.BeginPersistingPreferences();
         }
 
-        public EC2ColumnDefinition Definition
-        {
-            get { return this._definition; }
-        }
+        public EC2ColumnDefinition Definition => this._definition;
 
         protected override FrameworkElement GenerateElement(DataGridCell cell, object dataItem)
         {

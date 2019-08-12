@@ -1,18 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.CloudFront.Nodes;
-using Amazon.AWSToolkit.S3.Nodes;
 using Amazon.AWSToolkit.CloudFront.View;
 using Amazon.AWSToolkit.CloudFront.Model;
-using Amazon.AWSToolkit;
-
-using Amazon.CloudFront;
 using Amazon.CloudFront.Model;
 
 namespace Amazon.AWSToolkit.CloudFront.Controller
@@ -39,15 +30,9 @@ namespace Amazon.AWSToolkit.CloudFront.Controller
             return new ActionResults().WithSuccess(true);
         }
 
-        public string Title
-        {
-            get { return this._rootModel.Name; }
-        }
+        public string Title => this._rootModel.Name;
 
-        public string UniqueId
-        {
-            get { return "Distribtion: " + this._rootModel.DistributionId; }
-        }
+        public string UniqueId => "Distribtion: " + this._rootModel.DistributionId;
 
         public override void LoadModel()
         {
@@ -81,10 +66,7 @@ namespace Amazon.AWSToolkit.CloudFront.Controller
             }
         }
 
-        public EditDistributionConfigModel Model
-        {
-            get { return this._model; }
-        }
+        public EditDistributionConfigModel Model => this._model;
 
         public bool Persist()
         {

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
-
 using Amazon.CloudWatchEvents.Model;
 
 namespace Amazon.AWSToolkit.ECS.Model
@@ -18,8 +14,8 @@ namespace Amazon.AWSToolkit.ECS.Model
             this._nativeTargets = targets;
         }
 
-        public Rule NativeRule { get { return this._nativeRule; } }
-        public IList<Target> NativeTargets { get { return this._nativeTargets; } }
+        public Rule NativeRule => this._nativeRule;
+        public IList<Target> NativeTargets => this._nativeTargets;
 
         public string TaskDefinitions
         {

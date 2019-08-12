@@ -338,11 +338,9 @@ namespace Microsoft.VisualStudio.Project
 		/// True if the project is added to the solution after the solution is opened. false if the project is added to the solution while the solution is being opened.
 		/// </summary>
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		internal bool Added
-		{
-			get { return this.added; }
-		}
-		#endregion
+		internal bool Added => this.added;
+
+        #endregion
 
 		#region ctor
 		internal AfterProjectFileOpenedEventArgs(bool added)
@@ -363,11 +361,9 @@ namespace Microsoft.VisualStudio.Project
 		/// true if the project was removed from the solution before the solution was closed. false if the project was removed from the solution while the solution was being closed.
 		/// </summary>
 		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		internal bool Removed
-		{
-			get { return this.removed; }
-		}
-		#endregion
+		internal bool Removed => this.removed;
+
+        #endregion
 
 		#region ctor
 		internal BeforeProjectFileClosedEventArgs(bool removed)
@@ -389,11 +385,8 @@ namespace Microsoft.VisualStudio.Project
 			this.child = child;
 		}
 
-		public HierarchyNode Child
-		{
-			get { return this.child; }
-		}
-	}
+		public HierarchyNode Child => this.child;
+    }
 
 	/// <summary>
 	/// Event args class for triggering file change event arguments.
@@ -433,38 +426,20 @@ namespace Microsoft.VisualStudio.Project
 		/// Gets the file name that was changed on disk.
 		/// </summary>
 		/// <value>The file that was changed on disk.</value>
-		internal string FileName
-		{
-			get
-			{
-				return this.fileName;
-			}
-		}
+		internal string FileName => this.fileName;
 
-		/// <summary>
+        /// <summary>
 		/// Gets item id of the file that has changed
 		/// </summary>
 		/// <value>The file that was changed on disk.</value>
-		internal uint ItemID
-		{
-			get
-			{
-				return this.itemID;
-			}
-		}
+		internal uint ItemID => this.itemID;
 
-		/// <summary>
+        /// <summary>
 		/// The reason while the file has chnaged on disk.
 		/// </summary>
 		/// <value>The reason while the file has chnaged on disk.</value>
-		internal _VSFILECHANGEFLAGS FileChangeFlag
-		{
-			get
-			{
-				return this.fileChangeFlag;
-			}
-		}
-	}
+		internal _VSFILECHANGEFLAGS FileChangeFlag => this.fileChangeFlag;
+    }
 
 	/// <summary>
 	/// Defines the event args for the active configuration chnage event.
@@ -490,14 +465,8 @@ namespace Microsoft.VisualStudio.Project
 		/// <summary>
 		/// The hierarchy whose configuration has changed 
 		/// </summary>
-		internal IVsHierarchy Hierarchy
-		{
-			get
-			{
-				return this.hierarchy;
-			}
-		}
-	}
+		internal IVsHierarchy Hierarchy => this.hierarchy;
+    }
 
 	/// <summary>
 	/// Argument of the event raised when a project property is changed.
@@ -516,19 +485,10 @@ namespace Microsoft.VisualStudio.Project
 			this.newValue = newValue;
 		}
 
-		public string NewValue
-		{
-			get { return newValue; }
-		}
+		public string NewValue => newValue;
 
-		public string OldValue
-		{
-			get { return oldValue; }
-		}
+        public string OldValue => oldValue;
 
-		public string PropertyName
-		{
-			get { return propertyName; }
-		}
-	}
+        public string PropertyName => propertyName;
+    }
 }

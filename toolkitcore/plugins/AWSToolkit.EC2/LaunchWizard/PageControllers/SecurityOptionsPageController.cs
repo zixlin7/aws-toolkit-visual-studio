@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Windows.Controls;
 
 using Amazon.AWSToolkit.CommonUI;
@@ -23,32 +20,17 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
 
         #region IAWSWizardPageController Members
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageTitle
-        {
-            get { return "Security"; }
-        }
+        public string PageTitle => "Security";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "Define the key pair and security group (firewall) options for the instance(s)."; }
-        }
+        public string PageDescription => "Define the key pair and security group (firewall) options for the instance(s).";
 
         public void ResetPage()
         {

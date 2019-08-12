@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Text;
-
-using Amazon.S3.Model;
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.S3.Model
@@ -25,7 +21,7 @@ namespace Amazon.AWSToolkit.S3.Model
         private string _id;
         public string Id
         {
-            get { return this._id; }
+            get => this._id;
             set 
             { 
                 this._id = value;
@@ -36,7 +32,7 @@ namespace Amazon.AWSToolkit.S3.Model
         Service _service;
         public Service TargetService
         {
-            get { return this._service; }
+            get => this._service;
             set
             {
                 this._service = value;
@@ -67,7 +63,7 @@ namespace Amazon.AWSToolkit.S3.Model
         string _resourceArn;
         public string ResourceArn
         {
-            get { return this._resourceArn; }
+            get => this._resourceArn;
             set
             {
                 this._resourceArn = value;
@@ -79,7 +75,7 @@ namespace Amazon.AWSToolkit.S3.Model
         string _prefix;
         public string Prefix
         {
-            get { return this._prefix; }
+            get => this._prefix;
             set
             {
                 this._prefix = value;
@@ -90,7 +86,7 @@ namespace Amazon.AWSToolkit.S3.Model
         string _suffix;
         public string Suffix
         {
-            get { return this._suffix; }
+            get => this._suffix;
             set
             {
                 this._suffix = value;
@@ -101,7 +97,7 @@ namespace Amazon.AWSToolkit.S3.Model
         string _invocationRoleArn;
         public string InvocationRoleArn
         {
-            get { return this._invocationRoleArn; }
+            get => this._invocationRoleArn;
             set
             {
                 this._invocationRoleArn = value;
@@ -142,10 +138,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
 
         ObservableCollection<Amazon.S3.EventType> _eventTypes = new ObservableCollection<Amazon.S3.EventType>();
-        public ObservableCollection<Amazon.S3.EventType> EventTypes
-        {
-            get { return this._eventTypes; }
-        }
+        public ObservableCollection<Amazon.S3.EventType> EventTypes => this._eventTypes;
 
         public string FormattedEventTypes
         {

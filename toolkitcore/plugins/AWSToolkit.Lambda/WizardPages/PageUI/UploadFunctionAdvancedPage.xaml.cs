@@ -13,12 +13,10 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Threading.Tasks;
 
 using Amazon.IdentityManagement.Model;
-using Amazon.Lambda.Tools;
 using Amazon.AWSToolkit.Lambda.Model;
 using System.Net;
 using Amazon.AWSToolkit.Lambda.View;
@@ -35,7 +33,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionAdvancedPage));
 
-        private IAWSWizardPageController PageController { get; set; }
+        private IAWSWizardPageController PageController { get; }
 
         public UploadFunctionAdvancedPage()
         {
@@ -86,22 +84,16 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
         }
 
-        public ObservableCollection<EnvironmentVariable> EnvironmentVariables { get; private set; }
+        public ObservableCollection<EnvironmentVariable> EnvironmentVariables { get; }
 
-        public ObservableCollection<SelectableItem<SecurityGroupWrapper>> AvailableSecurityGroups
-        {
-            get { return _ctlSecurityGroups.AvailableSecurityGroups; }
-        }
+        public ObservableCollection<SelectableItem<SecurityGroupWrapper>> AvailableSecurityGroups => _ctlSecurityGroups.AvailableSecurityGroups;
 
         public void SetAvailableSecurityGroups(IEnumerable<SecurityGroup> existingGroups, string autoSelectGroup, string[] seedSecurityGroupsIds)
         {
             _ctlSecurityGroups.SetAvailableSecurityGroups(existingGroups, autoSelectGroup, seedSecurityGroupsIds);
         }
 
-        public ObservableCollection<SelectableItem<VpcAndSubnetWrapper>> AvailableVpcSubnets
-        {
-            get { return _ctlVpcSubnets.AvailableVpcSubnets; }
-        }
+        public ObservableCollection<SelectableItem<VpcAndSubnetWrapper>> AvailableVpcSubnets => _ctlVpcSubnets.AvailableVpcSubnets;
 
         public void SetAvailableVpcSubnets(IEnumerable<Vpc> vpcs, IEnumerable<Subnet> subnets, string[] seedSubnetIds)
         {
@@ -143,45 +135,15 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             _ctlDLQ.SetAvailableDLQTargets(topicArns, queueArns, defaultSelection);
         }
 
-        public string SelectedDLQTargetArn
-        {
-            get
-            {
-                return this._ctlDLQ.SelectedArn;
-            }
-        }
+        public string SelectedDLQTargetArn => this._ctlDLQ.SelectedArn;
 
-        public bool IsEnableActiveTracing
-        {
-            get
-            {
-                return this._ctlEnableActiveTracing.IsChecked.GetValueOrDefault();
-            }
-        }
+        public bool IsEnableActiveTracing => this._ctlEnableActiveTracing.IsChecked.GetValueOrDefault();
 
-        public IEnumerable<SubnetWrapper> SelectedSubnets
-        {
-            get
-            {
-                return _ctlVpcSubnets.SelectedSubnets;
-            }
-        }
+        public IEnumerable<SubnetWrapper> SelectedSubnets => _ctlVpcSubnets.SelectedSubnets;
 
-        public IEnumerable<SecurityGroupWrapper> SelectedSecurityGroups
-        {
-            get
-            {
-                return _ctlSecurityGroups.SelectedSecurityGroups;
-            }
-        }
+        public IEnumerable<SecurityGroupWrapper> SelectedSecurityGroups => _ctlSecurityGroups.SelectedSecurityGroups;
 
-        public bool SubnetsSpanVPCs
-        {
-            get
-            {
-                return _ctlVpcSubnets.SubnetsSpanVPCs;
-            }
-        }
+        public bool SubnetsSpanVPCs => _ctlVpcSubnets.SubnetsSpanVPCs;
 
         public void SetXRayAvailability(bool xrayIsAvailable)
         {
@@ -304,10 +266,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             IntializeIAMPickerForAccountAsync(role);
         }
 
-        private IAMRolePicker IAMPicker
-        {
-            get { return this._ctlIAMRolePicker; }
-        }
+        private IAMRolePicker IAMPicker => this._ctlIAMRolePicker;
 
         public Amazon.IdentityManagement.Model.Role SelectedRole
         {
@@ -331,22 +290,10 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
         }
 
-        public int Memory
-        {
-            get
-            {
-                return _ctlMemory != null ? (int)_ctlMemory.SelectedValue : -1;
-            }
-        }
+        public int Memory => _ctlMemory != null ? (int)_ctlMemory.SelectedValue : -1;
 
 
-        public int Timeout
-        {
-            get
-            {
-                return _ctlTimeout != null ? int.Parse(_ctlTimeout.Text) : -1;
-            }
-        }
+        public int Timeout => _ctlTimeout != null ? int.Parse(_ctlTimeout.Text) : -1;
 
         public ICollection<EnvironmentVariable> SelectedEnvironmentVariables
         {
@@ -362,13 +309,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
         }
 
-        public KeyListEntry SelectedKMSKey
-        {
-            get
-            {
-                return _ctlKMSKey.SelectedKey;
-            }
-        }
+        public KeyListEntry SelectedKMSKey => _ctlKMSKey.SelectedKey;
 
         private void IntializeIAMPickerForAccountAsync(string selectedRole)
         {
@@ -485,13 +426,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         /// warnings if any need to be fixed or re-considered. This is only called on forward
         /// navigation, so we know the required fields have been set by this point.
         /// </summary>
-        public bool IsValid
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public bool IsValid => true;
 
         private void AddVariable_Click(object sender, RoutedEventArgs e)
         {

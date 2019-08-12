@@ -66,7 +66,7 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
             _passwordValidationMsg.Text = string.Empty;
         }
 
-        public ObservableCollection<DBEngineVersion> EngineVersions { get { return _engineVersions; } }
+        public ObservableCollection<DBEngineVersion> EngineVersions => _engineVersions;
 
         public void SetAvailableEngineVersions(IEnumerable<DBEngineVersion> engineVersions)
         {
@@ -89,15 +89,9 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
             }
         }
 
-        public ObservableCollection<SelectableGroup<SecurityGroupInfo>> SecurityGroups { get { return _securityGroups; } }
+        public ObservableCollection<SelectableGroup<SecurityGroupInfo>> SecurityGroups => _securityGroups;
 
-        public List<SecurityGroupInfo> SelectedSecurityGroups
-        {
-            get
-            {
-                return (from g in _securityGroups where g.IsSelected select g.InnerObject).ToList();
-            }
-        }
+        public List<SecurityGroupInfo> SelectedSecurityGroups => (from g in _securityGroups where g.IsSelected select g.InnerObject).ToList();
 
         internal void SetSecurityGroups(IEnumerable<DBSecurityGroup> securityGroups)
         {
@@ -161,7 +155,7 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
             _dbSecurityGroups.IsEnabled = _securityGroups.Count() > 0;
         }
 
-        public ObservableCollection<DBParameterGroup> ParameterGroups {  get { return _parameterGroups; } }
+        public ObservableCollection<DBParameterGroup> ParameterGroups => _parameterGroups;
 
         public void SetAvailableParameterGroups(IEnumerable<DBParameterGroup> parameterGroups)
         {
@@ -197,20 +191,11 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
             }
         }
 
-        public DBInstanceClass InstanceClass
-        {
-            get { return this._instanceClass.SelectedItem as DBInstanceClass; }
-        }
+        public DBInstanceClass InstanceClass => this._instanceClass.SelectedItem as DBInstanceClass;
 
-        public bool IsMultiAZ
-        {
-            get { return this._btnMultiAZDeployment.IsEnabled && this._btnMultiAZDeployment.IsChecked == true; }
-        }
+        public bool IsMultiAZ => this._btnMultiAZDeployment.IsEnabled && this._btnMultiAZDeployment.IsChecked == true;
 
-        public bool AutoUpgradeMinorVersions
-        {
-            get { return this._btnAutoUpgradeMinorVersions.IsChecked == true; }
-        }
+        public bool AutoUpgradeMinorVersions => this._btnAutoUpgradeMinorVersions.IsChecked == true;
 
         public int Storage
         {
@@ -229,19 +214,11 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
             }
         }
 
-        public bool IsPasswordValid
-        {
-            get
-            {
-                return PasswordAndConfirmationMatch(_txtMasterUserPassword.Password, _txtPasswordConfirmation.Password) == true
-                        && string.IsNullOrEmpty(PasswordMeetsEngineRequirements(_txtMasterUserPassword.Password));
-            }
-        }
+        public bool IsPasswordValid =>
+            PasswordAndConfirmationMatch(_txtMasterUserPassword.Password, _txtPasswordConfirmation.Password) == true
+            && string.IsNullOrEmpty(PasswordMeetsEngineRequirements(_txtMasterUserPassword.Password));
 
-        public string MasterUserPassword
-        {
-            get { return _txtMasterUserPassword.Password; }
-        }
+        public string MasterUserPassword => _txtMasterUserPassword.Password;
 
         // return null on no selection so we can detect 'no change/don't care' scenario
         public string DBParameterGroup

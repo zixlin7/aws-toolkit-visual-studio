@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Windows.Media;
-
+﻿using System.Collections.ObjectModel;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.DynamoDB.Util;
-
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
-using Amazon.DynamoDBv2.DocumentModel;
 
 namespace Amazon.AWSToolkit.DynamoDB.Model
 {
@@ -21,7 +10,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         int _port = DynamoDBLocalManager.Instance.LastConfiguredPort;
         public int Port
         {
-            get { return this._port; }
+            get => this._port;
             set
             {
                 this._port = value;
@@ -33,7 +22,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         string _javaPath;
         public string JavaPath
         {
-            get { return this._javaPath; }
+            get => this._javaPath;
             set
             {
                 this._javaPath = value;
@@ -44,7 +33,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         bool _startNew = true;
         public bool StartNew
         {
-            get { return this._startNew; }
+            get => this._startNew;
             set
             {
                 this._startNew = value;
@@ -55,7 +44,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         ObservableCollection<DynamoDBLocalManager.DynamoDBLocalVersion> _versions;
         public ObservableCollection<DynamoDBLocalManager.DynamoDBLocalVersion> Versions
         {
-            get { return this._versions; }
+            get => this._versions;
             set
             {
                 this._versions = value;
@@ -66,7 +55,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         DynamoDBLocalManager.DynamoDBLocalVersion _selectedVersion;
         public DynamoDBLocalManager.DynamoDBLocalVersion SelectedVersion
         {
-            get { return this._selectedVersion; }
+            get => this._selectedVersion;
             set
             {
                 this._selectedVersion = value;

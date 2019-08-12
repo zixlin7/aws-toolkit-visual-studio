@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -35,18 +31,12 @@ namespace Amazon.AWSToolkit.SNS.Nodes
             topicModel.SNSRootViewModel.RemoveTopic(focus.Name);
         }
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList(
-                    new ActionHandlerWrapper("View Topic", OnViewTopic, null, true, null,null),
-                    new ActionHandlerWrapper("Edit Policy", OnEditPolicy, null, false, null, "policy.png"),
-                    null,
-                    new ActionHandlerWrapper("Delete", OnDelete, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false, null, "delete.png")
-                    );
-            }
-        }
-
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(
+                new ActionHandlerWrapper("View Topic", OnViewTopic, null, true, null,null),
+                new ActionHandlerWrapper("Edit Policy", OnEditPolicy, null, false, null, "policy.png"),
+                null,
+                new ActionHandlerWrapper("Delete", OnDelete, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false, null, "delete.png")
+            );
     }
 }

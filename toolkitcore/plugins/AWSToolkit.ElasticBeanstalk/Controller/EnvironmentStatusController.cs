@@ -1,30 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Windows;
-using System.Windows.Threading;
-
 using System.Windows.Controls.DataVisualization.Charting;
 using Amazon.AutoScaling;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
 using Amazon.AWSToolkit.ElasticBeanstalk.View;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.EC2.Nodes;
-using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.SimpleWorkers;
 using Amazon.EC2;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
-
-using Amazon;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using Amazon.ElasticLoadBalancing;
@@ -95,10 +85,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
                     .WithSuccess(true);
         }
 
-        public EnvironmentStatusModel Model
-        {
-            get { return this._statusModel; }
-        }
+        public EnvironmentStatusModel Model => this._statusModel;
 
         public void LoadModel()
         {

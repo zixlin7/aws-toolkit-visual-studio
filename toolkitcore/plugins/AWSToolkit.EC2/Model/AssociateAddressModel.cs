@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
 using Amazon.EC2.Model;
 using Amazon.AWSToolkit.CommonUI;
 
@@ -19,10 +16,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         AddressWrapper _address;
         public AddressWrapper Address
         {
-            get
-            {
-                return this._address;
-            }
+            get => this._address;
             set
             {
                 this._address = value;
@@ -33,10 +27,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         InstanceItem _instanceId;
         public InstanceItem Instance
         {
-            get
-            {
-                return this._instanceId;
-            }
+            get => this._instanceId;
             set
             {
                 this._instanceId = value;
@@ -66,13 +57,11 @@ namespace Amazon.AWSToolkit.EC2.Model
             public string InstanceId
             {
                 get;
-                private set;
             }
 
             public string DisplayName
             {
                 get;
-                private set;
             }
         }
     }

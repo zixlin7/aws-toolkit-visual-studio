@@ -38,53 +38,29 @@ namespace Microsoft.VisualStudio.Project
 
 		internal string DefaultProjectExtensionValue
 		{
-			get
-			{
-				return this.defaultProjectExtension;
-			}
-			set
-			{
-				this.defaultProjectExtension = value;
-			}
-		}
+			get => this.defaultProjectExtension;
+            set => this.defaultProjectExtension = value;
+        }
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		internal string ProjectTemplatesDirValue
 		{
-			get
-			{
-				return this.projectTemplatesDir;
-			}
-			set
-			{
-				this.projectTemplatesDir = value;
-			}
-		}
+			get => this.projectTemplatesDir;
+            set => this.projectTemplatesDir = value;
+        }
 
 		internal string WizardTemplatesDirValue
 		{
-			get
-			{
-				return this.wizardTemplatesDir;
-			}
-			set
-			{
-				this.wizardTemplatesDir = value;
-			}
-		}
+			get => this.wizardTemplatesDir;
+            set => this.wizardTemplatesDir = value;
+        }
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		internal Guid PackageGuidValue
 		{
-			get
-			{
-				return this.packageGuid;
-			}
-			set
-			{
-				this.packageGuid = value;
-			}
-		}
+			get => this.packageGuid;
+            set => this.packageGuid = value;
+        }
 
 		/// <summary>
 		/// If the project support VsTemplates, returns the path to

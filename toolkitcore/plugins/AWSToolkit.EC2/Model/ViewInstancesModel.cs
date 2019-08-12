@@ -1,35 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
-
-using Amazon.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.Model
 {
     public class ViewInstancesModel : BaseModel
     {
         ObservableCollection<RunningInstanceWrapper> _runningInstances = new ObservableCollection<RunningInstanceWrapper>();
-        public ObservableCollection<RunningInstanceWrapper> RunningInstances
-        {
-            get { return this._runningInstances; }
-        }
+        public ObservableCollection<RunningInstanceWrapper> RunningInstances => this._runningInstances;
 
         IList<RunningInstanceWrapper> _selectedInstances = new List<RunningInstanceWrapper>();
-        public IList<RunningInstanceWrapper> SelectedInstances
-        {
-            get { return this._selectedInstances; }
-        }
-       
+        public IList<RunningInstanceWrapper> SelectedInstances => this._selectedInstances;
+
         RunningInstanceWrapper _focusInstance;
         public RunningInstanceWrapper FocusInstance
         {
-            get { return this._focusInstance; }
+            get => this._focusInstance;
             set
             {
                 this._focusInstance = value;
@@ -52,13 +39,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
 
-        public string[] ListInstanceAvailableTags
-        {
-            get
-            {
-                return EC2ColumnDefinition.GetListAvailableTags(this.RunningInstances);
-            }
-        }
+        public string[] ListInstanceAvailableTags => EC2ColumnDefinition.GetListAvailableTags(this.RunningInstances);
 
         EC2ColumnDefinition[] _volumePropertytColumnDefinitions;
         public EC2ColumnDefinition[] VolumePropertyColumnDefinitions

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -12,7 +8,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _name;
         public string Name
         {
-            get { return this._name; }
+            get => this._name;
             set
             {
                 this._name = value;
@@ -23,7 +19,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _description;
         public string Description
         {
-            get { return this._description; }
+            get => this._description;
             set
             {
                 this._description = value;

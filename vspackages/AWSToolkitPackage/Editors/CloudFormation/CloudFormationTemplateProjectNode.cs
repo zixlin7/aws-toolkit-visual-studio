@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -50,10 +47,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
                 this.ImageHandler.AddImage(img);
         }
 
-        public override int ImageIndex
-        {
-            get { return cloudFormationProjectImageIndex; }
-        }
+        public override int ImageIndex => cloudFormationProjectImageIndex;
 
         public int SaveProjectToLocation(string pszProjectFilename)
         {
@@ -108,15 +102,9 @@ namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
             return VSConstants.S_OK;
         }
 
-        public override Guid ProjectGuid
-        {
-            get { return GuidList.guidCloudFormationTemplateProjectFactory; }
-        }
+        public override Guid ProjectGuid => GuidList.guidCloudFormationTemplateProjectFactory;
 
-        public override string ProjectType
-        {
-            get { return "AWS CloudFormation"; }
-        }
+        public override string ProjectType => "AWS CloudFormation";
 
         public override void AddFileFromTemplate(string source, string target)
         {
@@ -221,14 +209,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
 
         #region IErrorListReporter Implementation
 
-        Microsoft.VisualStudio.Shell.TaskProvider.TaskCollection IErrorListReporter.Tasks
-        {
-            get
-            {
-                
-                return this.TaskProvider.Tasks;
-            }           
-        }
+        Microsoft.VisualStudio.Shell.TaskProvider.TaskCollection IErrorListReporter.Tasks => this.TaskProvider.Tasks;
 
         bool IErrorListReporter.Navigate(Microsoft.VisualStudio.Shell.Task task, Guid logicalView)
         {            

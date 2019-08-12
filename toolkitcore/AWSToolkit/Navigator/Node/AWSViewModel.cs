@@ -1,22 +1,16 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Timers;
-using System.ComponentModel;
 using System.Windows;
-using System.Windows.Threading;
-
 using Amazon.Runtime;
 using Amazon.Runtime.Internal.Settings;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.MobileAnalytics;
 using log4net;
-using Amazon.Util;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.Runtime.CredentialManagement.Internal;
 using Amazon.AWSToolkit.Shared;
@@ -153,21 +147,9 @@ namespace Amazon.AWSToolkit.Navigator.Node
             }
         }
 
-        public ObservableCollection<AccountViewModel> RegisteredAccounts
-        {
-            get
-            {
-                return this._accounts;
-            }
-        }
+        public ObservableCollection<AccountViewModel> RegisteredAccounts => this._accounts;
 
-        public override ObservableCollection<IViewModel> Children
-        {
-            get
-            {
-                return new ObservableCollection<IViewModel>();
-            }
-        }
+        public override ObservableCollection<IViewModel> Children => new ObservableCollection<IViewModel>();
 
         public AccountViewModel AccountFromIdentityKey(string identityKey)
         {
@@ -314,13 +296,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
         {
         }
 
-        public override bool FailedToLoadChildren
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public override bool FailedToLoadChildren => false;
 
         private IEnumerable<string> GetCandidateCredentialPaths()
         {
@@ -378,7 +354,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
     internal class AccountViewModelEqualityComparer : IEqualityComparer<AccountViewModel>
     {
         private static AccountViewModelEqualityComparer _instance = new AccountViewModelEqualityComparer();
-        public static AccountViewModelEqualityComparer Instance { get { return _instance; } }
+        public static AccountViewModelEqualityComparer Instance => _instance;
 
         #region IEqualityComparer<AccountViewModel> Members
 

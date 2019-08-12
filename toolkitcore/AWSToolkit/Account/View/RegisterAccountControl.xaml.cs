@@ -1,20 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.Account.Model;
 using Amazon.AWSToolkit.Account.Controller;
 
 namespace Amazon.AWSToolkit.Account.View
@@ -81,17 +70,11 @@ namespace Amazon.AWSToolkit.Account.View
             return true;
         }
 
-        public override string MetricId
-        {
-            get { return this.GetType().FullName; }
-        }
+        public override string MetricId => this.GetType().FullName;
 
         // used to make the explanatory label of why a profile named 'default'
         // is useful. Not needed if user already has 'default' set up.
-        public bool PromptToUseDefaultName
-        {
-            get { return _controller.PromptToUseDefaultName; }
-        }
+        public bool PromptToUseDefaultName => _controller.PromptToUseDefaultName;
 
         public override bool OnCommit()
         {

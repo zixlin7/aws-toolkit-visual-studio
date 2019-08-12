@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.Lambda.View.DesignData
@@ -27,10 +22,7 @@ namespace Amazon.AWSToolkit.Lambda.View.DesignData
             });
         }
 
-        public ICollection<EventSourceMock> EventSources
-        {
-            get { return this; }
-        }
+        public ICollection<EventSourceMock> EventSources => this;
 
         public EventSourceMock SelectedEventSource { get; set; }
     }

@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
-using System.Windows;
 using System.Windows.Threading;
 
 using Amazon.AWSToolkit.Navigator;
@@ -18,15 +13,10 @@ using Amazon.AWSToolkit.S3.View;
 using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.Clipboard;
 using Amazon.AWSToolkit.CloudFront.Nodes;
-using Amazon.AWSToolkit.Lambda.Nodes;
-using Amazon.AWSToolkit;
-
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
 using Amazon.S3.IO;
-
-using Amazon.CloudFront;
 using Amazon.CloudFront.Model;
 
 using log4net;
@@ -95,36 +85,15 @@ namespace Amazon.AWSToolkit.S3.Controller
             }            
         }
 
-        public BucketBrowserModel Model
-        {
-            get { return this._browserModel; }
-        }
+        public BucketBrowserModel Model => this._browserModel;
 
-        public string BucketName
-        {
-            get
-            {
-                return this._bucketName;
-            }
-        }
+        public string BucketName => this._bucketName;
 
-        public IAmazonS3 S3Client
-        {
-            get { return this._s3Client; }
-        }
+        public IAmazonS3 S3Client => this._s3Client;
 
-        public S3RootViewModel S3RootViewModel
-        {
-            get
-            {
-                return this._s3RootViewModel;
-            }
-        }
+        public S3RootViewModel S3RootViewModel => this._s3RootViewModel;
 
-        public IS3ClipboardContainer ClipboardContainer
-        {
-            get { return this._clipboardContainer; }
-        }
+        public IS3ClipboardContainer ClipboardContainer => this._clipboardContainer;
 
         public void Refresh()
         {
@@ -406,13 +375,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             }
         }
 
-        public IList<ICloudFrontDistributionViewModel> CloudFrontDistributions
-        {
-            get
-            {
-                return connectedCloudFrontDistributions();
-            }
-        }
+        public IList<ICloudFrontDistributionViewModel> CloudFrontDistributions => connectedCloudFrontDistributions();
 
         private IList<ICloudFrontDistributionViewModel> connectedCloudFrontDistributions()
         {

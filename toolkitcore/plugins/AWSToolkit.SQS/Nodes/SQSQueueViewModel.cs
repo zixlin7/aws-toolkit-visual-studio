@@ -1,16 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Threading;
-
+﻿using System.Windows;
 using Amazon.SQS;
-using Amazon.SQS.Model;
-
 using Amazon.AWSToolkit.Navigator.Node;
 
 namespace Amazon.AWSToolkit.SQS.Nodes
@@ -32,46 +21,16 @@ namespace Amazon.AWSToolkit.SQS.Nodes
         }
 
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.SQS.Resources.EmbeddedImages.queue-node.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.SQS.Resources.EmbeddedImages.queue-node.png";
 
 
-        public string QueueUrl
-        {
-            get
-            {
-                return this._url;
-            }
-        }
+        public string QueueUrl => this._url;
 
-        public string QueueARN
-        {
-            get
-            {
-                return this.SQSClient.GetQueueARN(this.SQSRootViewModel.CurrentEndPoint.RegionSystemName, this.QueueUrl);
-            }
-        }
+        public string QueueARN => this.SQSClient.GetQueueARN(this.SQSRootViewModel.CurrentEndPoint.RegionSystemName, this.QueueUrl);
 
-        public SQSRootViewModel SQSRootViewModel
-        {
-            get
-            {
-                return this._serviceModel;
-            }
-        }
+        public SQSRootViewModel SQSRootViewModel => this._serviceModel;
 
-        public IAmazonSQS SQSClient
-        {
-            get
-            {
-                return this._sqsClient;
-            }
-        }
+        public IAmazonSQS SQSClient => this._sqsClient;
 
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {

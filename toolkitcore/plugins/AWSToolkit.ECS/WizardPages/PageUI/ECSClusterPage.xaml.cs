@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.ECS.Controller;
 using Amazon.AWSToolkit.ECS.WizardPages.PageControllers;
 using log4net;
 using System;
@@ -14,16 +13,12 @@ using Amazon.ECS;
 using Amazon.ECS.Model;
 using System.Collections.Generic;
 using System.Linq;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
-
 using static Amazon.AWSToolkit.ECS.WizardPages.ECSWizardUtils;
 using Amazon.AWSToolkit.EC2.Model;
 using System.Collections.ObjectModel;
 using Amazon.EC2.Model;
-using System.Windows.Input;
 using Amazon.AWSToolkit.EC2.Workers;
 using Amazon.AWSToolkit.SimpleWorkers;
-using System.Windows.Data;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 {
@@ -34,7 +29,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ECSClusterPage));
 
-        public ECSClusterPageController PageController { get; private set; }
+        public ECSClusterPageController PageController { get; }
 
         public ECSClusterPage()
         {
@@ -213,19 +208,16 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string Cluster
         {
-            get { return this._ctlClusterPicker.SelectedValue as string; }
-            set { this._ctlClusterPicker.SelectedValue = value; }
+            get => this._ctlClusterPicker.SelectedValue as string;
+            set => this._ctlClusterPicker.SelectedValue = value;
         }
 
-        public bool CreateNewCluster
-        {
-            get { return this._ctlClusterPicker.SelectedIndex == 0; }
-        }
+        public bool CreateNewCluster => this._ctlClusterPicker.SelectedIndex == 0;
 
         string _newClusterName;
         public string NewClusterName
         {
-            get { return _newClusterName; }
+            get => _newClusterName;
             set
             {
                 _newClusterName = value;
@@ -255,10 +247,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             NotifyPropertyChanged("Cluster");
         }
 
-        public Amazon.ECS.LaunchType LaunchType
-        {
-            get { return this._ctlLaunchTypePicker.SelectedItem as Amazon.ECS.LaunchType; }
-        }
+        public Amazon.ECS.LaunchType LaunchType => this._ctlLaunchTypePicker.SelectedItem as Amazon.ECS.LaunchType;
 
 
         private void _ctlLaunchTypePicker_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -390,7 +379,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             NotifyPropertyChanged("SecurityGroup");
         }
 
-        public ObservableCollection<SecurityGroupWrapper> AvailableSecurityGroups { get; private set; }
+        public ObservableCollection<SecurityGroupWrapper> AvailableSecurityGroups { get; }
 
         void LoadExistingSecurityGroups(string vpcId)
         {
@@ -488,15 +477,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             _ctlSubnetsPicker.SetAvailableVpcSubnets(new Vpc[0], new Subnet[0], new string[0]);
         }
 
-        public ObservableCollection<VpcAndSubnetWrapper> AvailableVpcSubnets { get; private set; }
+        public ObservableCollection<VpcAndSubnetWrapper> AvailableVpcSubnets { get; }
 
-        public IEnumerable<SubnetWrapper> SelectedSubnets
-        {
-            get
-            {
-                return _ctlSubnetsPicker.SelectedSubnets;
-            }
-        }
+        public IEnumerable<SubnetWrapper> SelectedSubnets => _ctlSubnetsPicker.SelectedSubnets;
 
         public string SecurityGroup
         {
@@ -517,16 +500,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
-        public bool CreateNewSecurityGroup
-        {
-            get { return this._ctlSecurityGroup.SelectedIndex == 0; }
-        }
+        public bool CreateNewSecurityGroup => this._ctlSecurityGroup.SelectedIndex == 0;
 
         private bool _assignPublicIpAddress;
         public bool AssignPublicIpAddress
         {
-            get { return _assignPublicIpAddress; }
-            set { this._assignPublicIpAddress = value; }
+            get => _assignPublicIpAddress;
+            set => this._assignPublicIpAddress = value;
         }
     }
 }

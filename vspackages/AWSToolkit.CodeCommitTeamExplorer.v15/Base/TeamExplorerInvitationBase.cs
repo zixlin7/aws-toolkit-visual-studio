@@ -31,55 +31,55 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.Base
 
         public bool CanConnect
         {
-            get { return _canConnect; }
+            get => _canConnect;
             set { _canConnect = value; this.RaisePropertyChanged(); }
         }
 
         public bool CanSignUp
         {
-            get { return _canSignUp; }
+            get => _canSignUp;
             set { _canSignUp = value; this.RaisePropertyChanged(); }
         }
 
         public string ConnectLabel
         {
-            get { return _connectLabel; }
+            get => _connectLabel;
             set { _connectLabel = value; this.RaisePropertyChanged(); }
         }
 
         public string Description
         {
-            get { return _description; }
+            get => _description;
             set { _description = value; this.RaisePropertyChanged(); }
         }
 
         public object Icon
         {
-            get { return _icon; }
+            get => _icon;
             set { _icon = value; this.RaisePropertyChanged(); }
         }
 
         public bool IsVisible
         {
-            get { return _isVisible; }
+            get => _isVisible;
             set { _isVisible = value; this.RaisePropertyChanged(); }
         }
 
         public string Name
         {
-            get { return _name; }
+            get => _name;
             set { _name = value; this.RaisePropertyChanged(); }
         }
 
         public string Provider
         {
-            get { return _provider; }
+            get => _provider;
             set { _provider = value; this.RaisePropertyChanged(); }
         }
 
         public string SignUpLabel
         {
-            get { return _signUpLabel; }
+            get => _signUpLabel;
             set { _signUpLabel = value; this.RaisePropertyChanged(); }
         }
 

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Interop;
 using System.Diagnostics;
 
 using Microsoft.WindowsAPICodePack.Dialogs;

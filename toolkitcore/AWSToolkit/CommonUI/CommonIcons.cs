@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Reflection;
 
 namespace Amazon.AWSToolkit.CommonUI
@@ -397,12 +394,6 @@ namespace Amazon.AWSToolkit.CommonUI
             }
         }
 
-        public IDictionary<string, Stream> Cached
-        {
-            get 
-            { 
-                return null; 
-            }
-        }
+        public IDictionary<string, Stream> Cached => null;
     }
 }

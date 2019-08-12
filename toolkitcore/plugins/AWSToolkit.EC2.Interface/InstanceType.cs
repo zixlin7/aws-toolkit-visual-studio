@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.EC2;
 using Amazon.EC2.Model;
 
@@ -16,7 +12,6 @@ namespace Amazon.AWSToolkit.EC2
         public string Name
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -25,13 +20,9 @@ namespace Amazon.AWSToolkit.EC2
         public string Id
         {
             get;
-            private set;
         }
 
-        public string DisplayName
-        {
-            get { return string.Format("{0} ({1})", Name, Id); }    
-        }
+        public string DisplayName => string.Format("{0} ({1})", Name, Id);
 
         /// <summary>
         /// The RAM (measured in Gigabytes) available on this instance type.
@@ -39,7 +30,6 @@ namespace Amazon.AWSToolkit.EC2
         public string MemoryWithUnits
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -48,7 +38,6 @@ namespace Amazon.AWSToolkit.EC2
         public string DiskSpaceWithUnits
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -57,7 +46,6 @@ namespace Amazon.AWSToolkit.EC2
         public int NumberOfVirtualCores
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -66,7 +54,6 @@ namespace Amazon.AWSToolkit.EC2
         public string ArchitectureBits
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -75,7 +62,6 @@ namespace Amazon.AWSToolkit.EC2
         public bool Supports32Bit
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -84,7 +70,6 @@ namespace Amazon.AWSToolkit.EC2
         public bool Supports64Bit
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -93,7 +78,6 @@ namespace Amazon.AWSToolkit.EC2
         public bool RequiresEbsVolume
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -102,7 +86,6 @@ namespace Amazon.AWSToolkit.EC2
         public bool RequiresHvmImage
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -120,7 +103,6 @@ namespace Amazon.AWSToolkit.EC2
         public int MaxInstanceStoreVolumes
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -129,7 +111,6 @@ namespace Amazon.AWSToolkit.EC2
         public bool IsCurrentGeneration
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -138,7 +119,6 @@ namespace Amazon.AWSToolkit.EC2
         public string HardwareFamily
         {
             get;
-            private set;
         }
 
         public InstanceType(string id, string name, string memoryInGigabytes,

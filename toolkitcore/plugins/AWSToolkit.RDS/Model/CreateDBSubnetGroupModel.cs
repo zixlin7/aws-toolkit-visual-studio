@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.EC2.Model;
@@ -14,7 +13,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         string _name;
         public string Name
         {
-            get { return _name; }
+            get => _name;
             set
             {
                 _name = value;
@@ -26,7 +25,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         string _description;
         public string Description
         {
-            get { return _description; }
+            get => _description;
             set
             {
                 _description = value;
@@ -39,7 +38,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         readonly ObservableCollection<VPCWrapper> _vpcList = new ObservableCollection<VPCWrapper>(); 
         public ObservableCollection<VPCWrapper> VPCList
         {
-            get { return _vpcList; }
+            get => _vpcList;
             set
             {
                 _vpcList.Clear();
@@ -76,7 +75,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         private AvailabilityZone _selectedZone;
         public AvailabilityZone SelectedZone
         {
-            get { return _selectedZone; }
+            get => _selectedZone;
             set
             {
                 _selectedZone = value; 
@@ -88,7 +87,7 @@ namespace Amazon.AWSToolkit.RDS.Model
 
         public ObservableCollection<AvailabilityZone> AllAvailabilityZones
         {
-            get { return _allAvailabilityZones; }
+            get => _allAvailabilityZones;
             set
             {
                 _allAvailabilityZones.Clear();
@@ -138,7 +137,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         /// </summary>
         public IEnumerable<SubnetWrapper> SubnetsForVPCZone
         {
-            get { return _subnetsForVPCZone; }
+            get => _subnetsForVPCZone;
             set
             {
                 _subnetsForVPCZone.Clear();
@@ -167,7 +166,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         /// </summary>
         public ObservableCollection<AssignedSubnet> AssignedSubnets
         {
-            get { return _assignedSubnets; }
+            get => _assignedSubnets;
             set
             {
                 _assignedSubnets.Clear();

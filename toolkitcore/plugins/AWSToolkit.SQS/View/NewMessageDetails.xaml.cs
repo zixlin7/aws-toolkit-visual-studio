@@ -1,19 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.SQS.Model;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.SQS.View
 {
@@ -32,15 +17,11 @@ namespace Amazon.AWSToolkit.SQS.View
 
         public string MessageBodyContent
         {
-            get { return this._messageBodyContent; }
-            set { this._messageBodyContent = value; }
-
+            get => this._messageBodyContent;
+            set => this._messageBodyContent = value;
         }
 
-        public override string Title
-        {
-            get { return "Send Message"; }
-        }
+        public override string Title => "Send Message";
 
 
         public int? DelaySeconds

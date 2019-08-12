@@ -1,17 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using Microsoft.Win32;
 
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Account.Controller;
-using Amazon.AWSToolkit.Account.Model;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
-using Amazon.IdentityManagement;
-using Amazon.IdentityManagement.Model;
-
 using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers

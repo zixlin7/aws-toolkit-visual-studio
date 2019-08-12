@@ -12,7 +12,6 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using VSLangProj;
@@ -32,29 +31,15 @@ namespace Microsoft.VisualStudio.Project.Automation
 		}
 
 		#region Reference override
-		public override string Culture
-		{
-			get { return string.Empty; }
-		}
-		public override string Name
-		{
-			get { return BaseReferenceNode.ReferencedProjectName; }
-		}
-		public override string Identity
-		{
-			get
-			{
-				return BaseReferenceNode.Caption;
-			}
-		}
-		public override string Path
-		{
-			get
-			{
-				return BaseReferenceNode.ReferencedProjectOutputPath;
-			}
-		}
-		public override EnvDTE.Project SourceProject
+		public override string Culture => string.Empty;
+
+        public override string Name => BaseReferenceNode.ReferencedProjectName;
+
+        public override string Identity => BaseReferenceNode.Caption;
+
+        public override string Path => BaseReferenceNode.ReferencedProjectOutputPath;
+
+        public override EnvDTE.Project SourceProject
 		{
 			get
 			{
@@ -76,15 +61,12 @@ namespace Microsoft.VisualStudio.Project.Automation
 				return null;
 			}
 		}
-		public override prjReferenceType Type
-		{
-			// TODO: Write the code that finds out the type of the output of the source project.
-			get { return prjReferenceType.prjReferenceTypeAssembly; }
-		}
-		public override string Version
-		{
-			get { return string.Empty; }
-		}
-		#endregion
+
+        // TODO: Write the code that finds out the type of the output of the source project.
+        public override prjReferenceType Type => prjReferenceType.prjReferenceTypeAssembly;
+
+        public override string Version => string.Empty;
+
+        #endregion
 	}
 }

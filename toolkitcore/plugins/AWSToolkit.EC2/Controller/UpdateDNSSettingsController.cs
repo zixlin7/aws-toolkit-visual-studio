@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.EC2.View;
@@ -45,10 +42,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             return this._results;
         }
 
-        public UpdateDNSSettingsModel Model
-        {
-            get { return this._model; }
-        }
+        public UpdateDNSSettingsModel Model => this._model;
 
         public bool UpdateVPCAttributes()
         {

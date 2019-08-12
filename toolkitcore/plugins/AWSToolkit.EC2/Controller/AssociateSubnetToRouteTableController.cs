@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
-using Amazon.AWSToolkit.Util;
-
 using Amazon.EC2;
 using Amazon.EC2.Model;
 
@@ -44,10 +38,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             return this._results;
         }
 
-        public AssociateSubnetModel Model
-        {
-            get { return this._model; }
-        }
+        public AssociateSubnetModel Model => this._model;
 
         public IList<SubnetWrapper> GetAvailableSubnets()
         {

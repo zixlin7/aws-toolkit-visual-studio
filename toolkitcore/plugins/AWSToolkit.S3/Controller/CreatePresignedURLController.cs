@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.S3.Nodes;
 using Amazon.AWSToolkit.S3.View;
 using Amazon.AWSToolkit.S3.Model;
-using Amazon.AWSToolkit;
-
 using Amazon.S3;
 using Amazon.S3.Model;
 
@@ -41,10 +35,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             return new ActionResults().WithSuccess(true);
         }
 
-        public CreatePresignedURLModel Model
-        {
-            get { return this._model; }
-        }
+        public CreatePresignedURLModel Model => this._model;
 
         public void GenerateURL()
         {

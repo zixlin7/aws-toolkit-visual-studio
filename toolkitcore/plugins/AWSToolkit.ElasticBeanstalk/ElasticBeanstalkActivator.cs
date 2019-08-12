@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.ComponentModel.Design;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.Navigator;
@@ -15,14 +11,10 @@ using Amazon.AWSToolkit.ElasticBeanstalk.Commands;
 using Amazon.AWSToolkit.CommonUI;
 
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
-
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
 using log4net;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk
@@ -31,10 +23,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ElasticBeanstalkActivator));
 
-        public override string PluginName
-        {
-            get { return "Beanstalk"; }
-        }
+        public override string PluginName => "Beanstalk";
 
         public override void RegisterMetaNodes()
         {
@@ -87,19 +76,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
 
         #region IAWSElasticBeanstalk Members
 
-        IAWSToolkitDeploymentService IAWSElasticBeanstalk.DeploymentService 
-        {
-            get { return this as IAWSToolkitDeploymentService; }
-        }
+        IAWSToolkitDeploymentService IAWSElasticBeanstalk.DeploymentService => this as IAWSToolkitDeploymentService;
 
         #endregion
 
         #region IAWSToolkitDeploymentService Members
 
-        string IAWSToolkitDeploymentService.DeploymentServiceIdentifier 
-        {
-            get { return DeploymentServiceIdentifiers.BeanstalkServiceName; } 
-        }
+        string IAWSToolkitDeploymentService.DeploymentServiceIdentifier => DeploymentServiceIdentifiers.BeanstalkServiceName;
 
         IEnumerable<IAWSWizardPageController> IAWSToolkitDeploymentService.ConstructDeploymentPages(IAWSWizard hostWizard, bool fastTrackRedeployment)
         {

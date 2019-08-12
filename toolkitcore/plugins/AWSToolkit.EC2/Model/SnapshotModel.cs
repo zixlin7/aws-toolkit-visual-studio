@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Amazon.AWSToolkit.EC2.Model
 {
@@ -24,25 +21,13 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public SnapshotModel(string snapshotId, string description, string size) : this(snapshotId, description, size, String.Empty) { }
 
-        public string SnapshotId
-        {
-            get { return _snapshotId; }
-        }
+        public string SnapshotId => _snapshotId;
 
-        public string Description
-        {
-            get { return _description; }
-        }
+        public string Description => _description;
 
-        public string Size
-        {
-            get { return _size; }
-        }
+        public string Size => _size;
 
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name => _name;
 
         public string DisplayString
         {

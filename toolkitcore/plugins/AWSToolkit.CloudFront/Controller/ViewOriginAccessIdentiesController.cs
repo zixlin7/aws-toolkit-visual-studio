@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.CloudFront.Nodes;
 using Amazon.AWSToolkit.CloudFront.View;
 using Amazon.AWSToolkit.CloudFront.Model;
-using Amazon.AWSToolkit;
-
 using Amazon.CloudFront;
 using Amazon.CloudFront.Model;
 
@@ -37,10 +31,7 @@ namespace Amazon.AWSToolkit.CloudFront.Controller
             return new ActionResults().WithSuccess(true);
         }
 
-        public ViewOriginAccessIdentiesModel Model
-        {
-            get { return this._model; }
-        }
+        public ViewOriginAccessIdentiesModel Model => this._model;
 
         public void LoadModel()
         {

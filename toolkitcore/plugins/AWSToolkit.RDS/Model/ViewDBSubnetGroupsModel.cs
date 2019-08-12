@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
 
@@ -12,17 +9,11 @@ namespace Amazon.AWSToolkit.RDS.Model
     {
         readonly ObservableCollection<DBSubnetGroupWrapper> _subnetGroups = new ObservableCollection<DBSubnetGroupWrapper>();
 
-        public ObservableCollection<DBSubnetGroupWrapper> DBSubnetGroups
-        {
-            get { return this._subnetGroups; }
-        }
+        public ObservableCollection<DBSubnetGroupWrapper> DBSubnetGroups => this._subnetGroups;
 
         readonly IList<DBSubnetGroupWrapper> _selectedDBSubnetGroups = new List<DBSubnetGroupWrapper>();
 
-        public IList<DBSubnetGroupWrapper> SelectedDBSubnetGroups
-        {
-            get { return _selectedDBSubnetGroups; }
-        }
+        public IList<DBSubnetGroupWrapper> SelectedDBSubnetGroups => _selectedDBSubnetGroups;
 
         EC2ColumnDefinition[] _subnetGroupPropertyColumnDefinitions;
         

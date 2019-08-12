@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.Runtime.Internal.Settings;
 
@@ -19,10 +15,7 @@ namespace Amazon.AWSToolkit.Util
         {
         }
 
-        public static KeyPairLocalStoreManager Instance
-        {
-            get { return INSTANCE; }
-        }
+        public static KeyPairLocalStoreManager Instance => INSTANCE;
 
         public string GetPrivateKey(AccountViewModel account, string region, string keyPairName)
         {

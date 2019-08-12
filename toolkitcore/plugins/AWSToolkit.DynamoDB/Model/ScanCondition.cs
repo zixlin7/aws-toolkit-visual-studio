@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -14,7 +13,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         string _attributeName;
         public string AttributeName
         {
-            get { return this._attributeName; }
+            get => this._attributeName;
             set
             {
                 this._attributeName = value;
@@ -23,31 +22,16 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
             }
         }
 
-        public bool HasAttributeName
-        {
-            get { return !string.IsNullOrEmpty(_attributeName); }
-        }
+        public bool HasAttributeName => !string.IsNullOrEmpty(_attributeName);
 
-        public bool IsNumeric
-        {
-            get
-            {
-                return this.DataType.SystemName == DynamoDBConstants.TYPE_NUMERIC || this.DataType.SystemName == DynamoDBConstants.TYPE_NUMERIC_SET;
-            }
-        }
+        public bool IsNumeric => this.DataType.SystemName == DynamoDBConstants.TYPE_NUMERIC || this.DataType.SystemName == DynamoDBConstants.TYPE_NUMERIC_SET;
 
-        public bool IsSet
-        {
-            get
-            {
-                return this.DataType.SystemName == DynamoDBConstants.TYPE_STRING_SET || this.DataType.SystemName == DynamoDBConstants.TYPE_NUMERIC_SET || this.Operator.Operator == ScanOperator.Between;
-            }
-        }
+        public bool IsSet => this.DataType.SystemName == DynamoDBConstants.TYPE_STRING_SET || this.DataType.SystemName == DynamoDBConstants.TYPE_NUMERIC_SET || this.Operator.Operator == ScanOperator.Between;
 
         DataTypes _dataType = DataTypes.AttributeDataTypes[0];
         public DataTypes DataType
         {
-            get { return this._dataType; }
+            get => this._dataType;
             set
             {
                 this._dataType = value;
@@ -101,7 +85,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         ConditionsTypes _operator = ConditionsTypes.StringOperators[0];
         public ConditionsTypes Operator
         {
-            get { return this._operator; }
+            get => this._operator;
             set
             {
                 this._operator = value;
@@ -113,7 +97,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         List<string> _values = new List<string>();
         public IEnumerable<string> Values
         {
-            get { return this._values; }
+            get => this._values;
             set
             {
                 _values = new List<string>(value);
@@ -180,13 +164,11 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         public string DisplayName
         {
             get;
-            private set;
         }
 
         public string SystemName
         {
             get;
-            private set;
         }
 
         public override string ToString()
@@ -275,13 +257,11 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         public string DisplayName
         {
             get;
-            private set;
         }
 
         public ScanOperator Operator
         {
             get;
-            private set;
         }
 
         public override string ToString()

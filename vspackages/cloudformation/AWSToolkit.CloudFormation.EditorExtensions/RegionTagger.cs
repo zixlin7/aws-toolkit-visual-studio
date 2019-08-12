@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.ComponentModel.Composition;
-using Microsoft.VisualStudio.Text.Outlining;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio.Text;
@@ -258,9 +257,9 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
             this._snapshot = snapshot;
         }
 
-        public bool IsDefaultCollapsed { get; private set; }
+        public bool IsDefaultCollapsed { get; }
 
-        public bool IsImplementation { get; private set; }
+        public bool IsImplementation { get; }
 
         public object CollapsedForm
         {

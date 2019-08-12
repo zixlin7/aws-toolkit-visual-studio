@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Amazon.AWSToolkit.CloudFront
+﻿namespace Amazon.AWSToolkit.CloudFront
 {
     public static class CloudFrontActionResultsContants
     {

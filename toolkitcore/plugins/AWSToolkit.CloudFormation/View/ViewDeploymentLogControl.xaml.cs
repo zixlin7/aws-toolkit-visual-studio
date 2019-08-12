@@ -1,28 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-
+﻿using System.Windows;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CloudFormation.Controllers;
-using Amazon.AWSToolkit.CloudFormation.Model;
-
-using log4net;
 
 namespace Amazon.AWSToolkit.CloudFormation.View
 {
@@ -48,21 +26,9 @@ namespace Amazon.AWSToolkit.CloudFormation.View
                 this._ctlLoadingStatus.Text = string.Format("Error retrieving log: {0}", this._controller.Model.ErrorMessage);
         }
 
-        public override string Title
-        {
-            get
-            {
-                return string.Format("Deployment Log for Instance {0}", this._controller.Model.InstanceId);
-            }
-        }
+        public override string Title => string.Format("Deployment Log for Instance {0}", this._controller.Model.InstanceId);
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {

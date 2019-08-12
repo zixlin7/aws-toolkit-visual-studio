@@ -1,14 +1,6 @@
-﻿using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using Microsoft.VisualStudio.Project;
-using Microsoft.VisualStudio.Project.Automation;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
+﻿using Microsoft.VisualStudio.Project;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 using VsCommands = Microsoft.VisualStudio.VSConstants.VSStd97CmdID;
-using VSConstants = Microsoft.VisualStudio.VSConstants;
 
 namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
 {

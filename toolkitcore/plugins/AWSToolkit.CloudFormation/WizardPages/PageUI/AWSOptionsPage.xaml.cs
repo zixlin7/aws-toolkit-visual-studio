@@ -2,17 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.EC2.Model;
 
 using Amazon.AWSToolkit.Account;
@@ -76,7 +69,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
 
         public IAWSWizardPageController PageController { get; set; }
 
-        public ObservableCollection<InstanceType> InstanceTypes { get; private set; }
+        public ObservableCollection<InstanceType> InstanceTypes { get; }
 
         public string SelectedInstanceTypeID
         {
@@ -90,13 +83,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
             }
         }
 
-        public InstanceType SelectedInstanceType
-        {
-            get
-            {
-                return this._instanceTypesSelector.SelectedItem as InstanceType;
-            }
-        }
+        public InstanceType SelectedInstanceType => this._instanceTypesSelector.SelectedItem as InstanceType;
 
         /// <summary>
         /// Loads the instance types selector with the supplied collection and optionally sets the default
@@ -149,24 +136,18 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
             }
         }
 
-        public ToolkitAMIManifest.ContainerAMI SelectedContainer
-        {
-            get
-            {
-                return _useDefaultAMI.IsChecked == true ? _defaultAMIs.SelectedItem as ToolkitAMIManifest.ContainerAMI : null;
-            }    
-        }
+        public ToolkitAMIManifest.ContainerAMI SelectedContainer => _useDefaultAMI.IsChecked == true ? _defaultAMIs.SelectedItem as ToolkitAMIManifest.ContainerAMI : null;
 
         public string CustomAMIID 
         {
-            get { return !string.IsNullOrEmpty(_customAMI.Text) ? _customAMI.Text.Trim() : string.Empty; }
-            set { _customAMI.Text = value; } 
+            get => !string.IsNullOrEmpty(_customAMI.Text) ? _customAMI.Text.Trim() : string.Empty;
+            set => _customAMI.Text = value;
         }
 
         string _stackNameValue;
         public string StackName 
         {
-            get { return _stackNameValue; }
+            get => _stackNameValue;
             set
             {
                 _stackNameValue = value;
@@ -176,18 +157,9 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
             }
         }
 
-        public bool IsStackNameValid
-        {
-            get
-            {
-                return ValidateStackName();
-            }
-        }
+        public bool IsStackNameValid => ValidateStackName();
 
-        public string SNSTopic
-        {
-            get { return _snsTopic.Text; }
-        }
+        public string SNSTopic => _snsTopic.Text;
 
         public string SecurityGroupName
         {
@@ -301,7 +273,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
         bool _rollbackOnFailure = true;
         public bool RollbackOnFailure
         {
-            get { return this._rollbackOnFailure; }
+            get => this._rollbackOnFailure;
             set
             {
                 this._rollbackOnFailure = value;
@@ -315,13 +287,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
             createNew = !_keyPairSelector.IsExistingKeyPairSelected;
         }
 
-        public bool HasKeyPairSelection
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(_keyPairSelector.SelectedKeyPairName);
-            }
-        }
+        public bool HasKeyPairSelection => !string.IsNullOrEmpty(_keyPairSelector.SelectedKeyPairName);
 
         public void SetExistingKeyPairs(ICollection<string> existingKeyPairs, ICollection<string> keyPairsStoredInToolkit, string autoSelectPair)
         {

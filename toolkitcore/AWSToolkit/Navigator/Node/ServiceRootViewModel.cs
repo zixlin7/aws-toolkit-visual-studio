@@ -1,10 +1,4 @@
 ﻿using Amazon.Runtime;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
 
 
 namespace Amazon.AWSToolkit.Navigator.Node
@@ -25,15 +19,9 @@ namespace Amazon.AWSToolkit.Navigator.Node
             BuildClient(this.AccountViewModel.Credentials);
         }
 
-        public RegionEndPointsManager.RegionEndPoints CurrentRegion
-        {
-            get { return this._region; }
-        }
+        public RegionEndPointsManager.RegionEndPoints CurrentRegion => this._region;
 
-        public RegionEndPointsManager.EndPoint CurrentEndPoint
-        {
-            get { return this._endPoint; }
-        }
+        public RegionEndPointsManager.EndPoint CurrentEndPoint => this._endPoint;
 
         protected abstract void BuildClient(AWSCredentials credentials);
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using Amazon.AWSToolkit.Util;
 using log4net;
@@ -16,28 +15,25 @@ namespace Amazon.AWSToolkit.Account.Model
             Account = account;
         }
 
-        public string IAMConsoleEndpoint
-        {
-            get { return "https://console.aws.amazon.com/iam/home?region=us-east-1#/users"; }
-        }
+        public string IAMConsoleEndpoint => "https://console.aws.amazon.com/iam/home?region=us-east-1#/users";
 
         public AccountViewModel Account { get; }
 
         public string UserName
         {
-            get { return _userName; }
+            get => _userName;
             set { _userName = value; OnPropertyChanged(); }
         }
 
         public string Password
         {
-            get { return _password; }
+            get => _password;
             set { _password = value; OnPropertyChanged(); }
         }
 
         public bool IsValid
         {
-            get { return _isValid; }
+            get => _isValid;
             set { _isValid = value; OnPropertyChanged(); }
         }
 

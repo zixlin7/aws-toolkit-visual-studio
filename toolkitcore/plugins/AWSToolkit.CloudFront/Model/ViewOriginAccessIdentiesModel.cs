@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.ObjectModel;
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.CloudFront.Model
@@ -13,7 +8,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         ObservableCollection<OriginAccessIdentity> _identites = new ObservableCollection<OriginAccessIdentity>();
         public ObservableCollection<OriginAccessIdentity> Identities
         {
-            get { return this._identites; }
+            get => this._identites;
             set
             {
                 this._identites = value;
@@ -27,7 +22,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
             string _id;
             public string Id
             {
-                get { return this._id; }
+                get => this._id;
                 set
                 {
                     this._id = value;
@@ -38,7 +33,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
             string _comment;
             public string Comment
             {
-                get { return this._comment; }
+                get => this._comment;
                 set
                 {
                     this._comment = value;
@@ -49,7 +44,7 @@ namespace Amazon.AWSToolkit.CloudFront.Model
             string _canonicalUserId;
             public string CanonicalUserId
             {
-                get { return this._canonicalUserId; }
+                get => this._canonicalUserId;
                 set
                 {
                     this._canonicalUserId = value;

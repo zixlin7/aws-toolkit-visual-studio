@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.EC2.Model;
-
 using Amazon.AWSToolkit.EC2.Model;
-using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.EC2.View.DataGrid
 {
@@ -32,31 +28,26 @@ namespace Amazon.AWSToolkit.EC2.View.DataGrid
         public string Header
         {
             get;
-            private set;
         }
 
         public ColumnType Type
         {
             get;
-            private set;
         }
 
         public string FieldName
         {
             get;
-            private set;
         }
 
         public string Icon
         {
             get;
-            private set;
         }
 
         public bool IsIconDynamic
         {
             get;
-            private set;
         }
 
         public double Width

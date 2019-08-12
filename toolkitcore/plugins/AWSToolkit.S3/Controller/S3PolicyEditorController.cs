@@ -1,19 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.S3.Nodes;
 using Amazon.AWSToolkit.PolicyEditor;
 using Amazon.AWSToolkit.PolicyEditor.Model;
-using Amazon.AWSToolkit.S3.View;
-using Amazon.AWSToolkit.S3.Model;
-using Amazon.AWSToolkit;
-
-using Amazon.S3;
 using Amazon.S3.Model;
 
 namespace Amazon.AWSToolkit.S3.Controller
@@ -43,15 +33,9 @@ namespace Amazon.AWSToolkit.S3.Controller
             }
         }
 
-        public string Title
-        {
-            get { return string.Format("S3 Policy: {0}", this._rootModel.Name); }
-        }
+        public string Title => string.Format("S3 Policy: {0}", this._rootModel.Name);
 
-        public PolicyModel.PolicyModelMode PolicyMode 
-        {
-            get { return PolicyModel.PolicyModelMode.S3; }
-        }
+        public PolicyModel.PolicyModelMode PolicyMode => PolicyModel.PolicyModelMode.S3;
 
         public string GetPolicyDocument()
         {

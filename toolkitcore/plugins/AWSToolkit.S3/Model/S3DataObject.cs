@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows;
-
-using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.S3.Controller;
-using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.Nodes;
 
 namespace Amazon.AWSToolkit.S3.Model

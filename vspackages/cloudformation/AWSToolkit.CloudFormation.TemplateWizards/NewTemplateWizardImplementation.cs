@@ -1,19 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Microsoft.VisualStudio.TemplateWizard;
 using EnvDTE;
-
-using Amazon.CloudFormation;
-using Amazon.CloudFormation.Model;
-
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CloudFormation.TemplateWizards.WizardPages;
 using Amazon.AWSToolkit.CloudFormation.TemplateWizards.WizardPages.PageControllers;
 
 

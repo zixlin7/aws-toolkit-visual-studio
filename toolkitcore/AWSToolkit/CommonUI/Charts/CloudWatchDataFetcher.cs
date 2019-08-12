@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
 using System.Windows.Controls.DataVisualization.Charting;
 
 using Amazon.CloudWatch;
@@ -165,8 +163,8 @@ namespace Amazon.AWSToolkit.CommonUI.Charts
 
         internal class DataItem
         {
-            public DateTime Date { get; private set; }
-            public double Value { get; private set; }
+            public DateTime Date { get; }
+            public double Value { get; }
             public DataItem(DateTime date, double place)
             {
                 Date = date;

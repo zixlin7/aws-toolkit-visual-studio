@@ -1,19 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-
-using Amazon.SQS.Model;
+﻿using Amazon.SQS.Model;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.SQS.Model;
@@ -39,12 +24,6 @@ namespace Amazon.AWSToolkit.SQS.View
             InitializeComponent();
         }
 
-        public override string Title
-        {
-            get
-            {
-                return "Message Body";
-            }
-        }
+        public override string Title => "Message Body";
     }
 }

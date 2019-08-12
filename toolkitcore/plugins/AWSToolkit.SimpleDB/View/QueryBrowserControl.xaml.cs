@@ -1,28 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Microsoft.Win32;
 
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.SimpleDB.Model;
 using Amazon.AWSToolkit.SimpleDB.Controller;
-
-using Amazon.SimpleDB;
-using Amazon.SimpleDB.Model;
 
 namespace Amazon.AWSToolkit.SimpleDB.View
 {
@@ -55,18 +39,9 @@ namespace Amazon.AWSToolkit.SimpleDB.View
         }
 
 
-        public override string Title
-        {
-            get
-            {
-                return "Domain: " + this._controller.Model.Domain;
-            }
-        }
+        public override string Title => "Domain: " + this._controller.Model.Domain;
 
-        public override string UniqueId
-        {
-            get { return string.Format("SDB:Domain:{0}", this._controller.Model.Domain); }
-        }
+        public override string UniqueId => string.Format("SDB:Domain:{0}", this._controller.Model.Domain);
 
         private void onPreviewKeyDown(object sender, KeyEventArgs e)
         {

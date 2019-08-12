@@ -1,21 +1,14 @@
 ﻿using System.Windows;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.ECS.Controller;
 using Amazon.AWSToolkit.ECS.WizardPages.PageControllers;
 using log4net;
 using System;
-using Amazon.AWSToolkit.Account;
 using System.ComponentModel;
 using System.Windows.Controls;
 
 using Task = System.Threading.Tasks.Task;
-
-using Amazon.ECS;
-using Amazon.ECS.Model;
 using System.Collections.Generic;
 using System.Linq;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
-
 using static Amazon.AWSToolkit.ECS.WizardPages.ECSWizardUtils;
 using System.Windows.Navigation;
 using System.Diagnostics;
@@ -30,7 +23,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ScheduleTaskPage));
 
-        public ScheduleTaskPageController PageController { get; private set; }
+        public ScheduleTaskPageController PageController { get; }
 
         public ScheduleTaskPage()
         {
@@ -88,10 +81,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             UpdateExistingResources();
         }
 
-        public string ScheduleRule
-        {
-            get { return this._ctlScheduleRule.SelectedItem as string; }
-        }
+        public string ScheduleRule => this._ctlScheduleRule.SelectedItem as string;
 
         private void _ctlScheduleRule_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -122,15 +112,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             NotifyPropertyChanged("ScheduleRule");
         }
 
-        public bool CreateNewScheduleRule
-        {
-            get { return this._ctlScheduleRule.SelectedIndex == 0; }
-        }
+        public bool CreateNewScheduleRule => this._ctlScheduleRule.SelectedIndex == 0;
 
         string _newScheduleRule;
         public string NewScheduleRule
         {
-            get { return this._newScheduleRule; }
+            get => this._newScheduleRule;
             set
             {
                 this._newScheduleRule = value;
@@ -141,7 +128,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         bool? _isRunTypeCronExpression;
         public bool? IsRunTypeCronExpression
         {
-            get { return this._isRunTypeCronExpression; }
+            get => this._isRunTypeCronExpression;
             set
             {
                 this._isRunTypeCronExpression = value;
@@ -152,7 +139,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         bool? _isRunTypeFixedInterval;
         public bool? IsRunTypeFixedInterval
         {
-            get { return this._isRunTypeFixedInterval; }
+            get => this._isRunTypeFixedInterval;
             set
             {
                 this._isRunTypeFixedInterval = value;
@@ -163,7 +150,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         int? _runIntervalValue;
         public int? RunIntervalValue
         {
-            get { return this._runIntervalValue; }
+            get => this._runIntervalValue;
             set
             {
                 this._runIntervalValue = value;
@@ -174,7 +161,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         RunIntervalUnitItem _runIntervalUnit;
         public RunIntervalUnitItem RunIntervalUnit
         {
-            get { return this._runIntervalUnit; }
+            get => this._runIntervalUnit;
             set
             {
                 this._runIntervalUnit = value;
@@ -185,7 +172,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         string _cronExpression;
         public string CronExpression
         {
-            get { return this._cronExpression; }
+            get => this._cronExpression;
             set
             {
                 this._cronExpression = value;
@@ -213,8 +200,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string Target
         {
-            get { return this._ctlTarget.SelectedItem as string; }
-            set { this._ctlTarget.SelectedItem = value; }
+            get => this._ctlTarget.SelectedItem as string;
+            set => this._ctlTarget.SelectedItem = value;
         }
 
         private void _ctlTarget_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -233,15 +220,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             NotifyPropertyChanged("Target");
         }
 
-        public bool CreateNewTarget
-        {
-            get { return this._ctlTarget.SelectedIndex == 0; }
-        }
+        public bool CreateNewTarget => this._ctlTarget.SelectedIndex == 0;
 
         string _newTarget;
         public string NewTarget
         {
-            get { return this._newTarget; }
+            get => this._newTarget;
             set
             {
                 this._newTarget = value;
@@ -252,7 +236,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         int? _desiredCount;
         public int? DesiredCount
         {
-            get { return this._desiredCount; }
+            get => this._desiredCount;
             set
             {
                 this._desiredCount = value;
@@ -262,8 +246,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public string CloudWatchEventIAMRole
         {
-            get { return this._ctlCloudWatchEventIAMRole.SelectedItem as string; }
-            set { this._ctlCloudWatchEventIAMRole.SelectedItem = value; }
+            get => this._ctlCloudWatchEventIAMRole.SelectedItem as string;
+            set => this._ctlCloudWatchEventIAMRole.SelectedItem = value;
         }
 
         public string CloudWatchEventIAMRoleArn
@@ -283,15 +267,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             NotifyPropertyChanged("CloudWatchEventIAMRole");
         }
 
-        public bool CreateCloudWatchEventIAMRole
-        {
-            get { return this._ctlCloudWatchEventIAMRole.SelectedIndex == 0; }
-        }
+        public bool CreateCloudWatchEventIAMRole => this._ctlCloudWatchEventIAMRole.SelectedIndex == 0;
 
         Visibility _fixedIntervalVisiblity = Visibility.Visible;
         public Visibility FixedIntervalVisiblity
         {
-            get { return this._fixedIntervalVisiblity; }
+            get => this._fixedIntervalVisiblity;
             set
             {
                 this._fixedIntervalVisiblity = value;
@@ -302,7 +283,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         Visibility _cronExpressionVisiblity = Visibility.Collapsed;
         public Visibility CronExpressionVisiblity
         {
-            get { return this._cronExpressionVisiblity; }
+            get => this._cronExpressionVisiblity;
             set
             {
                 this._cronExpressionVisiblity = value;
@@ -473,8 +454,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         }
 
         public string DisplayName { get; set; }
-        private string PluralSystemName { get; set; }
-        private string SingluarSystemName { get; set; }
+        private string PluralSystemName { get; }
+        private string SingluarSystemName { get; }
 
         public string GetUnitName(int value)
         {

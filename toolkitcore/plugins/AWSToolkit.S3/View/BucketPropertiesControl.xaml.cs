@@ -1,22 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Amazon.S3.Model;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.Controller;
@@ -72,10 +58,7 @@ namespace Amazon.AWSToolkit.S3.View
             return true;
         }
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get { return true; }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {
@@ -83,18 +66,9 @@ namespace Amazon.AWSToolkit.S3.View
             return this._controller.Model;
         }
 
-        public BucketPropertiesModel Model
-        {
-            get { return this._controller.Model; }
-        }
+        public BucketPropertiesModel Model => this._controller.Model;
 
-        public override string Title
-        {
-            get
-            {
-                return string.Format("S3 Bucket Properties: {0}", this._model.BucketName);
-            }
-        }
+        public override string Title => string.Format("S3 Bucket Properties: {0}", this._model.BucketName);
 
 
         private void OnAddPermission(object sender, RoutedEventArgs args)

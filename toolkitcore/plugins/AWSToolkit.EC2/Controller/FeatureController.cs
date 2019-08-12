@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
-using Amazon.AWSToolkit.Account;
+﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.EC2.Nodes;
-using Amazon.AWSToolkit.EC2.Model;
-using Amazon.AWSToolkit.EC2.View;
-
 using Amazon.EC2;
-using Amazon.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.Controller
 {
@@ -41,42 +30,18 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         protected abstract void DisplayView();
 
-        public IAmazonEC2 EC2Client
-        {
-            get { return this._ec2Client; }
-        }
+        public IAmazonEC2 EC2Client => this._ec2Client;
 
-        protected FeatureViewModel FeatureViewModel
-        {
-            get { return this._featureViewModel; }
-        }
+        protected FeatureViewModel FeatureViewModel => this._featureViewModel;
 
-        public M Model
-        {
-            get { return this._model; }
-        }
+        public M Model => this._model;
 
-        public string EndPointUniqueIdentifier
-        {
-            get
-            {
-                return this._endpointUniqueIdentifier;
-            }
-        }
+        public string EndPointUniqueIdentifier => this._endpointUniqueIdentifier;
 
-        public AccountViewModel Account
-        {
-            get { return this._featureViewModel.AccountViewModel; }
-        }
+        public AccountViewModel Account => this._featureViewModel.AccountViewModel;
 
-        public string RegionDisplayName
-        {
-            get { return this._featureViewModel.RegionDisplayName; }
-        }
+        public string RegionDisplayName => this._featureViewModel.RegionDisplayName;
 
-        public string RegionSystemName
-        {
-            get { return this.FeatureViewModel.RegionSystemName; }
-        }
+        public string RegionSystemName => this.FeatureViewModel.RegionSystemName;
     }
 }

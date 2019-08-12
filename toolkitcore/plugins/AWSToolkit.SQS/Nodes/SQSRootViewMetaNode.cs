@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
@@ -18,15 +14,9 @@ namespace Amazon.AWSToolkit.SQS.Nodes
             return new SQSRootViewModel(account);
         }
 
-        public SQSQueueViewMetaNode SQSViewMetaNode
-        {
-            get { return this.FindChild<SQSQueueViewMetaNode>(); }
-        }
+        public SQSQueueViewMetaNode SQSViewMetaNode => this.FindChild<SQSQueueViewMetaNode>();
 
-        public override string EndPointSystemName
-        {
-            get { return SQS_ENDPOINT_LOOKUP; }
-        }
+        public override string EndPointSystemName => SQS_ENDPOINT_LOOKUP;
 
         public ActionHandlerWrapper.ActionHandler OnCreate
         {
@@ -40,21 +30,10 @@ namespace Amazon.AWSToolkit.SQS.Nodes
             queueModel.AddQueue(results.Parameters[SQSActionResultsConstants.PARAM_QUEUE_URL] as string);
         }
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList(new ActionHandlerWrapper("Create Queue...", OnCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateResponse), false, this.GetType().Assembly,
-                    "Amazon.AWSToolkit.SimpleDB.Resources.EmbeddedImages.queue-add.png"));
-            }
-        }
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(new ActionHandlerWrapper("Create Queue...", OnCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateResponse), false, this.GetType().Assembly,
+                "Amazon.AWSToolkit.SimpleDB.Resources.EmbeddedImages.queue-add.png"));
 
-        public override string MarketingWebSite
-        {
-            get
-            {
-                return "http://aws.amazon.com/sqs/";
-            }
-        }
+        public override string MarketingWebSite => "http://aws.amazon.com/sqs/";
     }
 }

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-
 
 
 namespace Amazon.AWSToolkit.Util
@@ -25,7 +21,7 @@ namespace Amazon.AWSToolkit.Util
 
         public string Value
         {
-            get { return this._value; }
+            get => this._value;
             set
             {
                 this._value = value;

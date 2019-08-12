@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.SNS.Nodes;
 using Amazon.AWSToolkit.PolicyEditor;
 using Amazon.AWSToolkit.PolicyEditor.Model;
-using Amazon.AWSToolkit;
-
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 
@@ -41,15 +34,9 @@ namespace Amazon.AWSToolkit.SNS.Controller
             }
         }
 
-        public string Title
-        {
-            get { return string.Format("SNS Policy: {0}", this._rootModel.Name); }
-        }
+        public string Title => string.Format("SNS Policy: {0}", this._rootModel.Name);
 
-        public PolicyModel.PolicyModelMode PolicyMode
-        {
-            get { return PolicyModel.PolicyModelMode.SNS; }
-        }
+        public PolicyModel.PolicyModelMode PolicyMode => PolicyModel.PolicyModelMode.SNS;
 
         public string GetPolicyDocument()
         {

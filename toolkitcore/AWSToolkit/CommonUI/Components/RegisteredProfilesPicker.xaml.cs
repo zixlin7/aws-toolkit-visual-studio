@@ -2,22 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-
 using log4net;
 using Amazon.AWSToolkit.Account;
-using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 
 namespace Amazon.AWSToolkit.CommonUI.Components
@@ -164,10 +152,10 @@ namespace Amazon.AWSToolkit.CommonUI.Components
         {
             public enum ItemType { Category = 1, Profile =2}
 
-            public ItemType Type { get; private set; }
-            public string DisplayName { get; private set; }
+            public ItemType Type { get; }
+            public string DisplayName { get; }
 
-            public AccountViewModel Account { get; private set; }
+            public AccountViewModel Account { get; }
 
             public ProfileComboItem(ItemType type, string displayName, AccountViewModel account)
             {
@@ -176,18 +164,12 @@ namespace Amazon.AWSToolkit.CommonUI.Components
                 this.Account = account;
             }
 
-            public bool IsSelectable
-            {
-                get
-                {
-                    return this.Account != null;
-                }
-            }
+            public bool IsSelectable => this.Account != null;
 
             bool _isSelected;
             public bool IsSelected
             {
-                get { return this._isSelected; }
+                get => this._isSelected;
                 set
                 {
                     this._isSelected = value;

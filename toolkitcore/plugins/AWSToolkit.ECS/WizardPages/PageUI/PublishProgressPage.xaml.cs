@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.ECS.Controller;
 using Amazon.AWSToolkit.ECS.WizardPages.PageControllers;
 using log4net;
 using System;
@@ -14,7 +13,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(PublishProgressPage));
 
-        public PublishProgressPageController PageController { get; private set; }
+        public PublishProgressPageController PageController { get; }
 
         public PublishProgressPage()
         {
@@ -41,13 +40,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
-        public bool AutoCloseWizard
-        {
-            get
-            {
-                return this._ctlAutoCloseWizard.IsChecked.GetValueOrDefault();
-            }
-        }
+        public bool AutoCloseWizard => this._ctlAutoCloseWizard.IsChecked.GetValueOrDefault();
 
         public void OutputProgressMessage(string message)
         {

@@ -13,7 +13,6 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Project.Automation
@@ -97,35 +96,17 @@ namespace Microsoft.VisualStudio.Project.Automation
 			throw new NotImplementedException();
 		}
 
-		public virtual EnvDTE.Project Parent
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public virtual EnvDTE.Project Parent => throw new NotImplementedException();
 
-		public virtual bool Hidden
+        public virtual bool Hidden
 		{
-			get
-			{
-				return hidden;
-			}
-			set
-			{
-				hidden = value;
-			}
-		}
+			get => hidden;
+            set => hidden = value;
+        }
 
-		public virtual EnvDTE.DTE DTE
-		{
-			get
-			{
-				return (EnvDTE.DTE)this.node.ProjectMgr.Site.GetService(typeof(EnvDTE.DTE));
-			}
-		}
+		public virtual EnvDTE.DTE DTE => (EnvDTE.DTE)this.node.ProjectMgr.Site.GetService(typeof(EnvDTE.DTE));
 
-		#endregion
+        #endregion
 	}
 
 }

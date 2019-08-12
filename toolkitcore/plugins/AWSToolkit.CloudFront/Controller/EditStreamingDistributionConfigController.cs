@@ -1,18 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.CloudFront.Nodes;
 using Amazon.AWSToolkit.CloudFront.View;
 using Amazon.AWSToolkit.CloudFront.Model;
-using Amazon.AWSToolkit.S3.Nodes;
-using Amazon.AWSToolkit;
-
-using Amazon.CloudFront;
 using Amazon.CloudFront.Model;
 
 
@@ -41,15 +32,9 @@ namespace Amazon.AWSToolkit.CloudFront.Controller
 
         }
 
-        public string Title
-        {
-            get { return this._rootModel.Name; }
-        }
+        public string Title => this._rootModel.Name;
 
-        public string UniqueId
-        {
-            get { return "StreamingDistribtion: " + this._rootModel.DistributionId; }
-        }
+        public string UniqueId => "StreamingDistribtion: " + this._rootModel.DistributionId;
 
         public override void LoadModel()
         {
@@ -57,10 +42,7 @@ namespace Amazon.AWSToolkit.CloudFront.Controller
             Refresh();
         }
 
-        public EditStreamingDistributionConfigModel Model
-        {
-            get { return this._model; }
-        }
+        public EditStreamingDistributionConfigModel Model => this._model;
 
         public void Refresh()
         {

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -17,23 +11,14 @@ namespace Amazon.AWSToolkit.EC2.Model
             this._instance = instance;
         }
 
-        public string InstanceId
-        {
-            get { return this._instance.NativeInstance.InstanceId; }
-        }
+        public string InstanceId => this._instance.NativeInstance.InstanceId;
 
-        public bool IsReadOnly
-        {
-            get { return this._instance.NativeInstance.State.Name != EC2Constants.INSTANCE_STATE_STOPPED; }
-        }
+        public bool IsReadOnly => this._instance.NativeInstance.State.Name != EC2Constants.INSTANCE_STATE_STOPPED;
 
         string _userData;
         public string UserData
         {
-            get 
-            {
-                return this._userData; 
-            }
+            get => this._userData;
             set
             {
                 this._userData = value;
@@ -63,7 +48,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _initialUserData;
         public string InitialUserData
         {
-            get { return this._initialUserData; }
+            get => this._initialUserData;
             set
             {
                 this._initialUserData = value;
@@ -74,7 +59,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         bool _isBase64Encoded;
         public bool IsBase64Encoded
         {
-            get { return this._isBase64Encoded; }
+            get => this._isBase64Encoded;
             set
             {
                 this._isBase64Encoded = value;

@@ -11,11 +11,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
 using System;
 using System.Diagnostics;
-using System.Globalization;
-using System.IO;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using MSBuild = Microsoft.Build.Evaluation;
 using MSBuildExecution = Microsoft.Build.Execution;
@@ -44,47 +40,23 @@ namespace Microsoft.VisualStudio.Project
 		#endregion
 
 		#region properties
-		protected Microsoft.VisualStudio.Shell.Package Package
-		{
-			get
-			{
-				return this.package;
-			}
-		}
+		protected Microsoft.VisualStudio.Shell.Package Package => this.package;
 
-		protected System.IServiceProvider Site
-		{
-			get
-			{
-				return this.site;
-			}
-		}
+        protected System.IServiceProvider Site => this.site;
 
-		/// <summary>
+        /// <summary>
 		/// The msbuild engine that we are going to use.
 		/// </summary>
-		protected MSBuild.ProjectCollection BuildEngine
-		{
-			get
-			{
-				return this.buildEngine;
-			}
-		}
+		protected MSBuild.ProjectCollection BuildEngine => this.buildEngine;
 
-		/// <summary>
+        /// <summary>
 		/// The msbuild project for the temporary project file.
 		/// </summary>
 		protected MSBuild.Project BuildProject
 		{
-			get
-			{
-				return this.buildProject;
-			}
-			set
-			{
-				this.buildProject = value;
-			}
-		}
+			get => this.buildProject;
+            set => this.buildProject = value;
+        }
 		#endregion
 
 		#region ctor

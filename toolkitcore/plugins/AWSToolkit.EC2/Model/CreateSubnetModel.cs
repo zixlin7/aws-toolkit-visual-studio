@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -14,7 +10,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         VPCWrapper _vpc;
         public VPCWrapper VPC
         {
-            get { return this._vpc; }
+            get => this._vpc;
             set
             {
                 this._vpc = value;
@@ -25,7 +21,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _availabilityZone = NO_PREFERENCE_ZONE;
         public string AvailabilityZone
         {
-            get { return this._availabilityZone; }
+            get => this._availabilityZone;
             set
             {
                 this._availabilityZone = value;
@@ -36,7 +32,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _cidrBlock;
         public string CIDRBlock
         {
-            get { return this._cidrBlock; }
+            get => this._cidrBlock;
             set
             {
                 this._cidrBlock = value;

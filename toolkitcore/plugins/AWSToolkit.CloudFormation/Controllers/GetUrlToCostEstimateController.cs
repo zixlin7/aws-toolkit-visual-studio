@@ -1,26 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
 using Amazon.AWSToolkit.Account;
-
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.CloudFormation.Nodes;
 using Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers;
 
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
-
-using Amazon.AWSToolkit.CloudFormation.Model;
-using Amazon.AWSToolkit.CloudFormation.WizardPages;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 
 using log4net;

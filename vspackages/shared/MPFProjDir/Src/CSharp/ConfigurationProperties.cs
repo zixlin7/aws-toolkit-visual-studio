@@ -46,15 +46,9 @@ namespace Microsoft.VisualStudio.Project
 
 		public virtual string OutputPath
 		{
-			get
-			{
-				return this.projectConfig.GetConfigurationProperty(BuildPropertyPageTag.OutputPath.ToString(), true);
-			}
-			set
-			{
-				this.projectConfig.SetConfigurationProperty(BuildPropertyPageTag.OutputPath.ToString(), value);
-			}
-		}
+			get => this.projectConfig.GetConfigurationProperty(BuildPropertyPageTag.OutputPath.ToString(), true);
+            set => this.projectConfig.SetConfigurationProperty(BuildPropertyPageTag.OutputPath.ToString(), value);
+        }
 
 		#endregion
 	}

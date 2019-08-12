@@ -72,7 +72,7 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
         public bool UseIncrementalDeployment { get; protected set; }
         public int BuildAttempt { get; set; }   // one-based index
 
-        public bool IsFirstAttempt { get { return BuildAttempt == 1; } }
+        public bool IsFirstAttempt => BuildAttempt == 1;
 
         public string TargetRuntime
         {

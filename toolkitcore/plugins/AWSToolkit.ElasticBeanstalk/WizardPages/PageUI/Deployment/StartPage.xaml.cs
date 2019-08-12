@@ -4,18 +4,11 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Account.Controller;
-using Amazon.AWSToolkit.Account.View;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.PluginServices.Deployment;
 using Amazon.ElasticBeanstalk.Model;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
@@ -63,10 +56,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         AWSViewModel _rootViewModel;
         public AWSViewModel RootViewModel
         {
-            get
-            {
-                return IsInitialized ? _rootViewModel : null;
-            }
+            get => IsInitialized ? _rootViewModel : null;
             set
             {
                 this._rootViewModel = value;
@@ -88,28 +78,19 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         public AccountViewModel SelectedAccount
         {
-            get { return this._accountSelector.SelectedAccount; }
+            get => this._accountSelector.SelectedAccount;
             protected set { if (IsInitialized) this._accountSelector.SelectedAccount = value; }
         }
 
         public RegionEndPointsManager.RegionEndPoints SelectedRegion
         {
-            get
-            {
-                return this._accountSelector.SelectedRegion;
-            }
-            set
-            {
-                this._accountSelector.SelectedRegion = value;
-            }
+            get => this._accountSelector.SelectedRegion;
+            set => this._accountSelector.SelectedRegion = value;
         }
 
         private ObservableCollection<DeployedApplicationModel> _existingDeployments;
 
-        public ObservableCollection<DeployedApplicationModel> ExistingDeployments
-        {
-            get { return _existingDeployments; }
-        }
+        public ObservableCollection<DeployedApplicationModel> ExistingDeployments => _existingDeployments;
 
         public void LoadAvailableDeployments(ICollection<DeployedApplicationModel> deployments)
         {
@@ -118,13 +99,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             _btnRedeploy.IsEnabled = deployments != null && deployments.Count > 0;
         }
 
-        public bool RedeploySelected
-        {
-            get
-            {
-                return _btnRedeploy.IsChecked == true;
-            }
-        }
+        public bool RedeploySelected => _btnRedeploy.IsChecked == true;
 
         // returns the selected environment to redeploy to - if the user has selected
         // an application (root) tree item, null is returned, allowing us to disable
@@ -148,7 +123,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         public bool LockToNewWizard
         {
-            set { _btnUseLegacyWizard.Visibility = value ? Visibility.Collapsed : Visibility.Visible; }
+            set => _btnUseLegacyWizard.Visibility = value ? Visibility.Collapsed : Visibility.Visible;
         }
 
 

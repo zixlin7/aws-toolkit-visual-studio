@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit;
 
 namespace Amazon.AWSToolkit.CloudFormation.Nodes
 {
@@ -14,15 +9,9 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
     {
         public const string CLOUDFORMATION_ENDPOINT_LOOKUP = "CloudFormation";
 
-        public CloudFormationStackViewMetaNode CloudFormationStackViewMetaNode
-        {
-            get { return this.FindChild<CloudFormationStackViewMetaNode>(); }
-        }
+        public CloudFormationStackViewMetaNode CloudFormationStackViewMetaNode => this.FindChild<CloudFormationStackViewMetaNode>();
 
-        public override string EndPointSystemName
-        {
-            get { return CLOUDFORMATION_ENDPOINT_LOOKUP; }
-        }
+        public override string EndPointSystemName => CLOUDFORMATION_ENDPOINT_LOOKUP;
 
         public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
         {
@@ -30,13 +19,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
         }
 
 
-        public override string MarketingWebSite
-        {
-            get
-            {
-                return "http://aws.amazon.com/cloudformation/";
-            }
-        }
+        public override string MarketingWebSite => "http://aws.amazon.com/cloudformation/";
 
         public ActionHandlerWrapper.ActionHandler OnCreate
         {
@@ -54,13 +37,8 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
             }
         }
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList(new ActionHandlerWrapper("Create Stack...", OnCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateResponse), false,
-                    this.GetType().Assembly, "Amazon.AWSToolkit.CloudFormation.Resources.EmbeddedImages.create_stack.png"));
-            }
-        }
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(new ActionHandlerWrapper("Create Stack...", OnCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateResponse), false,
+                this.GetType().Assembly, "Amazon.AWSToolkit.CloudFormation.Resources.EmbeddedImages.create_stack.png"));
     }
 }

@@ -1,20 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Amazon.AWSToolkit.CommonUI;
-using log4net;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.Lambda.View
 {
@@ -41,9 +25,6 @@ namespace Amazon.AWSToolkit.Lambda.View
             this._ctlNewTrustPolicy.Text = newTrustPolicy;
         }
 
-        public override string Title
-        {
-            get { return string.Format("Fix Trust Policy for role {0}?", this._roleName); }
-        }
+        public override string Title => string.Format("Fix Trust Policy for role {0}?", this._roleName);
     }
 }

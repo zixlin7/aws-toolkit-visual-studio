@@ -4,9 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Diagnostics;
 
@@ -44,18 +42,9 @@ namespace Amazon.AWSToolkit.DynamoDB.Util
             catch { }
         }
 
-        public static DynamoDBLocalManager Instance
-        {
-            get { return _instance; }
-        }
+        public static DynamoDBLocalManager Instance => _instance;
 
-        public bool IsRunning
-        {
-            get
-            {
-                return this._javaProcess != null && !this._javaProcess.HasExited;
-            }
-        }
+        public bool IsRunning => this._javaProcess != null && !this._javaProcess.HasExited;
 
         CurrentState _state = CurrentState.Stopped;
         public CurrentState State
@@ -326,25 +315,22 @@ namespace Amazon.AWSToolkit.DynamoDB.Util
             public string Version
             {
                 get;
-                private set;
             }
 
             public string Description
             {
                 get;
-                private set;
             }
 
             public string Key
             {
                 get;
-                private set;
             }
 
             bool _isInstalled;
             public bool IsInstalled
             {
-                get { return this._isInstalled; }
+                get => this._isInstalled;
                 set
                 {
                     this._isInstalled = value;

@@ -1,17 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
 using Amazon.AWSToolkit.EC2;
@@ -37,23 +28,18 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
 
         public string ConfirmationMessage 
         {
-            set { _confirmationMessage.Text = value; }
+            set => _confirmationMessage.Text = value;
         }
 
         string _newEnvironmentType;
         public string NewEnvironmentType 
         {
-            set { _newEnvironmentType = value; }
+            set => _newEnvironmentType = value;
         }
 
-        bool IsSingleInstanceEnvironment
-        {
-            get 
-            { 
-                return !string.IsNullOrEmpty(_newEnvironmentType) 
-                    && _newEnvironmentType.Equals(BeanstalkConstants.EnvType_SingleInstance, StringComparison.Ordinal); 
-            }
-        }
+        bool IsSingleInstanceEnvironment =>
+            !string.IsNullOrEmpty(_newEnvironmentType) 
+            && _newEnvironmentType.Equals(BeanstalkConstants.EnvType_SingleInstance, StringComparison.Ordinal);
 
         public void SetVPCData(string VPCId, QueryVPCPropertiesWorker.VPCPropertyData vpcPropertyData)
         {
@@ -102,10 +88,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
             }
         }
 
-        public override string Title
-        {
-            get { return "Change Environment Type"; }
-        }
+        public override string Title => "Change Environment Type";
 
         public string SelectedInstanceSubnetId
         {

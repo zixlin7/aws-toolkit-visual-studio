@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CloudFormation;
@@ -27,13 +23,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         #region IAWSLegacyDeploymentPersistence
 
-        public Persistence.Deployment.ProjectDeploymentsPersistenceManager PersistenceManager
-        {
-            get 
-            { 
-                return _hostPackage.LegacyDeploymentsPersistenceManager;
-            }
-        }
+        public Persistence.Deployment.ProjectDeploymentsPersistenceManager PersistenceManager => _hostPackage.LegacyDeploymentsPersistenceManager;
 
         public Dictionary<string, object> SetTemplateDeploymentSeedData(string projectGuid, string templateUri)
         {

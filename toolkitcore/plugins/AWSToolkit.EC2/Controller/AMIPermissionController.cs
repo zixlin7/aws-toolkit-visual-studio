@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
@@ -33,12 +30,9 @@ namespace Amazon.AWSToolkit.EC2.Controller
             return new ActionResults().WithSuccess(false);
         }
 
-        public AMIPermissionModel Model
-        {
-            get { return this._model; }
-        }
+        public AMIPermissionModel Model => this._model;
 
-        public IAmazonEC2 EC2Client { get { return this._ec2Client; } }
+        public IAmazonEC2 EC2Client => this._ec2Client;
 
         public void LoadModel()
         {

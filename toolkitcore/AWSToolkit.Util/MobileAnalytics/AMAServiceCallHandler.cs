@@ -4,8 +4,6 @@ using Amazon.Runtime.Internal.Settings;
 using log4net;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace Amazon.AWSToolkit.MobileAnalytics
@@ -377,10 +375,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                     return null;
                 }
             }
-            set
-            {
-                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsMostRecentlyUsedCognitoIdentityPoolId, value);
-            }
+            set => PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsMostRecentlyUsedCognitoIdentityPoolId, value);
         }
 
     }

@@ -11,11 +11,7 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Project
 {
@@ -37,15 +33,9 @@ namespace Microsoft.VisualStudio.Project
 		/// <summary>
 		/// Add your listener to this list. They should be added in the overridden Initialize befaore calling the base.
 		/// </summary>
-		public IList<SolutionListener> SolutionListeners
-		{
-			get
-			{
-				return this.solutionListeners;
-			}
-		}
+		public IList<SolutionListener> SolutionListeners => this.solutionListeners;
 
-		public abstract string ProductUserContext { get; }
+        public abstract string ProductUserContext { get; }
 
 		#endregion
 

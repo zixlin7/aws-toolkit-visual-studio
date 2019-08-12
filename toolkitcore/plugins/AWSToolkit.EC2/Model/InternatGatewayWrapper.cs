@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.EC2.Model;
-using Amazon.AWSToolkit.EC2.View.DataGrid;
 
 namespace Amazon.AWSToolkit.EC2.Model
 {
@@ -28,22 +23,13 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public InternetGateway NativeInternetGateway
-        {
-            get { return this._gateway; }
-        }
+        public InternetGateway NativeInternetGateway => this._gateway;
 
         [Browsable(false)]
-        public string DisplayName
-        {
-            get { return this.NativeInternetGateway.InternetGatewayId; }
-        }
+        public string DisplayName => this.NativeInternetGateway.InternetGatewayId;
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "Internet Gateway"; }
-        }
+        public string TypeName => "Internet Gateway";
 
         [Browsable(false)]
         public string FormattedLabel
@@ -60,10 +46,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         [DisplayName("ID")]
         [AssociatedIcon(false, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.internet-gateway.png")]
-        public string InternetGatewayId
-        {
-            get { return this.NativeInternetGateway.InternetGatewayId; }
-        }
+        public string InternetGatewayId => this.NativeInternetGateway.InternetGatewayId;
 
         [DisplayName("State")]
         [AssociatedIcon(true, "StateIcon")]
@@ -160,10 +143,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public List<Tag> Tags
-        {
-            get { return this.NativeInternetGateway.Tags; }
-        }
+        public List<Tag> Tags => this.NativeInternetGateway.Tags;
 
         internal void ClearAttachments()
         {

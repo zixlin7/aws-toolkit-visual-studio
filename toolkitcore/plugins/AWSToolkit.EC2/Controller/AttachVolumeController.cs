@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
@@ -60,10 +56,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 _model.Device = _model.Instance.UnmappedDeviceSlots[0];
         }
 
-        public AttachVolumeModel Model
-        {
-            get { return _model; }
-        }
+        public AttachVolumeModel Model => _model;
 
         public void AttachVolume()
         {

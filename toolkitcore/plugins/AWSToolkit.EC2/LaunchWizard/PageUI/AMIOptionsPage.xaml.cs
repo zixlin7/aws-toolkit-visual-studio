@@ -1,20 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Amazon.AWSToolkit.EC2.Model;
 using Microsoft.Win32;
-
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 using Amazon.EC2.Model;
@@ -81,7 +73,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
             }
         }
 
-        public ObservableCollection<InstanceType> InstanceTypes { get; private set; }
+        public ObservableCollection<InstanceType> InstanceTypes { get; }
 
         public InstanceType SelectedInstanceType
         {
@@ -130,7 +122,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
             }
         }
 
-        public ObservableCollection<VpcAndSubnetWrapper> VpcSubnets { get; private set; }
+        public ObservableCollection<VpcAndSubnetWrapper> VpcSubnets { get; }
 
         public void SetVpcSubnets(ICollection<Vpc> vpcs, ICollection<Subnet> subnets, bool isVpcOnlyEnvironment)
         {
@@ -216,13 +208,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
             }
         }
 
-        public bool LaunchIntoVPC
-        {
-            get
-            {
-                return this._ctlLaunchVPC.IsChecked.GetValueOrDefault();
-            }
-        }
+        public bool LaunchIntoVPC => this._ctlLaunchVPC.IsChecked.GetValueOrDefault();
 
         public ICollection<InstanceProfile> IamProfiles
         {
@@ -307,15 +293,9 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
             }
         }
 
-        public bool EnableMonitoring
-        {
-            get { return _monitoring.IsChecked == true; }
-        }
+        public bool EnableMonitoring => _monitoring.IsChecked == true;
 
-        public bool PreventTermination
-        {
-            get { return _terminationProtection.IsChecked == true; }
-        }
+        public bool PreventTermination => _terminationProtection.IsChecked == true;
 
         public string UserData
         {
@@ -330,20 +310,11 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
 
         public string UserDataFilename { get; set; }
 
-        public bool UserDataIsFile
-        {
-            get { return _userDataAsFile.IsChecked == true; }
-        }
+        public bool UserDataIsFile => _userDataAsFile.IsChecked == true;
 
-        public bool UserDataEncoded
-        {
-            get { return _base64.IsChecked == true; }
-        }
+        public bool UserDataEncoded => _base64.IsChecked == true;
 
-        public string ShutdownBehavior
-        {
-            get { return (_shutdownBehaviour.SelectedItem as ComboBoxItem).Tag as string; }
-        }
+        public string ShutdownBehavior => (_shutdownBehaviour.SelectedItem as ComboBoxItem).Tag as string;
 
         private void _userDataAsText_Checked(object sender, RoutedEventArgs e)
         {

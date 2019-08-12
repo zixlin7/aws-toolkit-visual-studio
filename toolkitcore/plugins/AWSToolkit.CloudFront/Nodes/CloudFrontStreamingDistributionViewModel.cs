@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.CloudFront;
-using Amazon.CloudFront.Model;
-
-using Amazon.AWSToolkit.Navigator.Node;
+﻿using Amazon.CloudFront.Model;
 
 namespace Amazon.AWSToolkit.CloudFront.Nodes
 {
@@ -26,13 +18,7 @@ namespace Amazon.AWSToolkit.CloudFront.Nodes
             this.Aliases = distribution.Aliases;
         }
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.CloudFront.Resources.EmbeddedImages.streaming-distribution.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.CloudFront.Resources.EmbeddedImages.streaming-distribution.png";
 
         public static string GetName(StreamingDistribution distribution)
         {

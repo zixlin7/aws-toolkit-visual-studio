@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.EC2.Model
 {
@@ -13,7 +8,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         bool _isPortAndIpChecked = true;
         public bool IsPortAndIpChecked
         {
-            get { return this._isPortAndIpChecked; }
+            get => this._isPortAndIpChecked;
             set
             {
                 this._isPortAndIpChecked = value;
@@ -25,7 +20,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         bool _isUserAndGroupChecked;
         public bool IsUserAndGroupChecked
         {
-            get { return this._isUserAndGroupChecked; }
+            get => this._isUserAndGroupChecked;
             set
             {
                 this._isUserAndGroupChecked = value;
@@ -37,10 +32,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         NetworkProtocol _ipProtocol = NetworkProtocol.TCP;
         public NetworkProtocol IPProtocol
         {
-            get
-            {
-                return this._ipProtocol;
-            }
+            get => this._ipProtocol;
             set
             {
                 this._ipProtocol = value;
@@ -51,10 +43,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _portRangeStart;
         public string PortRangeStart
         {
-            get
-            {
-                return this._portRangeStart;
-            }
+            get => this._portRangeStart;
             set
             {
                 this._portRangeStart = value;
@@ -65,10 +54,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _portRangeEnd;
         public string PortRangeEnd
         {
-            get
-            {
-                return this._portRangeEnd;
-            }
+            get => this._portRangeEnd;
             set
             {
                 this._portRangeEnd = value;
@@ -79,10 +65,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _sourceCIDR = "0.0.0.0/0";
         public string SourceCIDR
         {
-            get 
-            {
-                return this._sourceCIDR; 
-            }
+            get => this._sourceCIDR;
             set
             {
                 this._sourceCIDR = value;
@@ -93,10 +76,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _userId;
         public string UserId
         {
-            get
-            {
-                return this._userId;
-            }
+            get => this._userId;
             set
             {
                 this._userId = value;
@@ -107,10 +87,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _groupName;
         public string GroupName
         {
-            get
-            {
-                return this._groupName;
-            }
+            get => this._groupName;
             set
             {
                 this._groupName = value;

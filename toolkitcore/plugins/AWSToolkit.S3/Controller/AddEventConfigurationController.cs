@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Web;
 
 using Amazon.Auth.AccessControlPolicy;
@@ -12,19 +10,13 @@ using Amazon.S3.Model;
 
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
-using Amazon.SimpleNotificationService.Util;
-
 using Amazon.SQS;
 using Amazon.SQS.Model;
-using Amazon.SQS.Util;
-
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
-
-using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.S3.View;
 

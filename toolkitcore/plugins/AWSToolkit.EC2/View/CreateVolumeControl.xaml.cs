@@ -27,26 +27,11 @@ namespace Amazon.AWSToolkit.EC2.View
             this._controller = controller;
         }
 
-        public override string Title
-        {
-            get
-            {
-                return "Create Volume";
-            }
-        }
+        public override string Title => "Create Volume";
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
-        public ResourceTagsModel TagsModel
-        {
-            get { return _controller != null ? this._controller.Model.TagsModel : null; }    
-        }
+        public ResourceTagsModel TagsModel => _controller != null ? this._controller.Model.TagsModel : null;
 
         protected override object LoadAndReturnModel()
         {
@@ -133,20 +118,20 @@ namespace Amazon.AWSToolkit.EC2.View
 
         public int MinimumValue
         {
-            get { return _minimumValue; }
-            set { _minimumValue = value; }
+            get => _minimumValue;
+            set => _minimumValue = value;
         }
 
         public int MaximumValue
         {
-            get { return _maximumValue; }
-            set { _maximumValue = value; }
+            get => _maximumValue;
+            set => _maximumValue = value;
         }
 
         public string ErrorMessage
         {
-            get { return _errorMessage; }
-            set { _errorMessage = value; }
+            get => _errorMessage;
+            set => _errorMessage = value;
         }
 
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)

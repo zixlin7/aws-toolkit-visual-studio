@@ -1,5 +1,4 @@
-﻿using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.EC2.Model;
+﻿using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.Model;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
@@ -7,8 +6,6 @@ using Amazon.EC2.Model;
 using Amazon.KeyManagementService.Model;
 using log4net;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -60,37 +57,13 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
             _ctlDLQ.SetAvailableDLQTargets(topicArns, queueArns, selectedTargetArn);
         }
 
-        public string SelectedDLQTargetArn
-        {
-            get
-            {
-                return this._ctlDLQ.SelectedArn;
-            }
-        }
+        public string SelectedDLQTargetArn => this._ctlDLQ.SelectedArn;
 
-        public IEnumerable<SubnetWrapper> SelectedSubnets
-        {
-            get
-            {
-                return _ctlVpcSubnets.SelectedSubnets;
-            }
-        }
+        public IEnumerable<SubnetWrapper> SelectedSubnets => _ctlVpcSubnets.SelectedSubnets;
 
-        public IEnumerable<SecurityGroupWrapper> SelectedSecurityGroups
-        {
-            get
-            {
-                return _ctlSecurityGroups.SelectedSecurityGroups;
-            }
-        }
+        public IEnumerable<SecurityGroupWrapper> SelectedSecurityGroups => _ctlSecurityGroups.SelectedSecurityGroups;
 
-        public bool SubnetsSpanVPCs
-        {
-            get
-            {
-                return _ctlVpcSubnets.SubnetsSpanVPCs;
-            }
-        }
+        public bool SubnetsSpanVPCs => _ctlVpcSubnets.SubnetsSpanVPCs;
 
         public void SetAvailableKMSKeys(IEnumerable<KeyListEntry> keys, IEnumerable<AliasListEntry> aliases, string keyArnToSelect)
         {
@@ -115,13 +88,7 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
                                            preselectedKey);
         }
 
-        public KeyListEntry SelectedKMSKey
-        {
-            get
-            {
-                return _ctlKMSKey.SelectedKey;
-            }
-        }
+        public KeyListEntry SelectedKMSKey => _ctlKMSKey.SelectedKey;
 
         private void AddVariable_Click(object sender, RoutedEventArgs e)
         {

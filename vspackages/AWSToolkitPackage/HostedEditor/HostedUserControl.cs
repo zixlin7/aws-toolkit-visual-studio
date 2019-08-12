@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using System.Windows.Forms.Integration;
-
-using Amazon.AWSToolkit.CommonUI;
-using System.Windows;
 using Amazon.AWSToolkit.Shared;
 
 namespace Amazon.AWSToolkit.VisualStudio.HostedEditor

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit;
-using Amazon.AWSToolkit.Account;
+﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 
 using Amazon.AWSToolkit.DynamoDB.Nodes;
@@ -15,10 +9,7 @@ namespace Amazon.AWSToolkit.DynamoDB
 {
     public class DynamoDBActivator : AbstractPluginActivator
     {
-        public override string PluginName
-        {
-            get { return "DynamoDB"; }
-        }
+        public override string PluginName => "DynamoDB";
 
         public override void RegisterMetaNodes()
         {

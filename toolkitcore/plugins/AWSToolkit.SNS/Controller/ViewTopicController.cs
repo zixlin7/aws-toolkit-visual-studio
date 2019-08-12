@@ -1,22 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Windows;
 using System.Windows.Threading;
-
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.SNS.Nodes;
 using Amazon.AWSToolkit.SNS.View;
 using Amazon.AWSToolkit.SNS.Model;
-using Amazon.AWSToolkit;
-
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 
@@ -114,10 +102,7 @@ namespace Amazon.AWSToolkit.SNS.Controller
             }
         }
 
-        public ViewTopicModel Model
-        {
-            get { return this._model; }
-        }
+        public ViewTopicModel Model => this._model;
 
         public void LoadModel()
         {

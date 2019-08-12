@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Windows.Controls;
 
 using Amazon.AWSToolkit.CommonUI;
@@ -58,10 +55,7 @@ namespace Amazon.AWSToolkit.Navigator
             set;
         }
 
-        public Image Icon
-        {
-            get { return IconHelper.GetIcon(IconAssembly, IconFile); }
-        }
+        public Image Icon => IconHelper.GetIcon(IconAssembly, IconFile);
 
         public Assembly IconAssembly
         {

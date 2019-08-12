@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-
-using ThirdParty.Json.LitJson;
+﻿using System.Collections.Generic;
 using log4net;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 
@@ -16,7 +9,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating
     /// </summary>
     public class BeanstalkTemplateWrapper : DeploymentTemplateWrapperBase
     {
-        public override string ServiceOwner { get { return DeploymentServiceIdentifiers.BeanstalkServiceName; } }
+        public override string ServiceOwner => DeploymentServiceIdentifiers.BeanstalkServiceName;
 
         public override System.Windows.Media.ImageSource TemplateIcon
         {

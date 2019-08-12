@@ -1,29 +1,19 @@
 ﻿using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.Lambda.Controller;
-using Amazon.AWSToolkit.Lambda.Model;
 using Amazon.AWSToolkit.Lambda.Nodes;
-using Amazon.AWSToolkit.Lambda.WizardPages.PageControllers;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 using Amazon.S3;
-using Amazon.S3.Model;
 using log4net;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
 using Amazon.AWSToolkit.CloudFormation;
-
-using ThirdParty.Json.LitJson;
-using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
 using Amazon.AWSToolkit.Lambda.View.Components;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
@@ -35,10 +25,10 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(PublishServerlessDetailsPage));
 
-        public IAWSWizardPageController PageController { get; private set; }
+        public IAWSWizardPageController PageController { get; }
 
-        private string SeedS3Bucket { get; set; }
-        private string SeedStackName { get; set; }
+        private string SeedS3Bucket { get; }
+        private string SeedStackName { get; }
 
 
         public PublishServerlessDetailsPage()
@@ -108,26 +98,14 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             this.Framework = this._ctlFrameworkPicker.Items[0].ToString();
         }
 
-        public AccountViewModel SelectedAccount
-        {
-            get
-            {
-                return _ctlAccountAndRegion.SelectedAccount;
-            }
-        }
+        public AccountViewModel SelectedAccount => _ctlAccountAndRegion.SelectedAccount;
 
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion
-        {
-            get
-            {
-                return _ctlAccountAndRegion.SelectedRegion;
-            }
-        }
+        public RegionEndPointsManager.RegionEndPoints SelectedRegion => _ctlAccountAndRegion.SelectedRegion;
 
         string _configuration;
         public string Configuration
         {
-            get { return _configuration; }
+            get => _configuration;
             set
             {
                 _configuration = value;
@@ -138,7 +116,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         string _framework;
         public string Framework
         {
-            get { return _framework; }
+            get => _framework;
             set
             {
                 _framework = value;
@@ -148,27 +126,18 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
         public string StackName
         {
-            get { return this._ctlStackPicker.Text; }
-            set { this._ctlStackPicker.Text = value; }
+            get => this._ctlStackPicker.Text;
+            set => this._ctlStackPicker.Text = value;
         }
 
-        public bool SaveSettings
-        {
-            get { return this._ctlPersistSettings.IsChecked.GetValueOrDefault(); }
-        }
+        public bool SaveSettings => this._ctlPersistSettings.IsChecked.GetValueOrDefault();
 
-        public bool IsNewStack
-        {
-            get
-            {
-                return !this._ctlStackPicker.Items.Contains(this._ctlStackPicker.Text);
-            }
-        }
+        public bool IsNewStack => !this._ctlStackPicker.Items.Contains(this._ctlStackPicker.Text);
 
         string _s3Bucket;
         public string S3Bucket
         {
-            get { return _s3Bucket; }
+            get => _s3Bucket;
             set
             {
                 _s3Bucket = value;

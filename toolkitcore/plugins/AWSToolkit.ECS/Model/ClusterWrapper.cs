@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.ECS.Model;
 using System.Windows.Media;
@@ -45,10 +41,7 @@ namespace Amazon.AWSToolkit.ECS.Model
             NotifyPropertyChanged("DisplayName");
         }
 
-        public bool IsLoaded
-        {
-            get { return _cluster != null; }
-        }
+        public bool IsLoaded => _cluster != null;
 
         public override void GetPropertyNames(out string className, out string componentName)
         {
@@ -58,87 +51,35 @@ namespace Amazon.AWSToolkit.ECS.Model
 
         [DisplayName("Name")]
         [AssociatedIcon(true, "ClusterIcon")]
-        public string Name
-        {
-            get
-            {
-                return _cluster != null ? _cluster.ClusterName : _clusterArn.Split('/').LastOrDefault();
-            }
-        }
+        public string Name => _cluster != null ? _cluster.ClusterName : _clusterArn.Split('/').LastOrDefault();
 
         [DisplayName("Services")]
-        public int Services
-        {
-            get { return _cluster?.ActiveServicesCount ?? 0; }
-        }
+        public int Services => _cluster?.ActiveServicesCount ?? 0;
 
         [DisplayName("Running EC2 tasks")]
-        public int RunningEC2Tasks
-        {
-            get
-            {
-                return GetStatistic("runningEC2TasksCount");
-            }
-        }
-
+        public int RunningEC2Tasks => GetStatistic("runningEC2TasksCount");
 
 
         [DisplayName("Pending EC2 tasks")]
-        public int PendingEC2Tasks
-        {
-            get
-            {
-                return GetStatistic("pendingEC2TasksCount");
-            }
-        }
+        public int PendingEC2Tasks => GetStatistic("pendingEC2TasksCount");
 
         [DisplayName("Running Fargate tasks")]
-        public int RunningFargateTasks
-        {
-            get
-            {
-                return GetStatistic("runningFargateTasksCount");
-            }
-        }
+        public int RunningFargateTasks => GetStatistic("runningFargateTasksCount");
 
         [DisplayName("Pending Fargate tasks")]
-        public int PendingFargateTasks
-        {
-            get
-            {
-                return GetStatistic("pendingFargateTasksCount");
-            }
-        }
+        public int PendingFargateTasks => GetStatistic("pendingFargateTasksCount");
 
         [DisplayName("Active EC2 Service")]
-        public int ActiveEC2ServiceCount
-        {
-            get
-            {
-                return GetStatistic("activeEC2ServiceCount");
-            }
-        }
+        public int ActiveEC2ServiceCount => GetStatistic("activeEC2ServiceCount");
 
         [DisplayName("Active Fargate Service")]
-        public int ActiveFargateServiceCount
-        {
-            get
-            {
-                return GetStatistic("activeFargateServiceCount");
-            }
-        }
+        public int ActiveFargateServiceCount => GetStatistic("activeFargateServiceCount");
 
         [DisplayName("Container instances")]
-        public int ContainerInstances
-        {
-            get { return _cluster?.RegisteredContainerInstancesCount ?? 0; }
-        }
+        public int ContainerInstances => _cluster?.RegisteredContainerInstancesCount ?? 0;
 
         [DisplayName("Status")]
-        public string Status
-        {
-            get { return _cluster?.Status ?? string.Empty; }
-        }
+        public string Status => _cluster?.Status ?? string.Empty;
 
         public SolidColorBrush StatusHealthColor
         {
@@ -167,25 +108,13 @@ namespace Amazon.AWSToolkit.ECS.Model
         }
 
         [DisplayName("ARN")]
-        public string ClusterArn
-        {
-            get { return _clusterArn; }
-        }
+        public string ClusterArn => _clusterArn;
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "Cluster"; }
-        }
+        public string TypeName => "Cluster";
 
         [Browsable(false)]
-        public string DisplayName
-        {
-            get
-            {
-                return string.Format("{0} ({1})", Name, _clusterArn);
-            }
-        }
+        public string DisplayName => string.Format("{0} ({1})", Name, _clusterArn);
 
         [Browsable(false)]
         public System.Windows.Media.ImageSource ClusterIcon

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
-using Amazon.RDS.Model;
-
+﻿using System.Collections.ObjectModel;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
 
@@ -14,10 +7,7 @@ namespace Amazon.AWSToolkit.RDS.Model
     public class ViewDBSecurityGroupsModel : BaseModel
     {
         ObservableCollection<DBSecurityGroupWrapper> _securityGroups = new ObservableCollection<DBSecurityGroupWrapper>();
-        public ObservableCollection<DBSecurityGroupWrapper> SecurityGroups
-        {
-            get { return this._securityGroups; }
-        }
+        public ObservableCollection<DBSecurityGroupWrapper> SecurityGroups => this._securityGroups;
 
         EC2ColumnDefinition[] _instancePropertytColumnDefinitions;
         public EC2ColumnDefinition[] PropertyColumnDefinitions

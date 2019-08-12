@@ -33,15 +33,9 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
 
         public CloneRepositoryController Controller { get; }
 
-        public override string Title
-        {
-            get { return "Clone AWS CodeCommit Repository"; }
-        }
+        public override string Title => "Clone AWS CodeCommit Repository";
 
-        public override bool SupportsDynamicOKEnablement
-        {
-            get { return true; }
-        }
+        public override bool SupportsDynamicOKEnablement => true;
 
         public override bool Validated()
         {

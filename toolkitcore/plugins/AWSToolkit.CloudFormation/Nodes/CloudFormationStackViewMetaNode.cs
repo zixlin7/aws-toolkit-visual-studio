@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.Account;
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit;
 
 namespace Amazon.AWSToolkit.CloudFormation.Nodes
 {
@@ -36,20 +30,14 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
             stackModel.CloudFormationRootViewModel.RemoveStack(focus.Name);
         }
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList(
-                    new ActionHandlerWrapper("Open", OnOpen, null, true, null, null),
-                    new ActionHandlerWrapper("Save Configuration", OnCreateConfig, null, false,
-                        this.GetType().Assembly, "Amazon.AWSToolkit.CloudFormation.Resources.EmbeddedImages.import.png"),
-                    null,
-                    new ActionHandlerWrapper("Delete", OnDelete, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false,
-                        this.GetType().Assembly, "Amazon.AWSToolkit.CloudFormation.Resources.EmbeddedImages.delete_stack.png")
-                    );
-            }
-        }
-
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(
+                new ActionHandlerWrapper("Open", OnOpen, null, true, null, null),
+                new ActionHandlerWrapper("Save Configuration", OnCreateConfig, null, false,
+                    this.GetType().Assembly, "Amazon.AWSToolkit.CloudFormation.Resources.EmbeddedImages.import.png"),
+                null,
+                new ActionHandlerWrapper("Delete", OnDelete, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false,
+                    this.GetType().Assembly, "Amazon.AWSToolkit.CloudFormation.Resources.EmbeddedImages.delete_stack.png")
+            );
     }
 }

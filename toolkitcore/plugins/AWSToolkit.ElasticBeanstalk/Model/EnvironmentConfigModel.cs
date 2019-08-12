@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 
 using Amazon.ElasticBeanstalk.Model;
@@ -48,7 +45,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         private bool _isConfigDirty;
         public bool IsConfigDirty
         {
-            get { return this._isConfigDirty; }
+            get => this._isConfigDirty;
             set
             {
                 this._isConfigDirty = value;
@@ -171,12 +168,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
             return value;
         }
 
-        public IEnumerable<string> Namespaces
-        {
-            get {
-                return this._propertiesByNamespace.Keys; 
-            }
-        }
+        public IEnumerable<string> Namespaces => this._propertiesByNamespace.Keys;
 
         public IEnumerable<ConfigurationOptionDescription> GetProperties(string ns)
         {

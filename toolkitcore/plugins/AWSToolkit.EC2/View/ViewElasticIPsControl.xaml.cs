@@ -1,17 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Model;
@@ -51,29 +41,11 @@ namespace Amazon.AWSToolkit.EC2.View
             this._ctlDataGrid.Initialize(this._controller.EC2Client, this._controller.Model.PropertyColumnDefinitions, DEFAULT_COLUMN_DEFINITIONS, COLUMN_USERSETTINGS_KEY);
         }
 
-        public override string Title
-        {
-            get
-            {
-                return String.Format("{0} Elastic IPs", this._controller.RegionDisplayName);
-            }
-        }
+        public override string Title => String.Format("{0} Elastic IPs", this._controller.RegionDisplayName);
 
-        public override string UniqueId
-        {
-            get
-            {
-                return "ElasticIPs_" + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
-            }
-        }
+        public override string UniqueId => "ElasticIPs_" + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {

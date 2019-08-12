@@ -1,9 +1,4 @@
-﻿
-
-using Amazon.AWSToolkit.MobileAnalytics;
-using Amazon.Lambda;
-
-using Amazon.Lambda.Tools;
+﻿using Amazon.Lambda;
 using Amazon.Lambda.Tools.Commands;
 
 using log4net;
@@ -139,7 +134,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
         internal class DeployToolLogger : IToolLogger
         {
-            ILambdaFunctionUploadHelpers FunctionHandler { get; set; }
+            ILambdaFunctionUploadHelpers FunctionHandler { get; }
 
             internal DeployToolLogger(ILambdaFunctionUploadHelpers controller)
             {

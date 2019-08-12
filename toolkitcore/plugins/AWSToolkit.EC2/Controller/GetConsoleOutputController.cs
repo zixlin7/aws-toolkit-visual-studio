@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.EC2.Model;
+﻿using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
 using Amazon.AWSToolkit.Util;
 
@@ -28,10 +22,6 @@ namespace Amazon.AWSToolkit.EC2.Controller
             ToolkitFactory.Instance.ShellProvider.ShowModal(new GetConsoleOutputControl(this), System.Windows.MessageBoxButton.OK);
         }
 
-        public GetConsoleOutputModel Model
-        {
-            get { return this._model; }
-        }
-
+        public GetConsoleOutputModel Model => this._model;
     }
 }

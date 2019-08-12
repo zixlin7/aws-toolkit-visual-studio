@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
 using Amazon.Auth.AccessControlPolicy;
 
 namespace Amazon.AWSToolkit.SQS.Model
@@ -17,26 +14,14 @@ namespace Amazon.AWSToolkit.SQS.Model
         {
         }
 
-        public string[] Actions
-        {
-            get
-            {
-                return new string[] { "*", "SendMessage", "ReceiveMessage", "DeleteMessage", "ChangeMessageVisibility", "GetQueueAttributes" };
-            }
-        }
+        public string[] Actions => new string[] { "*", "SendMessage", "ReceiveMessage", "DeleteMessage", "ChangeMessageVisibility", "GetQueueAttributes" };
 
         public QueuePermissionsModel(string policy)
         {
             parse(policy);
         }
 
-        public ObservableCollection<PermissionRecord> Permissions
-        {
-            get
-            {
-                return this._permissions;
-            }
-        }
+        public ObservableCollection<PermissionRecord> Permissions => this._permissions;
 
         private void parse(string policyStr)
         {

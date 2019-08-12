@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.RDS.Model
 {
@@ -12,7 +7,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         bool _useCidrIP = true;
         public bool UseCidrIP
         {
-            get { return this._useCidrIP; }
+            get => this._useCidrIP;
             set
             {
                 this._useCidrIP = value;
@@ -22,7 +17,7 @@ namespace Amazon.AWSToolkit.RDS.Model
 
         public bool UseEC2SecurityGroup
         {
-            get { return !this.UseCidrIP; }
+            get => !this.UseCidrIP;
             set
             {
                 this.UseCidrIP = !value;
@@ -33,7 +28,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         string _cidr;
         public string CIDR
         {
-            get { return this._cidr; }
+            get => this._cidr;
             set
             {
                 this._cidr = value;
@@ -45,7 +40,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         string _awsUser;
         public string AWSUser
         {
-            get { return this._awsUser; }
+            get => this._awsUser;
             set
             {
                 this._awsUser = value;
@@ -57,7 +52,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         string _ec2SecurityGroupName;
         public string EC2SecurityGroupName
         {
-            get { return this._ec2SecurityGroupName; }
+            get => this._ec2SecurityGroupName;
             set
             {
                 this._ec2SecurityGroupName = value;
@@ -69,7 +64,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         string _ec2SecurityGroupId;
         public string EC2SecurityGroupId
         {
-            get { return this._ec2SecurityGroupId; }
+            get => this._ec2SecurityGroupId;
             set
             {
                 this._ec2SecurityGroupId = value;

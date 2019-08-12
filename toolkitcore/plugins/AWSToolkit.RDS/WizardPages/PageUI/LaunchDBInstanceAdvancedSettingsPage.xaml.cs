@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using System.Security.Policy;
 using System.Windows;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Controls;
-using System.Windows.Media;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.RDS.Controller;
 using Amazon.AWSToolkit.RDS.Model;
@@ -89,21 +87,15 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
 
         #region Network and Security Settings
 
-        public bool LaunchingIntoVpc
-        {
-            get
-            {
-                return SelectedVpc != null && LaunchDBInstanceController.IsLaunchingIntoVPC(SelectedVpc.VpcId);
-            }
-        }
+        public bool LaunchingIntoVpc => SelectedVpc != null && LaunchDBInstanceController.IsLaunchingIntoVPC(SelectedVpc.VpcId);
 
         public string NameHint { get; set; }
         public string PortHint { get; set; }
 
         public VPCWrapper SelectedVpc { get; set; }
-        public ObservableCollection<VPCWrapper> VpcList { get { return _vpcList; } }
+        public ObservableCollection<VPCWrapper> VpcList => _vpcList;
         public DBSubnetGroupWrapper SelectedDbSubnetGroup { get; set; }
-        public ObservableCollection<DBSubnetGroupWrapper> DbSubnetGroupList { get { return _dbSubnetGroupList; } }
+        public ObservableCollection<DBSubnetGroupWrapper> DbSubnetGroupList => _dbSubnetGroupList;
 
         public bool CreateNewDBSubnetGroup
         {
@@ -118,17 +110,11 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
             }
         }
 
-        public List<SecurityGroupInfo> SelectedSecurityGroups
-        {
-            get
-            {
-                return (from g in _securityGroups where g.IsSelected select g.InnerObject).ToList();
-            }
-        }
+        public List<SecurityGroupInfo> SelectedSecurityGroups => (from g in _securityGroups where g.IsSelected select g.InnerObject).ToList();
 
         public bool PubliclyAccessible { get; set; }
         public EC2AvailabilityZone SelectedAvailabilityZone { get; set; }
-        public ObservableCollection<EC2AvailabilityZone> AvailabilityZoneList { get { return _availabilityZoneList; } }
+        public ObservableCollection<EC2AvailabilityZone> AvailabilityZoneList => _availabilityZoneList;
 
         public bool NoPreferenceAvailabilityZone
         {
@@ -141,26 +127,15 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
             }
         }
 
-        public bool CreateNewSecurityGroup { get { return _ctlCreateNewSecurityGroup.IsChecked.GetValueOrDefault(); } }
-        public ObservableCollection<SelectableGroup<SecurityGroupInfo>> SecurityGroups { get { return _securityGroups; } }
+        public bool CreateNewSecurityGroup => _ctlCreateNewSecurityGroup.IsChecked.GetValueOrDefault();
+        public ObservableCollection<SelectableGroup<SecurityGroupInfo>> SecurityGroups => _securityGroups;
         public bool AddCidrToSecurityGroups { get; set; }
 
-        public string AddCurrentCidrEstimate
-        {
-            get
-            {
-                return string.Format(AddCurrentCidrTextFormat, _cidrEstimate);
-            }
-        }
+        public string AddCurrentCidrEstimate => string.Format(AddCurrentCidrTextFormat, _cidrEstimate);
 
-        public string NewSecurityGroupTooltip
-        {
-            get
-            {
-                return string.Format("A security group allowing your current IP address ({0}) to connect to your instance will be created. This will make it easier for you to connect to the instance and configure it.",
-                                      IPAddressUtil.DetermineIPFromExternalSource());
-            }
-        }
+        public string NewSecurityGroupTooltip =>
+            string.Format("A security group allowing your current IP address ({0}) to connect to your instance will be created. This will make it easier for you to connect to the instance and configure it.",
+                IPAddressUtil.DetermineIPFromExternalSource());
 
         #endregion
 
@@ -168,20 +143,14 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
         public string DatabaseName { get; set; }
         public string DatabasePort { get; set; }
         public string DbParameterGroup { get; set; }
-        public ObservableCollection<DBParameterGroup> DbParameterGroupList { get { return _dbParameterGroupList; } }
+        public ObservableCollection<DBParameterGroup> DbParameterGroupList => _dbParameterGroupList;
         public string OptionGroup { get; set; }
-        public ObservableCollection<string> OptionGroupList { get { return _optionGroupList; } }
+        public ObservableCollection<string> OptionGroupList => _optionGroupList;
         public bool EnableEncryption { get; set; }
 
         #endregion
 
-        public bool SecurityGroupSelectionPermitted
-        {
-            get
-            {
-                return !_ctlCreateNewSecurityGroup.IsChecked.GetValueOrDefault();
-            }
-        }
+        public bool SecurityGroupSelectionPermitted => !_ctlCreateNewSecurityGroup.IsChecked.GetValueOrDefault();
 
         internal void SetAvailableVpcsAndDbSubnetGroups(IEnumerable<Vpc> vpcs, IEnumerable<DBSubnetGroup> dbSubnetGroups, bool isVpcOnly)
         {

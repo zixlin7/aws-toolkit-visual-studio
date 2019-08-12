@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.RDS.Model;
-
-namespace Amazon.AWSToolkit.RDS
+﻿namespace Amazon.AWSToolkit.RDS
 {
     public class DBInstanceClass
     {
@@ -15,7 +8,6 @@ namespace Amazon.AWSToolkit.RDS
         public string Name
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -24,13 +16,9 @@ namespace Amazon.AWSToolkit.RDS
         public string Id
         {
             get;
-            private set;
         }
 
-        public string DisplayName
-        {
-            get { return string.Format("{0} ({1})", Name, Id); }    
-        }
+        public string DisplayName => string.Format("{0} ({1})", Name, Id);
 
         /// <summary>
         /// The RAM (measured in Gigabytes) available on this instance type.
@@ -38,7 +26,6 @@ namespace Amazon.AWSToolkit.RDS
         public string MemoryWithUnits
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -47,7 +34,6 @@ namespace Amazon.AWSToolkit.RDS
         public double NumberOfVirtualCores
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -56,7 +42,6 @@ namespace Amazon.AWSToolkit.RDS
         public string ArchitectureBits
         {
             get;
-            private set;
         }
 
         /// <summary>
@@ -65,7 +50,6 @@ namespace Amazon.AWSToolkit.RDS
         public string IOCapacity
         {
             get;
-            private set;
         }
 
         public DBInstanceClass(string id, string name, string memoryInGigabytes,

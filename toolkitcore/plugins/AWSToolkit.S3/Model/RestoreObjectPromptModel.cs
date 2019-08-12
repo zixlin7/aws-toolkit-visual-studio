@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.S3.Model
 {
@@ -17,7 +12,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public string RestoreDays
         {
-            get { return this._restoreDays; }
+            get => this._restoreDays;
             set
             {
                 this._restoreDays = value;

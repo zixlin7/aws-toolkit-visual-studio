@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.SimpleDB.Model
 {
@@ -23,14 +18,11 @@ namespace Amazon.AWSToolkit.SimpleDB.Model
             this._domain = domain;
         }
 
-        public string Domain
-        {
-            get { return this._domain; }
-        }
+        public string Domain => this._domain;
 
         public string ItemCount
         {
-            get { return this._itemCount; }
+            get => this._itemCount;
             set
             {
                 this._itemCount = value;
@@ -40,7 +32,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Model
 
         public string AttributeValueCount
         {
-            get { return this._attributeValueCount; }
+            get => this._attributeValueCount;
             set
             {
                 this._attributeValueCount = value;
@@ -50,7 +42,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Model
 
         public string AttributeNameCount
         {
-            get { return this._attributeNameCount; }
+            get => this._attributeNameCount;
             set
             {
                 this._attributeNameCount = value;
@@ -60,7 +52,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Model
 
         public string ItemNamesSizeBytes
         {
-            get { return this._itemNamesSizeBytes; }
+            get => this._itemNamesSizeBytes;
             set
             {
                 this._itemNamesSizeBytes = value;
@@ -70,7 +62,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Model
 
         public string AttributeValuesSizeBytes
         {
-            get { return this._attributeValuesSizeBytes; }
+            get => this._attributeValuesSizeBytes;
             set
             {
                 this._attributeValuesSizeBytes = value;
@@ -80,7 +72,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Model
 
         public string AttributeNamesSizeBytes
         {
-            get { return this._attributeNamesSizeBytes; }
+            get => this._attributeNamesSizeBytes;
             set
             {
                 this._attributeNamesSizeBytes = value;

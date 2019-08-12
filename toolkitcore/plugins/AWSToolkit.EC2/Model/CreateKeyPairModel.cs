@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.EC2.Model
 {
@@ -13,7 +8,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _keyPairName;
         public string KeyPairName
         {
-            get { return this._keyPairName; }
+            get => this._keyPairName;
             set
             {
                 this._keyPairName = value;
@@ -24,7 +19,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _privateKey;
         public string PrivateKey
         {
-            get { return this._privateKey; }
+            get => this._privateKey;
             set
             {
                 this._privateKey = value;
@@ -35,7 +30,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _fingerprint;
         public string Fingerprint
         {
-            get { return this._fingerprint; }
+            get => this._fingerprint;
             set
             {
                 this._fingerprint = value;
@@ -46,7 +41,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         bool _storePrivateKey = true;
         public bool StorePrivateKey
         {
-            get { return this._storePrivateKey; }
+            get => this._storePrivateKey;
             set
             {
                 this._storePrivateKey = value;

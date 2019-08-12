@@ -4,8 +4,6 @@ using System.Windows.Controls;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.SQS.Model;
 using Amazon.AWSToolkit.SQS.Workers;
-using System.Collections.ObjectModel;
-
 using log4net;
 
 namespace Amazon.AWSToolkit.SQS.View
@@ -36,10 +34,7 @@ namespace Amazon.AWSToolkit.SQS.View
             set;
         }
 
-        public override string Title
-        {
-            get { return "Create Queue"; }
-        }
+        public override string Title => "Create Queue";
 
         // Validate all dependency objects in a window
         public override bool Validated()

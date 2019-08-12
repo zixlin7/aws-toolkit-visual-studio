@@ -8,14 +8,11 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.AWSToolkit.EC2;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment;
-using Amazon.IdentityManagement;
 using AWSDeployment;
 using log4net;
 using System.Windows.Data;
-using Amazon.AWSToolkit.Account;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 {
@@ -74,27 +71,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             }
         }
 
-        public InstanceType SelectedInstanceType
-        {
-            get
-            {
-                return this._instanceTypesSelector.SelectedItem as InstanceType;
-            }
-        }
+        public InstanceType SelectedInstanceType => this._instanceTypesSelector.SelectedItem as InstanceType;
 
-        public ObservableCollection<InstanceType> InstanceTypes { get; private set; }
+        public ObservableCollection<InstanceType> InstanceTypes { get; }
 
         public bool SingleInstanceEnvironment { get; set; }
 
         public bool EnableRollingDeployments { get; set; }
 
-        public bool UseNonDefaultVpc
-        {
-            get
-            {
-                return _useNonDefaultVpc.IsChecked.GetValueOrDefault();
-            }
-        }
+        public bool UseNonDefaultVpc => _useNonDefaultVpc.IsChecked.GetValueOrDefault();
 
         public void QueryKeyPairSelection(out string keypairName, out bool createNew)
         {
@@ -102,13 +87,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             createNew = !_keyPairSelector.IsExistingKeyPairSelected;
         }
 
-        public bool HasKeyPairSelection
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(_keyPairSelector.SelectedKeyPairName);
-            }
-        }
+        public bool HasKeyPairSelection => !string.IsNullOrEmpty(_keyPairSelector.SelectedKeyPairName);
 
         public void SetSolutionStacks(IEnumerable<string> stacks, string autoSelectStack)
         {
@@ -164,10 +143,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         /// </summary>
         internal bool VpcOnlyMode { get; set; }
 
-        internal bool HasDefaultVpc
-        {
-            get { return !string.IsNullOrEmpty(DefaultVpcId); }
-        }
+        internal bool HasDefaultVpc => !string.IsNullOrEmpty(DefaultVpcId);
 
         internal string DefaultVpcId { get; private set; }
 
@@ -241,13 +217,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             _rdsGroupsListCombo.IsEnabled = SecurityGroups.Any();
         }
 
-        public List<SecurityGroupInfo> SelectedSecurityGroups
-        {
-            get
-            {
-                return (from @group in this.SecurityGroups where @group.IsSelected select @group.InnerObject).ToList();
-            }
-        }
+        public List<SecurityGroupInfo> SelectedSecurityGroups => (from @group in this.SecurityGroups where @group.IsSelected select @group.InnerObject).ToList();
 
         // Extra data used for new Beanstalk wizard and VPC support, where we only want to open specific ports
         // in the RDS VPC security groups. This gives the referencing db instances for a given selected security group.

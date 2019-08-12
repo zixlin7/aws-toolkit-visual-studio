@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.RDS.Model;
 using Amazon.AWSToolkit.RDS.Nodes;
 using Amazon.AWSToolkit.RDS.View;
@@ -104,15 +103,9 @@ namespace Amazon.AWSToolkit.RDS.Controller
         }
 
 
-        public AccountViewModel Account
-        {
-            get { return this._subnetGroupsRootViewModel.AccountViewModel; }
-        }
+        public AccountViewModel Account => this._subnetGroupsRootViewModel.AccountViewModel;
 
-        public string EndPointUniqueIdentifier
-        {
-            get { return this._subnetGroupsRootViewModel.CurrentEndPoint.UniqueIdentifier; }
-        }
+        public string EndPointUniqueIdentifier => this._subnetGroupsRootViewModel.CurrentEndPoint.UniqueIdentifier;
 
         public string RegionDisplayName
         {

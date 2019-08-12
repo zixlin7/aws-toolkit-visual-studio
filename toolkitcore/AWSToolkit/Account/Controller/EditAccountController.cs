@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.Runtime.Internal.Settings;
-using Amazon.AWSToolkit.Account.View;
-using Amazon.AWSToolkit.Account.Model;
-
 using Amazon.Runtime.CredentialManagement;
-using Amazon.Runtime.CredentialManagement.Internal;
 
 namespace Amazon.AWSToolkit.Account.Controller
 {

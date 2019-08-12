@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
-
 using Amazon.EC2;
 using Amazon.EC2.Model;
 

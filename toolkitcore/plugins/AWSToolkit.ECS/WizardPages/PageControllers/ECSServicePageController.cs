@@ -1,13 +1,5 @@
-﻿using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
+﻿using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
-using log4net;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
@@ -20,36 +12,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public string Cluster { get; private set; }
 
-        public string PageDescription
-        {
-            get
-            {
-                return "Choose the number of instances of the service and how the instances should be deployed.";
-            }
-        }
+        public string PageDescription => "Choose the number of instances of the service and how the instances should be deployed.";
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
-        public string PageTitle
-        {
-            get
-            {
-                return "Service Configuration";
-            }
-        }
+        public string PageTitle => "Service Configuration";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
         public bool AllowShortCircuit()
         {

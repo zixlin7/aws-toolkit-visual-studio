@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.EC2.View;
@@ -42,10 +39,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             return this._result;
         }
 
-        public AddIPPermissionModel Model
-        {
-            get { return this._model; }
-        }
+        public AddIPPermissionModel Model => this._model;
 
         public void CreateIPPermission()
         {
@@ -93,13 +87,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             this._result = new ActionResults().WithSuccess(true);
         }
 
-        public AccountViewModel CurrentAccount
-        {
-            get
-            {
-                return this._viewModel.AccountViewModel;
-            }
-        }
+        public AccountViewModel CurrentAccount => this._viewModel.AccountViewModel;
 
         public List<string> GetEC2SecurityGroups(string accountNumber)
         {

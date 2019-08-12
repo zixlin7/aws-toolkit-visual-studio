@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.ECS.Model;
 using Amazon.ElasticLoadBalancingV2;
@@ -87,21 +84,15 @@ namespace Amazon.AWSToolkit.ECS.Model
         }
 
         List<ServiceEventWrapper> _events = new List<ServiceEventWrapper>();
-        public List<ServiceEventWrapper> Events
-        {
-            get { return this._events; }
-        }
+        public List<ServiceEventWrapper> Events => this._events;
 
         List<DeploymentWrapper> _deployments = new List<DeploymentWrapper>();
-        public List<DeploymentWrapper> Deployments
-        {
-            get { return this._deployments; }
-        }
+        public List<DeploymentWrapper> Deployments => this._deployments;
 
         bool _editMode = false;
         public bool EditMode
         {
-            get { return this._editMode; }
+            get => this._editMode;
             set
             {
                 this._editMode = value;
@@ -140,22 +131,13 @@ namespace Amazon.AWSToolkit.ECS.Model
         }
 
         [DisplayName("Name")]
-        public string ServiceName
-        {
-            get
-            {
-                return _service.ServiceName;
-            }
-        }
+        public string ServiceName => _service.ServiceName;
 
         int? _deploymentMinimumHealthyPercent;
         [DisplayName("DeploymentMinimumHealthyPercent")]
         public int? DeploymentMinimumHealthyPercent
         {
-            get
-            {
-                return this._deploymentMinimumHealthyPercent;
-            }
+            get => this._deploymentMinimumHealthyPercent;
             set
             {
                 this._deploymentMinimumHealthyPercent = value;
@@ -167,10 +149,7 @@ namespace Amazon.AWSToolkit.ECS.Model
         [DisplayName("DeploymentMaximumPercent")]
         public int? DeploymentMaximumPercent
         {
-            get
-            {
-                return this._deploymentMaximumPercent;
-            }
+            get => this._deploymentMaximumPercent;
             set
             {
                 this._deploymentMaximumPercent = value;
@@ -179,40 +158,16 @@ namespace Amazon.AWSToolkit.ECS.Model
         }
 
         [DisplayName("ServiceArn")]
-        public string ServiceArn
-        {
-            get
-            {
-                return _service.ServiceArn;
-            }
-        }
+        public string ServiceArn => _service.ServiceArn;
 
         [DisplayName("RoleArn")]
-        public string RoleArn
-        {
-            get
-            {
-                return _service.RoleArn;
-            }
-        }
+        public string RoleArn => _service.RoleArn;
 
         [DisplayName("RoleName")]
-        public string RoleName
-        {
-            get
-            {
-                return _service.RoleArn.Substring(_service.RoleArn.IndexOf('/') + 1);
-            }
-        }
+        public string RoleName => _service.RoleArn.Substring(_service.RoleArn.IndexOf('/') + 1);
 
         [DisplayName("Status")]
-        public string Status
-        {
-            get
-            {
-                return _service.Status;
-            }
-        }
+        public string Status => _service.Status;
 
         public SolidColorBrush StatusHealthColor
         {
@@ -242,31 +197,16 @@ namespace Amazon.AWSToolkit.ECS.Model
         }
 
         [DisplayName("RunningCount")]
-        public int RunningCount
-        {
-            get
-            {
-                return _service.RunningCount;
-            }
-        }
+        public int RunningCount => _service.RunningCount;
 
         [DisplayName("PendingCount")]
-        public int PendingCount
-        {
-            get
-            {
-                return _service.PendingCount;
-            }
-        }
+        public int PendingCount => _service.PendingCount;
 
         int _desiredCount;
         [DisplayName("DesiredCount")]
         public int DesiredCount
         {
-            get
-            {
-                return this._desiredCount;
-            }
+            get => this._desiredCount;
             set
             {
                 this._desiredCount = value;
@@ -275,27 +215,12 @@ namespace Amazon.AWSToolkit.ECS.Model
         }
 
         [DisplayName("CreatedAt")]
-        public DateTime CreatedAt
-        {
-            get
-            {
-                return _service.CreatedAt;
-            }
-        }
+        public DateTime CreatedAt => _service.CreatedAt;
 
         [DisplayName("TaskDefinition")]
-        public string TaskDefinitionName
-        {
-            get
-            {
-                return _service.TaskDefinition.Substring(this._service.TaskDefinition.LastIndexOf('/') + 1);
-            }
-        }
+        public string TaskDefinitionName => _service.TaskDefinition.Substring(this._service.TaskDefinition.LastIndexOf('/') + 1);
 
-        public Visibility ShowNoLoadBalancerText
-        {
-            get { return ShowLoadBalancerPanel == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible; }
-        }
+        public Visibility ShowNoLoadBalancerText => ShowLoadBalancerPanel == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
 
         public Visibility ShowLoadBalancerPanel
         {
@@ -379,7 +304,7 @@ namespace Amazon.AWSToolkit.ECS.Model
         bool _loadingELB;
         public bool LoadingELB
         {
-            get { return this._loadingELB; }
+            get => this._loadingELB;
             set
             {
                 this._loadingELB = value;
@@ -498,19 +423,10 @@ namespace Amazon.AWSToolkit.ECS.Model
 
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "Service"; }
-        }
+        public string TypeName => "Service";
 
         [Browsable(false)]
-        public string DisplayName
-        {
-            get
-            {
-                return this.ServiceName;
-            }
-        }
+        public string DisplayName => this.ServiceName;
 
         public class ServiceEventWrapper
         {
@@ -521,15 +437,9 @@ namespace Amazon.AWSToolkit.ECS.Model
                 this._serviceEvent = serviceEvent;
             }
 
-            public DateTime CreateTime
-            {
-                get { return this._serviceEvent.CreatedAt.ToLocalTime(); }
-            }
+            public DateTime CreateTime => this._serviceEvent.CreatedAt.ToLocalTime();
 
-            public ServiceEvent NativeServiceEvent
-            {
-                get { return this._serviceEvent; }
-            }
+            public ServiceEvent NativeServiceEvent => this._serviceEvent;
         }
 
         public class DeploymentWrapper
@@ -541,20 +451,11 @@ namespace Amazon.AWSToolkit.ECS.Model
                 this._deployment = deployment;
             }
 
-            public Deployment NativeDeployment
-            {
-                get { return this._deployment; }
-            }
+            public Deployment NativeDeployment => this._deployment;
 
-            public DateTime CreateTime
-            {
-                get { return this._deployment.CreatedAt.ToLocalTime(); }
-            }
+            public DateTime CreateTime => this._deployment.CreatedAt.ToLocalTime();
 
-            public DateTime UpdateTime
-            {
-                get { return this._deployment.UpdatedAt.ToLocalTime(); }
-            }
+            public DateTime UpdateTime => this._deployment.UpdatedAt.ToLocalTime();
         }
     }
 }

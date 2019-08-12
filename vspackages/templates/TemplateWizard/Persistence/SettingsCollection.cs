@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Text;
-
 using TemplateWizard.ThirdParty.Json.LitJson;
 
 namespace Amazon.AWSToolkit.Persistence
@@ -20,10 +18,7 @@ namespace Amazon.AWSToolkit.Persistence
             this._values = values;
         }
 
-        public int Count
-        {
-            get { return this._values.Count; }
-        }
+        public int Count => this._values.Count;
 
         internal void Persist(StreamWriter writer)
         {
@@ -106,10 +101,7 @@ namespace Amazon.AWSToolkit.Persistence
                 this._values = values;
             }
 
-            public string UniqueKey
-            {
-                get { return this._uniqueKey; }
-            }
+            public string UniqueKey => this._uniqueKey;
 
             public string this[string key]
             {
@@ -119,7 +111,7 @@ namespace Amazon.AWSToolkit.Persistence
                     this._values.TryGetValue(key, out o);
                     return o as string; 
                 }
-                set { this._values[key] = value; }
+                set => this._values[key] = value;
             }
 
             public void Remove(string key)

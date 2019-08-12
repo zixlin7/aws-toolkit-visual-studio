@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 
 using Amazon.AWSToolkit.Util;
-using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.Runtime.Internal.Settings;
 using Amazon.AWSToolkit.EC2.Model;
@@ -37,15 +34,9 @@ namespace Amazon.AWSToolkit.EC2.Controller
             get;
         }
 
-        public OpenLinuxToolModel Model
-        {
-            get { return this._model; }
-        }
+        public OpenLinuxToolModel Model => this._model;
 
-        public string InstanceId
-        {
-            get { return this._instance.InstanceId; }
-        }
+        public string InstanceId => this._instance.InstanceId;
 
         public abstract OpenLinuxToolControl CreateControl(bool useKeyPair, string password);
 

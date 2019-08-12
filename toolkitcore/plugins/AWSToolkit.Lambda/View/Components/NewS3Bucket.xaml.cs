@@ -1,20 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.S3;
-using Amazon.S3.Model;
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.Lambda.View.Components
@@ -37,13 +23,7 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
             this.S3Client = s3Client;
         }
 
-        public override string Title
-        {
-            get
-            {
-                return "Create Bucket";
-            }
-        }
+        public override string Title => "Create Bucket";
 
         public string BucketName
         {

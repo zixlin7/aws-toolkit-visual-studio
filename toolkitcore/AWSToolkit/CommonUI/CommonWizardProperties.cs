@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Amazon.AWSToolkit.CommonUI
+﻿namespace Amazon.AWSToolkit.CommonUI
 {
     /// <summary>
     /// Definitions of wizard property keys used by pages that span multiple wizards or plugin contributors

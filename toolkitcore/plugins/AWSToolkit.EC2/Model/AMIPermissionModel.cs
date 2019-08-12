@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Util;
 
@@ -20,7 +16,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         ImageWrapper _image;
         public ImageWrapper Image
         {
-            get { return this._image; }
+            get => this._image;
             set
             {
                 this._image = value;
@@ -31,7 +27,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         bool _isPublic;
         public bool IsPublic
         {
-            get { return this._isPublic; }
+            get => this._isPublic;
             set
             {
                 this._isPublic = value;
@@ -42,7 +38,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public bool IsPrivate
         {
-            get { return !this._isPublic; }
+            get => !this._isPublic;
             set
             {
                 this._isPublic = !value;
@@ -54,7 +50,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         ObservableCollection<MutableString> _userIds;
         public ObservableCollection<MutableString> UserIds
         {
-            get { return this._userIds; }
+            get => this._userIds;
             set
             {
                 this._userIds = value;
@@ -65,11 +61,8 @@ namespace Amazon.AWSToolkit.EC2.Model
         HashSet<string> _originalUserIds;
         public HashSet<string> OriginalUserIds
         {
-            get { return this._originalUserIds; }
-            set
-            {
-                this._originalUserIds = value;
-            }
+            get => this._originalUserIds;
+            set => this._originalUserIds = value;
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 
 namespace Amazon.AWSToolkit.CommonUI.WizardFramework.PageComponents
 {
@@ -15,12 +14,12 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework.PageComponents
 
         public string PanelHeader
         {
-            set { this._reviewSectionHeader.Text = value; }
+            set => this._reviewSectionHeader.Text = value;
         }
 
         public FrameworkElement PanelContent
         {
-            set { this._reviewSectionContent.Content = value; }
+            set => this._reviewSectionContent.Content = value;
         }
     }
 }

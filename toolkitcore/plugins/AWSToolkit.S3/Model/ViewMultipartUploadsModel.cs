@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 
 using Amazon.S3.Model;
@@ -20,7 +16,7 @@ namespace Amazon.AWSToolkit.S3.Model
         string _bucketName;
         public string BucketName
         {
-            get { return this._bucketName; }
+            get => this._bucketName;
             set 
             {
                 this._bucketName = value;
@@ -31,7 +27,7 @@ namespace Amazon.AWSToolkit.S3.Model
         ObservableCollection<MultipartUploadWrapper> _uploads = new ObservableCollection<MultipartUploadWrapper>();
         public ObservableCollection<MultipartUploadWrapper> Uploads
         {
-            get { return this._uploads; }
+            get => this._uploads;
             set
             {
                 this._uploads = value;
@@ -48,15 +44,9 @@ namespace Amazon.AWSToolkit.S3.Model
                 this._upload = upload;
             }
 
-            public string UploadId
-            {
-                get { return this._upload.UploadId; }
-            }
+            public string UploadId => this._upload.UploadId;
 
-            public string Key
-            {
-                get { return this._upload.Key; }
-            }
+            public string Key => this._upload.Key;
 
             public string StorageClass
             {
@@ -69,16 +59,7 @@ namespace Amazon.AWSToolkit.S3.Model
                 }
             }
 
-            public DateTime Initiated
-            {
-                get 
-                { 
-                    return this._upload.Initiated.ToLocalTime(); 
-                }
-            }
-
-
-
+            public DateTime Initiated => this._upload.Initiated.ToLocalTime();
         }
     }
 }

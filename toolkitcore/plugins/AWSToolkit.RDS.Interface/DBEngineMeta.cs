@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Amazon.AWSToolkit.RDS
 {
@@ -17,59 +15,44 @@ namespace Amazon.AWSToolkit.RDS
         public static readonly string SQLSERVER_EX = "sqlserver-ex";
         public static readonly string SQLSERVER_WEB = "sqlserver-web";
 
-        public string DBEngine { get; private set; }
+        public string DBEngine { get; }
         
-        public bool IsMySql
-        {
-            get { return DBEngine.StartsWith("mysql", StringComparison.InvariantCultureIgnoreCase); }
-        }
-        public bool IsOracle
-        {
-            get { return DBEngine.StartsWith("oracle", StringComparison.InvariantCultureIgnoreCase); }
-        }
-        public bool IsSqlServer
-        {
-            get { return DBEngine.StartsWith("sqlserver", StringComparison.InvariantCultureIgnoreCase); }
-        }
-        public bool IsPostgres
-        {
-            get { return DBEngine.StartsWith("postgres", StringComparison.InvariantCultureIgnoreCase); }
-        }
+        public bool IsMySql => DBEngine.StartsWith("mysql", StringComparison.InvariantCultureIgnoreCase);
 
-        public int DefaultPort { get; private set; }
-        public int MinPort { get; private set; }
-        public int MaxPort { get; private set; }
+        public bool IsOracle => DBEngine.StartsWith("oracle", StringComparison.InvariantCultureIgnoreCase);
 
-        public IEnumerable<string> SupportedLicenses { get; private set; }
-        public IEnumerable<string> SupportedInstanceClassIDs { get; private set; }
+        public bool IsSqlServer => DBEngine.StartsWith("sqlserver", StringComparison.InvariantCultureIgnoreCase);
+
+        public bool IsPostgres => DBEngine.StartsWith("postgres", StringComparison.InvariantCultureIgnoreCase);
+
+        public int DefaultPort { get; }
+        public int MinPort { get; }
+        public int MaxPort { get; }
+
+        public IEnumerable<string> SupportedLicenses { get; }
+        public IEnumerable<string> SupportedInstanceClassIDs { get; }
         
-        public IEnumerable<DBInstanceClass> SupportedInstanceClasses
-        {
-            get
-            {
-                return RDSServiceMeta.Instance.MetaForDBInstancesClasses(SupportedInstanceClassIDs);
-            }
-        }
+        public IEnumerable<DBInstanceClass> SupportedInstanceClasses => RDSServiceMeta.Instance.MetaForDBInstancesClasses(SupportedInstanceClassIDs);
 
-        public bool SupportsMultiAZ { get; private set; }
+        public bool SupportsMultiAZ { get; }
 
-        public int MinStorageAlloc { get; private set; }
-        public int MaxStorageAlloc { get; private set; }
+        public int MinStorageAlloc { get; }
+        public int MaxStorageAlloc { get; }
 
-        public int MinDBInstanceIdentifierLength { get; private set; }
-        public int MaxDBInstanceIdentifierLength { get; private set; }
+        public int MinDBInstanceIdentifierLength { get; }
+        public int MaxDBInstanceIdentifierLength { get; }
 
-        public int MinDBNameLength { get; private set; }
-        public int MaxDBNameLength { get; private set; }
+        public int MinDBNameLength { get; }
+        public int MaxDBNameLength { get; }
 
-        public int MinDBParameterGroupNameLength { get; private set; }
-        public int MaxDBParameterGroupNameLength { get; private set; }
+        public int MinDBParameterGroupNameLength { get; }
+        public int MaxDBParameterGroupNameLength { get; }
 
-        public int MinMasterUserNameLength { get; private set; }
-        public int MaxMasterUserNameLength { get; private set; }
+        public int MinMasterUserNameLength { get; }
+        public int MaxMasterUserNameLength { get; }
 
-        public int MinMasterPwdNameLength { get; private set; }
-        public int MaxMasterPwdNameLength { get; private set; }
+        public int MinMasterPwdNameLength { get; }
+        public int MaxMasterPwdNameLength { get; }
 
         public DBEngineMeta(string dbEngine, 
                             int port, int minPort, int maxPort, 

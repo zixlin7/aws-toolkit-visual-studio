@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Threading;
-
+﻿using System.Windows;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
-
-using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
 namespace Amazon.AWSToolkit.Lambda.Nodes
@@ -30,33 +21,15 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
             this._functionArn = function.FunctionArn;
         }
 
-        public LambdaRootViewModel LambdaRootViewModel
-        {
-            get { return this._LambdaRootViewModel; }
-        }
+        public LambdaRootViewModel LambdaRootViewModel => this._LambdaRootViewModel;
 
-        public IAmazonLambda LambdaClient
-        {
-            get { return this._LambdaRootViewModel.LambdaClient; }
-        }
+        public IAmazonLambda LambdaClient => this._LambdaRootViewModel.LambdaClient;
 
-        public string FunctionName
-        {
-            get { return this._functionName; }
-        }
+        public string FunctionName => this._functionName;
 
-        public string FunctionArn
-        {
-            get { return this._functionArn; }
-        }
+        public string FunctionArn => this._functionArn;
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.Lambda.Resources.EmbeddedImages.service-root.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.Lambda.Resources.EmbeddedImages.service-root.png";
 
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {

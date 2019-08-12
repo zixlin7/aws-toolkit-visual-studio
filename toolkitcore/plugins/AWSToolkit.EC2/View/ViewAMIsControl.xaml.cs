@@ -1,32 +1,12 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.Utils;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
-
-using Amazon.Runtime.Internal.Settings;
-
 using log4net;
 
 namespace Amazon.AWSToolkit.EC2.View
@@ -77,29 +57,11 @@ namespace Amazon.AWSToolkit.EC2.View
             this._controller.SetSearchColumns(this._ctlDataGrid.Columns);
         }
 
-        public override string Title
-        {
-            get
-            {
-                return string.Format("{0} EC2 AMIs", this._controller.RegionDisplayName);
-            }
-        }
+        public override string Title => string.Format("{0} EC2 AMIs", this._controller.RegionDisplayName);
 
-        public override string UniqueId
-        {
-            get
-            {
-                return "AMIs: " + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
-            }
-        }
+        public override string UniqueId => "AMIs: " + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {

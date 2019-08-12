@@ -12,7 +12,6 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using IServiceProvider = System.IServiceProvider;
 
@@ -44,32 +43,20 @@ namespace Microsoft.VisualStudio.Project
 			/// </summary>
 			internal uint ItemID
 			{
-				get
-				{
-					return this.itemID;
-				}
+				get => this.itemID;
 
-				set
-				{
-					this.itemID = value;
-				}
-			}
+                set => this.itemID = value;
+            }
 
 			/// <summary>
 			/// Defines the file change cookie that is returned when listenning on file changes on the nested project item.
 			/// </summary>
 			internal uint FileChangeCookie
 			{
-				get
-				{
-					return this.fileChangeCookie;
-				}
+				get => this.fileChangeCookie;
 
-				set
-				{
-					this.fileChangeCookie = value;
-				}
-			}
+                set => this.fileChangeCookie = value;
+            }
 		}
 		#endregion
 

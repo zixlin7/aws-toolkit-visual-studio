@@ -7,8 +7,8 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 {
     public abstract class BaseUploadWorker
     {
-        protected ILambdaFunctionUploadHelpers FunctionUploader { get; private set; }
-        protected IAmazonLambda LambdaClient { get; private set; }
+        protected ILambdaFunctionUploadHelpers FunctionUploader { get; }
+        protected IAmazonLambda LambdaClient { get; }
 
         public ActionResults Results { get; protected set; }
 

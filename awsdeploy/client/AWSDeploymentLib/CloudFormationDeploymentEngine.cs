@@ -8,8 +8,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-
-using Amazon;
 using Amazon.Runtime;
 using Amazon.Util;
 using Amazon.AWSToolkit;
@@ -17,7 +15,6 @@ using Amazon.AutoScaling;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 using Amazon.EC2.Model;
-using Amazon.ElasticBeanstalk.Model;
 using Amazon.ElasticLoadBalancing;
 using Amazon.ElasticLoadBalancing.Model;
 using Amazon.S3;
@@ -50,7 +47,7 @@ namespace AWSDeployment
         /// <summary>
         /// Override parameter values in the template.
         /// </summary>
-        public Dictionary<string, string> TemplateParameters { get; private set; }
+        public Dictionary<string, string> TemplateParameters { get; }
 
         /// <summary><para>
         /// Additional configuration parameters for the deployed application. These will be available as 

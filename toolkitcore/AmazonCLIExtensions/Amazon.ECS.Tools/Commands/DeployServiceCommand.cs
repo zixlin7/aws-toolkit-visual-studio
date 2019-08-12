@@ -59,7 +59,7 @@ namespace Amazon.ECS.Tools.Commands
 
                 return this._deployServiceProperties;
             }
-            set { this._deployServiceProperties = value; }
+            set => this._deployServiceProperties = value;
         }
 
 

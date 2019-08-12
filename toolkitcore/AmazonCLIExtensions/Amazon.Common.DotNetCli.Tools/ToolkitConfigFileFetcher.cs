@@ -17,10 +17,7 @@ namespace Amazon.Common.DotNetCli.Tools
         {
         }
 
-        public static ToolkitConfigFileFetcher Instance
-        {
-            get { return INSTANCE; }
-        }
+        public static ToolkitConfigFileFetcher Instance => INSTANCE;
 
         /// <summary>
         /// Attempt to get the configuration file from the AWS Toolkit for Visual Studio config bucket.

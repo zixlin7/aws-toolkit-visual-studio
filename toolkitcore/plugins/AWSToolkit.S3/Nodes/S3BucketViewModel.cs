@@ -1,18 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Threading;
-
-using Amazon;
+﻿using System.Windows;
 using Amazon.S3;
-using Amazon.S3.Model;
-using Amazon.S3.Util;
-
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit;
-
 using log4net;
 
 namespace Amazon.AWSToolkit.S3.Nodes
@@ -65,10 +53,7 @@ namespace Amazon.AWSToolkit.S3.Nodes
 
         public bool PendingDeletion 
         {
-            get
-            {
-                return _isPendingDelete;
-            }
+            get => _isPendingDelete;
             internal set
             {
                 _isPendingDelete = value;
@@ -119,13 +104,7 @@ namespace Amazon.AWSToolkit.S3.Nodes
             }
         }
 
-        public S3RootViewModel S3RootViewModel
-        {
-            get
-            {
-                return this._serviceModel;
-            }
-        }
+        public S3RootViewModel S3RootViewModel => this._serviceModel;
 
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {

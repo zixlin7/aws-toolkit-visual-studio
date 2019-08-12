@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Amazon.AWSToolkit.Account.Model;
 using Amazon.AWSToolkit.Account.View;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Util;
-using Amazon.IdentityManagement.Model;
 
 namespace Amazon.AWSToolkit.Account.Controller
 {
@@ -35,10 +30,7 @@ namespace Amazon.AWSToolkit.Account.Controller
             return new ActionResults().WithSuccess(false);
         }
 
-        public ServiceSpecificCredentials Credentials
-        {
-            get { return _control.Credentials; }
-        }
+        public ServiceSpecificCredentials Credentials => _control.Credentials;
 
         public void OpenInBrowser(string endpoint)
         {

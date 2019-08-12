@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Amazon.AWSToolkit.EC2.Model
+﻿namespace Amazon.AWSToolkit.EC2.Model
 {
     public class WindowsDeviceMapping
     {
@@ -27,10 +22,7 @@ namespace Amazon.AWSToolkit.EC2.Model
             };
         }
 
-        public static WindowsDeviceMapping[] Mappings
-        {
-            get { return _mappings; }
-        }
+        public static WindowsDeviceMapping[] Mappings => _mappings;
 
 
         private WindowsDeviceMapping(string ec2Name, string displayName)
@@ -42,13 +34,11 @@ namespace Amazon.AWSToolkit.EC2.Model
         public string EC2Name
         {
             get;
-            private set;
         }
 
         public string DisplayName
         {
             get;
-            private set;
         }
     }
 }

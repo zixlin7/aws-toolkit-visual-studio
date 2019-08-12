@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -15,7 +11,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public string VPCName
         {
-            get { return this._vpcName; }
+            get => this._vpcName;
             set
             {
                 this._vpcName = value;
@@ -27,7 +23,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public string CIDRBlock
         {
-            get { return this._cidrBlock; }
+            get => this._cidrBlock;
             set
             {
                 this._cidrBlock = value;
@@ -39,7 +35,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public bool WithPublicSubnet
         {
-            get { return this._withPublicSubnet; }
+            get => this._withPublicSubnet;
             set
             {
                 this._withPublicSubnet = value;
@@ -51,7 +47,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public bool WithPrivateSubnet
         {
-            get { return this._withPrivateSubnet; }
+            get => this._withPrivateSubnet;
             set
             {
                 this._withPrivateSubnet = value;
@@ -63,7 +59,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public string InstanceTenancy
         {
-            get { return this._instanceTenancy; }
+            get => this._instanceTenancy;
             set
             {
                 this._instanceTenancy = value;
@@ -75,7 +71,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public string PublicSubnetCIDRBlock
         {
-            get { return this._publicSubnetCIDRBlock; }
+            get => this._publicSubnetCIDRBlock;
             set
             {
                 this._publicSubnetCIDRBlock = value;
@@ -87,7 +83,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public string PublicSubnetAvailabilityZone
         {
-            get { return this._publicSubnetAvailabilityZone; }
+            get => this._publicSubnetAvailabilityZone;
             set
             {
                 this._publicSubnetAvailabilityZone = value;
@@ -99,7 +95,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public string PrivateSubnetCIDRBlock
         {
-            get { return this._privateSubnetCIDRBlock; }
+            get => this._privateSubnetCIDRBlock;
             set
             {
                 this._privateSubnetCIDRBlock = value;
@@ -111,7 +107,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public string PrivateSubnetAvailabilityZone
         {
-            get { return this._privateSubnetAvailabilityZone; }
+            get => this._privateSubnetAvailabilityZone;
             set
             {
                 this._privateSubnetAvailabilityZone = value;
@@ -123,7 +119,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public InstanceType NATInstanceType
         {
-            get { return this._natInstanceType; }
+            get => this._natInstanceType;
             set
             {
                 this._natInstanceType = value;
@@ -135,7 +131,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public string NATKeyPairName
         {
-            get { return this._natKeyPairName; }
+            get => this._natKeyPairName;
             set
             {
                 this._natKeyPairName = value;
@@ -147,7 +143,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public bool ConfigureDefaultVPCGroupForNAT
         {
-            get { return this._configureDefaultVPCGroupForNAT; }
+            get => this._configureDefaultVPCGroupForNAT;
             set
             {
                 this._configureDefaultVPCGroupForNAT = value;
@@ -165,7 +161,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public bool EnableDNSHostnames
         {
-            get { return _enableDNSHostnames; }
+            get => _enableDNSHostnames;
             set
             {
                 _enableDNSHostnames = value;
@@ -177,7 +173,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public bool EnableDNSSupport
         {
-            get { return _enableDNSSupport; }
+            get => _enableDNSSupport;
             set
             {
                 _enableDNSSupport = value;

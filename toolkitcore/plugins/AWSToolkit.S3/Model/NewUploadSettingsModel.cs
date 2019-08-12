@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.ObjectModel;
 using Amazon.S3.Model;
 using Amazon.AWSToolkit.CommonUI;
 
@@ -21,7 +16,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public bool UseReduceStorage
         {
-            get { return this._useReduceStorage; }
+            get => this._useReduceStorage;
             set
             {
                 this._useReduceStorage = value;
@@ -31,7 +26,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public bool UseServerSideEncryption
         {
-            get { return this._useServerSideEncryption; }
+            get => this._useServerSideEncryption;
             set
             {
                 this._useServerSideEncryption = value;
@@ -41,7 +36,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public bool MakePublic
         {
-            get { return this._makePublic; }
+            get => this._makePublic;
             set
             {
                 this._makePublic = value;
@@ -51,21 +46,21 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public ObservableCollection<Metadata> MetadataEntries
         {
-            get { return this._metadata; }
-            set { this._metadata = value; }
+            get => this._metadata;
+            set => this._metadata = value;
         }
 
 
         public ObservableCollection<Permission> PermissionEntries
         {
-            get { return this._permissions; }
-            set { this._permissions = value; }
+            get => this._permissions;
+            set => this._permissions = value;
         }
 
         public ObservableCollection<Tag> Tags
         {
-            get { return this._tags; }
-            set { this._tags = value; }
+            get => this._tags;
+            set => this._tags = value;
         }
     }
 }

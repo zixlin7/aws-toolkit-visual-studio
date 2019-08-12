@@ -1,6 +1,3 @@
-using System;
-using System.Globalization;
-using System.Diagnostics;
 using System.Windows.Forms;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
@@ -10,7 +7,6 @@ using Microsoft.VisualStudio.Shell;
 
 using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.VisualStudio.ShellOptions;
-using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.VisualStudio;
 
 namespace Microsoft.Samples.VisualStudio.IDE.OptionsPage
@@ -33,13 +29,7 @@ namespace Microsoft.Samples.VisualStudio.IDE.OptionsPage
             };
         }
 
-        protected override IWin32Window Window
-        {
-            get
-            {
-                return _hostedControl;
-            }
-        }
+        protected override IWin32Window Window => _hostedControl;
 
         #region Event Handlers
 

@@ -2,17 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Xml.Linq;
-
-using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 
 using log4net;
-using Amazon.AWSToolkit.Account;
-using System.Threading.Tasks;
 
 namespace Amazon.AWSToolkit.CommonUI.Components
 {
@@ -252,18 +246,12 @@ namespace Amazon.AWSToolkit.CommonUI.Components
             }
             #endregion
 
-            public bool IsSelectable
-            {
-                get
-                {
-                    return string.IsNullOrEmpty(this.Description);
-                }
-            }
+            public bool IsSelectable => string.IsNullOrEmpty(this.Description);
 
             bool _isSelected;
             public bool IsSelected
             {
-                get { return this._isSelected; }
+                get => this._isSelected;
                 set
                 {
                     this._isSelected = value;

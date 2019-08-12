@@ -4,7 +4,6 @@ using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.Model;
 using Amazon.AWSToolkit.Lambda.Nodes;
-using Amazon.AWSToolkit.Lambda.WizardPages.PageControllers;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 using log4net;
@@ -31,14 +30,14 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionDetailsPage));
 
-        public IAWSWizardPageController PageController { get; private set; }
+        public IAWSWizardPageController PageController { get; }
 
         Dictionary<string, FunctionConfiguration> _existingFunctions = new Dictionary<string, FunctionConfiguration>();
 
         public DeploymentType DeploymentType { get; private set; }
-        public UploadOriginator UploadOriginator { get; private set; }
+        public UploadOriginator UploadOriginator { get; }
 
-        private string SeedFunctionName { get; set; }
+        private string SeedFunctionName { get; }
 
         public UploadFunctionDetailsPage()
         {
@@ -286,31 +285,16 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
         }
 
-        public bool SaveSettings
-        {
-            get { return this._ctlPersistSettings.IsChecked.GetValueOrDefault(); }
-        }
+        public bool SaveSettings => this._ctlPersistSettings.IsChecked.GetValueOrDefault();
 
-        public AccountViewModel SelectedAccount
-        {
-            get
-            {
-                return _ctlAccountAndRegion.SelectedAccount;
-            }
-        }
+        public AccountViewModel SelectedAccount => _ctlAccountAndRegion.SelectedAccount;
 
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion
-        {
-            get
-            {
-                return _ctlAccountAndRegion.SelectedRegion;
-            }
-        }
+        public RegionEndPointsManager.RegionEndPoints SelectedRegion => _ctlAccountAndRegion.SelectedRegion;
 
         string _configuration;
         public string Configuration
         {
-            get { return _configuration; }
+            get => _configuration;
             set
             {
                 _configuration = value;
@@ -323,7 +307,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         string _framework;
         public string Framework
         {
-            get { return _framework; }
+            get => _framework;
             set
             {
                 _framework = value;
@@ -359,7 +343,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         RuntimeOption _runtime;
         public RuntimeOption Runtime
         {
-            get { return _runtime; }
+            get => _runtime;
             set
             {
                 _runtime = value;
@@ -402,7 +386,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         string _sourcePath;
         public string SourcePath
         {
-            get { return _sourcePath; }
+            get => _sourcePath;
             set
             {
                 _sourcePath = value;
@@ -413,7 +397,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         string _description;
         public string Description
         {
-            get { return _description; }
+            get => _description;
             set
             {
                 _description = value;
@@ -424,10 +408,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         string _handler;
         public string Handler
         {
-            get
-            {
-                return _handler;
-            }
+            get => _handler;
             set
             {
                 _handler = value;
@@ -449,7 +430,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         string _assemblyName;
         public string Assembly
         {
-            get { return _assemblyName; }
+            get => _assemblyName;
             set
             {
                 _assemblyName = value;
@@ -460,7 +441,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         string _typeName;
         public string TypeName
         {
-            get { return _typeName; }
+            get => _typeName;
             set
             {
                 _typeName = value;
@@ -471,7 +452,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         string _methodName;
         public string MethodName
         {
-            get { return _methodName; }
+            get => _methodName;
             set
             {
                 _methodName = value;

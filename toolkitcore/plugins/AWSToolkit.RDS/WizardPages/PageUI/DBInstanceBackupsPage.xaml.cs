@@ -1,16 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Globalization;
 using System.ComponentModel;
 
@@ -67,20 +58,11 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
             DeconstructMaintenanceWindow(maintenanceWindow);
         }
 
-        public bool BackupsEnabled
-        {
-            get { return _btnRetainBackups.IsChecked == true; }
-        }
+        public bool BackupsEnabled => _btnRetainBackups.IsChecked == true;
 
-        public int BackupRetentionPeriod
-        {
-            get { return int.Parse((_retentionPeriod.SelectedItem as ComboBoxItem).Tag.ToString()); }
-        }
+        public int BackupRetentionPeriod => int.Parse((_retentionPeriod.SelectedItem as ComboBoxItem).Tag.ToString());
 
-        public bool IsCustomBackupWindow
-        {
-            get { return _btnCustomBackupWindow.IsChecked == true; }
-        }
+        public bool IsCustomBackupWindow => _btnCustomBackupWindow.IsChecked == true;
 
         public DateTime CustomBackupStart
         {
@@ -101,20 +83,11 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
             }
         }
 
-        public TimeSpan CustomBackupDuration
-        {
-            get { return new TimeSpan(0, (int)(_backupDuration.Value * 60), 0); }
-        }
+        public TimeSpan CustomBackupDuration => new TimeSpan(0, (int)(_backupDuration.Value * 60), 0);
 
-        public bool IsCustomMaintenanceWindow
-        {
-            get { return _btnCustomMaintenanceWindow.IsChecked == true; }
-        }
+        public bool IsCustomMaintenanceWindow => _btnCustomMaintenanceWindow.IsChecked == true;
 
-        public string CustomMaintenanceDay
-        {
-            get { return _maintDay.SelectedItem as string; }
-        }
+        public string CustomMaintenanceDay => _maintDay.SelectedItem as string;
 
         public DateTime CustomMaintenanceStart
         {
@@ -135,10 +108,7 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
             }
         }
 
-        public TimeSpan CustomMaintenanceDuration
-        {
-            get { return new TimeSpan(0, (int)(_maintDuration.Value * 60), 0); }
-        }
+        public TimeSpan CustomMaintenanceDuration => new TimeSpan(0, (int)(_maintDuration.Value * 60), 0);
 
         public bool BackupAndMaintenancePeriodsOverlap
         {

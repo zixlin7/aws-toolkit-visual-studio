@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Amazon.AWSToolkit.CommonUI
 {
@@ -26,19 +23,16 @@ namespace Amazon.AWSToolkit.CommonUI
         public Guid LastTextFilterChangeToken
         {
             get;
-            private set;
         }
 
         public bool DisplayWaitState
         {
             get;
-            private set;
         }
 
         public bool FullRefresh
         {
             get;
-            private set;
         }
     }
 }

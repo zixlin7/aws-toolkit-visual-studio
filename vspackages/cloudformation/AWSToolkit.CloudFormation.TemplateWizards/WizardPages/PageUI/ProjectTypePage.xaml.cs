@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 using Amazon.AWSToolkit.Account;
@@ -91,31 +80,13 @@ namespace Amazon.AWSToolkit.CloudFormation.TemplateWizards.WizardPages.PageUI
             }
         }
 
-        public AccountViewModel SelectedAccount
-        {
-            get { return this._ctlAccountAndRegionPicker.SelectedAccount; }
-        }
+        public AccountViewModel SelectedAccount => this._ctlAccountAndRegionPicker.SelectedAccount;
 
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion
-        {
-            get { return this._ctlAccountAndRegionPicker.SelectedRegion; }
-        }
+        public RegionEndPointsManager.RegionEndPoints SelectedRegion => this._ctlAccountAndRegionPicker.SelectedRegion;
 
-        public string SelectedExistingStackName
-        {
-            get
-            {
-                return this._ctlExistingStacks.SelectedValue as string;
-            }
-        }
+        public string SelectedExistingStackName => this._ctlExistingStacks.SelectedValue as string;
 
-        public QueryCloudFormationSamplesWorker.SampleSummary SelectedSampleTemplate
-        {
-            get
-            {
-                return this._ctlSampleTemplate.SelectedValue as QueryCloudFormationSamplesWorker.SampleSummary;
-            }
-        }
+        public QueryCloudFormationSamplesWorker.SampleSummary SelectedSampleTemplate => this._ctlSampleTemplate.SelectedValue as QueryCloudFormationSamplesWorker.SampleSummary;
 
         void _ctlAccountAndRegionPicker_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {

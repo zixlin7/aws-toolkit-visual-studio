@@ -14,7 +14,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -59,67 +58,34 @@ namespace Microsoft.VisualStudio.Project
 
 		#region properties
 
-		public override string Url
-		{
-			get
-			{
-				return this.referencedProjectFullPath;
-			}
-		}
+		public override string Url => this.referencedProjectFullPath;
 
-		public override string Caption
-		{
-			get
-			{
-				return this.referencedProjectName;
-			}
-		}
+        public override string Caption => this.referencedProjectName;
 
-		internal Guid ReferencedProjectGuid
-		{
-			get
-			{
-				return this.referencedProjectGuid;
-			}
-		}
+        internal Guid ReferencedProjectGuid => this.referencedProjectGuid;
 
-		/// <summary>
+        /// <summary>
 		/// Possiblity to shortcut and set the dangling project reference icon.
 		/// It is ussually manipulated by solution listsneres who handle reference updates.
 		/// </summary>
 		internal protected bool IsNodeValid
 		{
-			get
-			{
-				return this.isNodeValid;
-			}
-			set
-			{
-				this.isNodeValid = value;
-			}
-		}
+			get => this.isNodeValid;
+            set => this.isNodeValid = value;
+        }
 
 		/// <summary>
 		/// Controls the state whether this reference can be removed or not. Think of the project unload scenario where the project reference should not be deleted.
 		/// </summary>
 		internal bool CanRemoveReference
 		{
-			get
-			{
-				return this.canRemoveReference;
-			}
-			set
-			{
-				this.canRemoveReference = value;
-			}
-		}
+			get => this.canRemoveReference;
+            set => this.canRemoveReference = value;
+        }
 
-		internal string ReferencedProjectName
-		{
-			get { return this.referencedProjectName; }
-		}
+		internal string ReferencedProjectName => this.referencedProjectName;
 
-		/// <summary>
+        /// <summary>
 		/// Gets the automation object for the referenced project.
 		/// </summary>
         internal EnvDTE.Project ReferencedProjectObject
@@ -196,10 +162,7 @@ namespace Microsoft.VisualStudio.Project
 
                 return this.referencedProject;
             }
-            set
-            {
-                this.referencedProject = value;
-            }
+            set => this.referencedProject = value;
         }
 
 		/// <summary>

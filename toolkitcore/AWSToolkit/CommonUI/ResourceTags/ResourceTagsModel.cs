@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 
 namespace Amazon.AWSToolkit.CommonUI.ResourceTags
 {
@@ -31,13 +29,13 @@ namespace Amazon.AWSToolkit.CommonUI.ResourceTags
 
         public ObservableCollection<ResourceTag> Tags
         {
-            get { return _tagList; }
-            set { _tagList = value; }
+            get => _tagList;
+            set => _tagList = value;
         }
 
         public string NameTag
         {
-            get { return _tagList[0].Value; }
+            get => _tagList[0].Value;
             set
             {
                 _tagList[0].Value = value;

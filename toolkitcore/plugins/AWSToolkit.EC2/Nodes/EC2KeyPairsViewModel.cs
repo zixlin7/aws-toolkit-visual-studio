@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Amazon.AWSToolkit.EC2.Nodes
+﻿namespace Amazon.AWSToolkit.EC2.Nodes
 {
     public class EC2KeyPairsViewModel : FeatureViewModel
     {
@@ -12,20 +7,8 @@ namespace Amazon.AWSToolkit.EC2.Nodes
         {
         }
 
-        public override string ToolTip
-        {
-            get
-            {
-                return "Manage EC2 key pairs and store private keys";
-            }
-        }
+        public override string ToolTip => "Manage EC2 key pairs and store private keys";
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.key-pairs.gif";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.key-pairs.gif";
     }
 }

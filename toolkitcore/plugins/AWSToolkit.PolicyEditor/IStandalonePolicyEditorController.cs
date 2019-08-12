@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.PolicyEditor.Model;
+﻿using Amazon.AWSToolkit.PolicyEditor.Model;
 
 namespace Amazon.AWSToolkit.PolicyEditor
 {

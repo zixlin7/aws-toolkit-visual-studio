@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.DynamoDBv2;
 
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.DynamoDBv2.DocumentModel;
-using System.Collections.ObjectModel;
 
 namespace Amazon.AWSToolkit.DynamoDB.Model
 {
@@ -22,7 +16,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         string _tableName;
         public string TableName
         {
-            get { return this._tableName; }
+            get => this._tableName;
             set
             {
                 this._tableName = value;
@@ -34,7 +28,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         bool _enableStream;
         public bool EnableStream
         {
-            get { return this._enableStream; }
+            get => this._enableStream;
             set
             {
                 this._enableStream = value;
@@ -45,7 +39,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         string _streamArn;
         public string StreamARN
         {
-            get { return this._streamArn; }
+            get => this._streamArn;
             set
             {
                 this._streamArn = value;
@@ -61,7 +55,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
             new ViewTypeWrapper(StreamViewType.NEW_AND_OLD_IMAGES, "New and Old Images - both the new and the old images of the item")
         };
 
-        public List<ViewTypeWrapper> AllViewTypes { get { return this._allViewTypes; } }
+        public List<ViewTypeWrapper> AllViewTypes => this._allViewTypes;
 
         public ViewTypeWrapper  FindViewType(StreamViewType viewType)
         {
@@ -77,7 +71,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         ViewTypeWrapper _selectedViewType;
         public ViewTypeWrapper SelectedViewType 
         {
-            get { return this._selectedViewType; }
+            get => this._selectedViewType;
             set
             {
                 this._selectedViewType = value;
@@ -94,8 +88,8 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
                 this.Description = description;
             }
 
-            public StreamViewType ViewType { get; private set; }
-            public string Description { get; private set; }
+            public StreamViewType ViewType { get; }
+            public string Description { get; }
         }
     }
 }

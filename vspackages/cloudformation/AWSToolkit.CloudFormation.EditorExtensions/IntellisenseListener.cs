@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.VisualStudio.Editor;
@@ -10,10 +9,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio;
-using System.Windows;
 using System.Runtime.InteropServices;
-
-using Amazon.AWSToolkit.CloudFormation.Parser;
 using Amazon.AWSToolkit.CloudFormation.Parser.Schema;
 
 namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
@@ -53,8 +49,8 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
                 Broker = broker;
             }
 
-            public IWpfTextView TextView { get; private set; }
-            public ICompletionBroker Broker { get; private set; }
+            public IWpfTextView TextView { get; }
+            public ICompletionBroker Broker { get; }
             public IOleCommandTarget Next { get; set; }
 
             private char GetTypeChar(IntPtr pvaIn)

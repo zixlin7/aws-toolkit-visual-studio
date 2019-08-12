@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Amazon.AWSToolkit.VisualStudio.Loggers
+﻿namespace Amazon.AWSToolkit.VisualStudio.Loggers
 {
     /// <summary>
     /// Interface declaration for pluggable loggers into the build/deployment

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace Amazon.AWSToolkit.CommonUI.Notifications
@@ -168,10 +165,7 @@ namespace Amazon.AWSToolkit.CommonUI.Notifications
                 return rs;
             }
 
-            protected set
-            {
-                this._runState = value;
-            }
+            protected set => this._runState = value;
         }
 
         public IQueryTaskCompletionProxy QueryTaskCompletionProxy { get; set; }

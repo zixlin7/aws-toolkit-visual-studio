@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Media;
 using System.Windows.Controls;
 
@@ -24,7 +21,7 @@ namespace Amazon.AWSToolkit.RDS.Model
 
         private DBEngineVersionWrapper() { }
 
-        public DBEngineVersion EngineVersion { get; private set; }
+        public DBEngineVersion EngineVersion { get; }
 
         public string FormattedEngineVersionAndDescription
         {
@@ -37,20 +34,11 @@ namespace Amazon.AWSToolkit.RDS.Model
             }
         }
 
-        public string Title 
-        {
-            get { return EngineVersion.Engine; }
-        }
+        public string Title => EngineVersion.Engine;
 
-        public string Description 
-        {
-            get { return EngineVersion.DBEngineDescription; }
-        }
+        public string Description => EngineVersion.DBEngineDescription;
 
-        public ImageSource EngineIcon
-        {
-            get { return IconForEngineType(EngineVersion.Engine); }
-        }
+        public ImageSource EngineIcon => IconForEngineType(EngineVersion.Engine);
 
         public static ImageSource IconForEngineType(string engine)
         {

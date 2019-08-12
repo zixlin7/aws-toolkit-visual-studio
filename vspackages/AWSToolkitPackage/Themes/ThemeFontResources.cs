@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.Shell;
+﻿using Microsoft.VisualStudio.Shell;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -12,29 +11,11 @@ namespace Amazon.AWSToolkit.VisualStudio
     /// </summary>
     public static class ThemeFontResources
     {
-        public static object CaptionFontFamilyKey
-        {
-            get
-            {
-                return VsFonts.CaptionFontFamilyKey;
-            }
-        }
+        public static object CaptionFontFamilyKey => VsFonts.CaptionFontFamilyKey;
 
-        public static object CaptionFontSizeKey
-        {
-            get
-            {
-                return VsFonts.CaptionFontSizeKey;
-            }
-        }
+        public static object CaptionFontSizeKey => VsFonts.CaptionFontSizeKey;
 
-        public static object CaptionFontWeightKey
-        {
-            get
-            {
-                return VsFonts.CaptionFontWeightKey;
-            }
-        }
+        public static object CaptionFontWeightKey => VsFonts.CaptionFontWeightKey;
 
         public static object Environment122PercentFontSizeKey
         {
@@ -192,20 +173,8 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        public static object EnvironmentFontFamilyKey
-        {
-            get
-            {
-                return VsFonts.EnvironmentFontFamilyKey;
-            }
-        }
+        public static object EnvironmentFontFamilyKey => VsFonts.EnvironmentFontFamilyKey;
 
-        public static object EnvironmentFontSizeKey
-        {
-            get
-            {
-                return VsFonts.EnvironmentFontSizeKey;
-            }
-        }
+        public static object EnvironmentFontSizeKey => VsFonts.EnvironmentFontSizeKey;
     }
 }

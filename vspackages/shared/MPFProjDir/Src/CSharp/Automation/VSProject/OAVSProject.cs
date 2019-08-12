@@ -10,7 +10,6 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 ***************************************************************************/
 
 using System;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using EnvDTE;
@@ -44,15 +43,9 @@ namespace Microsoft.VisualStudio.Project.Automation
 			throw new NotImplementedException();
 		}
 
-		public virtual BuildManager BuildManager
-		{
-			get
-			{
-				return new OABuildManager(this.project);
-			}
-		}
+		public virtual BuildManager BuildManager => new OABuildManager(this.project);
 
-		public virtual void CopyProject(string bstrDestFolder, string bstrDestUNCPath, prjCopyProjectOption copyProjectOption, string bstrUsername, string bstrPassword)
+        public virtual void CopyProject(string bstrDestFolder, string bstrDestUNCPath, prjCopyProjectOption copyProjectOption, string bstrUsername, string bstrPassword)
 		{
 			throw new NotImplementedException();
 		}
@@ -62,15 +55,9 @@ namespace Microsoft.VisualStudio.Project.Automation
 			throw new NotImplementedException();
 		}
 
-		public virtual DTE DTE
-		{
-			get
-			{
-				return (EnvDTE.DTE)this.project.Site.GetService(typeof(EnvDTE.DTE));
-			}
-		}
+		public virtual DTE DTE => (EnvDTE.DTE)this.project.Site.GetService(typeof(EnvDTE.DTE));
 
-		public virtual VSProjectEvents Events
+        public virtual VSProjectEvents Events
 		{
 			get
 			{
@@ -95,23 +82,11 @@ namespace Microsoft.VisualStudio.Project.Automation
 			throw new NotImplementedException(); ;
 		}
 
-		public virtual Imports Imports
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public virtual Imports Imports => throw new NotImplementedException();
 
-		public virtual EnvDTE.Project Project
-		{
-			get
-			{
-				return this.project.GetAutomationObject() as EnvDTE.Project;
-			}
-		}
+        public virtual EnvDTE.Project Project => this.project.GetAutomationObject() as EnvDTE.Project;
 
-		public virtual References References
+        public virtual References References
 		{
 			get
 			{
@@ -130,35 +105,17 @@ namespace Microsoft.VisualStudio.Project.Automation
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
-		public virtual string TemplatePath
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public virtual string TemplatePath => throw new NotImplementedException();
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
-		public virtual ProjectItem WebReferencesFolder
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-		}
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
+		public virtual ProjectItem WebReferencesFolder => throw new NotImplementedException();
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
 		public virtual bool WorkOffline
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+			get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
 
 		#endregion
 	}
@@ -183,32 +140,14 @@ namespace Microsoft.VisualStudio.Project.Automation
 
 		#region VSProjectEvents Members
 
-		public virtual BuildManagerEvents BuildManagerEvents
-		{
-			get
-			{
-				return vsProject.BuildManager as BuildManagerEvents;
-			}
-		}
+		public virtual BuildManagerEvents BuildManagerEvents => vsProject.BuildManager as BuildManagerEvents;
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
-		public virtual ImportsEvents ImportsEvents
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-		}
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
+		public virtual ImportsEvents ImportsEvents => throw new NotImplementedException();
 
-		public virtual ReferencesEvents ReferencesEvents
-		{
-			get
-			{
-				return vsProject.References as ReferencesEvents;
-			}
-		}
+        public virtual ReferencesEvents ReferencesEvents => vsProject.References as ReferencesEvents;
 
-		#endregion
+        #endregion
 	}
 
 }

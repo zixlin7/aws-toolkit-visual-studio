@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -13,7 +9,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _instanceId;
         public string InstanceId
         {
-            get { return this._instanceId; }
+            get => this._instanceId;
             set
             {
                 this._instanceId = value;
@@ -24,7 +20,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         DateTime _timestamp;
         public DateTime Timestamp
         {
-            get { return this._timestamp; }
+            get => this._timestamp;
             set
             {
                 this._timestamp = value;
@@ -35,7 +31,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _consoleOutput;
         public string ConsoleOutput
         {
-            get { return this._consoleOutput; }
+            get => this._consoleOutput;
             set
             {
                 this._consoleOutput = value;

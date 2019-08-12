@@ -17,7 +17,6 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using MSBuild = Microsoft.Build.Evaluation;
 using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
@@ -49,45 +48,22 @@ namespace Microsoft.VisualStudio.Project
             ProjectFileConstants.COMReference
         };
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
-        protected virtual string[] SupportedReferenceTypes
-        {
-            get { return supportedReferenceTypes; }
-        }
+        protected virtual string[] SupportedReferenceTypes => supportedReferenceTypes;
+
         #endregion
 
         #region overridden properties
-        public override int SortPriority
-        {
-            get
-            {
-                return DefaultSortOrderNode.ReferenceContainerNode;
-            }
-        }
+        public override int SortPriority => DefaultSortOrderNode.ReferenceContainerNode;
 
-        public override int MenuCommandId
-        {
-            get { return VsMenus.IDM_VS_CTXT_REFERENCEROOT; }
-        }
+        public override int MenuCommandId => VsMenus.IDM_VS_CTXT_REFERENCEROOT;
 
 
-        public override Guid ItemTypeGuid
-        {
-            get { return VSConstants.GUID_ItemType_VirtualFolder; }
-        }
+        public override Guid ItemTypeGuid => VSConstants.GUID_ItemType_VirtualFolder;
 
 
-        public override string Url
-        {
-            get { return this.VirtualNodeName; }
-        }
+        public override string Url => this.VirtualNodeName;
 
-        public override string Caption
-        {
-            get
-            {
-                return SR.GetString(SR.ReferencesNodeName, CultureInfo.CurrentUICulture);
-            }
-        }
+        public override string Caption => SR.GetString(SR.ReferencesNodeName, CultureInfo.CurrentUICulture);
 
 
         private Automation.OAReferences references;

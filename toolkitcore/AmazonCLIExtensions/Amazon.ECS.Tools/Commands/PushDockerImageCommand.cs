@@ -40,7 +40,7 @@ namespace Amazon.ECS.Tools.Commands
 
                 return this._pushProperties;
             }
-            set { this._pushProperties = value; }
+            set => this._pushProperties = value;
         }
 
 

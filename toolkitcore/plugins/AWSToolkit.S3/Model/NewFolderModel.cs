@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 
 namespace Amazon.AWSToolkit.S3.Model
@@ -20,19 +15,13 @@ namespace Amazon.AWSToolkit.S3.Model
             this._parentPath = parentPath;
         }
 
-        public string BucketName
-        {
-            get { return this._bucketName; }
-        }
+        public string BucketName => this._bucketName;
 
-        public string ParentPath
-        {
-            get { return this._parentPath; }
-        }
+        public string ParentPath => this._parentPath;
 
         public string NewFolderName
         {
-            get { return this._newFolderName; }
+            get => this._newFolderName;
             set
             {
                 this._newFolderName = value;

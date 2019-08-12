@@ -17,15 +17,9 @@ namespace Amazon.AWSToolkit.ECS.Model
             this._ecrClient = viewModel.ECRClient;
         }
 
-        public IAmazonECS ECSClient
-        {
-            get { return this._ecsClient; }
-        }
+        public IAmazonECS ECSClient => this._ecsClient;
 
-        public IAmazonECR ECRClient
-        {
-            get { return this._ecrClient; }
-        }
+        public IAmazonECR ECRClient => this._ecrClient;
 
         public string RegionSystemName
         {

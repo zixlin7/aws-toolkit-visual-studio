@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.EC2;
 using Amazon.EC2.Model;
 
@@ -12,10 +8,7 @@ namespace Amazon.AWSToolkit.EC2
     {
         static AvailabilityZoneManager _instance = new AvailabilityZoneManager();
 
-        public static AvailabilityZoneManager Instance
-        {
-            get { return _instance; }
-        }
+        public static AvailabilityZoneManager Instance => _instance;
 
         Dictionary<string, List<string>> _zonesByRegion
             = new Dictionary<string, List<string>>();

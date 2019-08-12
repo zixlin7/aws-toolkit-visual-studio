@@ -4,13 +4,9 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Security.RightsManagement;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.EC2.Model;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
-using Amazon.Runtime.Internal.Util;
 using log4net;
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -43,17 +39,11 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public Volume NativeVolume
-        {
-            get { return _volume; }
-        }
+        public Volume NativeVolume => _volume;
 
         [DisplayName("Volume ID")]
         [AssociatedIconAttribute(false, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.volume.png")]
-        public string VolumeId
-        {
-            get { return NativeVolume.VolumeId; }
-        }
+        public string VolumeId => NativeVolume.VolumeId;
 
         [DisplayName("Name")]
         public string Name
@@ -71,51 +61,27 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public string DisplayName
-        {
-            get { return this.NativeVolume.VolumeId; }
-        }
+        public string DisplayName => this.NativeVolume.VolumeId;
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "Volume"; }
-        }
+        public string TypeName => "Volume";
 
         [DisplayName("Created")]
-        public DateTime Created
-        {
-            get { return Convert.ToDateTime(NativeVolume.CreateTime); }
-        }
+        public DateTime Created => Convert.ToDateTime(NativeVolume.CreateTime);
 
         [DisplayName("Zone")]
-        public string AvailabilityZone
-        {
-            get { return this.NativeVolume.AvailabilityZone; }
-        }
+        public string AvailabilityZone => this.NativeVolume.AvailabilityZone;
 
         [DisplayName("Snapshot ID")]
-        public string SnapshotId
-        {
-            get { return NativeVolume.SnapshotId; }
-        }
+        public string SnapshotId => NativeVolume.SnapshotId;
 
         [DisplayName("Capacity")]
-        public string Capacity
-        {
-            get { return NativeVolume.Size + " GiB"; }
-        }
+        public string Capacity => NativeVolume.Size + " GiB";
 
         [DisplayName("Size")]
-        public string FormattedSize
-        {
-            get { return Convert.ToInt32(NativeVolume.Size) + " GiB"; }
-        }
+        public string FormattedSize => Convert.ToInt32(NativeVolume.Size) + " GiB";
 
-        public string VolumeType
-        {
-            get { return NativeVolume.VolumeType; }
-        }
+        public string VolumeType => NativeVolume.VolumeType;
 
         [DisplayName("Volume Type")]
         public string VolumeTypeDisplayName 
@@ -134,21 +100,13 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [DisplayName("IOPS")]
-        public string Iops
-        {
-            get
-            {
-                return NativeVolume.VolumeType.Equals(Amazon.EC2.VolumeType.Io1)
-                           ? NativeVolume.Iops.ToString()
-                           : string.Empty;
-            }
-        }
+        public string Iops =>
+            NativeVolume.VolumeType.Equals(Amazon.EC2.VolumeType.Io1)
+                ? NativeVolume.Iops.ToString()
+                : string.Empty;
 
         [Browsable(false)]
-        public int Size
-        {
-            get { return Convert.ToInt32(NativeVolume.Size); }
-        }
+        public int Size => Convert.ToInt32(NativeVolume.Size);
 
         [DisplayName("Attachment Information")]
         public string Attachments
@@ -161,22 +119,16 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public bool IsSnapshotsReady
-        {
-            get { return this.Snapshots != null; }
-        }
+        public bool IsSnapshotsReady => this.Snapshots != null;
 
         [Browsable(false)]
-        public bool CanAddSnapshots
-        {
-            get{return this.NativeVolume.State == EC2Constants.VOLUME_STATE_AVAILABLE || this.NativeVolume.State == EC2Constants.VOLUME_STATE_IN_USE;}
-        }
+        public bool CanAddSnapshots => this.NativeVolume.State == EC2Constants.VOLUME_STATE_AVAILABLE || this.NativeVolume.State == EC2Constants.VOLUME_STATE_IN_USE;
 
         ObservableCollection<SnapshotWrapper> _snapshots;
         [Browsable(false)]
         public ObservableCollection<SnapshotWrapper> Snapshots
         {
-            get { return _snapshots; }
+            get => _snapshots;
             set
             {
                 _snapshots = value;
@@ -198,20 +150,11 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public bool CanDelete
-        {
-            get
-            {
-                return (NativeVolume.State.Equals("available"));
-            }
-        }
+        public bool CanDelete => (NativeVolume.State.Equals("available"));
 
         [DisplayName("Status")]
         [AssociatedIcon(true, "StatusIcon")]
-        public string Status
-        {
-            get { return NativeVolume.State; }
-        }
+        public string Status => NativeVolume.State;
 
         [Browsable(false)]
         public System.Windows.Media.ImageSource StatusIcon
@@ -273,18 +216,9 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public List<Tag> Tags
-        {
-            get { return this.NativeVolume.Tags; }
-        }
+        public List<Tag> Tags => this.NativeVolume.Tags;
 
-        public string[] ListSnapshotsAvailableTags
-        {
-            get
-            {
-                return EC2ColumnDefinition.GetListAvailableTags(this.Snapshots);
-            }
-        }
+        public string[] ListSnapshotsAvailableTags => EC2ColumnDefinition.GetListAvailableTags(this.Snapshots);
     }
 
     /// <summary>
@@ -316,10 +250,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         // this is used solely to get use from control events on
         // a template instance to 'this' (eg the delete button)
-        public string ID
-        {
-            get { return _id; }    
-        }
+        public string ID => _id;
 
         public string[] AvailableStorageTypes
         {
@@ -333,13 +264,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         public bool DeleteOnTermination { get; set; }
         public bool Encrypted { get; set; }
 
-        public static string IopsRangeTooltip
-        {
-            get
-            {
-                return "The number of I/O operations per second (IOPS) to provision for the volume. Range is 100 to 4000";
-            }
-        }
+        public static string IopsRangeTooltip => "The number of I/O operations per second (IOPS) to provision for the volume. Range is 100 to 4000";
 
         private static readonly CreateVolumeModel.VolumeTypeOption[] VolumeTypeOptions =
         {
@@ -370,10 +295,7 @@ namespace Amazon.AWSToolkit.EC2.Model
             throw new ArgumentException("Unknown volume type code: " + typeCode);
         }
 
-        public static CreateVolumeModel.VolumeTypeOption[] VolumeTypes
-        {
-            get { return VolumeTypeOptions; }
-        }
+        public static CreateVolumeModel.VolumeTypeOption[] VolumeTypes => VolumeTypeOptions;
 
         public CreateVolumeModel.VolumeTypeOption VolumeType 
         { 
@@ -385,26 +307,18 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public ObservableCollection<SnapshotModel> Snapshots
         {
-            get { return _snapshots; }
-            set { _snapshots = value; }
+            get => _snapshots;
+            set => _snapshots = value;
         }
 
         public SnapshotModel Snapshot { get; set; }
 
-        public bool IsRootDevice
-        {
-            get
-            {
-                return "/dev/sda1".Equals(Device, StringComparison.OrdinalIgnoreCase)
-                       || "/dev/xvda".Equals(Device, StringComparison.OrdinalIgnoreCase);
-            }
-        }
+        public bool IsRootDevice =>
+            "/dev/sda1".Equals(Device, StringComparison.OrdinalIgnoreCase)
+            || "/dev/xvda".Equals(Device, StringComparison.OrdinalIgnoreCase);
 
         // simpler xaml binding than needing a 'bool inverter' converter
-        public bool IsNonRootDevice
-        {
-            get { return !IsRootDevice; }            
-        }
+        public bool IsNonRootDevice => !IsRootDevice;
 
         public bool IsIopsCompatibleDevice
         {

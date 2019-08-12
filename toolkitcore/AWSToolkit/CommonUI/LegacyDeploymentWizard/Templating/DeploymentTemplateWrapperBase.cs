@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using log4net;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 
@@ -79,10 +76,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating
                     return Constants.VERSION_NUMBER;
                 return this._minToolkitVersion;
             }
-            protected set
-            {
-                this._minToolkitVersion = value;
-            }
+            protected set => this._minToolkitVersion = value;
         }
 
         /// <summary>

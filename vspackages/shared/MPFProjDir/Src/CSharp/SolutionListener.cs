@@ -11,7 +11,6 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
 using System;
 using System.Diagnostics;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using IServiceProvider = System.IServiceProvider;
@@ -83,23 +82,11 @@ namespace Microsoft.VisualStudio.Project
         }
 
 		#region properties
-		protected uint EventsCookie
-		{
-			get
-			{
-				return this.eventsCookie;
-			}
-		}
+		protected uint EventsCookie => this.eventsCookie;
 
-		protected IVsSolution Solution
-		{
-			get
-			{
-				return this.solution;
-			}
-		}
+        protected IVsSolution Solution => this.solution;
 
-		protected IServiceProvider ServiceProvider
+        protected IServiceProvider ServiceProvider
 		{
 			get
 			{

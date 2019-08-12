@@ -2,16 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Windows;
-
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.S3.Nodes;
 using Amazon.AWSToolkit.S3.View;
 using Amazon.AWSToolkit.S3.Model;
-using Amazon.AWSToolkit;
-
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
@@ -34,10 +26,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             this._model = model;
         }
 
-        public ObjectPropertiesModel Model
-        {
-            get { return this._model; }
-        }
+        public ObjectPropertiesModel Model => this._model;
 
         public void Execute()
         {

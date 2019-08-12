@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.Account;
+﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.S3.Controller;
 using Amazon.AWSToolkit.S3.Nodes;
@@ -12,10 +7,7 @@ namespace Amazon.AWSToolkit.S3
 {
     public class S3Activator : AbstractPluginActivator
     {
-        public override string PluginName
-        {
-            get { return "S3"; }
-        }
+        public override string PluginName => "S3";
 
         public override void RegisterMetaNodes()
         {

@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.VersionInfo
@@ -37,22 +26,13 @@ namespace Amazon.AWSToolkit.VersionInfo
 
         public bool DoNotRemindMeAgain
         {
-            get { return this._doNotRemindMeAgain; }
-            set { this._doNotRemindMeAgain = value; }
+            get => this._doNotRemindMeAgain;
+            set => this._doNotRemindMeAgain = value;
         }
 
-        public override string Title
-        {
-            get
-            {
-                return "Update to AWS Toolkit for Visual Studio";
-            }
-        }
+        public override string Title => "Update to AWS Toolkit for Visual Studio";
 
-        public override string MetricId
-        {
-            get { return this.GetType().FullName; }
-        }
+        public override string MetricId => this.GetType().FullName;
 
         void buildDocument()
         {

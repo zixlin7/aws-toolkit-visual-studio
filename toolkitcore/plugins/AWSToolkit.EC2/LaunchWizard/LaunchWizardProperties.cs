@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Amazon.AWSToolkit.EC2.LaunchWizard
+﻿namespace Amazon.AWSToolkit.EC2.LaunchWizard
 {
     public static class LaunchWizardProperties
     {

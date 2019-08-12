@@ -1,41 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Account.Controller;
-using Amazon.AWSToolkit.Account.Model;
-using Amazon.AWSToolkit.Account.View;
-
 using Amazon.AWSToolkit.CloudFormation.View.Components;
 
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageWorkers;
-using Amazon.AWSToolkit.CommonUI.Components;
-using Amazon.AWSToolkit.SNS.Nodes;
-
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
-
-using Amazon.CloudFormation;
-using Amazon.CloudFormation.Model;
 using Amazon.AWSToolkit.PluginServices.Deployment;
-
-using Amazon.AWSToolkit.SimpleWorkers;
-
 using log4net;
 
 namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
@@ -73,15 +46,9 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
             this._ctlAccountAndRegionPicker.Initialize(account, region, new[] { DeploymentServiceIdentifiers.CloudFormationServiceName });
         }
 
-        public AccountViewModel SelectedAccount
-        {
-            get { return this._ctlAccountAndRegionPicker.SelectedAccount; }
-        }
+        public AccountViewModel SelectedAccount => this._ctlAccountAndRegionPicker.SelectedAccount;
 
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion
-        {
-            get { return this._ctlAccountAndRegionPicker.SelectedRegion; }
-        }
+        public RegionEndPointsManager.RegionEndPoints SelectedRegion => this._ctlAccountAndRegionPicker.SelectedRegion;
 
         public void BuildParameters(CloudFormationTemplateWrapper wrapper)
         {

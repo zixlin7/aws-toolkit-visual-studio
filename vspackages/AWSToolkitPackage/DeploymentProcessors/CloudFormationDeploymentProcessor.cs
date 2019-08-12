@@ -30,10 +30,7 @@ namespace Amazon.AWSToolkit.VisualStudio.DeploymentProcessors
             }
         }
 
-        bool IDeploymentProcessor.Result 
-        {
-            get { return _deploymentResult; }
-        }
+        bool IDeploymentProcessor.Result => _deploymentResult;
 
         #endregion
     }

@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
 using log4net;
@@ -22,10 +21,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls
             ThemeUtil.UpdateDictionariesForTheme(this.Resources);
         }
 
-        public ConnectSectionViewModel ViewModel
-        {
-            get { return DataContext as ConnectSectionViewModel; }
-        }
+        public ConnectSectionViewModel ViewModel => DataContext as ConnectSectionViewModel;
 
         private void OnRepositoryMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

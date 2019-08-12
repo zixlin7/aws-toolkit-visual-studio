@@ -1,13 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Windows;
-using System.Windows.Threading;
-
-using Amazon;
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 
@@ -31,20 +24,9 @@ namespace Amazon.AWSToolkit.SNS.Nodes
             this._accountViewModel = accountViewModel;
         }
 
-        public override string ToolTip
-        {
-            get
-            {
-                return "Amazon Simple Notification Service (Amazon SNS) is a web service that makes it easy to set up, operate, and send notifications from the cloud. It provides developers with a highly scalable, flexible, and cost-effective capability to publish messages from an application and immediately deliver them to subscribers or other applications. It is designed to make web-scale computing easier for developers.";
-            }
-        }
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.SNS.Resources.EmbeddedImages.service-root-icon.png";
-            }
-        }
+        public override string ToolTip => "Amazon Simple Notification Service (Amazon SNS) is a web service that makes it easy to set up, operate, and send notifications from the cloud. It provides developers with a highly scalable, flexible, and cost-effective capability to publish messages from an application and immediately deliver them to subscribers or other applications. It is designed to make web-scale computing easier for developers.";
+
+        protected override string IconName => "Amazon.AWSToolkit.SNS.Resources.EmbeddedImages.service-root-icon.png";
 
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
@@ -53,10 +35,7 @@ namespace Amazon.AWSToolkit.SNS.Nodes
             this._snsClient = new AmazonSimpleNotificationServiceClient(awsCredentials, config);
         }
 
-        public IAmazonSimpleNotificationService SNSClient
-        {
-            get { return this._snsClient; }
-        }
+        public IAmazonSimpleNotificationService SNSClient => this._snsClient;
 
         public void AddTopic(string topicArn)
         {

@@ -5,16 +5,12 @@ using System.Text;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers;
 using Amazon.AWSToolkit.PluginServices.Deployment;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
-
-using ThirdParty.Json.LitJson;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
 using Amazon.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyDeployment
 {

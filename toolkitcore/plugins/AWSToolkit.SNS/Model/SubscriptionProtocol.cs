@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Amazon.AWSToolkit.SNS.Model
+﻿namespace Amazon.AWSToolkit.SNS.Model
 {
     public class SubscriptionProtocol
     {
@@ -26,15 +21,9 @@ namespace Amazon.AWSToolkit.SNS.Model
             this._systemName = systemName;
         }
 
-        public string DisplayName
-        {
-            get { return this._displayName; }
-        }
+        public string DisplayName => this._displayName;
 
-        public string SystemName
-        {
-            get { return this._systemName; }
-        }
+        public string SystemName => this._systemName;
 
         public override string ToString()
         {

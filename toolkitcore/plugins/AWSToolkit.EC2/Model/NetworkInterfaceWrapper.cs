@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.EC2.Model;
-using Amazon.AWSToolkit.EC2.View.DataGrid;
 
 namespace Amazon.AWSToolkit.EC2.Model
 {
@@ -28,47 +22,23 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public NetworkInterface NativeNetworkInterface
-        {
-            get { return this._networkInterface; }
-        }
+        public NetworkInterface NativeNetworkInterface => this._networkInterface;
 
         [Browsable(false)]
-        public string DisplayName
-        {
-            get { return this.NativeNetworkInterface.NetworkInterfaceId; }
-        }
+        public string DisplayName => this.NativeNetworkInterface.NetworkInterfaceId;
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "Network Interface"; }
-        }
+        public string TypeName => "Network Interface";
 
         [DisplayName("Network Interface ID")]
         [AssociatedIcon(false, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.route-table.png")]
-        public string NetworkInterfaceId
-        {
-            get { return this._networkInterface.NetworkInterfaceId; }
-        }
+        public string NetworkInterfaceId => this._networkInterface.NetworkInterfaceId;
 
         [Browsable(false)]
-        public bool CanDelete
-        {
-            get
-            {
-                return this._networkInterface.Association == null;
-            }
-        }
+        public bool CanDelete => this._networkInterface.Association == null;
 
         [DisplayName("VPC")]
-        public string VpcId
-        {
-            get
-            {
-                return this._networkInterface.VpcId; 
-            }
-        }
+        public string VpcId => this._networkInterface.VpcId;
 
         [Browsable(false)]
         public string FormattedLabel
@@ -110,9 +80,6 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public List<Tag> Tags
-        {
-            get { return this._networkInterface.TagSet; }
-        }
+        public List<Tag> Tags => this._networkInterface.TagSet;
     }
 }

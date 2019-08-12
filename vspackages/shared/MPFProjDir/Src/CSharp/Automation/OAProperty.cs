@@ -36,35 +36,20 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Microsoft Internal Use Only.
 		/// </summary>
-		public object Application
-		{
-			get { return null; }
-		}
+		public object Application => null;
 
-		/// <summary>
+        //todo: EnvDTE.Property.Collection
+        /// <summary>
 		/// Gets the Collection containing the Property object supporting this property.
 		/// </summary>
-		public EnvDTE.Properties Collection
-		{
-			get
-			{
-				//todo: EnvDTE.Property.Collection
-				return this.parent;
-			}
-		}
+		public EnvDTE.Properties Collection => this.parent;
 
-		/// <summary>
+        /// <summary>
 		/// Gets the top-level extensibility object.
 		/// </summary>
-		public EnvDTE.DTE DTE
-		{
-			get
-			{
-				return this.parent.DTE;
-			}
-		}
+		public EnvDTE.DTE DTE => this.parent.DTE;
 
-		/// <summary>
+        /// <summary>
 		/// Returns one element of a list. 
 		/// </summary>
 		/// <param name="index1">The index of the item to display.</param>
@@ -94,32 +79,20 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Gets the name of the object.
 		/// </summary>
-		public string Name
-		{
-			get
-			{
-				return pi.Name;
-			}
-		}
+		public string Name => pi.Name;
 
-		/// <summary>
+        /// <summary>
 		/// Gets the number of indices required to access the value.
 		/// </summary>
-		public short NumIndices
-		{
-			get { return (short)pi.GetIndexParameters().Length; }
-		}
+		public short NumIndices => (short)pi.GetIndexParameters().Length;
 
-		/// <summary>
+        /// <summary>
 		/// Sets or gets the object supporting the Property object.
 		/// </summary>
 		public object Object
 		{
-			get
-			{
-				return this.parent.Target;
-			}
-			set
+			get => this.parent.Target;
+            set
 			{
 			}
 		}
@@ -127,12 +100,9 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Microsoft Internal Use Only.
 		/// </summary>
-		public EnvDTE.Properties Parent
-		{
-			get { return this.parent; }
-		}
+		public EnvDTE.Properties Parent => this.parent;
 
-		/// <summary>
+        /// <summary>
 		/// Sets the value of the property at the specified index.
 		/// </summary>
 		/// <param name="index1">The index of the item to set.</param>
@@ -166,8 +136,8 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// </summary>
 		public object Value
 		{
-			get { return pi.GetValue(this.parent.Target, null); }
-			set
+			get => pi.GetValue(this.parent.Target, null);
+            set
 			{
 				using(AutomationScope scope = new AutomationScope(this.parent.Target.Node.ProjectMgr.Site))
 				{

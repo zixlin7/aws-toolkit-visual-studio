@@ -1,22 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.Controller;
 
 using log4net;
@@ -39,13 +25,7 @@ namespace Amazon.AWSToolkit.S3.View
             this.DataContext = this._controller.Model;
         }
 
-        public override string Title
-        {
-            get
-            {
-                return "Create Pre-Signed URL";
-            }
-        }
+        public override string Title => "Create Pre-Signed URL";
 
         private void onGenerateClick(object sender, RoutedEventArgs evnt)
         {

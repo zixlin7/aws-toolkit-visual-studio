@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
@@ -47,10 +43,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             return this._results;
         }
 
-        public CreateSubnetModel Model
-        {
-            get { return this._model; }
-        }
+        public CreateSubnetModel Model => this._model;
 
         public void CreateSubnet()
         {

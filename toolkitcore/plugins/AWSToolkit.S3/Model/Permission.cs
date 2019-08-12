@@ -162,7 +162,7 @@ namespace Amazon.AWSToolkit.S3.Model
         S3Grantee _grantee;
         public S3Grantee Grantee
         {
-            get { return this._grantee; }
+            get => this._grantee;
             set
             {
                 this._grantee = value;
@@ -227,7 +227,7 @@ namespace Amazon.AWSToolkit.S3.Model
         bool _list;
         public bool List
         {
-            get { return this._list; }
+            get => this._list;
             set
             {
                 this._list = value;
@@ -238,7 +238,7 @@ namespace Amazon.AWSToolkit.S3.Model
         bool _uploadAndDelete;
         public bool UploadAndDelete
         {
-            get { return this._uploadAndDelete; }
+            get => this._uploadAndDelete;
             set
             {
                 this._uploadAndDelete = value;
@@ -249,7 +249,7 @@ namespace Amazon.AWSToolkit.S3.Model
         bool _openDownload;
         public bool OpenDownload
         {
-            get { return this._openDownload; }
+            get => this._openDownload;
             set
             {
                 this._openDownload = value;
@@ -260,7 +260,7 @@ namespace Amazon.AWSToolkit.S3.Model
         bool _viewPermissions;
         public bool ViewPermissions
         {
-            get { return this._viewPermissions; }
+            get => this._viewPermissions;
             set
             {
                 this._viewPermissions = value;
@@ -271,7 +271,7 @@ namespace Amazon.AWSToolkit.S3.Model
         bool _editPermissions;
         public bool EditPermissions
         {
-            get { return this._editPermissions; }
+            get => this._editPermissions;
             set
             {
                 this._editPermissions = value;
@@ -352,10 +352,7 @@ namespace Amazon.AWSToolkit.S3.Model
                 set;
             }
 
-            public S3Grantee Grantee
-            {
-                get { return new S3Grantee() { URI = this.URI }; }
-            }
+            public S3Grantee Grantee => new S3Grantee() { URI = this.URI };
         }
     }
 }

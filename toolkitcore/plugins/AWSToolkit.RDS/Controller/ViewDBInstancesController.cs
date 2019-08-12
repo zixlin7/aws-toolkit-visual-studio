@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows;
 
@@ -215,15 +213,9 @@ namespace Amazon.AWSToolkit.RDS.Controller
             }
         }
 
-        public AccountViewModel Account
-        {
-            get { return this._instanceRootViewModel.AccountViewModel; }
-        }
+        public AccountViewModel Account => this._instanceRootViewModel.AccountViewModel;
 
-        public string EndPointUniqueIdentifier
-        {
-            get { return this._instanceRootViewModel.CurrentEndPoint.UniqueIdentifier; }
-        }
+        public string EndPointUniqueIdentifier => this._instanceRootViewModel.CurrentEndPoint.UniqueIdentifier;
 
         public string RegionDisplayName
         {

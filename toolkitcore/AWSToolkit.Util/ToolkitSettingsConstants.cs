@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Amazon.AWSToolkit
+﻿namespace Amazon.AWSToolkit
 {
     public class ToolkitSettingsConstants
     {

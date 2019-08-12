@@ -75,12 +75,9 @@ namespace Microsoft.VisualStudio.Project
 		/// <summary>
 		/// This is the object that will be returned by EnvDTE.Project.Object for this project
 		/// </summary>
-		internal override object Object
-		{
-			get { return new OASolutionFolder<ProjectContainerNode>(this); }
-		}
+		internal override object Object => new OASolutionFolder<ProjectContainerNode>(this);
 
-		#endregion
+        #endregion
 
 		#region public overridden methods
 		/// <summary>
@@ -322,9 +319,9 @@ namespace Microsoft.VisualStudio.Project
 		/// </summary>
 		public virtual bool BuildNestedProjectsOnBuild
 		{
-			get { return this.buildNestedProjectsOnBuild; }
-			set { this.buildNestedProjectsOnBuild = value; }
-		}
+			get => this.buildNestedProjectsOnBuild;
+            set => this.buildNestedProjectsOnBuild = value;
+        }
 
 		/// <summary>
 		/// Enumerates the nested hierachies that should be added to the build dependency list.

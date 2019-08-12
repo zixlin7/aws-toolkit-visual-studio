@@ -8,7 +8,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Threading;
 using Amazon.AWSToolkit.Util;
 using Amazon.DynamoDBv2.DocumentModel;
-using System.Windows.Media;
 
 namespace Amazon.AWSToolkit.DynamoDB.View.Columns
 {
@@ -124,10 +123,7 @@ namespace Amazon.AWSToolkit.DynamoDB.View.Columns
             _btnAsString.IsEnabled = _btnAsNumeric.IsEnabled = valuesCount <= 1;
         }
 
-        public bool InEditMode
-        {
-            get { return this._cellEditControl != null; }
-        }
+        public bool InEditMode => this._cellEditControl != null;
 
         protected override FrameworkElement GenerateElement(DataGridCell cell, object dataItem)
         {

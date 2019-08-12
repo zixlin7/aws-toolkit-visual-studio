@@ -417,18 +417,13 @@ namespace Microsoft.VisualStudio.Project
 		/// <summary>
 		/// Token that needs to be replaced
 		/// </summary>
-		public string Token
-		{
-			get { return token; }
-		}
-		/// <summary>
+		public string Token => token;
+
+        /// <summary>
 		/// String to replace the token with
 		/// </summary>
-		public string Replacement
-		{
-			get { return replacement; }
-		}
-	}
+		public string Replacement => replacement;
+    }
 
 	/// <summary>
 	/// Storage classes for token to be deleted
@@ -452,11 +447,8 @@ namespace Microsoft.VisualStudio.Project
 		/// <summary>
 		/// Token marking the end of the block to delete
 		/// </summary>
-		public string StringToDelete
-		{
-			get { return token; }
-		}
-	}
+		public string StringToDelete => token;
+    }
 
 	/// <summary>
 	/// Storage classes for string to be deleted between tokens to be deleted 
@@ -501,33 +493,21 @@ namespace Microsoft.VisualStudio.Project
 		/// <summary>
 		/// Token marking the begining of the block to delete
 		/// </summary>
-		public string TokenStart
-		{
-			get { return tokenStart; }
-		}
+		public string TokenStart => tokenStart;
 
-		/// <summary>
+        /// <summary>
 		/// Token marking the end of the block to delete
 		/// </summary>
-		public string TokenEnd
-		{
-			get { return tokenEnd; }
-		}
+		public string TokenEnd => tokenEnd;
 
-		/// <summary>
+        /// <summary>
 		/// Token marking the end of the block to delete
 		/// </summary>
-		public string TokenReplacement
-		{
-			get { return replacement; }
-		}
+		public string TokenReplacement => replacement;
 
-		/// <summary>
+        /// <summary>
 		/// Token Identifier
 		/// </summary>
-		public string TokenIdentifier
-		{
-			get { return tokenidentifier; }
-		}
-	}
+		public string TokenIdentifier => tokenidentifier;
+    }
 }

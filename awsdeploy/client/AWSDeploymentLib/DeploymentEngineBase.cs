@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-
-using Amazon;
 using Amazon.AWSToolkit;
 using Amazon.EC2;
 using Amazon.EC2.Model;
@@ -142,10 +139,7 @@ namespace AWSDeployment
         /// <summary>
         /// If true, we're performing a redeployment to the selected target
         /// </summary>
-        public bool IsRedeployment 
-        { 
-            get { return DeploymentMode != DeploymentModes.DeployNewApplication && DeploymentMode != DeploymentModes.DeployPriorVersion; }
-        }
+        public bool IsRedeployment => DeploymentMode != DeploymentModes.DeployNewApplication && DeploymentMode != DeploymentModes.DeployPriorVersion;
 
         /// <summary>
         /// S3 Bucket where the deployment materials will be stored.

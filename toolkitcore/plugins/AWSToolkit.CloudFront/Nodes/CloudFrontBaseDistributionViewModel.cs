@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Amazon.CloudFront;
 using Amazon.CloudFront.Model;
 
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.CloudFront.Nodes;
-
 using log4net;
 
 namespace Amazon.AWSToolkit.CloudFront.Nodes
@@ -26,20 +20,11 @@ namespace Amazon.AWSToolkit.CloudFront.Nodes
             this._cfClient = viewModel.CFClient;
         }
 
-        public CloudFrontRootViewModel CloudFrontRootViewModel
-        {
-            get { return this.Parent as CloudFrontRootViewModel; }
-        }
+        public CloudFrontRootViewModel CloudFrontRootViewModel => this.Parent as CloudFrontRootViewModel;
 
-        public string DistributionId
-        {
-            get { return this._distributionId; }
-        }
+        public string DistributionId => this._distributionId;
 
-        public IAmazonCloudFront CFClient
-        {
-            get { return this._cfClient; }
-        }
+        public IAmazonCloudFront CFClient => this._cfClient;
 
         public string GetETag()
         {

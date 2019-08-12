@@ -1,18 +1,8 @@
 ﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.ElasticBeanstalk.Model;
-using Amazon.ElasticBeanstalk.Model;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 {
@@ -82,8 +72,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         public bool EnableConfigRollingDeployment
         {
-            get { return this._ctlEnableRolling.IsChecked.GetValueOrDefault(); }
-            set { this._ctlEnableRolling.IsChecked = value; }
+            get => this._ctlEnableRolling.IsChecked.GetValueOrDefault();
+            set => this._ctlEnableRolling.IsChecked = value;
         }
 
         public int? MaximumBatchSize
@@ -96,7 +86,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
                 return null;
             }
-            set { this._ctlMaxBatchSize.Text = value == null ? "" : value.ToString(); }
+            set => this._ctlMaxBatchSize.Text = value == null ? "" : value.ToString();
         }
 
         public int? MinInstanceInService
@@ -109,7 +99,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
                 return null;
             }
-            set { this._ctlMinInstanceInService.Text = value == null ? "" : value.ToString(); }
+            set => this._ctlMinInstanceInService.Text = value == null ? "" : value.ToString();
         }
 
         private void _ctlEnableRolling_Checked(object sender, RoutedEventArgs e)

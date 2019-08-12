@@ -2,8 +2,6 @@
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.TeamFoundation.Controls;
-
-using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.Base;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;

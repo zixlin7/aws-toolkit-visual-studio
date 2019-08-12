@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Odbc;
 using System.Linq;
 using System.Windows.Controls;
 using System.Xml.Linq;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.Persistence;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
@@ -18,8 +16,6 @@ using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 using Amazon.Runtime.Internal.Settings;
 using log4net;
-using Amazon.EC2;
-using Amazon.EC2.Model;
 using Amazon.AWSToolkit.EC2;
 using System.Threading;
 
@@ -51,10 +47,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
         // on subsequent pages.
         readonly Dictionary<string, ICollection<DeployedApplicationModel>> _deploymentsByUserRegion = new Dictionary<string, ICollection<DeployedApplicationModel>>();
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard
         {
@@ -62,25 +55,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
             set;
         }
 
-        public string PageGroup
-        {
-            get { return DeploymentWizardPageGroups.AppTargetGroup; }
-        }
+        public string PageGroup => DeploymentWizardPageGroups.AppTargetGroup;
 
-        public string PageTitle
-        {
-            get { return "Publish to AWS Elastic Beanstalk"; }
-        }
+        public string PageTitle => "Publish to AWS Elastic Beanstalk";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "Publish can create a new application/environment or redeploy to an existing environment."; }
-        }
+        public string PageDescription => "Publish can create a new application/environment or redeploy to an existing environment.";
 
         public void ResetPage()
         {

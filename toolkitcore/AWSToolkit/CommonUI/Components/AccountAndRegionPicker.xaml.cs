@@ -3,20 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Account.Controller;
-using Amazon.AWSToolkit.Account.Model;
 using Amazon.AWSToolkit.Account.View;
 
 using Amazon.AWSToolkit.Navigator;
@@ -147,10 +137,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
 
         public AWSViewModel RootViewModel
         {
-            get
-            {
-                return IsInitialized ? _rootViewModel : null;
-            }
+            get => IsInitialized ? _rootViewModel : null;
             set
             {
                 this._rootViewModel = value;
@@ -182,7 +169,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
 
         public AccountViewModel SelectedAccount
         {
-            get { return this._accountSelector.SelectedAccount as AccountViewModel; }
+            get => this._accountSelector.SelectedAccount as AccountViewModel;
             set
             {
                 if (IsInitialized)
@@ -324,7 +311,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
         }
         public RegionEndPointsManager.RegionEndPoints SelectedRegion
         {
-            get { return this._regionSelector.SelectedItem as RegionEndPointsManager.RegionEndPoints; }
+            get => this._regionSelector.SelectedItem as RegionEndPointsManager.RegionEndPoints;
             set { if (IsInitialized) this._regionSelector.SelectedItem = value; }
         }
 

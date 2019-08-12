@@ -78,12 +78,12 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
         /// <summary>
         /// Gets a file naming pattern to be used for the generated pattern
         /// </summary>
-        public static string ArchiveNamePattern { get { return ARCHIVE_NAME_PATTERN; } }
+        public static string ArchiveNamePattern => ARCHIVE_NAME_PATTERN;
 
         /// <summary>
         /// Returns the name of the generated manifest file
         /// </summary>
-        public string ManifestFilename { get { return _manifestFilename; } }
+        public string ManifestFilename => _manifestFilename;
 
         /// <summary>
         /// Generates deployment manifest for staged content

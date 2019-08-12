@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-
-using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.Runtime.Internal.Settings;
 using Amazon.AWSToolkit.EC2.Model;
@@ -66,15 +62,9 @@ namespace Amazon.AWSToolkit.EC2.Controller
             return new ActionResults().WithSuccess(true);
         }
 
-        public string InstanceId
-        {
-            get { return this._instance.InstanceId; }
-        }
+        public string InstanceId => this._instance.InstanceId;
 
-        public OpenRemoteDesktopModel Model
-        {
-            get { return this._model; }
-        }
+        public OpenRemoteDesktopModel Model => this._model;
 
         public void OpenRemoteDesktopWithCredentials(string username, string password)
         {

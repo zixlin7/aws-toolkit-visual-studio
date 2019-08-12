@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
 using Amazon.AWSToolkit.ECS.Controller;
-using Amazon.AWSToolkit.ECS.Nodes;
-using Amazon.AWSToolkit.MobileAnalytics;
 using log4net;
 
 namespace Amazon.AWSToolkit.ECS.View
@@ -25,32 +22,15 @@ namespace Amazon.AWSToolkit.ECS.View
             this._ctlPushCommands.Initialize(controller);
         }
 
-        public override string Title
-        {
-            get
-            {
-                return string.Format("Repository {0}", this._controller.RepositoryName);
-            }
-        }
+        public override string Title => string.Format("Repository {0}", this._controller.RepositoryName);
 
-        public override string UniqueId
-        {
-            get
-            {
-                return string.Format("Repository: {0} {1}_{2}",
-                                     this._controller.RepositoryArn,
-                                     this._controller.EndPointUniqueIdentifier,
-                                     this._controller.Account.SettingsUniqueKey);
-            }
-        }
+        public override string UniqueId =>
+            string.Format("Repository: {0} {1}_{2}",
+                this._controller.RepositoryArn,
+                this._controller.EndPointUniqueIdentifier,
+                this._controller.Account.SettingsUniqueKey);
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {

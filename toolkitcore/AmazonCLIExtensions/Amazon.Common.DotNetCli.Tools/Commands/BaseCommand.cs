@@ -20,7 +20,7 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
     {
         public ToolsException LastToolsException { get; protected set; }
 
-        public string[] OriginalCommandLineArguments { get; private set; }
+        public string[] OriginalCommandLineArguments { get; }
 
         public BaseCommand(IToolLogger logger, string workingDirectory)
         {
@@ -747,7 +747,7 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
                 }
                 return this._iamClient;
             }
-            set { this._iamClient = value; }
+            set => this._iamClient = value;
         }
 
         IAmazonS3 _s3Client;
@@ -766,7 +766,7 @@ namespace Amazon.Common.DotNetCli.Tools.Commands
                 }
                 return this._s3Client;
             }
-            set { this._s3Client = value; }
+            set => this._s3Client = value;
         }
 
         protected void SaveConfigFile()

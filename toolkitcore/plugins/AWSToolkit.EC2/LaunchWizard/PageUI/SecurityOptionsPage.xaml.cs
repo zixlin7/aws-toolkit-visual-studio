@@ -1,26 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
-
-using Amazon.EC2;
 using Amazon.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
@@ -110,15 +98,9 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
             }
         }
 
-        public bool CreateSecurityGroup
-        {
-            get { return this._createSecurityGroup.IsChecked == true; }
-        }
+        public bool CreateSecurityGroup => this._createSecurityGroup.IsChecked == true;
 
-        public EmbeddedSecurityGroupControl GroupEditor
-        {
-            get { return this._securityGroupEditor; }
-        }
+        public EmbeddedSecurityGroupControl GroupEditor => this._securityGroupEditor;
 
         public ICollection<SecurityGroupWrapper> SelectedGroups
         {

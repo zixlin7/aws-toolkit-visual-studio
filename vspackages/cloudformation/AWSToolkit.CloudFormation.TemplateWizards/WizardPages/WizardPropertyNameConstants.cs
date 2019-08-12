@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Amazon.AWSToolkit.CloudFormation.TemplateWizards.WizardPages
+﻿namespace Amazon.AWSToolkit.CloudFormation.TemplateWizards.WizardPages
 {
     internal static class WizardPropertyNameConstants
     {

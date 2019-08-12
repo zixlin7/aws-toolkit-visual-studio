@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
-
-using Amazon.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.Model
 {
@@ -24,7 +18,6 @@ namespace Amazon.AWSToolkit.EC2.Model
         public string IPProtocol
         {
             get;
-            private set;
         }
 
         public string FormattedIPProtocol
@@ -48,13 +41,11 @@ namespace Amazon.AWSToolkit.EC2.Model
         public int FromPort
         {
             get;
-            private set;
         }
 
         public int ToPort
         {
             get;
-            private set;
         }
 
         public string FormattedPortRange
@@ -71,13 +62,11 @@ namespace Amazon.AWSToolkit.EC2.Model
         public string UserId
         {
             get;
-            private set;
         }
 
         public string GroupName
         {
             get;
-            private set;
         }
 
         public string FormattedUserAndGroup
@@ -94,7 +83,6 @@ namespace Amazon.AWSToolkit.EC2.Model
         public string Source
         {
             get;
-            private set;
         }
 
         public string UnderlyingProtocol

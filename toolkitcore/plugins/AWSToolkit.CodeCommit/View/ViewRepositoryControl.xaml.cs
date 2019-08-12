@@ -24,18 +24,9 @@ namespace Amazon.AWSToolkit.CodeCommit.View
             DataContext = this;
         }
 
-        public override string Title
-        {
-            get
-            {
-                if (Model == null)
-                    return null;
+        public override string Title => Model == null ? null : string.Concat("Repository ", Model.Name);
 
-                return string.Concat("Repository ", Model.Name);
-            }
-        }
-
-        public ViewRepositoryModel Model { get; private set; }
+        public ViewRepositoryModel Model { get; }
 
         private void onLinkNavigate(object sender, RequestNavigateEventArgs e)
         {

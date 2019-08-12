@@ -1,17 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.Shared;
 
 namespace Amazon.AWSToolkit.CommonUI
@@ -73,10 +63,7 @@ namespace Amazon.AWSToolkit.CommonUI
             this._ctlAcceptButton.IsEnabled = this._hostedControl.UserControl.IsEnabled;
         }
 
-        public IAWSToolkitControl HostedControl
-        {
-            get { return this._hostedControl; }
-        }
+        public IAWSToolkitControl HostedControl => this._hostedControl;
 
         private void addHostedControl()
         {
@@ -111,8 +98,8 @@ namespace Amazon.AWSToolkit.CommonUI
 
         public bool IsOkEnabled
         {
-            get { return this._ctlAcceptButton.IsEnabled; }
-            set { this._ctlAcceptButton.IsEnabled = value; }
+            get => this._ctlAcceptButton.IsEnabled;
+            set => this._ctlAcceptButton.IsEnabled = value;
         }
 
         public void Close(bool dialogResult)

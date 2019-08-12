@@ -16,7 +16,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell.Interop;
 using VSLangProj;
-using ErrorHandler = Microsoft.VisualStudio.ErrorHandler;
 
 namespace Microsoft.VisualStudio.Project.Automation
 {
@@ -121,31 +120,13 @@ namespace Microsoft.VisualStudio.Project.Automation
 			return AddFromSelectorData(selector);
 		}
 
-		public EnvDTE.Project ContainingProject
-		{
-			get
-			{
-				return container.ProjectMgr.GetAutomationObject() as EnvDTE.Project;
-			}
-		}
+		public EnvDTE.Project ContainingProject => container.ProjectMgr.GetAutomationObject() as EnvDTE.Project;
 
-		public int Count
-		{
-			get
-			{
-				return container.EnumReferences().Count;
-			}
-		}
+        public int Count => container.EnumReferences().Count;
 
-		public EnvDTE.DTE DTE
-		{
-			get
-			{
-				return container.ProjectMgr.Site.GetService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
-			}
-		}
+        public EnvDTE.DTE DTE => container.ProjectMgr.Site.GetService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
 
-		public Reference Find(string bstrIdentity)
+        public Reference Find(string bstrIdentity)
 		{
 			if(string.IsNullOrEmpty(bstrIdentity))
 			{
@@ -210,15 +191,9 @@ namespace Microsoft.VisualStudio.Project.Automation
 			return refs[intIndex - 1].Object as Reference;
 		}
 
-		public object Parent
-		{
-			get
-			{
-				return container.Parent.Object;
-			}
-		}
+		public object Parent => container.Parent.Object;
 
-		#endregion
+        #endregion
 
 		#region _dispReferencesEvents_Event Members
 		public event _dispReferencesEvents_ReferenceAddedEventHandler ReferenceAdded;

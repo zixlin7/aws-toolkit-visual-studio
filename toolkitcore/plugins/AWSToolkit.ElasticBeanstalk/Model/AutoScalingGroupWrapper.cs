@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Media;
-
-using Amazon.ElasticBeanstalk.Model;
 using Amazon.AutoScaling.Model;
 
 using Amazon.AWSToolkit.Util;
@@ -25,41 +20,22 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
             this._originalLaunchConfiguration = originalLaunchConfiguration;
         }
 
-        public AutoScalingGroup NativeAutoScalingGroup
-        {
-            get { return this._originalAutoScalingGroup; }
-        }
+        public AutoScalingGroup NativeAutoScalingGroup => this._originalAutoScalingGroup;
 
-        public LaunchConfiguration NativeLaunchConfiguration
-        {
-            get { return this._originalLaunchConfiguration; }
-        }
+        public LaunchConfiguration NativeLaunchConfiguration => this._originalLaunchConfiguration;
 
-        public string FormattedSecurityGroups
-        {
-            get { return String.Join(", ", this._originalLaunchConfiguration.SecurityGroups.ToArray()); }
-        }
+        public string FormattedSecurityGroups => String.Join(", ", this._originalLaunchConfiguration.SecurityGroups.ToArray());
 
-        public string Name
-        {
-            get { return this._originalAutoScalingGroup.AutoScalingGroupName; }
-        }
-        public string MinSize
-        {
-            get { return EnvironmentStatusModel.StringIfSet(this._originalAutoScalingGroup.MinSize, "", ""); }
-        }
-        public string MaxSize
-        {
-            get { return EnvironmentStatusModel.StringIfSet(this._originalAutoScalingGroup.MaxSize, "", ""); }
-        }
-        public string DesiredCapacity
-        {
-            get { return EnvironmentStatusModel.StringIfSet(this._originalAutoScalingGroup.DesiredCapacity, "", ""); }
-        }
-        public string DefaultCooldown
-        {
-            get { return EnvironmentStatusModel.StringIfSet(this._originalAutoScalingGroup.DefaultCooldown, "", ""); }
-        }
+        public string Name => this._originalAutoScalingGroup.AutoScalingGroupName;
+
+        public string MinSize => EnvironmentStatusModel.StringIfSet(this._originalAutoScalingGroup.MinSize, "", "");
+
+        public string MaxSize => EnvironmentStatusModel.StringIfSet(this._originalAutoScalingGroup.MaxSize, "", "");
+
+        public string DesiredCapacity => EnvironmentStatusModel.StringIfSet(this._originalAutoScalingGroup.DesiredCapacity, "", "");
+
+        public string DefaultCooldown => EnvironmentStatusModel.StringIfSet(this._originalAutoScalingGroup.DefaultCooldown, "", "");
+
         public string Instances
         {
             get
@@ -77,37 +53,22 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
                 return String.Join("\n", instances.ToArray());
             }
         }
-        public string AvailabilityZones
-        {
-            get { return String.Join(", ", this._originalAutoScalingGroup.AvailabilityZones.ToArray()); }
-        }
-        public string LoadBalancers
-        {
-            get { return String.Join(", ", this._originalAutoScalingGroup.LoadBalancerNames.ToArray()); }
-        }
-        public string LaunchConfig
-        {
-            get { return this._originalAutoScalingGroup.LaunchConfigurationName; }
-        }
+        public string AvailabilityZones => String.Join(", ", this._originalAutoScalingGroup.AvailabilityZones.ToArray());
+
+        public string LoadBalancers => String.Join(", ", this._originalAutoScalingGroup.LoadBalancerNames.ToArray());
+
+        public string LaunchConfig => this._originalAutoScalingGroup.LaunchConfigurationName;
 
 
         //Properties below here are not shown.
-        public string CreatedTime
-        {
-            get { return EnvironmentStatusModel.StringIfSet(this._originalAutoScalingGroup.CreatedTime, "", ""); }
-        }
-        public string ARN
-        {
-            get { return this._originalAutoScalingGroup.AutoScalingGroupARN; }
-        }
-        public string HealthCheckType
-        {
-            get { return this._originalAutoScalingGroup.HealthCheckType; }
-        }
-        public string HealthCheckGracePeriod
-        {
-            get { return EnvironmentStatusModel.StringIfSet(this._originalAutoScalingGroup.HealthCheckGracePeriod, "", ""); }
-        }
+        public string CreatedTime => EnvironmentStatusModel.StringIfSet(this._originalAutoScalingGroup.CreatedTime, "", "");
+
+        public string ARN => this._originalAutoScalingGroup.AutoScalingGroupARN;
+
+        public string HealthCheckType => this._originalAutoScalingGroup.HealthCheckType;
+
+        public string HealthCheckGracePeriod => EnvironmentStatusModel.StringIfSet(this._originalAutoScalingGroup.HealthCheckGracePeriod, "", "");
+
         public string SuspendedProcesses
         {
             get
@@ -120,14 +81,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
                 return String.Join(", ", suspendedprocesses.ToArray());
             }
         }
-        public string PlacementGroup
-        {
-            get { return this._originalAutoScalingGroup.PlacementGroup; }
-        }
-        public string VPCZoneIdentifier
-        {
-            get { return this._originalAutoScalingGroup.VPCZoneIdentifier; }
-        }
+        public string PlacementGroup => this._originalAutoScalingGroup.PlacementGroup;
+
+        public string VPCZoneIdentifier => this._originalAutoScalingGroup.VPCZoneIdentifier;
+
         public string Metrics
         {
             get
@@ -141,15 +98,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
             }
         }
 
-        public string FormattedAvailabilityZones
-        {
-            get { return StringUtils.CreateCommaDelimitedList(this._originalAutoScalingGroup.AvailabilityZones); }
-        }
+        public string FormattedAvailabilityZones => StringUtils.CreateCommaDelimitedList(this._originalAutoScalingGroup.AvailabilityZones);
 
-        public string FormattedLoadBalancerNames
-        {
-            get { return StringUtils.CreateCommaDelimitedList(this._originalAutoScalingGroup.LoadBalancerNames); }
-        }
+        public string FormattedLoadBalancerNames => StringUtils.CreateCommaDelimitedList(this._originalAutoScalingGroup.LoadBalancerNames);
 
         public string FormattedEnabledMetrics
         {

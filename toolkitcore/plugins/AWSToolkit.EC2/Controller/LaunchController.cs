@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Windows;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -17,9 +16,6 @@ using Amazon.AWSToolkit.EC2.Model;
 
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.Account;
-using Amazon.Runtime.Internal.Settings;
-
 using Amazon.EC2;
 using Amazon.EC2.Model;
 

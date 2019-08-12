@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
@@ -24,24 +22,15 @@ namespace Amazon.AWSToolkit.PolicyEditor.Model
             this.Type = this._condition.Type;
         }
 
-        public Condition InternalCondition
-        {
-            get { return this._condition; }
-        }
+        public Condition InternalCondition => this._condition;
 
-        public string MainLabel
-        {
-            get { return this._condition.Type; }
-        }
+        public string MainLabel => this._condition.Type;
 
-        public string SubLabel
-        {
-            get { return string.Format("{0}: {1}", this._condition.ConditionKey, getValuesAsLabel()); }
-        }
+        public string SubLabel => string.Format("{0}: {1}", this._condition.ConditionKey, getValuesAsLabel());
 
         public string Type
         {
-            get { return this._condition.Type; }
+            get => this._condition.Type;
             set
             {
                 if(value == null)
@@ -71,7 +60,7 @@ namespace Amazon.AWSToolkit.PolicyEditor.Model
 
         public string Key
         {
-            get { return this._condition.ConditionKey; }
+            get => this._condition.ConditionKey;
             set
             {
                 if (value == null)

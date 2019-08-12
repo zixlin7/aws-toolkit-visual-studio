@@ -11,7 +11,6 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
 using System;
 using System.Diagnostics;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using ShellConstants = Microsoft.VisualStudio.Shell.Interop.Constants;
@@ -55,30 +54,13 @@ namespace Microsoft.VisualStudio.Project
 		#endregion
 
 		#region properties
-		protected uint EventsCookie
-		{
-			get
-			{
-				return this.eventsCookie;
-			}
-		}
+		protected uint EventsCookie => this.eventsCookie;
 
-		protected IVsTrackProjectDocuments2 ProjectDocumentTracker2
-		{
-			get
-			{
-				return this.projectDocTracker;
-			}
-		}
+        protected IVsTrackProjectDocuments2 ProjectDocumentTracker2 => this.projectDocTracker;
 
-		protected ServiceProvider ServiceProvider
-		{
-			get
-			{
-				return this.serviceProvider;
-			}
-		}
-		#endregion
+        protected ServiceProvider ServiceProvider => this.serviceProvider;
+
+        #endregion
 
 		#region IVsTrackProjectDocumentsEvents2 Members
 

@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace AWSDeployment
 {
@@ -15,10 +12,10 @@ namespace AWSDeployment
             this.Severity = severity;
         }
 
-        public DateTime Timestamp { get; private set; }
-        public string Source { get; private set; }
-        public string Message { get; private set; }
-        public string Severity { get; private set; }
+        public DateTime Timestamp { get; }
+        public string Source { get; }
+        public string Message { get; }
+        public string Severity { get; }
 
         public override string ToString()
         {

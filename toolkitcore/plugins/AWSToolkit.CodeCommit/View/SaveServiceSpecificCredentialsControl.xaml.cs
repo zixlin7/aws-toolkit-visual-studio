@@ -1,18 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Amazon.AWSToolkit.CodeCommit.Controller;
 using Microsoft.Win32;
 
@@ -43,10 +30,7 @@ namespace Amazon.AWSToolkit.CodeCommit.View
 
         public SaveServiceSpecificCredentialsController Controller { get; }
 
-        public override string Title
-        {
-            get { return Controller?.Model == null ? null : "Save Generated Credentials"; }
-        }
+        public override string Title => Controller?.Model == null ? null : "Save Generated Credentials";
 
         public override bool Validated()
         {
@@ -58,10 +42,7 @@ namespace Amazon.AWSToolkit.CodeCommit.View
             return Controller.Model.SaveToFile();
         }
 
-        public override bool SupportsDynamicOKEnablement
-        {
-            get { return true; }
-        }
+        public override bool SupportsDynamicOKEnablement => true;
 
         private void OnClickBrowseForFile(object sender, RoutedEventArgs e)
         {

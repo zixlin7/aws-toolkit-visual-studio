@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.IdentityManagement.Model
@@ -19,7 +15,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Model
         bool _isDirty;
         public bool IsDirty
         {
-            get { return this._isDirty; }
+            get => this._isDirty;
             set
             {
                 this._isDirty = value;
@@ -28,21 +24,15 @@ namespace Amazon.AWSToolkit.IdentityManagement.Model
         }
 
         List<string> _newPolicies = new List<string>();
-        public List<string> NewPolicies
-        {
-            get { return this._newPolicies; }
-        }
+        public List<string> NewPolicies => this._newPolicies;
 
         List<string> _deletedPolicies = new List<string>();
-        public List<string> DeletedPolicies
-        {
-            get { return this._deletedPolicies; }
-        }
+        public List<string> DeletedPolicies => this._deletedPolicies;
 
         ObservableCollection<IAMPolicyModel> _iamPolicyModels = new ObservableCollection<IAMPolicyModel>();
         public ObservableCollection<IAMPolicyModel> IAMPolicyModels
         {
-            get { return this._iamPolicyModels; }
+            get => this._iamPolicyModels;
             set
             {
                 this._iamPolicyModels = value;
@@ -92,7 +82,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Model
         string _newName;
         public string NewName
         {
-            get { return this._newName == null ? string.Empty : this._newName; }
+            get => this._newName == null ? string.Empty : this._newName;
             set
             {
                 this._newName = value;

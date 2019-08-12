@@ -1,10 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Media;
 
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
@@ -24,21 +18,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
 
         #region Properties
 
-        private bool IsDesignMode
-        {
-            get
-            {
-                return System.ComponentModel.DesignerProperties.GetIsInDesignMode(this);
-            }
-        }
+        private bool IsDesignMode => System.ComponentModel.DesignerProperties.GetIsInDesignMode(this);
 
-        public EnvironmentConfigModel ConfigModel
-        {
-            get
-            {
-                return this.DataContext as EnvironmentConfigModel;
-            }
-        }
+        public EnvironmentConfigModel ConfigModel => this.DataContext as EnvironmentConfigModel;
 
         public ConfigurationOptionDescription OptionDescription
         {

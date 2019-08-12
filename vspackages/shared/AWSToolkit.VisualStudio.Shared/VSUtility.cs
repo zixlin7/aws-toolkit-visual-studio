@@ -1,18 +1,14 @@
 using System;
 using System.Runtime.InteropServices;
-using System.Linq;
-
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
-using System.Reflection;
 using System.IO;
 using Microsoft.VisualStudio.Project;
 using System.Xml;
 
 using MSBuildProject = Microsoft.Build.Evaluation.Project;
 using System.Collections.Generic;
-using Microsoft.Build.Evaluation;
 
 namespace Amazon.AWSToolkit.VisualStudio.Shared
 {

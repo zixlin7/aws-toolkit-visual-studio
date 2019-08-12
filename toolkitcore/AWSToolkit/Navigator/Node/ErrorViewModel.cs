@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 
 
 namespace Amazon.AWSToolkit.Navigator.Node
@@ -22,13 +18,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
         {
         }
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.Resources.warning.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.Resources.warning.png";
 
 
         public override string Name
@@ -44,13 +34,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
             }
         }
 
-        public override string ToolTip
-        {
-            get
-            {
-                return this._exception.Message;
-            }
-        }
+        public override string ToolTip => this._exception.Message;
 
         public bool IsSignUpError
         {
@@ -65,14 +49,6 @@ namespace Amazon.AWSToolkit.Navigator.Node
             }
         }
 
-        protected override bool IsLink
-        {
-            get
-            {
-                return this.IsSignUpError;
-            }
-        }
-
-        
+        protected override bool IsLink => this.IsSignUpError;
     }
 }

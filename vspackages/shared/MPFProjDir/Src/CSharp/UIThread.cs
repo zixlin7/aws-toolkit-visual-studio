@@ -49,21 +49,12 @@ namespace Microsoft.VisualStudio.Project
         /// <summary>
         /// Gets the singleton instance
         /// </summary>
-        public static UIThread Instance
-        {
-            get
-            {
-                return instance;
-            }
-        }
+        public static UIThread Instance => instance;
 
         /// <summary>
         /// Checks whether this is the UI thread.
         /// </summary>
-        public bool IsUIThread
-        {
-            get { return this.uithread == System.Threading.Thread.CurrentThread; }
-        }
+        public bool IsUIThread => this.uithread == System.Threading.Thread.CurrentThread;
 
         /// <summary>
         /// Gets a value indicating whether unit tests are running.

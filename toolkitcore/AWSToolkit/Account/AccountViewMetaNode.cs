@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -51,14 +47,9 @@ namespace Amazon.AWSToolkit.Account
             }
         }
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList(
-                    new ActionHandlerWrapper("Edit Profile...", OnEditAccount, new ActionHandlerWrapper.ActionResponseHandler(this.OnEditAccountResponse)),
-                    new ActionHandlerWrapper("Unregister Profile", OnUnregisterAccount, new ActionHandlerWrapper.ActionResponseHandler(this.OnUnregisterAccountResponse)));
-            }
-        }
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(
+                new ActionHandlerWrapper("Edit Profile...", OnEditAccount, new ActionHandlerWrapper.ActionResponseHandler(this.OnEditAccountResponse)),
+                new ActionHandlerWrapper("Unregister Profile", OnUnregisterAccount, new ActionHandlerWrapper.ActionResponseHandler(this.OnUnregisterAccountResponse)));
     }
 }

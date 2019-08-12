@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit;
-using Amazon.AWSToolkit.Account;
+﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 
 using Amazon.AWSToolkit.SimpleDB.Nodes;
@@ -14,10 +8,7 @@ namespace Amazon.AWSToolkit.SimpleDB
 {
     public class SimpleDBActivator : AbstractPluginActivator
     {
-        public override string PluginName 
-        {
-            get { return "SimpleDB"; }
-        }
+        public override string PluginName => "SimpleDB";
 
         public override void RegisterMetaNodes()
         {

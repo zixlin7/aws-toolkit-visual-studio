@@ -1,19 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.CloudFront.Nodes;
 using Amazon.AWSToolkit.S3.Nodes;
-using Amazon.AWSToolkit.CloudFront.View;
 using Amazon.AWSToolkit.CloudFront.Model;
-using Amazon.AWSToolkit;
-
 using Amazon.CloudFront;
 using Amazon.CloudFront.Model;
 
@@ -41,10 +32,7 @@ namespace Amazon.AWSToolkit.CloudFront.Controller
             }
         }
 
-        public BaseConfigModel BaseModel
-        {
-            get { return this._baseModel; }
-        }
+        public BaseConfigModel BaseModel => this._baseModel;
 
         public virtual void LoadModel()
         {

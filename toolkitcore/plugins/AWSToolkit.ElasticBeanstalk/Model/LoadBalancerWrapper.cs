@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Media;
-
-using Amazon.ElasticBeanstalk.Model;
 using Amazon.ElasticLoadBalancing.Model;
 
 using Amazon.AWSToolkit.Util;
@@ -21,10 +16,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
             this._originalLoadBalancer = originalLoadBalancer;
         }
 
-        public string Name
-        {
-            get { return this._originalLoadBalancer.LoadBalancerName; }
-        }
+        public string Name => this._originalLoadBalancer.LoadBalancerName;
+
         public string Instances
         {
             get
@@ -38,16 +31,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
             }
         }
 
-        public string FormattedHealthCheck
-        {
-            get { return String.Format("{0}{1}{2}{3}{4}",
+        public string FormattedHealthCheck =>
+            String.Format("{0}{1}{2}{3}{4}",
                 this._originalLoadBalancer.HealthCheck.Target,
                 EnvironmentStatusModel.StringIfSet(this._originalLoadBalancer.HealthCheck.Interval, " with Interval ", ""),
                 EnvironmentStatusModel.StringIfSet(this._originalLoadBalancer.HealthCheck.Timeout, " with TimeOut ", ""),
                 EnvironmentStatusModel.StringIfSet(this._originalLoadBalancer.HealthCheck.HealthyThreshold, " with Healthy Threshold ", ""),
                 EnvironmentStatusModel.StringIfSet(this._originalLoadBalancer.HealthCheck.UnhealthyThreshold, " with Unhealthy Threshold ", ""));
-            }
-        }
 
         public string FormattedInstances
         {
@@ -65,10 +55,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         }
 
         //Properties below here currently not displayed
-        public string HostedZoneNameId
-        {
-            get { return this._originalLoadBalancer.CanonicalHostedZoneNameID; }
-        }
+        public string HostedZoneNameId => this._originalLoadBalancer.CanonicalHostedZoneNameID;
+
         public string Listeners
         {
             get
@@ -88,13 +76,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
             }
         }
 
-        public HealthCheck HealthCheck
-        {
-            get
-            {
-                return this._originalLoadBalancer.HealthCheck;
-            }
-        }
+        public HealthCheck HealthCheck => this._originalLoadBalancer.HealthCheck;
 
         public string Policies
         {
@@ -113,21 +95,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
                 return String.Join("\n", policies.ToArray());
             }
         }
-        public string DNSName
-        {
-            get { return this._originalLoadBalancer.DNSName; }
-        }
-        public string HostedZoneName
-        {
-            get { return this._originalLoadBalancer.CanonicalHostedZoneName; }
-        }
-        public string AvailabilityZones
-        {
-            get { return String.Join(", ", this._originalLoadBalancer.AvailabilityZones.ToArray()); }
-        }
-        public string CreatedTime
-        {
-            get { return this._originalLoadBalancer.CreatedTime.ToString(); }
-        }
+        public string DNSName => this._originalLoadBalancer.DNSName;
+
+        public string HostedZoneName => this._originalLoadBalancer.CanonicalHostedZoneName;
+
+        public string AvailabilityZones => String.Join(", ", this._originalLoadBalancer.AvailabilityZones.ToArray());
+
+        public string CreatedTime => this._originalLoadBalancer.CreatedTime.ToString();
     }
 }

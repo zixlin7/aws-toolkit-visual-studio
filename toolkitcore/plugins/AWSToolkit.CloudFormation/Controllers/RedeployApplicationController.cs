@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.CloudFormation.Model;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageWorkers;
-
 using AWSDeployment;
 
 using log4net;

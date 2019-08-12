@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Amazon.AWSToolkit.ECS.Model;
 using Amazon.AWSToolkit.ECS.Nodes;
 using Amazon.AWSToolkit.ECS.View;
@@ -11,10 +10,8 @@ using log4net;
 
 using Amazon.CloudWatchEvents;
 using Amazon.EC2;
-using Amazon.ECS;
 using Amazon.ElasticLoadBalancingV2;
 using Amazon.ElasticLoadBalancingV2.Model;
-using System.Threading;
 
 namespace Amazon.AWSToolkit.ECS.Controller
 {

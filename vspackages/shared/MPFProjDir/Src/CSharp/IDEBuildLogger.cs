@@ -11,11 +11,9 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
 using System;
 using System.Windows.Forms.Design;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
@@ -24,7 +22,6 @@ using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.Win32;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
@@ -61,21 +58,18 @@ namespace Microsoft.VisualStudio.Project
 
         #region properties
 
-        public IServiceProvider ServiceProvider
-        {
-            get { return this.serviceProvider; }
-        }
+        public IServiceProvider ServiceProvider => this.serviceProvider;
 
         public string WarningString
         {
-            get { return this.warningString; }
-            set { this.warningString = value; }
+            get => this.warningString;
+            set => this.warningString = value;
         }
 
         public string ErrorString
         {
-            get { return this.errorString; }
-            set { this.errorString = value; }
+            get => this.errorString;
+            set => this.errorString = value;
         }
 
         /// <summary>
@@ -84,10 +78,7 @@ namespace Microsoft.VisualStudio.Project
         /// <remarks>
         /// The only known way to detect an interactive build is to check this.outputWindowPane for null.
         /// </remarks>
-        protected bool InteractiveBuild
-        {
-            get { return this.outputWindowPane != null; }
-        }
+        protected bool InteractiveBuild => this.outputWindowPane != null;
 
         /// <summary>
         /// When building from within VS, setting this will
@@ -96,11 +87,8 @@ namespace Microsoft.VisualStudio.Project
         /// </summary>
         internal string BuildVerbosityRegistryRoot
         {
-            get { return this.buildVerbosityRegistryRoot; }
-            set 
-            {
-                this.buildVerbosityRegistryRoot = value;
-            }
+            get => this.buildVerbosityRegistryRoot;
+            set => this.buildVerbosityRegistryRoot = value;
         }
 
         /// <summary>
@@ -108,8 +96,8 @@ namespace Microsoft.VisualStudio.Project
         /// </summary>
         internal IVsOutputWindowPane OutputWindowPane
         {
-            get { return this.outputWindowPane; }
-            set { this.outputWindowPane = value; }
+            get => this.outputWindowPane;
+            set => this.outputWindowPane = value;
         }
 
         #endregion

@@ -1,20 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Windows.Controls;
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI;
+﻿using System.Windows.Controls;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.EC2;
-using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment;
-using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
-using Amazon.AWSToolkit.SimpleWorkers;
-using Amazon.ElasticBeanstalk.Model;
-using Amazon.IdentityManagement;
-using Amazon.RDS;
-using Amazon.RDS.Model;
 using log4net;
 using ConfigureRollingDeploymentsPage = Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment.ConfigureRollingDeploymentsPage;
 
@@ -29,32 +15,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
         readonly object _syncLock = new object();
         private ConfigureRollingDeploymentsPage _pageUI;
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return DeploymentWizardPageGroups.AWSOptionsGroup; }
-        }
+        public string PageGroup => DeploymentWizardPageGroups.AWSOptionsGroup;
 
-        public string PageTitle
-        {
-            get { return "Rolling Deployments"; }
-        }
+        public string PageTitle => "Rolling Deployments";
 
-        public string ShortPageTitle
-        {
-            get { return "Updates"; }
-        }
+        public string ShortPageTitle => "Updates";
 
-        public string PageDescription
-        {
-            get { return "Configure rolling deployments for application and environment configuration changes to avoid downtime during redeployments."; }
-        }
+        public string PageDescription => "Configure rolling deployments for application and environment configuration changes to avoid downtime during redeployments.";
 
         public void ResetPage()
         {

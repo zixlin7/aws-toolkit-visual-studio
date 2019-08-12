@@ -14,7 +14,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionProgressPage));
 
-        public UploadFunctionProgressPageController PageController { get; private set; }
+        public UploadFunctionProgressPageController PageController { get; }
 
         public UploadFunctionProgressPage()
         {
@@ -51,13 +51,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
         }
 
-        public bool AutoCloseWizard
-        {
-            get
-            {
-                return this._ctlAutoCloseWizard.IsChecked.GetValueOrDefault();
-            }
-        }
+        public bool AutoCloseWizard => this._ctlAutoCloseWizard.IsChecked.GetValueOrDefault();
 
         public void OutputProgressMessage(string message)
         {            

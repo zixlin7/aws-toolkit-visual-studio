@@ -1,6 +1,5 @@
 ﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.CloudWatchLogs;
 using Amazon.Common.DotNetCli.Tools;
@@ -8,11 +7,7 @@ using Amazon.ECR;
 using Amazon.ECS;
 using Amazon.ECS.Tools.Commands;
 using Amazon.IdentityManagement;
-using Amazon.IdentityManagement.Model;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {

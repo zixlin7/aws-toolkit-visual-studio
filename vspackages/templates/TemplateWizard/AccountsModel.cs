@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-
 using Amazon.AWSToolkit.Persistence;
-using Amazon.Util;
-using Amazon.Runtime;
-using Amazon.Runtime.Internal;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.Runtime.CredentialManagement.Internal;
 
@@ -25,23 +20,11 @@ namespace TemplateWizard
             });
         }
 
-        public Account this[int index]
-        {
-            get
-            {
-                return accounts[index];
-            }
-        }
+        public Account this[int index] => accounts[index];
 
-        public Account[] Accounts
-        {
-            get { return accounts.ToArray(); }
-        }
+        public Account[] Accounts => accounts.ToArray();
 
-        public int Count
-        {
-            get { return accounts.Count; }
-        }
+        public int Count => accounts.Count;
 
         public Account LastUsed
         {

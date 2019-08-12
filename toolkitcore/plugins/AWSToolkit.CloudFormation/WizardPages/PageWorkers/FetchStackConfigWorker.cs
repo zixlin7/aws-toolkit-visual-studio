@@ -2,24 +2,16 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.IO;
-using System.Text;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CloudFormation.Controllers;
 
 using Amazon.S3;
-using Amazon.S3.Model;
 using Amazon.EC2;
 using Amazon.EC2.Model;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 using Amazon.AutoScaling;
 using Amazon.ElasticLoadBalancing;
-
-using AWSDeploymentCryptoUtility;
-using AWSDeploymentHostManagerClient;
-
 using ThirdParty.Json.LitJson;
 using log4net;
 using Amazon.AWSToolkit.Util;
@@ -53,10 +45,10 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageWorkers
             }
 
             AccountViewModel _account;
-            public AccountViewModel Account { get { return _account; } }
+            public AccountViewModel Account => _account;
 
             RegionEndPointsManager.RegionEndPoints _regionEndPoints;
-            public RegionEndPointsManager.RegionEndPoints RegionEndPoints { get { return _regionEndPoints; } }
+            public RegionEndPointsManager.RegionEndPoints RegionEndPoints => _regionEndPoints;
 
             IAmazonAutoScaling _autoScalingClient;
             public IAmazonAutoScaling AutoScalingClient

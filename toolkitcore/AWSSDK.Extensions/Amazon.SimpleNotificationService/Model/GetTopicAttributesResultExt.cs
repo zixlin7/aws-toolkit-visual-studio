@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Amazon.SimpleNotificationService.Model
+﻿namespace Amazon.SimpleNotificationService.Model
 {
     public static class GetTopicAttributesResponseExt
     {

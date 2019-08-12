@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 using ThirdParty.Json.LitJson;
@@ -31,12 +30,9 @@ namespace Amazon.AWSToolkit.Persistence.Deployment
 
         readonly DeploymentHistories<BeanstalkDeploymentHistory> _deploymentHistories = new DeploymentHistories<BeanstalkDeploymentHistory>();
 
-        public DeploymentHistories<BeanstalkDeploymentHistory> PreviousDeployments
-        {
-            get { return _deploymentHistories; }
-        }
+        public DeploymentHistories<BeanstalkDeploymentHistory> PreviousDeployments => _deploymentHistories;
 
-        public override string ServiceOwner { get { return DeploymentServiceIdentifiers.BeanstalkServiceName; } }
+        public override string ServiceOwner => DeploymentServiceIdentifiers.BeanstalkServiceName;
 
         /// <summary>
         /// Serializes to existing Json object context

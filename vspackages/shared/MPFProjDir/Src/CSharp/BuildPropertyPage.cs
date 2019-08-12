@@ -13,7 +13,6 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 
 namespace Microsoft.VisualStudio.Project
 {
@@ -46,8 +45,8 @@ namespace Microsoft.VisualStudio.Project
 		[SRDescriptionAttribute(SR.OutputPathDescription)]
 		public string OutputPath
 		{
-			get { return this.outputPath; }
-			set { this.outputPath = value; this.IsDirty = true; }
+			get => this.outputPath;
+            set { this.outputPath = value; this.IsDirty = true; }
 		}
 		#endregion
 

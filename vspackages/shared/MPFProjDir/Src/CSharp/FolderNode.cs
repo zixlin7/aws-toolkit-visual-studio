@@ -16,7 +16,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
@@ -49,23 +48,15 @@ namespace Microsoft.VisualStudio.Project
 		#endregion
 
 		#region overridden properties
-		public override int SortPriority
-		{
-			get { return DefaultSortOrderNode.FolderNode; }
-		}
+		public override int SortPriority => DefaultSortOrderNode.FolderNode;
 
-		/// <summary>
+        // The SCC manager does not support being asked for the state icon of a folder (result of the operation is undefined)
+        /// <summary>
 		/// This relates to the SCC glyph
 		/// </summary>
-		public override VsStateIcon StateIconIndex
-		{
-			get
-			{
-				// The SCC manager does not support being asked for the state icon of a folder (result of the operation is undefined)
-				return VsStateIcon.STATEICON_NOSTATEICON;
-			}
-		}
-		#endregion
+		public override VsStateIcon StateIconIndex => VsStateIcon.STATEICON_NOSTATEICON;
+
+        #endregion
 
 		#region overridden methods
 		protected override NodeProperties CreatePropertiesObject()
@@ -148,28 +139,13 @@ namespace Microsoft.VisualStudio.Project
 		}
 
 
-		public override int MenuCommandId
-		{
-			get { return VsMenus.IDM_VS_CTXT_FOLDERNODE; }
-		}
+		public override int MenuCommandId => VsMenus.IDM_VS_CTXT_FOLDERNODE;
 
-		public override Guid ItemTypeGuid
-		{
-			get
-			{
-				return VSConstants.GUID_ItemType_PhysicalFolder;
-			}
-		}
+        public override Guid ItemTypeGuid => VSConstants.GUID_ItemType_PhysicalFolder;
 
-		public override string Url
-		{
-			get
-			{
-				return Path.Combine(Path.GetDirectoryName(this.ProjectMgr.Url), this.VirtualNodeName) + "\\";
-			}
-		}
+        public override string Url => Path.Combine(Path.GetDirectoryName(this.ProjectMgr.Url), this.VirtualNodeName) + "\\";
 
-		public override string Caption
+        public override string Caption
 		{
 			get
 			{

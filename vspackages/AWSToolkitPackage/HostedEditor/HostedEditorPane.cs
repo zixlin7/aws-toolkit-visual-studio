@@ -1,25 +1,14 @@
 ﻿using System;
 using System.Collections;
-using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Diagnostics;
-using System.IO;
-using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using System.Security.Permissions;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Shell;
 using EnvDTE;
 
 using ISysServiceProvider = System.IServiceProvider;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
-using VSStd97CmdID = Microsoft.VisualStudio.VSConstants.VSStd97CmdID;
-
 using Amazon.AWSToolkit.CommonUI;
 
 using log4net;
@@ -85,13 +74,8 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
         /// This is a required override from the Microsoft.VisualStudio.Shell.WindowPane class.
         /// It returns the extended rich text box that we host.
         /// </summary>
-        public override IWin32Window Window
-        {
-            get
-            {
-                return this._hostedControl;
-            }
-        }
+        public override IWin32Window Window => this._hostedControl;
+
         #endregion
 
 
@@ -99,18 +83,12 @@ namespace Amazon.AWSToolkit.VisualStudio.HostedEditor
         /// <summary>
         /// returns the name of the file currently loaded
         /// </summary>
-        public string FileName
-        {
-            get { return fileName; }
-        }
+        public string FileName => fileName;
 
         /// <summary>
         /// returns whether the contents of file have changed since the last save
         /// </summary>
-        public bool DataChanged
-        {
-            get { return false; }
-        }
+        public bool DataChanged => false;
 
 
         /// <summary> 

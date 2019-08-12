@@ -1,10 +1,7 @@
 ﻿using System;
 using System.IO;
-
-using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Account.Model;
 using Amazon.Runtime.Internal.Settings;
-using Amazon.Runtime.Internal.Util;
 using log4net;
 using ThirdParty.Json.LitJson;
 
@@ -21,10 +18,7 @@ namespace Amazon.AWSToolkit.Util
         {
         }
 
-        public static ServiceSpecificCredentialStore Instance
-        {
-            get { return _instance; }
-        }
+        public static ServiceSpecificCredentialStore Instance => _instance;
 
         public ServiceSpecificCredentials GetCredentialsForService(string accountArtifactsId, string serviceName)
         {

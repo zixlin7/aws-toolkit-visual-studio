@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-
-using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 
@@ -14,10 +11,7 @@ namespace Amazon.AWSToolkit.Lambda
 {
     public class LambdaActivator : AbstractPluginActivator, IAWSLambda
     {
-        public override string PluginName
-        {
-            get { return "Lambda"; }
-        }
+        public override string PluginName => "Lambda";
 
         public override void RegisterMetaNodes()
         {

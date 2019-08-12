@@ -15,12 +15,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
 using System.Collections.Generic;
 using Microsoft.Build.Evaluation;
-using Microsoft.Build.Execution;
 
 namespace Microsoft.VisualStudio.Project
 {
@@ -42,40 +40,22 @@ namespace Microsoft.VisualStudio.Project
         #endregion
 
         #region properties
-        public override string Caption
-        {
-            get { return this.typeName; }
-        }
+        public override string Caption => this.typeName;
 
-        public override string Url
-        {
-            get
-            {
-                return this.projectRelativeFilePath;
-            }
-        }
+        public override string Url => this.projectRelativeFilePath;
 
         /// <summary>
         /// Returns the Guid of the COM object.
         /// </summary>
-        public Guid TypeGuid
-        {
-            get { return this.typeGuid; }
-        }
+        public Guid TypeGuid => this.typeGuid;
 
         /// <summary>
         /// Returns the path where the COM object is installed.
         /// </summary>
-        public string InstalledFilePath
-        {
-            get { return this.installedFilePath; }
-        }
+        public string InstalledFilePath => this.installedFilePath;
 
         [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "LCID")]
-        public string LCID
-        {
-            get { return lcid; }
-        }
+        public string LCID => lcid;
 
         public int MajorVersionNumber
         {
@@ -98,16 +78,13 @@ namespace Microsoft.VisualStudio.Project
                 return value;
             }
 
-            set
-            {
-                this.ItemNode.SetMetadata(ProjectFileConstants.EmbedInteropTypes, value.ToString());
-            }
+            set => this.ItemNode.SetMetadata(ProjectFileConstants.EmbedInteropTypes, value.ToString());
         }
 
         public string WrapperTool
         {
-            get { return this.ItemNode.GetMetadata(ProjectFileConstants.WrapperTool); }
-            set { this.ItemNode.SetMetadata(ProjectFileConstants.WrapperTool, value); }
+            get => this.ItemNode.GetMetadata(ProjectFileConstants.WrapperTool);
+            set => this.ItemNode.SetMetadata(ProjectFileConstants.WrapperTool, value);
         }
 
         public int MinorVersionNumber

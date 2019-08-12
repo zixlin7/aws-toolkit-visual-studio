@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
 using Amazon.S3.Model;
 using Amazon.AWSToolkit.CommonUI;
 
@@ -22,7 +18,7 @@ namespace Amazon.AWSToolkit.S3.Model
         string _bucketName;
         public string BucketName
         {
-            get { return this._bucketName; }
+            get => this._bucketName;
             set 
             { 
                 this._bucketName = value;
@@ -33,7 +29,7 @@ namespace Amazon.AWSToolkit.S3.Model
         string _key;
         public string Key
         {
-            get { return this._key; }
+            get => this._key;
             set
             {
                 this._key = value;
@@ -44,7 +40,7 @@ namespace Amazon.AWSToolkit.S3.Model
         string _uploadId;
         public string UploadId
         {
-            get { return this._uploadId; }
+            get => this._uploadId;
             set
             {
                 this._uploadId = value;
@@ -55,7 +51,7 @@ namespace Amazon.AWSToolkit.S3.Model
         ObservableCollection<PartDetailWrapper> _partDetails = new ObservableCollection<PartDetailWrapper>();
         public ObservableCollection<PartDetailWrapper> PartDetails
         {
-            get { return this._partDetails; }
+            get => this._partDetails;
             set
             {
                 this._partDetails = value;
@@ -73,34 +69,13 @@ namespace Amazon.AWSToolkit.S3.Model
                 this._partDetail = partDetail;
             }
 
-            public long PartNumber
-            {
-                get { return this._partDetail.PartNumber; }
-            }
+            public long PartNumber => this._partDetail.PartNumber;
 
-            public string FormattedPartNumber
-            {
-                get
-                {
-                    return this._partDetail.PartNumber.ToString("#,0");
-                }
-            }
+            public string FormattedPartNumber => this._partDetail.PartNumber.ToString("#,0");
 
-            public string FormattedSize
-            {
-                get
-                {
-                    return this._partDetail.Size.ToString("#,0") + " bytes";
-                }
-            }
+            public string FormattedSize => this._partDetail.Size.ToString("#,0") + " bytes";
 
-            public DateTime LastModified
-            {
-                get
-                {
-                    return this._partDetail.LastModified.ToLocalTime();
-                }
-            }
+            public DateTime LastModified => this._partDetail.LastModified.ToLocalTime();
         }
     }
 }

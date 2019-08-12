@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Web;
-
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using Amazon.AWSToolkit.Account;
 using log4net;
-using Amazon.Auth.AccessControlPolicy;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
 {

@@ -29,10 +29,7 @@ namespace Amazon.AWSToolkit.CodeCommit
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(CodeCommitActivator));
         private const string CodeCommitUrlPrefix = "git-codecommit.";
 
-        public override string PluginName
-        {
-            get { return "CodeCommit"; }
-        }
+        public override string PluginName => "CodeCommit";
 
         public override void RegisterMetaNodes()
         {
@@ -67,10 +64,7 @@ namespace Amazon.AWSToolkit.CodeCommit
 
         #region IAWSCodeCommit Members
 
-        public ICodeCommitGitServices CodeCommitGitServices
-        {
-            get { return new CodeCommitGitServices(this); }
-        }
+        public ICodeCommitGitServices CodeCommitGitServices => new CodeCommitGitServices(this);
 
         public void AssociateCredentialsWithProfile(string profileArtifactsId, string userName, string password)
         {

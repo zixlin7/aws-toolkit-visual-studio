@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.EC2.Model;
-using Amazon.AWSToolkit.EC2.View.DataGrid;
 
 namespace Amazon.AWSToolkit.EC2.Model
 {
@@ -30,22 +25,13 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public NetworkAcl NativeNetworkAcl
-        {
-            get { return this._networkAcl; }
-        }
+        public NetworkAcl NativeNetworkAcl => this._networkAcl;
 
         [Browsable(false)]
-        public string DisplayName
-        {
-            get { return this.NativeNetworkAcl.NetworkAclId; }
-        }
+        public string DisplayName => this.NativeNetworkAcl.NetworkAclId;
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "Network ACL"; }
-        }
+        public string TypeName => "Network ACL";
 
         [Browsable(false)]
         public string FormattedLabel
@@ -62,32 +48,17 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         [DisplayName("ID")]
         [AssociatedIcon(false, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.networkacl.png")]
-        public string NetworkAclId
-        {
-            get { return this.NativeNetworkAcl.NetworkAclId; }
-        }
+        public string NetworkAclId => this.NativeNetworkAcl.NetworkAclId;
 
 
         [DisplayName("VPC")]
-        public string VpcId
-        {
-            get
-            {
-                return this.NativeNetworkAcl.VpcId;
-            }
-        }
+        public string VpcId => this.NativeNetworkAcl.VpcId;
 
         [DisplayName("Default")]
-        public string FormattedDefault
-        {
-            get { return this.NativeNetworkAcl.IsDefault.ToString(); }
-        }
+        public string FormattedDefault => this.NativeNetworkAcl.IsDefault.ToString();
 
         [Browsable(false)]
-        public bool CanDisassociate 
-        {
-            get { return !this.NativeNetworkAcl.IsDefault; }
-        }
+        public bool CanDisassociate => !this.NativeNetworkAcl.IsDefault;
 
         ObservableCollection<NetworkAclAssociationWrapper> _associations;
         [Browsable(false)]
@@ -183,9 +154,6 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public List<Tag> Tags
-        {
-            get { return this.NativeNetworkAcl.Tags; }
-        }
+        public List<Tag> Tags => this.NativeNetworkAcl.Tags;
     }
 }

@@ -7,9 +7,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CloudFormation.Nodes;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI;
 using Amazon.AWSToolkit.Util;
 
 using Amazon.AWSToolkit.EC2.Nodes;
@@ -31,7 +29,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
         protected DeploymentControllerBaseObserver Observer { get; set; }
         
         protected static ILog LOGGER;
-        protected IDictionary<string, object> DeploymentProperties { get; private set; }
+        protected IDictionary<string, object> DeploymentProperties { get; }
 
         const int MAX_REFRESH_RETRIES = 3;
         const int SLEEP_TIME_BETWEEN_REFRESHES = 500;

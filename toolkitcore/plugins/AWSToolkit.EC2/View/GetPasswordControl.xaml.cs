@@ -1,22 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.Controller;
-using Amazon.AWSToolkit.EC2.Model;
-
 using log4net;
 
 
@@ -51,13 +37,7 @@ namespace Amazon.AWSToolkit.EC2.View
             }
         }
 
-        public override string Title
-        {
-            get
-            {
-                return "Windows Administrator Password";
-            }
-        }
+        public override string Title => "Windows Administrator Password";
 
         public override bool Validated()
         {

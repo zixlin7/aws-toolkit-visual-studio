@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Amazon.AWSToolkit.CloudFormation.Parser
 {
@@ -24,39 +21,27 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
         }
 
         IEnumerable<TemplateToken> _highlightedTemplateTokens;
-        public IEnumerable<TemplateToken> HighlightedTemplateTokens
-        {
-            get { return this._highlightedTemplateTokens; }
-        }
+        public IEnumerable<TemplateToken> HighlightedTemplateTokens => this._highlightedTemplateTokens;
 
         IEnumerable<IntellisenseToken> _intellisenseTokens;
-        public IEnumerable<IntellisenseToken> IntellisenseTokens
-        {
-            get { return this._intellisenseTokens; }
-        }
+        public IEnumerable<IntellisenseToken> IntellisenseTokens => this._intellisenseTokens;
 
         public TemplateToken RootTemplateToken
         {
             get;
-            private set;
         }
 
         IEnumerable<ErrorToken> _errorTokens;
-        public IEnumerable<ErrorToken> ErrorTokens
-        {
-            get { return this._errorTokens; }
-        }
+        public IEnumerable<ErrorToken> ErrorTokens => this._errorTokens;
 
         public int IntellisenseStartingPosition
         {
             get;
-            private set;
         }
 
         public int IntellisenseEndingPosition
         {
             get;
-            private set;
         }
     }
 }

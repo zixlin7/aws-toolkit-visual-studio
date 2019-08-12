@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 
 using Amazon.ElasticBeanstalk.Model;
@@ -30,7 +27,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
 
         public string ApplicationName
         {
-            get { return this._description.ApplicationName; }
+            get => this._description.ApplicationName;
             set
             {
                 this._description.ApplicationName = value;
@@ -40,7 +37,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
 
         public string Description
         {
-            get { return this._description.Description; }
+            get => this._description.Description;
             set
             {
                 this._description.Description = value;
@@ -50,7 +47,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
 
         public DateTime DateCreated
         {
-            get { return this._description.DateCreated; }
+            get => this._description.DateCreated;
             set
             {
                 this._description.DateCreated = value;
@@ -60,7 +57,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
 
         public DateTime DateUpdated
         {
-            get { return this._description.DateUpdated; }
+            get => this._description.DateUpdated;
             set
             {
                 this._description.DateUpdated = value;
@@ -71,7 +68,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         List<EventWrapper> _unfilteredEvents = new List<EventWrapper>();
         public List<EventWrapper> UnfilteredEvents
         {
-            get { return this._unfilteredEvents; }
+            get => this._unfilteredEvents;
             set
             {
                 this._unfilteredEvents = value;
@@ -82,7 +79,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         ObservableCollection<EventWrapper> _events = new ObservableCollection<EventWrapper>();
         public ObservableCollection<EventWrapper> Events
         {
-            get { return this._events; }
+            get => this._events;
             set
             {
                 this._events = value;
@@ -93,7 +90,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         ObservableCollection<ApplicationVersionDescriptionWrapper> _versions = new ObservableCollection<ApplicationVersionDescriptionWrapper>();
         public ObservableCollection<ApplicationVersionDescriptionWrapper> Versions
         {
-            get { return this._versions; }
+            get => this._versions;
             set
             {
                 this._versions = value;
@@ -104,7 +101,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         string _textFilter;
         public string TextFilter
         {
-            get { return this._textFilter; }
+            get => this._textFilter;
             set
             {
                 this._textFilter = value;

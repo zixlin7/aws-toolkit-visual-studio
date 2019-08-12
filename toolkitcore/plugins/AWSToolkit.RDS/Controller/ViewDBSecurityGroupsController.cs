@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Windows;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
@@ -111,15 +106,9 @@ namespace Amazon.AWSToolkit.RDS.Controller
             this.RefreshSecurityGroups();
         }
 
-        public AccountViewModel Account
-        {
-            get { return this._securityRootViewModel.AccountViewModel; }
-        }
+        public AccountViewModel Account => this._securityRootViewModel.AccountViewModel;
 
-        public string EndPointUniqueIdentifier
-        {
-            get { return this._securityRootViewModel.CurrentEndPoint.UniqueIdentifier; }
-        }
+        public string EndPointUniqueIdentifier => this._securityRootViewModel.CurrentEndPoint.UniqueIdentifier;
 
         public string RegionDisplayName
         {

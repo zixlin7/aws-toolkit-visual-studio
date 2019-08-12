@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 using Amazon.AWSToolkit.CommonUI;
@@ -20,7 +19,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         string _tableName;
         public string TableName
         {
-            get { return this._tableName; }
+            get => this._tableName;
             set
             {
                 this._tableName = value;
@@ -31,7 +30,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         string _hashKeyName;
         public string HashKeyName
         {
-            get { return this._hashKeyName; }
+            get => this._hashKeyName;
             set
             {
                 this._hashKeyName = value;
@@ -42,7 +41,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         DynamoDBEntryType _hashKeyType = DynamoDBEntryType.String;
         public DynamoDBEntryType HashKeyType
         {
-            get { return this._hashKeyType; }
+            get => this._hashKeyType;
             set
             {
                 switch (value)
@@ -64,7 +63,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         }
         public bool IsHashKeyString
         {
-            get { return this._hashKeyType == DynamoDBEntryType.String; }
+            get => this._hashKeyType == DynamoDBEntryType.String;
             set
             {
                 this._hashKeyType = DynamoDBEntryType.String;
@@ -73,7 +72,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         }
         public bool IsHashKeyNumeric
         {
-            get { return this._hashKeyType == DynamoDBEntryType.Numeric; }
+            get => this._hashKeyType == DynamoDBEntryType.Numeric;
             set
             {
                 this._hashKeyType = DynamoDBEntryType.Numeric;
@@ -82,7 +81,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         }
         public bool IsHashKeyBinary
         {
-            get { return this._hashKeyType == DynamoDBEntryType.Binary; }
+            get => this._hashKeyType == DynamoDBEntryType.Binary;
             set
             {
                 this._hashKeyType = DynamoDBEntryType.Binary;
@@ -99,7 +98,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         bool _useLocalSecondaryIndexes;
         public bool UseLocalSecondaryIndexes
         {
-            get { return this._useLocalSecondaryIndexes; }
+            get => this._useLocalSecondaryIndexes;
             set
             {
                 this._useLocalSecondaryIndexes = value;
@@ -110,7 +109,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         bool _useGlobalSecondaryIndexes;
         public bool UseGlobalSecondaryIndexes
         {
-            get { return this._useGlobalSecondaryIndexes; }
+            get => this._useGlobalSecondaryIndexes;
             set
             {
                 this._useGlobalSecondaryIndexes = value;
@@ -122,22 +121,22 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
 
         public ObservableCollection<SecondaryIndex> LocalSecondaryIndexes
         {
-            get { return _localSecondaryIndexes; }
-            set { _localSecondaryIndexes = value; }
+            get => _localSecondaryIndexes;
+            set => _localSecondaryIndexes = value;
         }
 
         private ObservableCollection<SecondaryIndex> _globalSecondaryIndexes;
 
         public ObservableCollection<SecondaryIndex> GlobalSecondaryIndexes
         {
-            get { return _globalSecondaryIndexes; }
-            set { _globalSecondaryIndexes = value; }
+            get => _globalSecondaryIndexes;
+            set => _globalSecondaryIndexes = value;
         }
 
         bool _useRangeKey;
         public bool UseRangeKey
         {
-            get { return this._useRangeKey; }
+            get => this._useRangeKey;
             set
             {
                 this._useRangeKey = value;
@@ -148,7 +147,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         string _rangeKeyName;
         public string RangeKeyName
         {
-            get { return this._rangeKeyName; }
+            get => this._rangeKeyName;
             set
             {
                 this._rangeKeyName = value;
@@ -159,7 +158,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         DynamoDBEntryType _rangeKeyType = DynamoDBEntryType.String;
         public DynamoDBEntryType RangeKeyType
         {
-            get { return this._rangeKeyType; }
+            get => this._rangeKeyType;
             set
             {
                 switch (value)
@@ -181,7 +180,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         }
         public bool IsRangeKeyString
         {
-            get { return this._rangeKeyType == DynamoDBEntryType.String; }
+            get => this._rangeKeyType == DynamoDBEntryType.String;
             set
             {
                 this._rangeKeyType = DynamoDBEntryType.String;
@@ -190,7 +189,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         }
         public bool IsRangeKeyNumeric
         {
-            get { return this._rangeKeyType == DynamoDBEntryType.Numeric; }
+            get => this._rangeKeyType == DynamoDBEntryType.Numeric;
             set
             {
                 this._rangeKeyType = DynamoDBEntryType.Numeric;
@@ -199,7 +198,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         }
         public bool IsRangeKeyBinary
         {
-            get { return this._rangeKeyType == DynamoDBEntryType.Binary; }
+            get => this._rangeKeyType == DynamoDBEntryType.Binary;
             set
             {
                 this._rangeKeyType = DynamoDBEntryType.Binary;
@@ -216,7 +215,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         string _readsCapacityUnits = "3";
         public string ReadCapacityUnits
         {
-            get { return this._readsCapacityUnits; }
+            get => this._readsCapacityUnits;
             set
             {
                 this._readsCapacityUnits = value;
@@ -227,7 +226,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         string _writeCapacityUnits = "1";
         public string WriteCapacityUnits
         {
-            get { return this._writeCapacityUnits; }
+            get => this._writeCapacityUnits;
             set
             {
                 this._writeCapacityUnits = value;
@@ -238,7 +237,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         bool _useBasicAlarms = false;
         public bool UseBasicAlarms
         {
-            get { return this._useBasicAlarms; }
+            get => this._useBasicAlarms;
             set
             {
                 this._useBasicAlarms = value;
@@ -249,7 +248,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         string _alarmEmail;
         public string AlarmEmail
         {
-            get { return this._alarmEmail; }
+            get => this._alarmEmail;
             set
             {
                 this._alarmEmail = value;
@@ -260,7 +259,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         Percentages _percentage = Percentages.DEFAULT;
         public Percentages SelectedPercentage
         {
-            get { return this._percentage;}
+            get => this._percentage;
             set
             {
                 this._percentage = value;
@@ -268,10 +267,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
             }
         }
 
-        public IEnumerable<Percentages> PossiblePercentage
-        {
-            get { return Percentages.OPTIONS; }
-        }
+        public IEnumerable<Percentages> PossiblePercentage => Percentages.OPTIONS;
 
         public class Percentages
         {
@@ -294,13 +290,11 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
             public double Value
             {
                 get;
-                private set;
             }
 
             public string DisplayName
             {
                 get;
-                private set;
             }
         }
     }
@@ -323,14 +317,14 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
 
         public string Name
         {
-            get { return _name; }
+            get => _name;
             set { _name = value; base.NotifyPropertyChanged("Name"); }
         }
 
 
         public bool IsString
         {
-            get { return this._type == DynamoDBv2.ScalarAttributeType.S; }
+            get => this._type == DynamoDBv2.ScalarAttributeType.S;
             set 
             {
                 if (value)
@@ -342,13 +336,13 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
 
         public DynamoDBv2.ScalarAttributeType Type
         {
-            get {return this._type;}
-            set { this._type = value; }
+            get => this._type;
+            set => this._type = value;
         }
 
         public bool IsNumeric
         {
-            get { return this._type == DynamoDBv2.ScalarAttributeType.N; }
+            get => this._type == DynamoDBv2.ScalarAttributeType.N;
             set
             {
                 if (value)
@@ -360,7 +354,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
 
         public bool IsBinary
         {
-            get { return this._type == DynamoDBv2.ScalarAttributeType.B; }
+            get => this._type == DynamoDBv2.ScalarAttributeType.B;
             set
             {
                 if (value)
@@ -410,7 +404,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
 
         public string ProjectionType
         {
-            get { return _projectionType; }
+            get => _projectionType;
             set
             {
                 _projectionType = value;
@@ -438,20 +432,14 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
 
                 return ToProjectionTypeDisplayValue(this.ProjectionType);
             }
-            set
-            {
-                _projectionTypeDisplayValue = value;
-            }
+            set => _projectionTypeDisplayValue = value;
         }
 
         private bool _isCustomProjectionAllowed = false;
 
         public bool IsCustomProjectionAllowed
         {
-            get
-            {
-                return _isCustomProjectionAllowed;
-            }
+            get => _isCustomProjectionAllowed;
             set
             {
                 _isCustomProjectionAllowed = value;
@@ -481,7 +469,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
 
         public ObservableCollection<StringWrapper> ProjectionColumnList
         {
-            get { return _projectionColumnList; }
+            get => _projectionColumnList;
             set { _projectionColumnList = value; base.NotifyPropertyChanged("ProjectionColumnList"); }
         }
 
@@ -532,14 +520,14 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
 
         public string Name
         {
-            get { return _name; }
+            get => _name;
             set { _name = value; base.NotifyPropertyChanged("Name"); }
         }
 
         bool _isExisting;
         public bool IsExisting
         {
-            get { return _isExisting; }
+            get => _isExisting;
             set { _isExisting = value; base.NotifyPropertyChanged("IsExisting"); }
         }
 
@@ -547,7 +535,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
 
         public IndexKeyDefintion HashKey
         {
-            get { return _hashKeyName; }
+            get => _hashKeyName;
             set { _hashKeyName = value; base.NotifyPropertyChanged("HashKey"); }
         }
 
@@ -555,17 +543,14 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
 
         public IndexKeyDefintion RangeKey
         {
-            get { return _rangeKeyName; }
+            get => _rangeKeyName;
             set { _rangeKeyName = value; base.NotifyPropertyChanged("RangeKey");  }
         }
 
         private ProjectAttributeDefinition _projectAttributeDefinition = new ProjectAttributeDefinition();
         public ProjectAttributeDefinition ProjectAttributeDefinition
         {
-            get
-            {
-                return _projectAttributeDefinition;
-            }
+            get => _projectAttributeDefinition;
             set
             {
                 _projectAttributeDefinition = value;
@@ -576,14 +561,14 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         long _readCapacity = 3;
         public long ReadCapacity
         {
-            get { return _readCapacity; }
+            get => _readCapacity;
             set { _readCapacity = value; base.NotifyPropertyChanged("ReadCapacity"); }
         }
 
         long _writeCapacity = 1;
         public long WriteCapacity
         {
-            get { return _writeCapacity; }
+            get => _writeCapacity;
             set { _writeCapacity = value; base.NotifyPropertyChanged("WriteCapacity"); }
         }
 
@@ -593,10 +578,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
             set;
         }
 
-        public bool HasRangeKey
-        {
-            get { return (RangeKey != null && !string.IsNullOrEmpty(RangeKey.Name)); }
-        }
+        public bool HasRangeKey => (RangeKey != null && !string.IsNullOrEmpty(RangeKey.Name));
     }
 
     public class StringWrapper
@@ -609,8 +591,8 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         string value;
         public string Value 
         {
-            get { return this.value; }
-            set { this.value = value; }
+            get => this.value;
+            set => this.value = value;
         }
     }
 }

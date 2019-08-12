@@ -23,7 +23,6 @@ using System.Runtime.Versioning;
 using System.Text;
 using System.Xml;
 using EnvDTE;
-using Microsoft.Build.BackEnd;
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Execution;
 using Microsoft.VisualStudio.OLE.Interop;

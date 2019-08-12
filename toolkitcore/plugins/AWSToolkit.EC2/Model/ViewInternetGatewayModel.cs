@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-
+﻿using System.Collections.ObjectModel;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.EC2.Utils;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -15,10 +7,7 @@ namespace Amazon.AWSToolkit.EC2.Model
     public class ViewInternetGatewayModel : BaseModel
     {
         ObservableCollection<InternetGatewayWrapper> _gateways = new ObservableCollection<InternetGatewayWrapper>();
-        public ObservableCollection<InternetGatewayWrapper> Gateways
-        {
-            get { return this._gateways; }
-        }
+        public ObservableCollection<InternetGatewayWrapper> Gateways => this._gateways;
 
         EC2ColumnDefinition[] _propertytColumnDefinitions;
         public EC2ColumnDefinition[] PropertyColumnDefinitions
@@ -34,12 +23,6 @@ namespace Amazon.AWSToolkit.EC2.Model
             }
         }
 
-        public string[] ListAvailableTags
-        {
-            get
-            {
-                return EC2ColumnDefinition.GetListAvailableTags(this.Gateways);
-            }
-        }
+        public string[] ListAvailableTags => EC2ColumnDefinition.GetListAvailableTags(this.Gateways);
     }
 }

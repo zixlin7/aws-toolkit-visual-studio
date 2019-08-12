@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using System.ComponentModel;
 using Amazon.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -23,22 +15,13 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public NetworkAclEntry NativeNetworkAclEntry
-        {
-            get { return this._networkAclEntry; }
-        }
+        public NetworkAclEntry NativeNetworkAclEntry => this._networkAclEntry;
 
         [Browsable(false)]
-        public string DisplayName
-        {
-            get { return this.NativeNetworkAclEntry.RuleNumber.ToString(); }
-        }
+        public string DisplayName => this.NativeNetworkAclEntry.RuleNumber.ToString();
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "Network ACL Rule"; }
-        }
+        public string TypeName => "Network ACL Rule";
 
         [DisplayName("Protocol")]
         public string FormattedProtocol
@@ -91,10 +74,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [DisplayName("CIDR/IP")]
-        public string CidrBlock
-        {
-            get { return this.NativeNetworkAclEntry.CidrBlock; }
-        }
+        public string CidrBlock => this.NativeNetworkAclEntry.CidrBlock;
 
         [DisplayName("Rule #")]
         public string FormattedRuleNumber
@@ -109,12 +89,6 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [DisplayName("Allow/Deny")]
-        public string FormattedAccess
-        {
-            get
-            {
-                return this.NativeNetworkAclEntry.RuleAction.Value.ToUpper();
-            }
-        }
+        public string FormattedAccess => this.NativeNetworkAclEntry.RuleAction.Value.ToUpper();
     }
 }

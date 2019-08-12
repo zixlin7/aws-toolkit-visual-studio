@@ -1,28 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Windows;
-using System.Windows.Threading;
-
-using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.EC2.Nodes;
-using Amazon.AWSToolkit;
-
-using Amazon.AWSToolkit.EC2;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
-
-using Amazon.EC2;
-using Amazon.EC2.Model;
-
 using log4net;
 
 namespace Amazon.AWSToolkit.EC2.Controller

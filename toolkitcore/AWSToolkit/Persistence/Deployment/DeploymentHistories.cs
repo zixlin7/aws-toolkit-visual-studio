@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Amazon.AWSToolkit.Persistence.Deployment
 {
@@ -114,16 +112,10 @@ namespace Amazon.AWSToolkit.Persistence.Deployment
             return new Dictionary<string, T>();
         }
 
-        public IEnumerable<string> Accounts
-        {
-            get { return _deploymentHistories.Keys; }
-        }
+        public IEnumerable<string> Accounts => _deploymentHistories.Keys;
 
-        public bool HasPriorDeployments
-        {
-            // might want to tighten this to has accounts and at least one has a deployment stack
-            get { return _deploymentHistories.Keys.Count > 0; }
-        }
+        // might want to tighten this to has accounts and at least one has a deployment stack
+        public bool HasPriorDeployments => _deploymentHistories.Keys.Count > 0;
 
         public bool HasPriorDeploymentsForAccount(string accountID)
         {

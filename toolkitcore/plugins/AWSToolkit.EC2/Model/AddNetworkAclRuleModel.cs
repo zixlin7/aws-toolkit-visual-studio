@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.EC2.Model
 {
@@ -12,10 +7,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         NetworkProtocol _protocol = NetworkProtocol.TCP;
         public NetworkProtocol IPProtocol
         {
-            get
-            {
-                return this._protocol;
-            }
+            get => this._protocol;
             set
             {
                 this._protocol = value;
@@ -26,10 +18,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _portRangeStart;
         public string PortRangeStart
         {
-            get
-            {
-                return this._portRangeStart;
-            }
+            get => this._portRangeStart;
             set
             {
                 this._portRangeStart = value;
@@ -40,10 +29,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _portRangeEnd;
         public string PortRangeEnd
         {
-            get
-            {
-                return this._portRangeEnd;
-            }
+            get => this._portRangeEnd;
             set
             {
                 this._portRangeEnd = value;
@@ -54,10 +40,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _sourceCIDR = "0.0.0.0/0";
         public string SourceCIDR
         {
-            get
-            {
-                return this._sourceCIDR;
-            }
+            get => this._sourceCIDR;
             set
             {
                 this._sourceCIDR = value;
@@ -68,10 +51,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _ruleNumber;
         public string RuleNumber
         {
-            get
-            {
-                return this._ruleNumber;
-            }
+            get => this._ruleNumber;
             set
             {
                 this._ruleNumber = value;
@@ -82,10 +62,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         bool _isAllow = true;
         public bool IsAllow
         {
-            get
-            {
-                return this._isAllow;
-            }
+            get => this._isAllow;
             set
             {
                 this._isAllow = value;

@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.EC2.LaunchWizard.PageUI;
@@ -12,7 +10,6 @@ using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.Nodes;
 using Amazon.EC2;
 using Amazon.EC2.Model;
-using Microsoft.SqlServer.Server;
 
 namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
 {
@@ -24,32 +21,17 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
 
         #region IAWSWizardPageController Members
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageTitle
-        {
-            get { return "Storage"; }
-        }
+        public string PageTitle => "Storage";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "Configure the root device and add additional storage for the instance."; }
-        }
+        public string PageDescription => "Configure the root device and add additional storage for the instance.";
 
         public void ResetPage()
         {
@@ -131,17 +113,11 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
                 Model.StorageVolumes);
         }
 
-        bool IsForwardsNavigationAllowed
-        {
-            get { return true; }
-        }
+        bool IsForwardsNavigationAllowed => true;
 
         readonly StoragePageModel _model = new StoragePageModel();
 
-        internal StoragePageModel Model
-        {
-            get { return _model; }
-        }
+        internal StoragePageModel Model => _model;
     }
 
     internal class StoragePageModel : BaseModel
@@ -151,10 +127,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
         private ImageWrapper SelectedAMI { get; set; }
         private string SelectedInstanceType { get; set; }
 
-        public ObservableCollection<InstanceLaunchStorageVolume> StorageVolumes
-        {
-            get { return _storageVolumes; }
-        }
+        public ObservableCollection<InstanceLaunchStorageVolume> StorageVolumes => _storageVolumes;
 
         // we get a list of all possible snapshots when we initialize against an ami and then
         // when a volume is added, we filter out the ones used in other storage volumes for the

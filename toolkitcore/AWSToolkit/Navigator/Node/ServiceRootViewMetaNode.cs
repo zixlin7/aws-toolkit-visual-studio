@@ -1,21 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.Account;
+﻿using Amazon.AWSToolkit.Account;
 
 namespace Amazon.AWSToolkit.Navigator.Node
 {
     public abstract class ServiceRootViewMetaNode : AbstractMetaNode, IServiceRootViewMetaNode
     {
-        public override bool SupportsEndPoint
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool SupportsEndPoint => true;
 
         public abstract ServiceRootViewModel CreateServiceRootModel(AccountViewModel account);
 

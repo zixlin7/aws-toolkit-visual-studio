@@ -1,24 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Microsoft.Win32;
-
+﻿using System.Windows;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.View
@@ -38,10 +19,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View
             this._ctlApplicationVersions.Initialize(this._controller);
         }
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get { return true; }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {
@@ -49,15 +27,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View
             return this._controller.Model;
         }
 
-        public override string Title
-        {
-            get { return "App: " + this._controller.Model.ApplicationName; }
-        }
+        public override string Title => "App: " + this._controller.Model.ApplicationName;
 
-        public override string UniqueId
-        {
-            get { return "AppStatus" + this._controller.Model.ApplicationName; }
-        }
+        public override string UniqueId => "AppStatus" + this._controller.Model.ApplicationName;
 
         void onRefreshClick(object sender, RoutedEventArgs e)
         {

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-
+﻿using System.ComponentModel;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.EC2.Model;
@@ -31,10 +26,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public KeyPairInfo NativeKeyPair
-        {
-            get { return this._keyPair; }
-        }
+        public KeyPairInfo NativeKeyPair => this._keyPair;
 
         [Browsable(false)]
         public System.Windows.Media.ImageSource IsStoredLocallyIcon
@@ -54,32 +46,16 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [DisplayName("Key Pair Name")]
-        public string DisplayName
-        {
-            get { return NativeKeyPair.KeyName; }
-        }
+        public string DisplayName => NativeKeyPair.KeyName;
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "Key Pair"; }
-        }
+        public string TypeName => "Key Pair";
 
         [DisplayName("Stored Locally")]
-        public bool IsStoredLocally
-        {
-            get
-            {
-                return KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(this._account, this._region, this.NativeKeyPair.KeyName);
-            }
-        }
+        public bool IsStoredLocally => KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(this._account, this._region, this.NativeKeyPair.KeyName);
 
         [DisplayName("Fingerprint")]
-        public string Fingerprint
-        {
-            get { return NativeKeyPair.KeyFingerprint; }
-        }
-
+        public string Fingerprint => NativeKeyPair.KeyFingerprint;
 
 
         public void RaiseStoredLocallyEvent()

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.EC2.Model
 {
@@ -19,7 +14,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _decryptedPassword;
         public string DecryptedPassword
         {
-            get { return this._decryptedPassword; }
+            get => this._decryptedPassword;
             set
             {
                 this._decryptedPassword = value;
@@ -30,7 +25,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _encryptedPassword;
         public string EncryptedPassword
         {
-            get { return this._encryptedPassword; }
+            get => this._encryptedPassword;
             set
             {
                 this._encryptedPassword = value;
@@ -38,28 +33,16 @@ namespace Amazon.AWSToolkit.EC2.Model
             }
         }
 
-        public string InstanceId
-        {
-            get { return this._instance.NativeInstance.InstanceId; }
-        }
+        public string InstanceId => this._instance.NativeInstance.InstanceId;
 
-        public string KeyPair
-        {
-            get { return this._instance.NativeInstance.KeyName + ".pem"; }
-        }
+        public string KeyPair => this._instance.NativeInstance.KeyName + ".pem";
 
-        public string PublicDnsName
-        {
-            get 
-            { 
-                return this._instance.NativeInstance.PublicDnsName; 
-            }
-        }
+        public string PublicDnsName => this._instance.NativeInstance.PublicDnsName;
 
         string _privateKey;
         public string PrivateKey
         {
-            get { return this._privateKey; }
+            get => this._privateKey;
             set
             {
                 this._privateKey = value;

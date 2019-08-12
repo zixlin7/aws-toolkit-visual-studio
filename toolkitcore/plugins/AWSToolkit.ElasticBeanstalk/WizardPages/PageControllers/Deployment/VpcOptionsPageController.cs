@@ -27,32 +27,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
             }
         }
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return DeploymentWizardPageGroups.AWSOptionsGroup; }
-        }
+        public string PageGroup => DeploymentWizardPageGroups.AWSOptionsGroup;
 
-        public string PageTitle
-        {
-            get { return "VPC Options"; }
-        }
+        public string PageTitle => "VPC Options";
 
-        public string ShortPageTitle
-        {
-            get { return "VPC"; }
-        }
+        public string ShortPageTitle => "VPC";
 
-        public string PageDescription
-        {
-            get { return "Set Amazon VPC options for the deployed application."; }
-        }
+        public string PageDescription => "Set Amazon VPC options for the deployed application.";
 
         public void ResetPage()
         {

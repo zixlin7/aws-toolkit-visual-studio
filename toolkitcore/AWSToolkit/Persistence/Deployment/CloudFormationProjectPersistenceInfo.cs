@@ -1,9 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Collections.Generic;
 using System.Globalization;
-
-using Amazon.AWSToolkit;
 using ThirdParty.Json.LitJson;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 
@@ -22,12 +19,9 @@ namespace Amazon.AWSToolkit.Persistence.Deployment
 
         DeploymentHistories<CloudFormationDeploymentHistory> _deploymentHistories = new DeploymentHistories<CloudFormationDeploymentHistory>();
 
-        public DeploymentHistories<CloudFormationDeploymentHistory> PreviousDeployments
-        {
-            get { return _deploymentHistories; }
-        }
+        public DeploymentHistories<CloudFormationDeploymentHistory> PreviousDeployments => _deploymentHistories;
 
-        public override string ServiceOwner { get { return DeploymentServiceIdentifiers.CloudFormationServiceName; } }
+        public override string ServiceOwner => DeploymentServiceIdentifiers.CloudFormationServiceName;
 
         /// <summary>
         /// Serializes to existing Json object context

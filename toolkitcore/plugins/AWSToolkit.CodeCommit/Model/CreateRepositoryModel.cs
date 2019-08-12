@@ -14,7 +14,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
         public string Name
         {
-            get { return _name; }
+            get => _name;
             set
             {
                 _name = value;
@@ -26,7 +26,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
         public string Description
         {
-            get { return _description; }
+            get => _description;
             set { _description = value; NotifyPropertyChanged(nameof(Description)); }
         }
 
@@ -38,7 +38,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         /// </summary>
         public string BaseFolder
         {
-            get { return _baseFolder; }
+            get => _baseFolder;
             set
             {
                 _baseFolder = value;
@@ -48,18 +48,15 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
         public string SelectedFolder
         {
-            get { return _selectedFolder; }
+            get => _selectedFolder;
             set { _selectedFolder = value; NotifyPropertyChanged(nameof(SelectedFolder)); }
         }
 
-        public List<GitIgnoreOption> GitIgnoreOptions
-        {
-            get { return _gitIgnoreOptions; }
-        }
+        public List<GitIgnoreOption> GitIgnoreOptions => _gitIgnoreOptions;
 
         public GitIgnoreOption SelectedGitIgnore
         {
-            get { return _selectedGitIgnore; }
+            get => _selectedGitIgnore;
             set { _selectedGitIgnore = value; NotifyPropertyChanged(nameof(SelectedGitIgnore)); }
         }
 

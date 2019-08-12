@@ -16,7 +16,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 
@@ -60,32 +59,14 @@ namespace Microsoft.VisualStudio.Project
 		#endregion
 
 		#region properties
-		internal FORMATETC Format
-		{
-			get
-			{
-				return this.format;
-			}
-		}
+		internal FORMATETC Format => this.format;
 
-		internal long Data
-		{
-			get
-			{
-				return this.data;
-			}
-		}
+        internal long Data => this.data;
 
-		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-		internal DATADIR DataDir
-		{
-			get
-			{
-				return this.dataDir;
-			}
-		}
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+		internal DATADIR DataDir => this.dataDir;
 
-		#endregion
+        #endregion
 
 		/// <summary>
 		/// The IntPtr is data allocated that should be removed. It is allocated by the ProcessSelectionData method.

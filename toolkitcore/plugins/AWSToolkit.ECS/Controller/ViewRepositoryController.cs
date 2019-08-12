@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Amazon.AWSToolkit.ECS.Model;
 using Amazon.AWSToolkit.ECS.Nodes;
 using Amazon.AWSToolkit.ECS.View;
-using Amazon.ECR;
 using Amazon.ECR.Model;
 using log4net;
 
@@ -17,15 +15,9 @@ namespace Amazon.AWSToolkit.ECS.Controller
         private ViewRepositoryControl _control;
         private RepositoryViewModel _viewModel;
 
-        public string RepositoryArn
-        {
-            get { return ViewModel.Repository.RepositoryArn; }
-        }
+        public string RepositoryArn => ViewModel.Repository.RepositoryArn;
 
-        public string RepositoryName
-        {
-            get { return ViewModel.RepositoryName; }
-        }
+        public string RepositoryName => ViewModel.RepositoryName;
 
         private RepositoryViewModel ViewModel
         {

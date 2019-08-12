@@ -1,12 +1,8 @@
 ﻿using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
 using log4net;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 using Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI;
@@ -25,33 +21,15 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageDescription
-        {
-            get { return "These are parameters associated with your AWS CloudFormation template. You may review and proceed with the default parameters or make customizations as needed."; }
-        }
+        public string PageDescription => "These are parameters associated with your AWS CloudFormation template. You may review and proceed with the default parameters or make customizations as needed.";
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
-        public string PageTitle
-        {
-            get
-            {
-                return "Edit Template Parameters";
-            }
-        }
+        public string PageTitle => "Edit Template Parameters";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
         public void ResetPage()
         {

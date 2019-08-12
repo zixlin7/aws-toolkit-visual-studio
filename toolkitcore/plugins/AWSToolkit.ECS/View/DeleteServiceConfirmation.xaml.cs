@@ -1,23 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Amazon.ElasticLoadBalancingV2.Model;
 using Amazon.AWSToolkit.CommonUI;
 using log4net;
 using Amazon.AWSToolkit.ECS.Controller;
-using Amazon.AWSToolkit.ECS.Model;
 
 namespace Amazon.AWSToolkit.ECS.View
 {
@@ -106,7 +91,7 @@ namespace Amazon.AWSToolkit.ECS.View
         bool _deleteLoadbalancer;
         public bool DeleteLoadbalancer
         {
-            get { return this._deleteLoadbalancer; }
+            get => this._deleteLoadbalancer;
             set
             {
                 this._deleteLoadbalancer = value;
@@ -117,7 +102,7 @@ namespace Amazon.AWSToolkit.ECS.View
         bool _deleteListener;
         public bool DeleteListener
         {
-            get { return this._deleteListener; }
+            get => this._deleteListener;
             set
             {
                 this._deleteListener = value;
@@ -128,7 +113,7 @@ namespace Amazon.AWSToolkit.ECS.View
         bool _deleteTargetGroup;
         public bool DeleteTargetGroup
         {
-            get { return this._deleteTargetGroup; }
+            get => this._deleteTargetGroup;
             set
             {
                 this._deleteTargetGroup = value;

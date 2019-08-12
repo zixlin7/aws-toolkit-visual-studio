@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Amazon.AWSToolkit.EC2.Utils
 {
@@ -18,10 +15,7 @@ namespace Amazon.AWSToolkit.EC2.Utils
 
         static PlatformPicker[] _allPlatforms;
 
-        public static IEnumerable<PlatformPicker> AllPlatforms
-        {
-            get { return _allPlatforms; }
-        }
+        public static IEnumerable<PlatformPicker> AllPlatforms => _allPlatforms;
 
         static PlatformPicker()
         {
@@ -36,7 +30,6 @@ namespace Amazon.AWSToolkit.EC2.Utils
         public string DisplayName
         {
             get;
-            private set;
         }
     }
 }

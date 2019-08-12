@@ -1,26 +1,16 @@
-﻿using Amazon.AWSToolkit;
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI.Components;
+﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.ECS.Controller;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
 using Amazon.IdentityManagement;
-using Amazon.IdentityManagement.Model;
 using Amazon.ECS;
 using Amazon.EC2;
-using Amazon.ECS.Model;
-using log4net;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using Amazon.AWSToolkit.ECS.DeploymentWorkers;
 using Amazon.ECR;
 using Amazon.ElasticLoadBalancingV2;
-using System.IO;
 using Amazon.AWSToolkit.ECS.Nodes;
 using Amazon.CloudWatchEvents;
 using Amazon.CloudWatchLogs;
@@ -33,36 +23,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageDescription
-        {
-            get
-            {
-                return "Please wait while we publish your project to AWS.";
-            }
-        }
+        public string PageDescription => "Please wait while we publish your project to AWS.";
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
-        public string PageTitle
-        {
-            get
-            {
-                return "Publishing Container to AWS";
-            }
-        }
+        public string PageTitle => "Publishing Container to AWS";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
         public bool AllowShortCircuit()
         {

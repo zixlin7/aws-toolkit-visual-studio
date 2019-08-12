@@ -1,24 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Web;
-
-using Amazon.Auth.AccessControlPolicy;
-
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
-
 using Amazon.IdentityManagement;
-using Amazon.IdentityManagement.Model;
-
 using Amazon.Kinesis;
-using Amazon.Kinesis.Model;
-
 using Amazon.S3;
 using Amazon.S3.Model;
 
@@ -30,8 +19,6 @@ using Amazon.SQS.Model;
 
 using Amazon.CloudWatchEvents;
 using Amazon.CloudWatchEvents.Model;
-
-using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Lambda.View;
 using Amazon.AWSToolkit.MobileAnalytics;

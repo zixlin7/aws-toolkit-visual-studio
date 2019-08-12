@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Amazon.AWSToolkit.CloudFormation.Parser
+﻿namespace Amazon.AWSToolkit.CloudFormation.Parser
 {
     public enum ErrorTokenType { JSONLintvalidation, SchemaValidation };
 
@@ -34,49 +29,41 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
         public bool ShowToolTip
         {
             get;
-            private set;
         }
 
         public ErrorTokenType Type
         {
             get;
-            private set;
         }
 
         public int LineNumber
         {
             get;
-            private set;
         }
 
         public int LineStartOffset
         {
             get;
-            private set;
         }
 
         public int LineEndOffSet
         {
             get;
-            private set;
         }
 
         public int StartPos
         {
             get;
-            private set;
         }
 
         public int EndPos
         {
             get;
-            private set;
         }
 
         public string Message
         {
             get;
-            private set;
         }
     }
 }

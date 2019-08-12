@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Windows.Data;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.SimpleDB.Controller;
 
@@ -21,7 +14,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Model
         string _domain;
         public string Domain
         {
-            get { return this._domain; }
+            get => this._domain;
             set
             {
                 this._domain = value;
@@ -31,7 +24,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Model
 
         public DataTable Results
         {
-            get { return this._dataTable; }
+            get => this._dataTable;
             set 
             { 
                 this._dataTable = value;
@@ -138,7 +131,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Model
         string _lastExecutedQuery;
         public string LastExecutedQuery
         {
-            get { return this._lastExecutedQuery; }
+            get => this._lastExecutedQuery;
             set
             {
                 this._lastExecutedQuery = value;
@@ -160,7 +153,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Model
         string _nextToken;
         public string NextToken
         {
-            get { return this._nextToken; }
+            get => this._nextToken;
             set
             {
                 this._nextToken = value;
@@ -169,28 +162,16 @@ namespace Amazon.AWSToolkit.SimpleDB.Model
             }
         }
 
-        public bool HasData
-        {
-            get { return this.Results != null && this.Results.Rows.Count > 0; }
-        }
+        public bool HasData => this.Results != null && this.Results.Rows.Count > 0;
 
         public void RaiseHasDataEvent()
         {
             base.NotifyPropertyChanged("HasData");
         }
 
-        public bool HasMoreRows
-        {
-            get { return !string.IsNullOrEmpty(this.NextToken) && !IsLastQueryCountQuery(); }
-        }
+        public bool HasMoreRows => !string.IsNullOrEmpty(this.NextToken) && !IsLastQueryCountQuery();
 
-        public string DeterminDomainFromLastExecutedQuery
-        {
-            get
-            {
-                return DetermineDomain(this.LastExecutedQuery);
-            }
-        }
+        public string DeterminDomainFromLastExecutedQuery => DetermineDomain(this.LastExecutedQuery);
 
         public static string DetermineDomain(string query)
         {

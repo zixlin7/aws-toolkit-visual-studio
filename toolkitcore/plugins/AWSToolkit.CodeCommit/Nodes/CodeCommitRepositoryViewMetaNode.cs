@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.CodeCommit.Interface.Nodes;
 
 namespace Amazon.AWSToolkit.CodeCommit.Nodes
@@ -16,16 +15,10 @@ namespace Amazon.AWSToolkit.CodeCommit.Nodes
         }
 
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList
-                    (
-                        new ActionHandlerWrapper("Open", OnOpenRepositoryView, null, true, null, null)
-                    );
-            }
-        }
-
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList
+            (
+                new ActionHandlerWrapper("Open", OnOpenRepositoryView, null, true, null, null)
+            );
     }
 }

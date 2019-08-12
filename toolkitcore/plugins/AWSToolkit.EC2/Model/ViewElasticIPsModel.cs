@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-
+﻿using System.Collections.ObjectModel;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.EC2.Utils;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -15,10 +7,7 @@ namespace Amazon.AWSToolkit.EC2.Model
     public class ViewElasticIPsModel : BaseModel
     {
         ObservableCollection<AddressWrapper> _addresses = new ObservableCollection<AddressWrapper>();
-        public ObservableCollection<AddressWrapper> Addresses
-        {
-            get { return this._addresses; }
-        }
+        public ObservableCollection<AddressWrapper> Addresses => this._addresses;
 
         EC2ColumnDefinition[] _propertytColumnDefinitions;
         public EC2ColumnDefinition[] PropertyColumnDefinitions

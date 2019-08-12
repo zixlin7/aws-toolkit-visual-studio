@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Windows.Controls;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
@@ -20,32 +18,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
         private ApplicationOptionsPage _pageUI;
         private bool RedeployingAppVersion = false;
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return DeploymentWizardPageGroups.AppOptionsGroup; }
-        }
+        public string PageGroup => DeploymentWizardPageGroups.AppOptionsGroup;
 
-        public string PageTitle
-        {
-            get { return "Application Options"; }
-        }
+        public string PageTitle => "Application Options";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "Set additional build and deployment options for your application."; }
-        }
+        public string PageDescription => "Set additional build and deployment options for your application.";
 
         public void ResetPage()
         {

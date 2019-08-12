@@ -3,30 +3,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Text.RegularExpressions;
-
 using AWSDeployment;
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
-using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
 using Amazon.AWSToolkit.EC2;
-
-using Amazon.ElasticBeanstalk.Model;
-
 using log4net;
 using Amazon.IdentityManagement.Model;
 
@@ -75,8 +60,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment
 
         public string CustomAMIID
         {
-            get { return this._customAMI.Text.Trim(); }
-            set { this._customAMI.Text = value; }
+            get => this._customAMI.Text.Trim();
+            set => this._customAMI.Text = value;
         }
 
         public string SelectedInstanceTypeID
@@ -91,13 +76,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment
             }
         }
 
-        public InstanceType SelectedInstanceType
-        {
-            get
-            {
-                return this._instanceTypesSelector.SelectedItem as InstanceType;
-            }
-        }
+        public InstanceType SelectedInstanceType => this._instanceTypesSelector.SelectedItem as InstanceType;
 
         public string SelectedInstanceProfile
         {
@@ -130,13 +109,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment
             _role.SelectedIndex = 0;
         }
 
-        public bool LaunchIntoVPC
-        {
-            get
-            {
-                return this._launchIntoVPC.IsChecked.GetValueOrDefault();
-            }
-        }
+        public bool LaunchIntoVPC => this._launchIntoVPC.IsChecked.GetValueOrDefault();
 
         public void QueryKeyPairSelection(out string keypairName, out bool createNew)
         {
@@ -144,13 +117,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment
             createNew = !_keyPairSelector.IsExistingKeyPairSelected;
         }
 
-        public bool HasKeyPairSelection
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(_keyPairSelector.SelectedKeyPairName);
-            }
-        }
+        public bool HasKeyPairSelection => !string.IsNullOrEmpty(_keyPairSelector.SelectedKeyPairName);
 
         public void SetSolutionStacks(IEnumerable<string> stacks, string autoSelectStack)
         {
@@ -164,7 +131,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment
             }
         }
 
-        public ObservableCollection<InstanceType> InstanceTypes { get; private set; }
+        public ObservableCollection<InstanceType> InstanceTypes { get; }
 
         public void SetInstanceTypes(IEnumerable<string> instanceTypes)
         {

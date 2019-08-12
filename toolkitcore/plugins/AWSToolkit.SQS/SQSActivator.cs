@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit;
-using Amazon.AWSToolkit.Account;
+﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 
 using Amazon.AWSToolkit.SQS.Nodes;
@@ -14,10 +8,7 @@ namespace Amazon.AWSToolkit.SQS
 {
     public class SQSActivator : AbstractPluginActivator
     {
-        public override string PluginName
-        {
-            get { return "SQS"; }
-        }
+        public override string PluginName => "SQS";
 
         public override void RegisterMetaNodes()
         {

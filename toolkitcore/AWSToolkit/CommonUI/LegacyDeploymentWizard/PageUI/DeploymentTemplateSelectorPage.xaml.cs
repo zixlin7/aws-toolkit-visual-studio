@@ -1,34 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Account.Controller;
-using Amazon.AWSToolkit.Account.Model;
 using Amazon.AWSToolkit.Account.View;
-
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageWorkers;
 using Amazon.AWSToolkit.CommonUI.Components;
 
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
-
-using Amazon.CloudFormation.Model;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 
 namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
@@ -70,7 +55,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
                 _inner = inner;
             }
 
-            public ExistingServiceDeployment Inner { get { return _inner; } }
+            public ExistingServiceDeployment Inner => _inner;
 
             public System.Windows.Media.ImageSource ServiceLogo
             {
@@ -110,10 +95,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
         AWSViewModel _rootViewModel;
         public AWSViewModel RootViewModel
         {
-            get 
-            {
-                return IsInitialized ? _rootViewModel : null; 
-            }
+            get => IsInitialized ? _rootViewModel : null;
             set
             {                
                 this._rootViewModel = value;
@@ -146,7 +128,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
 
         public AccountViewModel SelectedAccount
         {
-            get { return this._accountSelector.SelectedItem as AccountViewModel; }
+            get => this._accountSelector.SelectedItem as AccountViewModel;
             protected set { if (IsInitialized) this._accountSelector.SelectedItem = value; }
         }
 
@@ -181,39 +163,18 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
 
         public IEnumerable<DeploymentTemplateWrapperBase> Templates
         {
-            set
-            {
-                this._templateSelector.Templates = value;
-            }
+            set => this._templateSelector.Templates = value;
         }
 
-        public DeploymentTemplateWrapperBase SelectedTemplate
-        {
-            get
-            {
-                return _templateSelector.SelectedTemplate;
-            }
-        }
+        public DeploymentTemplateWrapperBase SelectedTemplate => _templateSelector.SelectedTemplate;
 
         public RegionEndPointsManager.RegionEndPoints SelectedRegion
         {
-            get
-            {
-                return _regionSelector.SelectedItem as RegionEndPointsManager.RegionEndPoints;
-            }
-            set
-            {
-                _regionSelector.SelectedItem = value; 
-            }
+            get => _regionSelector.SelectedItem as RegionEndPointsManager.RegionEndPoints;
+            set => _regionSelector.SelectedItem = value;
         }
 
-        public bool RedeploySelected
-        {
-            get
-            {
-                return _btnRedeploy.IsChecked == true;
-            }
-        }
+        public bool RedeploySelected => _btnRedeploy.IsChecked == true;
 
         public void SetExistingDeployments(IEnumerable<ExistingServiceDeployment> deployments, string lastDeploymentService, string lastDeploymentName)
         {

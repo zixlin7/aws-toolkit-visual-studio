@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using MSBuild = Microsoft.Build.Evaluation;
 using MSBuildExecution = Microsoft.Build.Execution;
@@ -42,27 +41,19 @@ namespace Microsoft.VisualStudio.Project
         /// Get the project configuration object associated with this output group
         /// </summary>
         [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Cfg")]
-        protected ProjectConfig ProjectCfg
-        {
-            get { return projectCfg; }
-        }
+        protected ProjectConfig ProjectCfg => projectCfg;
 
         /// <summary>
         /// Get the project object that produces this output group.
         /// </summary>
-        protected ProjectNode Project
-        {
-            get { return project; }
-        }
+        protected ProjectNode Project => project;
 
         /// <summary>
         /// Gets the msbuild target name which is assciated to the outputgroup.
         /// ProjectNode defines a static collection of output group names and their associated MsBuild target
         /// </summary>
-        protected string TargetName
-        {
-            get { return targetName; }
-        }
+        protected string TargetName => targetName;
+
         #endregion
 
         #region ctors

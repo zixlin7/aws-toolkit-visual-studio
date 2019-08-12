@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.S3;
-using Amazon.S3.IO;
-
+﻿using Amazon.S3;
 using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.View;
 
@@ -22,13 +15,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             this._model = new RestoreObjectPromptModel();
         }
 
-        public RestoreObjectPromptModel Model
-        {
-            get
-            {
-                return this._model;
-            }
-        }
+        public RestoreObjectPromptModel Model => this._model;
 
         public bool Execute()
         {

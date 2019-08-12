@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.IO;
 using System.Threading;
 using Amazon.AWSToolkit.Util;
 using Amazon.CodeCommit;
 using Amazon.CodeCommit.Model;
-using Amazon.Runtime.Internal;
 using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommit.Model
@@ -39,7 +36,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         /// </summary>
         public string BaseFolder
         {
-            get { return _baseFolder; }
+            get => _baseFolder;
             set
             {
                 _baseFolder = value;
@@ -52,7 +49,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         /// </summary>
         public string SelectedFolder
         {
-            get { return _selectedFolder; }
+            get => _selectedFolder;
             set { _selectedFolder = value; NotifyPropertyChanged("SelectedFolder"); }
         }
 
@@ -67,32 +64,17 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         /// </summary>
         public CodeCommitRepository SelectedRepository
         {
-            get { return _selectedRepository; }
+            get => _selectedRepository;
             set { _selectedRepository = value; NotifyPropertyChanged("SelectedRepository"); }
         }
 
-        public RangeObservableCollection<CodeCommitRepository> Repositories
-        {
-            get { return _repositories; }
-        }
+        public RangeObservableCollection<CodeCommitRepository> Repositories => _repositories;
 
-        public List<SortOption> SortByOptions
-        {
-            get
-            {
-                return new List<SortOption> {_sortByRepositoryName, _sortByLastModifiedDate};
-            }
-        }
+        public List<SortOption> SortByOptions => new List<SortOption> {_sortByRepositoryName, _sortByLastModifiedDate};
 
         public SortOption SortBy { get; set; }
 
-        public List<OrderOption> OrderOptions
-        {
-            get
-            {
-                return new List<OrderOption> {_orderAscending, _orderDescending};
-            }
-        }
+        public List<OrderOption> OrderOptions => new List<OrderOption> {_orderAscending, _orderDescending};
 
         public OrderOption Order { get; set; }
 

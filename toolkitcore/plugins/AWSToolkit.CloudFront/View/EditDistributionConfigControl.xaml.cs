@@ -1,21 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.CloudFront.Model;
 using Amazon.AWSToolkit.CloudFront.Controller;
 
 using log4net;
@@ -37,26 +23,11 @@ namespace Amazon.AWSToolkit.CloudFront.View
             this._ctlConfigEditor.Initialize(this._controller);
         }
 
-        public override string Title
-        {
-            get
-            {
-                return this._controller.Title;
-            }
-        }
+        public override string Title => this._controller.Title;
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get { return true; }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
-        public override string UniqueId
-        {
-            get
-            {
-                return this._controller.UniqueId;
-            }
-        }
+        public override string UniqueId => this._controller.UniqueId;
 
         protected override object LoadAndReturnModel()
         {

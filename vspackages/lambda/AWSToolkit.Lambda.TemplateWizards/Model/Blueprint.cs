@@ -52,10 +52,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Model
         /// at the bottom of the wizard. Use this to mask blueprints that map
         /// to buttons on the wizard.
         /// </summary>
-        public bool IsHidden
-        {
-            get { return this.HiddenTags != null && this.HiddenTags.Contains("hidden", StringComparer.OrdinalIgnoreCase); }
-        }
+        public bool IsHidden => this.HiddenTags != null && this.HiddenTags.Contains("hidden", StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Returns true if the blueprint has a matching tag.
@@ -107,11 +104,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Model
 
                 return string.Join(", ", Tags);
             }
-            set
-            {
-                // this is mainly for design time setup convenience
-                Tags = new HashSet<string>(value.Split(','), StringComparer.OrdinalIgnoreCase);
-            }
+            set => Tags = new HashSet<string>(value.Split(','), StringComparer.OrdinalIgnoreCase);
         }
 
         public override string ToString()
@@ -370,10 +363,6 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.Model
             }
         }
 
-        public static SampleDataContext SampleData
-        {
-            get { return new SampleDataContext(); }
-        }
-
+        public static SampleDataContext SampleData => new SampleDataContext();
     }
 }

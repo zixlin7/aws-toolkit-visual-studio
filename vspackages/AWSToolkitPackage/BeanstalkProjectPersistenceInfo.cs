@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
-
 using ThirdParty.Json.LitJson;
 using System.Globalization;
 using Amazon.AWSToolkit.PluginServices.Deployment;
@@ -36,12 +31,9 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         readonly DeploymentHistories<BeanstalkDeploymentHistory> _deploymentHistories = new DeploymentHistories<BeanstalkDeploymentHistory>();
 
-        public DeploymentHistories<BeanstalkDeploymentHistory> PreviousDeployments
-        {
-            get { return _deploymentHistories; }
-        }
+        public DeploymentHistories<BeanstalkDeploymentHistory> PreviousDeployments => _deploymentHistories;
 
-        public override string ServiceOwner { get { return DeploymentServiceIdentifiers.BeanstalkServiceName; } }
+        public override string ServiceOwner => DeploymentServiceIdentifiers.BeanstalkServiceName;
 
         /// <summary>
         /// Serializes to existing Json object context

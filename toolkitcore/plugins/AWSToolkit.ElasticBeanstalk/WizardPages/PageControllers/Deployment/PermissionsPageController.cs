@@ -4,13 +4,10 @@ using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment;
 using log4net;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Controls;
 using System.ComponentModel;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.IdentityManagement;
 using System.Threading;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
 using Amazon.IdentityManagement.Model;
@@ -42,30 +39,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageDescription
-        {
-            get { return "Select roles granting permissions to your deployed application and for the service to monitor resources."; }
-        }
+        public string PageDescription => "Select roles granting permissions to your deployed application and for the service to monitor resources.";
 
-        public string PageGroup
-        {
-            get { return DeploymentWizardPageGroups.PermissionsGroup; }
-        }
+        public string PageGroup => DeploymentWizardPageGroups.PermissionsGroup;
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
-        public string PageTitle
-        {
-            get { return "Permissions"; }
-        }
+        public string PageTitle => "Permissions";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
         public bool AllowShortCircuit()
         {

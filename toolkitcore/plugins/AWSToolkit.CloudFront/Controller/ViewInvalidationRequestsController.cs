@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Windows;
-
+﻿using System.Collections.ObjectModel;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.CloudFront.Nodes;
@@ -51,10 +43,7 @@ namespace Amazon.AWSToolkit.CloudFront.Controller
             RefreshInvalidationSummaries();
         }
 
-        public string DistributionId
-        {
-            get { return this._viewModel.DistributionId; }
-        }
+        public string DistributionId => this._viewModel.DistributionId;
 
         void RefreshInvalidationSummaries()
         {
@@ -83,9 +72,6 @@ namespace Amazon.AWSToolkit.CloudFront.Controller
 
         }
 
-        public ViewInvalidationRequestsModel Model
-        {
-            get { return this._model; }
-        }
+        public ViewInvalidationRequestsModel Model => this._model;
     }
 }

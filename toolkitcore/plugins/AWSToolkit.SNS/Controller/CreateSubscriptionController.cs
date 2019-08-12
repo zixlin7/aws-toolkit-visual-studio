@@ -1,19 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows;
-
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.SNS.View;
 using Amazon.AWSToolkit.SNS.Model;
 using Amazon.AWSToolkit.SNS.Nodes;
 using Amazon.AWSToolkit.SQS.Nodes;
 using Amazon.AWSToolkit.Lambda.Nodes;
-using Amazon.AWSToolkit;
-
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 
@@ -23,8 +15,6 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 
 using Amazon.Lambda;
-using Amazon.Lambda.Model;
-
 using log4net;
 
 namespace Amazon.AWSToolkit.SNS.Controller
@@ -60,12 +50,9 @@ namespace Amazon.AWSToolkit.SNS.Controller
             this._model = model;
         }
 
-        public CreateSubscriptionModel Model
-        {
-           get{return this._model; }
-        }
+        public CreateSubscriptionModel Model => this._model;
 
-       public bool Execute()
+        public bool Execute()
        {
            CreateSubscriptionControl control = new CreateSubscriptionControl(this);
            return ToolkitFactory.Instance.ShellProvider.ShowModal(control);

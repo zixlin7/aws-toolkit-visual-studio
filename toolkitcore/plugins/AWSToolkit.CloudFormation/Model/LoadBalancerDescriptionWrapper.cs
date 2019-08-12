@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Util;
 
 using Amazon.ElasticLoadBalancing.Model;
@@ -18,15 +14,9 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
             this._loadBalancer = loadBalancer;
         }
 
-        public LoadBalancerDescription NativeLoadBalancerDescription
-        {
-            get { return this._loadBalancer; }
-        }
+        public LoadBalancerDescription NativeLoadBalancerDescription => this._loadBalancer;
 
-        public string FormattedAvailabilityZones
-        {
-            get { return StringUtils.CreateCommaDelimitedList(this._loadBalancer.AvailabilityZones); }
-        }
+        public string FormattedAvailabilityZones => StringUtils.CreateCommaDelimitedList(this._loadBalancer.AvailabilityZones);
 
         public string FormattedInstances
         {
@@ -43,10 +33,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
             }
         }
 
-        public string FormattedHealthCheck
-        {
-            get { return StringUtils.CreateCommaDelimitedList(this._loadBalancer.AvailabilityZones); }
-        }
+        public string FormattedHealthCheck => StringUtils.CreateCommaDelimitedList(this._loadBalancer.AvailabilityZones);
 
         List<ListenerDescriptionWrapper> _listenerDescriptions;
         public List<ListenerDescriptionWrapper> ListenerDescriptions
@@ -70,15 +57,9 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
                 this._listenerDescription = listenerDescription;
             }
 
-            public ListenerDescription NativeListenerDescription
-            {
-                get { return this._listenerDescription; }
-            }
+            public ListenerDescription NativeListenerDescription => this._listenerDescription;
 
-            public string FormattedPolicyNames
-            {
-                get { return StringUtils.CreateCommaDelimitedList(this._listenerDescription.PolicyNames); }
-            }
+            public string FormattedPolicyNames => StringUtils.CreateCommaDelimitedList(this._listenerDescription.PolicyNames);
         }
     }
 }

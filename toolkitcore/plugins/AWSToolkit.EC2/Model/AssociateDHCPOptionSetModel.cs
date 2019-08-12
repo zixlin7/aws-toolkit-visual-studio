@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.EC2.Model;
-using Amazon.AWSToolkit.EC2.View.DataGrid;
 
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -25,13 +18,12 @@ namespace Amazon.AWSToolkit.EC2.Model
         public VPCWrapper VPC
         {
             get;
-            private set;
         }
 
         bool _isNew;
         public bool IsNew
         {
-            get { return this._isNew; }
+            get => this._isNew;
             set
             {
                 this._isNew = value;
@@ -41,7 +33,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public bool IsExisting
         {
-            get { return !this._isNew; }
+            get => !this._isNew;
             set
             {
                 this._isNew = !value;
@@ -69,10 +61,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         DHCPOptionsWrapper _selectedDHCPOptions;
         public DHCPOptionsWrapper SelectedDHCPOptions
         {
-            get
-            {
-                return this._selectedDHCPOptions;
-            }
+            get => this._selectedDHCPOptions;
             set
             {
                 this._selectedDHCPOptions = value;
@@ -83,8 +72,8 @@ namespace Amazon.AWSToolkit.EC2.Model
         ObservableCollection<DHCPOptionsWrapper> _availableDHCPOptions;
         public ObservableCollection<DHCPOptionsWrapper> AvailableDHCPOptions
         {
-            get { return this._availableDHCPOptions; }
-            set { this._availableDHCPOptions = value; }
+            get => this._availableDHCPOptions;
+            set => this._availableDHCPOptions = value;
         }
     }
 }

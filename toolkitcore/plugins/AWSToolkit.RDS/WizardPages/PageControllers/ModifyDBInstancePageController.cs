@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 using Amazon.AWSToolkit.RDS.WizardPages.PageUI;
 using Amazon.AWSToolkit.RDS.WizardPages.PageWorkers;
-using Amazon.AWSToolkit.RDS.Nodes;
-
 using Amazon.RDS;
 using Amazon.RDS.Model;
 
@@ -46,32 +40,17 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
 
         #region IAWSWizardPageController Members
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard  { get; set; }
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageTitle
-        {
-            get { return "Modify Instance Details"; }
-        }
+        public string PageTitle => "Modify Instance Details";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "Update one or more details of your running RDS instance."; }
-        }
+        public string PageDescription => "Update one or more details of your running RDS instance.";
 
         public void ResetPage()
         {

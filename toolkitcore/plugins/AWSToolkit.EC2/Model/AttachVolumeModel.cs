@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -12,7 +8,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _volumeId;
         public string VolumeId
         {
-            get { return _volumeId; }
+            get => _volumeId;
             set
             {
                 _volumeId = value;
@@ -23,7 +19,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         IList<RunningInstanceWrapper> _availableInstances;
         public IList<RunningInstanceWrapper> AvailableInstances
         {
-            get { return _availableInstances; }
+            get => _availableInstances;
             set
             {
                 _availableInstances = value;
@@ -34,7 +30,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         RunningInstanceWrapper _instance;
         public RunningInstanceWrapper Instance
         {
-            get { return _instance; }
+            get => _instance;
             set
             {
                 _instance = value;
@@ -45,7 +41,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _device;
         public string Device
         {
-            get { return _device; }
+            get => _device;
             set
             {
                 _device = value;

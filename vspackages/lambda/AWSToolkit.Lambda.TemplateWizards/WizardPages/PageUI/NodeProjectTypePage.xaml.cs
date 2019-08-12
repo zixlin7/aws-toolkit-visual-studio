@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 using Amazon.AWSToolkit.Account;
@@ -91,31 +81,13 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageUI
             }
         }
 
-        public AccountViewModel SelectedAccount
-        {
-            get { return this._ctlAccountAndRegionPicker.SelectedAccount; }
-        }
+        public AccountViewModel SelectedAccount => this._ctlAccountAndRegionPicker.SelectedAccount;
 
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion
-        {
-            get { return this._ctlAccountAndRegionPicker.SelectedRegion; }
-        }
+        public RegionEndPointsManager.RegionEndPoints SelectedRegion => this._ctlAccountAndRegionPicker.SelectedRegion;
 
-        public string SelectedExistingFunctionName
-        {
-            get
-            {
-                return this._ctlExistingFunctions.SelectedValue as string;
-            }
-        }
+        public string SelectedExistingFunctionName => this._ctlExistingFunctions.SelectedValue as string;
 
-        public QueryLambdaFunctionSamplesWorker.SampleSummary SelectedSampleFunction
-        {
-            get
-            {
-                return this._ctlSampleFunction.SelectedValue as QueryLambdaFunctionSamplesWorker.SampleSummary;
-            }
-        }
+        public QueryLambdaFunctionSamplesWorker.SampleSummary SelectedSampleFunction => this._ctlSampleFunction.SelectedValue as QueryLambdaFunctionSamplesWorker.SampleSummary;
 
         void _ctlAccountAndRegionPicker_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {

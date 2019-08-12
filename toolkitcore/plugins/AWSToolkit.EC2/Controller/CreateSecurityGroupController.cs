@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
@@ -48,10 +44,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             return vpcs;
         }
 
-        public CreateSecurityGroupModel Model
-        {
-            get { return this._model; }
-        }
+        public CreateSecurityGroupModel Model => this._model;
 
         public void CreateSecurityGroup()
         {

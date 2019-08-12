@@ -1,24 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Persistence.Deployment;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 using Amazon.ElasticBeanstalk;
 using Amazon.IdentityManagement;
-using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
-
-using Amazon.AWSToolkit.EC2.Nodes;
 using Amazon.EC2;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.RDS;
 using Amazon.ElasticBeanstalk.Model;
 

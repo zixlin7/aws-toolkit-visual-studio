@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.Utils
@@ -38,10 +34,7 @@ namespace Amazon.AWSToolkit.EC2.Utils
 
         static CommonImageFilters[] _allFilters;
 
-        public static IEnumerable<CommonImageFilters> AllFilters
-        {
-            get { return _allFilters; }
-        }
+        public static IEnumerable<CommonImageFilters> AllFilters => _allFilters;
 
         static CommonImageFilters()
         {
@@ -70,13 +63,11 @@ namespace Amazon.AWSToolkit.EC2.Utils
         public string DisplayName
         {
             get;
-            private set;
         }
 
         public Filter[] Filters
         {
             get;
-            private set;
         }
     }
 }

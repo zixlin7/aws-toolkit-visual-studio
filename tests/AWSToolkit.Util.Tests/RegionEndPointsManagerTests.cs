@@ -2,13 +2,9 @@
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Reflection;
-using System.Text;
 using Xunit;
-using Amazon.AWSToolkit;
 using Moq;
 using Amazon.AWSToolkit.MobileAnalytics;
-using AWSToolkit.Util.Tests;
 
 namespace Amazon.AWSToolkit.Util.Tests
 {

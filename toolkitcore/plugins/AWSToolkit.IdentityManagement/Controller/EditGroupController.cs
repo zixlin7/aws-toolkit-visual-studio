@@ -1,15 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Windows;
-using System.Windows.Threading;
-
-using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.IdentityManagement.View;
@@ -32,10 +21,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
         EditGroupModel _model;
         IAMGroupViewModel _iamGroupViewModel;
 
-        public EditGroupModel Model
-        {
-            get { return this._model; }
-        }
+        public EditGroupModel Model => this._model;
 
         public override ActionResults Execute(IViewModel model)
         {

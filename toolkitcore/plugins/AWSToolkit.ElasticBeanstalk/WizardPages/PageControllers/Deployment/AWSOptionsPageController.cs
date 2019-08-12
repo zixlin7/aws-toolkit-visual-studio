@@ -12,7 +12,6 @@ using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
 using Amazon.AWSToolkit.SimpleWorkers;
 using Amazon.ElasticBeanstalk.Model;
-using Amazon.IdentityManagement;
 using log4net;
 using AWSOptionsPage = Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment.AWSOptionsPage;
 
@@ -41,32 +40,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
             }
         }
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return DeploymentWizardPageGroups.AWSOptionsGroup; }
-        }
+        public string PageGroup => DeploymentWizardPageGroups.AWSOptionsGroup;
 
-        public string PageTitle
-        {
-            get { return "AWS"; }
-        }
+        public string PageTitle => "AWS";
 
-        public string ShortPageTitle
-        {
-            get { return null; /* use the group title here, allowing VPC subpage */ }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "Set Amazon EC2 and other AWS-related options for the deployed application."; }
-        }
+        public string PageDescription => "Set Amazon EC2 and other AWS-related options for the deployed application.";
 
         public void ResetPage()
         {

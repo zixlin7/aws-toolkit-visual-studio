@@ -2,28 +2,17 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.IO;
-using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.VersionInfo;
 using Amazon.Runtime.Internal.Settings;
-
-using Amazon.Runtime.CredentialManagement;
 using Amazon.Runtime.CredentialManagement.Internal;
 
 using log4net;
@@ -131,7 +120,7 @@ namespace Amazon.AWSToolkit.Navigator
 
         public IViewModel SelectedNode
         {
-            get { return this._ctlResourceTree.SelectedItem as IViewModel; }
+            get => this._ctlResourceTree.SelectedItem as IViewModel;
             set
             {
                 var node = value as ITreeNodeProperties;
@@ -189,10 +178,7 @@ namespace Amazon.AWSToolkit.Navigator
             }
         }
 
-        public RegionEndPointsManager.RegionEndPoints SelectedRegionEndPoints
-        {
-            get { return this._ctlRegions.SelectedItem as RegionEndPointsManager.RegionEndPoints; }
-        }
+        public RegionEndPointsManager.RegionEndPoints SelectedRegionEndPoints => this._ctlRegions.SelectedItem as RegionEndPointsManager.RegionEndPoints;
 
         void setInitialRegionSelection()
         {
@@ -310,10 +296,7 @@ namespace Amazon.AWSToolkit.Navigator
             }
         }
 
-        public AccountViewModel SelectedAccount
-        {
-            get { return this._ctlAccounts.SelectedAccount; }
-        }
+        public AccountViewModel SelectedAccount => this._ctlAccounts.SelectedAccount;
 
         public AccountViewModel UpdateAccountSelection(Guid uniqueKey, bool refreshAccounts)
         {

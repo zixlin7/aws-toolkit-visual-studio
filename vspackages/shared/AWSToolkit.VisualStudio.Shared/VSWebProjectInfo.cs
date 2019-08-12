@@ -92,10 +92,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
         /// <summary>
         /// Returns the evaluated project or solution build object
         /// </summary>
-        public MSBuildProject BuildProject
-        {
-            get { return _buildProject ?? (_buildProject = LoadMSBuildEvaluation()); }
-        }
+        public MSBuildProject BuildProject => _buildProject ?? (_buildProject = LoadMSBuildEvaluation());
 
         public static bool IsWebProjectType(string projectTypeGuid)
         {
@@ -121,22 +118,13 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
         /// Returns the full path and filename of the project; for web site
         /// projects this is just a path.
         /// </summary>
-        public string VsProjectLocationAndName
-        {
-            get { return CachedProjectPathAndName; }
-        }
+        public string VsProjectLocationAndName => CachedProjectPathAndName;
 
         /// <summary>
         /// Rooted path (not including filename) of the web site or web 
         /// application project
         /// </summary>
-        public string VsProjectLocation 
-        { 
-            get
-            {
-                return Path.GetDirectoryName(CachedProjectPathAndName);
-            }
-        }
+        public string VsProjectLocation => Path.GetDirectoryName(CachedProjectPathAndName);
 
         /// <summary>
         /// Name of the project file less path; empty string for web site projects

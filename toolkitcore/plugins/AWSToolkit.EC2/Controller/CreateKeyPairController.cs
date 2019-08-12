@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿using System.Windows;
 
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.EC2.Model;
@@ -36,10 +32,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             return this._results;
         }
 
-        public CreateKeyPairModel Model
-        {
-            get { return this._model; }
-        }
+        public CreateKeyPairModel Model => this._model;
 
         public bool CreateKeyPair()
         {

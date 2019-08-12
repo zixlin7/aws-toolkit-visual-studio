@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.SNS.Model
@@ -26,7 +23,7 @@ namespace Amazon.AWSToolkit.SNS.Model
 
         public bool IsTopicARNReadOnly
         {
-            get { return this._isTopicARNReadOnly; }
+            get => this._isTopicARNReadOnly;
             set
             {
                 this._isTopicARNReadOnly = value;
@@ -37,7 +34,7 @@ namespace Amazon.AWSToolkit.SNS.Model
         bool _isAddSQSPermission = true;
         public bool IsAddSQSPermission
         {
-            get { return this._isAddSQSPermission; }
+            get => this._isAddSQSPermission;
             set
             {
                 this._isAddSQSPermission = value;
@@ -47,7 +44,7 @@ namespace Amazon.AWSToolkit.SNS.Model
 
         public string TopicArn
         {
-            get { return this._topicArn; }
+            get => this._topicArn;
             set
             {
                 this._topicArn = value;
@@ -55,24 +52,15 @@ namespace Amazon.AWSToolkit.SNS.Model
             }
         }
 
-        public List<string> PossibleTopicArns
-        {
-            get { return this._possibleTopicArns; }
-        }
+        public List<string> PossibleTopicArns => this._possibleTopicArns;
 
-        public List<string> PossibleSQSEndpoints
-        {
-            get { return this._possibleSQSEndpoints; }
-        }
+        public List<string> PossibleSQSEndpoints => this._possibleSQSEndpoints;
 
-        public List<string> PossibleLambdaEndpoints
-        {
-            get { return this._possibleLambdaEndpoints; }
-        }
+        public List<string> PossibleLambdaEndpoints => this._possibleLambdaEndpoints;
 
         public SubscriptionProtocol Protocol
         {
-            get { return this._protocol; }
+            get => this._protocol;
             set
             {
                 this._protocol = value;
@@ -127,7 +115,7 @@ namespace Amazon.AWSToolkit.SNS.Model
 
         public string Endpoint
         {
-            get { return this._endpoint; }
+            get => this._endpoint;
             set
             {
                 this._endpoint = value;

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Documents;
+﻿using System.Windows.Documents;
 using System.Windows;
 using System.Windows.Media;
 
@@ -42,20 +38,20 @@ namespace Amazon.AWSToolkit.CommonUI.Components
 
         public Typeface MessageTypeface
         {
-            get { return _typeface; }
-            set { _typeface = value; }
+            get => _typeface;
+            set => _typeface = value;
         }
 
         public double MessagePointSize
         {
-            get { return _messagePointSize; }
-            set { _messagePointSize = value; }
+            get => _messagePointSize;
+            set => _messagePointSize = value;
         }
 
         public Brush MessageBrush
         {
-            get { return _messageBrush; }
-            set { _messageBrush = value; }
+            get => _messageBrush;
+            set => _messageBrush = value;
         }
 
         protected override void OnRender(System.Windows.Media.DrawingContext drawingContext)

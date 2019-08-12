@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -43,10 +42,7 @@ namespace Amazon.AWSToolkit.CommonUI
             okButton.IsEnabled = this._hostedControl.Validated();
         }
 
-        public IAWSToolkitControl HostedControl
-        {
-            get { return this._hostedControl; }
-        }
+        public IAWSToolkitControl HostedControl => this._hostedControl;
 
         private void AddHostedControl()
         {

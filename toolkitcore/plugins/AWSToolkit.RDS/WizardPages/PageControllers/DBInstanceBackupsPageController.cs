@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 using Amazon.AWSToolkit.RDS.WizardPages.PageUI;
-using System.Globalization;
 using Amazon.AWSToolkit.RDS.Model;
 
 namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
@@ -17,32 +12,17 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
 
         #region IAWSWizardPageController Members
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageTitle
-        {
-            get { return "Backup and Maintenance"; }
-        }
+        public string PageTitle => "Backup and Maintenance";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
-        public string PageDescription
-        {
-            get { return "Set backup and maintenance options for your instance."; }
-        }
+        public string PageDescription => "Set backup and maintenance options for your instance.";
 
         public void ResetPage()
         {
@@ -109,13 +89,7 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
 
         #endregion
 
-        bool IsForwardsNavigationAllowed
-        {
-            get
-            {
-                return !(_pageUI.BackupAndMaintenancePeriodsOverlap);
-            }
-        }
+        bool IsForwardsNavigationAllowed => !(_pageUI.BackupAndMaintenancePeriodsOverlap);
 
         void StorePageData()
         {

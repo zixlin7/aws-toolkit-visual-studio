@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-
-using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.Navigator;
@@ -14,14 +11,11 @@ using Amazon.AWSToolkit.CloudFormation.Nodes;
 using Amazon.AWSToolkit.CloudFormation.Controllers;
 
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
-using Amazon.Runtime.Internal.Util;
 using log4net;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 
 namespace Amazon.AWSToolkit.CloudFormation
@@ -30,10 +24,7 @@ namespace Amazon.AWSToolkit.CloudFormation
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(CloudFormationActivator));
 
-        public override string PluginName
-        {
-            get { return "CloudFormation"; }
-        }
+        public override string PluginName => "CloudFormation";
 
         public override void RegisterMetaNodes()
         {
@@ -73,10 +64,7 @@ namespace Amazon.AWSToolkit.CloudFormation
 
         #region IAWSCloudFormation Members
 
-        IAWSToolkitDeploymentService IAWSCloudFormation.DeploymentService 
-        { 
-            get { return  this as IAWSToolkitDeploymentService; } 
-        }
+        IAWSToolkitDeploymentService IAWSCloudFormation.DeploymentService => this as IAWSToolkitDeploymentService;
 
         public DeployedTemplateData DeployCloudFormationTemplate(string filepath, IDictionary<string, object> seedParameters)
         {
@@ -94,10 +82,7 @@ namespace Amazon.AWSToolkit.CloudFormation
 
         #region IAWSToolkitDeploymentService Members
 
-        string IAWSToolkitDeploymentService.DeploymentServiceIdentifier
-        {
-            get { return DeploymentServiceIdentifiers.CloudFormationServiceName; }
-        }
+        string IAWSToolkitDeploymentService.DeploymentServiceIdentifier => DeploymentServiceIdentifiers.CloudFormationServiceName;
 
         IEnumerable<IAWSWizardPageController> IAWSToolkitDeploymentService.ConstructDeploymentPages(IAWSWizard hostWizard, bool fastTrackRedeployment)
         {

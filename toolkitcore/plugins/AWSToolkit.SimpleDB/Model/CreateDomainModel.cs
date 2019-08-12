@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.SimpleDB.Model
 {
@@ -13,7 +8,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Model
 
         public string DomainName
         {
-            get { return this._domainName; }
+            get => this._domainName;
             set
             {
                 this._domainName = value;

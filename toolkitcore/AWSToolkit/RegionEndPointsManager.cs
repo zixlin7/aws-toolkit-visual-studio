@@ -117,15 +117,12 @@ namespace Amazon.AWSToolkit
             return region;
         }
 
-        public IEnumerable<RegionEndPoints> Regions
-        {
-            get { return this._regions.Values; }
-        }
+        public IEnumerable<RegionEndPoints> Regions => this._regions.Values;
 
         public LocalRegionEndPoints LocalRegion
         {
-            get { return this._localRegions; }
-            protected set { this._localRegions = value; }
+            get => this._localRegions;
+            protected set => this._localRegions = value;
         }
 
         public RegionEndPoints GetDefaultRegionEndPoints()
@@ -143,20 +140,11 @@ namespace Amazon.AWSToolkit
             PersistenceManager.Instance.SetSetting(SETTINGS_KEY, region.SystemName);
         }
 
-        public bool FailedToLoad
-        {
-            get { return ErrorLoading != null; }
-        }
+        public bool FailedToLoad => ErrorLoading != null;
 
-        public bool LoadedFromResources
-        {
-            get { return _loadedFromResourceContent; }
-        }
+        public bool LoadedFromResources => _loadedFromResourceContent;
 
-        public Exception ErrorLoading
-        {
-            get { return this._errorLoading; }
-        }
+        public Exception ErrorLoading => this._errorLoading;
 
         public XDocument OpenEndPointConfigurationFile()
         {
@@ -262,10 +250,7 @@ namespace Amazon.AWSToolkit
             /// </summary>
             public S3FileFetcher FileFetcher { get; internal set; }
 
-            public bool HasRestrictions
-            {
-                get{return this._restrictions.Count > 0;}
-            }
+            public bool HasRestrictions => this._restrictions.Count > 0;
 
             public bool ContainAnyRestrictions(HashSet<string> restrictionsToCompare)
             {
@@ -287,13 +272,11 @@ namespace Amazon.AWSToolkit
             public string DisplayName
             {
                 get;
-                private set;
             }
 
             public string SystemName
             {
                 get;
-                private set;
             }
 
             public virtual EndPoint GetEndpoint(string serviceName)
@@ -353,30 +336,15 @@ namespace Amazon.AWSToolkit
                 this._authRegion = authRegion;
             }
 
-            public string RegionSystemName
-            {
-                get { return this._regionSystemName; }
-            }
+            public string RegionSystemName => this._regionSystemName;
 
-            public string UniqueIdentifier
-            {
-                get { return $"{this.RegionSystemName}/{this.Url}"; }
-            }
+            public string UniqueIdentifier => $"{this.RegionSystemName}/{this.Url}";
 
-            internal string Url
-            {
-                get { return this._url; }
-            }
+            internal string Url => this._url;
 
-            internal string Signer
-            {
-                get { return this._signer; }
-            }
+            internal string Signer => this._signer;
 
-            internal string AuthRegion
-            {
-                get { return this._authRegion; }
-            }
+            internal string AuthRegion => this._authRegion;
 
 
             public void ApplyToClientConfig(ClientConfig config)

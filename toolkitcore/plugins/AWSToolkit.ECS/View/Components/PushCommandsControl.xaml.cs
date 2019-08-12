@@ -11,20 +11,11 @@ namespace Amazon.AWSToolkit.ECS.View.Components
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(PushCommandsControl));
 
-        public string PowerShellTabHeader
-        {
-            get { return "AWS PowerShell Tools"; }
-        }
+        public string PowerShellTabHeader => "AWS PowerShell Tools";
 
-        public string AwsCliTabHeader
-        {
-            get { return "AWS CLI"; }
-        }
+        public string AwsCliTabHeader => "AWS CLI";
 
-        public string DotNetCliTabHeader
-        {
-            get { return "Dotnet CLI"; }
-        }
+        public string DotNetCliTabHeader => "Dotnet CLI";
 
         ViewRepositoryController _controller;
 

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Amazon.RDS;
 using Amazon.RDS.Model;
 
@@ -13,7 +9,6 @@ using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.RDS.Model;
 using Amazon.AWSToolkit.RDS.View;
 using Amazon.AWSToolkit.RDS.Nodes;
-using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.RDS.Controller
 {

@@ -1,19 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.S3.Model;
 
 using Amazon.AWSToolkit.S3.Model;
@@ -31,10 +17,7 @@ namespace Amazon.AWSToolkit.S3.View.Components
             InitializeComponent();
         }
 
-        public ITagContainerModel Model
-        {
-            get { return this.DataContext as ITagContainerModel; }
-        }
+        public ITagContainerModel Model => this.DataContext as ITagContainerModel;
 
         private void OnAddTag(object sender, RoutedEventArgs args)
         {

@@ -1,13 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Windows.Threading;
-
-using Amazon.EC2;
-using Amazon.EC2.Model;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -25,21 +17,9 @@ namespace Amazon.AWSToolkit.EC2.Nodes
             this._accountViewModel = accountViewModel;
         }
 
-        public override string ToolTip
-        {
-            get
-            {
-                return "Amazon Elastic Compute Cloud delivers scalable, pay-as-you-go compute capacity in the cloud.";
-            }
-        }
+        public override string ToolTip => "Amazon Elastic Compute Cloud delivers scalable, pay-as-you-go compute capacity in the cloud.";
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.service-root-icon.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.service-root-icon.png";
 
 
         protected override void LoadChildren()

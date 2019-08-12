@@ -48,7 +48,7 @@ namespace Amazon.ECS.Tools.Commands
 
                 return this._deployScheduledTaskProperties;
             }
-            set { this._deployScheduledTaskProperties = value; }
+            set => this._deployScheduledTaskProperties = value;
         }
 
         public DeployScheduledTaskCommand(IToolLogger logger, string workingDirectory, string[] args)

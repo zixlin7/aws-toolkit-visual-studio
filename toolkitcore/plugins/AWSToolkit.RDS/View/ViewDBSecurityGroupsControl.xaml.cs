@@ -1,17 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.RDS.Controller;
 using Amazon.AWSToolkit.RDS.Model;
@@ -90,29 +80,11 @@ namespace Amazon.AWSToolkit.RDS.View
             }
         }
 
-        public override string Title
-        {
-            get
-            {
-                return string.Format("{0} DB Security Groups", this._controller.RegionDisplayName);
-            }
-        }
+        public override string Title => string.Format("{0} DB Security Groups", this._controller.RegionDisplayName);
 
-        public override string UniqueId
-        {
-            get
-            {
-                return "RDSDBSecurityGroups_" + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
-            }
-        }
+        public override string UniqueId => "RDSDBSecurityGroups_" + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {

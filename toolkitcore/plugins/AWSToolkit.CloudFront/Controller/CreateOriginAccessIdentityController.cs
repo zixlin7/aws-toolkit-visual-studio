@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Amazon.CloudFront;
 using Amazon.CloudFront.Model;
 
@@ -22,13 +18,7 @@ namespace Amazon.AWSToolkit.CloudFront.Controller
             this._model = new CreateOriginAccessIdentityModel();
         }
 
-        public CreateOriginAccessIdentityModel Model
-        {
-            get
-            {
-                return this._model;
-            }
-        }
+        public CreateOriginAccessIdentityModel Model => this._model;
 
         public bool Execute()
         {

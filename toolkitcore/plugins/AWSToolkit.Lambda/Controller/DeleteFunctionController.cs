@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Lambda.Nodes;
-using Amazon.AWSToolkit;
-
-using Amazon.Lambda;
-using Amazon.Lambda.Model;
 
 namespace Amazon.AWSToolkit.Lambda.Controller
 {

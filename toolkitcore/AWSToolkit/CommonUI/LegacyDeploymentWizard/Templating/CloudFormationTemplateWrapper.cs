@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
 
 using ThirdParty.Json.LitJson;
@@ -19,7 +18,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating
     /// </summary>
     public class CloudFormationTemplateWrapper : DeploymentTemplateWrapperBase
     {
-        public override string ServiceOwner { get { return DeploymentServiceIdentifiers.CloudFormationServiceName; } }
+        public override string ServiceOwner => DeploymentServiceIdentifiers.CloudFormationServiceName;
 
         public override System.Windows.Media.ImageSource TemplateIcon
         {
@@ -395,13 +394,12 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating
             public string Name
             {
                 get;
-                private set;
             }
 
             string _description;
             public string Description
             {
-                get { return _description; }
+                get => _description;
                 private set
                 {
                     _description = value;
@@ -413,19 +411,16 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating
             public string Type
             {
                 get;
-                private set;
             }
 
             public string DefaultValue
             {
                 get;
-                private set;
             }
 
             public bool NoEcho
             {
                 get;
-                private set;
             }
 
             public bool Hidden { get; set; }
@@ -433,7 +428,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating
             string _overrideValue;
             public string OverrideValue
             {
-                get { return this._overrideValue; }
+                get => this._overrideValue;
                 set
                 {
                     this._overrideValue = value;
@@ -444,43 +439,36 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating
             public string[] AllowedValues
             {
                 get;
-                private set;
             }
 
             public int? MinLength
             {
                 get;
-                private set;
             }
 
             public int? MaxLength
             {
                 get;
-                private set;
             }
 
             public double? MinValue
             {
                 get;
-                private set;
             }
 
             public double? MaxValue
             {
                 get;
-                private set;
             }
 
             public string AllowedPattern
             {
                 get;
-                private set;
             }
 
             public string ConstraintDescription
             {
                 get;
-                private set;
             }
 
             public bool IsValid(out string errorMessage)

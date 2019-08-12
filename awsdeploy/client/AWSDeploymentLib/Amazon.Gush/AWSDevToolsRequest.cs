@@ -38,21 +38,9 @@ namespace Amazon.DevTools
             this.dateTime = dateTime.ToUniversalTime();
         }
 
-        public string DateStamp
-        {
-            get
-            {
-                return this.dateTime.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
-            }
-        }
+        public string DateStamp => this.dateTime.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
 
-        public string DateTimeStamp
-        {
-            get
-            {
-                return this.dateTime.ToString("yyyyMMddTHHmmss", CultureInfo.InvariantCulture);
-            }
-        }
+        public string DateTimeStamp => this.dateTime.ToString("yyyyMMddTHHmmss", CultureInfo.InvariantCulture);
 
         public abstract string DerivePath();
 
@@ -70,13 +58,7 @@ namespace Amazon.DevTools
             set;
         }
 
-        public string Service
-        {
-            get
-            {
-                return AWSDevToolsRequest.SERVICE;
-            }
-        }
+        public string Service => AWSDevToolsRequest.SERVICE;
 
         protected internal virtual void Validate()
         {

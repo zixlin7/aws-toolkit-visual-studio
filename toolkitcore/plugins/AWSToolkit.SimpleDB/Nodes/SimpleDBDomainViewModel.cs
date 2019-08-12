@@ -1,15 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Threading;
-
+﻿using System.Windows;
 using Amazon.SimpleDB;
-using Amazon.SimpleDB.Model;
-
-using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
 namespace Amazon.AWSToolkit.SimpleDB.Nodes
@@ -28,28 +18,13 @@ namespace Amazon.AWSToolkit.SimpleDB.Nodes
             this._domain = domain;
         }
 
-        public SimpleDBRootViewModel SimpleDBRootViewModel
-        {
-            get { return this._simpleDBRootViewModel; }
-        }
+        public SimpleDBRootViewModel SimpleDBRootViewModel => this._simpleDBRootViewModel;
 
-        public IAmazonSimpleDB SimpleDBClient
-        {
-            get { return this._simpleDBRootViewModel.SimpleDBClient; }
-        }
+        public IAmazonSimpleDB SimpleDBClient => this._simpleDBRootViewModel.SimpleDBClient;
 
-        public string Domain
-        {
-            get { return this._domain; }
-        }
+        public string Domain => this._domain;
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.SimpleDB.Resources.EmbeddedImages.domain-node.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.SimpleDB.Resources.EmbeddedImages.domain-node.png";
 
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {

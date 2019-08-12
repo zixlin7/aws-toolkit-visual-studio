@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.CloudFront.Nodes;
 using Amazon.AWSToolkit.CloudFront.DistributionWizard.PageController;
 using Amazon.AWSToolkit.CloudFront.Model;
-using Amazon.AWSToolkit;
-
-using Amazon.CloudFront;
 using Amazon.CloudFront.Model;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
@@ -66,10 +59,7 @@ namespace Amazon.AWSToolkit.CloudFront.Controller
             return this._results;
         }
 
-        public CreateDistributionModel Model
-        {
-            get { return this._model; }
-        }
+        public CreateDistributionModel Model => this._model;
 
         public Distribution Persist()
         {

@@ -37,22 +37,13 @@ namespace Microsoft.VisualStudio.Project.Automation
 
 		#region VSProjectItem Members
 
-		public virtual EnvDTE.Project ContainingProject
-		{
-			get { return fileNode.ProjectMgr.GetAutomationObject() as EnvDTE.Project; }
-		}
+		public virtual EnvDTE.Project ContainingProject => fileNode.ProjectMgr.GetAutomationObject() as EnvDTE.Project;
 
-		public virtual ProjectItem ProjectItem
-		{
-			get { return fileNode.GetAutomationObject() as ProjectItem; }
-		}
+        public virtual ProjectItem ProjectItem => fileNode.GetAutomationObject() as ProjectItem;
 
-		public virtual DTE DTE
-		{
-			get { return (DTE)this.fileNode.ProjectMgr.Site.GetService(typeof(DTE)); }
-		}
+        public virtual DTE DTE => (DTE)this.fileNode.ProjectMgr.Site.GetService(typeof(DTE));
 
-		public virtual void RunCustomTool()
+        public virtual void RunCustomTool()
 		{
 			this.FileNode.RunGenerator();
 		}
@@ -65,15 +56,9 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// </summary>
 		public FileNode FileNode
 		{
-			get
-			{
-				return fileNode;
-			}
-			set
-			{
-				fileNode = value;
-			}
-		}
+			get => fileNode;
+            set => fileNode = value;
+        }
 		#endregion
 
 	}

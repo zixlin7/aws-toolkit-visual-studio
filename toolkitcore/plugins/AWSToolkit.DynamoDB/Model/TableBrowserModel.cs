@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
 using System.Windows.Media;
 
 using Amazon.AWSToolkit.CommonUI;
@@ -27,7 +26,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
 
         public TableDescription TableDescription
         {
-            get { return this._tableDescription; }
+            get => this._tableDescription;
             set
             {
                 this._tableDescription = value;
@@ -42,13 +41,9 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         public string TableName
         {
             get;
-            private set;
         }
 
-        public string TableStatus
-        {
-            get { return this._tableDescription.TableStatus; }
-        }
+        public string TableStatus => this._tableDescription.TableStatus;
 
         public SolidColorBrush TableStatusColor
         {
@@ -68,12 +63,9 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
 
         public KeySchemaExtendedElement RangeKeyElement { get; private set; }
 
-        public ObservableCollection<KeySchemaExtendedElement> SecondaryIndexes { get; private set; }
+        public ObservableCollection<KeySchemaExtendedElement> SecondaryIndexes { get; }
 
-        public bool CanScan
-        {
-            get { return string.Equals(this.TableStatus, DynamoDBConstants.TABLE_STATUS_ACTIVE, StringComparison.CurrentCultureIgnoreCase); }
-        }
+        public bool CanScan => string.Equals(this.TableStatus, DynamoDBConstants.TABLE_STATUS_ACTIVE, StringComparison.CurrentCultureIgnoreCase);
 
         public bool HasBinaryKeys
         {
@@ -94,23 +86,14 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         }
 
         ObservableCollection<ScanCondition> _scanConditions = new ObservableCollection<ScanCondition>();
-        public ObservableCollection<ScanCondition> ScanConditions
-        {
-            get { return this._scanConditions; }
-        }
+        public ObservableCollection<ScanCondition> ScanConditions => this._scanConditions;
 
 
         ObservableCollection<Document> _documents = new ObservableCollection<Document>();
-        public ObservableCollection<Document> Documents
-        {
-            get { return this._documents; }
-        }
+        public ObservableCollection<Document> Documents => this._documents;
 
         public IList<Document> _deletedDocuments = new List<Document>();
-        public IList<Document> DeletedDocuments
-        {
-            get { return this._deletedDocuments; }
-        }
+        public IList<Document> DeletedDocuments => this._deletedDocuments;
 
         void onDocumentsChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -131,7 +114,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         bool _hasData;
         public bool HasData
         {
-            get { return this._hasData; }
+            get => this._hasData;
             set
             {
                 this._hasData = value;
@@ -142,7 +125,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         bool _hasMoreRows;
         public bool HasMoreRows
         {
-            get { return this._hasMoreRows; }
+            get => this._hasMoreRows;
             set
             {
                 this._hasMoreRows = value;
@@ -153,7 +136,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         string _settingsKey;
         public string SettingsKey
         {
-            get { return this._settingsKey; }
+            get => this._settingsKey;
             set
             {
                 this._settingsKey = value;

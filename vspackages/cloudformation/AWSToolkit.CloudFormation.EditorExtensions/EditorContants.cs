@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
+﻿namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
 {
     public static class EditorContants
     {

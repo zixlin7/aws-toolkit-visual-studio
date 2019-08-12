@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.TeamFoundation.Controls;
 using Microsoft.TeamFoundation.Controls.WPF.TeamExplorer;
-
-using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;

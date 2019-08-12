@@ -9,8 +9,6 @@ using System.Threading;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
-using Amazon.AWSToolkit.CodeCommit.Model;
-using Amazon.AWSToolkit.Persistence;
 using Amazon.AWSToolkit.Util;
 using Amazon.Runtime.Internal.Settings;
 using log4net;
@@ -175,10 +173,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
         /// Returns the credential targets currently registered with the OS for
         /// this connection.
         /// </summary>
-        public IEnumerable<string> OsCredentialTargets
-        {
-            get { return _persistedTargets.ToArray(); }
-        }
+        public IEnumerable<string> OsCredentialTargets => _persistedTargets.ToArray();
 
         /// <summary>
         /// Registers a set of git credentials with the OS, and updates

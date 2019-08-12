@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using Amazon.AWSToolkit.Annotations;
-using log4net.Core;
 
 namespace Amazon.AWSToolkit.CommonUI
 {
@@ -55,7 +50,7 @@ namespace Amazon.AWSToolkit.CommonUI
         private double _zoomLevel = 1.0;
         public double ZoomLevel
         {
-            get { return _zoomLevel; }
+            get => _zoomLevel;
             set
             {
                 _zoomLevel = value;

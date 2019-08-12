@@ -7,7 +7,6 @@ using System.Windows;
 using System.Windows.Media;
 
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 
 using Amazon.CloudFormation.Model;
@@ -43,7 +42,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         string _regionName;
         public string RegionName
         {
-            get { return this._regionName; }
+            get => this._regionName;
             set
             {
                 this._regionName = value;
@@ -54,7 +53,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         string _stackname;
         public string StackName
         {
-            get { return this._stackname; }
+            get => this._stackname;
             set
             {
                 this._stackname = value;
@@ -66,7 +65,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         string _stackId;
         public string StackId
         {
-            get { return this._stackId; }
+            get => this._stackId;
             set
             {
                 this._stackId = value;
@@ -78,7 +77,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         DateTime _created;
         public DateTime Created
         {
-            get { return this._created; }
+            get => this._created;
             set
             {
                 this._created = value;
@@ -89,7 +88,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         string _status;
         public string Status
         {
-            get { return this._status; }
+            get => this._status;
             set
             {
                 this._status = value;
@@ -137,7 +136,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         string _statusReason;
         public string StatusReason
         {
-            get { return this._statusReason; }
+            get => this._statusReason;
             set
             {
                 this._statusReason = value;
@@ -148,7 +147,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         string _snsTopic;
         public string SNSTopic
         {
-            get { return this._snsTopic; }
+            get => this._snsTopic;
             set
             {
                 this._snsTopic = value;
@@ -159,7 +158,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         IList<Tag> _tags;
         public IList<Tag> Tags
         {
-            get { return this._tags; }
+            get => this._tags;
             set
             {
                 this._tags = value;
@@ -167,22 +166,9 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
             }
         }
 
-        public Visibility AWSServerlessFieldsVisibility
-        {
-            get
-            {
-                return this.IsAWSServerlessStack ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
+        public Visibility AWSServerlessFieldsVisibility => this.IsAWSServerlessStack ? Visibility.Visible : Visibility.Collapsed;
 
-        public Visibility AWSServerlessCopyVisibility
-        {
-            get
-            {
-                return this.IsAWSServerlessStack && !string.IsNullOrWhiteSpace(this.AWSServerlessURL) ? Visibility.Visible : Visibility.Collapsed;
-            }
-
-        }
+        public Visibility AWSServerlessCopyVisibility => this.IsAWSServerlessStack && !string.IsNullOrWhiteSpace(this.AWSServerlessURL) ? Visibility.Visible : Visibility.Collapsed;
 
 
         public bool IsAWSServerlessStack
@@ -225,7 +211,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         string _createTimeout;
         public string CreateTimeout
         {
-            get { return this._createTimeout; }
+            get => this._createTimeout;
             set
             {
                 this._createTimeout = value;
@@ -236,7 +222,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         bool _rollbackOnFailure;
         public bool RollbackOnFailure
         {
-            get { return this._rollbackOnFailure; }
+            get => this._rollbackOnFailure;
             set
             {
                 this._rollbackOnFailure = value;
@@ -247,7 +233,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         string _description;
         public string Description
         {
-            get { return this._description; }
+            get => this._description;
             set
             {
                 this._description = value;
@@ -258,7 +244,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         CloudFormationTemplateWrapper _templateWrapper;
         public CloudFormationTemplateWrapper TemplateWrapper
         {
-            get { return this._templateWrapper; }
+            get => this._templateWrapper;
             set
             {
                 this._templateWrapper = value;
@@ -349,7 +335,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         ObservableCollection<Output> _outputs = new ObservableCollection<Output>();
         public ObservableCollection<Output> Outputs
         {
-            get { return this._outputs; }
+            get => this._outputs;
             set
             {
                 this._outputs = value;
@@ -361,7 +347,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         List<StackEventWrapper> _unfilteredEvents = new List<StackEventWrapper>();
         public List<StackEventWrapper> UnfilteredEvents
         {
-            get { return this._unfilteredEvents; }
+            get => this._unfilteredEvents;
             set
             {
                 this._unfilteredEvents = value;
@@ -372,7 +358,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         ObservableCollection<StackEventWrapper> _events = new ObservableCollection<StackEventWrapper>();
         public ObservableCollection<StackEventWrapper> Events
         {
-            get { return this._events; }
+            get => this._events;
             set
             {
                 this._events = value;
@@ -383,7 +369,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         string _eventTextFilter;
         public string EventTextFilter
         {
-            get { return this._eventTextFilter; }
+            get => this._eventTextFilter;
             set
             {
                 this._eventTextFilter = value;
@@ -392,15 +378,9 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
         }
 
         ObservableCollection<RunningInstanceWrapper> _instances = new ObservableCollection<RunningInstanceWrapper>();
-        public ObservableCollection<RunningInstanceWrapper> Instances
-        {
-            get { return this._instances; }
-        }
+        public ObservableCollection<RunningInstanceWrapper> Instances => this._instances;
 
         ObservableCollection<ResourceWrapper> _resources = new ObservableCollection<ResourceWrapper>();
-        public ObservableCollection<ResourceWrapper> Resources
-        {
-            get { return this._resources; }
-        }
+        public ObservableCollection<ResourceWrapper> Resources => this._resources;
     }
 }

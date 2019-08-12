@@ -22,9 +22,9 @@ namespace Microsoft.VisualStudio.Project
 		#region events
 		public event EventHandler<ProjectPropertyChangedArgs> OnProjectPropertyChanged
 		{
-			add { projectPropertiesListeners += value; }
-			remove { projectPropertiesListeners -= value; }
-		}
+			add => projectPropertiesListeners += value;
+            remove => projectPropertiesListeners -= value;
+        }
 		#endregion
 
 		#region methods

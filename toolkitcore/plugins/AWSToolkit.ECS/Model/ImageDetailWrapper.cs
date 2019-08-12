@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Amazon.ECR.Model;
 
 namespace Amazon.AWSToolkit.ECS.Model
@@ -17,20 +13,11 @@ namespace Amazon.AWSToolkit.ECS.Model
             _inner = inner;
         }
 
-        public ICollection<string> ImageTags
-        {
-            get { return _inner?.ImageTags; }
-        }
+        public ICollection<string> ImageTags => _inner?.ImageTags;
 
-        public string Digest
-        {
-            get { return _inner?.ImageDigest ?? ""; }
-        }
+        public string Digest => _inner?.ImageDigest ?? "";
 
-        public ImageDetail NativeImageDetail
-        {
-            get { return this._inner; }
-        }
+        public ImageDetail NativeImageDetail => this._inner;
 
         public string Size
         {
@@ -47,9 +34,6 @@ namespace Amazon.AWSToolkit.ECS.Model
             }
         }
 
-        public string PushedAt
-        {
-            get { return _inner?.ImagePushedAt.ToLocalTime().ToString() ?? ""; }
-        }
+        public string PushedAt => _inner?.ImagePushedAt.ToLocalTime().ToString() ?? "";
     }
 }

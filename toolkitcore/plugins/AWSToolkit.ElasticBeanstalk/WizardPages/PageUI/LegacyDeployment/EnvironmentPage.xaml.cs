@@ -2,25 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
-
-using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
-using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers;
-using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
 using Amazon.AWSToolkit.Account;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment
@@ -43,10 +31,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment
 
         public IAWSWizardPageController PageController { get; set; }
 
-        public bool CreateNewEnvironment
-        {
-            get { return this._btnCreateNewEnv.IsChecked == true; }
-        }
+        public bool CreateNewEnvironment => this._btnCreateNewEnv.IsChecked == true;
 
         public bool UserCreatingNewApp
         {
@@ -147,20 +132,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment
             }
         }
 
-        public string EnvironmentDescription
-        {
-            get { return this._envDescription.Text; }
-        }
+        public string EnvironmentDescription => this._envDescription.Text;
 
-        public string CName
-        {
-            get { return this._cname.Text.Trim(); }
-        }
+        public string CName => this._cname.Text.Trim();
 
-        public bool NewEnvironmentNameIsValid
-        {
-            get { return ValidateEnteredEnvironmentName(); }
-        }
+        public bool NewEnvironmentNameIsValid => ValidateEnteredEnvironmentName();
 
         public bool CNameIsValid
         {

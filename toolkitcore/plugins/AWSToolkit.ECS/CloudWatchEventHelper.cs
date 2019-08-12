@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using Amazon.CloudWatchEvents;
@@ -81,10 +79,7 @@ namespace Amazon.AWSToolkit.ECS
                 _rulesByTarget[rule.Name] = targets;
             }
 
-            public IEnumerable<string> RuleNames
-            {
-                get { return this._rules.Keys; }
-            }
+            public IEnumerable<string> RuleNames => this._rules.Keys;
 
             public Rule GetRule(string ruleName)
             {

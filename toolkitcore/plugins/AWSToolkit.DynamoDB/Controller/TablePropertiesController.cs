@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.DynamoDB.Nodes;
 using Amazon.AWSToolkit.DynamoDB.View;
 using Amazon.AWSToolkit.DynamoDB.Model;
-using Amazon.AWSToolkit;
-
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 
@@ -40,10 +35,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
             return this._results;
         }
 
-        public TablePropertiesModel Model
-        {
-            get { return this._model; }
-        }
+        public TablePropertiesModel Model => this._model;
 
         public void LoadModel()
         {

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Windows.Controls;
+﻿using System.ComponentModel;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.EC2.Model;
 using Amazon.RDS.Model;
 
 namespace Amazon.AWSToolkit.RDS.Model
@@ -27,10 +21,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         }
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "DB Subnet Group"; }
-        }
+        public string TypeName => "DB Subnet Group";
 
         [Browsable(false)]
         public string NameAndDescription
@@ -46,42 +37,24 @@ namespace Amazon.AWSToolkit.RDS.Model
             }
         }
 
-        public string DBSubnetGroupIdentifier
-        {
-            get { return this._nativeDbSubnetGroup.DBSubnetGroupName; }
-        }
+        public string DBSubnetGroupIdentifier => this._nativeDbSubnetGroup.DBSubnetGroupName;
 
         [Browsable(false)]
-        internal DBSubnetGroup NativeSubnetGroup
-        {
-            get { return this._nativeDbSubnetGroup; }
-        }
+        internal DBSubnetGroup NativeSubnetGroup => this._nativeDbSubnetGroup;
 
         [DisplayName("Name")]
         [AssociatedIconAttribute(false, "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.DBSubnetGroups.png;AWSToolkit.RDS")]
-        public string Name
-        {
-            get { return NativeSubnetGroup.DBSubnetGroupName; }    
-        }
+        public string Name => NativeSubnetGroup.DBSubnetGroupName;
 
         [DisplayName("Description")]
-        public string Description
-        {
-            get { return NativeSubnetGroup.DBSubnetGroupDescription; }
-        }
+        public string Description => NativeSubnetGroup.DBSubnetGroupDescription;
 
         [DisplayName("Status")]
         [AssociatedIcon(true, "StatusIcon")]
-        public string Status
-        {
-            get { return NativeSubnetGroup.SubnetGroupStatus; }
-        }
+        public string Status => NativeSubnetGroup.SubnetGroupStatus;
 
         [DisplayName("VPC ID")]
-        public string VpcId
-        {
-            get { return NativeSubnetGroup.VpcId; }
-        }
+        public string VpcId => NativeSubnetGroup.VpcId;
 
         [Browsable(false)]
         public System.Windows.Media.ImageSource StatusIcon

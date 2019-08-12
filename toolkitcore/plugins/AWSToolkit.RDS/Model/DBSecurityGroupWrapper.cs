@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-
 using Amazon.RDS.Model;
 
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.EC2.Model;
 
 namespace Amazon.AWSToolkit.RDS.Model
@@ -54,41 +48,23 @@ namespace Amazon.AWSToolkit.RDS.Model
         }
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "DB Security Group"; }
-        }
+        public string TypeName => "DB Security Group";
 
         [DisplayName("Name")]
         [AssociatedIconAttribute(false, "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.SecurityGroup.png;AWSToolkit.RDS")]
-        public string DisplayName
-        {
-            get { return this._nativeSecurityGroup.DBSecurityGroupName; }
-        }
+        public string DisplayName => this._nativeSecurityGroup.DBSecurityGroupName;
 
         [DisplayName("Description")]
-        public string Description
-        {
-            get { return this._nativeSecurityGroup.DBSecurityGroupDescription; }
-        }
+        public string Description => this._nativeSecurityGroup.DBSecurityGroupDescription;
 
         [DisplayName("Owner ID")]
-        public string OwnerId
-        {
-            get { return this._nativeSecurityGroup.OwnerId; }
-        }
+        public string OwnerId => this._nativeSecurityGroup.OwnerId;
 
         [DisplayName("VPC ID")]
-        public string VpcId
-        {
-            get { return this._nativeSecurityGroup.VpcId; }
-        }
+        public string VpcId => this._nativeSecurityGroup.VpcId;
 
         ObservableCollection<PermissionRule> _rules = new ObservableCollection<PermissionRule>();
         [Browsable(false)]
-        public ObservableCollection<PermissionRule> PermissionRules
-        {
-            get { return this._rules; }
-        }
+        public ObservableCollection<PermissionRule> PermissionRules => this._rules;
     }
 }

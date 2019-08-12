@@ -1,37 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Amazon.AWSToolkit.Navigator.Node
 {
     public abstract class AbstractMetaNode : IMetaNode
     {
-        public virtual bool SupportsEndPoint
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public virtual bool SupportsEndPoint => false;
 
-        public virtual bool SupportsRefresh
-        {
-            get { return this.SupportsEndPoint; }
-        }
+        public virtual bool SupportsRefresh => this.SupportsEndPoint;
 
-        public virtual string EndPointSystemName
-        {
-            get { return null; }
-        }
+        public virtual string EndPointSystemName => null;
 
-        public virtual IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return new List<ActionHandlerWrapper>();
-            }
-        }
+        public virtual IList<ActionHandlerWrapper> Actions => new List<ActionHandlerWrapper>();
 
         protected IList<ActionHandlerWrapper> BuildActionHandlerList(params ActionHandlerWrapper[] handles)
         {

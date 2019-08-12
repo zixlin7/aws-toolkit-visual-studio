@@ -84,29 +84,11 @@ namespace Amazon.AWSToolkit.RDS.View
             }
         }
 
-        public override string Title
-        {
-            get
-            {
-                return string.Format("{0} DB Subnet Groups", this._controller.RegionDisplayName);
-            }
-        }
+        public override string Title => string.Format("{0} DB Subnet Groups", this._controller.RegionDisplayName);
 
-        public override string UniqueId
-        {
-            get
-            {
-                return "RDSDBSubnetGroups_" + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
-            }
-        }
+        public override string UniqueId => "RDSDBSubnetGroups_" + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {

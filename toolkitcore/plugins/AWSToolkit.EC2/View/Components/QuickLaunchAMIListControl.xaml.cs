@@ -2,18 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using AMIImage = Amazon.EC2.Model.Image;
 using Amazon.AWSToolkit.EC2.Model;
 
@@ -104,27 +94,15 @@ namespace Amazon.AWSToolkit.EC2.View.Components
                 else
                     return null;
             }
-            set
-            {
-                this._amiList.SelectedItem = value;
-            }
+            set => this._amiList.SelectedItem = value;
         }
 
-        public bool HasSelection
-        {
-            get { return this._amiList.SelectedItem != null; }
-        }
+        public bool HasSelection => this._amiList.SelectedItem != null;
 
         public bool AllowFiltering
         {
-            get
-            {
-                return _filterControls.Visibility == Visibility.Visible;
-            }
-            set
-            {
-                _filterControls.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
-            }
+            get => _filterControls.Visibility == Visibility.Visible;
+            set => _filterControls.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
         }
 
         void RenderImagesForPlatformFilter()

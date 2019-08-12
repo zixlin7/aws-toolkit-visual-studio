@@ -4,20 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.Controller;
-using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.Util;
-
-using Amazon.EC2;
 using Amazon.EC2.Model;
 using AMIImage = Amazon.EC2.Model.Image;
 
@@ -42,20 +32,9 @@ namespace Amazon.AWSToolkit.EC2.View
             this.PreviewKeyDown += new KeyEventHandler(onKeyDown);
         }
 
-        public override string Title
-        {
-            get
-            {
-                return "Set AMI Permissions";
-            }
-        }
-        public override bool SupportsBackGroundDataLoad
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override string Title => "Set AMI Permissions";
+
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {

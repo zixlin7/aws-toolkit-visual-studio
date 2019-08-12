@@ -1,19 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.RDS.Model;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment
@@ -92,18 +82,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment
 
         public string Description { get; set; }
 
-        public string DisplayName
-        {
-            get
-            {
-                return IsVPCGroup ? string.Format("{0} (VPC)", Id) : Name;
-            }
-        }
+        public string DisplayName => IsVPCGroup ? string.Format("{0} (VPC)", Id) : Name;
 
-        public bool IsVPCGroup
-        {
-            get { return !string.IsNullOrEmpty(Id); }            
-        }
+        public bool IsVPCGroup => !string.IsNullOrEmpty(Id);
     }
 
     // Used to handle multi-select of security groups in a combo box

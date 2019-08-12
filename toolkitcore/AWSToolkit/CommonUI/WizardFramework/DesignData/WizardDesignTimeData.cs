@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace Amazon.AWSToolkit.CommonUI.WizardFramework.DesignData
@@ -16,18 +15,9 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework.DesignData
             new TableOfContentEntry { GroupName = "Group3" }
         };
 
-        public IEnumerable<TableOfContentEntry> TableOfContents
-        {
-            get { return _sampleData; }
-        }
+        public IEnumerable<TableOfContentEntry> TableOfContents => _sampleData;
 
-        public TableOfContentEntry ActiveTableOfContentEntry
-        {
-            get
-            {
-                return _sampleData[1];
-            }
-        }
+        public TableOfContentEntry ActiveTableOfContentEntry => _sampleData[1];
     }
 
     public class PageGroupsDesignTimeData
@@ -47,22 +37,13 @@ namespace Amazon.AWSToolkit.CommonUI.WizardFramework.DesignData
             }
         }
 
-        public string ActivePageGroupName
-        {
-            get { return _sampleData[1].GroupName; }
-        }
+        public string ActivePageGroupName => _sampleData[1].GroupName;
     }
 
     public class HeaderDesignTimeData
     {
-        public string ActivePageTitle
-        {
-            get { return "Page Title"; }
-        }
+        public string ActivePageTitle => "Page Title";
 
-        public string ActivePageDescription 
-        {
-            get { return "Some descriptive text about the page."; }
-        }
+        public string ActivePageDescription => "Some descriptive text about the page.";
     } 
 }

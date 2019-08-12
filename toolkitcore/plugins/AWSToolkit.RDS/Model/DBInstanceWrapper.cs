@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-
 using Amazon.RDS.Model;
 
 using Amazon.AWSToolkit.CommonUI;
@@ -38,23 +34,14 @@ namespace Amazon.AWSToolkit.RDS.Model
         }
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "DB Instance"; }
-        }
+        public string TypeName => "DB Instance";
 
         [Browsable(false)]
-        public string DisplayName
-        {
-            get { return this._nativeDbInstance.DBInstanceIdentifier; }
-        }
+        public string DisplayName => this._nativeDbInstance.DBInstanceIdentifier;
 
         [DisplayName("DB Instance")]
         [AssociatedIconAttribute(false, "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.DBInstances.png;AWSToolkit.RDS")]
-        public string DBInstanceIdentifier
-        {
-            get { return this._nativeDbInstance.DBInstanceIdentifier; }
-        }
+        public string DBInstanceIdentifier => this._nativeDbInstance.DBInstanceIdentifier;
 
         [DisplayName("Endpoint")]
         public string Endpoint
@@ -69,10 +56,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         }
 
         [DisplayName("MasterUsername")]
-        public string MasterUsername
-        {
-            get { return this._nativeDbInstance.MasterUsername; }
-        }
+        public string MasterUsername => this._nativeDbInstance.MasterUsername;
 
         [DisplayName("Port")]
         public int? Port
@@ -87,13 +71,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         }
 
         [Browsable(false)]
-        public bool MultiAZ
-        {
-            get 
-            {
-                return this._nativeDbInstance.MultiAZ; 
-            }
-        }
+        public bool MultiAZ => this._nativeDbInstance.MultiAZ;
 
         [DisplayName("Multi AZ")]
         public string MultiAZFormatted
@@ -112,25 +90,15 @@ namespace Amazon.AWSToolkit.RDS.Model
         }
 
         [DisplayName("Class")]
-        public string DBInstanceClass
-        {
-            get { return this._nativeDbInstance.DBInstanceClass; }
-        }
+        public string DBInstanceClass => this._nativeDbInstance.DBInstanceClass;
 
         [DisplayName("Status")]
         [AssociatedIcon(true, "StatusIcon")]
-        public string DBInstanceStatus
-        {
-            get { return this._nativeDbInstance.DBInstanceStatus; }
-        }
+        public string DBInstanceStatus => this._nativeDbInstance.DBInstanceStatus;
 
-        
 
         [DisplayName("Storage")]
-        public string FormattedStorage
-        {
-            get { return string.Format("{0} GiB", this._nativeDbInstance.AllocatedStorage); }
-        }
+        public string FormattedStorage => string.Format("{0} GiB", this._nativeDbInstance.AllocatedStorage);
 
         [DisplayName("Security Groups")]
         public string FormattedSecurityGroups
@@ -173,29 +141,18 @@ namespace Amazon.AWSToolkit.RDS.Model
             }
         }
 
+        // right now return last-queried state, might want to refresh first
         [Browsable(false)]
-        public bool IsAvailable
-        {
-            get 
-            { 
-                // right now return last-queried state, might want to refresh first
-                return string.Compare(this._nativeDbInstance.DBInstanceStatus,
-                                      DbStatusAvailable, 
-                                      StringComparison.InvariantCultureIgnoreCase) == 0; 
-            }
-        }
+        public bool IsAvailable =>
+            string.Compare(this._nativeDbInstance.DBInstanceStatus,
+                DbStatusAvailable, 
+                StringComparison.InvariantCultureIgnoreCase) == 0;
 
         [DisplayName("Engine")]
-        public string Engine
-        {
-            get { return this._nativeDbInstance.Engine; }
-        }
+        public string Engine => this._nativeDbInstance.Engine;
 
         [DisplayName("Zone")]
-        public string AvailabilityZone
-        {
-            get { return this._nativeDbInstance.AvailabilityZone; }
-        }
+        public string AvailabilityZone => this._nativeDbInstance.AvailabilityZone;
 
         [DisplayName("Created Time")]
         public DateTime? InstanceCreateTime
@@ -210,10 +167,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         }
 
         [DisplayName("DB Name")]
-        public string DBName
-        {
-            get { return this._nativeDbInstance.DBName; }
-        }
+        public string DBName => this._nativeDbInstance.DBName;
 
         [Browsable(false)]
         public DatabaseTypes DatabaseType
@@ -262,10 +216,7 @@ namespace Amazon.AWSToolkit.RDS.Model
         }
 
         [Browsable(false)]
-        internal DBInstance NativeInstance
-        {
-            get { return this._nativeDbInstance; }
-        }
+        internal DBInstance NativeInstance => this._nativeDbInstance;
 
         public string CreateConnectionString(string dbName, string password)
         {

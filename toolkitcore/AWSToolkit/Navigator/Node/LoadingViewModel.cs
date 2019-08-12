@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Amazon.AWSToolkit.Navigator.Node
+﻿namespace Amazon.AWSToolkit.Navigator.Node
 {
     public class LoadingViewModel : AbstractViewModel
     {
@@ -12,12 +7,6 @@ namespace Amazon.AWSToolkit.Navigator.Node
         {
         }
 
-        protected override string IconName
-        {
-            get
-            {
-                return null;
-            }
-        }
+        protected override string IconName => null;
     }
 }

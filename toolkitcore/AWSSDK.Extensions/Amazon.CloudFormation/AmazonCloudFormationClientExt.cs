@@ -4,7 +4,6 @@ using Amazon.CloudFormation.Model;
 using Amazon.AutoScaling;
 using Amazon.AutoScaling.Model;
 using Amazon.ElasticLoadBalancing;
-using Amazon.ElasticLoadBalancing.Model;
 
 namespace Amazon.CloudFormation
 {

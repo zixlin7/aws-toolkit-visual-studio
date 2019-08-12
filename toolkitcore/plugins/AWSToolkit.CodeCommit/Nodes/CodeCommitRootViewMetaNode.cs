@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Navigator;
+﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.CodeCommit.Interface.Nodes;
 
 namespace Amazon.AWSToolkit.CodeCommit.Nodes
@@ -15,27 +8,15 @@ namespace Amazon.AWSToolkit.CodeCommit.Nodes
     {
         public const string CodeCommit_ENDPOINT_LOOKUP = "CodeCommit";
 
-        public CodeCommitRepositoryViewMetaNode CodeCommitRepositoryViewMetaNode
-        {
-            get { return this.FindChild<CodeCommitRepositoryViewMetaNode>(); }
-        }
+        public CodeCommitRepositoryViewMetaNode CodeCommitRepositoryViewMetaNode => this.FindChild<CodeCommitRepositoryViewMetaNode>();
 
-        public override string EndPointSystemName
-        {
-            get { return CodeCommit_ENDPOINT_LOOKUP; }
-        }
+        public override string EndPointSystemName => CodeCommit_ENDPOINT_LOOKUP;
 
         public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
         {
             return new CodeCommitRootViewModel(account);
         }
 
-        public override string MarketingWebSite
-        {
-            get
-            {
-                return "http://aws.amazon.com/CodeCommit/";
-            }
-        }
+        public override string MarketingWebSite => "http://aws.amazon.com/CodeCommit/";
     }
 }

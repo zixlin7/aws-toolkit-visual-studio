@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
 
 namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
@@ -70,56 +68,43 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
             return this._allowedValues.ContainsKey(value);
         }
 
-        public IEnumerable<AllowedValue> AllowedValues
-        {
-            get { return this._allowedValues.Values; }
-        }
+        public IEnumerable<AllowedValue> AllowedValues => this._allowedValues.Values;
 
-        public int AllowedValuesCount
-        {
-            get { return this._allowedValues.Count; }
-        }
+        public int AllowedValuesCount => this._allowedValues.Count;
 
         public string Description
         {
             get;
-            private set;
         }
 
         public string SchemaType
         {
             get;
-            private set;
         }
 
         public string ArraySchemaType
         {
             get;
-            private set;
         }
 
         public HashSet<string> ResourceRefType
         {
             get;
-            private set;
         }
 
         public string SchemaLookupProperty
         {
             get;
-            private set;
         }
 
         public bool DisableReferences
         {
             get;
-            private set;
         }
 
         public bool DisableFunctions
         {
             get;
-            private set;
         }
 
         public SchemaObject ParentSchema
@@ -131,7 +116,6 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
         public bool Required
         {
             get;
-            private set;
         }
 
         public bool IsValidKey(string key)
@@ -162,15 +146,9 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
             return this._defaultChildSchemaObject;
         }
 
-        public IEnumerable<string> PropertySchemaNames
-        {
-            get { return this._propertySchemaObjects.Keys; }
-        }
+        public IEnumerable<string> PropertySchemaNames => this._propertySchemaObjects.Keys;
 
-        public IEnumerable<string> ChildSchemaNames
-        {
-            get { return this._childSchemaObjects.Keys; }
-        }
+        public IEnumerable<string> ChildSchemaNames => this._childSchemaObjects.Keys;
 
         public override string ToString()
         {
@@ -185,10 +163,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
             return sb.ToString();
         }
 
-        public IEnumerable<ReturnValue> ReturnValues
-        {
-            get { return this._returnValues.Values; }
-        }
+        public IEnumerable<ReturnValue> ReturnValues => this._returnValues.Values;
 
         public void AddReturnValue(ReturnValue rt)
         {
@@ -213,13 +188,11 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
             public string Name
             {
                 get;
-                private set;
             }
 
             public string Description
             {
                 get;
-                private set;
             }
         }
 
@@ -234,13 +207,11 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser.Schema
             public string DisplayLabel
             {
                 get;
-                private set;
             }
 
             public string Value
             {
                 get;
-                private set;
             }
         }
     }

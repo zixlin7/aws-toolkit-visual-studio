@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit;
 
 namespace Amazon.AWSToolkit.S3.Nodes
 {
@@ -18,15 +13,9 @@ namespace Amazon.AWSToolkit.S3.Nodes
 
         public const string S3_ENDPOINT_LOOKUP = "S3";
 
-        public S3BucketViewMetaNode S3BucketViewMetaNode
-        {
-            get { return this.FindChild<S3BucketViewMetaNode>(); }
-        }
+        public S3BucketViewMetaNode S3BucketViewMetaNode => this.FindChild<S3BucketViewMetaNode>();
 
-        public override string EndPointSystemName
-        {
-            get { return S3_ENDPOINT_LOOKUP; }
-        }
+        public override string EndPointSystemName => S3_ENDPOINT_LOOKUP;
 
         public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
         {
@@ -45,22 +34,11 @@ namespace Amazon.AWSToolkit.S3.Nodes
             rootModel.AddBucket(results.FocalName as string);
         }
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList(new ActionHandlerWrapper("Create Bucket...", OnCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateResponse), false, 
-                    this.GetType().Assembly, "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.new-bucket.png"));
-            }
-        }
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(new ActionHandlerWrapper("Create Bucket...", OnCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateResponse), false, 
+                this.GetType().Assembly, "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.new-bucket.png"));
 
-        public override string MarketingWebSite
-        {
-            get
-            {
-                return "http://aws.amazon.com/s3/";
-            }
-        }
+        public override string MarketingWebSite => "http://aws.amazon.com/s3/";
 
         /// <summary>
         /// Adds a bucket to the list of buckets being deleted.

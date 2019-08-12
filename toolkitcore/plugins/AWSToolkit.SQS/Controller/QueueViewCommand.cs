@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.SQS.View;
@@ -49,10 +45,7 @@ namespace Amazon.AWSToolkit.SQS.Controller
                 .WithSuccess(true);
         }
 
-        public QueueViewModel Model
-        {
-            get { return this._queueViewModel; }
-        }
+        public QueueViewModel Model => this._queueViewModel;
 
         public void LoadModel()
         {
@@ -267,8 +260,8 @@ namespace Amazon.AWSToolkit.SQS.Controller
                 this.Timestamp = timestamp;
             }
 
-            public int Value { get; private set; }
-            public DateTime Timestamp {get;private set;}
+            public int Value { get; }
+            public DateTime Timestamp {get; }
         }
     }
 }

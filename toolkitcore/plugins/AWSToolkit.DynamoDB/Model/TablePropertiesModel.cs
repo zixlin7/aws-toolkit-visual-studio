@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.DynamoDBv2;
+﻿using System.Collections.Generic;
 
 namespace Amazon.AWSToolkit.DynamoDB.Model
 {
@@ -18,7 +13,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         string _status;
         public string Status
         {
-            get { return this._status; }
+            get => this._status;
             set
             {
                 this._status = value;
@@ -29,7 +24,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         string _originalReadCapacityUnits;
         public string OriginalReadCapacityUnits
         {
-            get { return this._originalReadCapacityUnits; }
+            get => this._originalReadCapacityUnits;
             set
             {
                 this._originalReadCapacityUnits = value;
@@ -40,7 +35,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         string _originalWriteCapacityUnits;
         public string OriginalWriteCapacityUnits
         {
-            get { return this._originalWriteCapacityUnits; }
+            get => this._originalWriteCapacityUnits;
             set
             {
                 this._originalWriteCapacityUnits = value;
@@ -81,7 +76,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         bool _ttlEnabled;
         public bool TTLEnabled
         {
-            get { return this._ttlEnabled; }
+            get => this._ttlEnabled;
             set
             {
                 this._ttlEnabled = value;
@@ -92,7 +87,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         string _ttlAttributeName;
         public string TTLAttributeName
         {
-            get { return this._ttlAttributeName; }
+            get => this._ttlAttributeName;
             set
             {
                 this._ttlAttributeName = value;
@@ -103,7 +98,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         bool _originalTtlEnabled;
         public bool OriginalTTLEnabled
         {
-            get { return this._originalTtlEnabled; }
+            get => this._originalTtlEnabled;
             set
             {
                 this._originalTtlEnabled = value;
@@ -114,7 +109,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         string _originalTtlAttributeName;
         public string OriginalTTLAttributeName
         {
-            get { return this._originalTtlAttributeName; }
+            get => this._originalTtlAttributeName;
             set
             {
                 this._originalTtlAttributeName = value;
@@ -125,7 +120,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
         bool _ttlInfoAvailable;
         public bool TTLInfoAvailable
         {
-            get { return this._ttlInfoAvailable; }
+            get => this._ttlInfoAvailable;
             set
             {
                 this._ttlInfoAvailable = value;
@@ -133,12 +128,11 @@ namespace Amazon.AWSToolkit.DynamoDB.Model
             }
         }
 
-        public bool TTLInfoUnavailable { get { return !TTLInfoAvailable; } }
+        public bool TTLInfoUnavailable => !TTLInfoAvailable;
 
         public Dictionary<string, SecondaryIndex> ExistingGlobalSecondaryIndexes
         {
             get;
-            private set;
         }
     }
 }

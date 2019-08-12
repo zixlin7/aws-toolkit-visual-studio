@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Amazon.AWSToolkit.Navigator
 {
@@ -57,13 +54,7 @@ namespace Amazon.AWSToolkit.Navigator
             return this;
         }
 
-        public Dictionary<string, object> Parameters
-        {
-            get
-            {
-                return this._parameters;
-            }
-        }
+        public Dictionary<string, object> Parameters => this._parameters;
 
         public T GetParameter<T>(string key, T defaultValue)
         {

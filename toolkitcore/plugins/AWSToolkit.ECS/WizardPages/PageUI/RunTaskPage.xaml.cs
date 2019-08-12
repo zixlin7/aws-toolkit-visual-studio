@@ -1,25 +1,9 @@
 ﻿using System.Windows;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.ECS.Controller;
 using Amazon.AWSToolkit.ECS.WizardPages.PageControllers;
 using log4net;
-using System;
-using Amazon.AWSToolkit.Account;
 using System.ComponentModel;
 using System.Windows.Controls;
-
-using Task = System.Threading.Tasks.Task;
-
-using Amazon.ECS;
-using Amazon.ECS.Model;
-using System.Collections.Generic;
-using System.Linq;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
-
-using static Amazon.AWSToolkit.ECS.WizardPages.ECSWizardUtils;
-using System.Windows.Navigation;
-using System.Diagnostics;
-using Amazon.IdentityManagement.Model;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 {
@@ -30,7 +14,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ScheduleTaskPage));
 
-        public RunTaskPageController PageController { get; private set; }
+        public RunTaskPageController PageController { get; }
 
         public RunTaskPage()
         {
@@ -92,7 +76,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         int? _desiredCount;
         public int? DesiredCount
         {
-            get { return this._desiredCount; }
+            get => this._desiredCount;
             set
             {
                 this._desiredCount = value;
@@ -103,7 +87,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         string _taskGroup;
         public string TaskGroup
         {
-            get { return this._taskGroup; }
+            get => this._taskGroup;
             set
             {
                 this._taskGroup = value;
@@ -111,15 +95,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
-        public ECSWizardUtils.PlacementTemplates PlacementTemplate
-        {
-            get { return this._ctlPlacementTemplate.SelectedItem as ECSWizardUtils.PlacementTemplates; }
-        }
+        public ECSWizardUtils.PlacementTemplates PlacementTemplate => this._ctlPlacementTemplate.SelectedItem as ECSWizardUtils.PlacementTemplates;
 
         public bool IsPlacementTemplateEnabled
         {
-            get { return this._ctlPlacementTemplate.IsEnabled; }
-            set { this._ctlPlacementTemplate.IsEnabled = value; }
+            get => this._ctlPlacementTemplate.IsEnabled;
+            set => this._ctlPlacementTemplate.IsEnabled = value;
         }
 
 

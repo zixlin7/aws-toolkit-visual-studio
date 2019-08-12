@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.Navigator;
+﻿using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.EC2.View;
 using Amazon.AWSToolkit.EC2.Model;
 
@@ -38,10 +33,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             return this._result;
         }
 
-        public AddNetworkAclRuleModel Model
-        {
-            get { return this._model; }
-        }
+        public AddNetworkAclRuleModel Model => this._model;
 
         public void CreateRule()
         {

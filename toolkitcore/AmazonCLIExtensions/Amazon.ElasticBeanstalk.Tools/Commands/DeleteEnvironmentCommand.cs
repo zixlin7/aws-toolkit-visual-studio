@@ -33,7 +33,7 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
 
                 return this._deleteEnvironmentProperties;
             }
-            set { this._deleteEnvironmentProperties = value; }
+            set => this._deleteEnvironmentProperties = value;
         }
 
         public DeleteEnvironmentCommand(IToolLogger logger, string workingDirectory, string[] args)

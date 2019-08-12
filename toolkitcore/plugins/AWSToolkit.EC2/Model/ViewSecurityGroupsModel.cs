@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
 
@@ -13,16 +9,10 @@ namespace Amazon.AWSToolkit.EC2.Model
     {
 
         ObservableCollection<SecurityGroupWrapper> _SecurityGroups = new ObservableCollection<SecurityGroupWrapper>();
-        public ObservableCollection<SecurityGroupWrapper> SecurityGroups
-        {
-            get { return this._SecurityGroups; }
-        }
+        public ObservableCollection<SecurityGroupWrapper> SecurityGroups => this._SecurityGroups;
 
         IList<SecurityGroupWrapper> _selectedGroups = new List<SecurityGroupWrapper>();
-        public IList<SecurityGroupWrapper> SelectedGroups
-        {
-            get { return this._selectedGroups; }
-        }
+        public IList<SecurityGroupWrapper> SelectedGroups => this._selectedGroups;
 
         EC2ColumnDefinition[] _instancePropertytColumnDefinitions;
         public EC2ColumnDefinition[] PropertyColumnDefinitions
@@ -39,12 +29,6 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
 
-        public string[] ListAvailableTags
-        {
-            get
-            {
-                return EC2ColumnDefinition.GetListAvailableTags(this.SecurityGroups);
-            }
-        }
+        public string[] ListAvailableTags => EC2ColumnDefinition.GetListAvailableTags(this.SecurityGroups);
     }
 }

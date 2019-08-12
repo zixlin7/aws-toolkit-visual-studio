@@ -11,7 +11,6 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
 using System;
 using Microsoft.VisualStudio.Shell.Interop;
-using ErrorHandler = Microsoft.VisualStudio.ErrorHandler;
 
 namespace Microsoft.VisualStudio.Project.Automation
 {
@@ -72,12 +71,9 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Gets the IVsExtensibility3 interface used in the automation function.
 		/// </summary>
-		public IVsExtensibility3 Extensibility
-		{
-			get { return extensibility; }
-		}
+		public IVsExtensibility3 Extensibility => extensibility;
 
-		/// <summary>
+        /// <summary>
 		/// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 		/// </summary>
 		public void Dispose()

@@ -12,7 +12,6 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
@@ -51,75 +50,45 @@ namespace Microsoft.VisualStudio.Project
 			/// </summary>
 			public Object Generator
 			{
-				get
-				{
-					return generator;
-				}
-				set
-				{
-					generator = value;
-				}
-			}
+				get => generator;
+                set => generator = value;
+            }
 
 			/// <summary>
 			/// GeneratesDesignTimeSource reg value name under HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\[VsVer]\Generators\[ProjFacGuid]\[GeneratorProgId]
 			/// </summary>
 			public int GeneratesDesignTimeSource
 			{
-				get
-				{
-					return generatesDesignTimeSource;
-				}
-				set
-				{
-					generatesDesignTimeSource = value;
-				}
-			}
+				get => generatesDesignTimeSource;
+                set => generatesDesignTimeSource = value;
+            }
 
 			/// <summary>
 			/// GeneratesSharedDesignTimeSource reg value name under HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\[VsVer]\Generators\[ProjFacGuid]\[GeneratorProgId]
 			/// </summary>
 			public int GeneratesSharedDesignTimeSource
 			{
-				get
-				{
-					return generatesSharedDesignTimeSource;
-				}
-				set
-				{
-					generatesSharedDesignTimeSource = value;
-				}
-			}
+				get => generatesSharedDesignTimeSource;
+                set => generatesSharedDesignTimeSource = value;
+            }
 
 			/// <summary>
 			/// UseDesignTimeCompilationFlag reg value name under HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\[VsVer]\Generators\[ProjFacGuid]\[GeneratorProgId]
 			/// </summary>
 			public int UseDesignTimeCompilationFlag
 			{
-				get
-				{
-					return useDesignTimeCompilationFlag;
-				}
-				set
-				{
-					useDesignTimeCompilationFlag = value;
-				}
-			}
+				get => useDesignTimeCompilationFlag;
+                set => useDesignTimeCompilationFlag = value;
+            }
 
 			/// <summary>
 			/// Generator Class ID.
 			/// </summary>
 			public Guid GeneratorClsid
 			{
-				get
-				{
-					return generatorClsid;
-				}
-				set
-				{
-					generatorClsid = value;
-				}
-			}
+				get => generatorClsid;
+                set => generatorClsid = value;
+            }
 			#endregion
 		}
 		#endregion
@@ -185,18 +154,18 @@ namespace Microsoft.VisualStudio.Project
 		/// </summary>
 		public Guid ProjectGuid
 		{
-			get { return this.projectType; }
-			set { this.projectType = value; }
-		}
+			get => this.projectType;
+            set => this.projectType = value;
+        }
 
 		/// <summary>
 		/// Defines an associated service provider.
 		/// </summary>
 		public System.IServiceProvider ServiceProvider
 		{
-			get { return this.serviceProvider; }
-			set { this.serviceProvider = value; }
-		}
+			get => this.serviceProvider;
+            set => this.serviceProvider = value;
+        }
 		#endregion
 
 		#region IVsSingleFileGeneratorFactory Helpers
@@ -226,14 +195,9 @@ namespace Microsoft.VisualStudio.Project
 		/// <summary>
 		/// Returns the local registry instance
 		/// </summary>
-		private ILocalRegistry LocalRegistry
-		{
-			get
-			{
-				return this.serviceProvider.GetService(typeof(SLocalRegistry)) as ILocalRegistry;
-			}
-		}
-		#endregion
+		private ILocalRegistry LocalRegistry => this.serviceProvider.GetService(typeof(SLocalRegistry)) as ILocalRegistry;
+
+        #endregion
 
 		#region IVsSingleFileGeneratorFactory Members
 		/// <summary>

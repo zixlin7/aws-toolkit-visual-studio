@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Amazon.ElasticBeanstalk.Model;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
@@ -16,10 +12,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
             this._originalVersion = originalVersion;
         }
 
-        public string VersionLabel
-        {
-            get { return this._originalVersion.VersionLabel; }
-        }
+        public string VersionLabel => this._originalVersion.VersionLabel;
 
         public string S3Key
         {
@@ -54,9 +47,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
             }
         }
 
-        public DateTime DateCreated
-        {
-            get { return this._originalVersion.DateCreated; }
-        }
+        public DateTime DateCreated => this._originalVersion.DateCreated;
     }
 }

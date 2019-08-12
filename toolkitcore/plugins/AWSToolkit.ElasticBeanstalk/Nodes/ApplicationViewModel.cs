@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Threading;
-
-using Amazon;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
-
-
-using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
@@ -40,31 +31,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
         public string RegionSystemName
         {
             get;
-            private set;
         }
 
-        public ElasticBeanstalkRootViewModel ElasticBeanstalkRootViewModel
-        {
-            get { return this._serviceModel; }
-        }
+        public ElasticBeanstalkRootViewModel ElasticBeanstalkRootViewModel => this._serviceModel;
 
-        public IAmazonElasticBeanstalk BeanstalkClient
-        {
-            get { return this._serviceModel.BeanstalkClient; }
-        }
+        public IAmazonElasticBeanstalk BeanstalkClient => this._serviceModel.BeanstalkClient;
 
-        public ApplicationDescription Application
-        {
-            get { return this._application; }
-        }
+        public ApplicationDescription Application => this._application;
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.application.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.application.png";
 
         protected override void LoadChildren()
         {

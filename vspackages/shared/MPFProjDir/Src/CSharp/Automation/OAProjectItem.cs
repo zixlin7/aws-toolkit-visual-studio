@@ -12,7 +12,6 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Project.Automation
@@ -28,25 +27,14 @@ namespace Microsoft.VisualStudio.Project.Automation
 		#endregion
 
 		#region properties
-		protected T Node
-		{
-			get
-			{
-				return this.node;
-			}
-		}
+		protected T Node => this.node;
 
-		/// <summary>
+        /// <summary>
 		/// Returns the automation project
 		/// </summary>
-		protected OAProject Project
-		{
-			get
-			{
-				return this.project;
-			}
-		}
-		#endregion
+		protected OAProject Project => this.project;
+
+        #endregion
 
 		#region ctors
 		public OAProjectItem(OAProject project, T node)
@@ -71,37 +59,19 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Gets an object that can be accessed by name at run time.
 		/// </summary>
-		public virtual object Object
-		{
-			get
-			{
-				return this.node.Object;
-			}
-		}
+		public virtual object Object => this.node.Object;
 
-		/// <summary>
+        /// <summary>
 		/// Gets the Document associated with the item, if one exists.
 		/// </summary>
-		public virtual EnvDTE.Document Document
-		{
-			get
-			{
-				return null;
-			}
-		}
+		public virtual EnvDTE.Document Document => null;
 
-		/// <summary>
+        /// <summary>
 		/// Gets the number of files associated with a ProjectItem.
 		/// </summary>
-		public virtual short FileCount
-		{
-			get
-			{
-				return (short)1;
-			}
-		}
+		public virtual short FileCount => (short)1;
 
-		/// <summary>
+        /// <summary>
 		/// Gets a collection of all properties that pertain to the object. 
 		/// </summary>
 		public virtual EnvDTE.Properties Properties
@@ -120,26 +90,14 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Gets the FileCodeModel object for the project item.
 		/// </summary>
-		public virtual EnvDTE.FileCodeModel FileCodeModel
-		{
-			get
-			{
-				return null;
-			}
-		}
+		public virtual EnvDTE.FileCodeModel FileCodeModel => null;
 
-		/// <summary>
+        /// <summary>
 		/// Gets a ProjectItems for the object.
 		/// </summary>
-		public virtual EnvDTE.ProjectItems ProjectItems
-		{
-			get
-			{
-				return null;
-			}
-		}
+		public virtual EnvDTE.ProjectItems ProjectItems => null;
 
-		/// <summary>
+        /// <summary>
 		/// Gets a GUID string indicating the kind or type of the object.
 		/// </summary>
 		public virtual string Kind
@@ -165,15 +123,9 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Gets the top-level extensibility object.
 		/// </summary>
-		public virtual EnvDTE.DTE DTE
-		{
-			get
-			{
-				return (EnvDTE.DTE)this.project.DTE;
-			}
-		}
+		public virtual EnvDTE.DTE DTE => (EnvDTE.DTE)this.project.DTE;
 
-		/// <summary>
+        /// <summary>
 		/// Gets the ProjectItems collection containing the ProjectItem object supporting this property.
 		/// </summary>
 		public virtual EnvDTE.ProjectItems Collection
@@ -209,100 +161,54 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Gets a list of available Extenders for the object.
 		/// </summary>
-		public virtual object ExtenderNames
-		{
-			get
-			{
-				return null;
-			}
-		}
+		public virtual object ExtenderNames => null;
 
-		/// <summary>
+        /// <summary>
 		/// Gets the ConfigurationManager object for this ProjectItem. 
 		/// </summary>
 		/// <remarks>We do not support config management based per item.</remarks>
-		public virtual EnvDTE.ConfigurationManager ConfigurationManager
-		{
-			get
-			{
-				return null;
-			}
-		}
+		public virtual EnvDTE.ConfigurationManager ConfigurationManager => null;
 
-		/// <summary>
+        /// <summary>
 		/// Gets the project hosting the ProjectItem.
 		/// </summary>
-		public virtual EnvDTE.Project ContainingProject
-		{
-			get
-			{
-				return this.project;
-			}
-		}
+		public virtual EnvDTE.Project ContainingProject => this.project;
 
-		/// <summary>
+        /// <summary>
 		/// Gets or sets a value indicating whether or not the object has been modified since last being saved or opened.
 		/// </summary>
 		public virtual bool Saved
 		{
-			get
-			{
-				return !this.IsDirty;
-
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+			get => !this.IsDirty;
+            set => throw new NotImplementedException();
+        }
 
 		/// <summary>
 		/// Gets the Extender category ID (CATID) for the object.
 		/// </summary>
-		public virtual string ExtenderCATID
-		{
-			get
-			{
-				return null;
-			}
-		}
+		public virtual string ExtenderCATID => null;
 
-		/// <summary>
+        /// <summary>
 		/// If the project item is the root of a subproject, then the SubProject property returns the Project object for the subproject.
 		/// </summary>
-		public virtual EnvDTE.Project SubProject
-		{
-			get
-			{
-				return null;
-			}
-		}
+		public virtual EnvDTE.Project SubProject => null;
 
-		/// <summary>
+        /// <summary>
 		/// Microsoft Internal Use Only. Checks if the document associated to this item is dirty.
 		/// </summary>
 		public virtual bool IsDirty
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+			get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
 
 		/// <summary>
 		/// Gets or sets the name of the object.
 		/// </summary>
 		public virtual string Name
 		{
-			get
-			{
-				return this.node.Caption;
-			}
-			set
+			get => this.node.Caption;
+            set
 			{
 				if(this.node == null || this.node.ProjectMgr == null || this.node.ProjectMgr.IsClosed || this.node.ProjectMgr.Site == null)
 				{

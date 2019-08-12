@@ -246,15 +246,9 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
             }
         }
 
-        ResultCodes IBuildProcessor.Result
-        {
-            get { return ProcessorResult; }
-        }
+        ResultCodes IBuildProcessor.Result => ProcessorResult;
 
-        string IBuildProcessor.DeploymentPackage
-        {
-            get { return _outputPackage; }
-        }
+        string IBuildProcessor.DeploymentPackage => _outputPackage;
 
         #endregion
 

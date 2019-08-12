@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Amazon.AWSToolkit.IdentityManagement
+﻿namespace Amazon.AWSToolkit.IdentityManagement
 {
     public static class IAMActionResultsConstants
     {

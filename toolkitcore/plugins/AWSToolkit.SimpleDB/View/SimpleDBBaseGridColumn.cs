@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-
-using Amazon.AWSToolkit.SimpleDB.Controller;
 using Amazon.AWSToolkit.SimpleDB.Model;
 
 namespace Amazon.AWSToolkit.SimpleDB.View

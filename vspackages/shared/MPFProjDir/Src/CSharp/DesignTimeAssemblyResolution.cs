@@ -277,32 +277,17 @@ namespace Microsoft.VisualStudio.Project
 				++messages;
 			}
 
-			public bool ContinueOnError
-			{
-				get { return false; }
-			}
+			public bool ContinueOnError => false;
 
-			public string ProjectFileOfTaskNode
-			{
-				get { return String.Empty; }
-			}
+            public string ProjectFileOfTaskNode => String.Empty;
 
-			public int LineNumberOfTaskNode
-			{
-				get { return 0; }
-			}
+            public int LineNumberOfTaskNode => 0;
 
-			public int ColumnNumberOfTaskNode
-			{
-				get { return 0; }
-			}
+            public int ColumnNumberOfTaskNode => 0;
 
-			internal string Log
-			{
-				get { return log.ToString(); }
-			}
+            internal string Log => log.ToString();
 
-			public bool BuildProjectFile(string projectFileName, string[] targetNames, System.Collections.IDictionary globalProperties, System.Collections.IDictionary targetOutputs)
+            public bool BuildProjectFile(string projectFileName, string[] targetNames, System.Collections.IDictionary globalProperties, System.Collections.IDictionary targetOutputs)
 			{
 				throw new NotImplementedException();
 			}
@@ -347,23 +332,23 @@ namespace Microsoft.VisualStudio.Project
 			#endregion //private fields
 
 			public string[] TargetFrameworkDirectories { get; private set; }
-			public string[] AllowedAssemblyExtensions { get; private set; }
-			public string TargetProcessorArchitecture { get; private set; }
-			public string TargetFrameworkVersion { get; private set; }
-			public string TargetFrameworkMoniker { get; private set; }
-			public string TargetFrameworkMonikerDisplayName { get; private set; }
-			public string TargetedRuntimeVersion { get; private set; }
-			public string[] FullFrameworkFolders { get; private set; }
-			public string ProfileName { get; private set; }
-			public string[] PdtarSearchPaths { get; private set; }
-			public string[] CandidateAssemblyFiles { get; private set; }
-			public string StateFile { get; private set; }
-			public ITaskItem[] InstalledAssemblySubsetTables { get; private set; }
-			public bool IgnoreDefaultInstalledAssemblySubsetTables { get; private set; }
-			public string[] TargetFrameworkSubsets { get; private set; }
-			public string[] FullTargetFrameworkSubsetNames { get; private set; }
-			public ITaskItem[] FullFrameworkAssemblyTables { get; private set; }
-			public string[] LatestTargetFrameworkDirectories { get; private set; }
+			public string[] AllowedAssemblyExtensions { get; }
+			public string TargetProcessorArchitecture { get; }
+			public string TargetFrameworkVersion { get; }
+			public string TargetFrameworkMoniker { get; }
+			public string TargetFrameworkMonikerDisplayName { get; }
+			public string TargetedRuntimeVersion { get; }
+			public string[] FullFrameworkFolders { get; }
+			public string ProfileName { get; }
+			public string[] PdtarSearchPaths { get; }
+			public string[] CandidateAssemblyFiles { get; }
+			public string StateFile { get; }
+			public ITaskItem[] InstalledAssemblySubsetTables { get; }
+			public bool IgnoreDefaultInstalledAssemblySubsetTables { get; }
+			public string[] TargetFrameworkSubsets { get; }
+			public string[] FullTargetFrameworkSubsetNames { get; }
+			public ITaskItem[] FullFrameworkAssemblyTables { get; }
+			public string[] LatestTargetFrameworkDirectories { get; }
 
 			#region constructors
 			public RarInputs(ProjectInstance projectInstance)

@@ -15,7 +15,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
 using MSBuild = Microsoft.Build.Evaluation;
 using Microsoft.Build.Evaluation;
 
@@ -69,21 +68,10 @@ namespace Microsoft.VisualStudio.Project
             }
         }
 
-        internal MSBuild.ProjectItem Item
-        {
-            get
-            {
-                return this.item;
-            }
-        }
+        internal MSBuild.ProjectItem Item => this.item;
 
-        internal bool IsVirtual
-        {
-            get
-            {
-                return this.isVirtual;
-            }
-        }
+        internal bool IsVirtual => this.isVirtual;
+
         #endregion
 
         #region ctors

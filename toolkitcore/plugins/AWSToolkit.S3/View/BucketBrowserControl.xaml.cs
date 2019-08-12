@@ -6,18 +6,13 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using log4net;
 
 using Microsoft.Win32;
@@ -74,10 +69,7 @@ namespace Amazon.AWSToolkit.S3.View
             this._controller.DisposeLoadingThread();
         }
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get { return true; }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {
@@ -85,20 +77,11 @@ namespace Amazon.AWSToolkit.S3.View
             return this._controller.Model;
         }
 
-        public BucketBrowserModel Model
-        {
-            get{ return this.DataContext as BucketBrowserModel;}
-        }
+        public BucketBrowserModel Model => this.DataContext as BucketBrowserModel;
 
-        public override string Title
-        {
-            get{return "S3 Bucket: " + this._controller.BucketName;}
-        }
+        public override string Title => "S3 Bucket: " + this._controller.BucketName;
 
-        public override string UniqueId
-        {
-            get{return string.Format("S3:BucketBrowser:{0}", this._controller.BucketName);}
-        }
+        public override string UniqueId => string.Format("S3:BucketBrowser:{0}", this._controller.BucketName);
 
         private void RowMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

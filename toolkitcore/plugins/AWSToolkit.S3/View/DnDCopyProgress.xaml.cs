@@ -1,19 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Amazon.AWSToolkit.CommonUI.JobTracker;
 using Amazon.AWSToolkit.S3.Jobs;
 
 namespace Amazon.AWSToolkit.S3.View
@@ -71,21 +58,9 @@ namespace Amazon.AWSToolkit.S3.View
             }));
         }
 
-        public string TotalStatus
-        {
-            get
-            {
-                return string.Format("{0} / {1} Files", this._job.ProgressValue, this._job.ProgressMax);
-            }
-        }
+        public string TotalStatus => string.Format("{0} / {1} Files", this._job.ProgressValue, this._job.ProgressMax);
 
-        public string CurrentFileStatus
-        {
-            get
-            {
-                return string.Format("{0} / {1} Bytes", this._job.CurrentFileProgressValue, this._job.CurrentFileProgressMax);
-            }
-        }
+        public string CurrentFileStatus => string.Format("{0} / {1} Bytes", this._job.CurrentFileProgressValue, this._job.CurrentFileProgressMax);
 
         private void onCancelClick(object sender, RoutedEventArgs e)
         {

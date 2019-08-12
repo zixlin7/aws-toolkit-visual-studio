@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-
+﻿using System.Data.SqlClient;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -15,7 +10,6 @@ using Amazon.RDS;
 using Amazon.RDS.Model;
 
 using log4net;
-using Amazon.AWSToolkit.Account;
 
 namespace Amazon.AWSToolkit.RDS.Controller
 {
@@ -33,10 +27,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
         {
         }
 
-        public CreateSqlServerDBModel Model
-        {
-            get { return _model; }
-        }
+        public CreateSqlServerDBModel Model => _model;
 
         public override ActionResults Execute(IViewModel model)
         {

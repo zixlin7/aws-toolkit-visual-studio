@@ -1,22 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Windows;
-using System.Windows.Threading;
-
-using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.IdentityManagement.View;
 using Amazon.AWSToolkit.IdentityManagement.Model;
 using Amazon.AWSToolkit.IdentityManagement.Nodes;
-using Amazon.Runtime.Internal.Settings;
-
 using Amazon.Auth.AccessControlPolicy;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
@@ -33,10 +20,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
         EditRoleModel _model;
         IAMRoleViewModel _iamRoleViewModel;
 
-        public EditRoleModel Model
-        {
-            get { return this._model; }
-        }
+        public EditRoleModel Model => this._model;
 
         public override ActionResults Execute(IViewModel model)
         {

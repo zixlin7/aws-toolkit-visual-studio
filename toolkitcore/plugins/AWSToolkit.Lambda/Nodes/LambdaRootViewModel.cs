@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows;
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
-
-using Amazon.AWSToolkit;
 using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.Lambda.Nodes
@@ -25,21 +21,9 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
             this._accountViewModel = accountViewModel;
         }
 
-        public override string ToolTip
-        {
-            get
-            {
-                return "AWS Lambda is a compute service that runs your code in response to events and automatically manages the compute resources.";
-            }
-        }
+        public override string ToolTip => "AWS Lambda is a compute service that runs your code in response to events and automatically manages the compute resources.";
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.Lambda.Resources.EmbeddedImages.service-root.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.Lambda.Resources.EmbeddedImages.service-root.png";
 
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
@@ -48,13 +32,7 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
             this._lambdaClient = new AmazonLambdaClient(awsCredentials, config);
         }
 
-        public IAmazonLambda LambdaClient
-        {
-            get
-            {
-                return this._lambdaClient;
-            }
-        }
+        public IAmazonLambda LambdaClient => this._lambdaClient;
 
         protected override void LoadChildren()
         {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.IdentityManagement.Model;
 
 using Amazon.AWSToolkit.Navigator;
@@ -12,15 +8,9 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
 {
     public class IAMGroupRootViewMetaNode : AbstractMetaNode
     {
-        public IAMGroupViewMetaNode IAMGroupViewMetaNode
-        {
-            get { return this.FindChild<IAMGroupViewMetaNode>(); }
-        }
+        public IAMGroupViewMetaNode IAMGroupViewMetaNode => this.FindChild<IAMGroupViewMetaNode>();
 
-        public override bool SupportsRefresh
-        {
-            get { return true; }
-        }
+        public override bool SupportsRefresh => true;
 
         public ActionHandlerWrapper.ActionHandler OnCreateGroup
         {
@@ -38,12 +28,6 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             }
         }
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList(new ActionHandlerWrapper("Create Group...", OnCreateGroup, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateGroupResponse), false, this.GetType().Assembly, "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.group-service-root.png"));
-            }
-        }
+        public override IList<ActionHandlerWrapper> Actions => BuildActionHandlerList(new ActionHandlerWrapper("Create Group...", OnCreateGroup, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateGroupResponse), false, this.GetType().Assembly, "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.group-service-root.png"));
     }
 }

@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Amazon.CloudWatchEvents;
 using Amazon.EC2;
 using Amazon.ECS;

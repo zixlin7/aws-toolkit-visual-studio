@@ -1,19 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading;
+﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Threading;
-
-using Amazon;
 using Amazon.S3;
 using Amazon.S3.Model;
-using Amazon.S3.Util;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -38,21 +26,9 @@ namespace Amazon.AWSToolkit.S3.Nodes
             this._accountViewModel = accountViewModel;            
         }
 
-        public override string ToolTip
-        {
-            get
-            {
-                return "Amazon S3 is storage for the Internet. It’s a simple storage service that offers software developers a highly-scalable, reliable, and low-latency data storage infrastructure at very low costs.";
-            }
-        }
+        public override string ToolTip => "Amazon S3 is storage for the Internet. It’s a simple storage service that offers software developers a highly-scalable, reliable, and low-latency data storage infrastructure at very low costs.";
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.service-root-icon.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.service-root-icon.png";
 
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
@@ -61,10 +37,7 @@ namespace Amazon.AWSToolkit.S3.Nodes
         }
 
 
-        public IAmazonS3 S3Client
-        {
-            get {return this._s3Client;}
-        }
+        public IAmazonS3 S3Client => this._s3Client;
 
         public S3Clipboard Clipboard
         {

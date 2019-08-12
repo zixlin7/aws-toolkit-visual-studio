@@ -101,10 +101,7 @@ namespace Amazon.AWSToolkit.Util
             return _rowData[rowIndex];
         }
 
-        public int RowCount
-        {
-            get { return _rowData.Count; }
-        }
+        public int RowCount => _rowData.Count;
 
         /// <summary>
         /// Reads the data at the specified row to return key:value map of the available data.

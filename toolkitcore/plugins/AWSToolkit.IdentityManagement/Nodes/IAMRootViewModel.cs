@@ -1,20 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Windows;
-using System.Windows.Threading;
-
-using Amazon;
+﻿using System.Collections.Generic;
 using Amazon.IdentityManagement;
-using Amazon.IdentityManagement.Model;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.IdentityManagement.Nodes;
 using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.IdentityManagement.Nodes
@@ -38,28 +25,13 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             this._accountViewModel = accountViewModel;            
         }
 
-        public IAMGroupRootViewModel IAMGroupRootViewModel
-        {
-            get { return this._iamGroupRootViewModel; }
-        }
+        public IAMGroupRootViewModel IAMGroupRootViewModel => this._iamGroupRootViewModel;
 
-        public IAMUserRootViewModel IAMUserRootViewModel
-        {
-            get { return this._iamUserRootViewModel; }
-        }
+        public IAMUserRootViewModel IAMUserRootViewModel => this._iamUserRootViewModel;
 
-        public IAMRoleRootViewModel IAMRoleRootViewModel
-        {
-            get { return this._iamRoleRootViewModel; }
-        }
+        public IAMRoleRootViewModel IAMRoleRootViewModel => this._iamRoleRootViewModel;
 
-        public override string ToolTip
-        {
-            get
-            {
-                return "AWS Identity and Access Management (IAM) enables you to create multiple Users and manage the permissions for each of these Users within your AWS Account. A User is an identity (within your AWS Account) with unique security credentials that can be used to access AWS Services. IAM eliminates the need to share passwords or access keys, and makes it easy to enable or disable a User’s access as appropriate. IAM offers you greater flexibility, control and security when using AWS.";
-            }
-        }
+        public override string ToolTip => "AWS Identity and Access Management (IAM) enables you to create multiple Users and manage the permissions for each of these Users within your AWS Account. A User is an identity (within your AWS Account) with unique security credentials that can be used to access AWS Services. IAM eliminates the need to share passwords or access keys, and makes it easy to enable or disable a User’s access as appropriate. IAM offers you greater flexibility, control and security when using AWS.";
 
         public override void Refresh(bool async)
         {
@@ -74,13 +46,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             }
         }
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.service-root.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.service-root.png";
 
         protected override void BuildClient(AWSCredentials awsCredentials)
         {
@@ -89,10 +55,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             this._iamClient = new AmazonIdentityManagementServiceClient(awsCredentials, config);
         }
 
-        public IAmazonIdentityManagementService IAMClient
-        {
-            get { return this._iamClient; }
-        }
+        public IAmazonIdentityManagementService IAMClient => this._iamClient;
 
         protected override void LoadChildren()
         {

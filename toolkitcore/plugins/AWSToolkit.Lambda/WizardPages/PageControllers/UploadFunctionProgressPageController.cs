@@ -1,10 +1,7 @@
-﻿using Amazon.AWSToolkit;
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI.Components;
+﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.Exceptions;
-using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.Nodes;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
 using Amazon.IdentityManagement;
@@ -17,9 +14,7 @@ using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using Amazon.AWSToolkit.CloudFormation.Nodes;
 using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
@@ -59,15 +54,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             }
         }
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public string PageTitle
         {
@@ -81,10 +70,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             }
         }
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
         public bool AllowShortCircuit()
         {

@@ -1,17 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Amazon.AWSToolkit.ECS.Controller;
 using Amazon.AWSToolkit.ECS.Model;
 using log4net;
@@ -38,29 +27,11 @@ namespace Amazon.AWSToolkit.ECS.View
 
         }
 
-        public override string Title
-        {
-            get
-            {
-                return string.Format("ECS Cluster: {0}", this._controller.FeatureViewModel.Name);
-            }
-        }
+        public override string Title => string.Format("ECS Cluster: {0}", this._controller.FeatureViewModel.Name);
 
-        public override string UniqueId
-        {
-            get
-            {
-                return "Cluster: " + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey + "_" + this._controller.FeatureViewModel.Name;
-            }
-        }
+        public override string UniqueId => "Cluster: " + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey + "_" + this._controller.FeatureViewModel.Name;
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get
-            {
-                return true;
-            }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {

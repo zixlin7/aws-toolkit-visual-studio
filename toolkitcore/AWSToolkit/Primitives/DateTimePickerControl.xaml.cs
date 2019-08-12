@@ -1,17 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using log4net;
 
 namespace Amazon.AWSToolkit.Primitives
@@ -149,14 +139,8 @@ namespace Amazon.AWSToolkit.Primitives
 
         public DateTime SelectedDateTime
         {
-            get
-            {
-                return (DateTime)GetValue(SelectedDateTimeProperty);
-            }
-            set
-            {
-                SetValue(SelectedDateTimeProperty, value);
-            }
+            get => (DateTime)GetValue(SelectedDateTimeProperty);
+            set => SetValue(SelectedDateTimeProperty, value);
         }
 
         private static void SelectedDateNameChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)

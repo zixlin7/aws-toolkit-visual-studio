@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
 using Amazon.S3.Model;
 using Amazon.AWSToolkit.PolicyEditor.Model;
 using Amazon.AWSToolkit.CommonUI;
@@ -64,7 +61,7 @@ namespace Amazon.AWSToolkit.S3.Model
         bool _isDirty;
         public bool IsDirty
         {
-            get { return this._isDirty; }
+            get => this._isDirty;
             set
             {
                 if (!value && this._policyModel != null)
@@ -83,36 +80,15 @@ namespace Amazon.AWSToolkit.S3.Model
             this._bucketName = bucketName;
         }
 
-        public bool HasLoggingChanged
-        {
-            get { return this._hasLoggingChanged; }
-        }
+        public bool HasLoggingChanged => this._hasLoggingChanged;
 
-        public bool HasWebSiteChanged
-        {
-            get { return this._hasWebSiteChanged; }
-        }
+        public bool HasWebSiteChanged => this._hasWebSiteChanged;
 
-        public bool HasNotificationsChanged
-        {
-            get { return this._hasNotificationsChanged; }
-        }
+        public bool HasNotificationsChanged => this._hasNotificationsChanged;
 
-        public bool HasPermissionsChanged
-        {
-            get
-            {
-                return !Permission.IsDifferent(this._originalPermissions, this._permissions);
-            }
-        }
+        public bool HasPermissionsChanged => !Permission.IsDifferent(this._originalPermissions, this._permissions);
 
-        public bool HasLifecycleRulesChanged
-        {
-            get
-            {
-                return !LifecycleRuleModel.IsDifferent(this._originalLifecycleRules, this._lifecycleRules);
-            }
-        }
+        public bool HasLifecycleRulesChanged => !LifecycleRuleModel.IsDifferent(this._originalLifecycleRules, this._lifecycleRules);
 
         public void CommitState()
         {
@@ -144,7 +120,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public string RegionDisplayName
         {
-            get { return this._regionDisplayName; }
+            get => this._regionDisplayName;
             set
             {
                 this._regionDisplayName = value;
@@ -154,7 +130,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public string RegionSystemName
         {
-            get { return this._regionSystemName; }
+            get => this._regionSystemName;
             set
             {
                 this._regionSystemName = value;
@@ -164,7 +140,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public string BucketName
         {
-            get { return this._bucketName; }
+            get => this._bucketName;
             set 
             { 
                 this._bucketName = value;
@@ -174,7 +150,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public Owner BucketOwner
         {
-            get { return this._bucketOwner; }
+            get => this._bucketOwner;
             set
             {
                 this._bucketOwner = value;
@@ -196,7 +172,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public DateTime? CreationDate
         {
-            get { return this._creationDate; }
+            get => this._creationDate;
             set
             {
                 this._creationDate = value;
@@ -206,25 +182,25 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public ObservableCollection<Permission> PermissionEntries
         {
-            get { return this._permissions; }
-            set { this._permissions = value; }
+            get => this._permissions;
+            set => this._permissions = value;
         }
 
         public ObservableCollection<LifecycleRuleModel> LifecycleRules
         {
-            get { return this._lifecycleRules; }
-            set { this._lifecycleRules = value; }
+            get => this._lifecycleRules;
+            set => this._lifecycleRules = value;
         }
 
         public ObservableCollection<EventConfigurationModel> EventConfigurations
         {
-            get { return this._eventConfigurations; }
-            set { this._eventConfigurations = value; }
+            get => this._eventConfigurations;
+            set => this._eventConfigurations = value;
         }
 
         public bool IsLoggingEnabled
         {
-            get { return this._isLoggingEnabled; }
+            get => this._isLoggingEnabled;
             set
             {
                 this._isLoggingEnabled = value;
@@ -235,7 +211,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public string LoggingTargetBucket
         {
-            get { return this._loggingTargetBucket; }
+            get => this._loggingTargetBucket;
             set
             {
                 this._loggingTargetBucket = value;
@@ -246,7 +222,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public string LoggingTargetPrefix
         {
-            get { return this._loggintTargetPrefix; }
+            get => this._loggintTargetPrefix;
             set
             {
                 this._loggintTargetPrefix = value;
@@ -257,7 +233,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public bool IsWebSiteEnabled
         {
-            get { return this._isWebSiteEnabled; }
+            get => this._isWebSiteEnabled;
             set
             {
                 this._isWebSiteEnabled = value;
@@ -269,7 +245,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public string WebSiteIndexDocument
         {
-            get { return this._webSiteIndexDocument; }
+            get => this._webSiteIndexDocument;
             set
             {
                 this._webSiteIndexDocument = value;
@@ -280,7 +256,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public string WebSiteErrorDocument
         {
-            get { return this._webSiteErrorDocument; }
+            get => this._webSiteErrorDocument;
             set
             {
                 this._webSiteErrorDocument = value;
@@ -298,13 +274,13 @@ namespace Amazon.AWSToolkit.S3.Model
 
                 return this._webSiteEndPoint; 
             }
-            set { this._webSiteEndPoint = value; }
+            set => this._webSiteEndPoint = value;
         }
 
         PolicyModel _policyModel;
         public PolicyModel PolicyModel
         {
-            get { return this._policyModel; }
+            get => this._policyModel;
             set
             {
                 this._policyModel = value;

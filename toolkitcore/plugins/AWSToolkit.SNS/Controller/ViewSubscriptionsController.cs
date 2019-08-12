@@ -1,17 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Windows;
-using System.Windows.Threading;
-
-using Amazon.SQS;
-using Amazon.SQS.Model;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
@@ -20,8 +9,6 @@ using Amazon.AWSToolkit.SNS.View;
 using Amazon.AWSToolkit.SNS.Model;
 using Amazon.AWSToolkit.SQS.Nodes;
 using Amazon.AWSToolkit.Lambda.Nodes;
-using Amazon.AWSToolkit;
-
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 
@@ -35,10 +22,7 @@ namespace Amazon.AWSToolkit.SNS.Controller
         ViewSubscriptionsModel _model;
         SNSRootViewModel _snsRootModel;
 
-        public ViewSubscriptionsModel Model
-        {
-            get { return this._model; }
-        }
+        public ViewSubscriptionsModel Model => this._model;
 
         public override ActionResults Execute(IViewModel model)
         {

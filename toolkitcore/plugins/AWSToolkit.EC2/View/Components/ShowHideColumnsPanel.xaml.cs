@@ -2,18 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
 
 namespace Amazon.AWSToolkit.EC2.View.Components
@@ -41,8 +31,8 @@ namespace Amazon.AWSToolkit.EC2.View.Components
                 UnusedTag = false;
             }
 
-            public EC2ColumnDefinition InnerColumn { get; set; }
-            public bool IsDisplayed { get; set; }
+            public EC2ColumnDefinition InnerColumn { get; }
+            public bool IsDisplayed { get; }
 
             /// <summary>
             /// Set from column header editing for custom tag types that have been added by the user
@@ -85,8 +75,8 @@ namespace Amazon.AWSToolkit.EC2.View.Components
         /// </summary>
         public bool ShowCustomAttributePanel
         {
-            get { return (bool)GetValue(ShowCustomAttributePanelProperty); }
-            set { SetValue(ShowCustomAttributePanelProperty, value); }
+            get => (bool)GetValue(ShowCustomAttributePanelProperty);
+            set => SetValue(ShowCustomAttributePanelProperty, value);
         }
 
         #endregion
@@ -114,10 +104,7 @@ namespace Amazon.AWSToolkit.EC2.View.Components
             LoadFixedAttributes(fixedAttributes);
         }
 
-        public bool HasColumnDataSet
-        {
-            get { return _customTagCollection.Count > 0 || _fixedAttributeLists.Count > 0; }
-        }
+        public bool HasColumnDataSet => _customTagCollection.Count > 0 || _fixedAttributeLists.Count > 0;
 
         public EC2ColumnDefinition[] SelectedColumns
         {

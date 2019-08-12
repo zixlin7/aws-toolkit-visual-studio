@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Amazon.AWSToolkit.ECS.Model;
 using Amazon.AWSToolkit.ECS.Nodes;
 using Amazon.AWSToolkit.ECS.View;
@@ -34,10 +30,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
             return this._results;
         }
 
-        public CreateRepositoryModel Model
-        {
-            get { return this._model; }
-        }
+        public CreateRepositoryModel Model => this._model;
 
         public bool Persist()
         {

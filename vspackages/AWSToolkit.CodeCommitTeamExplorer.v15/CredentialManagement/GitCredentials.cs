@@ -112,7 +112,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
         
         public string Password
         {
-            get { return CreateString(SecurePassword); }
+            get => CreateString(SecurePassword);
             set
             {
                 CheckNotDisposed();
@@ -169,10 +169,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             }
         }
 
-        public DateTime LastWriteTime
-        {
-            get { return LastWriteTimeUtc.ToLocalTime(); }
-        }
+        public DateTime LastWriteTime => LastWriteTimeUtc.ToLocalTime();
 
         public DateTime LastWriteTimeUtc
         {
@@ -181,7 +178,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
                 CheckNotDisposed();
                 return _lastWriteTime;
             }
-            private set { _lastWriteTime = value; }
+            private set => _lastWriteTime = value;
         }
 
         /*

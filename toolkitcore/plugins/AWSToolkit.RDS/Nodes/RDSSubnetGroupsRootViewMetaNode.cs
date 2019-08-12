@@ -1,25 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
 
 namespace Amazon.AWSToolkit.RDS.Nodes
 {
     public class RDSSubnetGroupsRootViewMetaNode : RDSFeatureViewMetaNode
     {
 
-        public RDSSubnetGroupViewMetaNode RDSSubnetGroupsViewMetaNode
-        {
-            get { return this.FindChild<RDSSubnetGroupViewMetaNode>(); }
-        }
+        public RDSSubnetGroupViewMetaNode RDSSubnetGroupsViewMetaNode => this.FindChild<RDSSubnetGroupViewMetaNode>();
 
-        public override bool SupportsRefresh
-        {
-            get { return true; }
-        }
+        public override bool SupportsRefresh => true;
 
         public ActionHandlerWrapper.ActionHandler OnCreate
         {
@@ -27,18 +16,13 @@ namespace Amazon.AWSToolkit.RDS.Nodes
             set;
         }
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList(
-                    new ActionHandlerWrapper("Create...", OnCreate, null, false,
-                        this.GetType().Assembly, "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.CreateDBSubnetGroup.png"),
-                    null,
-                    new ActionHandlerWrapper("View", OnView, null, true,
-                        this.GetType().Assembly, null)
-                    );
-            }
-        }
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(
+                new ActionHandlerWrapper("Create...", OnCreate, null, false,
+                    this.GetType().Assembly, "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.CreateDBSubnetGroup.png"),
+                null,
+                new ActionHandlerWrapper("View", OnView, null, true,
+                    this.GetType().Assembly, null)
+            );
     }
 }

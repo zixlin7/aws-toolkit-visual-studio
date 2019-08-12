@@ -26,13 +26,11 @@ namespace Amazon.AWSToolkit.DynamoDB.View.Columns
         public string AttributeName
         {
             get;
-            private set;
         }
 
         public string DefaultDataType
         {
             get;
-            private set;
         }
 
         public string Serialize()

@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.SNS.Nodes;
-using Amazon.AWSToolkit.SNS.View;
+﻿using Amazon.AWSToolkit.SNS.View;
 using Amazon.AWSToolkit.SNS.Model;
-using Amazon.AWSToolkit;
-
 using Amazon.SimpleNotificationService;
 using Amazon.SimpleNotificationService.Model;
 
@@ -28,15 +17,9 @@ namespace Amazon.AWSToolkit.SNS.Controller
 
         }
 
-        public PublishModel Model
-       {
-           get
-           {
-               return this._model;
-           }
-       }
+        public PublishModel Model => this._model;
 
-       public bool Execute()
+        public bool Execute()
        {
            var control = new PublishControl(this);
            return ToolkitFactory.Instance.ShellProvider.ShowModal(control);

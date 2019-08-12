@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Windows;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.CloudFormation.Nodes;
 using Amazon.AWSToolkit.CloudFormation.Model;
 using Amazon.AWSToolkit.CloudFormation.View;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 
 using Amazon.AWSToolkit.EC2.Nodes;
@@ -27,7 +23,6 @@ using Amazon.RDS;
 using Amazon.RDS.Model;
 
 using log4net;
-using System.Threading;
 
 namespace Amazon.AWSToolkit.CloudFormation.Controllers
 {
@@ -97,25 +92,13 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             return new ActionResults().WithSuccess(true);
         }
 
-        public string StackName
-        {
-            get { return this._model.StackName; }
-        }
+        public string StackName => this._model.StackName;
 
-        public ViewStackModel Model
-        {
-            get { return this._model; }
-        }
+        public ViewStackModel Model => this._model;
 
-        public CloudFormationStackViewModel StackModel
-        {
-            get { return this._stackModel; }
-        }
+        public CloudFormationStackViewModel StackModel => this._stackModel;
 
-        public IAmazonCloudWatch CloudWatchClient
-        {
-            get { return this._cwClient; }
-        }
+        public IAmazonCloudWatch CloudWatchClient => this._cwClient;
 
         public void LoadModel()
         {

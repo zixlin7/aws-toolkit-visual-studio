@@ -20,17 +20,11 @@ namespace Amazon.AWSToolkit.Lambda.Model
             this.DisplayName = displayName;
         }
 
-        public string Value { get; private set; }
-        public string DisplayName { get; private set; }
+        public string Value { get; }
+        public string DisplayName { get; }
 
-        public bool IsNetCore
-        {
-            get { return this.Value.StartsWith("dotnetcore", StringComparison.OrdinalIgnoreCase) || this.Value.Equals(PROVIDED.Value, StringComparison.OrdinalIgnoreCase); }
-        }
+        public bool IsNetCore => this.Value.StartsWith("dotnetcore", StringComparison.OrdinalIgnoreCase) || this.Value.Equals(PROVIDED.Value, StringComparison.OrdinalIgnoreCase);
 
-        public bool IsNode
-        {
-            get { return this.Value.StartsWith("nodejs", StringComparison.OrdinalIgnoreCase); }
-        }
+        public bool IsNode => this.Value.StartsWith("nodejs", StringComparison.OrdinalIgnoreCase);
     }
 }

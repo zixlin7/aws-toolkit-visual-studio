@@ -4,8 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
-using Amazon.EC2.Model;
-using Amazon.ElasticBeanstalk;
 using log4net;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers

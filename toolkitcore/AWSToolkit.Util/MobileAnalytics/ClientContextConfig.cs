@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Amazon.AWSToolkit.MobileAnalytics
 {
@@ -98,38 +95,39 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// A unique identifier representing this installation instance of your app.
         /// </summary>
         /// <value>The client identifier.</value>
-        public string ClientId { get { return _clientId; } }
+        public string ClientId => _clientId;
 
         /// <summary>
         /// The title of your app. For example, My App.
         /// </summary>
         /// <value>The app title.</value>
-        public string AppTitle { get { return _appTitle; } }
+        public string AppTitle => _appTitle;
 
         /// <summary>
         /// The version of your app. For example, V2.0.
         /// </summary>
         /// <value>The name of the app version.</value>
-        public string AppVersionName { get { return _appVersionName; } }
+        public string AppVersionName => _appVersionName;
 
         /// <summary>
         /// The version code for your app. For example, 3.
         /// </summary>
         /// <value>The app version code.</value>
-        public string AppVersionCode { get { return _appVersionCode; } set { _appVersionCode = value; } }
+        public string AppVersionCode { get => _appVersionCode;
+            set => _appVersionCode = value;
+        }
 
         /// <summary>
         /// The name of your package. For example, com.example.my_app.
         /// </summary>
         /// <value>The name of the app package.</value>
-        public string AppPackageName { get { return _appPackageName; } }
+        public string AppPackageName => _appPackageName;
 
         /// <summary>
         /// Gets the app identifier. This is same as the Mobile Analytics App Id when you create the APP on the AWS
         /// Mobile Analytics Console.
         /// </summary>
         /// <value>The app identifier.</value>
-        public string AppId { get { return _appId; } }
-
+        public string AppId => _appId;
     }
 }

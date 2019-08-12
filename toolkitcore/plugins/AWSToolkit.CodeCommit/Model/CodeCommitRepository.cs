@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Reflection;
-using Amazon.AWSToolkit.CodeCommit.Interface.Model;
+﻿using Amazon.AWSToolkit.CodeCommit.Interface.Model;
 using Amazon.CodeCommit.Model;
 
 namespace Amazon.AWSToolkit.CodeCommit.Model
@@ -23,28 +21,16 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             LocalFolder = localFolder;
         }
 
-        public string Name
-        {
-            get { return RepositoryMetadata?.RepositoryName; }
-        }
+        public string Name => RepositoryMetadata?.RepositoryName;
 
-        public string Description
-        {
-            get { return RepositoryMetadata?.RepositoryDescription; }
-        }
+        public string Description => RepositoryMetadata?.RepositoryDescription;
 
         public RepositoryMetadata RepositoryMetadata { get; }
 
-        public string UniqueId
-        {
-            get { return RepositoryMetadata.RepositoryId; }
-        }
+        public string UniqueId => RepositoryMetadata.RepositoryId;
 
         public string LocalFolder { get; set; }
 
-        public string RepositoryUrl
-        {
-            get { return RepositoryMetadata.CloneUrlHttp; }
-        }
+        public string RepositoryUrl => RepositoryMetadata.CloneUrlHttp;
     }
 }

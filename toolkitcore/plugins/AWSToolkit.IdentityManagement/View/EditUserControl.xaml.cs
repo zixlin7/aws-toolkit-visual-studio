@@ -1,27 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Microsoft.Win32;
-
-using Amazon.AWSToolkit.Navigator.Node;
-
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.CommonUI.JobTracker;
-using Amazon.AWSToolkit.IdentityManagement.Model;
 using Amazon.AWSToolkit.IdentityManagement.Controller;
 
 namespace Amazon.AWSToolkit.IdentityManagement.View
@@ -42,26 +23,11 @@ namespace Amazon.AWSToolkit.IdentityManagement.View
             this._ctlAccessKeys.SetController(this._controller);
         }
 
-        public override string Title
-        {
-            get
-            {
-                return "User: " + this._controller.Model.NewName;
-            }
-        }
+        public override string Title => "User: " + this._controller.Model.NewName;
 
-        public override string UniqueId
-        {
-            get
-            {
-                return "IAM:User:" + this._controller.Model.OriginalName;
-            }
-        }
+        public override string UniqueId => "IAM:User:" + this._controller.Model.OriginalName;
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get { return true; }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {

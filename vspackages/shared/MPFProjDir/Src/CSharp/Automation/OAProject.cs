@@ -14,7 +14,6 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using EnvDTE;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Project.Automation
@@ -28,11 +27,9 @@ namespace Microsoft.VisualStudio.Project.Automation
 		#endregion
 
 		#region properties
-		public ProjectNode Project
-		{
-			get { return this.project; }
-		}
-		#endregion
+		public ProjectNode Project => this.project;
+
+        #endregion
 
 		#region ctor
 		public OAProject(ProjectNode project)
@@ -47,11 +44,8 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// </summary>
 		public virtual string Name
 		{
-			get
-			{
-				return project.Caption;
-			}
-			set
+			get => project.Caption;
+            set
 			{
 				if(this.project == null || this.project.Site == null || this.project.IsClosed)
 				{
@@ -68,15 +62,9 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Microsoft Internal Use Only.  Gets the file name of the project.
 		/// </summary>
-		public virtual string FileName
-		{
-			get
-			{
-				return project.ProjectFile;
-			}
-		}
+		public virtual string FileName => project.ProjectFile;
 
-		/// <summary>
+        /// <summary>
 		/// Microsoft Internal Use Only. Specfies if the project is dirty.
 		/// </summary>
 		public virtual bool IsDirty
@@ -105,53 +93,29 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Gets the Projects collection containing the Project object supporting this property.
 		/// </summary>
-		public virtual EnvDTE.Projects Collection
-		{
-			get { return null; }
-		}
+		public virtual EnvDTE.Projects Collection => null;
 
-		/// <summary>
+        /// <summary>
 		/// Gets the top-level extensibility object.
 		/// </summary>
-		public virtual EnvDTE.DTE DTE
-		{
-			get
-			{
-				return (EnvDTE.DTE)this.project.Site.GetService(typeof(EnvDTE.DTE));
-			}
-		}
+		public virtual EnvDTE.DTE DTE => (EnvDTE.DTE)this.project.Site.GetService(typeof(EnvDTE.DTE));
 
-		/// <summary>
+        /// <summary>
 		/// Gets a GUID string indicating the kind or type of the object.
 		/// </summary>
-		public virtual string Kind
-		{
-			get { return project.ProjectGuid.ToString("B"); }
-		}
+		public virtual string Kind => project.ProjectGuid.ToString("B");
 
-		/// <summary>
+        /// <summary>
 		/// Gets a ProjectItems collection for the Project object.
 		/// </summary>
-		public virtual EnvDTE.ProjectItems ProjectItems
-		{
-			get
-			{
-				return new OAProjectItems(this, project);
-			}
-		}
+		public virtual EnvDTE.ProjectItems ProjectItems => new OAProjectItems(this, project);
 
-		/// <summary>
+        /// <summary>
 		/// Gets a collection of all properties that pertain to the Project object.
 		/// </summary>
-		public virtual EnvDTE.Properties Properties
-		{
-			get
-			{
-				return new OAProperties(this.project.NodeProperties);
-			}
-		}
+		public virtual EnvDTE.Properties Properties => new OAProperties(this.project.NodeProperties);
 
-		/// <summary>
+        /// <summary>
 		/// Returns the name of project as a relative path from the directory containing the solution file to the project file
 		/// </summary>
 		/// <value>Unique name if project is in a valid state. Otherwise null</value>
@@ -183,12 +147,9 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Gets an interface or object that can be accessed by name at run time.
 		/// </summary>
-		public virtual object Object
-		{
-			get { return this.project.Object; }
-		}
+		public virtual object Object => this.project.Object;
 
-		/// <summary>
+        /// <summary>
 		/// Gets the requested Extender object if it is available for this object.
 		/// </summary>
 		/// <param name="name">The name of the extender object.</param>
@@ -201,20 +162,14 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Gets a list of available Extenders for the object.
 		/// </summary>
-		public virtual object ExtenderNames
-		{
-			get { return null; }
-		}
+		public virtual object ExtenderNames => null;
 
-		/// <summary>
+        /// <summary>
 		/// Gets the Extender category ID (CATID) for the object.
 		/// </summary>
-		public virtual string ExtenderCATID
-		{
-			get { return String.Empty; }
-		}
+		public virtual string ExtenderCATID => String.Empty;
 
-		/// <summary>
+        /// <summary>
 		/// Gets the full path and name of the Project object's file.
 		/// </summary>
 		public virtual string FullName
@@ -233,11 +188,8 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// </summary>
 		public virtual bool Saved
 		{
-			get
-			{
-				return !this.IsDirty;
-			}
-			set
+			get => !this.IsDirty;
+            set
 			{
 				if(this.project == null || this.project.Site == null || this.project.IsClosed)
 				{
@@ -287,28 +239,19 @@ namespace Microsoft.VisualStudio.Project.Automation
 		/// <summary>
 		/// Gets the Globals object containing add-in values that may be saved in the solution (.sln) file, the project file, or in the user's profile data.
 		/// </summary>
-		public virtual EnvDTE.Globals Globals
-		{
-			get { return null; }
-		}
+		public virtual EnvDTE.Globals Globals => null;
 
-		/// <summary>
+        /// <summary>
 		/// Gets a ProjectItem object for the nested project in the host project. 
 		/// </summary>
-		public virtual EnvDTE.ProjectItem ParentProjectItem
-		{
-			get { return null; }
-		}
+		public virtual EnvDTE.ProjectItem ParentProjectItem => null;
 
-		/// <summary>
+        /// <summary>
 		/// Gets the CodeModel object for the project.
 		/// </summary>
-		public virtual EnvDTE.CodeModel CodeModel
-		{
-			get { return null; }
-		}
+		public virtual EnvDTE.CodeModel CodeModel => null;
 
-		/// <summary>
+        /// <summary>
 		/// Saves the project. 
 		/// </summary>
 		/// <param name="fileName">The file name with which to save the solution, project, or project item. If the file exists, it is overwritten</param>

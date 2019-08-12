@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using log4net;
+﻿using System.Collections.Generic;
 
 namespace Amazon.AWSToolkit.Account
 {
@@ -30,19 +25,16 @@ namespace Amazon.AWSToolkit.Account
             public string DisplayName
             {
                 get;
-                private set;
             }
 
             public string SystemName
             {
                 get;
-                private set;
             }
 
             public string Description
             {
                 get;
-                private set;
             }
 
             public override int GetHashCode()

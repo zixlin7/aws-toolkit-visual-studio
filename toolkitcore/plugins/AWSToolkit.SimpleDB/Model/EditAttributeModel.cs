@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.CommonUI;
 
@@ -29,7 +25,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Model
 
         public string AttributeName
         {
-            get { return this._attributeName; }
+            get => this._attributeName;
             set
             {
                 this._attributeName = value;
@@ -56,7 +52,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Model
 
         public ObservableCollection<MutableString> Values
         {
-            get { return this._values; }
+            get => this._values;
             set
             {
                 this._values = value;

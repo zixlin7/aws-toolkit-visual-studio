@@ -20,10 +20,7 @@ namespace Amazon.AWSToolkit.DynamoDB.View.Columns
             this._definition = definition;
         }
 
-        public DynamoDBColumnDefinition Definition
-        {
-            get { return this._definition; }
-        }
+        public DynamoDBColumnDefinition Definition => this._definition;
 
         protected Brush GetForegroundBrush(object dataItem)
         {

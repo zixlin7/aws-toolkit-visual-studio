@@ -1,19 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Markup;
 
 namespace Amazon.AWSToolkit.CommonUI.Components
 {
@@ -140,8 +130,8 @@ namespace Amazon.AWSToolkit.CommonUI.Components
         /// </summary>
         public ImageSource DropDownImage
         {
-            get { return (ImageSource)GetValue(DropDownImageProperty); }
-            set { SetValue(DropDownImageProperty, value); }
+            get => (ImageSource)GetValue(DropDownImageProperty);
+            set => SetValue(DropDownImageProperty, value);
         }
 
         /// <summary>
@@ -149,8 +139,8 @@ namespace Amazon.AWSToolkit.CommonUI.Components
         /// </summary>
         public string DropDownLabel
         {
-            get { return (string)GetValue(DropDownLabelProperty); }
-            set { SetValue(DropDownLabelProperty, value); }
+            get => (string)GetValue(DropDownLabelProperty);
+            set => SetValue(DropDownLabelProperty, value);
         }
 
         /// <summary>
@@ -158,8 +148,8 @@ namespace Amazon.AWSToolkit.CommonUI.Components
         /// </summary>
         public string PanelHeaderLabel
         {
-            get { return (string)GetValue(PanelHeaderLabelProperty); }
-            set { SetValue(PanelHeaderLabelProperty, value); }
+            get => (string)GetValue(PanelHeaderLabelProperty);
+            set => SetValue(PanelHeaderLabelProperty, value);
         }
 
         #endregion
@@ -174,8 +164,8 @@ namespace Amazon.AWSToolkit.CommonUI.Components
 
         public event RoutedEventHandler ApplyPressed
         {
-            add { AddHandler(ApplyPressedEvent, value); }
-            remove { RemoveHandler(ApplyPressedEvent, value); }
+            add => AddHandler(ApplyPressedEvent, value);
+            remove => RemoveHandler(ApplyPressedEvent, value);
         }
 
         public static readonly RoutedEvent DropPanelOpeningEvent
@@ -186,8 +176,8 @@ namespace Amazon.AWSToolkit.CommonUI.Components
 
         public event RoutedEventHandler DropPanelOpening
         {
-            add { AddHandler(DropPanelOpeningEvent, value); }
-            remove { RemoveHandler(DropPanelOpeningEvent, value); }
+            add => AddHandler(DropPanelOpeningEvent, value);
+            remove => RemoveHandler(DropPanelOpeningEvent, value);
         }
 
         #endregion

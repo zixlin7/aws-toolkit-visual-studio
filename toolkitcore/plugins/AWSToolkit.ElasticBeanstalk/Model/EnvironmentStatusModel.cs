@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Windows.Media;
 
 using Amazon.AWSToolkit.CommonUI;
@@ -21,7 +19,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         string _environmentId;
         public string EnvironmentId
         {
-            get { return this._environmentId; }
+            get => this._environmentId;
             set
             {
                 this._environmentId = value;
@@ -32,7 +30,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         string _environmentName;
         public string EnvironmentName
         {
-            get { return this._environmentName; }
+            get => this._environmentName;
             set
             {
                 this._environmentName = value;
@@ -43,7 +41,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         string _description;
         public string Description
         {
-            get { return this._description; }
+            get => this._description;
             set
             {
                 this._description = value;
@@ -54,7 +52,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         DateTime _dateCreated;
         public DateTime DateCreated
         {
-            get { return this._dateCreated; }
+            get => this._dateCreated;
             set
             {
                 this._dateCreated = value;
@@ -65,7 +63,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         DateTime _dateUpdated;
         public DateTime DateUpdated
         {
-            get { return this._dateUpdated; }
+            get => this._dateUpdated;
             set
             {
                 this._dateUpdated = value;
@@ -76,7 +74,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         DateTime _lastEventTimestamp;
         public DateTime LastEventTimestamp
         {
-            get { return this._lastEventTimestamp; }
+            get => this._lastEventTimestamp;
             set
             {
                 this._lastEventTimestamp = value;
@@ -87,7 +85,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         DateTime _resourcesUpdated;
         public DateTime ResourcesUpdated
         {
-            get { return this._resourcesUpdated; }
+            get => this._resourcesUpdated;
             set
             {
                 this._resourcesUpdated = value;
@@ -98,7 +96,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         string _applicationName;
         public string ApplicationName
         {
-            get { return this._applicationName; }
+            get => this._applicationName;
             set
             {
                 this._applicationName = value;
@@ -109,7 +107,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         string _versionLabel;
         public string VersionLabel
         {
-            get { return this._versionLabel; }
+            get => this._versionLabel;
             set
             {
                 this._versionLabel = value;
@@ -120,7 +118,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         string _containerType;
         public string ContainerType
         {
-            get { return this._containerType; }
+            get => this._containerType;
             set
             {
                 this._containerType = value;
@@ -131,7 +129,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         string _endPointURL;
         public string EndPointURL
         {
-            get { return this._endPointURL; }
+            get => this._endPointURL;
             set
             {
                 this._endPointURL = value;
@@ -142,7 +140,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         string _status;
         public string Status
         {
-            get { return this._status; }
+            get => this._status;
             set
             {
                 this._status = value;
@@ -155,7 +153,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         string _health;
         public string Health
         {
-            get { return this._health; }
+            get => this._health;
             set
             {
                 this._health = value;
@@ -228,7 +226,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         string _cname;
         public string CNAME
         {
-            get { return this._cname; }
+            get => this._cname;
             set
             {
                 this._cname = value;
@@ -239,7 +237,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         List<EventWrapper> _unfilteredEvents = new List<EventWrapper>();
         public List<EventWrapper> UnfilteredEvents
         {
-            get { return this._unfilteredEvents; }
+            get => this._unfilteredEvents;
             set
             {
                 this._unfilteredEvents = value;
@@ -251,7 +249,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         ObservableCollection<EventWrapper> _events = new ObservableCollection<EventWrapper>();
         public ObservableCollection<EventWrapper> Events
         {
-            get { return this._events; }
+            get => this._events;
             set
             {
                 this._events = value;
@@ -262,7 +260,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         ObservableCollection<InstanceWrapper> _instances = new ObservableCollection<InstanceWrapper>();
         public ObservableCollection<InstanceWrapper> Instances
         {
-            get { return this._instances; }
+            get => this._instances;
             set
             {
                 this._instances = value;
@@ -273,7 +271,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         ObservableCollection<LoadBalancerWrapper> _loadBalancers = new ObservableCollection<LoadBalancerWrapper>();
         public ObservableCollection<LoadBalancerWrapper> LoadBalancers
         {
-            get { return this._loadBalancers; }
+            get => this._loadBalancers;
             set
             {
                 this._loadBalancers = value;
@@ -284,7 +282,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         ObservableCollection<AutoScalingGroupWrapper> _autoScalingGroups = new ObservableCollection<AutoScalingGroupWrapper>();
         public ObservableCollection<AutoScalingGroupWrapper> AutoScalingGroups
         {
-            get { return this._autoScalingGroups; }
+            get => this._autoScalingGroups;
             set
             {
                 this._autoScalingGroups = value;
@@ -295,7 +293,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         ObservableCollection<MetricAlarmWrapper> _triggers = new ObservableCollection<MetricAlarmWrapper>();
         public ObservableCollection<MetricAlarmWrapper> Triggers
         {
-            get { return this._triggers; }
+            get => this._triggers;
             set
             {
                 this._triggers = value;
@@ -306,7 +304,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         string _textFilter;
         public string TextFilter
         {
-            get { return this._textFilter; }
+            get => this._textFilter;
             set
             {
                 this._textFilter = value;

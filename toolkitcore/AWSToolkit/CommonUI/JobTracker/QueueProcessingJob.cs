@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace Amazon.AWSToolkit.CommonUI.JobTracker
@@ -24,10 +22,7 @@ namespace Amazon.AWSToolkit.CommonUI.JobTracker
             get;
         }
 
-        protected virtual int NumberActiveThreads
-        {
-            get { return 5; }
-        }
+        protected virtual int NumberActiveThreads => 5;
 
         protected override void ExecuteJob()
         {
@@ -104,15 +99,9 @@ namespace Amazon.AWSToolkit.CommonUI.JobTracker
             }
         }
 
-        protected virtual int CompletedUnits
-        {
-            get { return this._completedUnits.Count; }
-        }
+        protected virtual int CompletedUnits => this._completedUnits.Count;
 
-        protected virtual int TotalUnits
-        {
-            get { return this._totalNumberOfUnits; }
-        }
+        protected virtual int TotalUnits => this._totalNumberOfUnits;
 
         private void shutdown()
         {
@@ -156,10 +145,7 @@ namespace Amazon.AWSToolkit.CommonUI.JobTracker
                 this._job = job;
             }
 
-            internal Exception LastException
-            {
-                get { return this._lastException; }
-            }
+            internal Exception LastException => this._lastException;
 
             private IJobUnit getNextJobUnit()
             {

@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-
+﻿using System.Collections.ObjectModel;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.EC2.Utils;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -15,10 +7,7 @@ namespace Amazon.AWSToolkit.EC2.Model
     public class ViewVPCsModel : BaseModel
     {
         ObservableCollection<VPCWrapper> _vpcs = new ObservableCollection<VPCWrapper>();
-        public ObservableCollection<VPCWrapper> VPCs
-        {
-            get { return this._vpcs; }
-        }
+        public ObservableCollection<VPCWrapper> VPCs => this._vpcs;
 
         EC2ColumnDefinition[] _vpcPropertytColumnDefinitions;
         public EC2ColumnDefinition[] VPCPropertyColumnDefinitions
@@ -34,12 +23,6 @@ namespace Amazon.AWSToolkit.EC2.Model
             }
         }
 
-        public string[] ListVPCAvailableTags
-        {
-            get
-            {
-                return EC2ColumnDefinition.GetListAvailableTags(this.VPCs);
-            }
-        }
+        public string[] ListVPCAvailableTags => EC2ColumnDefinition.GetListAvailableTags(this.VPCs);
     }
 }

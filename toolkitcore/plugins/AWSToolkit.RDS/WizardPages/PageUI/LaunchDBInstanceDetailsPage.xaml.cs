@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.ComponentModel;
 
 using Amazon.AWSToolkit.RDS.Model;
@@ -71,10 +64,7 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
             _passwordRequirementMsg.Text = string.Empty;
         }
 
-        public string LicenseModel
-        {
-            get { return this._licenseModel.Text; }
-        }
+        public string LicenseModel => this._licenseModel.Text;
 
         public List<DBEngineVersionWrapper> EngineVersions
         {
@@ -103,20 +93,11 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
             }
         }
 
-        public DBInstanceClass InstanceClass
-        {
-            get { return this._instanceClass.SelectedItem as DBInstanceClass; }
-        }
+        public DBInstanceClass InstanceClass => this._instanceClass.SelectedItem as DBInstanceClass;
 
-        public bool IsMultiAZ
-        {
-            get { return this._btnMultiAZDeployment.IsChecked == true; }
-        }
+        public bool IsMultiAZ => this._btnMultiAZDeployment.IsChecked == true;
 
-        public bool AutoUpgradeMinorVersions
-        {
-            get { return this._btnAutoUpgradeMinorVersions.IsChecked == true; }
-        }
+        public bool AutoUpgradeMinorVersions => this._btnAutoUpgradeMinorVersions.IsChecked == true;
 
         public int Storage
         {
@@ -134,10 +115,7 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
             }
         }
 
-        public string DBInstanceIdentifier
-        {
-            get { return _txtInstanceIdentifier.Text; }
-        }
+        public string DBInstanceIdentifier => _txtInstanceIdentifier.Text;
 
         public string ValidateDBInstanceIdentifier()
         {
@@ -165,10 +143,7 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
             return string.Empty;
         }
 
-        public string MasterUserName
-        {
-            get { return _txtMasterUserName.Text; }
-        }
+        public string MasterUserName => _txtMasterUserName.Text;
 
         public string ValidateUserName()
         {
@@ -182,19 +157,11 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
             return string.Empty;
         }
 
-        public string MasterUserPassword
-        {
-            get { return _txtMasterUserPassword.Password; }
-        }
+        public string MasterUserPassword => _txtMasterUserPassword.Password;
 
-        public bool IsPasswordValid
-        {
-            get
-            {
-                return PasswordAndConfirmationMatch(_txtMasterUserPassword.Password, _txtPasswordConfirmation.Password) == true
-                        && string.IsNullOrEmpty(PasswordMeetsEngineRequirements(_txtMasterUserPassword.Password));
-            }
-        }
+        public bool IsPasswordValid =>
+            PasswordAndConfirmationMatch(_txtMasterUserPassword.Password, _txtPasswordConfirmation.Password) == true
+            && string.IsNullOrEmpty(PasswordMeetsEngineRequirements(_txtMasterUserPassword.Password));
 
         private void _dbEngineVersions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

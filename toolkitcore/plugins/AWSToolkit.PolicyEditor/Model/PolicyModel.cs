@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 
 using Amazon.Auth.AccessControlPolicy;
@@ -48,14 +45,11 @@ namespace Amazon.AWSToolkit.PolicyEditor.Model
         }
 
         PolicyModelMode _mode;
-        public PolicyModelMode Mode
-        {
-            get { return this._mode; }
-        }
+        public PolicyModelMode Mode => this._mode;
 
         public Policy Policy
         {
-            get { return this._policy; }
+            get => this._policy;
             set
             {
                 this._policy = value;
@@ -99,15 +93,12 @@ namespace Amazon.AWSToolkit.PolicyEditor.Model
             IsDirty = true;
         }
 
-        public bool HasStatements
-        {
-            get { return this._statements.Count > 0; }
-        }
+        public bool HasStatements => this._statements.Count > 0;
 
         ObservableCollection<StatementModel> _statements = new ObservableCollection<StatementModel>();
         public ObservableCollection<StatementModel> Statements
         {
-            get { return this._statements; }
+            get => this._statements;
             set
             {
                 this._statements = value;
@@ -150,7 +141,7 @@ namespace Amazon.AWSToolkit.PolicyEditor.Model
         bool _isDirty;
         public bool IsDirty
         {
-            get { return this._isDirty; }
+            get => this._isDirty;
             set
             {
                 if (this.OnChange != null)

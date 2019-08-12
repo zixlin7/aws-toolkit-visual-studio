@@ -1,10 +1,5 @@
-﻿using Amazon.Runtime.Internal.Settings;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.MobileAnalytics;
 using Amazon.MobileAnalytics.Model;
 
 
@@ -99,13 +94,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         private const string SERVICE_NAME_IDENTIFIER = "Amazon.AWSToolkit.";
         private const string VIEW_NAME_IDENTIFIER = ".View.";
 
-        public IReadOnlyDictionary<string, string> Attributes
-        {
-            get
-            {
-                return _attributes;
-            }
-        }
+        public IReadOnlyDictionary<string, string> Attributes => _attributes;
 
         private Dictionary<string, string> _attributes;
         private Dictionary<string, double> _metrics;

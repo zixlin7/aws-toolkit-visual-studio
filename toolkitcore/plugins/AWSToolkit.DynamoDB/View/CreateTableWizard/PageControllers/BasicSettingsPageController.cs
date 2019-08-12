@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Controls;
-using System.Threading;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using System.Windows.Controls;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 using Amazon.AWSToolkit.DynamoDB.View.CreateTableWizard.PageUI;
@@ -16,25 +9,13 @@ namespace Amazon.AWSToolkit.DynamoDB.View.CreateTableWizard.PageControllers
     {
         BasicSettingsPage _pageUI;
 
-        public override string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public override string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public override string PageTitle
-        {
-            get { return "Basic Settings"; }
-        }
+        public override string PageTitle => "Basic Settings";
 
-        public override string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public override string ShortPageTitle => null;
 
-        public override string PageDescription
-        {
-            get { return "These are the required settings for creating a Table."; }
-        }
+        public override string PageDescription => "These are the required settings for creating a Table.";
 
         public override UserControl PageActivating(AWSWizardConstants.NavigationReason navigationReason)
         {

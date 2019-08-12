@@ -1,15 +1,8 @@
-﻿using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
+﻿using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
 using Amazon.EC2.Model;
 using Amazon.ECS.Model;
-using log4net;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
@@ -20,36 +13,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         public IAWSWizard HostingWizard { get; set; }
 
-        public string PageDescription
-        {
-            get
-            {
-                return "Using an Application Load Balancer allows multiple instances of the application be accessible through a single URL endpoint.";
-            }
-        }
+        public string PageDescription => "Using an Application Load Balancer allows multiple instances of the application be accessible through a single URL endpoint.";
 
-        public string PageGroup
-        {
-            get { return AWSWizardConstants.DefaultPageGroup; }
-        }
+        public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
-        public string PageTitle
-        {
-            get
-            {
-                return "Application Load Balancer Configuration";
-            }
-        }
+        public string PageTitle => "Application Load Balancer Configuration";
 
-        public string ShortPageTitle
-        {
-            get { return null; }
-        }
+        public string ShortPageTitle => null;
 
         public void ResetPage()
         {

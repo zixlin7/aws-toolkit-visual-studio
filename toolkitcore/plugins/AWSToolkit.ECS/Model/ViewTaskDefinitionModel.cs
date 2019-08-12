@@ -8,7 +8,7 @@ namespace Amazon.AWSToolkit.ECS.Model
 
         public TaskDefinitionWrapper TaskDefinition
         {
-            get { return _taskDefinitionWrapper; }
+            get => _taskDefinitionWrapper;
             internal set { _taskDefinitionWrapper = value; NotifyPropertyChanged("TaskDefinition"); }
         }
     }

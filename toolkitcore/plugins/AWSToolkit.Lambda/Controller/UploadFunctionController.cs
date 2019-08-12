@@ -5,8 +5,6 @@ using System.IO;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.CommonUI.Components;
-
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 
@@ -14,8 +12,6 @@ using log4net;
 using Amazon.AWSToolkit.Lambda.WizardPages;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageControllers;
-using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
-
 using Amazon.Lambda.Tools;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;

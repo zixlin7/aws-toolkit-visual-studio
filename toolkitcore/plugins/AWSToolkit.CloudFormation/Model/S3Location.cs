@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Amazon.AWSToolkit.CloudFormation.Model
+﻿namespace Amazon.AWSToolkit.CloudFormation.Model
 {
     /// <summary>
     /// A specification of a location in Amazon S3. This is a copy of the

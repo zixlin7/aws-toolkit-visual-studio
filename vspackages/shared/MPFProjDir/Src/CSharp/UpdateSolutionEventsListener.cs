@@ -11,7 +11,6 @@ PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 
 using System;
 using System.Diagnostics;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using IServiceProvider = System.IServiceProvider;
 using ShellConstants = Microsoft.VisualStudio.Shell.Interop.Constants;
@@ -90,37 +89,19 @@ namespace Microsoft.VisualStudio.Project
 		/// <summary>
 		/// The associated service provider.
 		/// </summary>
-		protected IServiceProvider ServiceProvider
-		{
-			get
-			{
-				return this.serviceProvider;
-			}
-		}
+		protected IServiceProvider ServiceProvider => this.serviceProvider;
 
-		/// <summary>
+        /// <summary>
 		/// The solution build manager object controlling the solution events.
 		/// </summary>
-		protected IVsSolutionBuildManager2 SolutionBuildManager2
-		{
-			get
-			{
-				return this.solutionBuildManager;
-			}
-		}
+		protected IVsSolutionBuildManager2 SolutionBuildManager2 => this.solutionBuildManager;
 
-		/// <summary>
+        /// <summary>
 		/// The solution build manager object controlling the solution events.
 		/// </summary>
-		protected IVsSolutionBuildManager3 SolutionBuildManager3
-		{
-			get
-			{
-				return (IVsSolutionBuildManager3)this.solutionBuildManager;
-			}
+		protected IVsSolutionBuildManager3 SolutionBuildManager3 => (IVsSolutionBuildManager3)this.solutionBuildManager;
 
-		}
-		#endregion
+        #endregion
 
 		#region IVsUpdateSolutionEvents3 Members
 

@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace TemplateWizard
 {
     public class Account : IEquatable<Account>
     {
         private static Account emtpy = new Account(string.Empty);
-        public static Account Empty { get { return emtpy; } }
+        public static Account Empty => emtpy;
 
         public string UniqueKey { get; set; }
         public string Name { get; set; }
@@ -22,16 +20,10 @@ namespace TemplateWizard
             Name = AccessKey = SecretKey = Number = string.Empty;
         }
 
-        public bool IsValid
-        {
-            get
-            {
-                return
-                    !string.IsNullOrEmpty(Name) &&
-                    !string.IsNullOrEmpty(AccessKey) &&
-                    !string.IsNullOrEmpty(SecretKey);
-            }
-        }
+        public bool IsValid =>
+            !string.IsNullOrEmpty(Name) &&
+            !string.IsNullOrEmpty(AccessKey) &&
+            !string.IsNullOrEmpty(SecretKey);
 
         #region IEquatable<Account> Members
 

@@ -1,13 +1,7 @@
 ﻿using Amazon.AWSToolkit.Themes;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Threading;
 
 namespace Amazon.AWSToolkit.CommonUI
 {
@@ -58,14 +52,8 @@ namespace Amazon.AWSToolkit.CommonUI
         private PropertySourceChange _onPropertyChange;
         event PropertySourceChange IPropertySupport.OnPropertyChange
         {
-            add
-            {
-                this._onPropertyChange += value;
-            }
-            remove
-            {
-                this._onPropertyChange -= value;
-            }
+            add => this._onPropertyChange += value;
+            remove => this._onPropertyChange -= value;
         }
     }
 }

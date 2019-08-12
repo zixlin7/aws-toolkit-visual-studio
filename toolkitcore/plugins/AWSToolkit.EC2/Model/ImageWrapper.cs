@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -29,29 +28,14 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public Image NativeImage
-        {
-            get { return this._image; }
-        }
+        public Image NativeImage => this._image;
 
         [DisplayName("AMI Name")]
         [AssociatedIconAttribute(false, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.ami.png")]
-        public string Name
-        {
-            get
-            {
-                return this._image.Name;
-            }
-        }
+        public string Name => this._image.Name;
 
         [DisplayName("AMI ID")]
-        public string ImageId
-        {
-            get
-            {
-                return this._image.ImageId;
-            }
-        }
+        public string ImageId => this._image.ImageId;
 
         [DisplayName("Owner")]
         public string FormattedOwner
@@ -77,21 +61,14 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         // ec2 api shows 'windows' as platform label but have seen 'Windows' used
-        internal bool IsWindowsPlatform
-        {
-            get { return EC2Constants.PLATFORM_WINDOWS.Equals(this.NativeImage.Platform, StringComparison.OrdinalIgnoreCase); }
-        }
+        internal bool IsWindowsPlatform => EC2Constants.PLATFORM_WINDOWS.Equals(this.NativeImage.Platform, StringComparison.OrdinalIgnoreCase);
 
         [DisplayName("Visibility")]
         [ReadOnly(true)]
         public string FormattedVisibility
         {
-            get { return this.NativeImage.Public ? EC2Constants.IMAGE_VISIBILITY_PUBLIC : EC2Constants.IMAGE_VISIBILITY_PRIVATE; }
-            set
-            {
-                this.NativeImage.Public = string.Equals(value, EC2Constants.IMAGE_VISIBILITY_PUBLIC, StringComparison.InvariantCultureIgnoreCase);
-                //base.NotifyPropertyChanged("FormattedVisibility");
-            }
+            get => this.NativeImage.Public ? EC2Constants.IMAGE_VISIBILITY_PUBLIC : EC2Constants.IMAGE_VISIBILITY_PRIVATE;
+            set => this.NativeImage.Public = string.Equals(value, EC2Constants.IMAGE_VISIBILITY_PUBLIC, StringComparison.InvariantCultureIgnoreCase);
         }
 
         [Browsable(false)]
@@ -133,29 +110,17 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [DisplayName("Description")]
-        public string Description
-        {
-            get { return this._image.Description; }
-        }
+        public string Description => this._image.Description;
 
         [DisplayName("Source")]
-        public string Source
-        {
-            get { return this._image.ImageLocation; }
-        }
+        public string Source => this._image.ImageLocation;
 
         [DisplayName("State")]
         [AssociatedIconAttribute(true, "StateIcon")]
-        public string State
-        {
-            get { return this._image.State; }
-        }
+        public string State => this._image.State;
 
         [DisplayName("Root Device Type")]
-        public string RootDeviceType
-        {
-            get { return this._image.RootDeviceType; }
-        }
+        public string RootDeviceType => this._image.RootDeviceType;
 
         [DisplayName("Block Devices")]
         public string BlockDevices
@@ -179,10 +144,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [DisplayName("Virtualization")]
-        public string VirtualizationType
-        {
-            get { return this._image.VirtualizationType; }
-        }
+        public string VirtualizationType => this._image.VirtualizationType;
 
         [DisplayName("State Reason")]
         public string StateReason
@@ -197,37 +159,19 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [DisplayName("Kernal ID")]
-        public string KernalId
-        {
-            get { return this._image.KernelId; }
-        }
+        public string KernalId => this._image.KernelId;
 
         [DisplayName("Architecture")]
-        public string Architecture
-        {
-            get { return this._image.Architecture; }
-        }
+        public string Architecture => this._image.Architecture;
 
         [DisplayName("Root Device")]
-        public string RootDeviceName
-        {
-            get { return this._image.RootDeviceName; }
-        }
+        public string RootDeviceName => this._image.RootDeviceName;
 
         [DisplayName("RAM Disk ID")]
-        public string RAMDiskId
-        {
-            get { return this._image.RamdiskId; }
-        }
+        public string RAMDiskId => this._image.RamdiskId;
 
         [DisplayName("Image Size")]
-        public string FormattedImageSize
-        {
-            get 
-            {
-                return ImageSize + " GiB"; 
-            }
-        }
+        public string FormattedImageSize => ImageSize + " GiB";
 
         public int ImageSize
         {
@@ -265,34 +209,19 @@ namespace Amazon.AWSToolkit.EC2.Model
 
 
         [Browsable(false)]
-        public string SortVisibilityPath
-        {
-            get { return this.FormattedVisibility + this.ImageId; }
-        }
+        public string SortVisibilityPath => this.FormattedVisibility + this.ImageId;
 
         [Browsable(false)]
-        public string SortImageStatePath
-        {
-            get { return this.NativeImage.State + this.ImageId; }
-        }
+        public string SortImageStatePath => this.NativeImage.State + this.ImageId;
 
         [Browsable(false)]
-        public string SortPlatformPath
-        {
-            get { return this.FormattedPlatform + this.ImageId; }
-        }
+        public string SortPlatformPath => this.FormattedPlatform + this.ImageId;
 
         [Browsable(false)]
-        public string SortRootDeviceTypePath
-        {
-            get { return this.NativeImage.RootDeviceType + this.ImageId; }
-        }
+        public string SortRootDeviceTypePath => this.NativeImage.RootDeviceType + this.ImageId;
 
         [Browsable(false)]
-        public string SortVirtualizationTypePath
-        {
-            get { return this.NativeImage.VirtualizationType + this.ImageId; }
-        }
+        public string SortVirtualizationTypePath => this.NativeImage.VirtualizationType + this.ImageId;
 
 
         #region IWrapper Implementation
@@ -310,10 +239,8 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "Image"; }
-        }
+        public string TypeName => "Image";
+
         #endregion
 
         public override string ToString()
@@ -352,9 +279,6 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public List<Tag> Tags
-        {
-            get { return this.NativeImage.Tags; }
-        }
+        public List<Tag> Tags => this.NativeImage.Tags;
     }
 }

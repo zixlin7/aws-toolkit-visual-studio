@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.Navigator;
+﻿using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
 
@@ -30,10 +25,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             return new ActionResults().WithSuccess(false);
         }
 
-        public CreateImageModel Model
-        {
-            get { return this._model; }
-        }
+        public CreateImageModel Model => this._model;
 
         public string CreateImage()
         {

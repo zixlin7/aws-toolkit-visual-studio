@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Windows;
-using System.Windows.Controls;
 
 namespace Amazon.AWSToolkit.CommonUI.JobTracker
 {
@@ -53,7 +48,7 @@ namespace Amazon.AWSToolkit.CommonUI.JobTracker
 
         public virtual bool IsActionEnabled 
         {
-            get { return this._isActionEnabled || this.CanResume; }
+            get => this._isActionEnabled || this.CanResume;
             set
             {
                 this._isActionEnabled = value;
@@ -63,10 +58,7 @@ namespace Amazon.AWSToolkit.CommonUI.JobTracker
 
         public virtual bool IsComplete
         {
-            get
-            {
-                return this._isComplete;
-            }
+            get => this._isComplete;
             set
             {
                 this._isComplete = value;
@@ -108,10 +100,7 @@ namespace Amazon.AWSToolkit.CommonUI.JobTracker
 
         public virtual string Title 
         {
-            get
-            {
-                return this._title;
-            }
+            get => this._title;
             set
             {
                 this._title = value;
@@ -121,10 +110,7 @@ namespace Amazon.AWSToolkit.CommonUI.JobTracker
 
         public virtual string CurrentStatus
         {
-            get
-            {
-                return this._currentStatus;
-            }
+            get => this._currentStatus;
             set
             {
                 if (CANCELLED_STATUS.Equals(this.CurrentStatus))
@@ -138,10 +124,7 @@ namespace Amazon.AWSToolkit.CommonUI.JobTracker
 
         public virtual long ProgressMin
         {
-            get
-            {
-                return this._progressMin;
-            }
+            get => this._progressMin;
             set
             {
                 this._progressMin = value;
@@ -151,10 +134,7 @@ namespace Amazon.AWSToolkit.CommonUI.JobTracker
 
         public virtual long ProgressMax
         {
-            get
-            {
-                return this._progressMax;
-            }
+            get => this._progressMax;
             set
             {
                 this._progressMax = value;
@@ -164,10 +144,7 @@ namespace Amazon.AWSToolkit.CommonUI.JobTracker
 
         public virtual long ProgressValue
         {
-            get
-            {
-                return this._progressValue;
-            }
+            get => this._progressValue;
             set
             {
                 this._progressValue = value;
@@ -177,10 +154,7 @@ namespace Amazon.AWSToolkit.CommonUI.JobTracker
 
         public virtual string ProgressToolTip
         {
-            get
-            {
-                return this._progressToolTip;
-            }
+            get => this._progressToolTip;
             set
             {
                 this._progressToolTip = value;
@@ -188,10 +162,7 @@ namespace Amazon.AWSToolkit.CommonUI.JobTracker
             }
         }
 
-        public virtual bool CanResume
-        {
-            get { return false; }
-        }
+        public virtual bool CanResume => false;
 
         public void Resume()
         {

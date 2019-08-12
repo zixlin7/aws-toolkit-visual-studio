@@ -177,7 +177,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public string Status
         {
-            get { return this.rule.Status.ToString(); }
+            get => this.rule.Status.ToString();
             set
             {
                 if (string.Equals("Enabled", value, StringComparison.InvariantCultureIgnoreCase))

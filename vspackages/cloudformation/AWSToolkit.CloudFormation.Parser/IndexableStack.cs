@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Amazon.AWSToolkit.CloudFormation.Parser
 {
@@ -31,17 +29,10 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
             return item;
         }
 
-        public int Count
-        {
-            get { return this._data.Count; }
-        }
+        public int Count => this._data.Count;
 
-
-        public T this[int index]
-        {
-            // This list stores things in reverse order then normal Stacks so reverse the index.
-            get { return this._data[this.Count - 1 - index]; }
-        }
+        // This list stores things in reverse order then normal Stacks so reverse the index.
+        public T this[int index] => this._data[this.Count - 1 - index];
 
         public IEnumerator<T> GetEnumerator()
         {

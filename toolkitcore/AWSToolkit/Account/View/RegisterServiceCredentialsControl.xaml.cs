@@ -1,18 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.Util;
 using log4net;
@@ -41,15 +30,9 @@ namespace Amazon.AWSToolkit.Account.View
 
         public RegisterServiceCredentialsController Controller { get; }
 
-        public override string Title
-        {
-            get { return "Git Credentials for AWS CodeCommit"; }
-        }
+        public override string Title => "Git Credentials for AWS CodeCommit";
 
-        public override bool SupportsDynamicOKEnablement
-        {
-            get { return true; }
-        }
+        public override bool SupportsDynamicOKEnablement => true;
 
         public override bool Validated()
         {
@@ -62,17 +45,13 @@ namespace Amazon.AWSToolkit.Account.View
             return Controller.Model.PersistCredentials(Credentials);
         }
 
-        public ServiceSpecificCredentials Credentials
-        {
-            get
+        public ServiceSpecificCredentials Credentials =>
+            new ServiceSpecificCredentials
             {
-                return new ServiceSpecificCredentials
-                {
-                    Username = Controller.Model.UserName,
-                    Password = Controller.Model.Password
-                };
-            }
-        }
+                Username = Controller.Model.UserName,
+                Password = Controller.Model.Password
+            };
+
         private void OnClickCredentialsEndpoint(object sender, RequestNavigateEventArgs e)
         {
             try

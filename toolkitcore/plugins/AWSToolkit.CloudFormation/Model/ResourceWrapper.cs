@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 using Amazon.CloudFormation.Model;
 
 namespace Amazon.AWSToolkit.CloudFormation.Model
@@ -19,7 +14,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
 
         public string LogicalResourceId
         {
-            get { return this._nativeResource.LogicalResourceId; }
+            get => this._nativeResource.LogicalResourceId;
             set
             {
                 this._nativeResource.LogicalResourceId = value;
@@ -29,7 +24,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
 
         public string PhysicalResourceId
         {
-            get { return this._nativeResource.PhysicalResourceId; }
+            get => this._nativeResource.PhysicalResourceId;
             set
             {
                 this._nativeResource.PhysicalResourceId = value;
@@ -39,7 +34,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
 
         public string ResourceStatus
         {
-            get { return this._nativeResource.ResourceStatus; }
+            get => this._nativeResource.ResourceStatus;
             set
             {
                 this._nativeResource.ResourceStatus = value;
@@ -49,7 +44,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
 
         public string ResourceStatusReason
         {
-            get { return this._nativeResource.ResourceStatusReason; }
+            get => this._nativeResource.ResourceStatusReason;
             set
             {
                 this._nativeResource.ResourceStatusReason = value;
@@ -59,7 +54,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
 
         public string ResourceType
         {
-            get { return this._nativeResource.ResourceType; }
+            get => this._nativeResource.ResourceType;
             set
             {
                 this._nativeResource.ResourceType = value;

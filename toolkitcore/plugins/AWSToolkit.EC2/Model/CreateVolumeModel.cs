@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.ResourceTags;
 
@@ -43,7 +39,7 @@ namespace Amazon.AWSToolkit.EC2.Model
 
         public VolumeTypeOption[] VolumeTypes
         {
-            get { return _volumeTypeOptions; }
+            get => _volumeTypeOptions;
             set
             {
                 _volumeTypeOptions = value;
@@ -54,7 +50,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         ResourceTagsModel _tags = new ResourceTagsModel();
         public ResourceTagsModel TagsModel
         {
-            get { return _tags; }
+            get => _tags;
             set
             {
                 _tags = value;
@@ -75,7 +71,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         int _size = 1;
         public int Size
         {
-            get { return _size; }
+            get => _size;
             set 
             {
                 _size = value;
@@ -86,7 +82,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _availabilityZone;
         public string AvailabilityZone
         {
-            get { return _availabilityZone; }
+            get => _availabilityZone;
             set 
             { 
                 _availabilityZone = value;
@@ -97,7 +93,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _snapshotId;
         public string SnapshotId
         {
-            get {return _snapshotId; }
+            get => _snapshotId;
             set
             {
                 _snapshotId = value;
@@ -108,7 +104,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _volumeId;
         public string VolumeId
         {
-            get { return _volumeId; }
+            get => _volumeId;
             set
             {
                 _volumeId = value;
@@ -120,7 +116,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         IDictionary<string, SnapshotModel> _snapshotsById;
         public IList<SnapshotModel> AvailableSnapshots
         {
-            get { return _snapshots; }
+            get => _snapshots;
             set
             {
                 _snapshots = value;
@@ -146,7 +142,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         IList<string> _zones;
         public IList<string> AvailabilityZoneList
         {
-            get { return _zones; }
+            get => _zones;
             set
             {
                 _zones = value;
@@ -157,7 +153,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         RunningInstanceWrapper _instanceToAttach;
         public RunningInstanceWrapper InstanceToAttach
         {
-            get { return this._instanceToAttach; }
+            get => this._instanceToAttach;
             set
             {
                 this._instanceToAttach = value;
@@ -168,7 +164,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         string _device;
         public String Device
         {
-            get { return this._device; }
+            get => this._device;
             set
             {
                 this._device = value;
@@ -179,7 +175,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         int _iops = 100;
         public int Iops
         {
-            get { return this._iops; }
+            get => this._iops;
             set
             {
                 this._iops = value; 
@@ -190,7 +186,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         VolumeTypeOption _volumeType;
         public VolumeTypeOption VolumeType
         {
-            get { return this._volumeType; }
+            get => this._volumeType;
             set
             {
                 _volumeType = value;

@@ -31,49 +31,25 @@ namespace Microsoft.VisualStudio.Project
 		/// <summary>
 		/// Delegates to base.
 		/// </summary>
-		public override string DisplayName
-		{
-			get
-			{
-				return this.displayName;
-			}
-		}
+		public override string DisplayName => this.displayName;
 
-		/// <summary>
+        /// <summary>
 		/// Delegates to base.
 		/// </summary>
-		public override Type ComponentType
-		{
-			get
-			{
-				return this.property.ComponentType;
-			}
-		}
+		public override Type ComponentType => this.property.ComponentType;
 
-		/// <summary>
+        /// <summary>
 		/// Delegates to base.
 		/// </summary>
-		public override bool IsReadOnly
-		{
-			get
-			{
-				return this.property.IsReadOnly;
-			}
-		}
+		public override bool IsReadOnly => this.property.IsReadOnly;
 
-		/// <summary>
+        /// <summary>
 		/// Delegates to base.
 		/// </summary>
-		public override Type PropertyType
-		{
-			get
-			{
-				return this.property.PropertyType;
-			}
-		}
+		public override Type PropertyType => this.property.PropertyType;
 
 
-		/// <summary>
+        /// <summary>
 		/// Delegates to base.
 		/// </summary>
 		public override object GetEditor(Type editorBaseType)

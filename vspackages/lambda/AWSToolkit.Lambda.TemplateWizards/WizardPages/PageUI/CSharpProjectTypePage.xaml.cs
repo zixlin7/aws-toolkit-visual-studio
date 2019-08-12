@@ -1,13 +1,9 @@
-﻿using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
+﻿using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Lambda.TemplateWizards.Model;
 using log4net;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows.Controls;
-using System.Windows;
-using System;
 
 namespace Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageUI
 {
@@ -39,14 +35,14 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageUI
 
         public IAWSWizardPageController PageController { get; set; }
 
-        public BlueprintsModel Model { get; private set; }
+        public BlueprintsModel Model { get; }
 
         /// <summary>
         /// The set of blueprints the user can choose from, taking out
         /// non-UserVisible blueprints and blueprints that do not match
         /// any filter the user has specified.
         /// </summary>
-        public ObservableCollection<Blueprint> SelectableBlueprints { get; private set; }
+        public ObservableCollection<Blueprint> SelectableBlueprints { get; }
 
         /// <summary>
         /// The blueprint selected by the user; this can be one selected

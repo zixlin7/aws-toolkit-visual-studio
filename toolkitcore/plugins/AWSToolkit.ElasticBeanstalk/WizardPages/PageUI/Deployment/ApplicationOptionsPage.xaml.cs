@@ -66,7 +66,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         private bool _enable32BitAppPool;
         public bool Enable32BitAppPool
         {
-            get { return _enable32BitAppPool; }
+            get => _enable32BitAppPool;
             set
             {
                 this._enable32BitAppPool = value;
@@ -140,7 +140,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         private string _healthCheckUri;
         public string HealthCheckUri 
         {
-            get { return _healthCheckUri; }
+            get => _healthCheckUri;
             set
             {
                 this._healthCheckUri = value;
@@ -175,7 +175,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         private string _deploymentVersionLabel;
         public string DeploymentVersionLabel
         {
-            get { return _deploymentVersionLabel; }
+            get => _deploymentVersionLabel;
             set
             {
                 _deploymentVersionLabel = value;
@@ -197,7 +197,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         Visibility _xrayPanelVisibility = Visibility.Visible;
         public Visibility XRayPanelVisibility
         {
-            get { return this._xrayPanelVisibility; }
+            get => this._xrayPanelVisibility;
             set
             {
                 this._xrayPanelVisibility = value;
@@ -209,7 +209,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         Visibility _enhancedHealthPanelVisibility = Visibility.Visible;
         public Visibility EnhancedHealthPanelVisibility
         {
-            get { return this._enhancedHealthPanelVisibility; }
+            get => this._enhancedHealthPanelVisibility;
             set
             {
                 this._enhancedHealthPanelVisibility = value;
@@ -222,7 +222,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         private bool _enableXRayDaemon;
         public bool EnableXRayDaemon
         {
-            get { return this._enableXRayDaemon; }
+            get => this._enableXRayDaemon;
             set
             {
                 this._enableXRayDaemon = value;
@@ -239,7 +239,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         private bool _enableEnhancedHealth;
         public bool EnableEnhancedHealth
         {
-            get { return this._enableEnhancedHealth; }
+            get => this._enableEnhancedHealth;
             set
             {
                 this._enableEnhancedHealth = value;

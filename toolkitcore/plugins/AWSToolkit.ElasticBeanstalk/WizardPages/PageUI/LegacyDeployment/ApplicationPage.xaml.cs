@@ -1,37 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Account.Controller;
-using Amazon.AWSToolkit.Account.Model;
-using Amazon.AWSToolkit.Account.View;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard;
-
-using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
-using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
-using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
-
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
-
-using log4net;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment
 {
@@ -84,13 +58,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment
             }
         }
 
-        public bool IsSelectedVersionValid
-        {
-            get
-            {
-                return ValidateVersionLabelField();
-            }
-        }
+        public bool IsSelectedVersionValid => ValidateVersionLabelField();
 
         public void Initialize(string appName, string appDescription, string versionLabel, bool isRedeployment, bool? useIncremental)
         {
@@ -194,13 +162,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment
             AlertControllerToFieldChange();
         }
 
-        bool RegionSupportsIncrementalDeployment
-        {
-            get
-            {
-                return this.SelectedRegion.GetEndpoint(BeanstalkConstants.GIT_PUSH_SERVICE_NAME) != null;
-            }
-        }
+        bool RegionSupportsIncrementalDeployment => this.SelectedRegion.GetEndpoint(BeanstalkConstants.GIT_PUSH_SERVICE_NAME) != null;
 
         // wanted to use ValidationRules for this but can't find a way to get
         // the list of existing versions (or a reference to this page) through

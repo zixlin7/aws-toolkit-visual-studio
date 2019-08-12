@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using System.Windows;
 using System.Windows.Interop;
 
@@ -43,10 +39,7 @@ namespace Amazon.AWSToolkit.CommonUI
                 this._handle = handle;
             }
 
-            IntPtr System.Windows.Forms.IWin32Window.Handle
-            {
-                get { return this._handle; }
-            }
+            IntPtr System.Windows.Forms.IWin32Window.Handle => this._handle;
         }
     }
 }

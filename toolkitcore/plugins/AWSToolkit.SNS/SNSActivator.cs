@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.Navigator;
+﻿using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.SNS.Nodes;
 using Amazon.AWSToolkit.SNS.Controller;
@@ -13,10 +8,7 @@ namespace Amazon.AWSToolkit.SNS
 {
     public class SNSActivator : AbstractPluginActivator
     {
-        public override string PluginName
-        {
-            get { return "SNS"; }
-        }
+        public override string PluginName => "SNS";
 
         public override void RegisterMetaNodes()
         {

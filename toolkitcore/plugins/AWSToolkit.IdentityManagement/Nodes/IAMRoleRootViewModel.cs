@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Linq;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
-
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
 namespace Amazon.AWSToolkit.IdentityManagement.Nodes
@@ -24,15 +17,9 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             this._serviceModel = viewModel;
         }
 
-        public IAMRootViewModel IAMRootViewModel
-        {
-            get { return this._serviceModel; }
-        }
+        public IAMRootViewModel IAMRootViewModel => this._serviceModel;
 
-        public IAmazonIdentityManagementService IAMClient
-        {
-            get { return this._serviceModel.IAMClient; }
-        }
+        public IAmazonIdentityManagementService IAMClient => this._serviceModel.IAMClient;
 
         public void AddRole(Role role)
         {
@@ -47,13 +34,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
 
 
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.role.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.role.png";
 
         protected override void LoadChildren()
         {

@@ -1,22 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 using Amazon.AWSToolkit.DynamoDB.Model;
-
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 namespace Amazon.AWSToolkit.DynamoDB.View.CreateTableWizard.PageControllers
 {
     public abstract class BasePageController : IAWSWizardPageController
     {
-        public string PageID
-        {
-            get { return GetType().FullName; }
-        }
+        public string PageID => GetType().FullName;
 
         public abstract UserControl PageActivating(AWSWizardConstants.NavigationReason navigationReason);
 
@@ -81,10 +72,6 @@ namespace Amazon.AWSToolkit.DynamoDB.View.CreateTableWizard.PageControllers
             return true;
         }
 
-        public CreateTableModel DataContext
-        {
-            get { return HostingWizard[Amazon.AWSToolkit.DynamoDB.Controller.CreateTableController.WIZARD_SEED_DATACONTEXT] as CreateTableModel; }
-        }
-
+        public CreateTableModel DataContext => HostingWizard[Amazon.AWSToolkit.DynamoDB.Controller.CreateTableController.WIZARD_SEED_DATACONTEXT] as CreateTableModel;
     }
 }

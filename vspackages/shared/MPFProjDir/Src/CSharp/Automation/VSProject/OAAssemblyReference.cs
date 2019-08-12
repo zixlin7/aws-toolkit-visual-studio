@@ -148,14 +148,11 @@ namespace Microsoft.VisualStudio.Project.Automation
 				return true;
 			}
 		}
-		public override prjReferenceType Type
-		{
-			get
-			{
-				return prjReferenceType.prjReferenceTypeAssembly;
-			}
-		}
-		public override string Version
+
+        // TODO: Write the code that finds out the type of the output of the source project.
+        public override prjReferenceType Type => prjReferenceType.prjReferenceTypeAssembly;
+
+        public override string Version
 		{
 			get
 			{

@@ -1,14 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Threading;
-
+﻿using System.Windows;
 using Amazon.SimpleNotificationService;
-using Amazon.SimpleNotificationService.Model;
-
 using Amazon.AWSToolkit.Navigator.Node;
 
 namespace Amazon.AWSToolkit.SNS.Nodes
@@ -27,28 +18,13 @@ namespace Amazon.AWSToolkit.SNS.Nodes
             this._topicArn = topicArn;
         }
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.SNS.Resources.EmbeddedImages.topic-node.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.SNS.Resources.EmbeddedImages.topic-node.png";
 
-        public SNSRootViewModel SNSRootViewModel
-        {
-            get { return this._snsRootViewModel; }
-        }
+        public SNSRootViewModel SNSRootViewModel => this._snsRootViewModel;
 
-        public IAmazonSimpleNotificationService SNSClient
-        {
-            get { return this._snsRootViewModel.SNSClient; }
-        }
+        public IAmazonSimpleNotificationService SNSClient => this._snsRootViewModel.SNSClient;
 
-        public string TopicArn
-        {
-            get { return this._topicArn; }
-        }
+        public string TopicArn => this._topicArn;
 
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
@@ -32,39 +30,21 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
         }
 
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-
-            get
-            {
-                return BuildActionHandlerList(
-                    new ActionHandlerWrapper("Create New Function", OnUploadFunction, new ActionHandlerWrapper.ActionResponseHandler(this.OnUploadFunctionResponse), false, null, null)
-                    );
-            }
-        }
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(
+                new ActionHandlerWrapper("Create New Function", OnUploadFunction, new ActionHandlerWrapper.ActionResponseHandler(this.OnUploadFunctionResponse), false, null, null)
+            );
 
 
-        public override string EndPointSystemName
-        {
-            get { return LAMBDA_ENDPOINT_LOOKUP; }
-        }
+        public override string EndPointSystemName => LAMBDA_ENDPOINT_LOOKUP;
 
         public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
         {
             return new LambdaRootViewModel(account);
         }
 
-        public LambdaFunctionViewMetaNode LambdaFunctionViewMetaNode
-        {
-            get { return this.FindChild<LambdaFunctionViewMetaNode>(); }
-        }
+        public LambdaFunctionViewMetaNode LambdaFunctionViewMetaNode => this.FindChild<LambdaFunctionViewMetaNode>();
 
-        public override string MarketingWebSite
-        {
-            get
-            {
-                return "http://aws.amazon.com/lambda/";
-            }
-        }
+        public override string MarketingWebSite => "http://aws.amazon.com/lambda/";
     }
 }

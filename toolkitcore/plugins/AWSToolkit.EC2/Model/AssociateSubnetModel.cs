@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.EC2.Model
@@ -17,10 +13,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         SubnetWrapper _selectedSubnet;
         public SubnetWrapper SelectedSubnet
         {
-            get
-            {
-                return this._selectedSubnet;
-            }
+            get => this._selectedSubnet;
             set
             {
                 this._selectedSubnet = value;

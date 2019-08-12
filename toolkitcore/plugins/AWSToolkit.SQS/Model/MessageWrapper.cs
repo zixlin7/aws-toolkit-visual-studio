@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Util;
 
@@ -27,15 +23,12 @@ namespace Amazon.AWSToolkit.SQS.Model
         }
 
         [DisplayName("Message ID")]
-        public string MessageId
-        {
-            get { return this._message.MessageId; }
-        }
+        public string MessageId => this._message.MessageId;
 
         [Browsable(false)]
         public bool IsBase64Encoded
         {
-            get { return this._isBase64Encoded; }
+            get => this._isBase64Encoded;
             set
             {
                 this._isBase64Encoded = value;
@@ -57,10 +50,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         }
 
         [Browsable(false)]
-        public string CleanBody
-        {
-            get { return cleanBody(this.Body); }
-        }
+        public string CleanBody => cleanBody(this.Body);
 
         private string cleanBody(string body)
         {
@@ -68,10 +58,7 @@ namespace Amazon.AWSToolkit.SQS.Model
         }
 
         [DisplayName("Receipt Handle")]
-        public string ReceiptHandle
-        {
-            get { return this._message.ReceiptHandle; }
-        }
+        public string ReceiptHandle => this._message.ReceiptHandle;
 
         [DisplayName("Sender ID")]
         public string SenderId

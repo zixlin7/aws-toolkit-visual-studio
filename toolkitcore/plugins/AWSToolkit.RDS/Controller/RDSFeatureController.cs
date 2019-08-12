@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
-using Amazon.AWSToolkit.Account;
+﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.RDS.Nodes;
-using Amazon.AWSToolkit.RDS.Model;
-using Amazon.AWSToolkit.RDS.View;
-
 using Amazon.RDS;
-using Amazon.RDS.Model;
 
 namespace Amazon.AWSToolkit.RDS.Controller
 {
@@ -41,42 +30,18 @@ namespace Amazon.AWSToolkit.RDS.Controller
 
         protected abstract void DisplayView();
 
-        public IAmazonRDS RDSClient
-        {
-            get { return this._rdsClient; }
-        }
+        public IAmazonRDS RDSClient => this._rdsClient;
 
-        protected RDSFeatureViewModel FeatureViewModel
-        {
-            get { return this._featureViewModel; }
-        }
+        protected RDSFeatureViewModel FeatureViewModel => this._featureViewModel;
 
-        public M Model
-        {
-            get { return this._model; }
-        }
+        public M Model => this._model;
 
-        public string EndPointUniqueIdentifier
-        {
-            get
-            {
-                return this._endpointUniqueIdentifier;
-            }
-        }
+        public string EndPointUniqueIdentifier => this._endpointUniqueIdentifier;
 
-        public AccountViewModel Account
-        {
-            get { return this._featureViewModel.AccountViewModel; }
-        }
+        public AccountViewModel Account => this._featureViewModel.AccountViewModel;
 
-        public string RegionDisplayName
-        {
-            get { return this._featureViewModel.RegionDisplayName; }
-        }
+        public string RegionDisplayName => this._featureViewModel.RegionDisplayName;
 
-        public string RegionSystemName
-        {
-            get { return this.FeatureViewModel.RegionSystemName; }
-        }
+        public string RegionSystemName => this.FeatureViewModel.RegionSystemName;
     }
 }

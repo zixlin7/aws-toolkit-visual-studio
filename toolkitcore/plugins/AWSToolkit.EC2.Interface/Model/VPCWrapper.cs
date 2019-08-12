@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.EC2.Model;
@@ -35,22 +34,13 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public Vpc NativeVPC
-        {
-            get { return this._vpc; }
-        }
+        public Vpc NativeVPC => this._vpc;
 
         [Browsable(false)]
-        public string DisplayName
-        {
-            get { return this.VpcId; }
-        }
+        public string DisplayName => this.VpcId;
 
         [Browsable(false)]
-        public string TypeName
-        {
-            get { return "VPC"; }
-        }
+        public string TypeName => "VPC";
 
         [DisplayName("VPC ID")]
         [AssociatedIcon(false, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.vpc.png")]
@@ -65,14 +55,11 @@ namespace Amazon.AWSToolkit.EC2.Model
             }
         }
 
-        public string PseudoVpcId { get; private set; }
+        public string PseudoVpcId { get; }
 
         [DisplayName("State")]
         [AssociatedIcon(true, "VpcStateIcon")]
-        public string VpcState
-        {
-            get { return NativeVPC != null ? NativeVPC.State : null; }
-        }
+        public string VpcState => NativeVPC != null ? NativeVPC.State : null;
 
         [Browsable(false)]
         public System.Windows.Media.ImageSource VpcStateIcon
@@ -102,28 +89,16 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [DisplayName("CIDR")]
-        public string CidrBlock
-        {
-            get { return NativeVPC != null ? NativeVPC.CidrBlock : string.Empty; }
-        }
+        public string CidrBlock => NativeVPC != null ? NativeVPC.CidrBlock : string.Empty;
 
         [DisplayName("DHCP Options Set")]
-        public string DhcpOptionsId
-        {
-            get { return NativeVPC != null ? NativeVPC.DhcpOptionsId : string.Empty; }
-        }
+        public string DhcpOptionsId => NativeVPC != null ? NativeVPC.DhcpOptionsId : string.Empty;
 
         [DisplayName("Tenancy")]
-        public string InstanceTenancy
-        {
-            get { return NativeVPC != null ? NativeVPC.InstanceTenancy : null; }
-        }
+        public string InstanceTenancy => NativeVPC != null ? NativeVPC.InstanceTenancy : null;
 
         [DisplayName("Default")]
-        public string FormattedIsDefault
-        {
-            get { return NativeVPC != null ? NativeVPC.IsDefault.ToString() : null; }
-        }
+        public string FormattedIsDefault => NativeVPC != null ? NativeVPC.IsDefault.ToString() : null;
 
         [Browsable(false)]
         public string FormattedLabel
@@ -170,9 +145,6 @@ namespace Amazon.AWSToolkit.EC2.Model
         }
 
         [Browsable(false)]
-        public List<Tag> Tags
-        {
-            get { return NativeVPC != null ? this.NativeVPC.Tags : null; }
-        }
+        public List<Tag> Tags => NativeVPC != null ? this.NativeVPC.Tags : null;
     }
 }

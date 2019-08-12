@@ -1,17 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
 using Amazon.AWSToolkit.Lambda.Controller;
 
 using log4net;
@@ -43,13 +33,7 @@ namespace Amazon.AWSToolkit.Lambda.View
             EventSourceType_SelectionChanged(this, null);
         }
 
-        public override string Title
-        {
-            get
-            {
-                return "Add Event Source";
-            }
-        }
+        public override string Title => "Add Event Source";
 
         public SourceType EventSourceType
         {
@@ -75,13 +59,7 @@ namespace Amazon.AWSToolkit.Lambda.View
             }
         }
 
-        public string Resource
-        {
-            get
-            {
-                return this._ctlResources.Text;
-            }
-        }
+        public string Resource => this._ctlResources.Text;
 
         public int SQSBatchSize
         {
@@ -107,35 +85,17 @@ namespace Amazon.AWSToolkit.Lambda.View
             }
         }
 
-        public string Prefix
-        {
-            get { return this._ctlPrefix.Text; }
-        }
+        public string Prefix => this._ctlPrefix.Text;
 
-        public string Suffix
-        {
-            get { return this._ctlSuffix.Text; }
-        }
+        public string Suffix => this._ctlSuffix.Text;
 
-        public string StartPosition
-        {
-            get { return this._ctlStartingPosition.Text; }
-        }
+        public string StartPosition => this._ctlStartingPosition.Text;
 
-        public string ScheduleRuleName
-        {
-            get { return this._ctlScheduledEventRuleName.Text; }
-        }
+        public string ScheduleRuleName => this._ctlScheduledEventRuleName.Text;
 
-        public string ScheduleRuleDescription
-        {
-            get { return this._ctlScheduledEventRuleDescription.Text; }
-        }
+        public string ScheduleRuleDescription => this._ctlScheduledEventRuleDescription.Text;
 
-        public string ScheduleExpression
-        {
-            get { return this._ctlScheduledEventRuleScheduleExpression.Text; }
-        }
+        public string ScheduleExpression => this._ctlScheduledEventRuleScheduleExpression.Text;
 
         public override bool Validated()
         {

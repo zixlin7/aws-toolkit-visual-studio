@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.ECS.Controller;
 using Amazon.AWSToolkit.ECS.WizardPages.PageControllers;
 using log4net;
 using System;
@@ -17,7 +16,6 @@ using System.Linq;
 using System.Collections.ObjectModel;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CommonUI.Components;
-using Amazon.ECS.Tools;
 using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
@@ -31,7 +29,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         bool _initialTaskDefinitionLoad = true;
 
-        public ECSTaskDefinitionPageController PageController { get; private set; }
+        public ECSTaskDefinitionPageController PageController { get; }
 
         public ECSTaskDefinitionPage()
         {
@@ -248,10 +246,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
         }
 
-        private IAMRolePicker IAMPicker
-        {
-            get { return this._ctlIAMRolePicker; }
-        }
+        private IAMRolePicker IAMPicker => this._ctlIAMRolePicker;
 
         public Amazon.IdentityManagement.Model.Role SelectedRole
         {
@@ -458,18 +453,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
                 return this._ctlTaskDefinitionPicker.SelectedValue as string;
             }
-            set { this._ctlTaskDefinitionPicker.SelectedValue = value; }
+            set => this._ctlTaskDefinitionPicker.SelectedValue = value;
         }
 
-        public bool CreateTaskDefinition
-        {
-            get { return this._ctlTaskDefinitionPicker.SelectedIndex == 0; }
-        }
+        public bool CreateTaskDefinition => this._ctlTaskDefinitionPicker.SelectedIndex == 0;
 
         string _newTaskDefinitionName;
         public string NewTaskDefinitionName
         {
-            get { return this._newTaskDefinitionName; }
+            get => this._newTaskDefinitionName;
             set
             {
                 this._newTaskDefinitionName = value;
@@ -514,18 +506,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
                 return this._ctlContainerPicker.SelectedValue as string;
             }
-            set { this._ctlContainerPicker.SelectedValue = value; }
+            set => this._ctlContainerPicker.SelectedValue = value;
         }
 
-        public bool CreateContainer
-        {
-            get { return this._ctlContainerPicker.SelectedIndex == 0; }
-        }
+        public bool CreateContainer => this._ctlContainerPicker.SelectedIndex == 0;
 
         string _newContainerName;
         public string NewContainerName
         {
-            get { return this._newContainerName; }
+            get => this._newContainerName;
             set
             {
                 this._newContainerName = value;
@@ -584,7 +573,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         string _memorySoftLimitStr;
         public string MemorySoftLimitStr
         {
-            get { return _memorySoftLimitStr; }
+            get => _memorySoftLimitStr;
             set
             {
                 _memorySoftLimitStr = value;
@@ -602,16 +591,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
                 return value;
             }
-            set
-            {
-                MemorySoftLimitStr = value.ToString();
-            }
+            set => MemorySoftLimitStr = value.ToString();
         }
 
         string _memoryHardLimitStr;
         public string MemoryHardLimitStr
         {
-            get { return _memoryHardLimitStr; }
+            get => _memoryHardLimitStr;
             set
             {
                 _memoryHardLimitStr = value;
@@ -629,14 +615,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
                 return value;
             }
-            set
-            {
-                MemoryHardLimitStr = value.ToString();
-            }
+            set => MemoryHardLimitStr = value.ToString();
         }
 
 
-        public ObservableCollection<PortMappingItem> PortMappings { get; private set; }
+        public ObservableCollection<PortMappingItem> PortMappings { get; }
 
         private void AddPortMapping_Click(object sender, RoutedEventArgs e)
         {
@@ -706,7 +689,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             NotifyPropertyChanged("PortMappings");
         }
 
-        public ObservableCollection<EnvironmentVariableItem> EnvironmentVariables { get; private set; }
+        public ObservableCollection<EnvironmentVariableItem> EnvironmentVariables { get; }
 
         private void AddEnvironmentVariable_Click(object sender, RoutedEventArgs e)
         {
@@ -761,10 +744,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             NotifyPropertyChanged("EnvironmentVariable3s");
         }
 
-        public bool CreateNewTaskExecutionRole
-        {
-            get { return this._ctlExecutionRole.SelectedIndex == 0; }
-        }
+        public bool CreateNewTaskExecutionRole => this._ctlExecutionRole.SelectedIndex == 0;
 
         public string TaskExecutionRole
         {
@@ -775,10 +755,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
                 return this._ctlExecutionRole.SelectedValue as string;
             }
-            set
-            {
-                this._ctlExecutionRole.SelectedValue = value;
-            }
+            set => this._ctlExecutionRole.SelectedValue = value;
         }
 
 

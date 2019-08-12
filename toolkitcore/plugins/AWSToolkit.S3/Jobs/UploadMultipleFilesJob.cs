@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI.JobTracker;
 
 using Amazon.AWSToolkit.S3.Model;
@@ -57,13 +54,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
             setTitle();
         }
 
-        public override bool CanResume
-        {
-            get
-            {
-                return this._completedFiles.Count != this._filepaths.Length;
-            }
-        }
+        public override bool CanResume => this._completedFiles.Count != this._filepaths.Length;
 
         void setTitle()
         {

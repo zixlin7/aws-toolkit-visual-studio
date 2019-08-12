@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-
 using Amazon.S3.Model;
 using Amazon.AWSToolkit.CommonUI;
 
@@ -35,20 +32,11 @@ namespace Amazon.AWSToolkit.S3.Model
         }
 
 
-        public string BucketName
-        {
-            get { return this._bucketName; }
-        }
+        public string BucketName => this._bucketName;
 
-        public string Key
-        {
-            get { return this._key; }
-        }
+        public string Key => this._key;
 
-        public Uri Link
-        {
-            get { return this._link; }
-        }
+        public Uri Link => this._link;
 
         public string Name
         {
@@ -67,7 +55,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public string WebsiteRedirectLocation
         {
-            get { return this._websiteRedirectLocation; }
+            get => this._websiteRedirectLocation;
             set
             {
                 this._websiteRedirectLocation = value;
@@ -119,7 +107,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public bool UseReducedRedundancyStorage
         {
-            get { return this._useReducedRedundancyStorage; }
+            get => this._useReducedRedundancyStorage;
             set
             {
                 this._useReducedRedundancyStorage = value;
@@ -141,7 +129,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public bool UseServerSideEncryption
         {
-            get { return this._useServerSideEncryption; }
+            get => this._useServerSideEncryption;
             set
             {
                 this._useServerSideEncryption = value;
@@ -163,20 +151,17 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public ObservableCollection<Metadata> MetadataEntries
         {
-            get { return this._metadata; }
-            set { this._metadata = value; }
+            get => this._metadata;
+            set => this._metadata = value;
         }
 
         public ObservableCollection<Tag> Tags
         {
-            get { return this._tags; }
-            set { this._tags = value; }
+            get => this._tags;
+            set => this._tags = value;
         }
 
-        public Dictionary<string, string> OriginalTags
-        {
-            get { return this._originalTags; }
-        }
+        public Dictionary<string, string> OriginalTags => this._originalTags;
 
         public bool IsPublic
         {
@@ -197,8 +182,8 @@ namespace Amazon.AWSToolkit.S3.Model
         }
         public ObservableCollection<Permission> PermissionEntries
         {
-            get { return this._permissions; }
-            set { this._permissions = value; }
+            get => this._permissions;
+            set => this._permissions = value;
         }
 
     }

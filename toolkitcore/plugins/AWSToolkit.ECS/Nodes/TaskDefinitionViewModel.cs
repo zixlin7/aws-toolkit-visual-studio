@@ -20,27 +20,12 @@ namespace Amazon.AWSToolkit.ECS.Nodes
             this._ecsClient = viewModel.ECSClient;
         }
 
-        public RootViewModel RootViewModel
-        {
-            get { return this._rootViewModel; }
-        }
+        public RootViewModel RootViewModel => this._rootViewModel;
 
-        public TaskDefinitionWrapper TaskDefinition
-        {
-            get { return this._taskDefinition; }
-        }
+        public TaskDefinitionWrapper TaskDefinition => this._taskDefinition;
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.taskdef.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.taskdef.png";
 
-        public string Family
-        {
-            get { return _taskDefinition.Family; }
-        }
+        public string Family => _taskDefinition.Family;
     }
 }

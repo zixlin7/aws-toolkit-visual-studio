@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
@@ -7,7 +6,6 @@ using Amazon.CodeCommit;
 using Amazon.CodeCommit.Model;
 using Amazon.Runtime;
 using Amazon.AWSToolkit.CodeCommit.Interface.Nodes;
-using Amazon.AWSToolkit.CodeCommit.Model;
 using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommit.Nodes
@@ -24,21 +22,9 @@ namespace Amazon.AWSToolkit.CodeCommit.Nodes
             this._metaNode = base.MetaNode as CodeCommitRootViewMetaNode;
         }
 
-        public override string ToolTip
-        {
-            get
-            {
-                return "AWS CodeCommit gives you ... I dunno ... wings?";
-            }
-        }
+        public override string ToolTip => "AWS CodeCommit";
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.CodeCommit.Resources.EmbeddedImages.service-root-node.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.CodeCommit.Resources.EmbeddedImages.service-root-node.png";
 
         protected override void LoadChildren()
         {

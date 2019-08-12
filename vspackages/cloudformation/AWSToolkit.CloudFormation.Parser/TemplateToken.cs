@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.CloudFormation.Parser.Schema;
 
 namespace Amazon.AWSToolkit.CloudFormation.Parser
@@ -51,31 +47,27 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
 
                 return this._schema;
             }
-            private set { this._schema = value; }
+            private set => this._schema = value;
         }
 
         public IntrinsicFunction IntrinsicFunction
         {
             get;
-            private set;
         }
 
         public string KeyChain
         {
             get;
-            private set;
         }
 
         public string Value
         {
             get;
-            private set;
         }
 
         public int Postion
         {
             get;
-            private set;
         }
 
         public int Length
@@ -130,10 +122,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
 
                 return null;
             }
-            set
-            {
-                this._overrideDescription = value;
-            }
+            set => this._overrideDescription = value;
         }
 
         public void AddChildTemplateToken(TemplateToken token)
@@ -142,15 +131,12 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
             token.ParentToken = this;
         }
 
-        public IList<TemplateToken> ChildTokens
-        {
-            get { return this._childTokens; }
-        }
+        public IList<TemplateToken> ChildTokens => this._childTokens;
 
         public TemplateToken ParentToken
         {
-            get { return this._parentToken; }
-            private set { this._parentToken = value;}
+            get => this._parentToken;
+            private set => this._parentToken = value;
         }
 
         public SchemaObject ParentSchema

@@ -4,8 +4,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Xml;
-using System.Text;
-
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.CheckedTree;
 using Amazon.AWSToolkit.Util;
@@ -39,23 +37,11 @@ namespace Amazon.AWSToolkit.PolicyEditor.Model
             this.loadActions();
         }
 
-        public PolicyModel PolicyModel
-        {
-            get
-            {
-                return this._policyModel;
-            }
-        }
+        public PolicyModel PolicyModel => this._policyModel;
 
-        internal Statement InternalStatement
-        {
-            get { return this._statement; }
-        }
+        internal Statement InternalStatement => this._statement;
 
-        public string Id
-        {
-            get { return this._statement.Id; }
-        }
+        public string Id => this._statement.Id;
 
         void fixCaseForExistingActions()
         {
@@ -71,14 +57,11 @@ namespace Amazon.AWSToolkit.PolicyEditor.Model
 
         #region Effect
 
-        public string EffectDisplayLabel
-        {
-            get { return this._statement.Effect.ToString(); }
-        }
+        public string EffectDisplayLabel => this._statement.Effect.ToString();
 
         public bool AllowEffect
         {
-            get { return this._statement.Effect == Statement.StatementEffect.Allow; }
+            get => this._statement.Effect == Statement.StatementEffect.Allow;
             set
             {
                 this._statement.Effect = value ? Statement.StatementEffect.Allow : Statement.StatementEffect.Deny;
@@ -91,7 +74,7 @@ namespace Amazon.AWSToolkit.PolicyEditor.Model
 
         public bool DenyEffect
         {
-            get { return this._statement.Effect == Statement.StatementEffect.Deny; }
+            get => this._statement.Effect == Statement.StatementEffect.Deny;
             set
             {
                 this._statement.Effect = value ? Statement.StatementEffect.Deny : Statement.StatementEffect.Allow;
@@ -208,10 +191,7 @@ namespace Amazon.AWSToolkit.PolicyEditor.Model
         }
 
 
-        public IList<CheckedViewModel<ActionModel>> RootAction
-        {
-            get { return this._rootActions; }
-        }
+        public IList<CheckedViewModel<ActionModel>> RootAction => this._rootActions;
 
         void loadActions()
         {

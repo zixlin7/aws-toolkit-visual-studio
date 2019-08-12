@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.S3.Model;
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 
 namespace Amazon.AWSToolkit.S3.Model
 {
@@ -18,7 +12,7 @@ namespace Amazon.AWSToolkit.S3.Model
 
         public string BucketName
         {
-            get { return this._bucketName; }
+            get => this._bucketName;
             set
             {
                 this._bucketName = value;

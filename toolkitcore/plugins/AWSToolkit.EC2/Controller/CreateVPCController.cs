@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 
 using Amazon.AWSToolkit.Navigator;
@@ -39,10 +38,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             return this._results;
         }
 
-        public CreateVPCModel Model
-        {
-            get { return this._model; }
-        }
+        public CreateVPCModel Model => this._model;
 
         IList<string> GetListOfAvailablityZones()
         {

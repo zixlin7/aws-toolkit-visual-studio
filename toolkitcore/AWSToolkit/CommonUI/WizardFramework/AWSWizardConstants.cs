@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Amazon.AWSToolkit.CommonUI.WizardFramework
+﻿namespace Amazon.AWSToolkit.CommonUI.WizardFramework
 {
     public static class AWSWizardConstants
     {

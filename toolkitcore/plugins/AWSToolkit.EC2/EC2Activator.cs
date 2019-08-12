@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.EC2;
 using Amazon.AWSToolkit.EC2.Nodes;
 using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.EC2;
@@ -15,10 +9,7 @@ namespace Amazon.AWSToolkit.EC2
 {
     public class EC2Activator : AbstractPluginActivator, IAWSEC2
     {
-        public override string PluginName 
-        {
-            get { return "EC2"; } 
-        }
+        public override string PluginName => "EC2";
 
         public override void RegisterMetaNodes()
         {

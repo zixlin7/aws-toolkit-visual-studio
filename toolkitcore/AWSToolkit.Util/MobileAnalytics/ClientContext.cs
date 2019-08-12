@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using ThirdParty.Json.LitJson;
 
 namespace Amazon.AWSToolkit.MobileAnalytics
@@ -178,14 +176,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// <value>The environment Locale.</value>
         public string EnvLocale
         { 
-            get
-            {
-                return _envLocale;
-            }
-            set
-            {
-                _envLocale = value;
-            }
+            get => _envLocale;
+            set => _envLocale = value;
         }
 
         /// <summary>
@@ -194,14 +186,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// <value>The environment Make.</value>
         public string EnvMake
         { 
-            get
-            {
-                return _envMake;
-            }
-            set
-            {
-                _envMake = value;
-            }
+            get => _envMake;
+            set => _envMake = value;
         }
 
         /// <summary>
@@ -210,14 +196,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// <value>The environment Model.</value>
         public string EnvModel
         { 
-            get
-            {
-                return _envModel;
-            }
-            set
-            {
-                _envModel = value;
-            }
+            get => _envModel;
+            set => _envModel = value;
         }
 
         /// <summary>
@@ -226,14 +206,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         /// <value>The environment Version.</value>
         public string EnvPlatformVersion
         {
-            get
-            {
-                return _envPlatformVersion;
-            }
-            set
-            {
-                _envPlatformVersion = value;
-            }
+            get => _envPlatformVersion;
+            set => _envPlatformVersion = value;
         }
 
     }

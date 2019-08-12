@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Threading;
-
-using Amazon;
+﻿using System.Windows;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
-
-
-using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
 namespace Amazon.AWSToolkit.IdentityManagement.Nodes
@@ -29,28 +19,13 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             this._role = role;
         }
 
-        public override string Name
-        {
-            get
-            {
-                return this._role.RoleName;
-            }
-        }
+        public override string Name => this._role.RoleName;
 
-        public Role Role
-        {
-            get { return this._role; }
-        }
+        public Role Role => this._role;
 
-        public IAMRoleRootViewModel IAMRoleRootViewModel
-        {
-            get { return this._serviceModel; }
-        }
+        public IAMRoleRootViewModel IAMRoleRootViewModel => this._serviceModel;
 
-        public IAmazonIdentityManagementService IAMClient
-        {
-            get { return this._serviceModel.IAMClient; }
-        }
+        public IAmazonIdentityManagementService IAMClient => this._serviceModel.IAMClient;
 
         public void UpdateRole(string roleName)
         {
@@ -59,13 +34,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
         }
 
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.role.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.role.png";
 
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {

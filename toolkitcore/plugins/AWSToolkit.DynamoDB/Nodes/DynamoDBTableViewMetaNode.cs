@@ -38,20 +38,13 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
             tableModel.DynamoDBRootViewModel.RemoveTable(focus.Name);
         }
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList(
-                    new ActionHandlerWrapper("Open", OnOpen, null, true, this.GetType().Assembly, "Amazon.AWSToolkit.DynamoDB.Resources.EmbeddedImages.table.png"),
-                    new ActionHandlerWrapper("Stream Properties...", OnStreamProperties, null, false, null, null),
-                    new ActionHandlerWrapper("Table Properties...", OnProperties, null, false, null, "properties.png"),
-                    null,
-                    new ActionHandlerWrapper("Delete", OnDelete, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false, null, "delete.png")
-                    );
-            }
-        }
-
-
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(
+                new ActionHandlerWrapper("Open", OnOpen, null, true, this.GetType().Assembly, "Amazon.AWSToolkit.DynamoDB.Resources.EmbeddedImages.table.png"),
+                new ActionHandlerWrapper("Stream Properties...", OnStreamProperties, null, false, null, null),
+                new ActionHandlerWrapper("Table Properties...", OnProperties, null, false, null, "properties.png"),
+                null,
+                new ActionHandlerWrapper("Delete", OnDelete, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false, null, "delete.png")
+            );
     }
 }

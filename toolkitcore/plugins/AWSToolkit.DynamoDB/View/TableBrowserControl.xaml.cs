@@ -33,23 +33,11 @@ namespace Amazon.AWSToolkit.DynamoDB.View
             this._scanConditionsControl.Initialize(this._controller);
         }
 
-        public override string Title
-        {
-            get
-            {
-                return "Table: " + this._controller.Model.TableName;
-            }
-        }
+        public override string Title => "Table: " + this._controller.Model.TableName;
 
-        public override string UniqueId
-        {
-            get { return string.Format("DDB:Table:{0}", this._controller.Model.TableName); }
-        }
+        public override string UniqueId => string.Format("DDB:Table:{0}", this._controller.Model.TableName);
 
-        public override bool SupportsBackGroundDataLoad
-        {
-            get { return true; }
-        }
+        public override bool SupportsBackGroundDataLoad => true;
 
         protected override object LoadAndReturnModel()
         {

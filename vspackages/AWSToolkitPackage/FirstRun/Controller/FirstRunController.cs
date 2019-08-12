@@ -1,9 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Model;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.View;
 using log4net;
@@ -31,7 +29,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
 
         public FirstRunModel Model { get; }
 
-        public AWSToolkitPackage HostPackage { get; private set; }
+        public AWSToolkitPackage HostPackage { get; }
 
         /// <summary>
         /// Checks to see if any registered credential profiles are available. If

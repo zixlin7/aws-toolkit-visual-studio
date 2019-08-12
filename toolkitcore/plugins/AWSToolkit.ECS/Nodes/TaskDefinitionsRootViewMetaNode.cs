@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
@@ -11,15 +6,9 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 {
     public class TaskDefinitionsRootViewMetaNode : AbstractMetaNode
     {
-        public TaskDefinitionViewMetaNode TaskDefinitionViewMetaNode
-        {
-            get { return this.FindChild<TaskDefinitionViewMetaNode>(); }
-        }
+        public TaskDefinitionViewMetaNode TaskDefinitionViewMetaNode => this.FindChild<TaskDefinitionViewMetaNode>();
 
-        public override bool SupportsRefresh
-        {
-            get { return true; }
-        }
+        public override bool SupportsRefresh => true;
 
         public ActionHandlerWrapper.ActionHandler OnCreateTaskDefinition
         {
@@ -27,19 +16,14 @@ namespace Amazon.AWSToolkit.ECS.Nodes
             set;
         }
 
-        public override IList<ActionHandlerWrapper> Actions
-        {
-            get
-            {
-                return BuildActionHandlerList(
-                    new ActionHandlerWrapper("Create Task Definition...",
-                        OnCreateTaskDefinition,
-                        null,
-                        false,
-                        this.GetType().Assembly,
-                        "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.new_taskdef.png")
-                );
-            }
-        }
+        public override IList<ActionHandlerWrapper> Actions =>
+            BuildActionHandlerList(
+                new ActionHandlerWrapper("Create Task Definition...",
+                    OnCreateTaskDefinition,
+                    null,
+                    false,
+                    this.GetType().Assembly,
+                    "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.new_taskdef.png")
+            );
     }
 }

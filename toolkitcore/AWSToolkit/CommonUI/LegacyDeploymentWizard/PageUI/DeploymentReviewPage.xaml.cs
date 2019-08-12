@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Navigation;
 using Microsoft.Win32;
 
@@ -28,17 +26,11 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
             this._reviewPanelsContainer.ClearPanels();
         }
 
-        public bool OpenStatusOnClose
-        {
-            get { return this._launchStatusWindow.IsChecked == true; }
-        }
+        public bool OpenStatusOnClose => this._launchStatusWindow.IsChecked == true;
 
         public bool IsNETCoreProjectType
         {
-            get
-            {
-                return this._ctlDotnetCliTools.Visibility == Visibility.Visible;
-            }
+            get => this._ctlDotnetCliTools.Visibility == Visibility.Visible;
             set
             {
                 if(value)
@@ -67,13 +59,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
             }
         }
 
-        public bool SaveBeanstalkTools
-        {
-            get
-            {
-                return this._ctlDotnetCliPersistSettings.IsChecked.GetValueOrDefault();
-            }
-        }
+        public bool SaveBeanstalkTools => this._ctlDotnetCliPersistSettings.IsChecked.GetValueOrDefault();
 
         private void Browse(object sender, RoutedEventArgs e)
         {

@@ -18,28 +18,13 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
             this._table = table;
         }
 
-        public DynamoDBRootViewModel DynamoDBRootViewModel
-        {
-            get { return this._dynamoDBRootViewModel; }
-        }
+        public DynamoDBRootViewModel DynamoDBRootViewModel => this._dynamoDBRootViewModel;
 
-        public IAmazonDynamoDB DynamoDBClient
-        {
-            get { return this._dynamoDBRootViewModel.DynamoDBClient; }
-        }
+        public IAmazonDynamoDB DynamoDBClient => this._dynamoDBRootViewModel.DynamoDBClient;
 
-        public string Table
-        {
-            get { return this._table; }
-        }
+        public string Table => this._table;
 
-        protected override string IconName
-        {
-            get
-            {
-                return "Amazon.AWSToolkit.DynamoDB.Resources.EmbeddedImages.table.png";
-            }
-        }
+        protected override string IconName => "Amazon.AWSToolkit.DynamoDB.Resources.EmbeddedImages.table.png";
 
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {

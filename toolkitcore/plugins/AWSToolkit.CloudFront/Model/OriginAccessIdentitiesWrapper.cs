@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Amazon.AWSToolkit.CommonUI;
-
-namespace Amazon.AWSToolkit.CloudFront.Model
+﻿namespace Amazon.AWSToolkit.CloudFront.Model
 {
     public class OriginAccessIdentitiesWrapper
     {
@@ -20,19 +13,16 @@ namespace Amazon.AWSToolkit.CloudFront.Model
         public string Comment
         {
             get;
-            private set;
         }
 
         public string Id
         {
             get;
-            private set;
         }
 
         public string CanonicalUserId
         {
             get;
-            private set;
         }
 
         public string FormattedCanonicalUserId

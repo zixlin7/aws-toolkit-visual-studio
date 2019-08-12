@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel;
 
 using Amazon.AWSToolkit.CommonUI;
@@ -150,7 +147,7 @@ namespace Amazon.AWSToolkit.EC2.Model
         bool _is64BitSelected;
         public bool Is64BitSelected 
         {
-            get { return this._is64BitSelected; }
+            get => this._is64BitSelected;
             set
             {
                 this._is64BitSelected = value;
@@ -158,12 +155,12 @@ namespace Amazon.AWSToolkit.EC2.Model
 
             }
         }
-        public bool Is64BitEnabled { get { return this.ImageId64 != null; } }
+        public bool Is64BitEnabled => this.ImageId64 != null;
 
         bool _is32BitSelected;
         public bool Is32BitSelected
         {
-            get { return this._is32BitSelected; }
+            get => this._is32BitSelected;
             set
             {
                 this._is32BitSelected = value;
@@ -171,13 +168,9 @@ namespace Amazon.AWSToolkit.EC2.Model
 
             }
         }
-        public bool Is32BitEnabled { get { return this.ImageId32 != null; } }
+        public bool Is32BitEnabled => this.ImageId32 != null;
 
-        public bool IsWindowsPlatform
-        {
-            // seen EC2 use 'windows' and 'Windows'
-            get { return EC2Constants.PLATFORM_WINDOWS.Equals(this.Platform, StringComparison.OrdinalIgnoreCase); }
-        }
+        public bool IsWindowsPlatform => EC2Constants.PLATFORM_WINDOWS.Equals(this.Platform, StringComparison.OrdinalIgnoreCase);
 
         [Browsable(false)]
         public System.Windows.Media.ImageSource PlatformIcon

@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using System.Text;
 
 using Amazon.AWSToolkit.CommonUI;
@@ -24,39 +19,17 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
             this._instance = instance;
         }
 
-        public string InstanceId
-        {
-            get { return this._instance.InstanceId; }
-        }
+        public string InstanceId => this._instance.InstanceId;
 
-        public string ImageId
-        {
-            get { return this._instance.ImageId; }
-        }
+        public string ImageId => this._instance.ImageId;
 
-        public string Status
-        {
-            get { return this._instance.State.Name; }
-        }
+        public string Status => this._instance.State.Name;
 
-        public string ReservationId
-        {
-            get { return this._reservation.ReservationId; }
-        }
+        public string ReservationId => this._reservation.ReservationId;
 
-        public string Platform
-        {
-            get { return this._instance.Platform; }
-        }
+        public string Platform => this._instance.Platform;
 
-        public bool IsWindowsPlatform
-        {
-            get
-            {
-                // seen EC2 use 'windows' and 'Windows'
-                return EC2Constants.PLATFORM_WINDOWS.Equals(this.NativeInstance.Platform, StringComparison.OrdinalIgnoreCase);
-            }
-        }
+        public bool IsWindowsPlatform => EC2Constants.PLATFORM_WINDOWS.Equals(this.NativeInstance.Platform, StringComparison.OrdinalIgnoreCase);
 
         public string Name
         {
@@ -74,7 +47,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
 
         public string InstanceType
         {
-            get { return this.NativeInstance.InstanceType; }
+            get => this.NativeInstance.InstanceType;
             set
             {
                 this.NativeInstance.InstanceType = value;
@@ -82,10 +55,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
             }
         }
 
-        public string IpAddress
-        {
-            get { return this._instance.PublicIpAddress; }
-        }
+        public string IpAddress => this._instance.PublicIpAddress;
 
         public string FormattedTags
         {
@@ -103,15 +73,9 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
             }
         }
 
-        public Reservation NativeReservation
-        {
-            get { return this._reservation; }
-        }
+        public Reservation NativeReservation => this._reservation;
 
-        public Instance NativeInstance
-        {
-            get { return this._instance; }
-        }
+        public Instance NativeInstance => this._instance;
 
         public System.Windows.Media.ImageSource InstanceIcon
         {

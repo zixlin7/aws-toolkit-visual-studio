@@ -20,7 +20,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         private string _filename;
         public string Filename
         {
-            get { return _filename; }
+            get => _filename;
             set { _filename = value; NotifyPropertyChanged("Filename"); }
         }
 

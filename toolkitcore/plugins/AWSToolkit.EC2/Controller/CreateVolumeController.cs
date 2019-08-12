@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Amazon.AWSToolkit.CommonUI.ResourceTags;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
@@ -86,10 +83,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             Model.AvailableSnapshots = snaps;
         }
 
-        public CreateVolumeModel Model
-        {
-            get { return _model; }
-        }
+        public CreateVolumeModel Model => _model;
 
         public void AdjustSizePerSnapshot()
         {

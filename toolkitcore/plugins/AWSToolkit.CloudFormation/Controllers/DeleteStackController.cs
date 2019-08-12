@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.CloudFormation.Nodes;
-
-using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 
 namespace Amazon.AWSToolkit.CloudFormation.Controllers
