@@ -5,7 +5,7 @@ using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment;
 
-namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deployment
+namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 {
     internal class ApplicationPageController : IAWSWizardPageController
     {

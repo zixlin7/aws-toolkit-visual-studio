@@ -6,7 +6,7 @@ using ConfigureRollingDeploymentsPage = Amazon.AWSToolkit.ElasticBeanstalk.Wizar
 
 
 
-namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deployment
+namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 {
     internal class ConfigureRollingDeploymentsController : IAWSWizardPageController
     {

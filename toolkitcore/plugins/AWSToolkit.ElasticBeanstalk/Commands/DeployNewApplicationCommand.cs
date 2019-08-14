@@ -98,6 +98,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 Deployment.EnvironmentDescription = getValue<string>(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_EnvDescription);
                 Deployment.EnvironmentCNAME = getValue<string>(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_CName);
                 Deployment.EnvironmentType = getValue<string>(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_EnvType);
+                Deployment.LoadBalancerType = getValue<string>(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_LoadBalancerType);
 
                 Deployment.KeyPairName = getValue<string>(DeploymentWizardProperties.AWSOptions.propkey_KeyPairName);
                 if (getValue<bool>(DeploymentWizardProperties.AWSOptions.propkey_CreateKeyPair))

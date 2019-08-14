@@ -21,6 +21,7 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.Shared;
+
 using Amazon.AWSToolkit.CloudFormation;
 using Amazon.AWSToolkit.ElasticBeanstalk;
 using Amazon.AWSToolkit.ECS;
@@ -996,14 +997,6 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 IDictionary<string, object> wizardProperties;
                 var ret = InitializeAndRunDeploymentWizard(pi, out wizardProperties);
-                if (!ret)
-                {
-                    if (wizardProperties.ContainsKey(DeploymentWizardProperties.SeedData.propkey_LegacyDeploymentMode))
-                    {
-                        // if the user cancelled the new wizard and requested the legacy version, run it instead
-                        ret = InitializeAndRunLegacyDeploymentWizard(pi, out wizardProperties);
-                    }
-                }
 
                 if (ret)
                 {
@@ -1019,9 +1012,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         }
 
         /// <summary>
-        /// Runs the new deployment wizard. The user can cancel this and request the legacy wizard, in which
-        /// case the output properties need to contain the propkey_LegacyDeploymentMode key (all other property
-        /// info is ignored).
+        /// Runs the new deployment wizard.
         /// </summary>
         /// <param name="projectInfo"></param>
         /// <param name="wizardProperties"></param>
@@ -1072,70 +1063,6 @@ namespace Amazon.AWSToolkit.VisualStudio
         }
 
         /// <summary>
-        /// Runs the legacy deployment wizard. We inject the propkey_LegacyDeploymentMode key into the seed properties
-        /// so that plugins can determine which style of pages to inject.
-        /// </summary>
-        /// <param name="projectInfo"></param>
-        /// <param name="wizardProperties"></param>
-        /// <returns>True if the wizard ran to completion, false if the user cancelled</returns>
-        bool InitializeAndRunLegacyDeploymentWizard(VSWebProjectInfo projectInfo, out IDictionary<string, object> wizardProperties)
-        {
-            var tuple = this.JoinableTaskFactory.Run<Tuple<bool, IDictionary<string, object>>>(async () =>
-            {
-                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-                var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Deployment2AWS.View.LegacyDeploy2AWS", null);
-                wizard.Title = "Publish to Amazon Web Services";
-
-                wizard.SetProperty(DeploymentWizardProperties.SeedData.propkey_LegacyDeploymentMode, true);
-
-                SetVSToolkitDeploymentSeedData(wizard, projectInfo);
-
-                // fix the build configuration to deploy from the seed property we just set, so the legacy and new
-                // wizards can share the same build logic
-                var activeBuildConfiguration = wizard[DeploymentWizardProperties.SeedData.propkey_ActiveBuildConfiguration] as string;
-                wizard[DeploymentWizardProperties.AppOptions.propkey_SelectedBuildConfiguration] = activeBuildConfiguration;
-
-                var pageControllers = new List<IAWSWizardPageController>
-                {
-                    new CommonUI.WizardPages.PageControllers.AccountRegistrationPageController(),
-                    new CommonUI.LegacyDeploymentWizard.PageControllers.DeploymentTemplateSelectorPageController()
-                };
-
-                // the legacy wizard does not use page groups
-                var cloudFormation = AWSCloudFormationPlugin;
-                if (cloudFormation != null)
-                {
-                    var collatedPages = cloudFormation.DeploymentService.ConstructDeploymentPages(wizard, false);
-                    pageControllers.AddRange(collatedPages);
-                }
-
-                var beanstalk = AWSBeanstalkPlugin;
-                if (beanstalk != null)
-                {
-                    var collatedPages = beanstalk.DeploymentService.ConstructDeploymentPages(wizard, false);
-                    pageControllers.AddRange(collatedPages);
-                }
-
-                pageControllers.Add(new CommonUI.LegacyDeploymentWizard.PageControllers.DeploymentReviewPageController());
-                wizard.RegisterPageControllers(pageControllers, 0);
-                wizard.SetShortCircuitPage(AWSWizardConstants.WizardPageReferences.LastPageID);
-
-                var uiShell = await GetServiceAsync(typeof(SVsUIShell)) as IVsUIShell;
-                IntPtr parent;
-                uiShell.GetDialogOwnerHwnd(out parent);
-
-                var ret = wizard.Run();
-                IDictionary<string, object> localWizardProperties = wizard.CollectedProperties;
-                return new Tuple<bool, IDictionary<string, object>>(ret, localWizardProperties);
-            });
-
-            wizardProperties = tuple.Item2;
-
-            return tuple.Item1;
-        }
-
-        /// <summary>
         /// Start republishing the project to the last-used CloudFormation stack or Elastic Beanstalk environment
         /// </summary>
         /// <param name="sender"></param>
@@ -1175,8 +1102,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                 // fast-track republish does not use page groups
                 if (deploymentHistory is BeanstalkDeploymentHistory)
                 {
-                    wizard.SetProperty(DeploymentWizardProperties.SeedData.propkey_LegacyDeploymentMode, false);
-
                     wizard.Title = "Re-publish to AWS Elastic Beanstalk";
                     var beanstalk = AWSBeanstalkPlugin;
                     if (beanstalk != null)

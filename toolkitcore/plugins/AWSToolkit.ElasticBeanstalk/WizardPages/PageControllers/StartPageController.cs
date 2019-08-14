@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Windows.Controls;
 using System.Xml.Linq;
 using Amazon.AWSToolkit.Account;
@@ -9,6 +10,7 @@ using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.EC2;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
@@ -16,10 +18,8 @@ using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 using Amazon.Runtime.Internal.Settings;
 using log4net;
-using Amazon.AWSToolkit.EC2;
-using System.Threading;
 
-namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deployment
+namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 {
     public class StartPageController : IAWSWizardPageController
     {
@@ -127,25 +127,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
 
                 string lastRegionDeployedTo = string.Empty;
                 if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_LastRegionDeployedTo))
-                    lastRegionDeployedTo = HostingWizard[DeploymentWizardProperties.SeedData.propkey_LastRegionDeployedTo] as string;
-
-                if (!string.IsNullOrEmpty(lastRegionDeployedTo))
-                    _pageUI.SelectedRegion = RegionEndPointsManager.GetInstance().GetRegion(lastRegionDeployedTo);
-
-                // If we are running in vs2017 or higher, disable the legacy deployment wizard.
-                // If we're running in vs2013 or vs2015, disable the legacy wizard if we've been 
-                // called from the redeploy-app-version command in the Beanstalk plugin.
-                var lockToNewWizard = true;
-                var hostShellVersion = HostingWizard[CommonWizardProperties.propkey_HostShellVersion] as string;
-                if (hostShellVersion == "2013" || hostShellVersion == "2015")
                 {
-                    if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_RedeployingAppVersion))
-                        lockToNewWizard = (bool) HostingWizard[DeploymentWizardProperties.SeedData.propkey_RedeployingAppVersion];
-                    else
-                        lockToNewWizard = false;
+                    lastRegionDeployedTo =
+                        HostingWizard[DeploymentWizardProperties.SeedData.propkey_LastRegionDeployedTo] as string;
                 }
 
-                _pageUI.LockToNewWizard = lockToNewWizard;
+                if (!string.IsNullOrEmpty(lastRegionDeployedTo))
+                {
+                    _pageUI.SelectedRegion = RegionEndPointsManager.GetInstance().GetRegion(lastRegionDeployedTo);
+                }
             }
 
             // since our default is to deploy a new app environment, we can enable forward nav immediately
@@ -180,10 +170,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
             get
             {
                 if (_pageUI == null)
+                {
                     return false;
+                }
 
                 if (WorkersActive)
+                {
                     return false;
+                }
 
                 var fwdsOK = _pageUI.SelectedRegion != null && _pageUI.SelectedAccount != null;
 

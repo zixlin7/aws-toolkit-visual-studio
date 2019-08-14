@@ -24,6 +24,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="130" />
@@ -48,7 +49,7 @@
                   Style="{DynamicResource awsComboBoxStyle}"/>
 
         <Label Target="{Binding ElementName=_elbScheme}"  
-                Grid.Row="1"
+                Grid.Row="2"
                 Style="{DynamicResource awsWizardFieldLabelStyle}"
                 Content="ELB S_cheme *:" 
                 ToolTip="Specify &quot;Internal&quot; if you want to create an internal load balancer in your VPC so that your Elastic Beanstalk application cannot be accessed from outside your VPC."
@@ -56,6 +57,7 @@
 
         <ComboBox x:Name="_elbScheme" 
                     Grid.Row="1"
+                    Grid.ColumnSpan="3"
                     Grid.Column="1" 
                     Margin="4" 
                     VerticalAlignment="Center" 
@@ -70,22 +72,22 @@
                    Grid.Column="1" 
                    FontStyle="Italic" 
                    Visibility="Hidden"
-                   VerticalAlignment="Center"
                    Margin="4,0,0,0"
-                   Text="Not applicable"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+                   Text="Not applicable to 'Single Instance' environment."  Style="{DynamicResource awsTextBlockBaseStyle}"/>
 
         <Label Target="{Binding ElementName=_vpcSecurityGroup}"  
                 Grid.Row="1"
-                Grid.Column="2"
+                Grid.Column="0"
                 Style="{DynamicResource awsWizardFieldLabelStyle}"
-                Margin="8,2,4,0"
+
                 Content="Security _Group *:" 
                 ToolTip="The security group that your VPC's NAT will allow traffic from.  This group will be assigned to the EC2 instances launched by this environment."
                 />
 
         <ComboBox x:Name="_vpcSecurityGroup" 
-                    Grid.Row="1"
-                    Grid.Column="3" 
+                    Grid.Row="2"
+                    Grid.ColumnSpan="3"
+                    Grid.Column="1" 
                     Margin="4" 
                     VerticalAlignment="Center" 
                     SelectionChanged="_vpcSecurityGroup_SelectionChanged" 
@@ -94,60 +96,62 @@
                     Style="{DynamicResource awsComboBoxStyle}"/>
 
         <Label Target="{Binding ElementName=_elbSubnets}"  
-                Grid.Row="2"
+                Grid.Row="3"
                 Grid.Column="0"
                 Style="{DynamicResource awsWizardFieldLabelStyle}"
                 Content="ELB _Subnet *:"
                 ToolTip="The ID of the subnet for the elastic load balancer."
                 />
 
-        <ComboBox x:Name="_elbSubnets" 
-                    Grid.Row="2"
-                    Grid.ColumnSpan="3"
-                    Grid.Column="1" 
-                    Margin="4" 
-                    VerticalAlignment="Center" 
-                    SelectionChanged="_elbSubnets_SelectionChanged" 
-                    DisplayMemberPath="Key"
-                    ToolTip="The ID of the subnet for the elastic load balancer."
-                    Style="{DynamicResource awsComboBoxStyle}"/>
+        <ListBox x:Name="_elbSubnets" 
+                  Grid.Row="3"
+                  Grid.ColumnSpan="3"
+                  Grid.Column="1" 
+                  Margin="4" 
+                  VerticalAlignment="Center" 
+                  SelectionChanged="_elbSubnets_SelectionChanged" 
+                  DisplayMemberPath="Key"
+                  SelectionMode="Multiple"
+                  ToolTip="The ID(s) of the subnet(s) for the elastic load balancer."
+                  Style="{DynamicResource awsListBoxStyle}" />
+
         <TextBlock x:Name="_elbSubnetsNA" 
-                   Grid.Row="2" 
+                   Grid.Row="3" 
                    Grid.Column="1" 
                    Grid.ColumnSpan="3" 
                    FontStyle="Italic" 
                    Visibility="Hidden"
-                   VerticalAlignment="Center"
                    Margin="4,0,0,0"
-                   Text="Not applicable"  Style="{DynamicResource awsTextBlockBaseStyle}"/>
+                   Text="Not applicable to 'Single Instance' environment."  
+                   Style="{DynamicResource awsTextBlockBaseStyle}"/>
 
         <Label Target="{Binding ElementName=_instancesSubnets}"  
-                Grid.Row="3"
+                Grid.Row="4"
                 Grid.Column="0"
                 Style="{DynamicResource awsWizardFieldLabelStyle}"
                 Content="Instances Sub_net *:" 
                 ToolTip="The ID of the Auto Scaling group subnet."
                 />
 
-        <ComboBox x:Name="_instancesSubnets" 
-                    Grid.Row="3"
-                    Grid.Column="1" 
-                    Grid.ColumnSpan="3"
-                    Margin="4" 
-                    VerticalAlignment="Center" 
-                    SelectionChanged="_instancesSubnets_SelectionChanged" 
-                    DisplayMemberPath="Key"
-                    ToolTip="The ID of the Auto Scaling group subnet."
-                    Style="{DynamicResource awsComboBoxStyle}"/>
+        <ListBox x:Name="_instancesSubnets" 
+                 Grid.Row="4"
+                 Grid.Column="1" 
+                 Grid.ColumnSpan="3"
+                 Margin="4" 
+                 VerticalAlignment="Center" 
+                 SelectionChanged="_instancesSubnets_SelectionChanged" 
+                 DisplayMemberPath="Key"
+                 SelectionMode="Multiple"
+                 ToolTip="The ID(s) of the Auto Scaling group subnet."
+                 Style="{DynamicResource awsListBoxStyle}" />
 
-        <TextBlock Grid.Row="4" 
+        <TextBlock Grid.Row="5" 
                    Grid.ColumnSpan="4" 
                    TextWrapping="Wrap" 
                    FontStyle="Italic" 
                    Margin="0,16,0,0" Style="{DynamicResource awsFieldHintTextStyle}">
 
             <Run>To run AWS Elastic Beanstalk applications inside a VPC, you will need to configure at least the following:</Run>
-            <LineBreak />
             <LineBreak />
             <Run Foreground="Transparent">IND</Run>
             <BulletDecorator>
@@ -172,9 +176,6 @@
                 </BulletDecorator.Bullet>
             </BulletDecorator>
             <Run>Your EC2 instances must be able to connect to the Internet and AWS endpoints.</Run>
-            <LineBreak />
-            <LineBreak />
-            <Run>Elastic Load Balancer settings are not applicable to 'Single Instance' environment types.</Run>
             <LineBreak />
             <LineBreak />
             <Run>For more information visit</Run>

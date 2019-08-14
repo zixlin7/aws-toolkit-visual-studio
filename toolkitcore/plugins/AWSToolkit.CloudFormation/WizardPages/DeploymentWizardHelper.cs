@@ -10,9 +10,10 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages
         {
             CloudFormationRootViewModel rootViewModel = accountViewModel.FindSingleChild<CloudFormationRootViewModel>(false);
             if (rootViewModel != null)
+            {
                 return rootViewModel.CloudFormationClient;
-            else
-                return new AmazonCloudFormationClient(accountViewModel.Credentials, Amazon.RegionEndpoint.USEast1);
+            }
+            return new AmazonCloudFormationClient(accountViewModel.Credentials, Amazon.RegionEndpoint.USEast1);
         }
     }
 }

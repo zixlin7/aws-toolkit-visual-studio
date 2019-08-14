@@ -77,6 +77,11 @@
             public static readonly string propkey_EnvType = "envType";
 
             /// <summary>
+            /// String, the type of load balancer
+            /// </summary>
+            public static readonly string propkey_LoadBalancerType = "loadBalancerType";
+
+            /// <summary>
             /// Boolean which if true tells the wizard to show the rolling deployment page.
             /// </summary>
             public static readonly string propkey_EnableRollingDeployments = "enableRollingDeployments";

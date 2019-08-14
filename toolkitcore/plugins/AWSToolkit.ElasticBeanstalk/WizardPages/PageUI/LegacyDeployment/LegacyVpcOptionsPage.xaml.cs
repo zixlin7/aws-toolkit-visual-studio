@@ -3,12 +3,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Navigation;
-using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.LegacyDeployment;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.EC2;
 using log4net;
 using System.ComponentModel;
 using System.Diagnostics;
+using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment
 {

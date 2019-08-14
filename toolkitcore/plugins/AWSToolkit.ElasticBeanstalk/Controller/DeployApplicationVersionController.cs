@@ -11,6 +11,7 @@ using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers;
 
 using Amazon.AWSToolkit.ElasticBeanstalk.Commands;
 using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
+using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers;
 using Amazon.ElasticBeanstalk;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 
@@ -52,13 +53,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
             var defaultPages = new IAWSWizardPageController[]
             {
-                new WizardPages.PageControllers.Deployment.StartPageController(),
-                new WizardPages.PageControllers.Deployment.ApplicationPageController(),
-                new WizardPages.PageControllers.Deployment.AWSOptionsPageController(),
-                new WizardPages.PageControllers.Deployment.VpcOptionsPageController(),
-                new WizardPages.PageControllers.Deployment.ConfigureRollingDeploymentsController(),
-                new WizardPages.PageControllers.Deployment.ApplicationOptionsPageController(),
-                new WizardPages.PageControllers.Deployment.PseudoReviewPageController(),
+                new StartPageController(),
+                new ApplicationPageController(),
+                new AWSOptionsPageController(),
+                new VpcOptionsPageController(),
+                new ConfigureRollingDeploymentsController(),
+                new ApplicationOptionsPageController(),
+                new PseudoReviewPageController(),
                 new CommonUI.LegacyDeploymentWizard.PageControllers.DeploymentReviewPageController()
             };
 

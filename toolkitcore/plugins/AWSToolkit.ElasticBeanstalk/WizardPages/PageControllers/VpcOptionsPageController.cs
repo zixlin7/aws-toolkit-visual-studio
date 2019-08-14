@@ -8,7 +8,7 @@ using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
 
-namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deployment
+namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 {
     internal class VpcOptionsPageController : IAWSWizardPageController
     {

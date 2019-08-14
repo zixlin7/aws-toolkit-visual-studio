@@ -188,23 +188,16 @@
       <DependentUpon>EnvironmentStatusControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="WizardPages\DeploymentWizardHelper.cs" />
-    <Compile Include="WizardPages\PageControllers\Deployment\ApplicationOptionsPageController.cs" />
-    <Compile Include="WizardPages\PageControllers\Deployment\AWSOptionsPageController.cs" />
-    <Compile Include="WizardPages\PageControllers\Deployment\ApplicationPageController.cs" />
-    <Compile Include="WizardPages\PageControllers\Deployment\ConfigureRollingDeploymentsController.cs" />
-    <Compile Include="WizardPages\PageControllers\Deployment\CoreCLRApplicationOptionsPageController.cs" />
-    <Compile Include="WizardPages\PageControllers\Deployment\PermissionsPageController.cs" />
-    <Compile Include="WizardPages\PageControllers\Deployment\PseudoReviewPageController.cs" />
-    <Compile Include="WizardPages\PageControllers\Deployment\StartPageController.cs" />
-    <Compile Include="WizardPages\PageControllers\Deployment\VpcOptionsPageController.cs" />
-    <Compile Include="WizardPages\PageControllers\LegacyDeployment\ApplicationPageController.cs" />
-    <Compile Include="WizardPages\PageControllers\LegacyDeployment\AppOptionsPageController.cs" />
-    <Compile Include="WizardPages\PageControllers\LegacyDeployment\DatabasePageController.cs" />
-    <Compile Include="WizardPages\PageControllers\LegacyDeployment\EnvironmentPageController.cs" />
-    <Compile Include="WizardPages\PageControllers\Deployment\FastTrackRepublishPageController.cs" />
-    <Compile Include="WizardPages\PageControllers\LegacyDeployment\AWSOptionsPageController.cs" />
-    <Compile Include="WizardPages\PageControllers\LegacyDeployment\PseudoReviewPageController.cs" />
-    <Compile Include="WizardPages\PageControllers\LegacyDeployment\VpcOptionsPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\ApplicationOptionsPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\AWSOptionsPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\ApplicationPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\ConfigureRollingDeploymentsController.cs" />
+    <Compile Include="WizardPages\PageControllers\CoreCLRApplicationOptionsPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\PermissionsPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\PseudoReviewPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\StartPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\VpcOptionsPageController.cs" />
+    <Compile Include="WizardPages\PageControllers\FastTrackRepublishPageController.cs" />
     <Compile Include="WizardPages\PageUI\Deployment\ApplicationPage.xaml.cs">
       <DependentUpon>ApplicationPage.xaml</DependentUpon>
     </Compile>
@@ -591,8 +584,8 @@
     <PackageReference Include="AWSSDK.ElasticBeanstalk">
       <Version>3.3.100.35</Version>
     </PackageReference>
-    <PackageReference Include="AWSSDK.ElasticLoadBalancing">
-      <Version>3.3.100.35</Version>
+    <PackageReference Include="AWSSDK.ElasticLoadBalancingV2">
+      <Version>3.3.102.10</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
       <Version>3.3.100.11</Version>

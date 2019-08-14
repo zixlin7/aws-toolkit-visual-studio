@@ -114,11 +114,6 @@
             public static readonly string propkey_TemplateProperties = "templateProperties";
 
             /// <summary>
-            /// Set if the user requested that we launch and use the legacy deployment wizard.
-            /// </summary>
-            public static readonly string propkey_LegacyDeploymentMode = "legacyDeploymentMode";
-
-            /// <summary>
             /// Map of solution configurations and the project configuration that is contained
             /// in the configuration context. Automation builds use the solution configuration
             /// name, msbuild builds use the project configuration name.

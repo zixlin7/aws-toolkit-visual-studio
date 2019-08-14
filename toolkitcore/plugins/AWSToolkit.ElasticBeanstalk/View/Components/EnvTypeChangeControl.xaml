@@ -118,7 +118,7 @@
                    Grid.Column="0"
                    Style="{DynamicResource awsWizardFieldLabelStyle}"
                    Content="Instances Sub_net *:" 
-                   ToolTip="The ID of the Auto Scaling group subnet."
+                   ToolTip="The ID(s) of the Auto Scaling group subnet."
                    />
 
             <ComboBox x:Name="_instancesSubnets" 
@@ -128,7 +128,7 @@
                       Margin="4" 
                       VerticalAlignment="Center" 
                       DisplayMemberPath="Key"
-                      ToolTip="The ID of the Auto Scaling group subnet."
+                      ToolTip="The ID(s) of the Auto Scaling group subnet."
                       Style="{DynamicResource awsComboBoxStyle}"/>
         </Grid>
     </Grid>

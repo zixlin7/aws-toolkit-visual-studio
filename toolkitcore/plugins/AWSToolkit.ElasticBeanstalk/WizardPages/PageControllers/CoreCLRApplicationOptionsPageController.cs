@@ -8,10 +8,9 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment;
-
 using Amazon.ElasticBeanstalk.Model;
 
-namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deployment
+namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 {
     internal class CoreCLRApplicationOptionsPageController : IAWSWizardPageController
     {

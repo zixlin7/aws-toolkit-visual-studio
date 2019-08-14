@@ -76,6 +76,11 @@ namespace AWSDeployment
             && EnvironmentType.Equals("SingleInstance", StringComparison.Ordinal);
 
         /// <summary>
+        /// Type of load balancer
+        /// </summary>
+        public string LoadBalancerType { get; set; }
+
+        /// <summary>
         /// If true, deployment will be to a new environment of the specified name
         /// otherwise we are re-using an existing environment
         /// </summary>
@@ -1208,14 +1213,25 @@ namespace AWSDeployment
             var isSingleInstanceEnvLaunch = IsSingleInstanceEnvironmentType;
 
             if (!string.IsNullOrEmpty(EnvironmentType) && configOptionSettings.FirstOrDefault(
-                x => (x.Namespace == "aws:elasticbeanstalk:environment" && x.OptionName == "EnvironmentType")) == null)
+                    x => (x.Namespace == "aws:elasticbeanstalk:environment" && x.OptionName == "EnvironmentType")) == null)
             {
                 configOptionSettings.Add(new ConfigurationOptionSetting()
-				{
+                {
                     Namespace = "aws:elasticbeanstalk:environment",
                     OptionName = "EnvironmentType",
                     Value = EnvironmentType
-				});
+                });
+            }
+
+            if (!string.IsNullOrEmpty(LoadBalancerType) && configOptionSettings.FirstOrDefault(
+                    x => (x.Namespace == "aws:elasticbeanstalk:environment" && x.OptionName == "LoadBalancerType")) == null)
+            {
+                configOptionSettings.Add(new ConfigurationOptionSetting()
+                {
+                    Namespace = "aws:elasticbeanstalk:environment",
+                    OptionName = "LoadBalancerType",
+                    Value = LoadBalancerType
+                });
             }
 
             if (!string.IsNullOrEmpty(CustomAmiID) && configOptionSettings.FirstOrDefault(

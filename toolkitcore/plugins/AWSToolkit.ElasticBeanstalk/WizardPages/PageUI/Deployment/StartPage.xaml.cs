@@ -121,17 +121,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             }
         }
 
-        public bool LockToNewWizard
-        {
-            set => _btnUseLegacyWizard.Visibility = value ? Visibility.Collapsed : Visibility.Visible;
-        }
-
-
-        private void UseLegacyWizard_OnClick(object sender, RoutedEventArgs e)
-        {
-            PageController.HostingWizard.CancelRun(DeploymentWizardProperties.SeedData.propkey_LegacyDeploymentMode, true);    
-        }
-
         // this is used to wire an environment selection into the overall DeployedApplicationModel
         // attached to a treeitem root
         private void _existingDeploymentsTree_OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)

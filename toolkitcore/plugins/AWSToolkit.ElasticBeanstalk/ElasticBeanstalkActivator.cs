@@ -11,6 +11,7 @@ using Amazon.AWSToolkit.ElasticBeanstalk.Commands;
 using Amazon.AWSToolkit.CommonUI;
 
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
@@ -88,21 +89,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
         {
             if (fastTrackRedeployment)
             {
-                return new IAWSWizardPageController[] { new WizardPages.PageControllers.Deployment.FastTrackRepublishPageController() };
-            }
-
-            if (hostWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_LegacyDeploymentMode))
-            {
-                return new IAWSWizardPageController[]
-                {
-                    new WizardPages.PageControllers.LegacyDeployment.ApplicationPageController(),
-                    new WizardPages.PageControllers.LegacyDeployment.EnvironmentPageController(),
-                    new WizardPages.PageControllers.LegacyDeployment.AWSOptionsPageController(),
-                    new WizardPages.PageControllers.LegacyDeployment.VpcOptionsPageController(),
-                    new WizardPages.PageControllers.LegacyDeployment.AppOptionsPageController(),
-                    new WizardPages.PageControllers.LegacyDeployment.DatabasePageController(),
-                    new WizardPages.PageControllers.LegacyDeployment.PseudoReviewPageController()
-                };
+                return new IAWSWizardPageController[] { new FastTrackRepublishPageController() };
             }
 
             var isCoreCLRProject = false;
@@ -114,15 +101,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
 
             return new IAWSWizardPageController[]
             {
-                new WizardPages.PageControllers.Deployment.StartPageController(),
-                new WizardPages.PageControllers.Deployment.ApplicationPageController(),
-                new WizardPages.PageControllers.Deployment.AWSOptionsPageController(),
-                new WizardPages.PageControllers.Deployment.VpcOptionsPageController(),
-                new WizardPages.PageControllers.Deployment.ConfigureRollingDeploymentsController(),
-                new WizardPages.PageControllers.Deployment.PermissionsPageController(),
-                isCoreCLRProject ? new WizardPages.PageControllers.Deployment.CoreCLRApplicationOptionsPageController() as IAWSWizardPageController
-                                 : new WizardPages.PageControllers.Deployment.ApplicationOptionsPageController(),
-                new WizardPages.PageControllers.Deployment.PseudoReviewPageController()
+                new StartPageController(),
+                new ApplicationPageController(),
+                new AWSOptionsPageController(),
+                new VpcOptionsPageController(),
+                new ConfigureRollingDeploymentsController(),
+                new PermissionsPageController(),
+                isCoreCLRProject ? new CoreCLRApplicationOptionsPageController() as IAWSWizardPageController
+                                 : new ApplicationOptionsPageController(),
+                new PseudoReviewPageController()
             };
         }
 

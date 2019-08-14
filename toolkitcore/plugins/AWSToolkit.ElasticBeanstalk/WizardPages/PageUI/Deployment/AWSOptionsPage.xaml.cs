@@ -13,6 +13,7 @@ using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment;
 using AWSDeployment;
 using log4net;
 using System.Windows.Data;
+using Amazon.ElasticLoadBalancingV2;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 {
@@ -310,6 +311,28 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             _rdsGroupsListComboSelectedDisplay.Text = names.ToString();
         }
 
+        private void _loadBalancerList_OnDropDownClosed(object sender, EventArgs e)
+        {
+            var selected = _loadBalancerList.SelectedItem as string;
+
+            // If application, we must set VPC, so check that box and make it not editable
+            if (LoadBalancerTypeEnum.Application.Value.Equals(selected))
+            {
+                _useNonDefaultVpc.IsChecked = true;
+                _useNonDefaultVpc.IsEnabled = false;
+            }
+            else
+            {
+                _useNonDefaultVpc.IsEnabled = true;
+            }
+        }
+
+
+        void _loadBalancerListCombo_Loaded(object sender, RoutedEventArgs e)
+        {
+            _loadBalancerList.ItemsSource = new List<string>{"classic", LoadBalancerTypeEnum.Application, LoadBalancerTypeEnum.Network};
+        }
+
         void _rdsGroupsListCombo_Loaded(object sender, RoutedEventArgs e)
         {
             var contentPresenter = this._rdsGroupsListCombo.Template.FindName("ContentSite", this._rdsGroupsListCombo) as ContentPresenter;
@@ -322,7 +345,25 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         private void _singleInstanceMode_Checked(object sender, RoutedEventArgs e)
         {
             if (this._singleInstanceMode.IsChecked.GetValueOrDefault() && this._rollingDeploymentInstanceMode != null)
+            {
                 this._rollingDeploymentInstanceMode.IsChecked = false;
+            }
+
+            if (_loadBalancerList != null)
+            {
+                _loadBalancerList.IsEnabled = false;
+                _loadBalancerList.SelectedItem = null;
+                _useNonDefaultVpc.IsEnabled = true;
+            }
+        }
+
+        private void _singleInstanceMode_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (_loadBalancerList != null)
+            {
+                _loadBalancerList.IsEnabled = true;
+                _loadBalancerList.SelectedItem = "classic";
+            }
         }
     }
 }

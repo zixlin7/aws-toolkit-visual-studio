@@ -1,19 +1,19 @@
-﻿using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment;
-using log4net;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Windows.Controls;
 using System.ComponentModel;
+using System.Threading;
+using System.Windows.Controls;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
-using System.Threading;
+using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
+using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
 using Amazon.IdentityManagement.Model;
 using AWSDeployment;
+using log4net;
 
-namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deployment
+namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 {
     internal class PermissionsPageController : IAWSWizardPageController
     {

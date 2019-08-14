@@ -1,13 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Linq;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Navigation;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.EC2;
-using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deployment;
+using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers;
+using Amazon.EC2.Model;
 using log4net;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
@@ -37,35 +41,35 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             get
             {
                 if (!(this._vpcs.SelectedItem is KeyValuePair<string, Amazon.EC2.Model.Vpc>))
+                {
                     return null;
+                }
 
                 var kvp = (KeyValuePair<string, Amazon.EC2.Model.Vpc>)this._vpcs.SelectedItem;
                 return kvp.Value.VpcId;
             }
         }
 
+        private string extractSubnetIdsFromSelection(IList selections)
+        {
+            var strs = selections
+                .OfType<KeyValuePair<string, Subnet>?>()
+                .Select(item => item?.Value.SubnetId)
+                .Where(item => item != null);
+
+            var str = string.Join(",", strs);
+
+            return str.Length == 0 ? null : str;
+        }
+
         public string SelectedInstanceSubnetId
         {
-            get
-            {
-                if (!(this._instancesSubnets.SelectedItem is KeyValuePair<string, Amazon.EC2.Model.Subnet>))
-                    return null;
-
-                var kvp = (KeyValuePair<string, Amazon.EC2.Model.Subnet>)this._instancesSubnets.SelectedItem;
-                return kvp.Value.SubnetId;
-            }
+            get => extractSubnetIdsFromSelection(_instancesSubnets.SelectedItems);
         }
 
         public string SelectedELBSubnetId
         {
-            get
-            {
-                if (!(this._elbSubnets.SelectedItem is KeyValuePair<string, Amazon.EC2.Model.Subnet>))
-                    return null;
-
-                var kvp = (KeyValuePair<string, Amazon.EC2.Model.Subnet>)this._elbSubnets.SelectedItem;
-                return kvp.Value.SubnetId;
-            }
+            get => extractSubnetIdsFromSelection(_elbSubnets.SelectedItems);
         }
 
 
@@ -73,11 +77,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         {
             get
             {
-                if (!(this._elbScheme.SelectedItem is ComboBoxItem))
-                    return null;
-
-                var item = this._elbScheme.SelectedItem as ComboBoxItem;
-                return item.Tag as string;
+                var item = _elbScheme.SelectedItem as ComboBoxItem;
+                return item?.Tag as string;
             }
         }
 
@@ -85,11 +86,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         {
             get
             {
-                if (!(this._vpcSecurityGroup.SelectedItem is KeyValuePair<string, Amazon.EC2.Model.SecurityGroup>))
-                    return null;
-
-                var kvp = (KeyValuePair<string, Amazon.EC2.Model.SecurityGroup>)this._vpcSecurityGroup.SelectedItem;
-                return kvp.Value.GroupId;
+                var kvp = _vpcSecurityGroup.SelectedItem as KeyValuePair<string, SecurityGroup>?;
+                return kvp?.Value.GroupId;
             }
         }
 
@@ -184,7 +182,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
                 this._vpcSecurityGroup.ItemsSource = value;
                 if (_vpcSecurityGroup.Items.Count > 0)
+                {
                     _vpcSecurityGroup.SelectedIndex = 0;
+                }
+
                 _vpcSecurityGroup.Cursor = Cursors.Arrow;
 
                 foreach (var group in value)
@@ -211,7 +212,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         private void _vpc_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!IsInitialized)
+            {
                 return;
+            }
 
             NotifyPropertyChanged("vpc");
         }
@@ -219,7 +222,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         private void _elbScheme_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!IsInitialized)
+            {
                 return;
+            }
 
             NotifyPropertyChanged("elb-scheme");
         }
@@ -227,7 +232,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         private void _instancesSubnets_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!IsInitialized)
+            {
                 return;
+            }
 
             NotifyPropertyChanged("instance-subnets");
         }
@@ -235,7 +242,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         private void _elbSubnets_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!IsInitialized)
+            {
                 return;
+            }
 
             NotifyPropertyChanged("elb-subnets");
         }
@@ -243,7 +252,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         private void _vpcSecurityGroup_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!IsInitialized)
+            {
                 return;
+            }
 
             NotifyPropertyChanged("vpc-security-group");
         }

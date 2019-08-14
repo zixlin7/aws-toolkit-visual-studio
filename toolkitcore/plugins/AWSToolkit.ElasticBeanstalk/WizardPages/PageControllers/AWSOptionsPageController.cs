@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Windows.Controls;
+using Amazon.ElasticLoadBalancingV2;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
@@ -15,7 +16,7 @@ using Amazon.ElasticBeanstalk.Model;
 using log4net;
 using AWSOptionsPage = Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment.AWSOptionsPage;
 
-namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deployment
+namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 {
     internal class AWSOptionsPageController : IAWSWizardPageController
     {
@@ -191,12 +192,30 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                 _pageUI.QueryKeyPairSelection(out keypairName, out createNew);
                 HostingWizard[DeploymentWizardProperties.AWSOptions.propkey_KeyPairName] = keypairName;
                 if (!string.IsNullOrEmpty(keypairName))
+                {
                     HostingWizard[DeploymentWizardProperties.AWSOptions.propkey_CreateKeyPair] = createNew;
+                }
 
                 HostingWizard.SetProperty(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_EnvType,
                                           _pageUI.SingleInstanceEnvironment
                                               ? BeanstalkConstants.EnvType_SingleInstance
                                               : BeanstalkConstants.EnvType_LoadBalanced);
+
+                if (!_pageUI.SingleInstanceEnvironment)
+                {
+                    if (!"classic".Equals(_pageUI._loadBalancerList.SelectedItem))
+                    {
+                        HostingWizard.SetProperty(
+                            BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_LoadBalancerType,
+                            _pageUI._loadBalancerList.SelectedItem == null
+                                ? LoadBalancerTypeEnum.Application.Value
+                                : _pageUI._loadBalancerList.SelectedItem);
+                    }
+                }
+                else
+                {
+                    HostingWizard.SetProperty(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_LoadBalancerType, null);
+                }
 
                 HostingWizard[BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_EnableRollingDeployments] = 
                     _pageUI.EnableRollingDeployments && !_pageUI.SingleInstanceEnvironment;
@@ -250,6 +269,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deploym
                 HostingWizard[DeploymentWizardProperties.AWSOptions.propkey_KeyPairName] = string.Empty;
                 HostingWizard[BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_LaunchIntoVPC] = false;
                 HostingWizard.SetProperty(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_EnvType, BeanstalkConstants.EnvType_SingleInstance);
+                HostingWizard.SetProperty(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_LoadBalancerType, null);
             }
         }
 

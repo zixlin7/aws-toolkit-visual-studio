@@ -1,24 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows.Controls;
 using System.ComponentModel;
-
+using System.Windows.Controls;
+using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.Persistence.Deployment;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.AWSToolkit.Account;
-
+using Amazon.AWSToolkit.Persistence.Deployment;
+using Amazon.AWSToolkit.PluginServices.Deployment;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
-
 using log4net;
-using Amazon.AWSToolkit.PluginServices.Deployment;
 
-namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers.Deployment
+namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 {
     internal class FastTrackRepublishPageController : IAWSWizardPageController
     {

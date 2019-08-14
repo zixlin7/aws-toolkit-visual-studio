@@ -14,6 +14,7 @@ using Amazon.RDS;
 using Amazon.ElasticBeanstalk.Model;
 
 using log4net;
+
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages
 {
     public static class DeploymentWizardHelper
@@ -84,7 +85,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages
                 shortenedID = projectIdentifier;
             }
 
-            string subFolder = String.Format("AWSDeploy\\{0}\\", shortenedID);
+            string subFolder = $"AWSDeploy\\{shortenedID}\\";
             return Path.Combine(localAppDataFolder, subFolder);
         }
 
@@ -129,12 +130,16 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages
                                                                                         IDictionary<string, object> wizardProperties)
         {
             if (!wizardProperties.ContainsKey(DeploymentWizardProperties.SeedData.propkey_PreviousDeployments))
+            {
                 return null;
+            }
 
             var allPreviousDeployments = wizardProperties[DeploymentWizardProperties.SeedData.propkey_PreviousDeployments] as Dictionary<string, object>;
 
-            if (!allPreviousDeployments.ContainsKey(DeploymentServiceIdentifiers.BeanstalkServiceName))
+            if (allPreviousDeployments != null && !allPreviousDeployments.ContainsKey(DeploymentServiceIdentifiers.BeanstalkServiceName))
+            {
                 return null;
+            }
 
             var beanstalkDeployments = allPreviousDeployments[DeploymentServiceIdentifiers.BeanstalkServiceName] as DeploymentHistories<BeanstalkDeploymentHistory>;
 
@@ -200,22 +205,24 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages
 
             foreach(var stackName in existingSolutionStacks)
             {
-                if(stackName.StartsWith(DEFALT_SOLUTION_STACK_NAME_PREFIX, StringComparison.OrdinalIgnoreCase))
+                if (!stackName.StartsWith(DEFALT_SOLUTION_STACK_NAME_PREFIX, StringComparison.OrdinalIgnoreCase))
                 {
-                    var pos = stackName.IndexOf(' ', DEFALT_SOLUTION_STACK_NAME_PREFIX.Length);
-                    if (pos == -1)
-                        continue;
-
-                    var verionStr = stackName.Substring(DEFALT_SOLUTION_STACK_NAME_PREFIX.Length, pos - DEFALT_SOLUTION_STACK_NAME_PREFIX.Length);
-                    Version ver;
-                    if(Version.TryParse(verionStr, out ver) && (currentVersion == null || currentVersion < ver))
-                    {
-                        currentVersion = ver;
-                        defaultStack = stackName;
-                    }
+                    continue;
                 }
-            }
 
+                var pos = stackName.IndexOf(' ', DEFALT_SOLUTION_STACK_NAME_PREFIX.Length);
+                if (pos == -1) {
+                    continue;
+                }
+                var verionStr = stackName.Substring(DEFALT_SOLUTION_STACK_NAME_PREFIX.Length, pos - DEFALT_SOLUTION_STACK_NAME_PREFIX.Length);
+                Version ver;
+                if (!Version.TryParse(verionStr, out ver) || (currentVersion != null && currentVersion >= ver))
+                {
+                    continue;
+                }
+                currentVersion = ver;
+                defaultStack = stackName;
+            }
 
             return defaultStack ?? existingSolutionStacks.FirstOrDefault();
         }

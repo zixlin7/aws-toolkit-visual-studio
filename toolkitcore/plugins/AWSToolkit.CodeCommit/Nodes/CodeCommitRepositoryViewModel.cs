@@ -31,6 +31,5 @@ namespace Amazon.AWSToolkit.CodeCommit.Nodes
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {
         }
-
     }
 }
