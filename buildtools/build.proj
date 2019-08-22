@@ -203,10 +203,6 @@
 			
 			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\ICSharpCode.SharpZipLib.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\solutions\packages\log4net*\lib\net45-full\log4net.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\NGit.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\NSch.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\Mono.Security.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\Sharpen.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\YamlDotNet.dll"/>
 			

@@ -743,30 +743,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>false</Visible>
     </Content>
-    <Content Include="$(BuildRoot)\thirdparty\Mono.Security.dll">
-      <Link>Plugins\Mono.Security.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\thirdparty\NGit.dll">
-      <Link>Plugins\NGit.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\thirdparty\NSch.dll">
-      <Link>Plugins\NSch.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </Content>
-    <Content Include="$(BuildRoot)\thirdparty\Sharpen.dll">
-      <Link>Plugins\Sharpen.dll</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </Content>
     <Content Include="$(BuildRoot)\thirdparty\dotnet-lambda.dll">
       <Link>Plugins\dotnet-lambda.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>

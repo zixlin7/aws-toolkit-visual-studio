@@ -154,16 +154,8 @@ This software includes third party software subject to the following copyrights:
   [http://logging.apache.org/log4net/license.html]
 - Putty for PPK to PEM conversion, MIT license 
   [http://www.chiark.greenend.org.uk/~sgtatham/putty/licence.html]
-- NGit for AWS Elastic Beanstalk incremental push
-  [https://github.com/mono/ngit/blob/master/NGit.license.txt]
-- NSch dependency for NGit
-  [https://github.com/mono/ngit/blob/master/NSch.license.txt]
-- Sharpen dependency for NGit
-  [https://github.com/mono/ngit/blob/master/Sharpen/AssemblyInfo.cs]
-- ICSharpCode.SharpZipLib dependency for NGit
+- ICSharpCode.SharpZipLib, MIT License
   [http://www.icsharpcode.net/opensource/sharpziplib/]
-- Mono.Posix.dll and Mono.Security.dll dependencies for NGit
-  [http://mono-project.com/FAQ:_Licensing#Licensing]
 - MPFProj for Visual Studio Project Framework
   [http://mpfproj10.codeplex.com/license]
 - JSON Checker for JSON validation

@@ -36,54 +36,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\thirdparty\ICSharpCode.SharpZipLib.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Posix, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\thirdparty\Mono.Posix.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Mono.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\thirdparty\Mono.Security.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NGit, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f45df8c70110aa6a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\thirdparty\NGit.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="NSch, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f45df8c70110aa6a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\thirdparty\NSch.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Sharpen, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f45df8c70110aa6a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(BuildRoot)\thirdparty\Sharpen.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>4.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Xml.Linq">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data.DataSetExtensions">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Amazon.Gush\AWSDevToolsAuth.cs" />
-    <Compile Include="Amazon.Gush\AWSElasticBeanstalkRequest.cs" />
-    <Compile Include="Amazon.Gush\AWSDevToolsRequest.cs" />
-    <Compile Include="Amazon.Gush\AWSUser.cs" />
     <Compile Include="DeploymentConfigurationWriter.cs" />
     <Compile Include="DeploymentEngineBase.cs" />
     <Compile Include="BeanstalkDeploymentEngine.cs" />
@@ -141,9 +99,6 @@
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
       <Version>3.3.100.2</Version>
-    </PackageReference>
-    <PackageReference Include="log4net">
-      <Version>2.0.8</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
