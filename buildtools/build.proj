@@ -327,24 +327,10 @@
 	</Target>
 
     <!-- only care about packaging updated endpoints and flags for release builds -->
-    <Target Name="get-latest-endpoint-data" DependsOnTargets="build-tools" Condition="'$(Configuration)' == 'Release' ">
+    <Target Name="get-latest-endpoint-data">
         
         <Message Text="Fetching latest endpoints and flags from S3" />
-        
-        <DownloadFromS3Task
-            RegionValue="$(HostedFilesBucketRegion)"
-            S3ObjectKey="ServiceEndPoints.xml"
-            LocalPath="$(HostedFilesFolder)"
-            Bucket="$(HostedFilesBucket)"
-            />
-            
-        <DownloadFromS3Task
-            RegionValue="$(HostedFilesBucketRegion)"
-            S3Path="flags"
-            LocalPath="$(HostedFilesFolder)"
-            Bucket="$(HostedFilesBucket)"
-            />
-        
+        <Exec Command="powershell.exe $(MSBuildThisFileDirectory)updateEndpoints.ps1 -configuration $(Configuration) -s3BucketName $(HostedFilesBucket) -s3BucketRegion $(HostedFilesBucketRegion) -hostedfilesFolder $(HostedFilesFolder)" />
     </Target>
     
 	<Target Name="compare-hostedfiles-all" DependsOnTargets="compare-hostedfiles;compare-hostedfiles-bjs" />
@@ -352,7 +338,7 @@
 	<Target Name="compare-hostedfiles" DependsOnTargets="build-tools">
         
         <ItemGroup>
-            <!-- <FileException Include="$(HostedFilesFolder)\ServiceEndPoints.xml" /> -->
+            <FileException Include="$(HostedFilesFolder)\ServiceEndPoints.xml" />
             <FileException Include="$(HostedFilesFolder)\flags\**\*.png" />
         </ItemGroup>
         

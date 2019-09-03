@@ -21,6 +21,7 @@
 Deployment/**
 Include/**
 
+hostedfiles/ServiceEndPoints.xml
 
 ####################
 # Nuget
