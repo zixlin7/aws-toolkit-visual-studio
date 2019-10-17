@@ -328,7 +328,6 @@
 
     <!-- only care about packaging updated endpoints and flags for release builds -->
     <Target Name="get-latest-endpoint-data">
-        
         <Message Text="Fetching latest endpoints and flags from S3" />
         <Exec Command="powershell.exe $(MSBuildThisFileDirectory)updateEndpoints.ps1 -configuration $(Configuration) -s3BucketName $(HostedFilesBucket) -s3BucketRegion $(HostedFilesBucketRegion) -hostedfilesFolder $(HostedFilesFolder)" />
     </Target>
@@ -397,8 +396,6 @@
 		</UploadHostedFileTask>
     </Target>
 
-    <Target Name="upload-hostedfiles-all" DependsOnTargets="upload-hostedfiles;upload-hostedfiles-bjs" />
-
     <Target Name="upload-hostedfiles" DependsOnTargets="build-tools" Condition="$(PushHostedFiles)">
 
         <UploadHostedFilesTask
@@ -418,7 +415,7 @@
 		/>
     </Target>
 
-    <Target Name="upload-hostedfiles-bjs" DependsOnTargets="build-tools" Condition="$(PushHostedFiles)">
+    <Target Name="upload-hostedfiles-bjs" DependsOnTargets="build-tools;get-latest-endpoint-data;copy-artifacts" Condition="$(PushHostedFiles)">
 
 		<!-- we don't seem to do invalidation on bjs, but gather the keys anyway -->
         <UploadHostedFilesTask
