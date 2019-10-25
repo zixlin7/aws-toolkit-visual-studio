@@ -274,6 +274,9 @@ namespace Amazon.AWSToolkit
                 get;
             }
 
+            /// <summary>
+            /// Region Code
+            /// </summary>
             public string SystemName
             {
                 get;

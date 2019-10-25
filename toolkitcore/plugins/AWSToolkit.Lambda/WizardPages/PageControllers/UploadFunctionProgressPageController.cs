@@ -314,9 +314,10 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             }, state);
         }
 
-        string ILambdaFunctionUploadHelpers.CreateRole(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region, string functionName, ManagedPolicy managedPolicy)
+        string ILambdaFunctionUploadHelpers.CreateRole(AccountViewModel account, RegionEndPointsManager.RegionEndPoints regionEndPoints, string functionName, ManagedPolicy managedPolicy)
         {
-            var iamClient = account.CreateServiceClient<AmazonIdentityManagementServiceClient>(region);
+            var iamRegionEndpoint = regionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
+            var iamClient = account.CreateServiceClient<AmazonIdentityManagementServiceClient>(iamRegionEndpoint);
             Role newRole = null;
 
             try

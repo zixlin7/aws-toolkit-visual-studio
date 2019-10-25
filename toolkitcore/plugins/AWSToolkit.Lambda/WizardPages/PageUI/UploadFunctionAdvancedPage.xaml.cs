@@ -184,12 +184,15 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 stepName = "userConfirmed";
 
                 var account = PageController.HostingWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
-                var region = PageController.HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+                var regionEndPoints = PageController.HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
 
-                if (account == null || region == null)
+                if (account == null || regionEndPoints == null)
+                {
                     return;
+                }
 
-                using (var iamClient = account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(region))
+                var iamRegionEndpoint = regionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
+                using (var iamClient = account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(iamRegionEndpoint))
                 {
                     stepName = "createdClient";
 
@@ -315,12 +318,16 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         {
             // could check here if we're already bound to this a/c and region
             var account = PageController.HostingWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
-            var region = PageController.HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+            var regionEndPoints = PageController.HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
 
-            if (account == null || region == null)
+            if (account == null || regionEndPoints == null)
+            {
                 return;
+            }
 
-            using (var iamClient = account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(region))
+            var iamRegionEndpoint = regionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
+
+            using (var iamClient = account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(iamRegionEndpoint))
             {
                 var promptInfo = new RoleHelper.PromptRoleInfo
                 {
