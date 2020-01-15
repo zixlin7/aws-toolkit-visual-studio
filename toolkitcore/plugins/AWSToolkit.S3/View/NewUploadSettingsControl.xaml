@@ -21,30 +21,24 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="30"/>
             <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <TextBlock Margin="5,0,5,0" Grid.Row="0" Grid.Column="0" Style="{DynamicResource awsTextBlockBaseStyle}" >These settings will be applied to all the files being uploaded.</TextBlock>
-        <CheckBox Margin="5,0,5,0" Grid.Row="1" Grid.Column="0" 
-                  IsChecked="{Binding UseReduceStorage}" VerticalAlignment="Center"
-                  Style="{DynamicResource awsCheckboxButtonBaseStyle}">
-            Use Reduced Redundancy Storage
-        </CheckBox>
         
-        <CheckBox Margin="5,0,5,0" Grid.Row="2" Grid.Column="0" 
+        <CheckBox Margin="5,0,5,0" Grid.Row="1" Grid.Column="0" 
                   IsChecked="{Binding UseServerSideEncryption}" 
                   VerticalAlignment="Center"
                   Style="{DynamicResource awsCheckboxButtonBaseStyle}">
             Use Server Side Encryption
         </CheckBox>
 
-        <CheckBox Margin="5,0,5,0" Grid.Row="3" Grid.Column="0" 
+        <CheckBox Margin="5,0,5,0" Grid.Row="2" Grid.Column="0" 
                   IsChecked="{Binding MakePublic}" 
                   Style="{DynamicResource awsCheckboxButtonBaseStyle}">
             Make everything publicly readable
         </CheckBox>
 
-        <TabControl Margin="10, 0, 10, 10" Grid.Column="0" Grid.Row="4" Style="{DynamicResource awsPropertyPageHorizontalTabStyle}">
+        <TabControl Margin="10, 0, 10, 10" Grid.Column="0" Grid.Row="3" Style="{DynamicResource awsPropertyPageHorizontalTabStyle}">
             <TabItem Header="Metadata">
                 <components:MetadataControl HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Width="auto" Height="auto"/>
             </TabItem>

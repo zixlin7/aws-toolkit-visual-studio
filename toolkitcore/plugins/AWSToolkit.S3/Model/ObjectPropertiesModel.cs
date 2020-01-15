@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Amazon.S3.Model;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.S3;
 
 namespace Amazon.AWSToolkit.S3.Model
 {
@@ -12,7 +13,7 @@ namespace Amazon.AWSToolkit.S3.Model
         string _key;
         Uri _link;
 
-        bool _useReducedRedundancyStorage;
+        S3StorageClass _storageClass;
         bool _useServerSideEncryption;
         ObservableCollection<Metadata> _metadata = new ObservableCollection<Metadata>();
         ObservableCollection<Permission> _permissions = new ObservableCollection<Permission>();
@@ -105,20 +106,25 @@ namespace Amazon.AWSToolkit.S3.Model
             set;
         }
 
-        public bool UseReducedRedundancyStorage
+        public S3StorageClass StorageClass
         {
-            get => this._useReducedRedundancyStorage;
+            get => this._storageClass;
             set
             {
-                this._useReducedRedundancyStorage = value;
-                base.NotifyPropertyChanged("UseReducedRedundancyStorage");
+                this._storageClass = value;
+                base.NotifyPropertyChanged("StorageClass");
+                base.NotifyPropertyChanged("StorageClassValue");
             }
+        }
+
+        public string StorageClassValue
+        {
+            get => this._storageClass.Value;
         }
 
         public bool StoredInGlacier
         {
-            get;
-            set;
+            get => Amazon.AWSToolkit.S3.Model.StorageClass.GlacierS3StorageClasses.Contains(this.StorageClass);
         }
 
         public string RestoreInfo

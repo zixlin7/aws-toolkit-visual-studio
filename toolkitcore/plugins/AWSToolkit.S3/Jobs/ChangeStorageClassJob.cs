@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Amazon.AWSToolkit.CommonUI.JobTracker;
 
 using Amazon.AWSToolkit.S3.Controller;
@@ -14,6 +15,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
     {
         BucketBrowserController _controller;
         List<BucketBrowserModel.ChildItem> _itemsToChanged;
+        HashSet<string> _updatedFullPaths = new HashSet<string>();
         S3StorageClass _storageClass;
 
         public ChangeStorageClassJob(BucketBrowserController controller, List<BucketBrowserModel.ChildItem> itemsToChanged, S3StorageClass storageClass)
@@ -30,12 +32,13 @@ namespace Amazon.AWSToolkit.S3.Jobs
         protected override Queue<QueueProcessingJob.IJobUnit> BuildQueueOfJobUnits()
         {
             this.CurrentStatus = "Generating list of keys";
-            List<string> keysToChanged = this._controller.GetListOfKeys(this._itemsToChanged, true, S3Constants.LIST_OF_KEYS_NONGLACIER_STORAGE_CLASS);
+            List<string> keysToChanged = this._controller.GetListOfKeys(this._itemsToChanged, true, StorageClass.NonGlacierS3StorageClasses.AsS3StorageClassSet());
 
             Queue<IJobUnit> units = new Queue<IJobUnit>();
             foreach (string key in keysToChanged)
             {
                 units.Enqueue(new ChangeStorageClassUnit(this._controller, key, this._storageClass));
+                _updatedFullPaths.Add(key);
             }
 
             this.CurrentStatus = string.Empty;
@@ -51,7 +54,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
                 {
                     foreach (var item in _itemsToChanged)
                     {
-                        if (item.ChildType == BucketBrowserModel.ChildType.File)
+                        if (item.ChildType == BucketBrowserModel.ChildType.File && _updatedFullPaths.Contains(item.FullPath))
                             item.StorageClass = this._storageClass;
                     }
                 }));                    

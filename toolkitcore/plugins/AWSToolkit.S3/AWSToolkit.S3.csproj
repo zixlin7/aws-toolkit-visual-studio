@@ -81,6 +81,7 @@
     <Compile Include="Model\ITagContainerModel.cs" />
     <Compile Include="Model\LifecycleRuleModel.cs" />
     <Compile Include="Model\RestoreObjectPromptModel.cs" />
+    <Compile Include="Model\StorageClass.cs" />
     <Compile Include="S3Constants.cs" />
     <Compile Include="Controller\BucketBrowserController.cs" />
     <Compile Include="Controller\BucketPropertiesController.cs" />

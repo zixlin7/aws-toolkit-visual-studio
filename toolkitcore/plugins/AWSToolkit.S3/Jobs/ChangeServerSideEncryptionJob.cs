@@ -29,7 +29,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
         protected override Queue<QueueProcessingJob.IJobUnit> BuildQueueOfJobUnits()
         {
             this.CurrentStatus = "Generating list of keys";
-            List<string> keysToChanged = this._controller.GetListOfKeys(this._itemsToChanged, true, S3Constants.LIST_OF_KEYS_NONGLACIER_STORAGE_CLASS);
+            List<string> keysToChanged = this._controller.GetListOfKeys(this._itemsToChanged, true, StorageClass.NonGlacierS3StorageClasses.AsS3StorageClassSet());
 
             Queue<IJobUnit> units = new Queue<IJobUnit>();
             foreach (string key in keysToChanged)

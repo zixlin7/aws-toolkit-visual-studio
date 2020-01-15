@@ -34,7 +34,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
         protected override Queue<QueueProcessingJob.IJobUnit> BuildQueueOfJobUnits()
         {
             this.CurrentStatus = "Generating list of keys";
-            List<string> keysToBeRestored = this._controller.GetListOfKeys(this._itemsToBeRestored, false, S3Constants.LIST_OF_KEYS_GLACIER_STORAGE_CLASS);
+            List<string> keysToBeRestored = this._controller.GetListOfKeys(this._itemsToBeRestored, false, StorageClass.GlacierS3StorageClasses.AsS3StorageClassSet());
 
             Queue<QueueProcessingJob.IJobUnit> units = new Queue<IJobUnit>();
             foreach (string key in keysToBeRestored)

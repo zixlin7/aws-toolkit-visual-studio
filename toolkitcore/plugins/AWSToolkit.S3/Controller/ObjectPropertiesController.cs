@@ -47,8 +47,7 @@ namespace Amazon.AWSToolkit.S3.Controller
                 return;
 
             var s3o = listObjectResponse.S3Objects[0];
-            this._model.UseReducedRedundancyStorage = s3o.StorageClass != "STANDARD";
-            this._model.StoredInGlacier = AmazonS3Util.ConvertToS3StorageClass(s3o.StorageClass) == S3StorageClass.Glacier;
+            this._model.StorageClass = s3o.StorageClass;
 
             GetObjectMetadataResponse getMetadataResponse;
             try
@@ -180,16 +179,13 @@ namespace Amazon.AWSToolkit.S3.Controller
                 SourceKey = this._model.Key,
                 WebsiteRedirectLocation = this._model.WebsiteRedirectLocation,
                 MetadataDirective = S3MetadataDirective.REPLACE,
-                StorageClass = this._model.UseReducedRedundancyStorage ? S3StorageClass.ReducedRedundancy : S3StorageClass.Standard
+                StorageClass = this._model.StorageClass,
             };
 
-            if (!this._model.StoredInGlacier)
-            {
-                copyRequest.StorageClass = this._model.UseReducedRedundancyStorage ? S3StorageClass.ReducedRedundancy : S3StorageClass.Standard;
-            }
-
             if (this._model.UseServerSideEncryption)
+            {
                 copyRequest.ServerSideEncryptionMethod = ServerSideEncryptionMethod.AES256;
+            }
 
             SetupMetadataAndHeaders(copyRequest);
 

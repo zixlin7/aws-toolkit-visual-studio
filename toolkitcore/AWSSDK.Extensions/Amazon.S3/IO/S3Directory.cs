@@ -109,7 +109,7 @@ namespace Amazon.S3.IO
                     if (!includeFolderFiles && (s3Object.Key.EndsWith(FOLDER_POSTFIX) || s3Object.Key.EndsWith("/")))
                         continue;
 
-                    if (validStorageClasses != null && !validStorageClasses.Contains(AmazonS3Util.ConvertToS3StorageClass(s3Object.StorageClass)))
+                    if (validStorageClasses != null && !validStorageClasses.Contains(s3Object.StorageClass))
                         continue;
 
                     if (files != null)

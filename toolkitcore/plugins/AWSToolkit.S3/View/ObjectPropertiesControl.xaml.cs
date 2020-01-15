@@ -50,7 +50,6 @@ namespace Amazon.AWSToolkit.S3.View
                 this._controller.Model.UsesKMSServerSideEncryption ||
                 this._controller.Model.ErrorRetrievingMetadata)
             {
-                this._ctlStorageClass.IsEnabled = false;
                 this._cllServerSideEncryption.IsEnabled = false;
                 this._ctlMetadata.IsEnabled = false;
                 this._ctlPermissions.IsEnabled = false;
@@ -58,8 +57,6 @@ namespace Amazon.AWSToolkit.S3.View
 
                 if (this._controller.Model.StoredInGlacier)
                 {
-                    this._ctlStorageClass.Content = "Stored in Amazon Glacier";
-
                     if (!string.IsNullOrEmpty(this._controller.Model.RestoreInfo))
                     {
                         this._ctlRestoreInfo.Text = this._controller.Model.RestoreInfo;

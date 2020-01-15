@@ -564,15 +564,12 @@ namespace Amazon.AWSToolkit.S3.View
             this._changeStorageClass = new MenuItem();
             this._changeStorageClass.Header = "Change Storage Class";
 
-            MenuItem reducedRedundencyStorageClass = new MenuItem();
-            reducedRedundencyStorageClass.Header = "Reduced Redundancy";
-            reducedRedundencyStorageClass.Click += new RoutedEventHandler(onReducedRedundencyStorageClassClick);
-            this._changeStorageClass.Items.Add(reducedRedundencyStorageClass);
-
-            MenuItem standardStorageClass = new MenuItem();
-            standardStorageClass.Header = "Standard";
-            standardStorageClass.Click += new RoutedEventHandler(onStandardStorageClassClick);
-            this._changeStorageClass.Items.Add(standardStorageClass);
+            foreach (var storageClass in StorageClass.StorageClasses)
+            {
+                MenuItem menuItem = new MenuItem {Header = storageClass.Name};
+                menuItem.Click += (sender, e) => changeStorageClass(storageClass.S3StorageClass);
+                this._changeStorageClass.Items.Add(menuItem);
+            }
 
             this._changeServerSideEncryption = new MenuItem();
             this._changeServerSideEncryption.Header = "Change Encryption";

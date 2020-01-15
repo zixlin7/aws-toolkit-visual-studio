@@ -51,12 +51,9 @@
             </Hyperlink>
         </TextBlock>
 
-        <CheckBox Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="3" 
-                  IsChecked="{Binding UseReducedRedundancyStorage}" 
-                  Margin="0, 5, 0, 5" Name="_ctlStorageClass"
-                  Style="{DynamicResource awsCheckboxButtonBaseStyle}">
-            Use Reduced Redundancy Storage
-        </CheckBox>
+        <TextBlock Margin="5, 5, 0, 5" Grid.Column="1" Grid.Row="4" Style="{DynamicResource awsTextBlockBaseStyle}">Storage Class:</TextBlock>
+        <TextBox Margin="5, 5, 0, 5" Grid.Column="2" Grid.Row="4" Text="{Binding StorageClassValue, Mode=OneWay}" Style="{DynamicResource awsSelectableTextBoxStyle}"></TextBox>
+
         <CheckBox Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="3" 
                   IsChecked="{Binding UseServerSideEncryption}"
                   Margin="0, 5, 0, 5" 

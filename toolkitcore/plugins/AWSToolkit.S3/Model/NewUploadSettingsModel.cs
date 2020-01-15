@@ -6,23 +6,12 @@ namespace Amazon.AWSToolkit.S3.Model
 {
     public class NewUploadSettingsModel : BaseModel, IMetadataContainerModel, IPermissionContainerModel, ITagContainerModel
     {
-        bool _useReduceStorage;
         bool _useServerSideEncryption;
         bool _makePublic;
 
         ObservableCollection<Metadata> _metadata = new ObservableCollection<Metadata>();
         ObservableCollection<Permission> _permissions = new ObservableCollection<Permission>();
         ObservableCollection<Tag> _tags = new ObservableCollection<Tag>();
-
-        public bool UseReduceStorage
-        {
-            get => this._useReduceStorage;
-            set
-            {
-                this._useReduceStorage = value;
-                base.NotifyPropertyChanged("UseReduceStorage");
-            }
-        }
 
         public bool UseServerSideEncryption
         {

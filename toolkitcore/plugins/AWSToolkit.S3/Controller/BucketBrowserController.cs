@@ -184,8 +184,7 @@ namespace Amazon.AWSToolkit.S3.Controller
 
                     foreach (S3Object file in files)
                     {
-                        var storageClass = AmazonS3Util.ConvertToS3StorageClass(file.StorageClass);
-                        BucketBrowserModel.ChildItem item = new BucketBrowserModel.ChildItem(file.Key, file.Size, file.LastModified, storageClass);
+                        BucketBrowserModel.ChildItem item = new BucketBrowserModel.ChildItem(file.Key, file.Size, file.LastModified, file.StorageClass);
                         items.Add(item);
                     }
 

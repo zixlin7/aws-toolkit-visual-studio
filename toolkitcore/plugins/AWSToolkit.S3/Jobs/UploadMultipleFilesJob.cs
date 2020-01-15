@@ -92,7 +92,8 @@ namespace Amazon.AWSToolkit.S3.Jobs
                     {
                         FilePath = filepath,
                         BucketName = this._bucket,
-                        Key = key
+                        Key = key,
+                        StorageClass = S3StorageClass.Standard
                     };
                     request.UploadProgressEvent += this.uploadTransferredBytesProgressCallback;
 
@@ -102,8 +103,6 @@ namespace Amazon.AWSToolkit.S3.Jobs
                     foreach (var name in this._nvcHeaders.AllKeys)
                         request.Headers[name] = this._nvcHeaders[name];
 
-                    if (this._uploadSettingsModel.UseReduceStorage)
-                        request.StorageClass = S3StorageClass.ReducedRedundancy;
                     if (this._uploadSettingsModel.UseServerSideEncryption)
                         request.ServerSideEncryptionMethod = ServerSideEncryptionMethod.AES256;
                     if (this._uploadSettingsModel.MakePublic)

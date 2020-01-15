@@ -33,7 +33,7 @@
 
         <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" Margin="5,10,5,5" Style="{DynamicResource awsInfoTextStyle}">
             Initiating a restore operation causes the object that is currently stored in Amazon Glacier to be copied back to the Amazon S3 bucket.  
-            The restore operation will talk around 4 hours to complete.  The object will stay active in Amazon S3 for the number of days specified.
+            The restore operation will take around 4 hours to complete.  The object will stay active in Amazon S3 for the number of days specified.
         </TextBlock>
     </Grid>
 </commonui:BaseAWSControl>
