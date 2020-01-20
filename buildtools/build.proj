@@ -415,7 +415,7 @@
 		/>
     </Target>
 
-    <Target Name="upload-hostedfiles-bjs" DependsOnTargets="build-tools;get-latest-endpoint-data;copy-artifacts" Condition="$(PushHostedFiles)">
+    <Target Name="upload-hostedfiles-bjs" DependsOnTargets="build-tools;get-latest-endpoint-data" Condition="$(PushHostedFiles)">
 
 		<!-- we don't seem to do invalidation on bjs, but gather the keys anyway -->
         <UploadHostedFilesTask
