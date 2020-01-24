@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Linq;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
@@ -155,6 +156,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 Deployment.InstanceSubnetId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_InstanceSubnet);
                 Deployment.ELBSubnetId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ELBSubnet);
                 Deployment.ELBScheme = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ELBScheme);
+
+                if(string.IsNullOrEmpty(Deployment.ELBSubnetId) && string.Equals(Deployment.EnvironmentType, BeanstalkConstants.EnvType_LoadBalanced, StringComparison.OrdinalIgnoreCase))
+                {
+                    Deployment.ELBSubnetId = GetDefaultVPCSubnet(Account, Deployment.RegionEndPoints);
+                }
 
                 Deployment.EnableConfigRollingDeployment = getValue<bool>(BeanstalkDeploymentWizardProperties.RollingDeployments.propKey_EnableConfigRollingDeployment);
                 if (Deployment.EnableConfigRollingDeployment)
@@ -479,17 +485,53 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             var config = new AmazonEC2Config();
             endpoint.ApplyToClientConfig(config);
 
-            var client = new AmazonEC2Client(account.Credentials, config);
+            using (var client = new AmazonEC2Client(account.Credentials, config))
+            {
+                var request = new CreateKeyPairRequest() { KeyName = keyName };
+                var response = client.CreateKeyPair(request);
 
-            var request = new CreateKeyPairRequest() { KeyName = keyName };
-            var response = client.CreateKeyPair(request);
+                IEC2RootViewModel ec2Root = Account.FindSingleChild<IEC2RootViewModel>(false);
+                KeyPairLocalStoreManager.Instance.SavePrivateKey(Account,
+                                                                Deployment.RegionEndPoints.SystemName,
+                                                                keyName,
+                                                                response.KeyPair.KeyMaterial);
+                LOGGER.Debug("key pair created with name " + keyName + " and stored in local store");
+            }
+        }
 
-            IEC2RootViewModel ec2Root = Account.FindSingleChild<IEC2RootViewModel>(false);
-            KeyPairLocalStoreManager.Instance.SavePrivateKey(Account,
-                                                            Deployment.RegionEndPoints.SystemName,
-                                                            keyName,
-                                                            response.KeyPair.KeyMaterial);
-            LOGGER.Debug("key pair created with name " + keyName + " and stored in local store");
+        private string GetDefaultVPCSubnet(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
+        {
+            Observer.Status("Determining default VPC subnets for ELB load balancer.");
+
+            var endpoint = region.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
+            var config = new AmazonEC2Config();
+            endpoint.ApplyToClientConfig(config);
+
+            using (var client = new AmazonEC2Client(account.Credentials, config))
+            {
+                var defaultVpc = client.DescribeVpcs().Vpcs.Where(x => x.IsDefault).FirstOrDefault();
+                if (defaultVpc == null)
+                {
+                    LOGGER.Debug("No default VPC found when looking for default subnets");
+                    return null;
+                }
+
+                LOGGER.Debug("Default VPC found: " + defaultVpc.VpcId);
+
+
+                var allSubnets = client.DescribeSubnets(new DescribeSubnetsRequest
+                {
+                    Filters = new List<Filter> { new Filter { Name = "vpc-id", Values = new List<string> { defaultVpc.VpcId } } }
+                }).Subnets;
+
+
+                var defaultSubnetIds = allSubnets.Where(x => x.DefaultForAz).Select((subnet) => subnet.SubnetId);
+                var formattedSubnetIds = string.Join(",", defaultSubnetIds);
+
+                LOGGER.Debug("Default subnets found: " + formattedSubnetIds);
+
+                return formattedSubnetIds;
+            }
         }
 
         T getValue<T>(string key)

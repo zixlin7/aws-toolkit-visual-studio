@@ -208,14 +208,19 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                                          OnVPCPropertiesAvailable);
 
             _pageUI.VPCSecurityGroups = null;
-            _pageUI.InstanceSubnets = null;
-            _pageUI.ELBSubnets = null;
+            _pageUI.SetAvailableSubnets(null);
         }
 
         private void OnVPCPropertiesAvailable(QueryVPCPropertiesWorker.VPCPropertyData data)
         {
-            _pageUI.InstanceSubnets = data.Subnets;
-            _pageUI.ELBSubnets = data.Subnets;
+            var subnets = new List<Amazon.EC2.Model.Subnet>();
+            foreach(var kvp in data.Subnets)
+            {
+                subnets.Add(kvp.Value);
+            }
+
+            _pageUI.SetAvailableSubnets(subnets);
+
             _pageUI.VPCSecurityGroups = data.SecurityGroups;
             Interlocked.Decrement(ref _workersActive);
             TestForwardTransitionEnablement();

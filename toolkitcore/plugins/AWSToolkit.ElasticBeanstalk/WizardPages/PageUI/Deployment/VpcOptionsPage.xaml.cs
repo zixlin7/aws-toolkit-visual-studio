@@ -13,6 +13,7 @@ using Amazon.AWSToolkit.EC2;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers;
 using Amazon.EC2.Model;
 using log4net;
+using System;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 {
@@ -50,12 +51,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             }
         }
 
-        private string extractSubnetIdsFromSelection(IList selections)
+        private string extractSubnetIdsFromSelection(IEnumerable<SubnetWrapper> subnets)
         {
-            var strs = selections
-                .OfType<KeyValuePair<string, Subnet>?>()
-                .Select(item => item?.Value.SubnetId)
-                .Where(item => item != null);
+            var strs = subnets
+                .Where(x => x.IsSelected)
+                .Select(x => x.SubnetId);
 
             var str = string.Join(",", strs);
 
@@ -64,12 +64,33 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
         public string SelectedInstanceSubnetId
         {
-            get => extractSubnetIdsFromSelection(_instancesSubnets.SelectedItems);
+            get => extractSubnetIdsFromSelection(_instancesSubnets.ItemsSource as IEnumerable<SubnetWrapper>);
         }
 
         public string SelectedELBSubnetId
         {
-            get => extractSubnetIdsFromSelection(_elbSubnets.SelectedItems);
+            get => extractSubnetIdsFromSelection(_elbSubnets.ItemsSource as IEnumerable<SubnetWrapper>);
+        }
+
+        public void SetAvailableSubnets(IList<Subnet> subnets)
+        {
+            var instanceSubnets = new List<SubnetWrapper>();
+            var elbSubnets = new List<SubnetWrapper>();
+
+            if(subnets != null)
+            {
+                foreach (var subnet in subnets)
+                {
+                    instanceSubnets.Add(new SubnetWrapper(subnet));
+                    elbSubnets.Add(new SubnetWrapper(subnet));
+                }
+            }
+
+            _instancesSubnets.ItemsSource = instanceSubnets;
+            _elbSubnets.ItemsSource = elbSubnets;
+
+            _instancesSubnets.Cursor = Cursors.Arrow;
+            _elbSubnets.Cursor = Cursors.Arrow;
         }
 
 
@@ -106,66 +127,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
                 if (_vpcs.Items.Count > 0)
                     _vpcs.SelectedIndex = 0;
                 _vpcs.Cursor = Cursors.Arrow;
-            }
-        }
-
-        public IEnumerable<KeyValuePair<string, Amazon.EC2.Model.Subnet>> InstanceSubnets
-        {
-            set
-            {
-                if (value == null)
-                {
-                    _instancesSubnets.ItemsSource = null;
-                    _instancesSubnets.Cursor = Cursors.Wait;
-                    return;
-                }
-
-                this._instancesSubnets.ItemsSource = value;
-                _instancesSubnets.Cursor = Cursors.Arrow;
-
-                bool isSingleInstanceEnvironment
-                    = (this.PageController as VpcOptionsPageController).IsSingleInstanceEnvironmentType;
-                foreach (var subnet in value)
-                {
-                    if (isSingleInstanceEnvironment)
-                    {
-                        if (subnet.Key.StartsWith(EC2Constants.VPC_LAUNCH_PUBLIC_SUBNET_NAME))
-                        {
-                            this._instancesSubnets.SelectedItem = subnet;
-                            break;
-                        }
-                    }
-                    else if (subnet.Key.StartsWith(EC2Constants.VPC_LAUNCH_PRIVATE_SUBNET_NAME))
-                    {
-                        this._instancesSubnets.SelectedItem = subnet;
-                        break;
-                    }
-                }
-            }
-        }
-
-        public IEnumerable<KeyValuePair<string, Amazon.EC2.Model.Subnet>> ELBSubnets
-        {
-            set
-            {
-                if (value == null)
-                {
-                    _elbSubnets.ItemsSource = null;
-                    _elbSubnets.Cursor = Cursors.Wait;
-                    return;
-                }
-
-                this._elbSubnets.ItemsSource = value;
-                _elbSubnets.Cursor = Cursors.Arrow;
-
-                foreach (var subnet in value)
-                {
-                    if (subnet.Key.StartsWith(EC2Constants.VPC_LAUNCH_PUBLIC_SUBNET_NAME))
-                    {
-                        this._elbSubnets.SelectedItem = subnet;
-                        break;
-                    }
-                }
             }
         }
 
@@ -236,6 +197,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
                 return;
             }
 
+            FormatMultiSelectDisplayValue(this._instancesSubnets);
+            NotifyPropertyChanged("instance-subnets");
+        }
+
+        private void _instancesSubnets_DropDownClosed(object sender, EventArgs e)
+        {
+            FormatMultiSelectDisplayValue(this._instancesSubnets);
             NotifyPropertyChanged("instance-subnets");
         }
 
@@ -246,7 +214,38 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
                 return;
             }
 
+            FormatMultiSelectDisplayValue(this._elbSubnets);
             NotifyPropertyChanged("elb-subnets");
+        }
+
+        private void _elbSubnets_DropDownClosed(object sender, EventArgs e)
+        {
+            FormatMultiSelectDisplayValue(this._elbSubnets);
+            NotifyPropertyChanged("elb-subnets");
+        }
+
+        private void FormatMultiSelectDisplayValue(ComboBox control)
+        {
+            var contentPresenter = control.Template.FindName("ContentSite", control) as ContentPresenter;
+            if (contentPresenter == null)
+            {
+                return;    
+            }
+
+            var textBlock = contentPresenter.ContentTemplate.FindName("PART_ContentPresenter", contentPresenter) as TextBlock;
+            if(textBlock == null)
+            {
+                return;
+            }
+
+            var subnets = control?.ItemsSource as IEnumerable<SubnetWrapper>;
+            if (subnets == null)
+            {
+                textBlock.Text = string.Empty;
+                return;
+            }
+
+            textBlock.Text = string.Join(", ", subnets.Where(x => x.IsSelected).Select(x => x.SubnetId).OrderBy(id => id));
         }
 
         private void _vpcSecurityGroup_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -263,6 +262,20 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         {
             Process.Start(new ProcessStartInfo(e.Uri.OriginalString));
             e.Handled = true;
+        }
+
+        public class SubnetWrapper
+        {
+            Subnet _subnet;
+
+            public SubnetWrapper(Subnet subnet)
+            {
+                this._subnet = subnet;
+            }
+
+            public bool IsSelected { get; set; }
+            public string SubnetId => _subnet.SubnetId;
+            public string AvailabilityZone => _subnet.AvailabilityZone;
         }
     }
 }

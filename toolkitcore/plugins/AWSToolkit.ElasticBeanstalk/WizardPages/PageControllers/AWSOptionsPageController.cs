@@ -203,13 +203,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 
                 if (!_pageUI.SingleInstanceEnvironment)
                 {
-                    if (!"classic".Equals(_pageUI._loadBalancerList.SelectedItem))
+                    if (!"classic".Equals(_pageUI.SelectedLoadBalancerType))
                     {
                         HostingWizard.SetProperty(
                             BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_LoadBalancerType,
-                            _pageUI._loadBalancerList.SelectedItem == null
+                            _pageUI.SelectedLoadBalancerType == null
                                 ? LoadBalancerTypeEnum.Application.Value
-                                : _pageUI._loadBalancerList.SelectedItem);
+                                : _pageUI.SelectedLoadBalancerType);
                     }
                 }
                 else

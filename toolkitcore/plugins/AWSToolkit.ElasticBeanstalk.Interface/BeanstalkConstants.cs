@@ -29,5 +29,7 @@
 
         public const string EnvType_SingleInstance = "SingleInstance";
         public const string EnvType_LoadBalanced = "LoadBalanced";
+
+        public const string DEFAULT_INSTANCE_TYPE = "t3a.medium";
     }
 }

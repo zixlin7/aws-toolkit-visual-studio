@@ -128,7 +128,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
             if (InstanceTypes.Count > 0)
             {
-                _instanceTypesSelector.SelectedIndex = 0;
+                var defaultInstanceType = InstanceTypes.FirstOrDefault(x => string.Equals(x.Id, BeanstalkConstants.DEFAULT_INSTANCE_TYPE));
+                if(defaultInstanceType != null)
+                {
+                    _instanceTypesSelector.SelectedItem = defaultInstanceType;
+                }
+                else
+                {
+                    _instanceTypesSelector.SelectedIndex = 0;
+                }
+
+                
                 MakeSureSelectedInstanceTypeMeetsVPC();
             }
             _instanceTypesSelector.Cursor = Cursors.Arrow;
@@ -311,26 +321,20 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             _rdsGroupsListComboSelectedDisplay.Text = names.ToString();
         }
 
-        private void _loadBalancerList_OnDropDownClosed(object sender, EventArgs e)
+        public string SelectedLoadBalancerType
         {
-            var selected = _loadBalancerList.SelectedItem as string;
-
-            // If application, we must set VPC, so check that box and make it not editable
-            if (LoadBalancerTypeEnum.Application.Value.Equals(selected))
+            get
             {
-                _useNonDefaultVpc.IsChecked = true;
-                _useNonDefaultVpc.IsEnabled = false;
-            }
-            else
-            {
-                _useNonDefaultVpc.IsEnabled = true;
+                var type = this._loadBalancerList.SelectedItem as LoadBalancerType;
+                return type?.SystemName;
             }
         }
 
 
         void _loadBalancerListCombo_Loaded(object sender, RoutedEventArgs e)
         {
-            _loadBalancerList.ItemsSource = new List<string>{"classic", LoadBalancerTypeEnum.Application, LoadBalancerTypeEnum.Network};
+            _loadBalancerList.ItemsSource = AllLoadBalancerTypes;
+            _loadBalancerList.SelectedIndex = 0;
         }
 
         void _rdsGroupsListCombo_Loaded(object sender, RoutedEventArgs e)
@@ -352,7 +356,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             if (_loadBalancerList != null)
             {
                 _loadBalancerList.IsEnabled = false;
-                _loadBalancerList.SelectedItem = null;
                 _useNonDefaultVpc.IsEnabled = true;
             }
         }
@@ -361,8 +364,33 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         {
             if (_loadBalancerList != null)
             {
-                _loadBalancerList.IsEnabled = true;
-                _loadBalancerList.SelectedItem = "classic";
+                _loadBalancerList.IsEnabled = true;                
+            }
+        }
+
+        public static List<LoadBalancerType> AllLoadBalancerTypes => new List<LoadBalancerType>
+        {
+            new LoadBalancerType(LoadBalancerTypeEnum.Application, "Application", "An Application Load Balancer makes routing decisions at the application layer (HTTP/HTTPS)."),
+            new LoadBalancerType(LoadBalancerTypeEnum.Network, "Network", "A Network Load Balancer makes routing decisions at the transport layer (TCP/SSL)."),
+            new LoadBalancerType("classic", "Classic", "A Classic Load Balancer makes routing decisions at either the transport layer (TCP/SSL) or the application layer (HTTP/HTTPS).")
+        };
+
+        public class LoadBalancerType
+        {
+            public string DisplayName { get; }
+            public string SystemName { get;  }
+            public string Description { get;  }
+
+            public LoadBalancerType(string systemName, string displayName, string description)
+            {
+                this.SystemName = systemName;
+                this.DisplayName = displayName;
+                this.Description = description;
+            }
+
+            public override string ToString()
+            {
+                return this.SystemName;
             }
         }
     }

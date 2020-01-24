@@ -277,8 +277,9 @@
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="2" Margin="0,20,0,0">
+        <Grid Grid.Row="2" Margin="0,15,0,0">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -287,19 +288,35 @@
                 Load balancer type
             </Label>
 
+            <TextBlock
+                Grid.Row="1"
+                Margin="12,4,4,2"
+                FontStyle="Italic"
+                Style="{DynamicResource awsFieldHintTextStyle}"
+                TextWrapping="Wrap">
+                Choose the type of load balancer to use when not creating a single instance environment.
+            </TextBlock>
+
             <ComboBox
                 x:Name="_loadBalancerList"
-                Grid.Row="1"
+                Grid.Row="2"
                 MinWidth="120"
                 Margin="12,4,4,0"
                 IsEnabled="False"
                 Loaded="_loadBalancerListCombo_Loaded"
-                DropDownClosed="_loadBalancerList_OnDropDownClosed"
-                Style="{DynamicResource awsComboBoxStyle}"
-            />
+                Style="{DynamicResource awsComboBoxStyle}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Margin="3,0,7,3" Text="{Binding DisplayName}" Style="{DynamicResource awsTextBlock122PercentStyle}"/>
+                            <TextBlock Margin="3,0,0,3" Text="{Binding Description}" Style="{DynamicResource awsInfoTextStyle}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
         </Grid>
 
-        <Grid Grid.Row="3" Margin="0,4,0,0">
+        <Grid Grid.Row="3" Margin="0,25,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
