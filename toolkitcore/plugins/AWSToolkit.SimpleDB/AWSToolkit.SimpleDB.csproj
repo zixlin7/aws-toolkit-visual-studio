@@ -189,7 +189,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.SimpleDB">
-      <Version>3.3.100.35</Version>
+      <Version>3.3.100.126</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

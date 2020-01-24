@@ -178,8 +178,8 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
             {
                 var name = this._ctlNewStackName.Text;
                 this._nameValidatedMsg.Visibility = SelectTemplateModel.IsValidStackName(name)
-                    ? Visibility.Hidden
-                    : Visibility.Visible;
+                    ? System.Windows.Visibility.Hidden
+                    : System.Windows.Visibility.Visible;
             }
 
             NotifyPropertyChanged("solutionsStackName");

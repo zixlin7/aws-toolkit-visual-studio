@@ -148,16 +148,16 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CodeCommit">
-      <Version>3.3.100.26</Version>
+      <Version>3.3.106.25</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Core">
-      <Version>3.3.102.7</Version>
+      <Version>3.3.104.19</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.3.100.11</Version>
+      <Version>3.3.104.26</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.MobileAnalytics">
-      <Version>3.3.100.35</Version>
+      <Version>3.3.100.126</Version>
     </PackageReference>
     <PackageReference Include="EntityFramework">
       <Version>6.2.0</Version>

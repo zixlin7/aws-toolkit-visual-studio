@@ -333,10 +333,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFront">
-      <Version>3.3.100.32</Version>
+      <Version>3.3.101.93</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
-      <Version>3.3.100.2</Version>
+      <Version>3.3.110.17</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.8</Version>

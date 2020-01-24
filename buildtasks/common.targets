@@ -50,7 +50,11 @@
 		</Task>
 	</UsingTask>
 
-	<UsingTask
+  <UsingTask
+		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+		TaskName="BuildTasks.UpdateAwsSdkVersionsTask" />
+
+  <UsingTask
 		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
 		TaskName="BuildTasks.UpdatePowerShellVersionTask" />
 

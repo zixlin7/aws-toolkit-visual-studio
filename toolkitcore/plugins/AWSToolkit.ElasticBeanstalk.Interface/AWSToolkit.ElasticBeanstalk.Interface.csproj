@@ -70,7 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.ElasticBeanstalk">
-      <Version>3.3.100.35</Version>
+      <Version>3.3.100.126</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.8</Version>

@@ -66,10 +66,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFront">
-      <Version>3.3.100.32</Version>
+      <Version>3.3.101.93</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CodeCommit">
-      <Version>3.3.100.26</Version>
+      <Version>3.3.106.25</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -42,6 +42,10 @@
         <BuildVSToolkit2017>true</BuildVSToolkit2017>
     </PropertyGroup>
 
+  <Target Name="update-awssdk" DependsOnTargets="build-tools">
+    <UpdateAwsSdkVersionsTask RootLocation="$(BuildRoot)" WaitForDebugger="$(WaitForDebugger)"/>
+  </Target>
+  
 	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;get-latest-endpoint-data;restore-nuget;update-version;build-vstoolkit;build-vstoolkit-2017;run-tests;keyscan;copy-artifacts;sign-packages;save-build">
 		<Message Text="Builds all components of the AWS Toolkit for Visual Studio"/>
 	</Target>

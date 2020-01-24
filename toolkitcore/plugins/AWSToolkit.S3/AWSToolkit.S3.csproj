@@ -424,22 +424,22 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFront">
-      <Version>3.3.100.32</Version>
+      <Version>3.3.101.93</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.3.100.11</Version>
+      <Version>3.3.104.26</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Lambda">
-      <Version>3.3.100.9</Version>
+      <Version>3.3.107.1</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
-      <Version>3.3.100.2</Version>
+      <Version>3.3.110.17</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SimpleNotificationService">
-      <Version>3.3.100.10</Version>
+      <Version>3.3.101.115</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SQS">
-      <Version>3.3.100.35</Version>
+      <Version>3.3.102.58</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.8</Version>
