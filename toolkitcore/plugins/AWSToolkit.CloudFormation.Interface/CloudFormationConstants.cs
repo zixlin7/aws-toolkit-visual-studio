@@ -25,6 +25,7 @@
 
         public const string AWS_SERVERLESS_TAG = "AWSServerlessAppNETCore";
 
+        public const string RESOURCE_TYPE_HTTP_API = "AWS::ApiGatewayV2::Api";
         public const string RESOURCE_TYPE_REST_API = "AWS::ApiGateway::RestApi";
         public const string RESOURCE_TYPE_STAGE_API = "AWS::ApiGateway::Stage";
 

@@ -190,20 +190,29 @@ namespace Amazon.AWSToolkit.CloudFormation.Model
                     return null;
 
 
-                string restApiId = null;
+                string apiId = null;
                 string stageId = null;
+
+                bool isHttpApi = false;
                 foreach (var resource in this.Resources)
                 {
-                    if (string.Equals(resource.ResourceType, CloudFormationConstants.RESOURCE_TYPE_REST_API, StringComparison.OrdinalIgnoreCase))
-                        restApiId = resource.PhysicalResourceId;
+                    if (string.Equals(resource.ResourceType, CloudFormationConstants.RESOURCE_TYPE_REST_API, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(resource.ResourceType, CloudFormationConstants.RESOURCE_TYPE_HTTP_API, StringComparison.OrdinalIgnoreCase))
+                    {
+                        apiId = resource.PhysicalResourceId;
+                        isHttpApi = string.Equals(resource.ResourceType, CloudFormationConstants.RESOURCE_TYPE_HTTP_API, StringComparison.OrdinalIgnoreCase);
+                    }
                     else if (string.Equals(resource.ResourceType, CloudFormationConstants.RESOURCE_TYPE_STAGE_API, StringComparison.OrdinalIgnoreCase))
+                    {
                         stageId = resource.PhysicalResourceId;
+                    }
                 }
 
-                if (string.IsNullOrEmpty(restApiId) || string.IsNullOrEmpty(stageId))
+                // HTTP API don't have to have a stage
+                if (string.IsNullOrEmpty(apiId) || (string.IsNullOrEmpty(stageId) && !isHttpApi))
                     return null;
 
-                var rootUrl = $"https://{restApiId}.execute-api.{this.RegionName}.amazonaws.com/{stageId}";
+                var rootUrl = $"https://{apiId}.execute-api.{this.RegionName}.amazonaws.com/{stageId}";
                 return rootUrl;
             }
         }
