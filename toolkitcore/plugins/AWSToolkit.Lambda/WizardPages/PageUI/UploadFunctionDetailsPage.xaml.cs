@@ -188,7 +188,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                     this._ctlGenericHandlerDescription.Text = HANDLER_DESCRIPTION_GENERIC;
                     if (isFirstTimeConfig)
                     {
-                        Runtime = RuntimeOption.NodeJS_v8_10;
+                        Runtime = RuntimeOption.NodeJS_v12_X;
                     }
                     break;
                 case UploadFunctionController.DeploymentType.NETCore:
