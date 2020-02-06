@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <versions location="http://aws.amazon.com/visualstudio">
+  <version number="1.16.0.0" release-date="2020-02-06" prompt="false">
+	<change>Add ability in Elastic Beanstalk deployment wizard to select the type of Elastic Load Balancer to use.</change>
+	<change>Updated the Elastic Beanstalk deployment wizard to allow selecting multiple subnets.</change>
+	<change>Add Node.js 12 as a Lambda deployment option.</change>
+	<change>Updated the available storage class that can be assigned to S3 objects in the S3 bucket browser.</change>
+	<change>Updated CloudFormation stack view to show the URL if the stack contained an API Gateway HTTP API.</change>
+	<change>Fixed issue with using the correct IAM endpoint when using the me-south-1 region.</change>
+	<change>Updated the toolkit to use the latest version of the AWS SDK for .NET.</change>
+	<change>Updated the Lambda new project wizard to have VS 2017 and 2019 pull available blueprints from a separate source.</change>
+  </version>
   <version number="1.15.2.1" release-date="2019-07-02" prompt="false">
 	<change>Fix issue with file locking issues when listening to file changes to the shared credentials file.</change>
   </version>
