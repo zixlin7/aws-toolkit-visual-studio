@@ -69,7 +69,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
                     lambdaTester = new JObject();
                     lambdaTester["commandName"] = "Executable";
                     lambdaTester["commandLineArgs"] = "--port 5050";
-                    lambdaTester["workingDirectory"] = $".\\bin\\Debug\\{targetFramework}";
+                    lambdaTester["workingDirectory"] = $".\\bin\\$(Configuration)\\{targetFramework}";
 
                     profiles[LAUNCH_SETTINGS_NODE] = lambdaTester;
                 }
