@@ -9,6 +9,7 @@
 	<change>Fixed issue with using the correct IAM endpoint when using the me-south-1 region.</change>
 	<change>Updated the toolkit to use the latest version of the AWS SDK for .NET.</change>
 	<change>Updated the Lambda new project wizard to have VS 2017 and 2019 pull available blueprints from a separate source.</change>
+	<change>Updated feature that configures the Lambda Test Tool to use %USERNAME% when setting up the executablePath in launchSettings.json.</change>
   </version>
   <version number="1.15.2.1" release-date="2019-07-02" prompt="false">
 	<change>Fix issue with file locking issues when listening to file changes to the shared credentials file.</change>
