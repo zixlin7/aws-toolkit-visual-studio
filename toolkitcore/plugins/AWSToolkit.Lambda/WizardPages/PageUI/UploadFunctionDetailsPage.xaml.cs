@@ -317,13 +317,13 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                     try
                     {
                         NotifyPropertyChanged("Framework");
-                        if (string.Equals(_framework, "netcoreapp2.1", StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(_framework, "netcoreapp3.1", StringComparison.OrdinalIgnoreCase))
+                        {
+                            _runtime = RuntimeOption.NetCore_v3_1;
+                        }
+                        else if (string.Equals(_framework, "netcoreapp2.1", StringComparison.OrdinalIgnoreCase))
                         {
                             _runtime = RuntimeOption.NetCore_v2_1;
-                        }
-                        else if(string.Equals(_framework, "netcoreapp1.0", StringComparison.OrdinalIgnoreCase))
-                        {
-                            _runtime = RuntimeOption.NetCore_v1_0;
                         }
                         else
                         {
@@ -353,15 +353,15 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                     try
                     {
                         NotifyPropertyChanged("Runtime");
-                        if (RuntimeOption.NetCore_v2_1 == _runtime && this._ctlFrameworkPicker.Items.Contains("netcoreapp2.1"))
+                        if (RuntimeOption.NetCore_v3_1 == _runtime && this._ctlFrameworkPicker.Items.Contains("netcoreapp3.1"))
+                        {
+                            _framework = "netcoreapp3.1";
+                            this._ctlFrameworkPicker.SelectedItem = "netcoreapp3.1";
+                        }
+                        else if (RuntimeOption.NetCore_v2_1 == _runtime && this._ctlFrameworkPicker.Items.Contains("netcoreapp2.1"))
                         {
                             _framework = "netcoreapp2.1";
                             this._ctlFrameworkPicker.SelectedItem = "netcoreapp2.1";
-                        }
-                        else if (RuntimeOption.NetCore_v1_0 == _runtime && this._ctlFrameworkPicker.Items.Contains("netcoreapp1.0"))
-                        {
-                            _framework = "netcoreapp1.0";
-                            this._ctlFrameworkPicker.SelectedItem = "netcoreapp1.0";
                         }
                     }
                     finally
