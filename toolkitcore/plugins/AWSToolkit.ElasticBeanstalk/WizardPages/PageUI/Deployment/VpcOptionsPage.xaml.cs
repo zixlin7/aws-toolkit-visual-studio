@@ -276,6 +276,31 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             public bool IsSelected { get; set; }
             public string SubnetId => _subnet.SubnetId;
             public string AvailabilityZone => _subnet.AvailabilityZone;
+
+            public string FormattedTags
+            {
+                get
+                {
+                    var sb = new StringBuilder();
+                    foreach(var tag in this._subnet.Tags)
+                    {
+                        if(sb.Length != 0)
+                        {
+                            sb.Append(", ");
+                        }
+
+                        sb.Append($"{tag.Key}={tag.Value}");
+                    }
+
+                    // Make sure we are stretching the combo box beyound reasonable.
+                    if(sb.Length > 100)
+                    {
+                        return sb.ToString().Substring(0, 96) + " ...";
+                    }
+
+                    return sb.ToString();
+                }
+            }
         }
     }
 }
