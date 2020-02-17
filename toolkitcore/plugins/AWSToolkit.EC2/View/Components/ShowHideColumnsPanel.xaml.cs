@@ -32,7 +32,7 @@ namespace Amazon.AWSToolkit.EC2.View.Components
             }
 
             public EC2ColumnDefinition InnerColumn { get; }
-            public bool IsDisplayed { get; }
+            public bool IsDisplayed { get; set; }
 
             /// <summary>
             /// Set from column header editing for custom tag types that have been added by the user
