@@ -134,7 +134,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                 }
                 else
                 {
-                    _pageUI.ConfigureForEnvironmentType(DeploymentWizardHelper.IsSingleInstanceEnvironment(HostingWizard));
+                    _pageUI.ConfigureForEnvironmentType(DeploymentWizardHelper.IsSingleInstanceEnvironment(HostingWizard), HostingWizard[BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_LoadBalancerType] as string);
                     // always load versions as we could be deploying a new environment for an existing app; the load will
                     // yield an empty version collection for as-yet-unknown apps
                     _pageUI.LoadExistingVersions();
@@ -279,7 +279,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                             this._originalEnableEnhancedHealth = enableEnhancedHealth;
                             this._pageUI.EnableEnhancedHealth = enableEnhancedHealth;
 
-                            this._pageUI.ConfigureForEnvironmentType(isSingleInstanceEnvironment);
+                            this._pageUI.ConfigureForEnvironmentType(isSingleInstanceEnvironment, HostingWizard[BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_LoadBalancerType] as string);
 
                             this._pageUI.AppSettings = appSettings;
                             foreach (var kvp in appSettings)

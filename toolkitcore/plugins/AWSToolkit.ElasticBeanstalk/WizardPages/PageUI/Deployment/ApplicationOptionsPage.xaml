@@ -231,7 +231,6 @@
                     FontStyle="Italic"
                     Style="{DynamicResource awsInfoTextStyle}"
                     Visibility="Hidden">
-                    The status of the single EC2 instance is used to determine environment health.
                 </TextBlock>
 
                 <TextBlock

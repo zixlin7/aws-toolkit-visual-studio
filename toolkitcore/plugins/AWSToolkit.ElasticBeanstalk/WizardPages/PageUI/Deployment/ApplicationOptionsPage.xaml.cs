@@ -13,6 +13,7 @@ using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
 using Amazon.ElasticBeanstalk.Model;
 using System.Diagnostics;
+using Amazon.ElasticLoadBalancingV2;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 {
@@ -99,16 +100,30 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         // when we come to validation
         private bool IsSingleInstanceEnvironment { get; set; }
 
-        public void ConfigureForEnvironmentType(bool isSingleInstanceEnvironment)
+        public void ConfigureForEnvironmentType(bool isSingleInstanceEnvironment, string loadBalancerType)
         {
             IsSingleInstanceEnvironment = isSingleInstanceEnvironment;
 
-            _healthCheckFromInstanceMsg.Visibility = isSingleInstanceEnvironment
+            var showHealthCheckUrl = !isSingleInstanceEnvironment && !string.Equals(loadBalancerType, LoadBalancerTypeEnum.Network.Value, StringComparison.InvariantCultureIgnoreCase);
+
+            _healthCheckFromInstanceMsg.Visibility = showHealthCheckUrl
+                ? Visibility.Hidden
+                : Visibility.Visible;
+            _healthCheckURL.Visibility = showHealthCheckUrl
                 ? Visibility.Visible
                 : Visibility.Hidden;
-            _healthCheckURL.Visibility = isSingleInstanceEnvironment 
-                ? Visibility.Hidden 
-                : Visibility.Visible;
+
+            if(_healthCheckFromInstanceMsg.Visibility == Visibility.Visible)
+            {
+                if (string.Equals(loadBalancerType, LoadBalancerTypeEnum.Network.Value, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    _healthCheckFromInstanceMsg.Text = "Environments using network load balancer make TCP connections to instances to determine health.";
+                }
+                else
+                {
+                    _healthCheckFromInstanceMsg.Text = "The status of the single EC2 instance is used to determine environment health.";
+                }
+            }
         }
 
         public IDictionary<string, string> AppSettings

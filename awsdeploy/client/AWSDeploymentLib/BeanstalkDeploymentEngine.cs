@@ -17,6 +17,7 @@ using Amazon.EC2;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using S3Location = Amazon.ElasticBeanstalk.Model.S3Location;
+using Amazon.ElasticLoadBalancingV2;
 
 namespace AWSDeployment
 {
@@ -907,6 +908,19 @@ namespace AWSDeployment
                 });
             }
 
+
+            if (!IsSingleInstanceEnvironmentType && string.Equals(LoadBalancerType, LoadBalancerTypeEnum.Application.Value, StringComparison.InvariantCultureIgnoreCase) && !string.IsNullOrEmpty(ApplicationHealthcheckPath) && configOptionSettings.FirstOrDefault(
+                x => (x.Namespace == "aws:elasticbeanstalk:environment:process:default" && x.OptionName == "HealthCheckPath")) == null)
+            {
+                configOptionSettings.Add(new ConfigurationOptionSetting()
+                {
+                    Namespace = "aws:elasticbeanstalk:environment:process:default",
+                    OptionName = "HealthCheckPath",
+                    Value = ApplicationHealthcheckPath
+                });
+            }
+
+
             var request = new UpdateEnvironmentRequest()
             {
                 EnvironmentName = this.EnvironmentName,
@@ -1104,7 +1118,20 @@ namespace AWSDeployment
                     Value = ApplicationHealthcheckPath
                 });
             }
-            if(this.EnableConfigRollingDeployment)
+
+            if (!IsSingleInstanceEnvironmentType && string.Equals(LoadBalancerType, LoadBalancerTypeEnum.Application.Value, StringComparison.InvariantCultureIgnoreCase) && !string.IsNullOrEmpty(ApplicationHealthcheckPath) && configOptionSettings.FirstOrDefault(
+                x => (x.Namespace == "aws:elasticbeanstalk:environment:process:default" && x.OptionName == "HealthCheckPath")) == null)
+            {
+                configOptionSettings.Add(new ConfigurationOptionSetting()
+                {
+                    Namespace = "aws:elasticbeanstalk:environment:process:default",
+                    OptionName = "HealthCheckPath",
+                    Value = ApplicationHealthcheckPath
+                });
+            }
+
+
+            if (this.EnableConfigRollingDeployment)
             {
                 if (configOptionSettings.FirstOrDefault(
                     x => (x.Namespace == "aws:autoscaling:updatepolicy:rollingupdate" && x.OptionName == "RollingUpdateEnabled")) == null)
