@@ -281,24 +281,23 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             {
                 get
                 {
-                    var sb = new StringBuilder();
-                    foreach(var tag in this._subnet.Tags)
-                    {
-                        if(sb.Length != 0)
-                        {
-                            sb.Append(", ");
-                        }
-
-                        sb.Append($"{tag.Key}={tag.Value}");
-                    }
+                    var formattedtags = string.Join(", ", this._subnet.Tags.Select(tag => $"{tag.Key}={tag.Value}"));
 
                     // Make sure we are stretching the combo box beyound reasonable.
-                    if(sb.Length > 100)
+                    if(formattedtags.Length > 100)
                     {
-                        return sb.ToString().Substring(0, 96) + " ...";
+                        formattedtags = formattedtags.Substring(0, 96) + " ...";
                     }
 
-                    return sb.ToString();
+                    return formattedtags;
+                }
+            }
+
+            public string ToolTipTags
+            {
+                get
+                {
+                    return string.Join("\n", this._subnet.Tags.Select(tag => $"{tag.Key}={tag.Value}"));
                 }
             }
         }

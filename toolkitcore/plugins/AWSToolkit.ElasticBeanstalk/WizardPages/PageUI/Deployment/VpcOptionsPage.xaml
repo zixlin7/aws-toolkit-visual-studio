@@ -68,9 +68,15 @@
                                                                 </DataTemplate>
                                                             </GridViewColumn.CellTemplate>
                                                         </GridViewColumn>
-                                                        <GridViewColumn DisplayMemberBinding="{Binding SubnetId}" Header="Subnet ID" />
-                                                        <GridViewColumn DisplayMemberBinding="{Binding AvailabilityZone}" Header="Availability Zone" />
-                                                        <GridViewColumn DisplayMemberBinding="{Binding FormattedTags}" Header="Tags" />
+                                                        <GridViewColumn DisplayMemberBinding="{Binding SubnetId}" Header="Subnet ID"/>
+                                                        <GridViewColumn DisplayMemberBinding="{Binding AvailabilityZone}" Header="Availability Zone"/>
+                                                        <GridViewColumn Header="Tags">
+                                                            <GridViewColumn.CellTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding FormattedTags}" TextWrapping="NoWrap" ToolTip="{Binding ToolTipTags}"/>
+                                                                </DataTemplate>
+                                                            </GridViewColumn.CellTemplate>
+                                                        </GridViewColumn>
                                                     </GridView.Columns>
                                                 </GridView>
                                             </ListView.View>
