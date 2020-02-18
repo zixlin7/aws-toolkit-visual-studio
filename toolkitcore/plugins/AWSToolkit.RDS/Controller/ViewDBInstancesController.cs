@@ -177,7 +177,9 @@ namespace Amazon.AWSToolkit.RDS.Controller
 
         public void RegisterDataConnection(DBInstanceWrapper instance)
         {
-            new AddToServerExplorerController().Execute(this._instanceRootViewModel);
+            var metaModel = this._instanceRootViewModel.MetaNode.FindChild<RDSInstanceViewMetaNode>();
+            var model = new RDSInstanceViewModel(metaModel, this._instanceRootViewModel, instance);
+            new AddToServerExplorerController().Execute(model);
         }
 
         public void RefreshSelectedEvents()
