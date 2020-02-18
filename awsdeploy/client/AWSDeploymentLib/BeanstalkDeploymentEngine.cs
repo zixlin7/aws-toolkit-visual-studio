@@ -908,18 +908,7 @@ namespace AWSDeployment
                 });
             }
 
-
-            if (!IsSingleInstanceEnvironmentType && string.Equals(LoadBalancerType, LoadBalancerTypeEnum.Application.Value, StringComparison.InvariantCultureIgnoreCase) && !string.IsNullOrEmpty(ApplicationHealthcheckPath) && configOptionSettings.FirstOrDefault(
-                x => (x.Namespace == "aws:elasticbeanstalk:environment:process:default" && x.OptionName == "HealthCheckPath")) == null)
-            {
-                configOptionSettings.Add(new ConfigurationOptionSetting()
-                {
-                    Namespace = "aws:elasticbeanstalk:environment:process:default",
-                    OptionName = "HealthCheckPath",
-                    Value = ApplicationHealthcheckPath
-                });
-            }
-
+            ConfigureALBHealthCheck();
 
             var request = new UpdateEnvironmentRequest()
             {
@@ -932,6 +921,20 @@ namespace AWSDeployment
             BeanstalkClient.UpdateEnvironment(request);
         }
 
+
+        private void ConfigureALBHealthCheck()
+        {
+            if (!IsSingleInstanceEnvironmentType && string.Equals(LoadBalancerType, LoadBalancerTypeEnum.Application.Value, StringComparison.InvariantCultureIgnoreCase) && !string.IsNullOrEmpty(ApplicationHealthcheckPath) && configOptionSettings.FirstOrDefault(
+                x => (x.Namespace == "aws:elasticbeanstalk:environment:process:default" && x.OptionName == "HealthCheckPath")) == null)
+            {
+                configOptionSettings.Add(new ConfigurationOptionSetting()
+                {
+                    Namespace = "aws:elasticbeanstalk:environment:process:default",
+                    OptionName = "HealthCheckPath",
+                    Value = ApplicationHealthcheckPath
+                });
+            }
+        }
 
         IList<OptionSpecification> TestForValidOptionsForEnvironnment(bool solutionStack, params OptionSpecification[] options)
         {
@@ -1119,16 +1122,7 @@ namespace AWSDeployment
                 });
             }
 
-            if (!IsSingleInstanceEnvironmentType && string.Equals(LoadBalancerType, LoadBalancerTypeEnum.Application.Value, StringComparison.InvariantCultureIgnoreCase) && !string.IsNullOrEmpty(ApplicationHealthcheckPath) && configOptionSettings.FirstOrDefault(
-                x => (x.Namespace == "aws:elasticbeanstalk:environment:process:default" && x.OptionName == "HealthCheckPath")) == null)
-            {
-                configOptionSettings.Add(new ConfigurationOptionSetting()
-                {
-                    Namespace = "aws:elasticbeanstalk:environment:process:default",
-                    OptionName = "HealthCheckPath",
-                    Value = ApplicationHealthcheckPath
-                });
-            }
+            ConfigureALBHealthCheck();
 
 
             if (this.EnableConfigRollingDeployment)
