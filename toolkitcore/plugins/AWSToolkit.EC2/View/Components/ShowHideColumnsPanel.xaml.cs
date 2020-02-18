@@ -31,7 +31,7 @@ namespace Amazon.AWSToolkit.EC2.View.Components
                 UnusedTag = false;
             }
 
-            public EC2ColumnDefinition InnerColumn { get; }
+            public EC2ColumnDefinition InnerColumn { get; set; }
             public bool IsDisplayed { get; set; }
 
             /// <summary>

@@ -20,7 +20,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
     {
         protected ILog LOGGER = LogManager.GetLogger(typeof(BaseWorker));
 
-        protected IDockerDeploymentHelper Helper { get; }
+        protected IDockerDeploymentHelper Helper { get; set; }
 
         protected IAmazonIdentityManagementService _iamClient;
 

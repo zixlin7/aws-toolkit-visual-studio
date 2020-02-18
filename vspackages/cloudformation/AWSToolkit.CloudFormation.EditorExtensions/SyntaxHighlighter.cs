@@ -83,8 +83,7 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
 
             IClassificationTypeRegistryService _classificationRegistry;
             ITextBuffer _buffer;
-            ITextSearchService TextSearchService { get; }
-
+            ITextSearchService TextSearchService { get; set; }
 
             object updateLock = new object();
             List<ClassificationSpan> CurrentSpans { get; set; }

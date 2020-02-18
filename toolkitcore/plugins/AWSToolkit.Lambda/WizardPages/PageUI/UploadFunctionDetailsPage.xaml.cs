@@ -37,7 +37,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         public DeploymentType DeploymentType { get; private set; }
         public UploadOriginator UploadOriginator { get; }
 
-        private string SeedFunctionName { get; }
+        private string SeedFunctionName { get; set; }
 
         public UploadFunctionDetailsPage()
         {

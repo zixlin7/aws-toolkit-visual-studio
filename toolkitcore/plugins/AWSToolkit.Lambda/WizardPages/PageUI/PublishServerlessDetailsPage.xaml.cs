@@ -25,11 +25,10 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(PublishServerlessDetailsPage));
 
-        public IAWSWizardPageController PageController { get; }
+        public IAWSWizardPageController PageController { get; set; }
 
-        private string SeedS3Bucket { get; }
-        private string SeedStackName { get; }
-
+        private string SeedS3Bucket { get; set; }
+        private string SeedStackName { get; set; }
 
         public PublishServerlessDetailsPage()
         {

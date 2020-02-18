@@ -454,8 +454,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         }
 
         public string DisplayName { get; set; }
-        private string PluralSystemName { get; }
-        private string SingluarSystemName { get; }
+        private string PluralSystemName { get; set; }
+        private string SingluarSystemName { get; set; }
 
         public string GetUnitName(int value)
         {

@@ -4,7 +4,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
     public class ECSToolLogger : IToolLogger
     {
-        IDockerDeploymentHelper Helper { get; }
+        IDockerDeploymentHelper Helper { get; set; }
 
         internal ECSToolLogger(IDockerDeploymentHelper helper)
         {

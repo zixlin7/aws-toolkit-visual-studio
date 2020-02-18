@@ -30,8 +30,8 @@ namespace Amazon.AWSToolkit.CommonUI.Components
                 PairType = pairType;
             }
 
-            public string KeyPairName { get; }
-            public KeyPairType PairType { get; }
+            public string KeyPairName { get; set; }
+            public KeyPairType PairType { get; set; }
 
             public System.Windows.Media.ImageSource IsStoredLocallyIcon
             {

@@ -33,7 +33,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionAdvancedPage));
 
-        private IAWSWizardPageController PageController { get; }
+        private IAWSWizardPageController PageController { get; set; }
 
         public UploadFunctionAdvancedPage()
         {
