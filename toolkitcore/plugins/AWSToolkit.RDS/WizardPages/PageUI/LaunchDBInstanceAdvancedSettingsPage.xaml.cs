@@ -94,7 +94,22 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
 
         public VPCWrapper SelectedVpc { get; set; }
         public ObservableCollection<VPCWrapper> VpcList => _vpcList;
-        public DBSubnetGroupWrapper SelectedDbSubnetGroup { get; set; }
+
+
+        DBSubnetGroupWrapper _selectedDBSubnetGroupWrapper;
+        public DBSubnetGroupWrapper SelectedDbSubnetGroup
+        {
+            get
+            {
+                return this._selectedDBSubnetGroupWrapper;
+            }
+            set
+            {
+                this._selectedDBSubnetGroupWrapper = value;
+                OnPropertyChanged("SelectedDbSubnetGroup");
+            }
+        }
+
         public ObservableCollection<DBSubnetGroupWrapper> DbSubnetGroupList => _dbSubnetGroupList;
 
         public bool CreateNewDBSubnetGroup
@@ -229,7 +244,10 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
 
             OnPropertyChanged("DbSubnetGroupList");
 
-            SelectedDbSubnetGroup = _dbSubnetGroupList.Count == 1 ? _dbSubnetGroupList[0] : null;
+            SelectedDbSubnetGroup = _dbSubnetGroupList.Count == 1 ? 
+                                        _dbSubnetGroupList[0] : 
+                                        _dbSubnetGroupList.FirstOrDefault(x => string.Equals(x.Name, DefaultDbSubnetGroupText, StringComparison.InvariantCultureIgnoreCase));
+
             OnPropertyChanged("SelectedDbSubnetGroup");
         }
 

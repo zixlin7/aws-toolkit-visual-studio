@@ -192,7 +192,25 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
             }
         }
 
-        bool IsForwardsNavigationAllowed => BackgroundWorkerCount == 0;
+        bool IsForwardsNavigationAllowed
+        {
+            get
+            {
+                // If the view has never been viewed then allow it to be skipped and use the default parameters.
+                if (_pageUI == null)
+                    return true;
+
+                // If the view has been created but is currently fetching data then do not allow forward progress
+                if (BackgroundWorkerCount > 0)
+                    return false;
+
+                // If launch into VPC is enabled but a subnet has not been selected that stop forward progress.
+                if (_pageUI.LaunchingIntoVpc && !_pageUI.CreateNewDBSubnetGroup && _pageUI.SelectedDbSubnetGroup == null)
+                    return false;
+
+                return true;
+            }
+        }
 
         void _pageUI_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
