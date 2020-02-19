@@ -156,6 +156,7 @@
                             <Setter TargetName="radioButtonBorder" Property="Background" Value="{DynamicResource awsCheckboxOrRadioBackgroundBrushKey}" />
                             <Setter TargetName="radioButtonBorder" Property="BorderBrush" Value="{DynamicResource awsDisabledControlForegroundBrushKey}" />
                             <Setter TargetName="optionMark" Property="Fill" Value="{DynamicResource awsDisabledControlForegroundBrushKey}" />
+                            <Setter Property="Foreground" Value="{DynamicResource awsDisabledControlForegroundBrushKey}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
                             <Setter TargetName="radioButtonBorder" Property="Background" Value="{DynamicResource awsCheckboxOrRadioBackgroundBrushKey}" />
@@ -245,6 +246,7 @@
                             <Setter TargetName="checkBoxBorder" Property="BorderBrush" Value="{DynamicResource awsDisabledControlForegroundBrushKey}" />
                             <Setter TargetName="optionMark" Property="Fill" Value="{DynamicResource awsDisabledControlForegroundBrushKey}" />
                             <Setter TargetName="indeterminateMark" Property="Fill" Value="{DynamicResource awsDisabledControlForegroundBrushKey}" />
+                            <Setter Property="Foreground" Value="{DynamicResource awsDisabledControlForegroundBrushKey}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
                             <Setter TargetName="checkBoxBorder" Property="Background" Value="{DynamicResource awsCheckboxOrRadioBackgroundBrushKey}" />
