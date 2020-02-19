@@ -35,6 +35,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -42,9 +43,18 @@
                     <ColumnDefinition Width="112" />
                 </Grid.ColumnDefinitions>
 
-                <Label Style="{DynamicResource awsLabelBaseStyle}">License Model:</Label>
+                <Label Grid.Row="0" Grid.Column="0" Style="{DynamicResource awsLabelBaseStyle}">Database:</Label>
+                <TextBlock
+                    x:Name="_databaseEngineName"
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    VerticalAlignment="Center"
+                    Style="{DynamicResource awsTextBlockBaseStyle}" />
+
+                <Label Grid.Row="1" Style="{DynamicResource awsLabelBaseStyle}">License Model:</Label>
                 <TextBlock
                     x:Name="_licenseModel"
+                    Grid.Row="1"
                     Grid.Column="1"
                     VerticalAlignment="Center"
                     FontStyle="Italic"
@@ -66,14 +76,14 @@
                 </Border>
 
                 <Label
-                    Grid.Row="1"
+                    Grid.Row="2"
                     Style="{DynamicResource awsLabelBaseStyle}"
                     Target="{Binding ElementName=_dbEngineVersions}">
                     DB Engine _Version:
                 </Label>
                 <toolkitcomponents:ListViewComboBox
                     x:Name="_dbEngineVersions"
-                    Grid.Row="1"
+                    Grid.Row="2"
                     Grid.Column="1"
                     VerticalAlignment="Center"
                     AlternationCount="2"
@@ -85,14 +95,14 @@
                 </toolkitcomponents:ListViewComboBox>
 
                 <Label
-                    Grid.Row="2"
+                    Grid.Row="3"
                     Style="{DynamicResource awsLabelBaseStyle}"
                     Target="{Binding ElementName=_instanceClass}">
                     DB Instance _Class:
                 </Label>
                 <toolkitcomponents:ListViewComboBox
                     x:Name="_instanceClass"
-                    Grid.Row="2"
+                    Grid.Row="3"
                     Grid.Column="1"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Center"
@@ -108,7 +118,7 @@
 
                 <CheckBox
                     x:Name="_btnMultiAZDeployment"
-                    Grid.Row="3"
+                    Grid.Row="4"
                     Grid.Column="1"
                     Grid.ColumnSpan="2"
                     Margin="0,4"
@@ -119,7 +129,7 @@
 
                 <CheckBox
                     x:Name="_btnAutoUpgradeMinorVersions"
-                    Grid.Row="4"
+                    Grid.Row="5"
                     Grid.Column="1"
                     Grid.ColumnSpan="2"
                     Margin="0,4"

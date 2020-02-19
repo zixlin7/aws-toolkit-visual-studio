@@ -48,7 +48,7 @@ namespace Amazon.AWSToolkit.RDS
             }
         }
 
-        public DBEngineMeta MetaForEngine(string dbEngineId)
+        public DBEngineMeta MetaForEngine(string dbEngineId, bool assertIfMissing = true)
         {
             // do an exact check first to allow for specificity if multiple same-vendor engines in future
             if (_engineMetaDictionary.ContainsKey(dbEngineId))
@@ -64,7 +64,12 @@ namespace Amazon.AWSToolkit.RDS
             }
 
             LOGGER.WarnFormat("DB engine metadata set does not contain an entry for engine id {0}", dbEngineId);
-            System.Diagnostics.Debug.Assert(false, "DB engine metadata set does not contain an entry for engine id " + dbEngineId);
+
+            if (assertIfMissing)
+            {
+                System.Diagnostics.Debug.Assert(false,
+                    "DB engine metadata set does not contain an entry for engine id " + dbEngineId);
+            }
 
             return null;
         }

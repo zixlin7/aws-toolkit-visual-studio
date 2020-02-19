@@ -44,7 +44,15 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
     /// </summary>
     public class DBEngineType
     {
+        /// <summary>
+        /// Engine id
+        /// Example: sqlserver-se
+        /// </summary>
         public string Title { get; set; }
+        /// <summary>
+        /// Friendly Display Name
+        /// Example: Microsoft SQL Server Standard Edition
+        /// </summary>
         public string Description { get; set; }
         public ImageSource EngineIcon => DBEngineVersionWrapper.IconForEngineType(Title);
     }

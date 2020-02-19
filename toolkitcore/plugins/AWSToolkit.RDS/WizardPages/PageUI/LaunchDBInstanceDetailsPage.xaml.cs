@@ -34,6 +34,7 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageUI
             // we're guaranteed there's at least one version in the collection
             DBEngineVersionWrapper wrapper = _engineVersions[0];
 
+            _databaseEngineName.Text = wrapper.Description;
             _logo.Source = wrapper.EngineIcon;
 
             EngineMeta = RDSServiceMeta.Instance.MetaForEngine(wrapper.Title);

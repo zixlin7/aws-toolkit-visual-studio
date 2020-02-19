@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
@@ -15,6 +16,14 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
     internal class LaunchDBInstanceEnginePageController : IAWSWizardPageController
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(LaunchDBInstanceEnginePageController));
+
+        private static readonly IList<string> DatabaseEnginePreferredOrder
+            = new ReadOnlyCollection<string>(new List<string>
+            {
+                "sqlserver-ex", "sqlserver-web", "sqlserver-se", "sqlserver-ee",
+                "oracle-se", "oracle-se1", "oracle-ee"
+            });
+
         LaunchDBInstanceEnginePage _pageUI;
         Dictionary<string, List<DBEngineVersionWrapper>> _engines;
 
@@ -22,7 +31,7 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
 
         public string PageID => GetType().FullName;
 
-        public IAWSWizard HostingWizard  { get; set; }
+        public IAWSWizard HostingWizard { get; set; }
 
         public string PageGroup => AWSWizardConstants.DefaultPageGroup;
 
@@ -50,29 +59,7 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
                 _pageUI.PropertyChanged += _pageUI_PropertyChanged;
                 _engines = QueryAvailableEngineVersions();
 
-                // transform to a shorter collection of types for the page list, using the
-                // first available engine version of each type for data but order so we get
-                // sql server first, then oracle and then the remainder
-                var priorityOrderKeyList = new[] 
-                {
-                    "sqlserver-ex", "sqlserver-web", "sqlserver-se", "sqlserver-ee",
-                    "oracle-se", "oracle-se1", "oracle-ee"
-                };
-                var priorityOrderKeys = new HashSet<string>(priorityOrderKeyList);
-
-                var engineTypes = (from key in priorityOrderKeyList
-                                   where _engines.ContainsKey(key)
-                                   let wrappers = _engines[key]
-                                   where wrappers.Count > 0
-                                   select new DBEngineType { Title = key, Description = wrappers[0].Description })
-                                   .ToList();
-                engineTypes.AddRange(from engine in _engines.Keys
-                                     where (!priorityOrderKeys.Contains(engine))
-                                     let wrappers = _engines[engine]
-                                     where wrappers.Count > 0
-                                     select new DBEngineType { Title = engine, Description = wrappers[0].Description });
-
-                _pageUI.AvailableEngineTypes = engineTypes;
+                _pageUI.AvailableEngineTypes = GetAvailableEngineTypes();
             }
 
             return _pageUI;
@@ -97,7 +84,8 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
 
         public void TestForwardTransitionEnablement()
         {
-            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Forward, QueryFinishButtonEnablement());
+            HostingWizard.SetNavigationEnablement(this, AWSWizardConstants.NavigationButtons.Forward,
+                QueryFinishButtonEnablement());
         }
 
         public bool AllowShortCircuit()
@@ -121,7 +109,8 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
         /// <returns></returns>
         Dictionary<string, List<DBEngineVersionWrapper>> QueryAvailableEngineVersions()
         {
-            Dictionary<string, List<DBEngineVersionWrapper>> engines = new Dictionary<string, List<DBEngineVersionWrapper>>();
+            Dictionary<string, List<DBEngineVersionWrapper>> engines =
+                new Dictionary<string, List<DBEngineVersionWrapper>>();
 
             try
             {
@@ -147,6 +136,7 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
                             wrappers = new List<DBEngineVersionWrapper>();
                             engines.Add(engine.Engine, wrappers);
                         }
+
                         wrappers.Add(new DBEngineVersionWrapper(engine));
                     }
                 } while (!string.IsNullOrEmpty(nextMarker));
@@ -157,6 +147,35 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
             }
 
             return engines;
+        }
+
+        private IList<DBEngineType> GetAvailableEngineTypes()
+        {
+            var candidateEngineTypes = _engines
+                // Filter out any DB Engine Type that we don't have metadata for
+                .Where(engineKeyValue => engineKeyValue.Value.Any())
+                .Where(engineKeyValue => RDSServiceMeta.Instance.MetaForEngine(engineKeyValue.Key, false) != null)
+                // Transform to the model of interest.
+                .Select(engineKeyValue => new DBEngineType
+                    {Title = engineKeyValue.Key, Description = engineKeyValue.Value.First().Description})
+                .ToList();
+
+            return candidateEngineTypes
+                .OrderBy(engine => GetPreferredDatabaseEngineOrder(engine.Title))
+                .ThenBy(engine => engine.Description)
+                .ToList();
+        }
+
+        private static int GetPreferredDatabaseEngineOrder(string engineId)
+        {
+            var index = DatabaseEnginePreferredOrder.IndexOf(engineId);
+
+            if (index == -1)
+            {
+                return DatabaseEnginePreferredOrder.Count;
+            }
+
+            return index;
         }
     }
 }

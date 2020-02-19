@@ -137,6 +137,7 @@
                         x:Name="_ctlCreateNewSecurityGroup"
                         Click="_ctlCreateNewSecurityGroup_OnClick"
                         Content="Create new Security Group"
+                        Style="{DynamicResource awsCheckboxButtonBaseStyle}"
                         ToolTip="{Binding NewSecurityGroupTooltip}" />
                     <ListBox
                         x:Name="_ctlSecurityGroupsList"
