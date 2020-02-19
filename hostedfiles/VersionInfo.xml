@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <versions location="http://aws.amazon.com/visualstudio">
+  <version number="1.16.1.0" release-date="2020-02-19" prompt="false">
+    <change>Elastic Beanstalk launch wizard now shows subnet tags alongside VPC options</change>
+    <change>RDS launch wizard now auto-selects the default subnet group</change>
+    <change>Checkboxes and radio buttons that are disabled are now appropriately greyed out</change>
+    <change>Fixed issue where trying to Show/Hide columns in some views would crash Visual Studio</change>
+    <change>Fixed issue related to setting health check URLs on Beanstalk environments that use ALBs</change>
+    <change>The RDS Launch wizard no longer shows database engines that the wizard doesn't provide support for</change>
+    <change>Fixed issue with RDS Launch Wizard not correctly enabling the Next and Finish buttons in the advanced page</change>
+    <change>Fixed issue with Add to Server Explorer not working from the RDS Instance view</change>
+  </version>
   <version number="1.16.0.0" release-date="2020-02-06" prompt="false">
 	<change>Add ability in Elastic Beanstalk deployment wizard to select the type of Elastic Load Balancer to use.</change>
 	<change>Updated the Elastic Beanstalk deployment wizard to allow selecting multiple subnets.</change>
