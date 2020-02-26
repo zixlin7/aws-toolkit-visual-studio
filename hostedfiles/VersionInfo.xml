@@ -1,5 +1,54 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <versions location="http://aws.amazon.com/visualstudio">
+  <version number="1.16.1.0" release-date="2020-02-19" prompt="false">
+    <change>Elastic Beanstalk launch wizard now shows subnet tags alongside VPC options</change>
+    <change>RDS launch wizard now auto-selects the default subnet group</change>
+    <change>Checkboxes and radio buttons that are disabled are now appropriately greyed out</change>
+    <change>Fixed issue where trying to Show/Hide columns in some views would crash Visual Studio</change>
+    <change>Fixed issue related to setting health check URLs on Beanstalk environments that use ALBs</change>
+    <change>The RDS Launch wizard no longer shows database engines that the wizard doesn't provide support for</change>
+    <change>Fixed issue with RDS Launch Wizard not correctly enabling the Next and Finish buttons in the advanced page</change>
+    <change>Fixed issue with Add to Server Explorer not working from the RDS Instance view</change>
+  </version>
+  <version number="1.16.0.0" release-date="2020-02-06" prompt="false">
+	<change>Add ability in Elastic Beanstalk deployment wizard to select the type of Elastic Load Balancer to use.</change>
+	<change>Updated the Elastic Beanstalk deployment wizard to allow selecting multiple subnets.</change>
+	<change>Add Node.js 12 as a Lambda deployment option.</change>
+	<change>Updated the available storage class that can be assigned to S3 objects in the S3 bucket browser.</change>
+	<change>Updated CloudFormation stack view to show the URL if the stack contained an API Gateway HTTP API.</change>
+	<change>Fixed issue with using the correct IAM endpoint when using the me-south-1 region.</change>
+	<change>Updated the toolkit to use the latest version of the AWS SDK for .NET.</change>
+	<change>Updated the Lambda new project wizard to have VS 2017 and 2019 pull available blueprints from a separate source.</change>
+	<change>Updated feature that configures the Lambda Test Tool to use %USERNAME% when setting up the executablePath in launchSettings.json.</change>
+  </version>
+  <version number="1.15.2.1" release-date="2019-07-02" prompt="false">
+	<change>Fix issue with file locking issues when listening to file changes to the shared credentials file.</change>
+  </version>
+  <version number="1.15.2.0" release-date="2019-05-23" prompt="false">
+	<change>Fix issue with CodeCommit not working correct in VS 2019.</change>
+	<change>Update Project Templates to support VS 2019 filtering.</change>
+	<change>Provide option to save a profile in the shard credentials file.</change>
+	<change>Update Lambda deployment code from "dotnet lambda" cli which contains customer fix for the error message "The filename or extension is too long".</change>
+  </version>
+  <version number="1.15.1.0" release-date="2019-04-17" prompt="false">
+	<change>Fix issue with CodeCommit not working correct in VS 2017.</change>
+	<change>Remove ASP.NET Core version check.</change>
+	<change>Pull in latest changes of Amazon.Lambda.Tools for Lambda deployment.</change>
+  </version>
+  <version number="1.15.0.0" release-date="2019-03-28" prompt="false">
+	<change>Add support or Visual Studio 2019</change>
+	<change>Add support for Lambda Custom Runtime deployment.</change>
+	<change>Add support for Lambda Layers during deployment.</change>
+	<change>Fixed bug where Lambda projects in a Project Folder were not detected for configuring .NET Lambda Test Tool.</change>
+	<change>Remove flag from region picker.</change>
+	<change>Fixed situation where a corrupt credentials file would crash VS on startup.</change>
+	<change>Updated Toolkit's Lambda Max Timeout to 900 seconds.</change>
+	<change>Pull in latest changes of Amazon.Lambda.Tools for Lambda deployment.</change>
+  </version>
+  <version number="1.14.5.0" release-date="2018-11-19" prompt="false">
+	<change>Added ability to .NET Lambda Test Tool for opened Lambda projects.</change>
+	<change>Cosmetic UI changes to the Lambda function view.</change>
+  </version>
   <version number="1.14.4.0" release-date="2018-07-09" prompt="false">
     <change>Added support for .NET Core 2.1 with AWS Lambda.</change>
     <change>Added support for configuring SQS event source for AWS Lambda functions.</change>

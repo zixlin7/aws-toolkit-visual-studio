@@ -22,22 +22,109 @@
 
 	<InstanceTypes>
 
-		<!-- Micro Instance Family Types -->
+		<!-- General purpose Burstable Performance Instances  -->
 
-		<InstanceType id="t1.micro">
-			<DisplayName>Micro</DisplayName>
-			<Memory>613 MB</Memory>
+
+		<!-- The first one in the list is the default instance type used in the EC2 Wizard. -->
+		<InstanceType id="t3a.small">
+			<DisplayName>General Purpose Burstable Small</DisplayName>
+			<Memory>2 GB</Memory>
 			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>1</VirtualCores>
-			<ArchitectureBits>32/64</ArchitectureBits>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
 			<RequiresEBSVolume>true</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
+			<RequiresHvmImage>true</RequiresHvmImage>
 			<MaxInstanceStore>0</MaxInstanceStore>
-			<CurrentGeneration>false</CurrentGeneration>
-			<HardwareFamily>Micro instances</HardwareFamily>
+			<CurrentGeneration>true</CurrentGeneration>
+			<RequiresVPC>true</RequiresVPC>
+			<HardwareFamily>Burstable general purpose</HardwareFamily>
 		</InstanceType>
 
-		<!-- General purpose Burstable Performance Instances  -->
+
+
+		<InstanceType id="t3a.nano">
+			<DisplayName>General Purpose Burstable Nano</DisplayName>
+			<Memory>0.5 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<RequiresVPC>true</RequiresVPC>
+			<HardwareFamily>Burstable general purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="t3a.micro">
+			<DisplayName>General Purpose Burstable Micro</DisplayName>
+			<Memory>1 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<RequiresVPC>true</RequiresVPC>
+			<HardwareFamily>Burstable general purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="t3a.medium">
+			<DisplayName>General Purpose Burstable Medium</DisplayName>
+			<Memory>4 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<RequiresVPC>true</RequiresVPC>
+			<HardwareFamily>Burstable general purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="t3a.large">
+			<DisplayName>General Purpose Burstable Large</DisplayName>
+			<Memory>8 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<RequiresVPC>true</RequiresVPC>
+			<HardwareFamily>Burstable general purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="t3a.xlarge">
+			<DisplayName>General Purpose Burstable Extra Large</DisplayName>
+			<Memory>16 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<RequiresVPC>true</RequiresVPC>
+			<HardwareFamily>Burstable general purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="t3a.2xlarge">
+			<DisplayName>General Purpose Burstable 2x Extra Large</DisplayName>
+			<Memory>32 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<RequiresVPC>true</RequiresVPC>
+			<HardwareFamily>Burstable general purpose</HardwareFamily>
+		</InstanceType>
 
 		<InstanceType id="t2.micro">
 			<DisplayName>General Purpose Burstable Micro</DisplayName>
@@ -50,7 +137,7 @@
 			<MaxInstanceStore>0</MaxInstanceStore>
 			<CurrentGeneration>true</CurrentGeneration>
 			<RequiresVPC>true</RequiresVPC>
-			<HardwareFamily>General purpose</HardwareFamily>
+			<HardwareFamily>Burstable general purpose</HardwareFamily>
 		</InstanceType>
 
 		<InstanceType id="t2.small">
@@ -64,7 +151,7 @@
 			<MaxInstanceStore>0</MaxInstanceStore>
 			<CurrentGeneration>true</CurrentGeneration>
 			<RequiresVPC>true</RequiresVPC>
-			<HardwareFamily>General purpose</HardwareFamily>
+			<HardwareFamily>Burstable general purpose</HardwareFamily>
 		</InstanceType>
 
 		<InstanceType id="t2.medium">
@@ -78,7 +165,7 @@
 			<MaxInstanceStore>0</MaxInstanceStore>
 			<CurrentGeneration>true</CurrentGeneration>
 			<RequiresVPC>true</RequiresVPC>
-			<HardwareFamily>General purpose</HardwareFamily>
+			<HardwareFamily>Burstable general purpose</HardwareFamily>
 		</InstanceType>
 
 		<InstanceType id="t2.large">
@@ -92,7 +179,7 @@
 			<MaxInstanceStore>0</MaxInstanceStore>
 			<CurrentGeneration>true</CurrentGeneration>
 			<RequiresVPC>true</RequiresVPC>
-			<HardwareFamily>General purpose</HardwareFamily>
+			<HardwareFamily>Burstable general purpose</HardwareFamily>
 		</InstanceType>
 
 		<InstanceType id="t2.xlarge">
@@ -106,7 +193,7 @@
 			<MaxInstanceStore>0</MaxInstanceStore>
 			<CurrentGeneration>true</CurrentGeneration>
 			<RequiresVPC>true</RequiresVPC>
-			<HardwareFamily>General purpose</HardwareFamily>
+			<HardwareFamily>Burstable general purpose</HardwareFamily>
 		</InstanceType>
 
 		<InstanceType id="t2.2xlarge">
@@ -120,290 +207,26 @@
 			<MaxInstanceStore>0</MaxInstanceStore>
 			<CurrentGeneration>true</CurrentGeneration>
 			<RequiresVPC>true</RequiresVPC>
-			<HardwareFamily>General purpose</HardwareFamily>
+			<HardwareFamily>Burstable general purpose</HardwareFamily>
 		</InstanceType>
 
-		<InstanceType id="t3.nano">
-			<DisplayName>General Purpose Burstable Nano</DisplayName>
-			<Memory>0.5 GB</Memory>
+		<InstanceType id="t1.micro">
+			<DisplayName>Micro</DisplayName>
+			<Memory>613 MB</Memory>
 			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>2</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
+			<VirtualCores>1</VirtualCores>
+			<ArchitectureBits>32/64</ArchitectureBits>
 			<RequiresEBSVolume>true</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
+			<RequiresHvmImage>false</RequiresHvmImage>
 			<MaxInstanceStore>0</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<RequiresVPC>true</RequiresVPC>
-			<HardwareFamily>General purpose</HardwareFamily>
+			<CurrentGeneration>false</CurrentGeneration>
+			<HardwareFamily>Burstable general purpose</HardwareFamily>
 		</InstanceType>
-
-		<InstanceType id="t3.micro">
-			<DisplayName>General Purpose Burstable Micro</DisplayName>
-			<Memory>1 GB</Memory>
-			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>2</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>true</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>0</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<RequiresVPC>true</RequiresVPC>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="t3.small">
-			<DisplayName>General Purpose Burstable Small</DisplayName>
-			<Memory>2 GB</Memory>
-			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>2</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>true</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>0</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<RequiresVPC>true</RequiresVPC>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="t3.medium">
-			<DisplayName>General Purpose Burstable Medium</DisplayName>
-			<Memory>4 GB</Memory>
-			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>2</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>true</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>0</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<RequiresVPC>true</RequiresVPC>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="t3.large">
-			<DisplayName>General Purpose Burstable Large</DisplayName>
-			<Memory>8 GB</Memory>
-			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>2</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>true</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>0</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<RequiresVPC>true</RequiresVPC>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="t3.xlarge">
-			<DisplayName>General Purpose Burstable Extra Large</DisplayName>
-			<Memory>16 GB</Memory>
-			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>4</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>true</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>0</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<RequiresVPC>true</RequiresVPC>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="t3.2xlarge">
-			<DisplayName>General Purpose Burstable 2x Extra Large</DisplayName>
-			<Memory>32 GB</Memory>
-			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>8</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>true</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>0</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<RequiresVPC>true</RequiresVPC>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
+	
 
 		<!-- General Purpose Family Types -->
 
-		<InstanceType id="m1.small">
-			<DisplayName>Small</DisplayName>
-			<Memory>1.7 GB</Memory>
-			<DiskSpace>160 GB</DiskSpace>
-			<VirtualCores>1</VirtualCores>
-			<ArchitectureBits>32/64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>1</MaxInstanceStore>
-			<CurrentGeneration>false</CurrentGeneration>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
 
-		<InstanceType id="m1.medium">
-			<DisplayName>Medium</DisplayName>
-			<Memory>3.75 GB</Memory>
-			<DiskSpace>410 GB</DiskSpace>
-			<VirtualCores>1</VirtualCores>
-			<ArchitectureBits>32/64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>1</MaxInstanceStore>
-			<CurrentGeneration>false</CurrentGeneration>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="m1.large">
-			<DisplayName>Large</DisplayName>
-			<Memory>7.5 GB</Memory>
-			<DiskSpace>850 GB</DiskSpace>
-			<VirtualCores>2</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>false</CurrentGeneration>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="m1.xlarge">
-			<DisplayName>Extra Large</DisplayName>
-			<Memory>15 GB</Memory>
-			<DiskSpace>1690 GB</DiskSpace>
-			<VirtualCores>4</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>4</MaxInstanceStore>
-			<CurrentGeneration>false</CurrentGeneration>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="m3.medium">
-			<DisplayName>High-CPU Medium</DisplayName>
-			<Memory>3.75 GB</Memory>
-			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>1</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>1</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="m3.large">
-			<DisplayName>High-CPU Large</DisplayName>
-			<Memory>7.5 GB</Memory>
-			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>2</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>1</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="m3.xlarge">
-			<DisplayName>High-CPU Extra Large</DisplayName>
-			<Memory>15 GB</Memory>
-			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>4</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>true</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="m3.2xlarge">
-			<DisplayName>High-CPU Double Extra Large</DisplayName>
-			<Memory>30 GB</Memory>
-			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>8</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>true</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="m4.large">
-			<DisplayName>(M4) High-CPU Large</DisplayName>
-			<Memory>8 GB</Memory>
-			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>2</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>true</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="m4.xlarge">
-			<DisplayName>(M4) High-CPU Extra Large</DisplayName>
-			<Memory>16 GB</Memory>
-			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>4</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>true</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="m4.2xlarge">
-			<DisplayName>(M4) High-CPU Double Extra Large</DisplayName>
-			<Memory>32 GB</Memory>
-			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>8</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>true</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="m4.4xlarge">
-			<DisplayName>(M4) High-CPU Quadruple Extra Large</DisplayName>
-			<Memory>64 GB</Memory>
-			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>16</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>true</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="m4.10xlarge">
-			<DisplayName>(M4) High-CPU 10x Extra Large</DisplayName>
-			<Memory>160 GB</Memory>
-			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>40</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>true</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="m4.16xlarge">
-			<DisplayName>(M4) High-CPU 16x Extra Large</DisplayName>
-			<Memory>256 GB</Memory>
-			<DiskSpace>0 (EBS only)</DiskSpace>
-			<VirtualCores>64</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>true</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>General purpose</HardwareFamily>
-		</InstanceType>
 
 		<InstanceType id="m5.large">
 			<DisplayName>M5 General Purpose Large</DisplayName>
@@ -561,7 +384,293 @@
 			<HardwareFamily>General purpose</HardwareFamily>
 		</InstanceType>
 
-		<!-- Memory Optimized Family Types -->
+
+		<InstanceType id="m5a.large">
+			<DisplayName>M5 General Purpose Large</DisplayName>
+			<Memory>8 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m5a.xlarge">
+			<DisplayName>M5 General Purpose Extra Large</DisplayName>
+			<Memory>16 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m5a.2xlarge">
+			<DisplayName>M5 General Purpose 2x Extra Large</DisplayName>
+			<Memory>32 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m5a.4xlarge">
+			<DisplayName>M5 General Purpose 4x Extra Large</DisplayName>
+			<Memory>64 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>16</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m5a.12xlarge">
+			<DisplayName>M5 General Purpose 12x Extra Large</DisplayName>
+			<Memory>192 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>48</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m5a.24xlarge">
+			<DisplayName>M5 General Purpose 24x Extra Large</DisplayName>
+			<Memory>384 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>96</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m5ad.large">
+			<DisplayName>M5D General Purpose Large</DisplayName>
+			<Memory>8 GB</Memory>
+			<DiskSpace>75 GB</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m5ad.xlarge">
+			<DisplayName>M5D General Purpose Extra Large</DisplayName>
+			<Memory>16 GB</Memory>
+			<DiskSpace>150 GB</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m5ad.2xlarge">
+			<DisplayName>M5D General Purpose 2x Extra Large</DisplayName>
+			<Memory>32 GB</Memory>
+			<DiskSpace>300 GB</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m5ad.4xlarge">
+			<DisplayName>M5D General Purpose 4x Extra Large</DisplayName>
+			<Memory>64 GB</Memory>
+			<DiskSpace>2x300 GB</DiskSpace>
+			<VirtualCores>16</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m5ad.12xlarge">
+			<DisplayName>M5D General Purpose 12x Extra Large</DisplayName>
+			<Memory>192 GB</Memory>
+			<DiskSpace>2x900 GB</DiskSpace>
+			<VirtualCores>48</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m5ad.24xlarge">
+			<DisplayName>M5D General Purpose 24x Extra Large</DisplayName>
+			<Memory>384 GB</Memory>
+			<DiskSpace>4x900 GB</DiskSpace>
+			<VirtualCores>96</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>	
+
+		<InstanceType id="m4.large">
+			<DisplayName>(M4) High-CPU Large</DisplayName>
+			<Memory>8 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m4.xlarge">
+			<DisplayName>(M4) High-CPU Extra Large</DisplayName>
+			<Memory>16 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m4.2xlarge">
+			<DisplayName>(M4) High-CPU Double Extra Large</DisplayName>
+			<Memory>32 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m4.4xlarge">
+			<DisplayName>(M4) High-CPU Quadruple Extra Large</DisplayName>
+			<Memory>64 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>16</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m4.10xlarge">
+			<DisplayName>(M4) High-CPU 10x Extra Large</DisplayName>
+			<Memory>160 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>40</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m4.16xlarge">
+			<DisplayName>(M4) High-CPU 16x Extra Large</DisplayName>
+			<Memory>256 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>64</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>		
+
+		<InstanceType id="m3.medium">
+			<DisplayName>High-CPU Medium</DisplayName>
+			<Memory>3.75 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>1</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m3.large">
+			<DisplayName>High-CPU Large</DisplayName>
+			<Memory>7.5 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m3.xlarge">
+			<DisplayName>High-CPU Extra Large</DisplayName>
+			<Memory>15 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m3.2xlarge">
+			<DisplayName>High-CPU Double Extra Large</DisplayName>
+			<Memory>30 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>		
+
 
 		<InstanceType id="m2.xlarge">
 			<DisplayName>High-Mem Extra Large</DisplayName>
@@ -573,7 +682,7 @@
 			<RequiresHvmImage>false</RequiresHvmImage>
 			<MaxInstanceStore>1</MaxInstanceStore>
 			<CurrentGeneration>false</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
+			<HardwareFamily>General purpose</HardwareFamily>
 		</InstanceType>
 
 		<InstanceType id="m2.2xlarge">
@@ -586,7 +695,7 @@
 			<RequiresHvmImage>false</RequiresHvmImage>
 			<MaxInstanceStore>1</MaxInstanceStore>
 			<CurrentGeneration>false</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
+			<HardwareFamily>General purpose</HardwareFamily>
 		</InstanceType>
 
 		<InstanceType id="m2.4xlarge">
@@ -599,603 +708,79 @@
 			<RequiresHvmImage>false</RequiresHvmImage>
 			<MaxInstanceStore>4</MaxInstanceStore>
 			<CurrentGeneration>false</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>		
 
-		<InstanceType id="cr1.8xlarge">
-			<DisplayName>High-Mem Eight Extra Large</DisplayName>
-			<Memory>244 GB</Memory>
-			<DiskSpace>2x120 GB SSD</DiskSpace>
-			<VirtualCores>32</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>false</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r3.large">
-			<DisplayName>Memory Optimized Large</DisplayName>
-			<Memory>15 GB</Memory>
-			<DiskSpace>80 GB</DiskSpace>
-			<VirtualCores>2</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>1</MaxInstanceStore>
-			<CurrentGeneration>false</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r3.xlarge">
-			<DisplayName>Memory Optimized Extra Large</DisplayName>
-			<Memory>30.5 GB</Memory>
-			<DiskSpace>190 GB</DiskSpace>
-			<VirtualCores>4</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>1</MaxInstanceStore>
-			<CurrentGeneration>false</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r3.2xlarge">
-			<DisplayName>Memory Optimized Double Extra Large</DisplayName>
-			<Memory>61 GB</Memory>
-			<DiskSpace>380 GB</DiskSpace>
-			<VirtualCores>8</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>1</MaxInstanceStore>
-			<CurrentGeneration>false</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r3.4xlarge">
-			<DisplayName>Memory Optimized Quadruple Extra Large</DisplayName>
-			<Memory>122 GB</Memory>
-			<DiskSpace>2x380 GB</DiskSpace>
-			<VirtualCores>16</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>1</MaxInstanceStore>
-			<CurrentGeneration>false</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r3.8xlarge">
-			<DisplayName>Memory Optimized Eight Extra Large</DisplayName>
-			<Memory>244 GB</Memory>
-			<DiskSpace>4x380 GB</DiskSpace>
-			<VirtualCores>32</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>false</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r4.large">
-			<DisplayName>R4 Memory Optimized Large</DisplayName>
-			<Memory>15.25 GB</Memory>
-			<DiskSpace>0 (EBS Only)</DiskSpace>
-			<VirtualCores>2</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r4.xlarge">
-			<DisplayName>R4 Memory Optimized Extra Large</DisplayName>
-			<Memory>30.5 GB</Memory>
-			<DiskSpace>0 (EBS Only)</DiskSpace>
-			<VirtualCores>4</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r4.2xlarge">
-			<DisplayName>R4 Memory Optimized 2x Extra Large</DisplayName>
-			<Memory>61 GB</Memory>
-			<DiskSpace>0 (EBS Only)</DiskSpace>
-			<VirtualCores>8</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r4.4xlarge">
-			<DisplayName>R4 Memory Optimized 4x Extra Large</DisplayName>
-			<Memory>122 GB</Memory>
-			<DiskSpace>0 (EBS Only)</DiskSpace>
-			<VirtualCores>16</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r4.8xlarge">
-			<DisplayName>R4 Memory Optimized 8x Extra Large</DisplayName>
-			<Memory>244 GB</Memory>
-			<DiskSpace>0 (EBS Only)</DiskSpace>
-			<VirtualCores>32</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r4.16xlarge">
-			<DisplayName>R4 Memory Optimized 16x Extra Large</DisplayName>
-			<Memory>488 GB</Memory>
-			<DiskSpace>0 (EBS Only)</DiskSpace>
-			<VirtualCores>64</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r5.large">
-			<DisplayName>R5 Memory Optimized Large</DisplayName>
-			<Memory>16 GB</Memory>
-			<DiskSpace>0 (EBS Only)</DiskSpace>
-			<VirtualCores>2</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r5.xlarge">
-			<DisplayName>R5 Memory Optimized Extra Large</DisplayName>
-			<Memory>32 GB</Memory>
-			<DiskSpace>0 (EBS Only)</DiskSpace>
-			<VirtualCores>4</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r5.2xlarge">
-			<DisplayName>R5 Memory Optimized 2x Extra Large</DisplayName>
-			<Memory>64 GB</Memory>
-			<DiskSpace>0 (EBS Only)</DiskSpace>
-			<VirtualCores>8</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r5.4xlarge">
-			<DisplayName>R5 Memory Optimized 4x Extra Large</DisplayName>
-			<Memory>128 GB</Memory>
-			<DiskSpace>0 (EBS Only)</DiskSpace>
-			<VirtualCores>16</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r5.12xlarge">
-			<DisplayName>R5 Memory Optimized 12x Extra Large</DisplayName>
-			<Memory>384 GB</Memory>
-			<DiskSpace>0 (EBS Only)</DiskSpace>
-			<VirtualCores>48</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r5.24xlarge">
-			<DisplayName>R5 Memory Optimized 24x Extra Large</DisplayName>
-			<Memory>768 GB</Memory>
-			<DiskSpace>0 (EBS Only)</DiskSpace>
-			<VirtualCores>96</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r5d.large">
-			<DisplayName>R5D Memory Optimized Large</DisplayName>
-			<Memory>16 GB</Memory>
-			<DiskSpace>75 GB</DiskSpace>
-			<VirtualCores>2</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r5d.xlarge">
-			<DisplayName>R5D Memory Optimized Extra Large</DisplayName>
-			<Memory>32 GB</Memory>
-			<DiskSpace>150 GB</DiskSpace>
-			<VirtualCores>4</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r5d.2xlarge">
-			<DisplayName>R5D Memory Optimized 2x Extra Large</DisplayName>
-			<Memory>64 GB</Memory>
-			<DiskSpace>300 GB</DiskSpace>
-			<VirtualCores>8</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r5d.4xlarge">
-			<DisplayName>R5D Memory Optimized 4x Extra Large</DisplayName>
-			<Memory>128 GB</Memory>
-			<DiskSpace>2x300 GB</DiskSpace>
-			<VirtualCores>16</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r5d.12xlarge">
-			<DisplayName>R5D Memory Optimized 12x Extra Large</DisplayName>
-			<Memory>384 GB</Memory>
-			<DiskSpace>2x900 GB</DiskSpace>
-			<VirtualCores>48</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="r5d.24xlarge">
-			<DisplayName>R5D Memory Optimized 24x Extra Large</DisplayName>
-			<Memory>768 GB</Memory>
-			<DiskSpace>4x900 GB</DiskSpace>
-			<VirtualCores>96</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="x1.16xlarge">
-			<DisplayName>X1 Memory Optimized 16x Extra Large</DisplayName>
-			<Memory>976 GB</Memory>
-			<DiskSpace>1920 GB</DiskSpace>
-			<VirtualCores>64</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>1</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="x1.32xlarge">
-			<DisplayName>X1 Memory Optimized 32x Extra Large</DisplayName>
-			<Memory>1952 GB</Memory>
-			<DiskSpace>2x1920 GB</DiskSpace>
-			<VirtualCores>128</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>1</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="x1e.xlarge">
-			<DisplayName>X1E Memory Optimized Extra Large</DisplayName>
-			<Memory>122 GB</Memory>
-			<DiskSpace>120 GB</DiskSpace>
-			<VirtualCores>4</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>1</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="x1e.2xlarge">
-			<DisplayName>X1E Memory Optimized 2x Extra Large</DisplayName>
-			<Memory>244 GB</Memory>
-			<DiskSpace>240 GB</DiskSpace>
-			<VirtualCores>8</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>1</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="x1e.4xlarge">
-			<DisplayName>X1E Memory Optimized 4x Extra Large</DisplayName>
-			<Memory>488 GB</Memory>
-			<DiskSpace>480 GB</DiskSpace>
-			<VirtualCores>16</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>1</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="x1e.8xlarge">
-			<DisplayName>X1E Memory Optimized 8x Extra Large</DisplayName>
-			<Memory>976 GB</Memory>
-			<DiskSpace>960 GB</DiskSpace>
-			<VirtualCores>32</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>1</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="x1e.16xlarge">
-			<DisplayName>X1E Memory Optimized 16x Extra Large</DisplayName>
-			<Memory>1952 GB</Memory>
-			<DiskSpace>1920 GB</DiskSpace>
-			<VirtualCores>64</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>1</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="x1e.32xlarge">
-			<DisplayName>X1E Memory Optimized 32x Extra Large</DisplayName>
-			<Memory>3904 GB</Memory>
-			<DiskSpace>2x1920 GB</DiskSpace>
-			<VirtualCores>128</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>1</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="z1d.large">
-			<DisplayName>Z1D Memory Optimized Large</DisplayName>
-			<Memory>16 GB</Memory>
-			<DiskSpace>75 GB</DiskSpace>
-			<VirtualCores>2</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="z1d.xlarge">
-			<DisplayName>Z1D Memory Optimized Extra Large</DisplayName>
-			<Memory>32 GB</Memory>
-			<DiskSpace>150 GB</DiskSpace>
-			<VirtualCores>4</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="z1d.2xlarge">
-			<DisplayName>Z1D Memory Optimized 2x Extra Large</DisplayName>
-			<Memory>64 GB</Memory>
-			<DiskSpace>300 GB</DiskSpace>
-			<VirtualCores>8</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="z1d.3xlarge">
-			<DisplayName>Z1D Memory Optimized 3x Extra Large</DisplayName>
-			<Memory>96 GB</Memory>
-			<DiskSpace>450 GB</DiskSpace>
-			<VirtualCores>12</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="z1d.6xlarge">
-			<DisplayName>Z1D Memory Optimized 6x Extra Large</DisplayName>
-			<Memory>192 GB</Memory>
-			<DiskSpace>900 GB</DiskSpace>
-			<VirtualCores>24</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="z1d.12xlarge">
-			<DisplayName>Z1D Memory Optimized 12x Extra Large</DisplayName>
-			<Memory>384 GB</Memory>
-			<DiskSpace>2x900 GB</DiskSpace>
-			<VirtualCores>48</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Memory optimized</HardwareFamily>
-		</InstanceType>
-
-		<!-- Compute Optimized Family Types -->
-
-		<InstanceType id="c1.medium">
-			<DisplayName>High-CPU Medium</DisplayName>
+	<InstanceType id="m1.small">
+			<DisplayName>Small</DisplayName>
 			<Memory>1.7 GB</Memory>
-			<DiskSpace>350 GB</DiskSpace>
-			<VirtualCores>2</VirtualCores>
+			<DiskSpace>160 GB</DiskSpace>
+			<VirtualCores>1</VirtualCores>
 			<ArchitectureBits>32/64</ArchitectureBits>
 			<RequiresEBSVolume>false</RequiresEBSVolume>
 			<RequiresHvmImage>false</RequiresHvmImage>
 			<MaxInstanceStore>1</MaxInstanceStore>
 			<CurrentGeneration>false</CurrentGeneration>
-			<HardwareFamily>Compute optimized</HardwareFamily>
+			<HardwareFamily>General purpose</HardwareFamily>
 		</InstanceType>
 
-		<InstanceType id="c1.xlarge">
-			<DisplayName>High-CPU Extra Large</DisplayName>
-			<Memory>7 GB</Memory>
+		<InstanceType id="m1.medium">
+			<DisplayName>Medium</DisplayName>
+			<Memory>3.75 GB</Memory>
+			<DiskSpace>410 GB</DiskSpace>
+			<VirtualCores>1</VirtualCores>
+			<ArchitectureBits>32/64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>false</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m1.large">
+			<DisplayName>Large</DisplayName>
+			<Memory>7.5 GB</Memory>
+			<DiskSpace>850 GB</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>false</CurrentGeneration>
+			<HardwareFamily>General purpose</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="m1.xlarge">
+			<DisplayName>Extra Large</DisplayName>
+			<Memory>15 GB</Memory>
 			<DiskSpace>1690 GB</DiskSpace>
-			<VirtualCores>8</VirtualCores>
+			<VirtualCores>4</VirtualCores>
 			<ArchitectureBits>64</ArchitectureBits>
 			<RequiresEBSVolume>false</RequiresEBSVolume>
 			<RequiresHvmImage>false</RequiresHvmImage>
 			<MaxInstanceStore>4</MaxInstanceStore>
 			<CurrentGeneration>false</CurrentGeneration>
-			<HardwareFamily>Compute optimized</HardwareFamily>
+			<HardwareFamily>General purpose</HardwareFamily>
 		</InstanceType>
 
-		<!-- C3 generation -->
+		<!-- A1 generation -->
 
-		<InstanceType id="c3.large">
-			<DisplayName>C3 Compute Optimized Large</DisplayName>
-			<Memory>3.75 GB</Memory>
-			<DiskSpace>2x16 GB SSD</DiskSpace>
-			<VirtualCores>2</VirtualCores>
+		<InstanceType id="a1.medium">
+			<DisplayName>General Purpose ARM Based Medium</DisplayName>
+			<Memory>2 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>1</VirtualCores>
 			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
 			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
+			<MaxInstanceStore>0</MaxInstanceStore>
 			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Compute optimized</HardwareFamily>
+			<HardwareFamily>General purpose arm based</HardwareFamily>
 		</InstanceType>
 
-		<InstanceType id="c3.xlarge">
-			<DisplayName>C3 Compute Optimized Extra Large</DisplayName>
-			<Memory>7.5 GB</Memory>
-			<DiskSpace>2x40 GB SSD</DiskSpace>
-			<VirtualCores>4</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Compute optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="c3.2xlarge">
-			<DisplayName>C3 Compute Optimized Double Extra Large</DisplayName>
-			<Memory>15 GB</Memory>
-			<DiskSpace>2x80 GB SSD</DiskSpace>
-			<VirtualCores>8</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Compute optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="c3.4xlarge">
-			<DisplayName>C3 Compute Optimized Quadruple Extra Large</DisplayName>
-			<Memory>30 GB</Memory>
-			<DiskSpace>2x160 GB SSD</DiskSpace>
-			<VirtualCores>16</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Compute optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="c3.8xlarge">
-			<DisplayName>C3 Compute Optimized Eight Extra Large</DisplayName>
-			<Memory>60 GB</Memory>
-			<DiskSpace>2x320 GB SSD</DiskSpace>
-			<VirtualCores>32</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Compute optimized</HardwareFamily>
-		</InstanceType>
-
-		<!--  C4 generation -->
-
-		<InstanceType id="c4.large">
-			<DisplayName>C4 Compute Optimized Large</DisplayName>
-			<Memory>3.75 GB</Memory>
+		<InstanceType id="a1.large">
+			<DisplayName>General Purpose ARM Based Large</DisplayName>
+			<Memory>4 GB</Memory>
 			<DiskSpace>0 (EBS only)</DiskSpace>
 			<VirtualCores>2</VirtualCores>
 			<ArchitectureBits>64</ArchitectureBits>
@@ -1203,12 +788,66 @@
 			<RequiresHvmImage>true</RequiresHvmImage>
 			<MaxInstanceStore>0</MaxInstanceStore>
 			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose arm based</HardwareFamily>
+		</InstanceType>	
+
+		<InstanceType id="a1.xlarge">
+			<DisplayName>General Purpose ARM Based Extra Large</DisplayName>
+			<Memory>8 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose arm based</HardwareFamily>
+		</InstanceType>		
+
+		<InstanceType id="a1.2xlarge">
+			<DisplayName>General Purpose ARM Based 2x Extra Large</DisplayName>
+			<Memory>16 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose arm based</HardwareFamily>
+		</InstanceType>	
+
+		<InstanceType id="a1.4xlarge">
+			<DisplayName>General Purpose ARM Based 4x Extra Large</DisplayName>
+			<Memory>32 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>16</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>General purpose arm based</HardwareFamily>
+		</InstanceType>	
+
+		<!-- Compute Optimized Family Types -->
+		<!-- C5n generation -->
+		<InstanceType id="c5n.large">
+			<DisplayName>C5 Compute Optimized Large</DisplayName>
+			<Memory>5.25 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
 			<HardwareFamily>Compute optimized</HardwareFamily>
 		</InstanceType>
 
-		<InstanceType id="c4.xlarge">
-			<DisplayName>C4 Compute Optimized Extra Large</DisplayName>
-			<Memory>7.5 GB</Memory>
+		<InstanceType id="c5n.xlarge">
+			<DisplayName>C5 Compute Optimized Extra Large</DisplayName>
+			<Memory>10.5 GB</Memory>
 			<DiskSpace>0 (EBS only)</DiskSpace>
 			<VirtualCores>4</VirtualCores>
 			<ArchitectureBits>64</ArchitectureBits>
@@ -1219,9 +858,9 @@
 			<HardwareFamily>Compute optimized</HardwareFamily>
 		</InstanceType>
 
-		<InstanceType id="c4.2xlarge">
-			<DisplayName>C4 Compute Optimized Double Extra Large</DisplayName>
-			<Memory>15 GB</Memory>
+		<InstanceType id="c5n.2xlarge">
+			<DisplayName>C5 Compute Optimized 2x Extra Large</DisplayName>
+			<Memory>21 GB</Memory>
 			<DiskSpace>0 (EBS only)</DiskSpace>
 			<VirtualCores>8</VirtualCores>
 			<ArchitectureBits>64</ArchitectureBits>
@@ -1232,9 +871,9 @@
 			<HardwareFamily>Compute optimized</HardwareFamily>
 		</InstanceType>
 
-		<InstanceType id="c4.4xlarge">
-			<DisplayName>C4 Compute Optimized Quadruple Extra Large</DisplayName>
-			<Memory>30 GB</Memory>
+		<InstanceType id="c5n.4xlarge">
+			<DisplayName>C5 Compute Optimized 4x Extra Large</DisplayName>
+			<Memory>42 GB</Memory>
 			<DiskSpace>0 (EBS only)</DiskSpace>
 			<VirtualCores>16</VirtualCores>
 			<ArchitectureBits>64</ArchitectureBits>
@@ -1245,9 +884,9 @@
 			<HardwareFamily>Compute optimized</HardwareFamily>
 		</InstanceType>
 
-		<InstanceType id="c4.8xlarge">
-			<DisplayName>C4 Compute Optimized Eight Extra Large</DisplayName>
-			<Memory>60 GB</Memory>
+		<InstanceType id="c5n.9xlarge">
+			<DisplayName>C5 Compute Optimized 9x Extra Large</DisplayName>
+			<Memory>96 GB</Memory>
 			<DiskSpace>0 (EBS only)</DiskSpace>
 			<VirtualCores>36</VirtualCores>
 			<ArchitectureBits>64</ArchitectureBits>
@@ -1258,15 +897,28 @@
 			<HardwareFamily>Compute optimized</HardwareFamily>
 		</InstanceType>
 
-		<InstanceType id="cc2.8xlarge">
-			<DisplayName>Cluster Compute Eight Extra Large</DisplayName>
-			<Memory>60.5 GB</Memory>
-			<DiskSpace>3370 GB</DiskSpace>
-			<VirtualCores>32</VirtualCores>
+		<InstanceType id="c5n.18xlarge">
+			<DisplayName>C5 Compute Optimized 18x Extra Large</DisplayName>
+			<Memory>192 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>72</VirtualCores>
 			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
 			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>4</MaxInstanceStore>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Compute optimized</HardwareFamily>
+		</InstanceType>			
+
+		<InstanceType id="c1.medium">
+			<DisplayName>High-CPU Medium</DisplayName>
+			<Memory>1.7 GB</Memory>
+			<DiskSpace>350 GB</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>32/64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
 			<CurrentGeneration>false</CurrentGeneration>
 			<HardwareFamily>Compute optimized</HardwareFamily>
 		</InstanceType>
@@ -1429,6 +1081,1070 @@
 			<HardwareFamily>Compute optimized</HardwareFamily>
 		</InstanceType>
 
+		<!--  C4 generation -->
+
+		<InstanceType id="c4.large">
+			<DisplayName>C4 Compute Optimized Large</DisplayName>
+			<Memory>3.75 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Compute optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="c4.xlarge">
+			<DisplayName>C4 Compute Optimized Extra Large</DisplayName>
+			<Memory>7.5 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Compute optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="c4.2xlarge">
+			<DisplayName>C4 Compute Optimized Double Extra Large</DisplayName>
+			<Memory>15 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Compute optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="c4.4xlarge">
+			<DisplayName>C4 Compute Optimized Quadruple Extra Large</DisplayName>
+			<Memory>30 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>16</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Compute optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="c4.8xlarge">
+			<DisplayName>C4 Compute Optimized Eight Extra Large</DisplayName>
+			<Memory>60 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>36</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Compute optimized</HardwareFamily>
+		</InstanceType>
+
+		<!-- C3 generation -->
+
+		<InstanceType id="c3.large">
+			<DisplayName>C3 Compute Optimized Large</DisplayName>
+			<Memory>3.75 GB</Memory>
+			<DiskSpace>2x16 GB SSD</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Compute optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="c3.xlarge">
+			<DisplayName>C3 Compute Optimized Extra Large</DisplayName>
+			<Memory>7.5 GB</Memory>
+			<DiskSpace>2x40 GB SSD</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Compute optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="c3.2xlarge">
+			<DisplayName>C3 Compute Optimized Double Extra Large</DisplayName>
+			<Memory>15 GB</Memory>
+			<DiskSpace>2x80 GB SSD</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Compute optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="c3.4xlarge">
+			<DisplayName>C3 Compute Optimized Quadruple Extra Large</DisplayName>
+			<Memory>30 GB</Memory>
+			<DiskSpace>2x160 GB SSD</DiskSpace>
+			<VirtualCores>16</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Compute optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="c3.8xlarge">
+			<DisplayName>C3 Compute Optimized Eight Extra Large</DisplayName>
+			<Memory>60 GB</Memory>
+			<DiskSpace>2x320 GB SSD</DiskSpace>
+			<VirtualCores>32</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Compute optimized</HardwareFamily>
+		</InstanceType>
+
+
+
+		<InstanceType id="c1.xlarge">
+			<DisplayName>High-CPU Extra Large</DisplayName>
+			<Memory>7 GB</Memory>
+			<DiskSpace>1690 GB</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>4</MaxInstanceStore>
+			<CurrentGeneration>false</CurrentGeneration>
+			<HardwareFamily>Compute optimized</HardwareFamily>
+		</InstanceType>
+
+
+
+		<InstanceType id="cc2.8xlarge">
+			<DisplayName>Cluster Compute Eight Extra Large</DisplayName>
+			<Memory>60.5 GB</Memory>
+			<DiskSpace>3370 GB</DiskSpace>
+			<VirtualCores>32</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>4</MaxInstanceStore>
+			<CurrentGeneration>false</CurrentGeneration>
+			<HardwareFamily>Compute optimized</HardwareFamily>
+		</InstanceType>
+
+
+
+
+
+						
+
+		<!-- Memory Optimized Family Types -->
+
+		<InstanceType id="r5a.large">
+			<DisplayName>R5A Memory Optimized Large</DisplayName>
+			<Memory>16 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5a.xlarge">
+			<DisplayName>R5A Memory Optimized Extra Large</DisplayName>
+			<Memory>32 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5a.2xlarge">
+			<DisplayName>R5A Memory Optimized 2x Extra Large</DisplayName>
+			<Memory>64 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5a.4xlarge">
+			<DisplayName>R5A Memory Optimized 4x Extra Large</DisplayName>
+			<Memory>128 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>16</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5a.12xlarge">
+			<DisplayName>R5A Memory Optimized 12x Extra Large</DisplayName>
+			<Memory>384 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>48</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5a.16xlarge">
+			<DisplayName>R5A Memory Optimized 16x Extra Large</DisplayName>
+			<Memory>512 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>64</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>		
+
+		<InstanceType id="r5a.24xlarge">
+			<DisplayName>R5A Memory Optimized 24x Extra Large</DisplayName>
+			<Memory>768 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>96</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5ad.large">
+			<DisplayName>R5AD Memory Optimized Large</DisplayName>
+			<Memory>16 GB</Memory>
+			<DiskSpace>75 GB</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5ad.xlarge">
+			<DisplayName>R5AD Memory Optimized Extra Large</DisplayName>
+			<Memory>32 GB</Memory>
+			<DiskSpace>150 GB</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5ad.2xlarge">
+			<DisplayName>R5AD Memory Optimized 2x Extra Large</DisplayName>
+			<Memory>64 GB</Memory>
+			<DiskSpace>300 GB</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5ad.4xlarge">
+			<DisplayName>R5AD Memory Optimized 4x Extra Large</DisplayName>
+			<Memory>128 GB</Memory>
+			<DiskSpace>2x300 GB</DiskSpace>
+			<VirtualCores>16</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5ad.12xlarge">
+			<DisplayName>R5AD Memory Optimized 12x Extra Large</DisplayName>
+			<Memory>384 GB</Memory>
+			<DiskSpace>2x900 GB</DiskSpace>
+			<VirtualCores>48</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5ad.24xlarge">
+			<DisplayName>R5AD Memory Optimized 24x Extra Large</DisplayName>
+			<Memory>768 GB</Memory>
+			<DiskSpace>4x900 GB</DiskSpace>
+			<VirtualCores>96</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>		
+
+		<InstanceType id="r5.large">
+			<DisplayName>R5 Memory Optimized Large</DisplayName>
+			<Memory>16 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5.xlarge">
+			<DisplayName>R5 Memory Optimized Extra Large</DisplayName>
+			<Memory>32 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5.2xlarge">
+			<DisplayName>R5 Memory Optimized 2x Extra Large</DisplayName>
+			<Memory>64 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5.4xlarge">
+			<DisplayName>R5 Memory Optimized 4x Extra Large</DisplayName>
+			<Memory>128 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>16</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5.12xlarge">
+			<DisplayName>R5 Memory Optimized 12x Extra Large</DisplayName>
+			<Memory>384 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>48</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5.24xlarge">
+			<DisplayName>R5 Memory Optimized 24x Extra Large</DisplayName>
+			<Memory>768 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>96</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5d.large">
+			<DisplayName>R5D Memory Optimized Large</DisplayName>
+			<Memory>16 GB</Memory>
+			<DiskSpace>75 GB</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5d.xlarge">
+			<DisplayName>R5D Memory Optimized Extra Large</DisplayName>
+			<Memory>32 GB</Memory>
+			<DiskSpace>150 GB</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5d.2xlarge">
+			<DisplayName>R5D Memory Optimized 2x Extra Large</DisplayName>
+			<Memory>64 GB</Memory>
+			<DiskSpace>300 GB</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5d.4xlarge">
+			<DisplayName>R5D Memory Optimized 4x Extra Large</DisplayName>
+			<Memory>128 GB</Memory>
+			<DiskSpace>2x300 GB</DiskSpace>
+			<VirtualCores>16</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5d.12xlarge">
+			<DisplayName>R5D Memory Optimized 12x Extra Large</DisplayName>
+			<Memory>384 GB</Memory>
+			<DiskSpace>2x900 GB</DiskSpace>
+			<VirtualCores>48</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r5d.24xlarge">
+			<DisplayName>R5D Memory Optimized 24x Extra Large</DisplayName>
+			<Memory>768 GB</Memory>
+			<DiskSpace>4x900 GB</DiskSpace>
+			<VirtualCores>96</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+
+		<InstanceType id="cr1.8xlarge">
+			<DisplayName>High-Mem Eight Extra Large</DisplayName>
+			<Memory>244 GB</Memory>
+			<DiskSpace>2x120 GB SSD</DiskSpace>
+			<VirtualCores>32</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>false</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r3.large">
+			<DisplayName>Memory Optimized Large</DisplayName>
+			<Memory>15 GB</Memory>
+			<DiskSpace>80 GB</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>false</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r3.xlarge">
+			<DisplayName>Memory Optimized Extra Large</DisplayName>
+			<Memory>30.5 GB</Memory>
+			<DiskSpace>190 GB</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>false</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r3.2xlarge">
+			<DisplayName>Memory Optimized Double Extra Large</DisplayName>
+			<Memory>61 GB</Memory>
+			<DiskSpace>380 GB</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>false</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r3.4xlarge">
+			<DisplayName>Memory Optimized Quadruple Extra Large</DisplayName>
+			<Memory>122 GB</Memory>
+			<DiskSpace>2x380 GB</DiskSpace>
+			<VirtualCores>16</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>false</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r3.8xlarge">
+			<DisplayName>Memory Optimized Eight Extra Large</DisplayName>
+			<Memory>244 GB</Memory>
+			<DiskSpace>4x380 GB</DiskSpace>
+			<VirtualCores>32</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>false</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r4.large">
+			<DisplayName>R4 Memory Optimized Large</DisplayName>
+			<Memory>15.25 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r4.xlarge">
+			<DisplayName>R4 Memory Optimized Extra Large</DisplayName>
+			<Memory>30.5 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r4.2xlarge">
+			<DisplayName>R4 Memory Optimized 2x Extra Large</DisplayName>
+			<Memory>61 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r4.4xlarge">
+			<DisplayName>R4 Memory Optimized 4x Extra Large</DisplayName>
+			<Memory>122 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>16</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r4.8xlarge">
+			<DisplayName>R4 Memory Optimized 8x Extra Large</DisplayName>
+			<Memory>244 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>32</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="r4.16xlarge">
+			<DisplayName>R4 Memory Optimized 16x Extra Large</DisplayName>
+			<Memory>488 GB</Memory>
+			<DiskSpace>0 (EBS Only)</DiskSpace>
+			<VirtualCores>64</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized</HardwareFamily>
+		</InstanceType>
+
+
+
+		<InstanceType id="x1e.xlarge">
+			<DisplayName>X1E Memory Optimized Extra Large</DisplayName>
+			<Memory>122 GB</Memory>
+			<DiskSpace>120 GB</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High performance memory</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="x1e.2xlarge">
+			<DisplayName>X1E Memory Optimized 2x Extra Large</DisplayName>
+			<Memory>244 GB</Memory>
+			<DiskSpace>240 GB</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High performance memory</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="x1e.4xlarge">
+			<DisplayName>X1E Memory Optimized 4x Extra Large</DisplayName>
+			<Memory>488 GB</Memory>
+			<DiskSpace>480 GB</DiskSpace>
+			<VirtualCores>16</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High performance memory</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="x1e.8xlarge">
+			<DisplayName>X1E Memory Optimized 8x Extra Large</DisplayName>
+			<Memory>976 GB</Memory>
+			<DiskSpace>960 GB</DiskSpace>
+			<VirtualCores>32</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High performance memory</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="x1e.16xlarge">
+			<DisplayName>X1E Memory Optimized 16x Extra Large</DisplayName>
+			<Memory>1952 GB</Memory>
+			<DiskSpace>1920 GB</DiskSpace>
+			<VirtualCores>64</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High performance memory</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="x1e.32xlarge">
+			<DisplayName>X1E Memory Optimized 32x Extra Large</DisplayName>
+			<Memory>3904 GB</Memory>
+			<DiskSpace>2x1920 GB</DiskSpace>
+			<VirtualCores>128</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High performance memory</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="x1.16xlarge">
+			<DisplayName>X1 Memory Optimized 16x Extra Large</DisplayName>
+			<Memory>976 GB</Memory>
+			<DiskSpace>1920 GB</DiskSpace>
+			<VirtualCores>64</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High performance memory</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="x1.32xlarge">
+			<DisplayName>X1 Memory Optimized 32x Extra Large</DisplayName>
+			<Memory>1952 GB</Memory>
+			<DiskSpace>2x1920 GB</DiskSpace>
+			<VirtualCores>128</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High performance memory</HardwareFamily>
+		</InstanceType>		
+
+		<InstanceType id="z1d.large">
+			<DisplayName>Z1D Memory Optimized Large</DisplayName>
+			<Memory>16 GB</Memory>
+			<DiskSpace>75 GB</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High compute and memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="z1d.xlarge">
+			<DisplayName>Z1D Memory Optimized Extra Large</DisplayName>
+			<Memory>32 GB</Memory>
+			<DiskSpace>150 GB</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High compute and memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="z1d.2xlarge">
+			<DisplayName>Z1D Memory Optimized 2x Extra Large</DisplayName>
+			<Memory>64 GB</Memory>
+			<DiskSpace>300 GB</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High compute and memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="z1d.3xlarge">
+			<DisplayName>Z1D Memory Optimized 3x Extra Large</DisplayName>
+			<Memory>96 GB</Memory>
+			<DiskSpace>450 GB</DiskSpace>
+			<VirtualCores>12</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High compute and memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="z1d.6xlarge">
+			<DisplayName>Z1D Memory Optimized 6x Extra Large</DisplayName>
+			<Memory>192 GB</Memory>
+			<DiskSpace>900 GB</DiskSpace>
+			<VirtualCores>24</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High compute and memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="z1d.12xlarge">
+			<DisplayName>Z1D Memory Optimized 12x Extra Large</DisplayName>
+			<Memory>384 GB</Memory>
+			<DiskSpace>2x900 GB</DiskSpace>
+			<VirtualCores>48</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High compute and memory optimized</HardwareFamily>
+		</InstanceType>
+
+		<!-- Memory Optimized High Memory u Generation -->
+		<InstanceType id="u-6tb1.metal">
+			<DisplayName>High Memory 6 (TiB)</DisplayName>
+			<Memory>6 TB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>448</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized (metal)</HardwareFamily>
+		</InstanceType>
+
+		<InstanceType id="u-9tb1.metal">
+			<DisplayName>High Memory 9 (TiB)</DisplayName>
+			<Memory>9 TB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>448</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized (metal)</HardwareFamily>
+		</InstanceType>		
+
+		<InstanceType id="u-12tb1.metal">
+			<DisplayName>High Memory 12 (TiB)</DisplayName>
+			<Memory>12 TB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>448</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Memory optimized (metal)</HardwareFamily>
+		</InstanceType>	
+
+
+		<!-- Storaged Optimized -->
+
+		<InstanceType id="i3en.large">
+			<DisplayName>Storage Optimized SSD Large</DisplayName>
+			<Memory>16 GB</Memory>
+			<DiskSpace>1 x 1,250 NVMe SSD</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Storage optimized</HardwareFamily>
+		</InstanceType>		
+
+		<InstanceType id="i3en.xlarge">
+			<DisplayName>Storage Optimized SSD Extra Large</DisplayName>
+			<Memory>32 GB</Memory>
+			<DiskSpace>1 x 2,500 NVMe SSD</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Storage optimized</HardwareFamily>
+		</InstanceType>				
+
+		<InstanceType id="i3en.2xlarge">
+			<DisplayName>Storage Optimized SSD 2x Extra Large</DisplayName>
+			<Memory>64 GB</Memory>
+			<DiskSpace>2 x 2,500 NVMe SSD</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Storage optimized</HardwareFamily>
+		</InstanceType>				
+
+		<InstanceType id="i3en.3xlarge">
+			<DisplayName>Storage Optimized SSD 3x Extra Large</DisplayName>
+			<Memory>96 GB</Memory>
+			<DiskSpace>1 x 7,500 NVMe SSD</DiskSpace>
+			<VirtualCores>12</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Storage optimized</HardwareFamily>
+		</InstanceType>				
+
+		<InstanceType id="i3en.6xlarge">
+			<DisplayName>Storage Optimized SSD 6x Extra Large</DisplayName>
+			<Memory>192 GB</Memory>
+			<DiskSpace>2 x 7,500 NVMe SSD</DiskSpace>
+			<VirtualCores>24</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Storage optimized</HardwareFamily>
+		</InstanceType>				
+
+		<InstanceType id="i3en.12xlarge">
+			<DisplayName>Storage Optimized SSD 12x Extra Large</DisplayName>
+			<Memory>384 GB</Memory>
+			<DiskSpace>4 x 7,500 NVMe SSD</DiskSpace>
+			<VirtualCores>48</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Storage optimized</HardwareFamily>
+		</InstanceType>				
+
+		<InstanceType id="i3en.24xlarge">
+			<DisplayName>Storage Optimized SSD 24x Extra Large</DisplayName>
+			<Memory>768 GB</Memory>
+			<DiskSpace>8 x 7,500 NVMe SSD</DiskSpace>
+			<VirtualCores>96</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Storage optimized</HardwareFamily>
+		</InstanceType>				
+
+		<InstanceType id="i3.large">
+			<DisplayName>Storage Optimized SSD Large</DisplayName>
+			<Memory>15.25 GB</Memory>
+			<DiskSpace>1 x 475 NVMe SSD</DiskSpace>
+			<VirtualCores>2</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Storage optimized</HardwareFamily>
+		</InstanceType>		
+
+		<InstanceType id="i3.xlarge">
+			<DisplayName>Storage Optimized SSD Extra Large</DisplayName>
+			<Memory>30.5</Memory>
+			<DiskSpace>1 x 950 NVMe SSD</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Storage optimized</HardwareFamily>
+		</InstanceType>		
+
+		<InstanceType id="i3.2xlarge">
+			<DisplayName>Storage Optimized SSD 2x Extra Large</DisplayName>
+			<Memory>61 GB</Memory>
+			<DiskSpace>1 x 1,900 NVMe SSD</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Storage optimized</HardwareFamily>
+		</InstanceType>	
+
+		<InstanceType id="i3.4xlarge">
+			<DisplayName>Storage Optimized SSD 4x Extra Large</DisplayName>
+			<Memory>122 GB</Memory>
+			<DiskSpace>2 x 1,900 NVMe SSD</DiskSpace>
+			<VirtualCores>16</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Storage optimized</HardwareFamily>
+		</InstanceType>	
+
+		<InstanceType id="i3.8xlarge">
+			<DisplayName>Storage Optimized SSD 8x Extra Large</DisplayName>
+			<Memory>244 GB</Memory>
+			<DiskSpace>4 x 1,900 NVMe SSD</DiskSpace>
+			<VirtualCores>32</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>4</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Storage optimized</HardwareFamily>
+		</InstanceType>	
+
+		<InstanceType id="i3.16xlarge">
+			<DisplayName>Storage Optimized SSD 16x Extra Large</DisplayName>
+			<Memory>488</Memory>
+			<DiskSpace>8 x 1,900 NVMe SSD</DiskSpace>
+			<VirtualCores>64</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>8</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Storage optimized</HardwareFamily>
+		</InstanceType>	
+
+		<InstanceType id="i3.metal">
+			<DisplayName>Storage Optimized SSD Metal</DisplayName>
+			<Memory>512</Memory>
+			<DiskSpace>8 x 1,900 NVMe SSD</DiskSpace>
+			<VirtualCores>72</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>8</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>Storage optimized</HardwareFamily>
+		</InstanceType>												
+	
+
 		<!-- GPU Instance Family Types -->
 
 		<InstanceType id="g2.2xlarge">
@@ -1440,7 +2156,7 @@
 			<RequiresEBSVolume>false</RequiresEBSVolume>
 			<RequiresHvmImage>false</RequiresHvmImage>
 			<MaxInstanceStore>1</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
+			<CurrentGeneration>false</CurrentGeneration>
 			<HardwareFamily>GPU instances</HardwareFamily>
 		</InstanceType>
 
@@ -1457,85 +2173,152 @@
 			<HardwareFamily>GPU instances</HardwareFamily>
 		</InstanceType>
 
-		<!-- Storage Optimized Family Types -->
-
-		<InstanceType id="i2.xlarge">
-			<DisplayName>High I/O Extra Large I2</DisplayName>
+		<InstanceType id="g3s.xlarge">
+			<DisplayName>GPU Large (1 GPU)</DisplayName>
 			<Memory>30.5 GB</Memory>
-			<DiskSpace>1x800 GB SSD</DiskSpace>
+			<DiskSpace>0 (EBS only)</DiskSpace>
 			<VirtualCores>4</VirtualCores>
 			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
 			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>1</MaxInstanceStore>
+			<MaxInstanceStore>0</MaxInstanceStore>
 			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Storage optimized</HardwareFamily>
-		</InstanceType>
+			<HardwareFamily>GPU instances</HardwareFamily>
+		</InstanceType>		
 
-		<InstanceType id="i2.2xlarge">
-			<DisplayName>High I/O Double Extra Large I2</DisplayName>
-			<Memory>61 GB</Memory>
-			<DiskSpace>2x800 GB SSD</DiskSpace>
-			<VirtualCores>8</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Storage optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="i2.4xlarge">
-			<DisplayName>High I/O Quadruple Extra Large I2</DisplayName>
-			<Memory>122 GB</Memory>
-			<DiskSpace>4x800 GB SSD</DiskSpace>
+		<InstanceType id="g3.4xlarge">
+			<DisplayName>GPU 4x Extra Large (1 GPU)</DisplayName>
+			<Memory>122</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
 			<VirtualCores>16</VirtualCores>
 			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
 			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>4</MaxInstanceStore>
+			<MaxInstanceStore>0</MaxInstanceStore>
 			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Storage optimized</HardwareFamily>
-		</InstanceType>
+			<HardwareFamily>GPU instances</HardwareFamily>
+		</InstanceType>		
 
-		<InstanceType id="i2.8xlarge">
-			<DisplayName>High I/O Eight Extra Large I2</DisplayName>
+
+		<InstanceType id="g3.8xlarge">
+			<DisplayName>GPU 8x Extra Large (2 GPU)</DisplayName>
 			<Memory>244 GB</Memory>
-			<DiskSpace>8x800 GB SSD</DiskSpace>
+			<DiskSpace>0 (EBS only)</DiskSpace>
 			<VirtualCores>32</VirtualCores>
 			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>true</RequiresHvmImage>
-			<MaxInstanceStore>8</MaxInstanceStore>
-			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Storage optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="hi1.4xlarge">
-			<DisplayName>High I/O Quadruple Extra Large</DisplayName>
-			<Memory>60.5 GB</Memory>
-			<DiskSpace>2x1024 GB SSD</DiskSpace>
-			<VirtualCores>16</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
 			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>2</MaxInstanceStore>
-			<CurrentGeneration>false</CurrentGeneration>
-			<HardwareFamily>Storage optimized</HardwareFamily>
-		</InstanceType>
-
-		<InstanceType id="hs1.8xlarge">
-			<DisplayName>High I/O Eight Extra Large</DisplayName>
-			<Memory>117 GB</Memory>
-			<DiskSpace>24x2048 GB SSD</DiskSpace>
-			<VirtualCores>16</VirtualCores>
-			<ArchitectureBits>64</ArchitectureBits>
-			<RequiresEBSVolume>false</RequiresEBSVolume>
-			<RequiresHvmImage>false</RequiresHvmImage>
-			<MaxInstanceStore>24</MaxInstanceStore>
+			<MaxInstanceStore>0</MaxInstanceStore>
 			<CurrentGeneration>true</CurrentGeneration>
-			<HardwareFamily>Storage optimized</HardwareFamily>
-		</InstanceType>
+			<HardwareFamily>GPU instances</HardwareFamily>
+		</InstanceType>		
+
+
+		<InstanceType id="g3.16xlarge">
+			<DisplayName>GPU 16x Extra Large (4 GPU)</DisplayName>
+			<Memory>64 GB</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>GPU instances</HardwareFamily>
+		</InstanceType>		
+
+
+		<InstanceType id="p2.xlarge">
+			<DisplayName>GPU Extra Large (1 GPU)</DisplayName>
+			<Memory>61</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>4</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>GPU instances</HardwareFamily>
+		</InstanceType>		
+
+		<InstanceType id="p2.8xlarge">
+			<DisplayName>GPU Extra Large (8 GPU)</DisplayName>
+			<Memory>488</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>32</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>GPU instances</HardwareFamily>
+		</InstanceType>	
+
+		<InstanceType id="p2.16xlarge">
+			<DisplayName>GPU Extra Large (16 GPU)</DisplayName>
+			<Memory>732</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>64</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>GPU instances</HardwareFamily>
+		</InstanceType>		
+
+
+		<InstanceType id="p3.2xlarge">
+			<DisplayName>GPU 2x Extra Large (1 GPU)</DisplayName>
+			<Memory>61</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>GPU instances</HardwareFamily>
+		</InstanceType>							
+
+		<InstanceType id="p3.8xlarge">
+			<DisplayName>GPU 8x Extra Large (4GPU)</DisplayName>
+			<Memory>244</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>32</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>GPU instances</HardwareFamily>
+		</InstanceType>							
+
+		<InstanceType id="p3.16xlarge">
+			<DisplayName>GPU 16x Extra Large (8 GPU)</DisplayName>
+			<Memory>488</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>64</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>GPU instances</HardwareFamily>
+		</InstanceType>							
+
+		<InstanceType id="p3dn.24xlarge	">
+			<DisplayName>GPU Extra Large (8 GPU)</DisplayName>
+			<Memory>768</Memory>
+			<DiskSpace>0 (EBS only)</DiskSpace>
+			<VirtualCores>96</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>true</RequiresEBSVolume>
+			<RequiresHvmImage>false</RequiresHvmImage>
+			<MaxInstanceStore>0</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>GPU instances</HardwareFamily>
+		</InstanceType>							
 
 		<!-- Dense-Storage Family Types -->
 
@@ -1590,6 +2373,63 @@
 			<CurrentGeneration>true</CurrentGeneration>
 			<HardwareFamily>Dense-Storage instances</HardwareFamily>
 		</InstanceType>
+
+		
+
+		<!-- H1 generation -->	
+
+		<InstanceType id="h1.2xlarge">
+			<DisplayName>High Memory 2x Extra Large</DisplayName>
+			<Memory>32 GB</Memory>
+			<DiskSpace>1 x 2,000 HDD</DiskSpace>
+			<VirtualCores>8</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>1</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High Disk Throughput</HardwareFamily>
+		</InstanceType>			
+
+		<InstanceType id="h1.4xlarge">
+			<DisplayName>High Memory 4x Extra Large</DisplayName>
+			<Memory>64 GB</Memory>
+			<DiskSpace>2 x 2,000 HDD</DiskSpace>
+			<VirtualCores>16</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>2</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High Disk Throughput</HardwareFamily>
+		</InstanceType>			
+
+		<InstanceType id="h1.8xlarge">
+			<DisplayName>High Memory 8x Extra Large</DisplayName>
+			<Memory>128 GB</Memory>
+			<DiskSpace>4 x 2,000 HDD</DiskSpace>
+			<VirtualCores>32</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>4</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High Disk Throughput</HardwareFamily>
+		</InstanceType>			
+
+		<InstanceType id="h1.16xlarge">
+			<DisplayName>High Memory 16x Extra Large</DisplayName>
+			<Memory>256 GB</Memory>
+			<DiskSpace>8 x 2,000 HDD</DiskSpace>
+			<VirtualCores>64</VirtualCores>
+			<ArchitectureBits>64</ArchitectureBits>
+			<RequiresEBSVolume>false</RequiresEBSVolume>
+			<RequiresHvmImage>true</RequiresHvmImage>
+			<MaxInstanceStore>8</MaxInstanceStore>
+			<CurrentGeneration>true</CurrentGeneration>
+			<HardwareFamily>High Disk Throughput</HardwareFamily>
+		</InstanceType>			
+
 
 	</InstanceTypes>
 </EC2MetaInfo>
