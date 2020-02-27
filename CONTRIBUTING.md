@@ -6,6 +6,45 @@ documentation, we greatly value feedback and contributions from our community.
 Please read through this document before submitting any issues or pull requests to ensure we have all the necessary
 information to effectively respond to your bug report or contribution.
 
+## Getting Started
+
+### Setup
+
+Before you start, you will need the following:
+
+-   Visual Studio 2017
+    -   The following workloads need to be installed:
+        -   .NET desktop development
+        -   ASP.NET and web development
+        -   Visual Studio extension development
+
+### Build
+
+-   Open a Developer Command Prompt for VS 2017
+-   change directories to the repo root
+-   Typical command: `msbuild buildtools\build.proj /t:build-vstoolkit-2017`
+-   Mode comprehensive rebuild: `msbuild buildtools\build.proj /t:build-tools;clean;get-references;restore-nuget;build-vstoolkit-2017`
+
+### Debug
+
+#### Visual Studio
+
+-   Open `/solutions/AWSVisualStudioToolkit.sln`
+-   Locate the project **AWSToolkitPackage**
+    -   Right click -> Set as StartUp Project
+    -   Right click and open the project Properties
+        -   Click on the **Debug** tab
+        -   Click on **Start external program** and point this at the Visual Studio application (`devenv.exe`) that you'd like to launch the Toolkit with
+            -   example: `<program files>\Microsoft Visual Studio\2017\Professional\Common7\IDE\devenv.exe`
+        -   Set the **Command line arguments** to `/rootsuffix Exp`
+-   Save and close the project properties
+-   You can now debug the toolkit
+
+### Known Issues
+
+-   The Toolkit currently does not compile under Visual Studio 2019
+-   After compiling within VS 2017, the Output tab will report `Build: 62 succeeded, 0 failed, 0 up-to-date, 0 skipped` but the Error List tab will show four errors with the text "AWSToolkit.CodeCommitTeamExplorer.v16 is not compatible with net46". You can still run and debug the Toolkit from VS2017. The errors are related to VS 2019 specific files to support CodeCommit.
+-   msbuild can fail with errors related to missing RuntimeIdentifier. `¯\_(ツ)_/¯` Compiling from within VS 2017 first seems to help this.
 
 ## Reporting Bugs/Feature Requests
 
@@ -14,16 +53,16 @@ We welcome you to use the GitHub issue tracker to report bugs or suggest feature
 When filing an issue, please check [existing open](https://github.com/aws/aws-toolkit-visual-studio-staging/issues), or [recently closed](https://github.com/aws/aws-toolkit-visual-studio-staging/issues?utf8=%E2%9C%93&q=is%3Aissue%20is%3Aclosed%20), issues to make sure somebody else hasn't already
 reported the issue. Please try to include as much information as you can. Details like these are incredibly useful:
 
-* A reproducible test case or series of steps
-* The version of our code being used
-* Any modifications you've made relevant to the bug
-* Anything unusual about your environment or deployment
-
+-   A reproducible test case or series of steps
+-   The version of our code being used
+-   Any modifications you've made relevant to the bug
+-   Anything unusual about your environment or deployment
 
 ## Contributing via Pull Requests
+
 Contributions via pull requests are much appreciated. Before sending us a pull request, please ensure that:
 
-1. You are working against the latest source on the *master* branch.
+1. You are working against the latest source on the _master_ branch.
 2. You check existing open, and recently merged, pull requests to make sure someone else hasn't addressed the problem already.
 3. You open an issue to discuss any significant work - we would hate for your time to be wasted.
 
@@ -39,20 +78,19 @@ To send us a pull request, please:
 GitHub provides additional document on [forking a repository](https://help.github.com/articles/fork-a-repo/) and
 [creating a pull request](https://help.github.com/articles/creating-a-pull-request/).
 
-
 ## Finding contributions to work on
+
 Looking at the existing issues is a great way to find something to contribute on. As our projects, by default, use the default GitHub issue labels (enhancement/bug/duplicate/help wanted/invalid/question/wontfix), looking at any ['help wanted'](https://github.com/aws/aws-toolkit-visual-studio-staging/labels/help%20wanted) issues is a great place to start.
 
-
 ## Code of Conduct
+
 This project has adopted the [Amazon Open Source Code of Conduct](https://aws.github.io/code-of-conduct).
 For more information see the [Code of Conduct FAQ](https://aws.github.io/code-of-conduct-faq) or contact
 opensource-codeofconduct@amazon.com with any additional questions or comments.
 
-
 ## Security issue notifications
-If you discover a potential security issue in this project we ask that you notify AWS/Amazon Security via our [vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/). Please do **not** create a public github issue.
 
+If you discover a potential security issue in this project we ask that you notify AWS/Amazon Security via our [vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/). Please do **not** create a public github issue.
 
 ## Licensing
 
