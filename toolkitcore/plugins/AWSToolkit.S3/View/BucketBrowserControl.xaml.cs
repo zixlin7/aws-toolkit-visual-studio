@@ -491,7 +491,7 @@ namespace Amazon.AWSToolkit.S3.View
             this._openItem.Click += new RoutedEventHandler(onOpen);
 
             this._downloadItem = new MenuItem();
-            this._downloadItem.Header = "Download";
+            this._downloadItem.Header = "Download...";
             this._downloadItem.Icon = IconHelper.GetIcon(assembly, "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.download.png");
             this._downloadItem.Click += new RoutedEventHandler(onDownloadRows);
 
@@ -550,13 +550,13 @@ namespace Amazon.AWSToolkit.S3.View
             this._invokeLamda.Click += onInvokeLambda;
 
             MenuItem uploadFile = new MenuItem();
-            uploadFile.Header = "File";
+            uploadFile.Header = "File...";
             uploadFile.Icon = IconHelper.GetIcon(assembly, "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.file_up.png");
             uploadFile.Click += new RoutedEventHandler(uploadFileClick);
             this._upload.Items.Add(uploadFile);
 
             MenuItem uploadDirectory = new MenuItem();
-            uploadDirectory.Header = "Folder";
+            uploadDirectory.Header = "Folder...";
             uploadDirectory.Icon = IconHelper.GetIcon(assembly, "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.folder_up.png");
             uploadDirectory.Click += new RoutedEventHandler(uploadDirectoryClick);
             this._upload.Items.Add(uploadDirectory);
@@ -599,17 +599,16 @@ namespace Amazon.AWSToolkit.S3.View
         private void onGridContextMenu(object sender, RoutedEventArgs e)
         {
             this.buildMenuItems();
-            ContextMenu menu = new ContextMenu();
 
             List<BucketBrowserModel.ChildItem> selectedItems = getSelectedItemsAsList();
 
             bool glacierItemsOnlySelected = !selectedItems.Any(x =>
-                {
-                    if (x.StorageClass == null || x.StorageClass.Value != S3StorageClass.Glacier)
-                        return true;
+            {
+                if (x.StorageClass == null || x.StorageClass.Value != S3StorageClass.Glacier)
+                    return true;
 
-                    return false;
-                });
+                return false;
+            });
 
             this._makePublicItem.IsEnabled = selectedItems.Count > 0;
             this._openItem.IsEnabled = selectedItems.Count > 0;
@@ -630,68 +629,101 @@ namespace Amazon.AWSToolkit.S3.View
             this._changeStorageClass.IsEnabled = !glacierItemsOnlySelected;
             this._changeServerSideEncryption.IsEnabled = !glacierItemsOnlySelected;
 
-            menu.Items.Add(this._createFolder);
-            menu.Items.Add(this._upload);
+            var commonMenuItems = new List<MenuItem>();
+            var secondaryMenuItems = new List<MenuItem>();
+            var clipboardMenuItems = new List<MenuItem>();
+            var settingsMenuItems = new List<MenuItem>();
+            var commandsMenuItems = new List<MenuItem>();
+            var destructiveMenuItems = new List<MenuItem>();
+            var propertiesMenuItems = new List<MenuItem>();
+
+            secondaryMenuItems.Add(this._createFolder);
+            secondaryMenuItems.Add(this._upload);
+
             if (selectedItems.Count == 1 && selectedItems[0].ChildType == BucketBrowserModel.ChildType.File)
             {
-                menu.Items.Add(this._openItem);
+                commonMenuItems.Add(this._openItem);
             }
 
             if (selectedItems.Count > 0)
             {
-                menu.Items.Add(this._downloadItem);
-                menu.Items.Add(this._makePublicItem);
-                menu.Items.Add(this._deleteItem);
-                menu.Items.Add(this._changeStorageClass);
-                menu.Items.Add(this._changeServerSideEncryption);
-                menu.Items.Add(this._invokeLamda);
-                menu.Items.Add(this._restoreItem);
+                commonMenuItems.Add(this._downloadItem);
+                commandsMenuItems.Add(this._makePublicItem);
+                destructiveMenuItems.Add(this._deleteItem);
+                settingsMenuItems.Add(this._changeStorageClass);
+                settingsMenuItems.Add(this._changeServerSideEncryption);
+                commandsMenuItems.Add(this._invokeLamda);
+                commandsMenuItems.Add(this._restoreItem);
             }
 
             if (selectedItems.Count == 1 && selectedItems[0].ChildType == BucketBrowserModel.ChildType.File)
             {
-                menu.Items.Add(this._renameItem);
+                destructiveMenuItems.Add(this._renameItem);
             }
 
             if (selectedItems.Count > 0)
             {
-                menu.Items.Add(new Separator());
-                menu.Items.Add(this._cutItem);
-                menu.Items.Add(this._copyItem);
+                clipboardMenuItems.Add(this._cutItem);
+                clipboardMenuItems.Add(this._copyItem);
+            }
+
+            if (selectedItems.Count == 1 && selectedItems[0].ChildType == BucketBrowserModel.ChildType.File)
+            {
+                addCopyToClipboardMenuItems(selectedItems[0], clipboardMenuItems);
             }
 
             if (selectedItems.Count == 1 && selectedItems[0].ChildType == BucketBrowserModel.ChildType.Folder)
             {
                 this._pasteIntoItem.Uid = selectedItems[0].FullPath;
-                menu.Items.Add(this._pasteIntoItem);
+                clipboardMenuItems.Add(this._pasteIntoItem);
             }
             else
             {
                 this._pasteItem.Uid = this._model.Path;
-                menu.Items.Add(this._pasteItem);
+                clipboardMenuItems.Add(this._pasteItem);
             }
 
             if (selectedItems.Count == 1 && selectedItems[0].ChildType == BucketBrowserModel.ChildType.File)
             {
-                menu.Items.Add(new Separator());
-                menu.Items.Add(this._propertiesItem);
-                menu.Items.Add(this._generatePreSignedURL);
-
-                addCopyToClipboardMenuItems(menu, selectedItems[0]);
+                propertiesMenuItems.Add(this._propertiesItem);
+                commandsMenuItems.Add(this._generatePreSignedURL);
             }
 
             if (selectedItems.Count > 0 && this._controller.CloudFrontDistributions.Count > 0)
             {
-                menu.Items.Add(new Separator());
-                menu.Items.Add(this._cloudFrontInvalidation);
+                commandsMenuItems.Add(this._cloudFrontInvalidation);
             }
+
+            // Build the menu, adding separators between each group
+            ContextMenu menu = new ContextMenu();
+            new List<List<MenuItem>>()
+                {
+                    commonMenuItems,
+                    secondaryMenuItems,
+                    clipboardMenuItems,
+                    settingsMenuItems,
+                    commandsMenuItems,
+                    destructiveMenuItems,
+                    propertiesMenuItems
+                }.Where(group => group.Any())
+                .ToList()
+                .ForEach(group =>
+                {
+                    if (menu.Items.Count > 0)
+                    {
+                        menu.Items.Add(new Separator());
+                    }
+
+                    group.ForEach(menuItem => menu.Items.Add(menuItem));
+                });
 
 
             menu.PlacementTarget = this;
             menu.IsOpen = true;
         }
 
-        private void addCopyToClipboardMenuItems(ContextMenu menu, BucketBrowserModel.ChildItem item)
+        private void addCopyToClipboardMenuItems(BucketBrowserModel.ChildItem item,
+            List<MenuItem> clipboardMenuItems)
         {
             MenuItem copyUrl = new MenuItem();
             copyUrl.Header = "Copy URL to Clipboard";
@@ -708,7 +740,7 @@ namespace Amazon.AWSToolkit.S3.View
                     ToolkitFactory.Instance.ShellProvider.ShowError("Error copying URL to clipboard: " + ex.Message);
                 }
             };
-            menu.Items.Add(copyUrl);
+            clipboardMenuItems.Add(copyUrl);
 
             if (this._controller.CloudFrontDistributions.Count > 0)
             {
@@ -730,7 +762,7 @@ namespace Amazon.AWSToolkit.S3.View
                     }
                 }
 
-                menu.Items.Add(copyDistributionUrl);
+                clipboardMenuItems.Add(copyDistributionUrl);
 
             }
         }
