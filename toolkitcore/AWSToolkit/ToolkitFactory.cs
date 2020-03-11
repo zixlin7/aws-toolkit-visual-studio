@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Threading.Tasks;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.PluginServices.Activators;
 using Amazon.AWSToolkit.Shared;
 
 using log4net;
@@ -26,10 +28,10 @@ namespace Amazon.AWSToolkit
         readonly NavigatorControl _navigator;
         readonly IAWSToolkitShellProvider _shellProvider;
 
-        AWSViewMetaNode _rootViewMetaNode;
+        private readonly AWSViewMetaNode _rootViewMetaNode = new AWSViewMetaNode();
         AWSViewModel _rootViewModel;
 
-        Dictionary<string, IPluginActivator> _pluginActivators;
+        private readonly Dictionary<string, IPluginActivator> _pluginActivators = new Dictionary<string, IPluginActivator>();
 
         private ToolkitFactory(NavigatorControl navigator, IAWSToolkitShellProvider shellProvider)
         {
@@ -42,12 +44,10 @@ namespace Amazon.AWSToolkit
             }
         }
 
-        public static void InitializeToolkit(
-            NavigatorControl navigator,
+        public static async Task InitializeToolkit(NavigatorControl navigator,
             IAWSToolkitShellProvider shellProvider,
             string additionalPluginPaths,
-            Action initializeCompleteCallback
-        )
+            Action initializeCompleteCallback)
         {
             if (INSTANCE != null)
                 throw new ApplicationException("Toolkit has already been initialized");
@@ -55,12 +55,13 @@ namespace Amazon.AWSToolkit
             Amazon.Util.Internal.InternalSDKUtils.SetUserAgent(shellProvider.ShellName, Constants.VERSION_NUMBER);
             ProxyUtilities.ApplyCurrentProxySettings();
 
+            var pluginActivators = await PluginActivatorUtilities.LoadPluginActivators(
+                typeof(ToolkitFactory).Assembly.Location,
+                additionalPluginPaths);
+
             INSTANCE = new ToolkitFactory(navigator, shellProvider);
 
-
-            INSTANCE.loadPluginActivators(additionalPluginPaths);
-            INSTANCE.registerMetaNodes();
-
+            INSTANCE.InitializePluginActivators(pluginActivators);
 
             INSTANCE.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
@@ -95,6 +96,26 @@ namespace Amazon.AWSToolkit
 
                 LOGGER.Info("ToolkitFactory initialized");
             }));
+        }
+
+        private void InitializePluginActivators(IList<IPluginActivator> pluginActivators)
+        {
+            this._pluginActivators.Clear();
+
+            // Store the plugin activators
+            pluginActivators
+                .ToList()
+                .ForEach(plugin => this._pluginActivators.Add(plugin.PluginName, plugin));
+
+            // Register the plugins
+            LOGGER.Debug("Registering Toolkit Plugins in the AWS Explorer...");
+            foreach (var plugin in this._pluginActivators.Values)
+            {
+                LOGGER.Debug($"... registering {plugin.PluginName}");
+                plugin.RegisterMetaNodes();
+            }
+
+            LOGGER.Debug("Finished Registering Toolkit Plugins in the AWS Explorer...");
         }
 
         public static void AddToolkitInitializedDelegate(ToolkitInitialized callback)
@@ -188,89 +209,6 @@ namespace Amazon.AWSToolkit
             }
 
             // TBD
-        }
-
-        void loadPluginActivators(string additionalPluginPaths)
-        {
-            this._pluginActivators = new Dictionary<string, IPluginActivator>();
-
-            // by default infer a plugin location based on the running assembly, then consider provider-specific 
-            // search paths
-            string pluginDirectory;
-            string toolkitLocation = Path.GetDirectoryName(this.GetType().Assembly.Location);
-            if (toolkitLocation.EndsWith(@"bin\debug", StringComparison.CurrentCultureIgnoreCase) 
-                    || toolkitLocation.EndsWith(@"bin\release", StringComparison.CurrentCultureIgnoreCase) 
-                    || toolkitLocation.EndsWith(@"\out", StringComparison.CurrentCultureIgnoreCase))
-                pluginDirectory = Path.Combine(toolkitLocation, @"..\..\..\..\Deployment\Plugins");
-            else
-                pluginDirectory = Path.Combine(toolkitLocation, "Plugins");
-
-            LOGGER.InfoFormat("Starting default probe for plugins in folder '{0}'", pluginDirectory);
-            loadPlugins(pluginDirectory);
-
-            if (!string.IsNullOrEmpty(additionalPluginPaths))
-            {
-                LOGGER.InfoFormat("Received additional probe paths '{0}'", additionalPluginPaths);
-                string[] additionalPaths = additionalPluginPaths.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string additionalPath in additionalPaths)
-                {
-                    LOGGER.InfoFormat("Starting custom probe for plugins in folder '{0}'", additionalPath);
-                    loadPlugins(additionalPath);
-                }
-            }
-        }
-
-        void loadPlugins(string folderPath)
-        {
-            try
-            {
-                foreach (var assemblyPath in Directory.GetFiles(folderPath, "*.dll"))
-                {
-                    try
-                    {
-                        var assembly = Assembly.Load(AssemblyName.GetAssemblyName(assemblyPath));
-                        var query = from type in assembly.GetTypes()
-                                    where type.GetInterface("IPluginActivator") != null
-                                    select type;
-
-                        foreach (var pluginActivatorType in query)
-                        {
-                            if (!pluginActivatorType.IsAbstract)
-                            {
-                                var plugin = Activator.CreateInstance(pluginActivatorType) as IPluginActivator;
-                                this._pluginActivators[plugin.PluginName] = plugin;
-                                LOGGER.InfoFormat("Loaded plugin {0} from {1}", plugin.PluginName, assembly.GetName());
-                            }
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        LOGGER.Debug("Error loading assembly: " + assemblyPath, e);
-                        var typeLoadException = e as ReflectionTypeLoadException;
-                        if (typeLoadException != null)
-                        {
-                            var loaderExceptions = typeLoadException.LoaderExceptions;
-                            foreach (var le in loaderExceptions)
-                            {
-                                LOGGER.Debug("...type load exception: " + le.Message);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (DirectoryNotFoundException)
-            {
-                LOGGER.WarnFormat("Skipped folder '{0}' - folder does not exist", folderPath);
-            }
-        }
-
-        void registerMetaNodes()
-        {
-            this._rootViewMetaNode = new AWSViewMetaNode();
-            foreach (var plugin in this._pluginActivators.Values)
-            {
-                plugin.RegisterMetaNodes();
-            }
         }
 
     }

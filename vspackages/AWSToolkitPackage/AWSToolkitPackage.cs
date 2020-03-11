@@ -562,7 +562,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 ThemeUtil.Initialize(dteVersion);
 
 
-                ToolkitFactory.InitializeToolkit(navigator, ToolkitShellProviderService as IAWSToolkitShellProvider, additionalPluginFolders, () =>
+                await ToolkitFactory.InitializeToolkit(navigator, ToolkitShellProviderService as IAWSToolkitShellProvider, additionalPluginFolders, () =>
                 {
                     _toolkitInitialized = true;
                     ShowFirstRun();
