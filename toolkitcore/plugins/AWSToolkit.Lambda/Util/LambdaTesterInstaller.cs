@@ -22,15 +22,21 @@ namespace Amazon.AWSToolkit.Lambda.Util
 
         static readonly IDictionary<string, ToolConfig> ToolConfigs = new Dictionary<string, ToolConfig>
         {
-            { "netcoreapp2.1", new ToolConfig{ Package = "Amazon.Lambda.TestTool-2.1", ToolExe = "dotnet-lambda-test-tool-2.1.exe" } },
-            { "netcoreapp3.1", new ToolConfig{ Package = "Amazon.Lambda.TestTool-3.1", ToolExe = "dotnet-lambda-test-tool-3.1.exe" } }
+            { "netcoreapp2.1", new ToolConfig("Amazon.Lambda.TestTool-2.1", "dotnet-lambda-test-tool-2.1.exe" ) },
+            { "netcoreapp3.1", new ToolConfig("Amazon.Lambda.TestTool-3.1", "dotnet-lambda-test-tool-3.1.exe" ) }
         };
 
 
         public class ToolConfig
         {
-            public string Package { get; set; }
-            public string ToolExe { get; set; }            
+            public ToolConfig(string package, string toolExe)
+            {
+                this.Package = package;
+                this.ToolExe = toolExe;
+            }
+
+            public string Package { get; private set; }
+            public string ToolExe { get; private set; }            
         }
 
         public static void Install(string projectPath)
