@@ -18,11 +18,26 @@ namespace Amazon.AWSToolkit.Lambda.Util
         static ILog LOGGER = LogManager.GetLogger(typeof(LambdaTesterInstaller));
         const string LAUNCH_SETTINGS_FILE = "launchSettings.json";
 
-        const string LAMBDA_TEST_TOOL_PACKAGE = "Amazon.Lambda.TestTool-2.1";
-        const string LAMBDA_TEST_TOOL_EXE = "dotnet-lambda-test-tool-2.1.exe";
         const string LAUNCH_SETTINGS_NODE = "Mock Lambda Test Tool";
 
-        static readonly HashSet<string> SUPPORTED_TARGET_FRAMEWORKS = new HashSet<string> { "netcoreapp2.1" };
+        static readonly IDictionary<string, ToolConfig> ToolConfigs = new Dictionary<string, ToolConfig>
+        {
+            { "netcoreapp2.1", new ToolConfig("Amazon.Lambda.TestTool-2.1", "dotnet-lambda-test-tool-2.1.exe" ) },
+            { "netcoreapp3.1", new ToolConfig("Amazon.Lambda.TestTool-3.1", "dotnet-lambda-test-tool-3.1.exe" ) }
+        };
+
+
+        public class ToolConfig
+        {
+            public ToolConfig(string package, string toolExe)
+            {
+                this.Package = package;
+                this.ToolExe = toolExe;
+            }
+
+            public string Package { get; private set; }
+            public string ToolExe { get; private set; }            
+        }
 
         public static void Install(string projectPath)
         {
@@ -44,13 +59,15 @@ namespace Amazon.AWSToolkit.Lambda.Util
                 if (string.IsNullOrEmpty(awsProjectType) || !awsProjectType.Contains("Lambda"))
                     return;
 
-                var lambdaTestToolInstallpath = GetLambdaTestToolPath(Path.GetDirectoryName(projectPath));
+                var targetFramework = GetTargetFramework(xdoc);
+                ToolConfig toolConfig;
+                if (string.IsNullOrEmpty(targetFramework) || !ToolConfigs.TryGetValue(targetFramework, out toolConfig))
+                    return;
+
+                var lambdaTestToolInstallpath = GetLambdaTestToolPath(Path.GetDirectoryName(projectPath), toolConfig);
                 if (string.IsNullOrEmpty(lambdaTestToolInstallpath))
                     return;
 
-                var targetFramework = GetTargetFramework(xdoc);
-                if (string.IsNullOrEmpty(targetFramework) || !SUPPORTED_TARGET_FRAMEWORKS.Contains(targetFramework))
-                    return;
 
                 var getCurrentLaunchConfig = GetLaunchSettings(projectPath);
 
@@ -69,11 +86,11 @@ namespace Amazon.AWSToolkit.Lambda.Util
                     lambdaTester = new JObject();
                     lambdaTester["commandName"] = "Executable";
                     lambdaTester["commandLineArgs"] = "--port 5050";
-                    lambdaTester["workingDirectory"] = $".\\bin\\$(Configuration)\\{targetFramework}";
 
                     profiles[LAUNCH_SETTINGS_NODE] = lambdaTester;
                 }
 
+                lambdaTester["workingDirectory"] = $".\\bin\\$(Configuration)\\{targetFramework}";
                 lambdaTester["executablePath"] = $"{lambdaTestToolInstallpath}";
 
                 var updated = JsonConvert.SerializeObject(root, Formatting.Indented);
@@ -85,24 +102,24 @@ namespace Amazon.AWSToolkit.Lambda.Util
             }
         }
 
-        private static string GetLambdaTestToolPath(string projectDirectory)
+        private static string GetLambdaTestToolPath(string projectDirectory, ToolConfig toolConfig)
         {
             var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            var fullPath = Path.Combine(userProfile, ".dotnet", "tools", LAMBDA_TEST_TOOL_EXE);
+            var fullPath = Path.Combine(userProfile, ".dotnet", "tools", toolConfig.ToolExe);
 
             if (!File.Exists(fullPath))
             {
-                if (RunToolCommand(projectDirectory, "install") != 0)
+                if (RunToolCommand(projectDirectory, "install", toolConfig) != 0)
                 {
                     return null;
                 }
             }
             else
             {
-                RunToolCommand(projectDirectory, "update");
+                RunToolCommand(projectDirectory, "update", toolConfig);
             }
 
-            var variablePath = Path.Combine(Directory.GetParent(userProfile).FullName, "%USERNAME%", ".dotnet", "tools", LAMBDA_TEST_TOOL_EXE);
+            var variablePath = Path.Combine(Directory.GetParent(userProfile).FullName, "%USERNAME%", ".dotnet", "tools", toolConfig.ToolExe);
             return variablePath;
         }
 
@@ -137,14 +154,14 @@ namespace Amazon.AWSToolkit.Lambda.Util
             File.WriteAllText(fullPath, content);
         }
 
-        private static int RunToolCommand(string projectDirectory, string command)
+        private static int RunToolCommand(string projectDirectory, string command, ToolConfig toolConfig)
         {
             var dotnetCLI = DotNetCLIWrapper.FindExecutableInPath("dotnet.exe");
             if (dotnetCLI == null)
                 return DOTNET_NOT_FOUND_ERROR_CODE;
 
 
-            var arguments = $"tool {command} -g {LAMBDA_TEST_TOOL_PACKAGE}";
+            var arguments = $"tool {command} -g {toolConfig.Package}";
             var psi = new ProcessStartInfo
             {
                 FileName = dotnetCLI,
