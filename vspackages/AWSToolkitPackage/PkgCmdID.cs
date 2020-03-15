@@ -21,6 +21,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         public const uint cmdidAddAWSServerlessTemplate = 0x207;
 
         public const uint cmdidDeployToLambdaSolutionExplorer = 0x300;
+        public const uint cmdidDeployToLambdaServerlessTemplate = 0x301;
 
         public const uint cmdidTeamExplorerConnect = 0x400;
 
