@@ -9,6 +9,7 @@ using System.Xml;
 
 using MSBuildProject = Microsoft.Build.Evaluation.Project;
 using System.Collections.Generic;
+using log4net;
 
 namespace Amazon.AWSToolkit.VisualStudio.Shared
 {
@@ -19,7 +20,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
         // capability apis present in 2012+.
         private const string _dotNetCoreWebCapability = "DotNetCoreWeb";
 
-
+        static readonly ILog LOGGER = LogManager.GetLogger(typeof(VSUtility));
 
         public static string QueryProjectIDGuid(IVsHierarchy projectHier)
         {
@@ -122,6 +123,36 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
                 catch (Exception) { }
 
                 return null;
+            }
+        }
+
+        public static string GetSelectedItemFullPath()
+        {
+            var item = GetSelectedProjectItem();
+            if (item == null)
+                return null;
+
+            if (item.FileCount == 0)
+                return null;
+            
+            // Solution items act differently then project items. The file names collection is 1 based.
+            // Because the behavior of getting solution item file path is so weird added 
+            // extra try/catch and logging around that behavior.
+            if (item.Kind == Constants.VS_SOLUTION_ITEM_KIND_GUID)
+            {
+                try
+                {
+                    return item.FileNames[1];
+                }
+                catch(Exception e)
+                {
+                    LOGGER.Warn($"Failed to get full file path for solution item.", e);
+                    return null;
+                }
+            }
+            else
+            {
+                return item.FileNames[0];
             }
         }
 

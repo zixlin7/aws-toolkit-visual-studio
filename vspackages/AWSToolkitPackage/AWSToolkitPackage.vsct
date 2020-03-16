@@ -84,7 +84,7 @@
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CSCD_PROJECT_ADD"/>
       </Group>
 
-      <Group guid="guid_VSPackageCmdSet" id="IDG_AWS_SERVERLESS_TEMPLATE_SOLUTION_EXPLORER" priority="0x0601">
+      <Group guid="guid_VSPackageCmdSet" id="IDG_AWS_SERVERLESS_TEMPLATE_SOLUTION_EXPLORER" priority="0x0001">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
       </Group>      
 

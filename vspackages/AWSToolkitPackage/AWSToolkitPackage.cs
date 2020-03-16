@@ -2125,24 +2125,9 @@ namespace Amazon.AWSToolkit.VisualStudio
                     var fileItem = VSUtility.GetSelectedProjectItem();
                     if(string.Equals(fileItem?.Name, Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME))
                     {
-                        if (fileItem.FileCount == 0)
-                            return;
+                        fullPath = VSUtility.GetSelectedItemFullPath();
 
-                        // Solution items act differently then project items. The file names collection is 1 based.
-                        // Also checking saved status throws an error which is why it is not done.
-                        if (fileItem.Kind == Constants.VS_SOLUTION_ITEM_KIND_GUID)
-                        {
-                            fullPath = fileItem.FileNames[1];
-                        }
-                        else
-                        {
-                            if (!fileItem.Saved)
-                                fileItem.Save();
-
-                            fullPath = fileItem.FileNames[0];
-                        }
-
-                        if (!File.Exists(fullPath))
+                        if (fullPath == null || !File.Exists(fullPath))
                             return;
                     }
                 }
@@ -2226,8 +2211,9 @@ namespace Amazon.AWSToolkit.VisualStudio
                 if (!this.LambdaPluginAvailable)
                     return;
 
-                if (VSUtility.IsLambdaDotnetProject || VSUtility.SelectedFileMatchesName(Amazon.AWSToolkit.Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME))
-                {
+                if (VSUtility.IsLambdaDotnetProject || 
+                    (VSUtility.SelectedFileMatchesName(Amazon.AWSToolkit.Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME) && VSUtility.GetSelectedItemFullPath() != null))
+                {                    
                     menuCommand.Visible = true;
                 }
                 // Check if it is a valid Node.js Lambda project.
