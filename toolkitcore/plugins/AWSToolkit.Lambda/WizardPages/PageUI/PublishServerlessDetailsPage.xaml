@@ -53,75 +53,7 @@
 
         </Grid>
 
-        <Grid x:Name="_buildSettingsPanel" Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
 
-            <Label
-                Grid.Row="0"
-                Margin="0"
-                Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
-                Build Settings
-            </Label>
-
-            <Grid
-                Grid.Row="2"
-                Grid.ColumnSpan="2"
-                Visibility="Visible">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="110" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                </Grid.RowDefinitions>
-
-                <Label
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Margin="10,2,4,2"
-                    VerticalAlignment="Center"
-                    Style="{DynamicResource awsLabelBaseStyle}">
-                    _Configuration:
-                </Label>
-
-                <ComboBox
-                    Name="_ctlConfigurationPicker"
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    Margin="16,2,4,2"
-                    SelectedIndex="0"
-                    SelectedItem="{Binding Configuration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    Style="{DynamicResource awsComboBoxStyle}" />
-
-                <Label
-                    Grid.Row="0"
-                    Grid.Column="2"
-                    Margin="8,2,4,2"
-                    VerticalAlignment="Center"
-                    Style="{DynamicResource awsLabelBaseStyle}">
-                    Frame_work:
-                </Label>
-
-                <ComboBox
-                    Name="_ctlFrameworkPicker"
-                    Grid.Row="0"
-                    Grid.Column="3"
-                    Margin="4,2"
-                    SelectedItem="{Binding Framework, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    Style="{DynamicResource awsComboBoxStyle}" />
-            </Grid>
-        </Grid>
 
         <Grid x:Name="_serverlessPublishingPanel" Grid.Row="2">
             <Grid.RowDefinitions>
