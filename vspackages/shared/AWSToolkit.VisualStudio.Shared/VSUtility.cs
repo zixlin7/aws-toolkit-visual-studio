@@ -125,6 +125,15 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
             }
         }
 
+        public static bool SelectedFileMatchesName(string filename)
+        {
+            var prjItem = GetSelectedProjectItem();
+            if (prjItem == null || prjItem.Name == null)
+                return false;
+
+            return string.Equals(filename, prjItem.Name);
+        }
+
         public static bool SelectedFileHasExtension(string extension)
         {
             var prjItem = GetSelectedProjectItem();
@@ -145,10 +154,13 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
                 var projHier = Marshal.GetTypedObjectForIUnknown(hierarchyPtr, typeof(IVsHierarchy)) as IVsHierarchy;
                 Object prjItemObject = null;
                 projHier.GetProperty(projectItemId, (int)__VSHPROPID.VSHPROPID_ExtObject, out prjItemObject);
+                
 
                 var prjItem = prjItemObject as EnvDTE.ProjectItem;
                 if (prjItem != null)
+                {
                     return prjItem;
+                }
             }
 
             return null;

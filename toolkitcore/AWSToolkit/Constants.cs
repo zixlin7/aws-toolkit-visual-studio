@@ -27,6 +27,8 @@ namespace Amazon.AWSToolkit
 
         public const string BEANSTALK_RDS_SECURITY_GROUP_POSTFIX = "-rds-associations";
 
+        public const string VS_SOLUTION_ITEM_KIND_GUID = "{66A26722-8FB5-11D2-AA7E-00C04F688DDE}";
+
 
         public static string GetIAMRoleAssumeRolePolicyDocument(string serviceName, RegionEndPointsManager.RegionEndPoints region)
         {
