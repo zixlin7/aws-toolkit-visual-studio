@@ -2114,27 +2114,22 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             if (this.LambdaPluginAvailable)
             {
-                string fullPath = null;
-
                 // selectedProject can be null if the user is right clicking on a serverless.template file.
                 var selectedProject = VSUtility.GetSelectedProject();
 
-                fullPath = selectedProject?.FullName;
+                var fullPath = selectedProject?.FullName;
                 if(fullPath == null)
                 {
                     var fileItem = VSUtility.GetSelectedProjectItem();
                     if(string.Equals(fileItem?.Name, Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME))
                     {
                         fullPath = VSUtility.GetSelectedItemFullPath();
-
-                        if (fullPath == null || !File.Exists(fullPath))
-                            return;
                     }
                 }
                 
 
 
-                if (fullPath == null)
+                if (fullPath == null || !File.Exists(fullPath))
                 {
                     var shell = GetService(typeof(SAWSToolkitShellProvider)) as IAWSToolkitShellProvider;
                     if (shell != null)
@@ -2158,20 +2153,20 @@ namespace Amazon.AWSToolkit.VisualStudio
                     seedProperties[UploadFunctionWizardProperties.SourcePath] = rootDirectory;
                 }
 
-                var prop = selectedProject?.Properties.Item("StartupFile");
-                if (prop != null && prop.Value is string && !string.IsNullOrEmpty((string)prop.Value))
-                {
+                // Look to see if there is a Javascript Lambda function StartupFile and seed that as the suggested function handler.
+                var startupFile = selectedProject?.Properties.Item("StartupFile")?.Value as string;
+                if (!string.IsNullOrEmpty(startupFile))
+                {                    
                     string relativePath;
-                    if (fullPath.StartsWith(rootDirectory))
-                        relativePath = fullPath.Substring(rootDirectory.Length + 1);
+                    if (startupFile.StartsWith(rootDirectory))
+                        relativePath = startupFile.Substring(rootDirectory.Length + 1);
                     else
-                        relativePath = Path.GetFileName(fullPath);
+                        relativePath = Path.GetFileName(startupFile);
 
                     if (!relativePath.StartsWith("_"))
                     {
                         seedProperties[UploadFunctionWizardProperties.Handler] = System.IO.Path.GetFileNameWithoutExtension(relativePath) + ".app.js";
-                    }
-                        
+                    }                        
                 }
 
                 // Make sure all open editors are saved before deploying.
