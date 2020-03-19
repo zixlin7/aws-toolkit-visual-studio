@@ -531,6 +531,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAddCloudFormationTemplate, AddCloudFormationTemplate, AddCloudFormationTemplate_BeforeQueryStatus);
 
+                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployToLambdaServerlessTemplate, UploadToLambda, UploadToLambdaMenuCommand_BeforeQueryStatus);
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployToLambdaSolutionExplorer, UploadToLambda, UploadToLambdaMenuCommand_BeforeQueryStatus);
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAddAWSServerlessTemplate, AddAWSServerlessTemplate, AddAWSServerlessTemplate_BeforeQueryStatus);
 
@@ -2113,10 +2114,22 @@ namespace Amazon.AWSToolkit.VisualStudio
         {
             if (this.LambdaPluginAvailable)
             {
-                var item = VSUtility.GetSelectedProject();
+                // selectedProject can be null if the user is right clicking on a serverless.template file.
+                var selectedProject = VSUtility.GetSelectedProject();
+
+                var fullPath = selectedProject?.FullName;
+                if(fullPath == null)
+                {
+                    var fileItem = VSUtility.GetSelectedProjectItem();
+                    if(string.Equals(fileItem?.Name, Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME))
+                    {
+                        fullPath = VSUtility.GetSelectedItemFullPath();
+                    }
+                }
+                
 
 
-                if (item == null)
+                if (fullPath == null || !File.Exists(fullPath))
                 {
                     var shell = GetService(typeof(SAWSToolkitShellProvider)) as IAWSToolkitShellProvider;
                     if (shell != null)
@@ -2124,30 +2137,36 @@ namespace Amazon.AWSToolkit.VisualStudio
                     return;
                 }
 
-                var rootDirectory = Path.GetDirectoryName(item.FullName);
+                var rootDirectory = Path.GetDirectoryName(fullPath);
 
                 var seedProperties = new Dictionary<string, object>();
-                seedProperties[UploadFunctionWizardProperties.SelectedProjectFile] = item.FullName;
+                seedProperties[UploadFunctionWizardProperties.SelectedProjectFile] = fullPath;
 
-                IDictionary<string, IList<string>> suggestedMethods = VSLambdaUtility.SearchForLambdaFunctionSuggestions(item);
-                seedProperties[UploadFunctionWizardProperties.SuggestedMethods] = suggestedMethods;
-                seedProperties[UploadFunctionWizardProperties.SourcePath] = rootDirectory;
-
-                var prop = item.Properties.Item("StartupFile");
-                if (prop != null && prop.Value is string && !string.IsNullOrEmpty((string)prop.Value))
+                if(selectedProject != null)
                 {
-                    string fullPath = prop.Value as string;
+                    IDictionary<string, IList<string>> suggestedMethods = VSLambdaUtility.SearchForLambdaFunctionSuggestions(selectedProject);
+                    seedProperties[UploadFunctionWizardProperties.SuggestedMethods] = suggestedMethods;
+                    seedProperties[UploadFunctionWizardProperties.SourcePath] = rootDirectory;
+                }
+                else if(File.Exists(fullPath))
+                {
+                    seedProperties[UploadFunctionWizardProperties.SourcePath] = rootDirectory;
+                }
+
+                // Look to see if there is a Javascript Lambda function StartupFile and seed that as the suggested function handler.
+                var startupFile = selectedProject?.Properties.Item("StartupFile")?.Value as string;
+                if (!string.IsNullOrEmpty(startupFile))
+                {                    
                     string relativePath;
-                    if (fullPath.StartsWith(rootDirectory))
-                        relativePath = fullPath.Substring(rootDirectory.Length + 1);
+                    if (startupFile.StartsWith(rootDirectory))
+                        relativePath = startupFile.Substring(rootDirectory.Length + 1);
                     else
-                        relativePath = Path.GetFileName(fullPath);
+                        relativePath = Path.GetFileName(startupFile);
 
                     if (!relativePath.StartsWith("_"))
                     {
                         seedProperties[UploadFunctionWizardProperties.Handler] = System.IO.Path.GetFileNameWithoutExtension(relativePath) + ".app.js";
-                    }
-                        
+                    }                        
                 }
 
                 // Make sure all open editors are saved before deploying.
@@ -2161,10 +2180,13 @@ namespace Amazon.AWSToolkit.VisualStudio
                     LOGGER.Warn("Error while saving all opening documents before uploading to Lambda", ex);
                 }
 
-                var projectFrameworks = VSUtility.GetSelectedNetCoreProjectFrameworks();
-                if(projectFrameworks != null && projectFrameworks.Count > 0)
+                if(selectedProject != null)
                 {
-                    seedProperties[UploadFunctionWizardProperties.ProjectTargetFrameworks] = projectFrameworks;
+                    var projectFrameworks = VSUtility.GetSelectedNetCoreProjectFrameworks();
+                    if (projectFrameworks != null && projectFrameworks.Count > 0)
+                    {
+                        seedProperties[UploadFunctionWizardProperties.ProjectTargetFrameworks] = projectFrameworks;
+                    }
                 }
 
                 this.LambdaPlugin.UploadFunctionFromPath(seedProperties);
@@ -2184,8 +2206,9 @@ namespace Amazon.AWSToolkit.VisualStudio
                 if (!this.LambdaPluginAvailable)
                     return;
 
-                if (VSUtility.IsLambdaDotnetProject)
-                {
+                if (VSUtility.IsLambdaDotnetProject || 
+                    (VSUtility.SelectedFileMatchesName(Amazon.AWSToolkit.Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME) && VSUtility.GetSelectedItemFullPath() != null))
+                {                    
                     menuCommand.Visible = true;
                 }
                 // Check if it is a valid Node.js Lambda project.

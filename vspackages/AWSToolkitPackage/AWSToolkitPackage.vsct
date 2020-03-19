@@ -84,6 +84,10 @@
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CSCD_PROJECT_ADD"/>
       </Group>
 
+      <Group guid="guid_VSPackageCmdSet" id="IDG_AWS_SERVERLESS_TEMPLATE_SOLUTION_EXPLORER" priority="0x0001">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
+      </Group>      
+
       <Group guid="guid_VSPackageCmdSet" id="IDG_TEAMEXPLORER_MANAGECONNECTIONS" priority="0x0800">
         <Parent guid="guidManageConnections" id="idManageConnections" />
       </Group>
@@ -266,6 +270,19 @@
         </Strings>
       </Button>
 
+      <Button guid="guid_VSPackageCmdSet" id="cmdidDeployToLambdaServerlessTemplate" priority="0x0000" type="Button">
+        <Icon guid="guidImages" id="bmpPublishToAWSLambda" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.DeployLambda</CommandName>
+          <ButtonText>Publish to AWS Lambda...</ButtonText>
+          <ToolTipText>Upload the project to AWS Lambda</ToolTipText>
+        </Strings>
+      </Button>
+
       <Button guid="guid_VSPackageCmdSet" id="cmdidTeamExplorerConnect" type="Button">
         <Icon guid="guidImages" id="bmpCodeCommit" />
         <Strings>
@@ -408,6 +425,10 @@
       <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
     </CommandPlacement>
 
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidDeployToLambdaServerlessTemplate" priority="0x0602">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_SERVERLESS_TEMPLATE_SOLUTION_EXPLORER" />
+    </CommandPlacement>
+
     <!-- 
     ***********************************************************************************************
     * CloudFormation groups placement into AWS 'Template' drop-down from IDE main menu
@@ -487,6 +508,7 @@
       <IDSymbol name="cmdidAddAWSServerlessTemplate" value="0x0207"/>
 
       <IDSymbol name="cmdidDeployToLambdaSolutionExplorer" value="0x0300"/>
+      <IDSymbol name="cmdidDeployToLambdaServerlessTemplate" value="0x0301"/>
 
       <IDSymbol name="cmdidTeamExplorerConnect" value="0x0400"/>
 
@@ -501,7 +523,9 @@
       <IDSymbol name="IDG_AWS_CLOUDFORMATION_ADD_TEMPLATE" value="0x1030"/>
       <IDSymbol name="IDG_ADD_AWS_SERVERLESS_TEMPLATE" value="0x01035"/>
 
-      <IDSymbol name="IDG_TEAMEXPLORER_MANAGECONNECTIONS" value="0x01050" />      
+      <IDSymbol name="IDG_TEAMEXPLORER_MANAGECONNECTIONS" value="0x01050" />
+
+      <IDSymbol name="IDG_AWS_SERVERLESS_TEMPLATE_SOLUTION_EXPLORER" value="0x01060"/>
 
     </GuidSymbol>
 

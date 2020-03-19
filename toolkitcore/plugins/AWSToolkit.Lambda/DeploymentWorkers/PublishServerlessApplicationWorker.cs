@@ -62,20 +62,6 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
                 if (command.ExecuteAsync().Result)
                 {
-                    var lambdaDeploymentProperties = new LambdaDeploymentMetrics.LambdaDeploymentProperties
-                    {
-                        TargetFramework = command.TargetFramework
-                    };
-
-                    var zipArchivePath = Path.Combine(Settings.SourcePath, "bin", Settings.Configuration,
-                        Settings.Framework, new DirectoryInfo(Settings.SourcePath).Name + ".zip");
-                    if (File.Exists(zipArchivePath))
-                    {
-                        lambdaDeploymentProperties.BundleSize = new FileInfo(zipArchivePath).Length;
-                    }
-
-                    lambdaDeploymentMetrics.QueueDeploymentSuccess(lambdaDeploymentProperties);
-
                     this.Helpers.PublishServerlessAsyncCompleteSuccess(this.Settings);
                 }
                 else
