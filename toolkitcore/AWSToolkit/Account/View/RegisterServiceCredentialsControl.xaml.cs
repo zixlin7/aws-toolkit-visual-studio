@@ -70,7 +70,7 @@ namespace Amazon.AWSToolkit.Account.View
 
         private void OnClickImportCredentials(object sender, RoutedEventArgs e)
         {
-            var csvFilename = ShowFileOpenDialog("Import AWS CodeCommit Git Credentals for HTTPS from CSV File");
+            var csvFilename = ShowFileOpenDialog("Import AWS CodeCommit Git Credentials for HTTPS from CSV File");
             if (csvFilename != null)
             {
                 if (Controller.Model.ImportCredentialsFromCsv(csvFilename))

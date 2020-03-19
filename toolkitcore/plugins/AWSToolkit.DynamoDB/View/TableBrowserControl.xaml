@@ -84,7 +84,7 @@
                     Name="_ctlAddAttributeBtn"
                     Click="onAddAttributeClick"
                     IsEnabled="False">
-                    <Button.ToolTip>Add an attribute to the output window.  The attribute will be saved in SimpleDB when all the changes are committed.</Button.ToolTip>
+                    <Button.ToolTip>Add an attribute to the output window.  The attribute will be saved in DynamoDB when all the changes are committed.</Button.ToolTip>
                     <Button.Content>
                         <WrapPanel>
                             <Image

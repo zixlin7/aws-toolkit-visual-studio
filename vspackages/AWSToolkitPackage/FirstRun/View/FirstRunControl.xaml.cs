@@ -102,7 +102,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
         {
             try
             {
-                var csvFilename = ShowFileOpenDialog("Import AWS Credentals from Csv File");
+                var csvFilename = ShowFileOpenDialog("Import AWS Credentials from Csv File");
                 if (csvFilename != null)
                 {
                     if (Model.AwsCredentialsFromCsv(csvFilename))

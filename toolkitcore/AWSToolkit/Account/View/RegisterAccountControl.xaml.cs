@@ -106,7 +106,7 @@ namespace Amazon.AWSToolkit.Account.View
                 DefaultExt = ".csv",
                 Filter = "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*",
                 CheckPathExists = true,
-                Title = "Import AWS Credentals from CSV File"
+                Title = "Import AWS Credentials from CSV File"
             };
 
             var result = dlg.ShowDialog();
