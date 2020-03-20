@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -25,6 +26,7 @@ namespace Amazon.AWSToolkit.Studio
             InitializeComponent();
             this.WindowState = WindowState.Maximized;
 
+            // InitializeToolkit is now async -- this code compiles but AWS Studio does not function properly.
             ToolkitFactory.InitializeToolkit(this._navigation, this, null, () =>
             {
                 this.AddHandler(CloseableTabItem.CloseTabEvent, new RoutedEventHandler(this.CloseTab));
@@ -208,6 +210,22 @@ namespace Amazon.AWSToolkit.Studio
                 {
                     this._ctlStatusField.Text = status;
                 }));
+        }
+
+        public void ExecuteOnUIThread(Action action)
+        {
+            this.ShellDispatcher.Invoke((Action)(async () =>
+            {
+                action();
+            }));
+        }
+
+        public void BeginExecuteOnUIThread(Action action)
+        {
+            this.ShellDispatcher.BeginInvoke((Action)(async () =>
+            {
+                action();
+            }));
         }
 
         public bool Confirm(string title, string msg)

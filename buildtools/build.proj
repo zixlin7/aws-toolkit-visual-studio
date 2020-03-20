@@ -8,8 +8,6 @@
 	<Import Project="$(InternalBuildTools)\common.targets" Condition="Exists('$(InternalBuildTools)\common.targets')" />
 
     <PropertyGroup>
-		<EnableGetReferences>true</EnableGetReferences>
-		
         <!-- perform a release build by default -->
         <Configuration Condition="'$(Configuration)'==''">Debug</Configuration>
 
@@ -42,39 +40,39 @@
         <BuildVSToolkit2017>true</BuildVSToolkit2017>
     </PropertyGroup>
 
-  <Target Name="update-awssdk" DependsOnTargets="build-tools">
-    <UpdateAwsSdkVersionsTask RootLocation="$(BuildRoot)" WaitForDebugger="$(WaitForDebugger)"/>
-  </Target>
+    <Target Name="update-awssdk" DependsOnTargets="build-tools">
+        <UpdateAwsSdkVersionsTask RootLocation="$(BuildRoot)" WaitForDebugger="$(WaitForDebugger)"/>
+    </Target>
   
-	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-references;get-latest-endpoint-data;restore-nuget;update-version;build-vstoolkit;build-vstoolkit-2017;run-tests;keyscan;copy-artifacts;sign-packages;save-build">
+	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-latest-endpoint-data;restore-nuget;update-version;build-vstoolkit;run-tests;keyscan;copy-artifacts;sign-packages;save-build">
 		<Message Text="Builds all components of the AWS Toolkit for Visual Studio"/>
 	</Target>
 
+    <!-- Restore nuget packages for the Visual Studio Toolkit solution -->
     <Target Name="restore-nuget">
         <Message Text="Restoring nuget packages"/>
         <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSVisualStudioToolkit.sln" />
-        <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSStudioToolkit.sln" />
     </Target>
 
-  <Target Name="build-vstoolkit" DependsOnTargets="patch-vsixmanifest">
-		<Message Text="------------------------------------------------------------------------------" />
-        <Message Text="| Visual Studio 2013 Toolkit - $(Configuration)" />
-		<Message Text="------------------------------------------------------------------------------" />
-        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=12.0;Configuration=$(Configuration)" />
-		
-		<Message Text="------------------------------------------------------------------------------" />
-        <Message Text="| Visual Studio 2015 Toolkit - $(Configuration)" />
-		<Message Text="------------------------------------------------------------------------------" />
-        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=14.0;Configuration=$(Configuration)" />
-				
+    <Target Name="build-awsstudio">
 		<Message Text="------------------------------------------------------------------------------" />
         <Message Text="| AWS Studio - $(Configuration)" />
 		<Message Text="------------------------------------------------------------------------------" />
-        <MSBuild Projects="..\solutions\AWSStudioToolkit.sln" Properties="Configuration=$(Configuration)" />
 
+        <Message Text="Restoring nuget packages"/>
+        <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSStudioToolkit.sln" />
+
+        <Message Text="Compiling Solution"/>
+        <MSBuild Projects="..\solutions\AWSStudioToolkit.sln" Properties="Configuration=$(Configuration)" />
+    </Target>
+
+    <Target Name="build-vstoolkit" DependsOnTargets="patch-vsixmanifest">
+        <Message Text="Building AWS Toolkit for Visual Studio"/>
+
+        <CallTarget Targets="build-vstoolkit-2017"/>
 	</Target>
 	
-	<Target Name="build-vstoolkit-2017" DependsOnTargets="patch-vsixmanifest" Condition="'$(BuildVSToolkit2017)'=='true'">
+	<Target Name="build-vstoolkit-2017" DependsOnTargets="restore-nuget;patch-vsixmanifest" Condition="'$(BuildVSToolkit2017)'=='true'">
 		<Message Text="------------------------------------------------------------------------------" />
         <Message Text="| Visual Studio 2017 Toolkit - $(Configuration)" />
 		<Message Text="------------------------------------------------------------------------------" />
@@ -436,10 +434,4 @@
 		<EC2QuickLaunchGeneratorTask />
 	</Target>
 
-	<Target Name="get-references"  DependsOnTargets="build-tools"  Condition="$(EnableGetReferences)">
-		<!-- 
-		<MSBuild Projects ="$(MSBuildProjectFullPath)" Targets="get-reference-sdk" Properties="TargetRepository=$(MSBuildProjectDirectory)\.."/> 
-		-->
-	</Target>
-    
 </Project>
