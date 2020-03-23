@@ -1,6 +1,8 @@
 ﻿using Amazon.Common.DotNetCli.Tools.Options;
 using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Reflection;
 
 namespace Amazon.Common.DotNetCli.Tools.Commands
 {
