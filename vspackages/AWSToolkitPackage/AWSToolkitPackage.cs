@@ -589,7 +589,22 @@ namespace Amazon.AWSToolkit.VisualStudio
                 {
                     _lastDebugProcessId= newProcess.ProcessID;
                     ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.DotnetLambdaTestToolLaunch_2_1, "1");
+
+                    AttributeKeys metricKey;
+                    if(debugAppName.Contains("dotnet-lambda-test-tool-2.1"))
+                    {
+                        metricKey = AttributeKeys.DotnetLambdaTestToolLaunch_2_1;
+                    }
+                    else if (debugAppName.Contains("dotnet-lambda-test-tool-3.1"))
+                    {
+                        metricKey = AttributeKeys.DotnetLambdaTestToolLaunch_3_1;
+                    }
+                    else
+                    {
+                        metricKey = AttributeKeys.DotnetLambdaTestToolLaunch_UnknownVersion;
+                    }
+
+                    evnt.AddProperty(metricKey, "1");
                     SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
                 }
             }

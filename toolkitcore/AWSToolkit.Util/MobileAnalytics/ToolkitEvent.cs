@@ -45,6 +45,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
 
         VisualStudioIdentifier,
         DotnetLambdaTestToolLaunch_2_1,
+        DotnetLambdaTestToolLaunch_3_1,
+        DotnetLambdaTestToolLaunch_UnknownVersion,
 
         CodeCommitCloneStatus,
         CodeCommitCreateStatus,
