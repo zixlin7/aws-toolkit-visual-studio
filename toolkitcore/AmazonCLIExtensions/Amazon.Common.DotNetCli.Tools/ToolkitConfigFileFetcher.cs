@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Amazon.Common.DotNetCli.Tools
@@ -17,7 +19,10 @@ namespace Amazon.Common.DotNetCli.Tools
         {
         }
 
-        public static ToolkitConfigFileFetcher Instance => INSTANCE;
+        public static ToolkitConfigFileFetcher Instance
+        {
+            get { return INSTANCE; }
+        }
 
         /// <summary>
         /// Attempt to get the configuration file from the AWS Toolkit for Visual Studio config bucket.

@@ -7,6 +7,7 @@ using Amazon.Common.DotNetCli.Tools.Options;
 using ThirdParty.Json.LitJson;
 
 using Amazon.Lambda.Model;
+using System.Runtime.InteropServices;
 
 namespace Amazon.Lambda.Tools.Commands
 {
