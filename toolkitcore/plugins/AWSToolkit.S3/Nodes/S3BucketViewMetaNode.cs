@@ -50,14 +50,25 @@ namespace Amazon.AWSToolkit.S3.Nodes
 
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(
-                new ActionHandlerWrapper("Browse", OnBrowse, null, true, null, null) { VisibilityHandler = VisibilityHandler },
-                new ActionHandlerWrapper("Edit Policy", OnEditPolicy, null, false, null, "policy.png") { VisibilityHandler = VisibilityHandler },
-                new ActionHandlerWrapper("Properties", OnProperties, null, false, null, "properties.png") { VisibilityHandler = VisibilityHandler },
-                new ActionHandlerWrapper("Create Pre-Signed URL...", OnCreatePreSignedURL, null, false, null, null) { VisibilityHandler = VisibilityHandler },
-                new ActionHandlerWrapper("View Multipart Uploads", OnViewMultipartUploads, null, false,
-                    this.GetType().Assembly, "Amazon.AWSToolkit.S3.Resources.EmeddedImages.view-multiparts.png") { VisibilityHandler = VisibilityHandler },
+                new ActionHandlerWrapper("Browse", OnBrowse, null, true, null, null)
+                    {VisibilityHandler = VisibilityHandler},
                 null,
-                new ActionHandlerWrapper("Delete", OnDelete, new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false, null, "delete.png") { VisibilityHandler = VisibilityHandler }
+                new ActionHandlerWrapper("View Multipart Uploads", OnViewMultipartUploads, null, false,
+                        this.GetType().Assembly, "Amazon.AWSToolkit.S3.Resources.EmeddedImages.view-multiparts.png")
+                    {VisibilityHandler = VisibilityHandler},
+                new ActionHandlerWrapper("Create Pre-Signed URL...", OnCreatePreSignedURL, null, false, null, null)
+                    {VisibilityHandler = VisibilityHandler},
+                null,
+                new ActionHandlerWrapper("Edit Policy", OnEditPolicy, null, false, null, "policy.png")
+                    {VisibilityHandler = VisibilityHandler},
+                null,
+                new ActionHandlerWrapper("Delete", OnDelete,
+                        new ActionHandlerWrapper.ActionResponseHandler(this.OnDeleteResponse), false, null,
+                        "delete.png")
+                    {VisibilityHandler = VisibilityHandler},
+                null,
+                new ActionHandlerWrapper("Properties", OnProperties, null, false, null, "properties.png")
+                    {VisibilityHandler = VisibilityHandler}
             );
 
         private Amazon.AWSToolkit.Navigator.ActionHandlerWrapper.ActionVisibility VisibilityHandler(IViewModel focus)
