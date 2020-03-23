@@ -48,21 +48,26 @@ namespace Amazon.AWSToolkit.CloudFormation.View.Components
                 catch (Exception e)
                 {
                     error = true;
-                    this.Dispatcher.Invoke((Action)(() =>
+
+                    ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
                     {
                         this._ctlLastRefresh.Text = e.Message;
-                    }));
+                    });
+
                     LOGGER.Error("Error refreshing resources", e);
                 }
                 finally
                 {
                     this._isLoading = false;
-                    this.Dispatcher.Invoke((Action)(() =>
+
+                    ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
                     {
                         if (!error)
+                        {
                             this._ctlLastRefresh.Text = "";
+                        }
                         this.IsEnabled = true;
-                    }));
+                    });
                 }
             });
 

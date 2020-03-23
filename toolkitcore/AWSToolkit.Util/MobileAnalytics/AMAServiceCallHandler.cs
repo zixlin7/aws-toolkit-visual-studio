@@ -1,10 +1,12 @@
-﻿using Amazon.MobileAnalytics;
+﻿using Amazon.AWSToolkit.Tasks;
+using Amazon.MobileAnalytics;
 using Amazon.MobileAnalytics.Model;
 using Amazon.Runtime.Internal.Settings;
 using log4net;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Amazon.AWSToolkit.MobileAnalytics
 {
@@ -21,14 +23,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         private Thread _mainBackgroundThread;
         private Queue<Event> _backgroundQueue;
 
-        private AmazonMobileAnalyticsClient _amazonMobileAnalyticsClient;
-        private AnalyticsCognitoAWSCredentials _credentialsProvider;
+        private AmazonMobileAnalyticsClient _amazonMobileAnalyticsClient = null;
         private ClientContext _clientContext;
-
-        //flag that prevents analytics collection in the event that we can't
-        //generate the necessary prepatory service calls
-        //we won't need this once the high level client comes available
-        private bool _credentialsOrClientFailedToConstruct = false;
 
         /*
          * Create a singleton instance of this class
@@ -45,13 +41,35 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                     {
                         if (instance == null)
                         {
-                            instance = new AMAServiceCallHandler();
+                            LOGGER.Debug("Creating AMAServiceCallHandler instance");
+                            instance = CreateAMAServiceCallHandler();
+                            LOGGER.Debug("Finished Creating AMAServiceCallHandler instance");
                         }
                     }
                 }
 
                 return instance;
             }
+        }
+
+        private static AMAServiceCallHandler CreateAMAServiceCallHandler()
+        {
+            var callHandler = new AMAServiceCallHandler();
+
+            // Without blocking the main thread, get Metrics Access via Cognito
+            // and set up a Metrics Client. Provide the client to the call handler
+            // once available.
+            Task.Run(() =>
+            {
+                var client = CreateAmazonMobileAnalyticsClient();
+
+                if (client != null)
+                {
+                    callHandler.Initialize(client);
+                }
+            }).LogExceptionAndForget();
+
+            return callHandler;
         }
 
         /// <summary>
@@ -70,12 +88,24 @@ namespace Amazon.AWSToolkit.MobileAnalytics
             {
                 //if null or if it doesn't match the currently stored pool id, clear the cached cognito identity id (different than pool id)
                 //and write the newest identity pool id
-                //when the _credentialsProvider is called next, it will handle caching a new identity id
+                //the next time a AnalyticsCognitoAWSCredentials object is called, it will handle caching a new identity id
                 PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsCognitoIdentityId, "");
                 PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsMostRecentlyUsedCognitoIdentityPoolId, AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID);
                 LOGGER.InfoFormat("AnalyticsMostRecentlyUsedCognitoIdentityPoolId needs set or updated. Clearing AnalyticsCognitoIdentityId and setting AnalyticsMostRecentlyUsedCognitoIdentityPoolId to {0} in MiscSettings", AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID);
             }
 
+            //construct the AWS Mobile Analytics Client Context
+            ClientContextConfig clientContextConfig = new ClientContextConfig(CustomerGuid, AMAConstants.ClientInformation.APP_TITLE, AMAConstants.ClientInformation.APP_ID);
+            _clientContext = new ClientContext(clientContextConfig);
+
+
+            //set when the next scheduled service call should be
+            _nextScheduledServiceCall = DateTime.UtcNow + MAX_SLEEP_TIME_BEOFORE_SERVICE_CALL_ATTEMPT;
+            LOGGER.Info("Finished AMAServiceCallHandler constructor");
+        }
+
+        private static AmazonMobileAnalyticsClient CreateAmazonMobileAnalyticsClient()
+        {
             try
             {
                 /* 
@@ -84,41 +114,40 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                  * ensure caching of the identityID for unauthenticated session logging. 
                  */
                 LOGGER.InfoFormat("Attempting to create credentials via Cognito using poolId: {0} and RegionEndpoint.USEast1.", AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID);
-                _credentialsProvider = new AnalyticsCognitoAWSCredentials(
+                var credentialsProvider = new AnalyticsCognitoAWSCredentials(
                     AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID,
                     RegionEndpoint.USEast1
                 );
+
+                LOGGER.Info("Constructing AmazonMobileAnalyticsClient");
+                var amazonMobileAnalyticsClient = new AmazonMobileAnalyticsClient(credentialsProvider, RegionEndpoint.USEast1);
+                LOGGER.Info("Finished Constructing AmazonMobileAnalyticsClient");
+
+                return amazonMobileAnalyticsClient;
             }
             catch (Exception e)
             {
-                LOGGER.Error("Failed to construct credentials provider.", e);
-                _credentialsOrClientFailedToConstruct = true;
+                LOGGER.Error("Failed to construct AmazonMobileAnalyticsClient client.", e);
+                return null;
             }
+        }
 
-            if (!_credentialsOrClientFailedToConstruct)
+        private void Initialize(AmazonMobileAnalyticsClient amazonMobileAnalyticsClient)
+        {
+            LOGGER.Info("AMAServiceCallHandler Initialization");
+            if (amazonMobileAnalyticsClient == null)
             {
-                try
-                {
-                    //construct the AWS Mobile Analytics Client
-                    _amazonMobileAnalyticsClient = new AmazonMobileAnalyticsClient(_credentialsProvider, RegionEndpoint.USEast1);
-                }
-                catch (Exception e)
-                {
-                    LOGGER.Error("Failed to construct AMA client.", e);
-                }
-
-                //construct the AWS Mobile Analytics Client Context
-                ClientContextConfig clientContextConfig = new ClientContextConfig(CustomerGuid, AMAConstants.ClientInformation.APP_TITLE, AMAConstants.ClientInformation.APP_ID);
-                _clientContext = new ClientContext(clientContextConfig);
-
-                //start the main background thread
-                LOGGER.Info("Attempting to start background thread to pull from main thread queue.");
-                _mainBackgroundThread = new Thread(new ThreadStart(mainBackgroundThreadActivity));
-                _mainBackgroundThread.Start();
+                LOGGER.Debug("No client received");
+                return;
             }
 
-            //set when the next scheduled service call should be
-            _nextScheduledServiceCall = DateTime.UtcNow + MAX_SLEEP_TIME_BEOFORE_SERVICE_CALL_ATTEMPT;
+            this._amazonMobileAnalyticsClient = amazonMobileAnalyticsClient;
+
+            //start the main background thread
+            LOGGER.Info("Attempting to start background thread to pull from main thread queue.");
+            _mainBackgroundThread = new Thread(new ThreadStart(mainBackgroundThreadActivity));
+            _mainBackgroundThread.Start();
+            LOGGER.Info("Finished AMAServiceCallHandler Initialization");
         }
 
         private void mainBackgroundThreadActivity()
@@ -177,7 +206,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         private void ServiceCallAttempt(object obj)
         {
             var request = obj as PutEventsRequest;
-            if (PermissionToCollectAnalytics && !_credentialsOrClientFailedToConstruct && request != null)
+            if (PermissionToCollectAnalytics && _amazonMobileAnalyticsClient != null && request != null)
             {
                 if (request.Events.Count > 0)
                 {

@@ -27,12 +27,12 @@
 	</When>
 	<When Condition="'$(SolutionName)' == 'AWSStudioToolkit'">
       <PropertyGroup>
-        <VisualStudioVersion>14.0</VisualStudioVersion>
-        <VSTarget>14.0</VSTarget>
+        <VisualStudioVersion>15.0</VisualStudioVersion>
+        <VSTarget>15.0</VSTarget>
         <OutputTarget>awsstudio</OutputTarget>
         <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-        <DevEnvDir>$(VS140COMNTOOLS)..\IDE\</DevEnvDir>
-        <VSSDKDir>$(VSSDK140Install)</VSSDKDir>
+        <DevEnvDir>$(VS150COMNTOOLS)..\IDE\</DevEnvDir>
+        <VSSDKDir>$(VSSDK150Install)</VSSDKDir>
       </PropertyGroup>
 	</When>
     <When Condition="'$(VisualStudioVersion)' == '12.0'">

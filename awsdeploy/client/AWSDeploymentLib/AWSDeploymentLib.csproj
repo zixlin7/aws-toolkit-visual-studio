@@ -67,10 +67,6 @@
       <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
       <Name>AWSToolkit</Name>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\awsdeploy\host\AWSDeploymentHostManagerClient\AWSDeploymentHostManagerClientLib.csproj">
-      <Project>{4CEA2748-E89E-4DB9-A75B-E47F59113920}</Project>
-      <Name>AWSDeploymentHostManagerClientLib</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.AutoScaling">

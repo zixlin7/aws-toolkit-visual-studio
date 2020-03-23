@@ -97,7 +97,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls
             }
             catch(Exception ex)
             {
-                LogManager.GetLogger(typeof(ConnectionSectionControl)).Error("Error updating Git credentals", ex);
+                LogManager.GetLogger(typeof(ConnectionSectionControl)).Error("Error updating Git credentials", ex);
             }
         }
     }

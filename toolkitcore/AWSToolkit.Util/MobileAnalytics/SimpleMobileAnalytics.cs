@@ -37,7 +37,9 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                     {
                         if (instance == null)
                         {
+                            LOGGER.Debug("Initializing SimpleMobileAnalytics");
                             instance = new SimpleMobileAnalytics();
+                            LOGGER.Debug("Finished Initializing SimpleMobileAnalytics");
                         }
                     }
                 }
@@ -125,7 +127,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
 
             //This method trigger when VS closes so we need to force the service call.
             //If we don't the background thread won't collect any remaining events in the queue.
-            LOGGER.Info("Main session was stopped. Attemping to force final analytics service call attempt. Note: Permission to collect analytics will be checked.");
+            LOGGER.Info("Main session was stopped. Attempting to force final analytics service call attempt. Note: Permission to collect analytics will be checked.");
             _serviceCallHandler.ForceAMAServiceCallAttempt();
 
             //Signifies that this method should only be called when the toolkit is being closed.

@@ -63,6 +63,7 @@
     <Compile Include="MobileAnalytics\SimpleMobileAnalytics.cs" />
     <Compile Include="MobileAnalytics\ToolkitEvent.cs" />
     <Compile Include="ProjectFileUtilities.cs" />
+    <Compile Include="Tasks\TaskExtensionMethods.cs" />
     <Compile Include="ToolkitSettingsConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="S3FileFetcher.cs" />
@@ -316,5 +317,6 @@
       <Version>2.0.8</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

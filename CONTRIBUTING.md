@@ -22,8 +22,8 @@ Before you start, you will need the following:
 
 -   Open a Developer Command Prompt for VS 2017
 -   change directories to the repo root
--   Typical command: `msbuild buildtools\build.proj /t:build-vstoolkit-2017`
--   Mode comprehensive rebuild: `msbuild buildtools\build.proj /t:build-tools;clean;get-references;restore-nuget;build-vstoolkit-2017`
+-   Typical command: `msbuild buildtools\build.proj /t:build-vstoolkit`
+-   Mode comprehensive rebuild: `msbuild buildtools\build.proj /t:build-tools;clean;build-vstoolkit`
 
 ### Debug
 
@@ -44,7 +44,6 @@ Before you start, you will need the following:
 
 -   The Toolkit currently does not compile under Visual Studio 2019
 -   After compiling within VS 2017, the Output tab will report `Build: 62 succeeded, 0 failed, 0 up-to-date, 0 skipped` but the Error List tab will show four errors with the text "AWSToolkit.CodeCommitTeamExplorer.v16 is not compatible with net46". You can still run and debug the Toolkit from VS2017. The errors are related to VS 2019 specific files to support CodeCommit.
--   msbuild can fail with errors related to missing RuntimeIdentifier. `¯\_(ツ)_/¯` Compiling from within VS 2017 first seems to help this.
 
 ## Reporting Bugs/Feature Requests
 
