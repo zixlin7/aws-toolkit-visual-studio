@@ -436,34 +436,34 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.AutoScaling">
-      <Version>3.3.101.26</Version>
+      <Version>3.3.102.14</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.3.103.26</Version>
+      <Version>3.3.104.16</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatch">
-      <Version>3.3.105.1</Version>
+      <Version>3.3.106.8</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.EC2">
-      <Version>3.3.154.0</Version>
+      <Version>3.3.168.5</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ElasticLoadBalancing">
-      <Version>3.3.100.126</Version>
+      <Version>3.3.100.147</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.MobileAnalytics">
-      <Version>3.3.100.126</Version>
+      <Version>3.3.100.147</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.RDS">
-      <Version>3.3.116.4</Version>
+      <Version>3.3.119.2</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
-      <Version>3.3.110.17</Version>
+      <Version>3.3.110.38</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SecurityToken">
-      <Version>3.3.104.24</Version>
+      <Version>3.3.104.46</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SimpleNotificationService">
-      <Version>3.3.101.115</Version>
+      <Version>3.3.101.136</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.8</Version>

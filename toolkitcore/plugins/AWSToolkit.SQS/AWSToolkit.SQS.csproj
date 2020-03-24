@@ -183,7 +183,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.SQS">
-      <Version>3.3.102.58</Version>
+      <Version>3.3.102.79</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.8</Version>
