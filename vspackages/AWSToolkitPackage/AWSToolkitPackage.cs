@@ -79,6 +79,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                        Orientation = ToolWindowOrientation.Left,
                        Transient = false,
                        Window = ToolWindowGuids80.ServerExplorer)]
+    [CustomProvideEditorFactory(typeof(HostedEditorFactory), 114)]
     [ProvideEditorExtension(typeof(HostedEditorFactory), ".hostedControl", 50, 
               ProjectGuid = "{A2FE74E1-B743-11d0-AE1A-00A0C90FFFC3}", 
               TemplateDir = "Templates", 
@@ -89,7 +90,7 @@ namespace Amazon.AWSToolkit.VisualStudio
     [Guid(GuidList.guidPackageString)]
     [AWSCommandLineRegistration(CommandLineToken = awsToolkitPluginsParam, DemandLoad = false, Arguments = 1)]
     [ProvideService(typeof(SAWSToolkitShellProvider))]
-    [ProvideEditorFactory(typeof(TemplateEditorFactory), 113)]
+    [CustomProvideEditorFactory(typeof(TemplateEditorFactory), 113)]
     [ProvideEditorLogicalView(typeof(TemplateEditorFactory), EnvDTEConstants.vsViewKindTextView)]
     [ProvideEditorExtension(typeof(TemplateEditorFactory), ".template", 10000, NameResourceID = 113)]
     // need to force load when VS starts for CFN editor project stuff

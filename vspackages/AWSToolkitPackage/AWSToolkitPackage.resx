@@ -170,6 +170,9 @@ This software includes third party software subject to the following copyrights:
   <data name="113" xml:space="preserve">
     <value>AWS CloudFormation Template Editor</value>
   </data>
+  <data name="114" xml:space="preserve">
+    <value>AWS Toolkit Control View</value>
+  </data>
   <data name="150" xml:space="preserve">
     <value>AWS Toolkit</value>
     <comment>Tools, Options category name</comment>
