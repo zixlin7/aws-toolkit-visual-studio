@@ -29,7 +29,7 @@ Before you start, you will need the following:
 
 #### Visual Studio
 
--   Open `/solutions/AWSVisualStudioToolkit.sln`
+-   Open `/solutions/AWSVisualStudioToolkit.sln` in VS 2017
 -   Locate the project **AWSToolkitPackage**
     -   Right click -> Set as StartUp Project
     -   Right click and open the project Properties
@@ -39,6 +39,21 @@ Before you start, you will need the following:
         -   Set the **Command line arguments** to `/rootsuffix Exp`
 -   Save and close the project properties
 -   You can now debug the toolkit
+
+#### Testing the Toolkit in VS 2019
+
+You'll have to install the toolkit into VS 2019, and attach to it from VS 2017.
+
+-   Compile the toolkit in VS 2017 (above)
+-   Go to Deployment\15.0\Debug and install AWSToolkitPackage.vsix into your VS 2019 instance
+-   look at the install log to see which folder the extension was installed to. This will be something like C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\Extensions\(some-random-string)
+-   Launch VS 2019 with the installed toolkit, then Attach your VS 2017 debugger to this devenv.exe process
+-   To iterate from here:
+    -   close VS 2019
+    -   after making code changes and compiling, update dlls from Deployment\15.0\Debug into the folder where the extension was installed
+    -   launch VS 2019
+
+If you make changes that affect the installer, you will have to uninstall the toolkit from VS 2019 and reinstall your updated version.
 
 ### Known Issues
 
