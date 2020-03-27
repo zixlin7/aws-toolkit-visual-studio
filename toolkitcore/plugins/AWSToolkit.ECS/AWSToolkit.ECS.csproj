@@ -336,31 +336,31 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudWatchEvents">
-      <Version>3.3.101.80</Version>
+      <Version>3.3.102.13</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatchLogs">
-      <Version>3.3.101.76</Version>
+      <Version>3.3.101.97</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.EC2">
-      <Version>3.3.154.0</Version>
+      <Version>3.3.168.5</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ECR">
-      <Version>3.3.103.7</Version>
+      <Version>3.3.103.29</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ECS">
-      <Version>3.3.113.1</Version>
+      <Version>3.3.115.4</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ElasticLoadBalancingV2">
-      <Version>3.3.104.22</Version>
+      <Version>3.3.104.44</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.3.104.26</Version>
+      <Version>3.3.105.20</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.MobileAnalytics">
-      <Version>3.3.100.126</Version>
+      <Version>3.3.100.147</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
-      <Version>3.3.110.17</Version>
+      <Version>3.3.110.38</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.8</Version>
