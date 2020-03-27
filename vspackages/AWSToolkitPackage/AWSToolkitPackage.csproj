@@ -354,6 +354,7 @@
     <Compile Include="FirstRun\View\FirstRunControl.xaml.cs">
       <DependentUpon>FirstRunControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CustomProvideEditorFactoryAttribute.cs" />
     <Compile Include="Registration\AWSCommandLineRegistrationAttribute.cs" />
     <Compile Include="Guids.cs" />
     <Compile Include="Messaging.cs" />
