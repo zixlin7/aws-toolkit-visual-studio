@@ -1,4 +1,7 @@
-﻿using ThirdParty.Json.LitJson;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using ThirdParty.Json.LitJson;
 
 namespace Amazon.Common.DotNetCli.Tools
 {

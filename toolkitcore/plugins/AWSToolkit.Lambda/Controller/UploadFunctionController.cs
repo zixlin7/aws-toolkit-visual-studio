@@ -69,6 +69,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         {
             string sourcePath = null;
             var deploymentType = DeploymentType.Generic;
+
             if (seedValues.ContainsKey(UploadFunctionWizardProperties.SourcePath))
             {
                 sourcePath = seedValues[UploadFunctionWizardProperties.SourcePath] as string;
@@ -252,7 +253,11 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         public static DeploymentType DetermineDeploymentType(string sourcePath)
         {
-            if (Directory.Exists(sourcePath) && (Directory.GetFiles(sourcePath, "*.csproj").FirstOrDefault() != null || Directory.GetFiles(sourcePath, "*.fsproj").FirstOrDefault() != null || File.Exists(Path.Combine(sourcePath, "project.json"))))
+            if (!Directory.Exists(sourcePath))
+                return DeploymentType.Generic;
+
+            var files = Directory.GetFiles(sourcePath);
+            if (files.Any(x => x.EndsWith(".csproj") || x.EndsWith(".fsproj") || x.EndsWith(Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME)))
                 return DeploymentType.NETCore;
 
             return DeploymentType.Generic;

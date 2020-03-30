@@ -998,13 +998,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.3.103.26</Version>
+      <Version>3.3.104.16</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.EC2">
-      <Version>3.3.154.0</Version>
+      <Version>3.3.168.5</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.3.104.26</Version>
+      <Version>3.3.105.20</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.8</Version>

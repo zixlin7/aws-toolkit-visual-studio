@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using YamlDotNet.RepresentationModel;
 
 namespace Amazon.Lambda.Tools.TemplateProcessor
@@ -45,6 +47,11 @@ namespace Amazon.Lambda.Tools.TemplateProcessor
             {
                 var resourceBody = (YamlMappingNode)resource.Value;
                 var type = (YamlScalarNode)resourceBody.Children[new YamlScalarNode("Type")];
+
+
+                if (!resourceBody.Children.ContainsKey("Properties"))
+                    continue;
+
                 var properties = (YamlMappingNode)resourceBody.Children[new YamlScalarNode("Properties")];
 
                 if (properties == null) continue;

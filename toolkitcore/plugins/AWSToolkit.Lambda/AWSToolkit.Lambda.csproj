@@ -305,43 +305,43 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.3.103.26</Version>
+      <Version>3.3.104.16</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatchEvents">
-      <Version>3.3.101.80</Version>
+      <Version>3.3.102.13</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatchLogs">
-      <Version>3.3.101.76</Version>
+      <Version>3.3.101.97</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.DynamoDBv2">
-      <Version>3.3.104.21</Version>
+      <Version>3.3.105.14</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.EC2">
-      <Version>3.3.154.0</Version>
+      <Version>3.3.168.5</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.3.104.26</Version>
+      <Version>3.3.105.20</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.KeyManagementService">
-      <Version>3.3.104.1</Version>
+      <Version>3.3.105.16</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Kinesis">
-      <Version>3.3.100.126</Version>
+      <Version>3.3.100.147</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Lambda">
-      <Version>3.3.107.1</Version>
+      <Version>3.3.108.13</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.MobileAnalytics">
-      <Version>3.3.100.126</Version>
+      <Version>3.3.100.147</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
-      <Version>3.3.110.17</Version>
+      <Version>3.3.110.38</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SimpleNotificationService">
-      <Version>3.3.101.115</Version>
+      <Version>3.3.101.136</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.SQS">
-      <Version>3.3.102.58</Version>
+      <Version>3.3.102.79</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.8</Version>

@@ -55,73 +55,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
             UpdateExistingResources();
 
-            InitializeNETCoreFields();
-
-
-            var buildConfiguration = hostWizard[UploadFunctionWizardProperties.Configuration] as string;
-            if (!string.IsNullOrEmpty(buildConfiguration) && this._ctlConfigurationPicker.Items.Contains(buildConfiguration))
-            {
-                this.Configuration = buildConfiguration;
-            }
-
-            var targetFramework = hostWizard[UploadFunctionWizardProperties.Framework] as string;
-            if (!string.IsNullOrEmpty(targetFramework) && this._ctlFrameworkPicker.Items.Contains(targetFramework))
-            {
-                this.Framework = targetFramework;
-            }
-
             this._ctlPersistSettings.IsChecked = true;
-        }
-
-        private void InitializeNETCoreFields()
-        {
-            this._ctlConfigurationPicker.Items.Add("Release");
-            this._ctlConfigurationPicker.Items.Add("Debug");
-            this.Configuration = "Release";
-
-            var projectFrameworks = this.PageController.HostingWizard[UploadFunctionWizardProperties.ProjectTargetFrameworks] as IList<string>;
-            if (projectFrameworks != null && projectFrameworks.Count > 0)
-            {
-                foreach (var framework in projectFrameworks)
-                {
-                    this._ctlFrameworkPicker.Items.Add(framework);
-                }
-            }
-            else
-            {
-                this._ctlFrameworkPicker.Items.Add("netcoreapp1.0");
-                this._ctlFrameworkPicker.Items.Add("netcoreapp2.1");
-            }
-
-            this._ctlFrameworkPicker.SelectedIndex = 0;
-            this.Framework = this._ctlFrameworkPicker.Items[0].ToString();
         }
 
         public AccountViewModel SelectedAccount => _ctlAccountAndRegion.SelectedAccount;
 
         public RegionEndPointsManager.RegionEndPoints SelectedRegion => _ctlAccountAndRegion.SelectedRegion;
-
-        string _configuration;
-        public string Configuration
-        {
-            get => _configuration;
-            set
-            {
-                _configuration = value;
-                NotifyPropertyChanged("Configuration");
-            }
-        }
-
-        string _framework;
-        public string Framework
-        {
-            get => _framework;
-            set
-            {
-                _framework = value;
-                NotifyPropertyChanged("Framework");
-            }
-        }
 
         public string StackName
         {
@@ -252,14 +191,6 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         {
             get
             {
-                if (string.IsNullOrEmpty(this.Configuration))
-                {
-                    return false;
-                }
-                if (string.IsNullOrEmpty(this.Framework))
-                {
-                    return false;
-                }
                 if (string.IsNullOrEmpty(this.StackName))
                 {
                     return false;
@@ -311,17 +242,6 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
 
             return null;
-        }
-
-        private bool IsVS2015
-        {
-            get
-            {
-                if (string.Equals("2015", ToolkitFactory.Instance.ShellProvider.ShellVersion, StringComparison.Ordinal))
-                    return true;
-
-                return false;
-            }
         }
     }
 }

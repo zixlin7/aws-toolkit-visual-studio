@@ -8,12 +8,12 @@ namespace Amazon.AWSToolkit.Lambda.Model
         public static readonly RuntimeOption NodeJS_v10_X = new RuntimeOption("nodejs10.x", "Node.js v10");
         public static readonly RuntimeOption NodeJS_v12_X = new RuntimeOption("nodejs12.x", "Node.js v12");
 
-        public static readonly RuntimeOption NetCore_v1_0 = new RuntimeOption("dotnetcore1.0", ".NET Core v1.0");
         public static readonly RuntimeOption NetCore_v2_1 = new RuntimeOption("dotnetcore2.1", ".NET Core v2.1");
+        public static readonly RuntimeOption NetCore_v3_1 = new RuntimeOption("dotnetcore3.1", ".NET Core v3.1");
 
         public static readonly RuntimeOption PROVIDED = new RuntimeOption("provided", "Custom .NET Core Runtime");
 
-        public static readonly RuntimeOption[] ALL_OPTIONS = new RuntimeOption[] { NetCore_v1_0, NetCore_v2_1, NodeJS_v8_10, NodeJS_v10_X, NodeJS_v12_X, PROVIDED };
+        public static readonly RuntimeOption[] ALL_OPTIONS = new RuntimeOption[] { NetCore_v2_1, NetCore_v3_1, NodeJS_v8_10, NodeJS_v10_X, NodeJS_v12_X, PROVIDED };
 
         private RuntimeOption(string value, string displayName)
         {

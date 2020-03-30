@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Amazon.Common.DotNetCli.Tools.Options
 {
@@ -12,7 +13,10 @@ namespace Amazon.Common.DotNetCli.Tools.Options
     {
         Dictionary<CommandOption, CommandOptionValue> _values = new Dictionary<CommandOption, CommandOptionValue>();
 
-        public int Count => this._values.Count;
+        public int Count
+        {
+            get { return this._values.Count; }
+        }
 
         /// <summary>
         /// Gets the list of command line arguments that are not associated with a command option. Currently 

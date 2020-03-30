@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using ThirdParty.Json.LitJson;
 
 namespace Amazon.Lambda.Tools.TemplateProcessor
