@@ -7,6 +7,8 @@
     <change>Removed configuration and target framework from serverless deployment wizard as those sittings are inferred from the project being deployed.</change>
     <change>Improvements to the Context Menu for S3 items in the AWS Explorer</change>
     <change>Improvements to the toolkits startup performance.</change>
+    <change>Fixed issue with content type not being set for JSON files uploaded to S3 in the S3 browser.</change>
+    <change>Updated the toolkit to use the latest version of the AWS SDK for .NET.</change>
   </version>
   <version number="1.16.1.0" release-date="2020-02-19" prompt="false">
     <change>Elastic Beanstalk launch wizard now shows subnet tags alongside VPC options</change>
