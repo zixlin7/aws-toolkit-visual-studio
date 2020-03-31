@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <versions location="http://aws.amazon.com/visualstudio">
+  <version number="1.17.0.0" release-date="2020-03-31" prompt="false">
+    <change>Added support .NET Core 3.1 Lambda support.</change>
+    <change>Fixed some issues where a "File is already open" error would appear in versions of Visual Studio 2019 16.5 and newer.</change>
+    <change>Added ability to right click deploy a serverless.template as a solution item.</change>
+    <change>Removed configuration and target framework from serverless deployment wizard as those sittings are inferred from the project being deployed.</change>
+    <change>Improvements to the Context Menu for S3 items in the AWS Explorer</change>
+    <change>Improvements to the toolkits startup performance.</change>
+  </version>
   <version number="1.16.1.0" release-date="2020-02-19" prompt="false">
     <change>Elastic Beanstalk launch wizard now shows subnet tags alongside VPC options</change>
     <change>RDS launch wizard now auto-selects the default subnet group</change>
