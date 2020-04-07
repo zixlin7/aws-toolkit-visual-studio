@@ -71,6 +71,7 @@
     <Compile Include="Controller\CloneRepositoryController.cs" />
     <Compile Include="Controller\SaveServiceSpecificCredentialsController.cs" />
     <Compile Include="Controller\ViewRepositoryController.cs" />
+    <Compile Include="Util\CodeCommitClientExtensionMethods.cs" />
     <Compile Include="View\Controls\CloneRepositoryControl.xaml.cs">
       <DependentUpon>CloneRepositoryControl.xaml</DependentUpon>
     </Compile>
@@ -184,6 +185,7 @@
       <Version>1.0.111</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
 </Project>

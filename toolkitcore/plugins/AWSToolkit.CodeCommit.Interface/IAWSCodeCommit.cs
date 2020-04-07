@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
 using Amazon.AWSToolkit.Shared;
@@ -110,8 +111,9 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// Collection of wrappers around the found repositories. Repositories we failed to
         /// process are dropped on the floor.
         /// </returns>
-        IEnumerable<ICodeCommitRepository> GetRepositories(AccountViewModel account, 
-                                                           IEnumerable<string> pathsToRepositories);
+        Task<IEnumerable<ICodeCommitRepository>> GetRepositories(
+            AccountViewModel account,
+            IEnumerable<string> pathsToRepositories);
 
         /// <summary>
         /// Returns the wrapped metadata for a CodeCommit repository.

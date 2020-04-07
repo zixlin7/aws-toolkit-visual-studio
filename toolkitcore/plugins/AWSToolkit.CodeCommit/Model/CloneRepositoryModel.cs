@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
+using Amazon.AWSToolkit.CodeCommit.Util;
 using Amazon.AWSToolkit.Util;
 using Amazon.CodeCommit;
 using Amazon.CodeCommit.Model;
@@ -50,7 +53,14 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         public string SelectedFolder
         {
             get => _selectedFolder;
-            set { _selectedFolder = value; NotifyPropertyChanged("SelectedFolder"); }
+            set
+            {
+                if (_selectedFolder != value)
+                {
+                    _selectedFolder = value;
+                    NotifyPropertyChanged("SelectedFolder");
+                }
+            }
         }
 
         /// <summary>
@@ -65,7 +75,14 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         public CodeCommitRepository SelectedRepository
         {
             get => _selectedRepository;
-            set { _selectedRepository = value; NotifyPropertyChanged("SelectedRepository"); }
+            set
+            {
+                if (_selectedRepository != value)
+                {
+                    _selectedRepository = value;
+                    NotifyPropertyChanged("SelectedRepository");
+                }
+            }
         }
 
         public RangeObservableCollection<CodeCommitRepository> Repositories => _repositories;
@@ -80,9 +97,9 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
 
         public void RefreshRepositoryList()
         {
-            RefreshRepositoriesList(GetClientForRegion(SelectedRegion.SystemName));
             SelectedRepository = null;
             SelectedFolder = BaseFolder;
+            RefreshRepositoriesList(GetClientForRegion(SelectedRegion.SystemName));
         }
 
         /// <summary>
@@ -115,53 +132,14 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             return null;
         }
 
-        private void RefreshRepositoriesList(IAmazonCodeCommit codecommitClient)
+        private void RefreshRepositoriesList(IAmazonCodeCommit codeCommitClient)
         {
             Interlocked.Increment(ref _backgroundWorkersActive);
             NotifyPropertyChanged(RepoListRefreshStartingPropertyName);
 
-            ThreadPool.QueueUserWorkItem(x =>
+            ThreadPool.QueueUserWorkItem(async x =>
             {
-                var repositoryList = new List<CodeCommitRepository>();
-                string nextToken = null;
-                do
-                {
-                    try
-                    {
-                        var response = codecommitClient.ListRepositories(new ListRepositoriesRequest
-                        {
-                            NextToken = nextToken,
-                            SortBy = SortBy.SortBy,
-                            Order = Order.Order
-                        });
-
-                        nextToken = response.NextToken;
-
-                        // BatchGetRepositories only accepts up to 25 names at a time
-                        var names = new List<string>();
-                        foreach (var repository in response.Repositories)
-                        {
-                            names.Add(repository.RepositoryName);
-
-                            if (names.Count == 25)
-                            {
-                                QueryRepositoryMetadataBatch(codecommitClient, names, repositoryList);
-                                names.Clear();
-                            }
-                        }
-
-                        if (names.Count > 0)    // mop up the remainder
-                        {
-                            QueryRepositoryMetadataBatch(codecommitClient, names, repositoryList);
-                        }
-
-                    }
-                    catch (Exception e)
-                    {
-                        LOGGER.Error("Failed to retrieve repository list", e);
-                        nextToken = null;
-                    }
-                } while (!string.IsNullOrEmpty(nextToken));
+                var repositoryList = await LoadRepositoryModels(codeCommitClient);
 
                 ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                 {
@@ -175,32 +153,52 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             });
         }
 
-        private static void QueryRepositoryMetadataBatch(IAmazonCodeCommit client, 
-                                                         IEnumerable<string> repositoryNames,
-                                                         ICollection<CodeCommitRepository> repositoryMetadataList)
+        private async Task<IList<CodeCommitRepository>> LoadRepositoryModels(IAmazonCodeCommit codeCommitClient)
         {
-            var batchGetResponse = client.BatchGetRepositories(new BatchGetRepositoriesRequest
-            {
-                RepositoryNames = new List<string>(repositoryNames)
-            });
+            var repositoryNames = await codeCommitClient.ListRepositoryNames();
 
-            foreach (var repositoryMetadata in batchGetResponse.Repositories)
+            var repositoryMetadata = await codeCommitClient.GetRepositoryMetadata(repositoryNames);
+
+            return SortAndOrder(repositoryMetadata)
+                .Select(metadata => new CodeCommitRepository(metadata))
+                .ToList();
+        }
+
+        /// <summary>
+        /// Sorts and orders the given repository metadata based on this model's settings
+        /// </summary>
+        /// <param name="metadata">metadata to sort/order</param>
+        /// <returns>sorted/ordered metadata enumerable</returns>
+        private IEnumerable<RepositoryMetadata> SortAndOrder(IEnumerable<RepositoryMetadata> metadata)
+        {
+            if (Order == _orderAscending)
             {
-                repositoryMetadataList.Add(new CodeCommitRepository(repositoryMetadata));
+                return metadata.OrderBy(SortBy.SortMethod);
             }
 
+            return metadata.OrderByDescending(SortBy.SortMethod);
         }
 
         private string _baseFolder;
         private string _selectedFolder;
         private CodeCommitRepository _selectedRepository;
         private readonly RangeObservableCollection<CodeCommitRepository> _repositories = new RangeObservableCollection<CodeCommitRepository>();
-
+        
         private readonly SortOption _sortByRepositoryName =
-            new SortOption {SortBy = SortByEnum.RepositoryName, DisplayText = "Repository Name"};
+            new SortOption
+            {
+                SortBy = SortByEnum.RepositoryName,
+                DisplayText = "Repository Name",
+                SortMethod = (metadata) => metadata.RepositoryName
+            };
 
         private readonly SortOption _sortByLastModifiedDate =
-            new SortOption {SortBy = SortByEnum.LastModifiedDate, DisplayText = "Last Modified Date"};
+            new SortOption
+            {
+                SortBy = SortByEnum.LastModifiedDate,
+                DisplayText = "Last Modified Date",
+                SortMethod = (metadata) => metadata.LastModifiedDate
+            };
 
         private readonly OrderOption _orderAscending =
             new OrderOption {Order = OrderEnum.Ascending, DisplayText = "Ascending"};
@@ -213,6 +211,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
     {
         public SortByEnum SortBy { get; set; }
         public string DisplayText { get; set; }
+        public Func<RepositoryMetadata, object> SortMethod { get; set; }
     }
 
     public class OrderOption

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
@@ -140,11 +141,14 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             {
                 // as this probing could take some time, spin up a thread to add the new
                 // repos into the collection
-                ThreadPool.QueueUserWorkItem(QueryNewlyAddedRepositoriesDataAsync, reposToValidate);
+                ThreadPool.QueueUserWorkItem(
+                    async state => { await QueryNewlyAddedRepositoriesDataAsync(state); },
+                    reposToValidate
+                );
             }
         }
 
-        private void QueryNewlyAddedRepositoriesDataAsync(object state)
+        private async Task QueryNewlyAddedRepositoriesDataAsync(object state)
         {
             LOGGER.Info("TeamExplorerConnection: QueryNewlyAddedRepositoriesDataAsync");
             if (CodeCommitPlugin == null)
@@ -155,7 +159,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             if (repoPaths == null)
                 return;
 
-            var validRepos = CodeCommitPlugin.GetRepositories(Account, repoPaths);
+            var validRepos = await CodeCommitPlugin.GetRepositories(Account, repoPaths);
             Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();

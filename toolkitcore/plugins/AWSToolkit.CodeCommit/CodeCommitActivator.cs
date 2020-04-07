@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Account.Controller;
@@ -15,12 +16,14 @@ using Amazon.AWSToolkit.CodeCommit.Interface.Model;
 using Amazon.AWSToolkit.CodeCommit.Model;
 using Amazon.AWSToolkit.CodeCommit.Nodes;
 using Amazon.AWSToolkit.CodeCommit.Services;
+using Amazon.AWSToolkit.CodeCommit.Util;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.CodeCommit.Model;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using LibGit2Sharp;
 using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.CodeCommit
 {
@@ -180,7 +183,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             return region;
         }
 
-        public IEnumerable<ICodeCommitRepository> GetRepositories(AccountViewModel account, IEnumerable<string> pathsToRepositories)
+        public async Task<IEnumerable<ICodeCommitRepository>> GetRepositories(AccountViewModel account, IEnumerable<string> pathsToRepositories)
         {
             if (account == null)
                 throw new ArgumentNullException(nameof(account));
@@ -191,49 +194,54 @@ namespace Amazon.AWSToolkit.CodeCommit
 
             var repositoryNameAndPathByRegion = GroupLocalRepositoriesByRegion(pathsToRepositories);
 
-            foreach (var region in repositoryNameAndPathByRegion.Keys)
+            // Load local Repos for each region
+            var tasks = repositoryNameAndPathByRegion.Keys.Select(async region =>
             {
-                var client = BaseRepositoryModel.GetClientForRegion(account.Credentials, region);
+                validRepositories.AddRange(
+                    await LoadLocalReposForRegion(region, account.Credentials, repositoryNameAndPathByRegion)
+                );
+            });
 
-                try
-                {
-                    var reposInRegion = repositoryNameAndPathByRegion[region];
-                    var request = new BatchGetRepositoriesRequest
-                    {
-                        RepositoryNames = reposInRegion.Keys.ToList()
-                    };
-                    var batchGetResponse = client.BatchGetRepositories(request);
-                    foreach (var repo in batchGetResponse.Repositories)
-                    {
-                        var repoCopies = reposInRegion[repo.RepositoryName];
-                        foreach (var repoCopy in repoCopies)
-                        {
-                            var wrapper = new CodeCommitRepository(repo)
-                            {
-                                LocalFolder = repoCopy
-                            };
-
-                            validRepositories.Add(wrapper);
-                        }
-                    }
-
-                    if (batchGetResponse.RepositoriesNotFound != null)
-                    {
-                        foreach (var r in batchGetResponse.RepositoriesNotFound)
-                        {
-                            LOGGER.InfoFormat("Repository {0} was not found at the service during batch metadata query", r);
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    LOGGER.Error("Exception batch querying for repos in region " + region, e);
-                }
-            }
+            await Task.WhenAll(tasks);
 
             // this reorders across all regions; we may eventually decide to group by region
             // eventually in the UI
-            return validRepositories.OrderBy(x => x.Name).ToList();
+            return validRepositories
+                .OrderBy(x => x.Name)
+                .ThenBy(x => x.LocalFolder)
+                .ToList();
+        }
+
+        private static async Task<IList<ICodeCommitRepository>> LoadLocalReposForRegion(
+            string region,
+            AWSCredentials accountCredentials, 
+            Dictionary<string, Dictionary<string, List<string>>> repositoryNameAndPathByRegion)
+        {
+            List<ICodeCommitRepository> validRepositories = new List<ICodeCommitRepository>();
+
+            try
+            {
+                var client = BaseRepositoryModel.GetClientForRegion(accountCredentials, region);
+                var repoNameToLocalPaths = repositoryNameAndPathByRegion[region];
+
+                var repositoryMetadatas = await client.GetRepositoryMetadata(repoNameToLocalPaths.Keys.ToList());
+
+                foreach (var repo in repositoryMetadatas)
+                {
+                    var repoLocalPaths = repoNameToLocalPaths[repo.RepositoryName];
+                    var models = repoLocalPaths.Select(localPath => new CodeCommitRepository(repo)
+                    {
+                        LocalFolder = localPath
+                    });
+                    validRepositories.AddRange(models);
+                }
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error($"Exception batch querying for repos in region {region}", e);
+            }
+
+            return validRepositories;
         }
 
         public ICodeCommitRepository GetRepository(string repositoryName,

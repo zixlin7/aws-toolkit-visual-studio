@@ -29,6 +29,8 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
             // dialog host and enable the OK button dynamically (the host
             // will call our IsValidated handler)
             Controller.Model.PropertyChanged += ModelOnPropertyChanged;
+
+            this.Loaded += CloneRepositoryControl_Loaded;
         }
 
         public CloneRepositoryController Controller { get; }
@@ -36,6 +38,20 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
         public override string Title => "Clone AWS CodeCommit Repository";
 
         public override bool SupportsDynamicOKEnablement => true;
+
+        private void CloneRepositoryControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            RefreshRepositoryList();
+        }
+
+        private void RefreshRepositoryList()
+        {
+            // Skip loading while the form is being created
+            if (IsLoaded)
+            {
+                Controller.Model.RefreshRepositoryList();
+            }
+        }
 
         public override bool Validated()
         {
@@ -62,7 +78,7 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
 
         private void OnRegionSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Controller.Model.RefreshRepositoryList();
+            RefreshRepositoryList();
         }
 
         private void OnClickBrowseFolder(object sender, RoutedEventArgs e)
@@ -108,12 +124,12 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
 
         private void OnSelectionChangedSortBy(object sender, SelectionChangedEventArgs e)
         {
-            Controller.Model.RefreshRepositoryList();
+            RefreshRepositoryList();
         }
 
         private void OnSelectionChangedOrder(object sender, SelectionChangedEventArgs e)
         {
-            Controller.Model.RefreshRepositoryList();
+            RefreshRepositoryList();
         }
     }
 }

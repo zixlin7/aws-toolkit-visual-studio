@@ -71,6 +71,7 @@
     <Compile Include="ToolkitGlobalContants.cs" />
     <Compile Include="UserCrypto.cs" />
     <Compile Include="Utility.cs" />
+    <Compile Include="Util\ListExtensionMethods.cs" />
     <Compile Include="Util\IPAddressUtil.cs" />
     <Compile Include="Util\Mutable.cs" />
     <Compile Include="Util\MutableString.cs" />
