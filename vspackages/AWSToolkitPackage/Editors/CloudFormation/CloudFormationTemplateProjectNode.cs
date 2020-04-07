@@ -8,6 +8,7 @@ using VsCommands = Microsoft.VisualStudio.VSConstants.VSStd97CmdID;
 using VSConstants = Microsoft.VisualStudio.VSConstants;
 
 using Microsoft.VisualStudio.Project;
+using VSProjectUtilities = Microsoft.VisualStudio.Project.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using Amazon.AWSToolkit.CloudFormation.EditorExtensions;
@@ -28,8 +29,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
 
         static CloudFormationTemplateProjectNode()
         {
-            projectNodeImageList = Utilities.GetImageList(typeof(CloudFormationTemplateProjectNode).Assembly.GetManifestResourceStream("Amazon.AWSToolkit.VisualStudio.CloudFormationEditor.Resources.CloudFormationTemplateProjectNode.png"));
-            templateFileNodeImageList = Utilities.GetImageList(typeof(CloudFormationTemplateProjectNode).Assembly.GetManifestResourceStream("Amazon.AWSToolkit.VisualStudio.CloudFormationEditor.Resources.CloudFormationTemplateNode.png"));
+            projectNodeImageList = VSProjectUtilities.GetImageList(typeof(CloudFormationTemplateProjectNode).Assembly.GetManifestResourceStream("Amazon.AWSToolkit.VisualStudio.CloudFormationEditor.Resources.CloudFormationTemplateProjectNode.png"));
+            templateFileNodeImageList = VSProjectUtilities.GetImageList(typeof(CloudFormationTemplateProjectNode).Assembly.GetManifestResourceStream("Amazon.AWSToolkit.VisualStudio.CloudFormationEditor.Resources.CloudFormationTemplateNode.png"));
         }
 
         public CloudFormationTemplateProjectNode(AWSToolkitPackage package)

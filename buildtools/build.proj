@@ -82,9 +82,10 @@
 
     <Target Name="run-tests" DependsOnTargets="build-vstoolkit">
         <Message Text="$(Configuration) - running unit tests."/>
-        
+
         <ItemGroup>
             <TestAssemblies Include="..\tests\AWSToolkit.Util.Tests\bin\$(Configuration)\AWSToolkit.Util.Tests.dll" />
+            <TestAssemblies Include="..\tests\AWSToolkitPackage.Tests\bin\$(Configuration)\AWSToolkitPackage.Tests.dll" />
         </ItemGroup>        
         
         <!-- need to find how to reference this after we've done a nuget restore, at project level, 

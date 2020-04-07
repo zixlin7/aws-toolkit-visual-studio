@@ -53,6 +53,7 @@ using Amazon.AWSToolkit.Lambda.WizardPages;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 using System.Threading;
+using Amazon.AWSToolkit.VisualStudio.Lambda;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -133,7 +134,6 @@ namespace Amazon.AWSToolkit.VisualStudio
         
         Guid _guidAwsOutputWindowPane = new Guid(0xb1c55205, 0xa332, 0x4dcb, 0xbf, 0xa0, 0x86, 0x62, 0x7f, 0x6d, 0x4, 0x86 );
         IVsOutputWindowPane _awsOutputWindowPane;
-        SolutionEvents _events;
 
         uint _vsShellPropertyChangeEventSinkCookie;
 
@@ -164,7 +164,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// </summary>
         bool? _msdeployInstallVerified = null;
 
-        EnvDTE.DebuggerEvents _debuggerEvents;
+        private LambdaTesterEventListener _lambdaTesterEventListener;
 
         internal SimpleMobileAnalytics AnalyticsRecorder { get; }
 
@@ -199,7 +199,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             // .suo persistence keys must be registered during ctor according to docs
             AddOptionKey(DeploymentsPersistenceTag);           // this one used to store all cf/beanstalk deployment data going forward
             AddOptionKey(DeprecatedDeploymentsPersistenceTag); // so we can migrate prior version
-			
+
             try
             {
                 this.JoinableTaskFactory.Run(async () =>
@@ -496,14 +496,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                     dteVersion = dte.Version;
                     dteEdition = dte.Edition;
 
-                    _events = dte.Events.SolutionEvents;
-                    _events.ProjectAdded += OnProjectAddedEvent;
-                    _events.Opened += OnSolutionOpenedEvent;
-
-                    _debuggerEvents = dte.Events.DebuggerEvents;
-                    _debuggerEvents.OnContextChanged += OnDebuggerContextChange;
-
-
                     navigator = new NavigatorControl();
 
                     RegisterProjectFactory(new CloudFormationTemplateProjectFactory(this));
@@ -555,7 +547,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                 // shell provider is used all the time, so pre-load. Leave legacy deployment
                 // service until a plugin asks for it.
                 InstantiateToolkitShellProviderService(dteVersion);
-
+                
 
                 ToolkitEvent evnt = new ToolkitEvent();
                 evnt.AddProperty(AttributeKeys.VisualStudioIdentifier, string.Format("{0}/{1}", dteVersion, dteEdition));
@@ -566,6 +558,9 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 await ToolkitFactory.InitializeToolkit(navigator, ToolkitShellProviderService as IAWSToolkitShellProvider, additionalPluginFolders, () =>
                 {
+                    // Event listener uses IAWSLambda, requires plugins to be loaded first
+                    InitializeLambdaTesterEventListener();
+
                     _toolkitInitialized = true;
                     ShowFirstRun();
                 });
@@ -578,81 +573,15 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-
-        int _lastDebugProcessId = -1;
-        private void OnDebuggerContextChange(EnvDTE.Process newProcess, Program newProgram, EnvDTE.Thread newThread, EnvDTE.StackFrame newStackFrame)
+        private void InitializeLambdaTesterEventListener()
         {
             try
             {
-                var debugAppName = newProcess.Name;
-
-                if (_lastDebugProcessId != newProcess.ProcessID && !string.IsNullOrEmpty(debugAppName) && debugAppName.Contains("dotnet-lambda-test-tool"))
-                {
-                    _lastDebugProcessId= newProcess.ProcessID;
-                    ToolkitEvent evnt = new ToolkitEvent();
-
-                    AttributeKeys metricKey;
-                    if(debugAppName.Contains("dotnet-lambda-test-tool-2.1"))
-                    {
-                        metricKey = AttributeKeys.DotnetLambdaTestToolLaunch_2_1;
-                    }
-                    else if (debugAppName.Contains("dotnet-lambda-test-tool-3.1"))
-                    {
-                        metricKey = AttributeKeys.DotnetLambdaTestToolLaunch_3_1;
-                    }
-                    else
-                    {
-                        metricKey = AttributeKeys.DotnetLambdaTestToolLaunch_UnknownVersion;
-                    }
-
-                    evnt.AddProperty(metricKey, "1");
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-                }
+                _lambdaTesterEventListener = new LambdaTesterEventListener(this);
             }
             catch (Exception e)
             {
-                LOGGER.Info("Error detecting debug action", e);
-            }
-        }
-
-        private void OnSolutionOpenedEvent()
-        {
-            var dte = (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
-            foreach (Project project in dte.Solution.Projects)
-            {
-                EnsureLambdaTesterConfigured(project);
-            }
-        }
-
-        private void OnProjectAddedEvent(Project project)
-        {
-            EnsureLambdaTesterConfigured(project);
-        }
-
-        private void EnsureLambdaTesterConfigured(Project project)
-        {
-            if (project == null)
-                return;
-
-            if (this.LambdaPluginAvailable)
-            {
-                var name = project.Name;
-                var kind = project.Kind;
-
-                // If we got an event that a project folder was opened then we have
-                // to manually look for the projects under the folder because VS won't send 
-                // the child events.
-                if (string.Equals(kind, GuidList.VSProjectTypeProjectFolder))
-                {
-                    foreach (ProjectItem childItem in project.ProjectItems)
-                    {
-                        EnsureLambdaTesterConfigured(childItem.SubProject);
-                    }
-                }
-                else
-                {
-                    this.LambdaPlugin.EnsureLambdaTesterConfigured(project.FileName);
-                }
+                LOGGER.Error("Unable to set up event listeners for the Lambda Tester", e);
             }
         }
 
