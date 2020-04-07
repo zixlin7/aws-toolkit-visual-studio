@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.PluginServices.Activators;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace AWSToolkit.Tests.PluginActivator
 {
@@ -36,57 +36,55 @@ namespace AWSToolkit.Tests.PluginActivator
 
         protected static void AssertContainsSamplePluginActivator(IList<IPluginActivator> activators)
         {
-            Assert.IsNotNull(activators);
-            Assert.IsTrue(activators.Count > 0, "No activators were found");
-            Assert.IsTrue(activators.Any(activator => activator.PluginName == SamplePluginActivator.SamplePluginName));
+            Assert.NotNull(activators);
+            Assert.True(activators.Count > 0, "No activators were found");
+            Assert.True(activators.Any(activator => activator.PluginName == SamplePluginActivator.SamplePluginName));
         }
     }
 
-    [TestClass]
     public class GetToolkitPluginDirectory
     {
-        [TestMethod]
-        [DataRow(@"c:\somepath\bin\debug\plugin.dll")]
-        [DataRow(@"c:\somepath\bin\release\plugin.dll")]
-        [DataRow(@"c:\somepath\out\plugin.dll")]
+        [Theory]
+        [InlineData(@"c:\somepath\bin\debug\plugin.dll")]
+        [InlineData(@"c:\somepath\bin\release\plugin.dll")]
+        [InlineData(@"c:\somepath\out\plugin.dll")]
         public void ReturnsDeploymentPlugins(string inputPath)
         {
             var expectedDirectory = Path.Combine(Path.GetDirectoryName(inputPath), @"..\..\..\..\Deployment\Plugins");
 
             var pluginDirectory = PluginActivatorUtilities.GetToolkitPluginDirectory(inputPath);
-            Assert.AreEqual(expectedDirectory, pluginDirectory);
+            Assert.Equal(expectedDirectory, pluginDirectory);
         }
 
-        [TestMethod]
+        [Fact]
         public void AppendsPlugins()
         {
             var pluginDirectory = PluginActivatorUtilities.GetToolkitPluginDirectory(@"c:\somepath\plugin.dll");
-            Assert.AreEqual(@"c:\somepath\Plugins", pluginDirectory);
+            Assert.Equal(@"c:\somepath\Plugins", pluginDirectory);
         }
     }
 
-    [TestClass]
     public class ParseAdditionalPluginPaths
     {
-        [TestMethod]
+        [Fact]
         public void HandlesEmptyInput()
         {
             var paths = PluginActivatorUtilities.ParseAdditionalPluginPaths(String.Empty);
-            Assert.IsNotNull(paths);
-            Assert.AreEqual(0, paths.Count);
+            Assert.NotNull(paths);
+            Assert.Equal(0, paths.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void HandlesOnePath()
         {
             var somePath = @"c:\somepath1";
             var paths = PluginActivatorUtilities.ParseAdditionalPluginPaths(somePath);
-            Assert.IsNotNull(paths);
-            Assert.AreEqual(1, paths.Count);
-            Assert.IsTrue(paths.Contains(somePath));
+            Assert.NotNull(paths);
+            Assert.Equal(1, paths.Count);
+            Assert.True(paths.Contains(somePath));
         }
 
-        [TestMethod]
+        [Fact]
         public void HandlesManyPaths()
         {
             var somePath1 = @"c:\somepath1";
@@ -96,26 +94,25 @@ namespace AWSToolkit.Tests.PluginActivator
             var inputPath = $"{somePath1};{somePath2};{somePath3}";
 
             var paths = PluginActivatorUtilities.ParseAdditionalPluginPaths(inputPath);
-            Assert.IsNotNull(paths);
-            Assert.AreEqual(3, paths.Count);
-            Assert.IsTrue(paths.Contains(somePath1));
-            Assert.IsTrue(paths.Contains(somePath2));
-            Assert.IsTrue(paths.Contains(somePath3));
+            Assert.NotNull(paths);
+            Assert.Equal(3, paths.Count);
+            Assert.True(paths.Contains(somePath1));
+            Assert.True(paths.Contains(somePath2));
+            Assert.True(paths.Contains(somePath3));
         }
     }
 
-    [TestClass]
     public class GetPluginActivatorsFromFolder : BasePluginActivatorUtilitiesTest
     {
-        [TestMethod]
+        [Fact]
         public async Task MissingFolderReturnsEmpty()
         {
             var activators = await PluginActivatorUtilities.GetPluginActivatorsFromFolder(@"c:\RandomFolder");
-            Assert.IsNotNull(activators);
-            Assert.AreEqual(0, activators.Count);
+            Assert.NotNull(activators);
+            Assert.Equal(0, activators.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task LoadsPluginsFromFolder()
         {
             var pluginActivators =
@@ -124,31 +121,29 @@ namespace AWSToolkit.Tests.PluginActivator
         }
     }
 
-    [TestClass]
     public class GetPluginActivatorsFromAssembly : BasePluginActivatorUtilitiesTest
     {
-        [TestMethod]
+        [Fact]
         public async Task LoadsPluginActivatorFromPath()
         {
             var pluginActivators =
                 await PluginActivatorUtilities.GetPluginActivatorsFromAssembly(this.GetType().Assembly.Location);
             AssertContainsSamplePluginActivator(pluginActivators);
-            Assert.AreEqual(1, pluginActivators.Count);
+            Assert.Equal(1, pluginActivators.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void LoadsPluginActivatorFromAssembly()
         {
             var pluginActivators = PluginActivatorUtilities.GetPluginActivatorsFromAssembly(this.GetType().Assembly);
             AssertContainsSamplePluginActivator(pluginActivators);
-            Assert.AreEqual(1, pluginActivators.Count);
+            Assert.Equal(1, pluginActivators.Count);
         }
     }
 
-    [TestClass]
     public class GetPluginActivators : BasePluginActivatorUtilitiesTest
     {
-        [TestMethod]
+        [Fact]
         public async Task ReturnsActivators()
         {
             var paths = new List<string>()
@@ -161,10 +156,9 @@ namespace AWSToolkit.Tests.PluginActivator
         }
     }
 
-    [TestClass]
     public class LoadPluginActivators : BasePluginActivatorUtilitiesTest
     {
-        [TestMethod]
+        [Fact]
         public async Task LoadsAndReturnsPluginActivators()
         {
             var activators =

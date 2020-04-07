@@ -55,6 +55,14 @@ You'll have to install the toolkit into VS 2019, and attach to it from VS 2017.
 
 If you make changes that affect the installer, you will have to uninstall the toolkit from VS 2019 and reinstall your updated version.
 
+### Writing Tests
+
+This codebase uses [xUnit](https://xunit.net/) for testing. The codebase has a very small collection of tests; you are encouraged to help grow test coverage by including tests with your changes.
+
+At this time, unit and component-level tests are available. UI Tests have not been implemented.
+
+Tests are run as part of the build steps in msbuild. You can also run tests from within Visual Studio by using the Test Explorer.
+
 ### Known Issues
 
 -   The Toolkit currently does not compile under Visual Studio 2019

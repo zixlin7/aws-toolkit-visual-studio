@@ -72,31 +72,47 @@
         <CallTarget Targets="build-vstoolkit-2017"/>
 	</Target>
 	
+    <!-- Compile and test -->
 	<Target Name="build-vstoolkit-2017" DependsOnTargets="restore-nuget;patch-vsixmanifest" Condition="'$(BuildVSToolkit2017)'=='true'">
 		<Message Text="------------------------------------------------------------------------------" />
         <Message Text="| Visual Studio 2017 Toolkit - $(Configuration)" />
 		<Message Text="------------------------------------------------------------------------------" />
         <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=15.0;Configuration=$(Configuration)" />
+
+        <CallTarget Targets="run-tests"/>
 	</Target>
 	
+    <!-- ======================================== Test Related ======================================== -->
 
-    <Target Name="run-tests" DependsOnTargets="build-vstoolkit">
+    <!-- Use NuGet to grab the xunit runner -->
+    <Target Name="get-test-runner">
+        <Message Text="Restoring nuget packages for the test runner"/>
+        <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe install xunit.runner.msbuild -Version 2.4.1 -OutputDirectory $(BuildRoot)\solutions\packages" />
+	</Target>
+
+    <!-- Required for the "xunit" element within the run-tests task. -->
+    <UsingTask 
+        AssemblyFile="$(BuildRoot)\solutions\packages\xunit.runner.msbuild.2.4.1\build\net452\xunit.runner.msbuild.net452.dll"
+        TaskName="Xunit.Runner.MSBuild.xunit"
+        />
+
+    <!-- Run tests with the current compiled code -->
+    <Target Name="run-tests" DependsOnTargets="get-test-runner">
         <Message Text="$(Configuration) - running unit tests."/>
 
         <ItemGroup>
+            <!-- Add projects to be tested with xunit here -->
+            <TestAssemblies Include="..\tests\AmazonCLIExtensions.Tests\bin\$(Configuration)\AmazonCLIExtensions.Tests.dll" />
+            <TestAssemblies Include="..\tests\AWSToolkit.Tests\bin\$(Configuration)\AWSToolkit.Tests.dll" />
             <TestAssemblies Include="..\tests\AWSToolkit.Util.Tests\bin\$(Configuration)\AWSToolkit.Util.Tests.dll" />
             <TestAssemblies Include="..\tests\AWSToolkitPackage.Tests\bin\$(Configuration)\AWSToolkitPackage.Tests.dll" />
         </ItemGroup>        
         
-        <!-- need to find how to reference this after we've done a nuget restore, at project level, 
-             then we can enable unit tests
-        <UsingTask AssemblyFile="path\to\xunit.runner.msbuild.net452.dll"
-                   TaskName="Xunit.Runner.MSBuild.xunit"/>
-                   
-        <xunit Assemblies="@(TestAssemblies)" /> 
-        -->
+        <xunit Assemblies="@(TestAssemblies)" />
     </Target>
-    
+
+    <!-- ======================================== END Test Related ======================================== -->
+
 	<Target Name="patch-vsixmanifest" Condition="$(UpdateVersions)">
 		<!-- patch vsixmanifest with release package id if running on Jenkins (likely indicated by update version flag set) -->
         <!-- DISABLE while setting up new project layouts
