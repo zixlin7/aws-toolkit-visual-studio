@@ -99,6 +99,9 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
             if (contentPresenter != null)
             {
                 this._ctlGroupsSelectionDisplay = contentPresenter.ContentTemplate.FindName("PART_ContentPresenter", contentPresenter) as TextBlock;
+
+                // Since this is the first time the control is being loaded make sure if a value is already set that the text block has the display value for the selected value.
+                FormatDisplayValue();
             }
         }
 
