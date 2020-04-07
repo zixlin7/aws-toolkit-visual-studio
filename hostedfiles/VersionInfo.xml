@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <versions location="http://aws.amazon.com/visualstudio">
+  <!-- 
+    Toolkit v1.17.0.0 is the last version to reference this release notes page.
+    Release notes are now packaged into newer Toolkit versions.
+  -->
   <version number="1.17.0.0" release-date="2020-03-31" prompt="false">
     <change>Added support .NET Core 3.1 Lambda support.</change>
     <change>Fixed some issues where a "File is already open" error would appear in versions of Visual Studio 2019 16.5 and newer.</change>
