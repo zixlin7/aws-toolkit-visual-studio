@@ -3,6 +3,7 @@
 * Fixed an issue on toolkit startup that caused the following message to appear in Activity Log: SetSite failed for package AWSToolkitPackage Source: 'EnvDTE' ... EnvDTE.Events.get_DebuggerEvents
 * Fixed an issue where CodeCommit repos would not appear if the account did not have access permissions to all of them.
 * Fix dark theme support in the Beanstalk Advanced pane for Custom Availability Zones.
+* The Toolkit's welcome panel now has scroll bars that appear when the contents don't all fit in the view.
 * Improvements to the toolkits startup performance.
 
 v1.17.0.0 (2020-03-31)
