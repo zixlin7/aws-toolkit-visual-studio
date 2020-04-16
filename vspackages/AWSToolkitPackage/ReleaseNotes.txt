@@ -1,4 +1,10 @@
-﻿v1.17.0.0 (2020-03-31)
+﻿vNext
+* Fixed an issue where subnet and security groups would not show when viewing a Lambda Function
+* Fixed an issue on toolkit startup that caused the following message to appear in Activity Log: SetSite failed for package AWSToolkitPackage Source: 'EnvDTE' ... EnvDTE.Events.get_DebuggerEvents
+* Fixed an issue where CodeCommit repos would not appear if the account did not have access permissions to all of them
+* Improvements to the toolkits startup performance.
+
+v1.17.0.0 (2020-03-31)
 * Added support .NET Core 3.1 Lambda support.
 * Fixed some issues where a "File is already open" error would appear in versions of Visual Studio 2019 16.5 and newer.
 * Added ability to right click deploy a serverless.template as a solution item.
