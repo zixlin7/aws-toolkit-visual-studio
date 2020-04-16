@@ -304,6 +304,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.Components
                     var cb = new CheckBox();
                     cb.Margin = new Thickness(2);
                     cb.Content = item;
+                    cb.SetResourceReference(Control.StyleProperty, "awsCheckboxButtonBaseStyle");
                     ListValuesControl.Children.Add(cb);
                 }
             }
