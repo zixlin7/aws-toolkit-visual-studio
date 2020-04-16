@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
+  <Import Project="$(BuildRoot)\buildtools\Common.Build.targets" Condition=" '$(CommonBuildTargetsImported)' == '' " />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0669BB1C-8A7B-4DB0-8410-AC27D471E77B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <AssemblyName>AWSSDK.ToolkitTelemetry</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
+    <DefineConstants>$(BuildConstants);DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>$(OutputRoot)\Plugins</OutputPath>
+    <DefineConstants>$(BuildConstants);TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.Core">
+        <Version>3.3.105.1</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Generated\AmazonToolkitTelemetryConfig.cs" />
+    <Compile Include="Generated\AmazonToolkitTelemetryException.cs" />
+    <Compile Include="Generated\Internal\AmazonToolkitTelemetryMetadata.cs" />
+    <Compile Include="Generated\Model\AmazonToolkitTelemetryRequest.cs" />
+    <Compile Include="Generated\Model\ErrorDetails.cs" />
+    <Compile Include="Generated\Model\Internal\MarshallTransformations\ErrorDetailsMarshaller.cs" />
+    <Compile Include="Generated\Model\Internal\MarshallTransformations\MetadataEntryMarshaller.cs" />
+    <Compile Include="Generated\Model\Internal\MarshallTransformations\MetricDatumMarshaller.cs" />
+    <Compile Include="Generated\Model\Internal\MarshallTransformations\PostErrorReportRequestMarshaller.cs" />
+    <Compile Include="Generated\Model\Internal\MarshallTransformations\PostErrorReportResponseUnmarshaller.cs" />
+    <Compile Include="Generated\Model\Internal\MarshallTransformations\PostFeedbackRequestMarshaller.cs" />
+    <Compile Include="Generated\Model\Internal\MarshallTransformations\PostFeedbackResponseUnmarshaller.cs" />
+    <Compile Include="Generated\Model\Internal\MarshallTransformations\PostMetricsRequestMarshaller.cs" />
+    <Compile Include="Generated\Model\Internal\MarshallTransformations\PostMetricsResponseUnmarshaller.cs" />
+    <Compile Include="Generated\Model\Internal\MarshallTransformations\UserdataMarshaller.cs" />
+    <Compile Include="Generated\Model\MetadataEntry.cs" />
+    <Compile Include="Generated\Model\MetricDatum.cs" />
+    <Compile Include="Generated\Model\PostErrorReportRequest.cs" />
+    <Compile Include="Generated\Model\PostErrorReportResponse.cs" />
+    <Compile Include="Generated\Model\PostFeedbackRequest.cs" />
+    <Compile Include="Generated\Model\PostFeedbackResponse.cs" />
+    <Compile Include="Generated\Model\PostMetricsRequest.cs" />
+    <Compile Include="Generated\Model\PostMetricsResponse.cs" />
+    <Compile Include="Generated\Model\Userdata.cs" />
+    <Compile Include="Generated\ServiceEnumerations.cs" />
+    <Compile Include="Generated\_bcl45\AmazonToolkitTelemetryClient.cs" />
+    <Compile Include="Generated\_bcl45\IAmazonToolkitTelemetry.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

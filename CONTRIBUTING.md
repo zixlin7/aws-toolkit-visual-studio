@@ -68,6 +68,12 @@ Tests are run as part of the build steps in msbuild. You can also run tests from
 -   The Toolkit currently does not compile under Visual Studio 2019
 -   After compiling within VS 2017, the Output tab will report `Build: 62 succeeded, 0 failed, 0 up-to-date, 0 skipped` but the Error List tab will show four errors with the text "AWSToolkit.CodeCommitTeamExplorer.v16 is not compatible with net46". You can still run and debug the Toolkit from VS2017. The errors are related to VS 2019 specific files to support CodeCommit.
 
+## Subsystems
+
+### Telemetry Client
+
+The Telemetry Client is generated from files that model the service. Details about how to generate updated client files can be found at [/toolkitcore/Telemetry/README.md](/toolkitcore/Telemetry/README.md).
+
 ## Reporting Bugs/Feature Requests
 
 We welcome you to use the GitHub issue tracker to report bugs or suggest features.
