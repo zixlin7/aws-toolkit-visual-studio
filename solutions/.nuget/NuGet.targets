@@ -20,7 +20,6 @@
 		<PackageSource Include="$(SolutionDir)..\Include\sdk\nuget" />
 		<PackageSource Include="C:\Codebase\LocalNuget\powershell-pre-release" />
 		<PackageSource Include="https://api.nuget.org/v3/index.json" />
-		<PackageSource Include="https://www.nuget.org/api/v2/" />
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(OS)' == 'Windows_NT'">
