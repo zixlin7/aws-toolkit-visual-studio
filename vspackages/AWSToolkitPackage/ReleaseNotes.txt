@@ -1,4 +1,7 @@
-﻿v1.17.1.0 (2020-04-22)
+﻿vNext
+* Fixed an issue where the Toolkit-generated Beanstalk service role (aws-elasticbeanstalk-service-role) causes Beanstalk deployments to report a RED health status when they use multi-instance Application Load Balancers. Whenever the role is created, a service policy is now attached to it.
+
+v1.17.1.0 (2020-04-22)
 * Fixed an issue where subnet and security groups would not show when viewing a Lambda Function.
 * Fixed an issue on toolkit startup that caused the following message to appear in Activity Log: SetSite failed for package AWSToolkitPackage Source: 'EnvDTE' ... EnvDTE.Events.get_DebuggerEvents
 * Fixed an issue where CodeCommit repos would not appear if the account did not have access permissions to all of them.

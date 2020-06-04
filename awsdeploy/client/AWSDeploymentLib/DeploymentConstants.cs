@@ -91,32 +91,9 @@
 
     public abstract class RolePolicies
     {
-        public const string DefaultBeanstalkServiceRolePolicy = 
-"{"
-  + "\"Version\": \"2012-10-17\","
-  + "\"Statement\": ["
-  + " {"
-  + "   \"Effect\": \"Allow\","
-  + "    \"Action\": ["
-  + "      \"elasticloadbalancing:DescribeInstanceHealth\","
-  + "      \"ec2:DescribeInstances\","
-  + "      \"ec2:DescribeInstanceStatus\","
-  + "      \"ec2:GetConsoleOutput\","
-  + "      \"ec2:AssociateAddress\","
-  + "      \"ec2:DescribeAddresses\","
-  + "      \"ec2:DescribeSecurityGroups\","
-  + "      \"sqs:GetQueueAttributes\","
-  + "      \"sqs:GetQueueUrl\","
-  + "      \"autoscaling:DescribeAutoScalingGroups\","
-  + "      \"autoscaling:DescribeAutoScalingInstances\","
-  + "      \"autoscaling:DescribeScalingActivities\","
-  + "      \"autoscaling:DescribeNotificationConfigurations\""
-  + "    ],"
-  + "    \"Resource\": ["
-  + "      \"*\""
-  + "    ]"
-  + "  }"
-  + "]"
-  + "}";
+        public static class ServiceRoleArns
+        {
+            public const string AWSElasticBeanstalkService = "arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkService";
+        }
     }
 }

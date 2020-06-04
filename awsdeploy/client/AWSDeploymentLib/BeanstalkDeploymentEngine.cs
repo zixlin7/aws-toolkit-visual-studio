@@ -1484,10 +1484,9 @@ namespace AWSDeployment
                         };
                         role = IAMClient.CreateRole(request).Role;
 
-                        IAMClient.PutRolePolicy(new PutRolePolicyRequest
+                        IAMClient.AttachRolePolicy(new AttachRolePolicyRequest
                         {
-                            PolicyDocument = RolePolicies.DefaultBeanstalkServiceRolePolicy,
-                            PolicyName = serviceRoleName + "_VSToolkit-autocreated",
+                            PolicyArn = RolePolicies.ServiceRoleArns.AWSElasticBeanstalkService,
                             RoleName = serviceRoleName
                         });
                     }
