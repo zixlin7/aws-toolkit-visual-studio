@@ -1,5 +1,6 @@
 ﻿vNext
 * Fixed an issue where the Toolkit-generated Beanstalk service role (aws-elasticbeanstalk-service-role) causes Beanstalk deployments to report a RED health status when they use multi-instance Application Load Balancers. Whenever the role is created, a service policy is now attached to it.
+* Fixed an issue where the Beanstalk deployment wizard would not populate roles on the Permissions page when trying to deploy to certain regions.
 
 v1.17.1.0 (2020-04-22)
 * Fixed an issue where subnet and security groups would not show when viewing a Lambda Function.

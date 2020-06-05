@@ -62,7 +62,8 @@ namespace Amazon.AWSToolkit.CommonUI.Components
         {
             this._iamMode = iamMode;
             this._region = region;
-            this._iamClient = account.CreateServiceClient<AmazonIdentityManagementServiceClient>(region);
+            var iamRegionEndpoint = region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
+            this._iamClient = account.CreateServiceClient<AmazonIdentityManagementServiceClient>(iamRegionEndpoint);
 
             this._serviceSpecificProfiles = serviceSpecificProfiles;
 
