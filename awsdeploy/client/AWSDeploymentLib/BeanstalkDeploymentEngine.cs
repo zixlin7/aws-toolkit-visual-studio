@@ -1489,6 +1489,12 @@ namespace AWSDeployment
                             PolicyArn = RolePolicies.ServiceRoleArns.AWSElasticBeanstalkService,
                             RoleName = serviceRoleName
                         });
+
+                        IAMClient.AttachRolePolicy(new AttachRolePolicyRequest
+                        {
+                            PolicyArn = RolePolicies.ServiceRoleArns.AWSElasticBeanstalkEnhancedHealth,
+                            RoleName = serviceRoleName
+                        });
                     }
                     else
                     {

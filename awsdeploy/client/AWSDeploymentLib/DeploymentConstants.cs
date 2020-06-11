@@ -93,7 +93,11 @@
     {
         public static class ServiceRoleArns
         {
-            public const string AWSElasticBeanstalkService = "arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkService";
+            public const string AWSElasticBeanstalkService =
+                "arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkService";
+
+            public const string AWSElasticBeanstalkEnhancedHealth =
+                "arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth";
         }
     }
 }
