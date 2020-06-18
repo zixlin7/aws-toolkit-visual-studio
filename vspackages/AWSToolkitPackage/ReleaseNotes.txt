@@ -1,4 +1,6 @@
 ﻿vNext
+* A banner is shown on first usage, indicating that information relating to Toolkit usage is collected
+* Fixed an issue where first-time users of the Toolkit were not being shown the "Getting Started" dialog in Visual Studio 2019. All users will see this dialog the first time Visual Studio is opened after installing this version of the toolkit.
 * Fixed an issue where the Toolkit-generated Beanstalk service role (aws-elasticbeanstalk-service-role) causes Beanstalk deployments to report a RED health status when they use multi-instance Application Load Balancers. Whenever the role is created, a service policy is now attached to it.
 * Fixed an issue where the Beanstalk deployment wizard would not populate roles on the Permissions page when trying to deploy to certain regions.
 
