@@ -1,11 +1,13 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
+using System.Windows;
+using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Settings;
+using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Model;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.View;
 using log4net;
-using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
 {
@@ -17,39 +19,42 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
     {
         internal static ILog LOGGER = LogManager.GetLogger(typeof(FirstRunController));
 
+        private readonly IAWSToolkitShellProvider _shellProvider;
+
         protected ActionResults _results;
         private FirstRunControl _control;
+        private readonly IToolkitSettingsWatcher _settingsWatcher;
 
-        public FirstRunController(AWSToolkitPackage hostPackage)
+        public FirstRunController(AWSToolkitPackage hostPackage, IToolkitSettingsWatcher toolkitSettingsWatcher)
+            : this(hostPackage, toolkitSettingsWatcher, ToolkitFactory.Instance.ShellProvider)
         {
+        }
+
+        public FirstRunController(
+            AWSToolkitPackage hostPackage,
+            IToolkitSettingsWatcher toolkitSettingsWatcher,
+            IAWSToolkitShellProvider shellProvider)
+        {
+            _shellProvider = shellProvider;
             HostPackage = hostPackage;
-            Model = new FirstRunModel();  
-            Model.PropertyChanged += ModelOnPropertyChanged;  
+            Model = new FirstRunModel();
+            Model.PropertyChanged += ModelOnPropertyChanged;
+
+            _settingsWatcher = toolkitSettingsWatcher;
+            _settingsWatcher.SettingsChanged += ToolkitSettingsChanged;
         }
 
         public FirstRunModel Model { get; }
 
         public AWSToolkitPackage HostPackage { get; }
 
-        /// <summary>
-        /// Checks to see if any registered credential profiles are available. If
-        /// not, the first run page can be displayed in the IDE.
-        /// </summary>
-        internal static bool ShouldShowFirstRunSetupPage
-        {
-            get
-            {
-                var accounts = ToolkitFactory.Instance.RootViewModel.RegisteredAccounts;
-                return !accounts.Any();
-            }
-        }
-
         public ActionResults Execute()
         {
             try
             {
                 this._control = new FirstRunControl(this);
-                ToolkitFactory.Instance.ShellProvider.OpenInEditor(this._control);
+                _shellProvider.OpenInEditor(this._control);
+                _control.Unloaded += FirstRunControlUnloaded;
 
                 ToolkitEvent evnt = new ToolkitEvent();
                 evnt.AddProperty(AttributeKeys.FirstExperienceDisplayStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
@@ -68,6 +73,17 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
             return new ActionResults().WithSuccess(true);
         }
 
+        private void FirstRunControlUnloaded(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is FirstRunControl control))
+            {
+                return;
+            }
+
+            control.Unloaded -= FirstRunControlUnloaded;
+            _settingsWatcher.SettingsChanged -= ToolkitSettingsChanged;
+        }
+
         public void OpenInBrowser(string endpoint)
         {
             this.HostPackage.JoinableTaskFactory.Run(async () =>
@@ -84,6 +100,23 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
                 return;
 
             Model.IsValid = !string.IsNullOrEmpty(Model.AccessKey) && !string.IsNullOrEmpty(Model.SecretKey);
+
+            if (propertyChangedEventArgs.PropertyName.Equals("CollectAnalytics", StringComparison.OrdinalIgnoreCase))
+            {
+                // Update settings
+                ToolkitSettings.Instance.TelemetryEnabled = Model.CollectAnalytics;
+            }
+        }
+
+        private void ToolkitSettingsChanged(object sender, EventArgs e)
+        {
+            if (Model.CollectAnalytics != ToolkitSettings.Instance.TelemetryEnabled)
+            {
+                _shellProvider.ExecuteOnUIThread(() =>
+                {
+                    Model.CollectAnalytics = ToolkitSettings.Instance.TelemetryEnabled;
+                });
+            }
         }
     }
 }

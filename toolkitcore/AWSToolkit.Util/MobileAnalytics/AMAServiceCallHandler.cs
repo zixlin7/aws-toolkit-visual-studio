@@ -1,4 +1,6 @@
-﻿using Amazon.AWSToolkit.Tasks;
+﻿using Amazon.AWSToolkit.Settings;
+using Amazon.AWSToolkit.Tasks;
+using Amazon.AWSToolkit.Telemetry;
 using Amazon.MobileAnalytics;
 using Amazon.MobileAnalytics.Model;
 using Amazon.Runtime.Internal.Settings;
@@ -95,7 +97,8 @@ namespace Amazon.AWSToolkit.MobileAnalytics
             }
 
             //construct the AWS Mobile Analytics Client Context
-            ClientContextConfig clientContextConfig = new ClientContextConfig(CustomerGuid, AMAConstants.ClientInformation.APP_TITLE, AMAConstants.ClientInformation.APP_ID);
+            var clientId = ClientId.Instance.Get().ToString();
+            ClientContextConfig clientContextConfig = new ClientContextConfig(clientId, AMAConstants.ClientInformation.APP_TITLE, AMAConstants.ClientInformation.APP_ID);
             _clientContext = new ClientContext(clientContextConfig);
 
 
@@ -346,41 +349,12 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 //try to retrieve permission. If we can't access the file for whatever reason, assume we don't have permission.
                 try
                 {
-                    string analyticsPermission = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsPermitted);
-                    return string.Equals(analyticsPermission, "true", StringComparison.OrdinalIgnoreCase);
+                    return ToolkitSettings.Instance.TelemetryEnabled;
                 }
                 catch (Exception e)
                 {
-                    LOGGER.Error("Failed to access MiscSettings file. We don't know if we have permission to collect analytics. Assuming we do not have permission.", e);
-                    return false;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or Generates a unique, non-identifying/anonymous customer GUID cached in the APP Data.
-        /// </summary>
-        private string CustomerGuid
-        {
-            get
-            {
-                //try to retrieve customer guid. If we can't access the file for whatever reason, create an arbitrary one.
-                try
-                {
-                    string customerId = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsAnonymousCustomerId);
-                    if (string.IsNullOrEmpty(customerId))
-                    {
-                        Guid g = Guid.NewGuid();
-                        customerId = g.ToString();
-                        PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsAnonymousCustomerId, customerId);
-                    }
-
-                    return customerId;
-                }
-                catch (Exception e)
-                {
-                    LOGGER.Error("Failed to access AnalyticsAnonymousCustomerId in MiscSettings. Creating a new one.", e);
-                    return Guid.NewGuid().ToString();
+                    LOGGER.Error(e);
+                    return ToolkitSettings.DefaultValues.TelemetryEnabled;
                 }
             }
         }

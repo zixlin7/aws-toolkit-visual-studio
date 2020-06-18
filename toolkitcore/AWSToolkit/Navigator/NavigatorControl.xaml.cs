@@ -56,6 +56,8 @@ namespace Amazon.AWSToolkit.Navigator
                     this._ctlResourceTree.ItemsSource = account.Children;
                 }
             }
+
+            OnSelectedAccountChanged();
         }
 
         public void Initialize(AWSViewModel viewModel)
@@ -297,6 +299,7 @@ namespace Amazon.AWSToolkit.Navigator
         }
 
         public AccountViewModel SelectedAccount => this._ctlAccounts.SelectedAccount;
+        public event EventHandler SelectedAccountChanged;
 
         public AccountViewModel UpdateAccountSelection(Guid uniqueKey, bool refreshAccounts)
         {
@@ -636,6 +639,11 @@ namespace Amazon.AWSToolkit.Navigator
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error navigating to link: " + ex.Message);
             }
+        }
+
+        private void OnSelectedAccountChanged()
+        {
+            SelectedAccountChanged?.Invoke(this, new EventArgs());
         }
     }
 }

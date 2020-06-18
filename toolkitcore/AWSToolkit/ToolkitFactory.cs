@@ -10,7 +10,7 @@ using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.PluginServices.Activators;
 using Amazon.AWSToolkit.Shared;
-
+using Amazon.AWSToolkit.Telemetry;
 using log4net;
 
 namespace Amazon.AWSToolkit
@@ -27,16 +27,20 @@ namespace Amazon.AWSToolkit
 
         readonly NavigatorControl _navigator;
         readonly IAWSToolkitShellProvider _shellProvider;
+        private readonly ITelemetryLogger _telemetryLogger;
 
         private readonly AWSViewMetaNode _rootViewMetaNode = new AWSViewMetaNode();
         AWSViewModel _rootViewModel;
 
         private readonly Dictionary<string, IPluginActivator> _pluginActivators = new Dictionary<string, IPluginActivator>();
 
-        private ToolkitFactory(NavigatorControl navigator, IAWSToolkitShellProvider shellProvider)
+        private ToolkitFactory(NavigatorControl navigator, 
+            ITelemetryLogger telemetryLogger,
+            IAWSToolkitShellProvider shellProvider)
         {
             this._navigator = navigator;
             this._shellProvider = shellProvider;
+            this._telemetryLogger = telemetryLogger;
 
             if (ServicePointManager.DefaultConnectionLimit < 100)
             {
@@ -45,6 +49,7 @@ namespace Amazon.AWSToolkit
         }
 
         public static async Task InitializeToolkit(NavigatorControl navigator,
+            ITelemetryLogger telemetryLogger,
             IAWSToolkitShellProvider shellProvider,
             string additionalPluginPaths,
             Action initializeCompleteCallback)
@@ -59,7 +64,7 @@ namespace Amazon.AWSToolkit
                 typeof(ToolkitFactory).Assembly.Location,
                 additionalPluginPaths);
 
-            INSTANCE = new ToolkitFactory(navigator, shellProvider);
+            INSTANCE = new ToolkitFactory(navigator, telemetryLogger, shellProvider);
 
             INSTANCE.InitializePluginActivators(pluginActivators);
 
@@ -156,6 +161,11 @@ namespace Amazon.AWSToolkit
         public NavigatorControl Navigator => this._navigator;
 
         public IAWSToolkitShellProvider ShellProvider => this._shellProvider;
+
+        /// <summary>
+        /// Entry point for toolkit code to emit metrics from.
+        /// </summary>
+        public ITelemetryLogger TelemetryLogger => this._telemetryLogger;
 
         public AWSViewMetaNode RootViewMetaNode => this._rootViewMetaNode;
 

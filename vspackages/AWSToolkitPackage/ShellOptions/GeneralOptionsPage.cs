@@ -6,6 +6,7 @@ using Amazon.Runtime.Internal.Settings;
 using Microsoft.VisualStudio.Shell;
 
 using Amazon.AWSToolkit;
+using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.VisualStudio.ShellOptions;
 using Amazon.AWSToolkit.VisualStudio;
 
@@ -42,11 +43,13 @@ namespace Microsoft.Samples.VisualStudio.IDE.OptionsPage
         /// <remarks>If the Cancel property of the event is set to true, the page is not activated.</remarks>
         protected override void OnActivate(CancelEventArgs e)
 		{
-            var hostedFilesLocation = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.HostedFilesLocation);
-            (_hostedControl.Child as GeneralOptionsPageControl).HostedFilesLocation = hostedFilesLocation;
+            var optionsControl = _hostedControl.Child as GeneralOptionsPageControl;
+            if (optionsControl == null) return;
 
-            var analyticsPermitted = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsPermitted);
-            (_hostedControl.Child as GeneralOptionsPageControl).AnalyticsPermission = analyticsPermitted;
+            var hostedFilesLocation = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.HostedFilesLocation);
+            optionsControl.HostedFilesLocation = hostedFilesLocation;
+
+            optionsControl.TelemetryEnabled = ToolkitSettings.Instance.TelemetryEnabled;
 
             base.OnActivate(e);
 		}
@@ -82,11 +85,14 @@ namespace Microsoft.Samples.VisualStudio.IDE.OptionsPage
 
             // returns empty for 'default', or region system name to use regional location, or 
             // specific file system location
-            var hostedFilesLocation = (_hostedControl.Child as GeneralOptionsPageControl).HostedFilesLocation;
-            PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.HostedFilesLocation, hostedFilesLocation);
+            var optionsControl = _hostedControl.Child as GeneralOptionsPageControl;
+            if (optionsControl == null) return;
 
-            var analyticsPermitted = (_hostedControl.Child as GeneralOptionsPageControl).AnalyticsPermission;
-            PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsPermitted, analyticsPermitted);
+            var hostedFilesLocation = optionsControl.HostedFilesLocation;
+            PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.HostedFilesLocation,
+                hostedFilesLocation);
+
+            ToolkitSettings.Instance.TelemetryEnabled = optionsControl.TelemetryEnabled;
         }
 
         #endregion Event Handlers

@@ -48,5 +48,23 @@ namespace Amazon.AWSToolkit.VisualStudio
         public const string guidCodeCommitConnectSectionString = "d4632b03-6cf0-4f5e-9124-175280c955df";
 
         public const string VSProjectTypeProjectFolder = "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}";
+
+
+        // Source : Microsoft.VisualStudio.ImageCatalog
+        // There are conflicts with .NET Framework versions when trying to 
+        // directly reference the NuGet package Microsoft.VisualStudio.ImageCatalog
+        // due to the VS2019 CodeCommit module using framework 4.7.x when the rest of the 
+        // code uses 4.6.x (to support VS2017).
+        // Instead, we'll place the values of interest here.
+        // TODO : Get Microsoft.VisualStudio.ImageCatalog NuGet references working in-solution somehow
+        #region KnownImageIds
+
+        public static class VsImageCatalog
+        {
+            public static readonly Guid ImageCatalogGuid = new Guid("{ae27a6b0-e345-4288-96df-5eaf394ee369}");
+            public const int StatusInformation = 2933;
+        }
+
+        #endregion
     };
 }

@@ -59,7 +59,13 @@
     <Compile Include="RegionEndPointsManagerTests.cs" />
     <Compile Include="S3FileFetcherTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings\ToolkitSettingsTests.cs" />
     <Compile Include="Tasks\TaskExtensionMethodsTests.cs" />
+    <Compile Include="Telemetry\ModelExtensionMethodsTests.cs" />
+    <Compile Include="Telemetry\TelemetryClientTests.cs" />
+    <Compile Include="Telemetry\TelemetryPublisherTests.cs" />
+    <Compile Include="Telemetry\TelemetryServiceTests.cs" />
+    <Compile Include="Telemetry\TestHelper.cs" />
     <Compile Include="TestUtil.cs" />
     <Compile Include="Util\ListExtensionMethodsTests.cs" />
   </ItemGroup>
@@ -80,6 +86,10 @@
       <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>
       <Name>AWSToolkit.Lambda.Interface</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\Telemetry\Client\AWSSDK.ToolkitTelemetry.csproj">
+      <Project>{0669bb1c-8a7b-4db0-8410-ac27d471e77b}</Project>
+      <Name>AWSSDK.ToolkitTelemetry</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\InvalidXmlEndpointsFile.xml" />
@@ -96,6 +106,9 @@
     </PackageReference>
     <PackageReference Include="Moq">
       <Version>4.8.1</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>12.0.3</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
       <Version>4.3.0</Version>

@@ -7,6 +7,7 @@ using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Model;
 using log4net;
 using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.AWSToolkit.Settings;
 
 namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
 {
@@ -29,17 +30,20 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
             this._controller = controller;
             this.DataContext = this._controller.Model;
 
+            this.Loaded += FirstRunControl_Loaded;
+            
             InitializeComponent();
             ThemeUtil.ThemeChange += ThemeUtilOnThemeChange;
 
-            // if the user is in VS2013 or VS2015, they will have been asked about
-            // analytics when running the installer
-            var shellVersion = controller.HostPackage.ToolkitShellProviderService.ShellVersion;
-            if (shellVersion == "2013" || shellVersion == "2015")
-                _analyticsPanel.Visibility = Visibility.Collapsed;
-
             // match the logo header 'text' to the theme on startup
             ThemeUtilOnThemeChange(null, null);
+        }
+
+        private void FirstRunControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            ToolkitSettings.Instance.HasUserSeenFirstRunForm = true;
+
+            this.Loaded -= FirstRunControl_Loaded;
         }
 
         private void ThemeUtilOnThemeChange(object sender, EventArgs eventArgs)

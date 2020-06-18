@@ -39,7 +39,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         LambdaFunctionUsesXRay,
         LambdaDeployedFunctionLanguage,
 
-        LambdaTestInvoke,
         LambdaEventSourceSetupSuccess,
         LambdaEventSourceSetupError,
 
@@ -82,7 +81,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         GroupIndex,
         DeploymentBundleSize,
         LambdaDeploymentBundleSize,
-        FunctionInvokeTime,
 
         ErrorInitializingAwsViewModel,
         ErrorLoadingProfiles,

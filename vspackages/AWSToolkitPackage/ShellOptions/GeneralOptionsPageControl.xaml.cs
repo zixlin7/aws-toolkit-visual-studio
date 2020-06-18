@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Navigation;
+using Amazon.AWSToolkit.Settings;
 
 namespace Amazon.AWSToolkit.VisualStudio.ShellOptions
 {
@@ -19,24 +20,10 @@ namespace Amazon.AWSToolkit.VisualStudio.ShellOptions
 
         private static string filePrefix = Uri.UriSchemeFile + Uri.SchemeDelimiter;
 
-        public string AnalyticsPermission
+        public bool TelemetryEnabled
         {
-            get
-            {
-                if (permissionCheckBox.IsChecked.GetValueOrDefault())
-                    return "true";
-                else
-                    return "false";
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                    permissionCheckBox.IsChecked = false;
-                else if (value.Equals("true"))
-                    permissionCheckBox.IsChecked = true;
-                else
-                    permissionCheckBox.IsChecked = false;
-            }
+            get => permissionCheckBox.IsChecked.GetValueOrDefault(ToolkitSettings.DefaultValues.TelemetryEnabled);
+            set => permissionCheckBox.IsChecked = value;
         }
 
         public string HostedFilesLocation
@@ -92,11 +79,6 @@ namespace Amazon.AWSToolkit.VisualStudio.ShellOptions
         {
             Process.Start(new ProcessStartInfo((sender as Hyperlink).NavigateUri.ToString()));
             e.Handled = true;
-        }
-
-        private void CheckBox_Checked(object sender, EventArgs e)
-        {
-
         }
     }
 }

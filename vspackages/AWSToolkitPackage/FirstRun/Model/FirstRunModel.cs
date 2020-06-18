@@ -8,6 +8,7 @@ using System.Windows.Media;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Persistence;
+using Amazon.AWSToolkit.Settings;
 using log4net;
 using ThirdParty.Json.LitJson;
 using Amazon.AWSToolkit.Account.Model;
@@ -72,7 +73,14 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
         public bool CollectAnalytics
         {
             get => _collectAnalytics;
-            set { _collectAnalytics = value;OnPropertyChanged(); }
+            set
+            {
+                if (_collectAnalytics != value)
+                {
+                    _collectAnalytics = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public bool OpenAWSExplorerOnClosing
@@ -153,50 +161,24 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
         }
 
         /// <summary>
-        /// If the user has the 2013/2015 extension installed, they may have already declined analytics 
-        /// so check and return appropriate flag setting for page defaults.
+        /// The user may have already set this option
         /// </summary>
         /// <returns>
-        /// True to request collection if the user has not declined previously
-        /// or not been prompted
+        /// True: user has enabled telemetry, or has never been prompted
+        /// False: user has disabled telemetry
         /// </returns>
         private bool CheckAnalyticsCollectionPermission()
         {
             try
             {
-                var localAppFolderLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AWSToolkit");
-                var miscSettingsFile = Path.Combine(localAppFolderLocation, "MiscSettings.json");
-
-                // if the file doesn't exist, the user only has VS2017 installed and we
-                // therefore want to default to collection
-                if (!File.Exists(miscSettingsFile))
-                    return true;
-
-                //grab the text from MiscSettings and convert it to a Json object
-                var miscSettings = File.ReadAllText(miscSettingsFile);
-
-                // if the file is empty, we can default to collection since the user
-                // hasn't declined previously
-                if (string.IsNullOrEmpty(miscSettings))
-                    return true;
-
-                var jsonObj = JsonMapper.ToObject(miscSettings);
-                if (JsonPropertyExists(jsonObj, ToolkitSettingsConstants.MiscSettings) 
-                    && JsonPropertyExists(jsonObj[ToolkitSettingsConstants.MiscSettings], ToolkitSettingsConstants.AnalyticsPermitted))
-                {
-                    var userPreferenceOnAnalytics = jsonObj[ToolkitSettingsConstants.MiscSettings][ToolkitSettingsConstants.AnalyticsPermitted].ToString();
-                    bool collectionPermitted;
-                    bool.TryParse(userPreferenceOnAnalytics, out collectionPermitted);
-                    return collectionPermitted;
-                }
+                return ToolkitSettings.Instance.TelemetryEnabled;
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error reading analytics setting from miscsettings.json file", e);
+                LOGGER.Error(e);
             }
 
-            // if an error occurs, just reset to collect so we don't miss anything
-            return true;
+            return ToolkitSettings.DefaultValues.TelemetryEnabled;
         }
 
         /// <summary>
@@ -208,58 +190,12 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
         {
             try
             {
-                var localAppFolderLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AWSToolkit");
-                var miscSettingsFile = Path.Combine(localAppFolderLocation, "MiscSettings.json");
-
-                JsonData miscSettings = null;
-                if (File.Exists(miscSettingsFile) )
-                    miscSettings = JsonMapper.ToObject(File.ReadAllText(miscSettingsFile));
-
-                if (JsonPropertyExists(miscSettings, ToolkitSettingsConstants.MiscSettings))
-                {
-                    miscSettings[ToolkitSettingsConstants.MiscSettings][ToolkitSettingsConstants.AnalyticsPermitted] = CollectAnalytics.ToString();
-                }
-                else
-                {
-                    var insideObj = new JsonData();
-                    insideObj.SetJsonType(JsonType.String);
-                    insideObj[ToolkitSettingsConstants.AnalyticsPermitted] = CollectAnalytics.ToString();
-
-                    var outsideObj = new JsonData();
-                    outsideObj.SetJsonType(JsonType.Object);
-                    outsideObj[ToolkitSettingsConstants.MiscSettings] = insideObj;
-
-                    miscSettings = outsideObj;
-                }
-
-                var sb = new StringBuilder();
-                var writer = new JsonWriter(sb) {PrettyPrint = true};
-                JsonMapper.ToJson(miscSettings, writer);
-
-                if (!Directory.Exists(localAppFolderLocation))
-                    Directory.CreateDirectory(localAppFolderLocation);
-
-                File.WriteAllText(miscSettingsFile, sb.ToString());
+                ToolkitSettings.Instance.TelemetryEnabled = CollectAnalytics;
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error writing analytics setting to miscsettings.json file", e);
+                LOGGER.Error(e);
             }
-        }
-
-        public static bool JsonPropertyExists(JsonData jsonObject, string property)
-        {
-            if (jsonObject == null)
-                return false;
-
-            IEnumerable<string> propertyNames = jsonObject.PropertyNames;
-            foreach (var propertyName in propertyNames)
-            {
-                if (string.Equals(propertyName, property, StringComparison.OrdinalIgnoreCase))
-                    return true;
-            }
-
-            return false;
         }
 
 
@@ -268,7 +204,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
         private string _accessKey;
         private string _secretKey;
         private string _accountNumber;
-        private bool _collectAnalytics = true;
+        private bool _collectAnalytics = ToolkitSettings.DefaultValues.TelemetryEnabled;
         private bool _isValid;
         private bool _openAwsExplorerOnClose = true;
 

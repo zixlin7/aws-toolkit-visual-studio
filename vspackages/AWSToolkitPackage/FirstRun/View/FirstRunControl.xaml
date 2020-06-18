@@ -346,36 +346,22 @@
                                 Toolkit Analytics
                             </TextBlock>
 
-                            <FlowDocumentScrollViewer Grid.Row="1"
-                                                  VerticalScrollBarVisibility="Auto">
-                                <FlowDocument Style="{StaticResource flowDocumentStyle}">
-                                    <Paragraph>
-                                        <Run>
-                                            By leaving this box checked, you agree that AWS may anonymously collect 
-                                            analytics about your usage of AWS Toolkit (such as service/feature usage 
-                                            and view, UI instrumentation usage, AWS Toolkit version and user platform). 
-                                            AWS will use this information to improve the AWS Toolkit and other Amazon 
-                                            products and services and will handle all information received in accordance 
-                                            with the
-                                        </Run>
-                                        <Hyperlink IsEnabled="True"
-                                                   NavigateUri="{Binding PrivacyPolicyEndpoint, Mode=OneWay}"
-                                                   RequestNavigate="Hyperlink_OnRequestNavigate">
-                                            AWS Privacy Policy
-                                        </Hyperlink>
-                                        <Run>.</Run>
-                                    </Paragraph>
-                                </FlowDocument>
-                            </FlowDocumentScrollViewer>
-
-                            <CheckBox Grid.Row="2" Margin="12,4,4,0"
+                            <CheckBox Grid.Row="1" Margin="12,11,4,0"
                                   IsChecked="{Binding CollectAnalytics}"
+                                  VerticalContentAlignment="Top"
                                       Style="{DynamicResource awsCheckboxButtonBaseStyle}">
-                                <TextBlock TextWrapping="Wrap">
-                                    I acknowledge the legal notice above and agree to let AWS collect anonymous 
-                                    analytics about my AWS Toolkit usage.
+                                <TextBlock TextWrapping="Wrap" Style="{DynamicResource awsTextBlockBaseStyle}">
+                                    Allow AWS Toolkit to collect usage information
                                 </TextBlock>
                             </CheckBox>
+                            <TextBlock Grid.Row="2" Margin="32 11 0 0" TextWrapping="Wrap" Style="{DynamicResource awsTextBlockBaseStyle}">
+                                By letting us know which Toolkit features are used, this data helps improve the AWS Toolkit and other Amazon products and services. AWS handles this data in accordance with the
+                                <Hyperlink IsEnabled="True"
+                                           NavigateUri="{Binding PrivacyPolicyEndpoint, Mode=OneWay}"
+                                           RequestNavigate="Hyperlink_OnRequestNavigate">
+                                    AWS Privacy Policy
+                                </Hyperlink>. When available, an AWS Account ID is associated with this information.
+                            </TextBlock>
                         </Grid>
 
                         <Grid x:Name="_linksPanel" Grid.Row="1">

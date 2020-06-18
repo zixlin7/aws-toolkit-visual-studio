@@ -7,9 +7,9 @@ using System.Text;
 using System.Windows;
 using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.Model;
+using Amazon.AWSToolkit.Telemetry;
 using log4net;
 using System.Xml.Linq;
-using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.Lambda.View.Components
 {
@@ -36,7 +36,6 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
         private async void Execute_Click(object sender, RoutedEventArgs x)
         {
             bool success = false;
-            long start = DateTime.Now.Ticks;
             try
             {
                 this._ctlResponse.Text = "";
@@ -61,11 +60,11 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
             }
             finally
             {
-                var totalTime = TimeSpan.FromTicks(DateTime.Now.Ticks - start).TotalMilliseconds;
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.LambdaTestInvoke, success.ToString());
-                evnt.AddProperty(MetricKeys.FunctionInvokeTime, totalTime);
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
+                ToolkitFactory.Instance.TelemetryLogger.RecordLambdaInvokeRemote(new LambdaInvokeRemote()
+                {
+                    Result = success ? Result.Succeeded : Result.Failed,
+                    Runtime = new Telemetry.Runtime(this._controller?.Model?.Runtime?.ToString())
+                });
 
                 StopProgressBar();
             }

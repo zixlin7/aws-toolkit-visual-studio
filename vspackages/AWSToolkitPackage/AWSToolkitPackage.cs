@@ -14,6 +14,7 @@ using Microsoft.Samples.VisualStudio.IDE.OptionsPage;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Threading;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
@@ -53,7 +54,15 @@ using Amazon.AWSToolkit.Lambda.WizardPages;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 using System.Threading;
+using System.Threading.Tasks;
+using Amazon.AWSToolkit.Settings;
+using Amazon.AWSToolkit.Telemetry;
+using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.VisualStudio.Lambda;
+using Amazon.AWSToolkit.VisualStudio.Telemetry;
+using Amazon.AWSToolkit.VisualStudio.Utilities;
+using Amazon.AWSToolkit.VisualStudio.Utilities.DTE;
+using Amazon.AWSToolkit.VisualStudio.Utilities.VsAppId;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -118,6 +127,12 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         // registered VS command line param, /awsToolkitPlugins c:\path1[;c:\path2;c:\path3...]
         internal const string awsToolkitPluginsParam = "awsToolkitPlugins";
+
+        private ToolkitSettingsWatcher _toolkitSettingsWatcher;
+
+        private TelemetryManager _telemetryManager;
+        private TelemetryInfoBarManager _telemetryInfoBarManager;
+        private DateTime _startInitializeOn;
 
         internal AWSToolkitShellProviderService ToolkitShellProviderService { get; private set; }
         internal AWSLegacyDeploymentPersistenceService LegacyDeploymentPersistenceService { get; private set; }
@@ -184,10 +199,14 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// </summary>
         public AWSToolkitPackage()
         {
+            _startInitializeOn = DateTime.Now;
+
             Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
             Utility.ConfigureLog4Net();
 
             AppDomain.CurrentDomain.AssemblyResolve += Utility.AssemblyResolveEventHandler;
+
+            ToolkitSettings.Initialize();
 
             _navigatorVsUIHierarchy = new NavigatorVsUIHierarchy(this);
             ShellDispatcher = Dispatcher.CurrentDispatcher;
@@ -544,10 +563,17 @@ namespace Amazon.AWSToolkit.VisualStudio
                     }
                 });
 
+                _toolkitSettingsWatcher = new ToolkitSettingsWatcher();
+
+                var productEnvironment = CreateProductEnvironment();
+
+                var accountManager = CreateAccountManager(navigator);
+                
+                _telemetryManager = CreateTelemetryManager(accountManager, productEnvironment);
+
                 // shell provider is used all the time, so pre-load. Leave legacy deployment
                 // service until a plugin asks for it.
                 InstantiateToolkitShellProviderService(dteVersion);
-                
 
                 ToolkitEvent evnt = new ToolkitEvent();
                 evnt.AddProperty(AttributeKeys.VisualStudioIdentifier, string.Format("{0}/{1}", dteVersion, dteEdition));
@@ -556,14 +582,27 @@ namespace Amazon.AWSToolkit.VisualStudio
                 ThemeUtil.Initialize(dteVersion);
 
 
-                await ToolkitFactory.InitializeToolkit(navigator, ToolkitShellProviderService as IAWSToolkitShellProvider, additionalPluginFolders, () =>
-                {
-                    // Event listener uses IAWSLambda, requires plugins to be loaded first
-                    InitializeLambdaTesterEventListener();
+                await ToolkitFactory.InitializeToolkit(
+                    navigator,
+                    _telemetryManager.TelemetryLogger,
+                    ToolkitShellProviderService as IAWSToolkitShellProvider,
+                    additionalPluginFolders,
+                    () =>
+                    {
+                        // Event listener uses IAWSLambda, requires plugins to be loaded first
+                        InitializeLambdaTesterEventListener();
+                        ToolkitFactory.Instance?.TelemetryLogger.RecordSessionStart(new SessionStart());
 
-                    _toolkitInitialized = true;
-                    ShowFirstRun();
-                });
+                        var startupMs = (DateTime.Now - _startInitializeOn).TotalMilliseconds;
+
+                        ToolkitFactory.Instance?.TelemetryLogger.RecordToolkitInit(new ToolkitInit()
+                        {
+                            Duration = startupMs
+                        });
+
+                        _toolkitInitialized = true;
+                        ShowFirstRun();
+                    });
 
                 ToolkitFactory.SignalShellInitializationComplete();
             }
@@ -571,6 +610,66 @@ namespace Amazon.AWSToolkit.VisualStudio
             {
                 LOGGER.Info("AWSToolkitPackage InitializeAsync complete");
             }
+        }
+
+        private static AccountManager CreateAccountManager(NavigatorControl navigator)
+        {
+            var accountManager = new AccountManager();
+
+            navigator.SelectedAccountChanged += async (sender, args) =>
+            {
+                try
+                {
+                    var navigatorControl = sender as NavigatorControl;
+
+                    Debug.Assert(navigatorControl != null, "Event did not receive a NavigatorControl");
+
+                    var account = navigatorControl.SelectedAccount;
+
+                    // Handle the account processing on a background thread
+                    await TaskScheduler.Default;
+
+                    await accountManager.SetCurrentAccount(account);
+                }
+                catch (Exception e)
+                {
+                    LOGGER.Error(e);
+                }
+            };
+
+            return accountManager;
+        }
+
+        private TelemetryManager CreateTelemetryManager(
+            AccountManager accountManager,
+            ProductEnvironment productEnvironment)
+        {
+            var telemetryManager = new TelemetryManager(accountManager, productEnvironment);
+
+            // Get telemetry started in a background thread (don't block on obtaining credentials)
+            ThreadPool.QueueUserWorkItem(state => { telemetryManager.Initialize(); });
+
+            return telemetryManager;
+        }
+
+        private ProductEnvironment CreateProductEnvironment()
+        {
+            return this.JoinableTaskFactory.Run(async () =>
+            {
+                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                try
+                {
+                    var dte = (EnvDTE.DTE) await GetServiceAsync(typeof(EnvDTE.DTE));
+                    var vsAppId = (IVsAppId) await GetServiceAsync(typeof(IVsAppId));
+
+                    return ToolkitProductEnvironment.CreateProductEnvironment(vsAppId, dte);
+                }
+                catch (Exception e)
+                {
+                    LOGGER.Error("Unable to create ProductEnvironment, using default values", e);
+                    return ProductEnvironment.Default;
+                }
+            });
         }
 
         private void InitializeLambdaTesterEventListener()
@@ -593,28 +692,42 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// <returns></returns>
         public int OnShellPropertyChange(int propid, object propValue)
         {
+            bool shellInitialized = false;
+
             if ((int)__VSSPROPID4.VSSPROPID_ShellInitialized == propid)
             {
                 var propertyValue = (bool)propValue;
                 LOGGER.InfoFormat("Received __VSSPROPID4.VSSPROPID_ShellInitialized property change, new value {0}", propertyValue);
 
-                if (propertyValue)
+                shellInitialized = propertyValue;
+            }
+            else if ((int) __VSSPROPID2.VSSPROPID_MainWindowVisibility == propid)
+            {
+                // VS 2019 emits VSSPROPID_MainWindowVisibility, not always VSSPROPID_ShellInitialized
+                // VS 2017 does not emit VSSPROPID_MainWindowVisibility
+                var propertyValue = (bool) propValue;
+                LOGGER.InfoFormat("Received __VSSPROPID2.VSSPROPID_MainWindowVisibility property change, new value {0}", propertyValue);
+                shellInitialized = propertyValue;
+            }
+
+            if (shellInitialized)
+            {
+                this.JoinableTaskFactory.Run(async () =>
                 {
-                    this.JoinableTaskFactory.Run(async () =>
+                    await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    var shellService = await GetServiceAsync(typeof(SVsShell)) as IVsShell;
+                    if (shellService != null)
                     {
-                        await this.JoinableTaskFactory.SwitchToMainThreadAsync();
-                        var shellService = await GetServiceAsync(typeof(SVsShell)) as IVsShell;
-                        if (shellService != null)
-                        {
-                            ErrorHandler.ThrowOnFailure(shellService.UnadviseShellPropertyChanges(_vsShellPropertyChangeEventSinkCookie));
-                        }
-                    });
+                        ErrorHandler.ThrowOnFailure(shellService.UnadviseShellPropertyChanges(_vsShellPropertyChangeEventSinkCookie));
+                    }
+                });
 
-                    _vsShellPropertyChangeEventSinkCookie = 0;
+                _vsShellPropertyChangeEventSinkCookie = 0;
 
-                    _shellInitialized = true;
-                    ShowFirstRun();
-                }
+                LOGGER.Debug("Toolkit considers VS to be initialized now");
+                _shellInitialized = true;
+                ShowFirstRun();
+                ShowTelemetryNotice();
             }
 
             return VSConstants.S_OK;
@@ -632,9 +745,9 @@ namespace Amazon.AWSToolkit.VisualStudio
                     await this.JoinableTaskFactory.SwitchToMainThreadAsync();
                     try
                     {
-                        if (FirstRunController.ShouldShowFirstRunSetupPage)
+                        if (!ToolkitSettings.Instance.HasUserSeenFirstRunForm)
                         {
-                            var controller = new FirstRunController(this);
+                            var controller = new FirstRunController(this, _toolkitSettingsWatcher);
                             controller.Execute();
                         }
                     }
@@ -644,6 +757,30 @@ namespace Amazon.AWSToolkit.VisualStudio
                     }
                 });
             }
+        }
+
+        private void ShowTelemetryNotice()
+        {
+            if (!TelemetryNotice.CanShowNotice())
+            {
+                return;
+            }
+
+            this.JoinableTaskFactory.Run(async () =>
+            {
+                try
+                {
+                    await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                    LOGGER.Debug("Attempting to show Telemetry Banner");
+                    _telemetryInfoBarManager = new TelemetryInfoBarManager(this);
+                    _telemetryInfoBarManager.ShowTelemetryInfoBar();
+                }
+                catch (Exception e)
+                {
+                    LOGGER.Error("ShowTelemetryNotice error", e);
+                }
+            });
         }
 
         static void SetupMenuCommand(OleMenuCommandService mcs, Guid cmdSetGuid, uint commandId, EventHandler command, EventHandler queryStatus)
@@ -2198,6 +2335,13 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         int IVsPackage.Close()
         {
+            _toolkitSettingsWatcher?.Dispose();
+
+            ToolkitFactory.Instance?.TelemetryLogger.RecordSessionEnd(new SessionEnd());
+            _telemetryManager?.Dispose();
+
+            _telemetryInfoBarManager?.Dispose();
+
             SimpleMobileAnalytics.Instance.StopMainSession();
             return Microsoft.VisualStudio.VSConstants.S_OK;
         }

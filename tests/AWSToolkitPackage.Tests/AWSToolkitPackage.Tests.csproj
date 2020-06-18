@@ -43,6 +43,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FirstRun\FirstRunControllerTests.cs" />
     <Compile Include="UIThreadFixture.cs" />
     <Compile Include="Lambda\LambdaTesterUsageEmitterTests.cs" />
     <Compile Include="Lambda\LambdaTesterUtilitiesTests.cs" />
@@ -56,6 +57,10 @@
     <ProjectReference Include="..\..\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
       <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
       <Name>AWSToolkit.Util</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\AWSToolkit\AWSToolkit.csproj">
+      <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
+      <Name>AWSToolkit</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj">
       <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>
@@ -98,7 +103,6 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
