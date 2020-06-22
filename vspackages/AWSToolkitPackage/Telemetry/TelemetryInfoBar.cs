@@ -14,8 +14,16 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
     {
         static readonly ILog Logger = LogManager.GetLogger(typeof(TelemetryInfoBar));
 
-        private readonly InfoBarHyperlink _infoBarMoreDetails = new InfoBarHyperlink("More details");
-        private readonly InfoBarHyperlink _infoBarDisable = new InfoBarHyperlink("Disable");
+        public enum ActionContexts
+        {
+            MoreDetails,
+            Disable,
+            DontShowAgain,
+        }
+
+        private readonly InfoBarHyperlink _infoBarMoreDetails = new InfoBarHyperlink("More details", ActionContexts.MoreDetails);
+        private readonly InfoBarHyperlink _infoBarDisable = new InfoBarHyperlink("Disable", ActionContexts.Disable);
+        private readonly InfoBarHyperlink _infoBarDontShowAgain = new InfoBarHyperlink("Don't show this again", ActionContexts.DontShowAgain);
 
         private IVsInfoBarUIElement _registeredInfoBarElement;
         private uint _infoBarElementCookie;
@@ -39,6 +47,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
                 {
                     _infoBarMoreDetails,
                     _infoBarDisable,
+                    _infoBarDontShowAgain,
                 },
                 image: imageMoniker,
                 isCloseButtonVisible: true);
@@ -75,15 +84,24 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
             {
                 ThreadHelper.ThrowIfNotOnUIThread();
 
-                if (actionItem == _infoBarDisable)
+                if (actionItem?.ActionContext is ActionContexts actionContext)
                 {
-                    ToolkitSettings.Instance.TelemetryEnabled = false;
-                    infoBarUiElement.Close();
-                }
-                else if (actionItem == _infoBarMoreDetails)
-                {
-                    var dlg = new TelemetryInformationDialog();
-                    dlg.ShowModal();
+                    switch (actionContext)
+                    {
+                        case ActionContexts.Disable:
+                            ToolkitSettings.Instance.TelemetryEnabled = false;
+                            infoBarUiElement.Close();
+                            break;
+                        case ActionContexts.MoreDetails:
+                        {
+                            var dlg = new TelemetryInformationDialog();
+                            dlg.ShowModal();
+                            break;
+                        }
+                        case ActionContexts.DontShowAgain:
+                            infoBarUiElement.Close();
+                            break;
+                    }
                 }
             }
             catch (Exception e)
