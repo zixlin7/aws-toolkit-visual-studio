@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment;
+using Amazon.AWSToolkit.ElasticBeanstalk.Model;
 using Amazon.RDS;
 using Amazon.RDS.Model;
 using log4net;

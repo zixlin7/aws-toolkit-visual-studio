@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+
 using Amazon.Common.DotNetCli.Tools.Commands;
 using Amazon.Common.DotNetCli.Tools;
 using Amazon.Common.DotNetCli.Tools.Options;
@@ -37,7 +40,7 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
                 }
                 return this._ebClient;
             }
-            set => this._ebClient = value;
+            set { this._ebClient = value; }
         }
 
         public string GetSolutionStackOrDefault(string propertyValue, CommandOption option, bool required)
@@ -75,11 +78,74 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
             var allSolutionStacks = (await this.EBClient.ListAvailableSolutionStacksAsync()).SolutionStacks;
             foreach (var stack in allSolutionStacks.OrderByDescending(x => x))
             {
-                if (stack.Contains("Windows"))
+                if (EBUtilities.IsSolutionStackWindows(stack) || EBUtilities.IsSolutionStackLinuxNETCore(stack))
                     solutionStacks.Add(stack);
             }
 
-            return solutionStacks;
+            return FilterSolutionStackToLatestVersion(solutionStacks);
         }
+
+        private static SolutionStackNameProperties ParseSolutionStackName(string solutionStackName)
+        {
+            Version version = null;
+            var tokens = solutionStackName.Split(' ');
+            var familyName = new StringBuilder();
+            foreach (var token in tokens)
+            {
+                if (token.StartsWith("v") && char.IsNumber(token[1]))
+                {
+                    Version.TryParse(token.Substring(1), out version);
+                }
+                else
+                {
+                    familyName.Append(token + " ");
+                }
+            }
+
+            if (version == null)
+            {
+                return new SolutionStackNameProperties { FamilyName = solutionStackName, FullName = solutionStackName };
+            }
+
+            return new SolutionStackNameProperties { FamilyName = familyName.ToString().TrimEnd(), FullName = solutionStackName, Version = version };
+        }
+
+        public static IList<string> FilterSolutionStackToLatestVersion(IList<string> allSolutionStacks)
+        {
+
+
+            var latestVersions = new Dictionary<string, SolutionStackNameProperties>();
+            foreach(var solutionStackName in allSolutionStacks)
+            {
+                var properties = ParseSolutionStackName(solutionStackName);
+                if(properties.Version == null)
+                {
+                    latestVersions[properties.FamilyName] = properties;
+                }
+                else if(latestVersions.TryGetValue(properties.FamilyName, out var current))
+                {
+                    if(current.Version < properties.Version)
+                    {
+                        latestVersions[properties.FamilyName] = properties;
+                    }
+                }
+                else
+                {
+                    latestVersions[properties.FamilyName] = properties;
+                }
+            }
+
+            var filterList = latestVersions.Values.Select(x => x.FullName).OrderBy(x => x).ToList();
+
+            return filterList;
+        }
+
+        class SolutionStackNameProperties
+        { 
+            public string FamilyName { get; set; }
+            public string FullName { get; set; }
+            public Version Version { get; set; }
+        }
+
     }
 }

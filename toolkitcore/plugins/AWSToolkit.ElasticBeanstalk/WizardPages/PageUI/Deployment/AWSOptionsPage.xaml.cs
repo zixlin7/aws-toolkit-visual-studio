@@ -9,10 +9,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.EC2;
-using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment;
 using AWSDeployment;
 using log4net;
 using System.Windows.Data;
+using Amazon.AWSToolkit.ElasticBeanstalk.Model;
 using Amazon.ElasticLoadBalancingV2;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment

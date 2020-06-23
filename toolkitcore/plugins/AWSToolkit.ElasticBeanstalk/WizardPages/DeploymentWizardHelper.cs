@@ -197,34 +197,92 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages
             return results;
         }
 
-        public const string DEFALT_SOLUTION_STACK_NAME_PREFIX = "64bit Windows Server 2016 v";
-        public static string PickDefaultSolutionStack(IEnumerable<string> existingSolutionStacks)
+        public static readonly IList<string> DefaultSolutionStackPrefixPrecedence = new List<string>()
         {
-            string defaultStack = null;
-            Version currentVersion = null;
+            BeanstalkConstants.SolutionStackNames.Prefixes.WithVersionDecorator.AmazonLinux2_64Bit,
+            BeanstalkConstants.SolutionStackNames.Prefixes.WithVersionDecorator.WindowsServer2019_64Bit,
+        }; 
 
-            foreach(var stackName in existingSolutionStacks)
+        public static string PickDefaultSolutionStack(IList<string> solutionStacks)
+        {
+            var prefixLatestStack = DefaultSolutionStackPrefixPrecedence.Select(prefix =>
             {
-                if (!stackName.StartsWith(DEFALT_SOLUTION_STACK_NAME_PREFIX, StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
+                // Get the latest version (if any) for each prefix of interest
+                var stackVersions = solutionStacks
+                    .Where(stack => stack.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    .Select(stack => new
+                    {
+                        Stack = stack,
+                        Version = GetSolutionStackVersion(stack, prefix)
+                    })
+                    .Where(x => x.Version != null)
+                    .OrderByDescending(x => x.Version)
+                    .ToList();
 
-                var pos = stackName.IndexOf(' ', DEFALT_SOLUTION_STACK_NAME_PREFIX.Length);
-                if (pos == -1) {
-                    continue;
-                }
-                var verionStr = stackName.Substring(DEFALT_SOLUTION_STACK_NAME_PREFIX.Length, pos - DEFALT_SOLUTION_STACK_NAME_PREFIX.Length);
-                Version ver;
-                if (!Version.TryParse(verionStr, out ver) || (currentVersion != null && currentVersion >= ver))
+                var latestStack = stackVersions.FirstOrDefault()?.Stack;
+
+                return new
                 {
-                    continue;
-                }
-                currentVersion = ver;
-                defaultStack = stackName;
+                    Prefix = prefix,
+                    LatestStack = latestStack,
+                };
+            }).FirstOrDefault(x => x.LatestStack != null);
+
+            return prefixLatestStack?.LatestStack ?? solutionStacks.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Given a SolutionStack and a prefix, the version that immediately follows the
+        /// prefix is parsed.
+        ///
+        /// If solutionStack does not start with prefix, or a version is not parse-able, null is returned.
+        /// </summary>
+        /// <example>
+        /// stack: 64bit Windows Server 2019 v2.5.6 running IIS 10.0
+        /// prefix: 64bit Windows Server 2019 v
+        /// returns: Version("2.5.6")
+        /// 
+        /// stack: 64bit Windows Server 2019 v2.5.6 running IIS 10.0
+        /// prefix: 64bit Windows Server 2016 v
+        /// returns: null
+        /// </example>
+        private static Version GetSolutionStackVersion(string solutionStack, string prefix)
+        {
+            var versionStr = GetSolutionStackVersionString(solutionStack, prefix);
+            if (!Version.TryParse(versionStr, out var version))
+            {
+                return null;
             }
 
-            return defaultStack ?? existingSolutionStacks.FirstOrDefault();
+            return version;
+        }
+
+        /// <summary>
+        /// Given a SolutionStack and a prefix, the text that immediately follows the
+        /// prefix is returned as the version (up to the next space).
+        ///
+        /// If solutionStack does not start with prefix, null is returned.
+        /// </summary>
+        /// <example>
+        /// stack: 64bit Windows Server 2019 v2.5.6 running IIS 10.0
+        /// prefix: 64bit Windows Server 2019 v
+        /// returns: "2.5.6"
+        /// 
+        /// stack: 64bit Windows Server 2019 v2.5.6 running IIS 10.0
+        /// prefix: 64bit Windows Server 2016 v
+        /// returns: null
+        /// </example>
+        private static string GetSolutionStackVersionString(string solutionStack, string prefix)
+        {
+            if (!solutionStack.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            return solutionStack
+                .Substring(prefix.Length)
+                .Split(new char[] {' '})
+                .First();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -45,15 +46,16 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
             {
                 _pageUI = new DeploymentReviewPage();
 
-#if VS2017
-                if (this.HostingWizard.GetProperty(DeploymentWizardProperties.SeedData.propkey_ProjectType) is string)
-                {
-                    var isNETCoreProjectType = (this.HostingWizard.GetProperty(DeploymentWizardProperties.SeedData.propkey_ProjectType) as string)
-                                            .Equals(DeploymentWizardProperties.NetCoreWebProject, StringComparison.OrdinalIgnoreCase);
+                var isNetCoreProjectType = false;
 
-                    _pageUI.IsNETCoreProjectType = isNETCoreProjectType;
+                if (this.HostingWizard.GetProperty(DeploymentWizardProperties.SeedData.propkey_ProjectType) is
+                    string projectType)
+                {
+                    isNetCoreProjectType = projectType.Equals(DeploymentWizardProperties.NetCoreWebProject,
+                        StringComparison.OrdinalIgnoreCase);
                 }
-#endif
+
+                _pageUI.IsNETCoreProjectType = isNetCoreProjectType;
             }
 
             return _pageUI;
@@ -87,7 +89,6 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
                 if (_pageUI != null)
                 {
                     HostingWizard[DeploymentWizardProperties.ReviewProperties.propkey_LaunchStatusOnClose] = _pageUI.OpenStatusOnClose;
-                    HostingWizard[DeploymentWizardProperties.ReviewProperties.propkey_ConfigFileDestination] = _pageUI.ConfigFileDestination;
                     HostingWizard[DeploymentWizardProperties.ReviewProperties.propkey_SaveBeanstalkTools] = _pageUI.SaveBeanstalkTools;
                 }
             }

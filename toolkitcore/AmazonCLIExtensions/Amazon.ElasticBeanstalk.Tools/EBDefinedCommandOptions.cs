@@ -1,4 +1,7 @@
 ﻿using Amazon.Common.DotNetCli.Tools.Options;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Amazon.ElasticBeanstalk.Tools
 {
@@ -53,7 +56,7 @@ namespace Amazon.ElasticBeanstalk.Tools
                 Name = "Type of Elastic Beanstalk Environment",
                 Switch = "--environment-type",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "Type of the environment to launch \"LoadBalanced\" or \"SingleInstance\". The default is \"LoadBalanced\"."
+                Description = $"Type of the environment to launch \"{EBConstants.ENVIRONMENT_TYPE_LOADBALANCED}\" or \"{EBConstants.ENVIRONMENT_TYPE_SINGLEINSTANCE}\". The default is \"{EBConstants.ENVIRONMENT_TYPE_LOADBALANCED}\"."
             };
         public static readonly CommandOption ARGUMENT_EC2_KEYPAIR =
             new CommandOption
@@ -69,7 +72,7 @@ namespace Amazon.ElasticBeanstalk.Tools
                 Name = "EC2 instance type",
                 Switch = "--instance-type",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "Type of the EC2 instances launched for the environment. The default is \"t2.small\"."
+                Description = $"Type of the EC2 instances launched for the environment. The default is \"{EBConstants.DEFAULT_LINUX_INSTANCE_TYPE}\" for Linux and \"{EBConstants.DEFAULT_WINDOWS_INSTANCE_TYPE}\" for Windows."
             };
         public static readonly CommandOption ARGUMENT_HEALTH_CHECK_URL =
             new CommandOption
@@ -143,6 +146,32 @@ namespace Amazon.ElasticBeanstalk.Tools
                 ValueType = CommandOption.CommandOptionValueType.BoolValue,
                 Description = "If set to true then the AWS X-Ray daemon will be enabled on EC2 instances running the application."
             };
+        public static readonly CommandOption ARGUMENT_ENHANCED_HEALTH_TYPE =
+            new CommandOption
+            {
+                Name = "Enhanced Health Type",
+                Switch = "--enhanced-health-type",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = $"The type of enhanced health to be enabled. Valid values: {string.Join(", ", EBConstants.ValidEnhanceHealthType)}"
+            };
+        public static readonly CommandOption ARGUMENT_LOADBALANCER_TYPE =
+            new CommandOption
+            {
+                Name = "Loadbalancer Type",
+                Switch = "--loadbalancer-type",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = $"LoadBalancer type for the environment. If no value set then a single instance environment type is created. Valid values: {EBConstants.LOADBALANCER_TYPE_APPLICATION}, {EBConstants.LOADBALANCER_TYPE_NETWORK}, {EBConstants.LOADBALANCER_TYPE_CLASSIC}"
+            };
+        public static readonly CommandOption ARGUMENT_ENABLE_STICKY_SESSIONS =
+            new CommandOption
+            {
+                Name = "Enable Sticky Sessions",
+                Switch = "--enable-sticky-sessions",
+                ValueType = CommandOption.CommandOptionValueType.BoolValue,
+                Description = "If set to true sticky sessions will be enabled for the load balancer of the environment."
+            };
+
+
         public static readonly CommandOption ARGUMENT_EB_ADDITIONAL_OPTIONS =
             new CommandOption
             {
@@ -159,6 +188,22 @@ namespace Amazon.ElasticBeanstalk.Tools
                 Switch = "--output-package",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
                 Description = "The zip file containing the application will be packaged into."
+            };
+        public static readonly CommandOption ARGUMENT_PROXY_SERVER =
+            new CommandOption
+            {
+                Name = "Reverse Proxy Server",
+                Switch = "--proxy-server",
+                ValueType = CommandOption.CommandOptionValueType.StringValue,
+                Description = $"The reverse proxy server used on Linux EC2 instances. Valid values: {string.Join(", ", EBConstants.ValidProxyServer)}. The default is \"{EBConstants.PROXY_SERVER_NGINX}\"."
+            };
+        public static readonly CommandOption ARGUMENT_APPLICATION_PORT =
+            new CommandOption
+            {
+                Name = "Application Port",
+                Switch = "--application-port",
+                ValueType = CommandOption.CommandOptionValueType.IntValue,
+                Description = $"The application port that will be redirect to port 80. The default is port {EBConstants.DEFAULT_APPLICATION_PORT}."
             };
     }
 }

@@ -1,8 +1,10 @@
 ﻿using Amazon.Common.DotNetCli.Tools;
 using Amazon.Common.DotNetCli.Tools.Options;
 using Amazon.ElasticBeanstalk.Model;
+using Amazon.S3.Transfer;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -21,6 +23,7 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
             CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION,
             CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION,
             CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK,
+            CommonDefinedCommandOptions.ARGUMENT_SELF_CONTAINED,
             CommonDefinedCommandOptions.ARGUMENT_PUBLISH_OPTIONS,
 
             EBDefinedCommandOptions.ARGUMENT_EB_APPLICATION,
@@ -38,12 +41,24 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
             EBDefinedCommandOptions.ARGUMENT_INSTANCE_TYPE,
             EBDefinedCommandOptions.ARGUMENT_HEALTH_CHECK_URL,
             EBDefinedCommandOptions.ARGUMENT_ENABLE_XRAY,
+            EBDefinedCommandOptions.ARGUMENT_ENHANCED_HEALTH_TYPE,
             EBDefinedCommandOptions.ARGUMENT_INSTANCE_PROFILE,
             EBDefinedCommandOptions.ARGUMENT_SERVICE_ROLE,
             EBDefinedCommandOptions.ARGUMENT_INPUT_PACKAGE,
 
+            EBDefinedCommandOptions.ARGUMENT_LOADBALANCER_TYPE,
+            EBDefinedCommandOptions.ARGUMENT_ENABLE_STICKY_SESSIONS,
+            EBDefinedCommandOptions.ARGUMENT_PROXY_SERVER,
+            EBDefinedCommandOptions.ARGUMENT_APPLICATION_PORT,
+
             EBDefinedCommandOptions.ARGUMENT_WAIT_FOR_UPDATE
         });
+
+        const string OPTIONS_NAMESPACE_ENVIRONMENT_PROXY = "aws:elasticbeanstalk:environment:proxy";
+        const string OPTIONS_NAMESPACE_APPLICATION_ENVIRONMENT = "aws:elasticbeanstalk:application:environment";
+
+        const string OPTIONS_NAME_PROXY_SERVER = "ProxyServer";
+        const string OPTIONS_NAME_APPLICATION_PORT = "PORT";
 
         public string Package { get; set; }
 
@@ -79,7 +94,30 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
             string environment = this.GetStringValueOrDefault(this.DeployEnvironmentOptions.Environment, EBDefinedCommandOptions.ARGUMENT_EB_ENVIRONMENT, true);
 
             bool doesApplicationExist = await DoesApplicationExist(application);
-            bool doesEnvironmentExist = doesApplicationExist ? await DoesEnvironmentExist(application, environment) : false;
+            var environmentDescription = doesApplicationExist ? await GetEnvironmentDescription(application, environment) : null;
+
+            bool isWindowsEnvironment;
+            List<ConfigurationOptionSetting> existingSettings = null;
+            if(environmentDescription != null)
+            {
+                isWindowsEnvironment = EBUtilities.IsSolutionStackWindows(environmentDescription.SolutionStackName);
+
+                var response = await this.EBClient.DescribeConfigurationSettingsAsync(new DescribeConfigurationSettingsRequest
+                {
+                    ApplicationName = environmentDescription.ApplicationName,
+                    EnvironmentName = environmentDescription.EnvironmentName
+                });
+
+                if(response.ConfigurationSettings.Count != 1)
+                {
+                    throw new ElasticBeanstalkExceptions($"Unknown error to retrieving settings for existing Beanstalk environment.", ElasticBeanstalkExceptions.EBCode.FailedToDescribeEnvironmentSettings);
+                }
+                existingSettings = response.ConfigurationSettings[0].OptionSettings;
+            }
+            else
+            {
+                isWindowsEnvironment = EBUtilities.IsSolutionStackWindows(this.GetSolutionStackOrDefault(this.DeployEnvironmentOptions.SolutionStack, EBDefinedCommandOptions.ARGUMENT_SOLUTION_STACK, true));
+            }
 
             await CreateEBApplicationIfNotExist(application, doesApplicationExist);
 
@@ -110,6 +148,19 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
                 var publishLocation = Utilities.DeterminePublishLocation(null, projectLocation, configuration, targetFramework);
                 this.Logger?.WriteLine("Determine publish location: " + publishLocation);
 
+                if (!isWindowsEnvironment)
+                {
+                    
+                    if(publishOptions == null || !publishOptions.Contains("-r ") && !publishOptions.Contains("--runtime "))
+                    {
+                        publishOptions += " --runtime linux-x64";
+                    }
+                    if(publishOptions == null || !publishOptions.Contains("--self-contained"))
+                    {
+                        var selfContained = this.GetBoolValueOrDefault(this.DeployEnvironmentOptions.SelfContained, CommonDefinedCommandOptions.ARGUMENT_SELF_CONTAINED, false);
+                        publishOptions += $" --self-contained {selfContained.GetValueOrDefault().ToString(CultureInfo.InvariantCulture).ToLowerInvariant()}"; 
+                    }
+                }
 
                 this.Logger?.WriteLine("Executing publish command");
                 if (dotnetCli.Publish(projectLocation, publishLocation, targetFramework, configuration, publishOptions) != 0)
@@ -117,7 +168,33 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
                     throw new ElasticBeanstalkExceptions("Error executing \"dotnet publish\"", ElasticBeanstalkExceptions.CommonErrorCode.DotnetPublishFailed);
                 }
 
-                EBUtilities.SetupAWSDeploymentManifest(this.Logger, this, this.DeployEnvironmentOptions, publishLocation);
+                if(isWindowsEnvironment)
+                {
+                    this.Logger?.WriteLine("Configuring application bundle for a Windows deployment");
+                    EBUtilities.SetupAWSDeploymentManifest(this.Logger, this, this.DeployEnvironmentOptions, publishLocation);
+                }
+                else
+                {
+                    var proxyServer = this.GetStringValueOrDefault(this.DeployEnvironmentOptions.ProxyServer, EBDefinedCommandOptions.ARGUMENT_PROXY_SERVER, false);
+                    if(string.IsNullOrEmpty(proxyServer))
+                    {
+                        proxyServer = existingSettings.FindExistingValue(OPTIONS_NAMESPACE_ENVIRONMENT_PROXY, OPTIONS_NAMESPACE_APPLICATION_ENVIRONMENT);
+                    }
+
+                    var applicationPort = this.GetIntValueOrDefault(this.DeployEnvironmentOptions.ApplicationPort, EBDefinedCommandOptions.ARGUMENT_APPLICATION_PORT, false);
+                    if(!applicationPort.HasValue)
+                    {
+                        var strPort = existingSettings.FindExistingValue(OPTIONS_NAMESPACE_APPLICATION_ENVIRONMENT, OPTIONS_NAME_APPLICATION_PORT);
+                        int intPort;
+                        if(int.TryParse(strPort, NumberStyles.Any, CultureInfo.InvariantCulture, out intPort))
+                        {
+                            applicationPort = intPort;
+                        }
+                    }
+
+                    this.Logger?.WriteLine("Configuring application bundle for a Linux deployment");
+                    EBUtilities.SetupPackageForLinux(this.Logger, this, this.DeployEnvironmentOptions, publishLocation, proxyServer, applicationPort);
+                }
 
                 zipArchivePath = Path.Combine(Directory.GetParent(publishLocation).FullName, new DirectoryInfo(projectLocation).Name + "-" + DateTime.Now.Ticks + ".zip");
 
@@ -165,13 +242,13 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
             var startingEventDate = await GetLatestEventDateAsync(application, environment);
 
             string environmentArn;
-            if(doesEnvironmentExist)
-            {
-                environmentArn = await UpdateEnvironment(application, environment, versionLabel);
+            if(environmentDescription != null)
+            {                
+                environmentArn = await UpdateEnvironment(environmentDescription, versionLabel);
             }
             else
             {
-                environmentArn = await CreateEnvironment(application, environment, versionLabel);
+                environmentArn = await CreateEnvironment(application, environment, versionLabel, isWindowsEnvironment);
             }
 
             bool? waitForUpdate = this.GetBoolValueOrDefault(this.DeployEnvironmentOptions.WaitForUpdate, EBDefinedCommandOptions.ARGUMENT_WAIT_FOR_UPDATE, false);
@@ -191,7 +268,7 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
                 this.Logger?.WriteLine("Environment update initiated");
             }
 
-            if (doesEnvironmentExist)
+            if (environmentDescription != null)
             {
                 var tags = ConvertToTagsCollection();
                 if (tags != null && tags.Count > 0)
@@ -249,7 +326,7 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
             return collection;
         }
 
-        private async Task<string> CreateEnvironment(string application, string environment, string versionLabel)
+        private async Task<string> CreateEnvironment(string application, string environment, string versionLabel, bool isWindowsEnvironment)
         {
             var createRequest = new CreateEnvironmentRequest
             {
@@ -260,30 +337,16 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
                 CNAMEPrefix = this.GetStringValueOrDefault(this.DeployEnvironmentOptions.CNamePrefix, EBDefinedCommandOptions.ARGUMENT_CNAME_PREFIX, false)
             };
 
-            var environmentType = this.GetStringValueOrDefault(this.DeployEnvironmentOptions.EnvironmentType, EBDefinedCommandOptions.ARGUMENT_ENVIRONMENT_TYPE, false) ?? "LoadBalanced";
-            if(!string.IsNullOrEmpty(environmentType))
+            string environmentType, loadBalancerType;
+            DetermineEnvironment(out environmentType, out loadBalancerType);
+
+            if (!string.IsNullOrEmpty(environmentType))
             {
                 createRequest.OptionSettings.Add(new ConfigurationOptionSetting()
                 {
                     Namespace = "aws:elasticbeanstalk:environment",
                     OptionName = "EnvironmentType",
                     Value = environmentType
-                });
-            }
-
-            var healthCheckURl = this.GetStringValueOrDefault(this.DeployEnvironmentOptions.HealthCheckUrl, EBDefinedCommandOptions.ARGUMENT_HEALTH_CHECK_URL, false);
-            if(string.IsNullOrEmpty(healthCheckURl) && string.Equals(environmentType, "LoadBalanced", StringComparison.OrdinalIgnoreCase))
-            {
-                healthCheckURl = "/";
-            }
-
-            if (!string.IsNullOrEmpty(healthCheckURl))
-            {
-                createRequest.OptionSettings.Add(new ConfigurationOptionSetting()
-                {
-                    Namespace = "aws:elasticbeanstalk:application",
-                    OptionName = "Application Healthcheck URL",
-                    Value = healthCheckURl
                 });
             }
 
@@ -300,7 +363,10 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
 
             var instanceType = this.GetStringValueOrDefault(this.DeployEnvironmentOptions.InstanceType, EBDefinedCommandOptions.ARGUMENT_INSTANCE_TYPE, false);
             if (string.IsNullOrEmpty(instanceType))
-                instanceType = "t2.small";
+            {
+                instanceType = isWindowsEnvironment ? EBConstants.DEFAULT_WINDOWS_INSTANCE_TYPE : EBConstants.DEFAULT_LINUX_INSTANCE_TYPE;
+            }
+                
 
             createRequest.OptionSettings.Add(new ConfigurationOptionSetting()
             {
@@ -327,7 +393,7 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
             }
 
             var serviceRole = this.GetServiceRoleOrCreateIt(this.DeployEnvironmentOptions.ServiceRole, EBDefinedCommandOptions.ARGUMENT_SERVICE_ROLE, 
-                "aws-elasticbeanstalk-service-role", Constants.EC2_ASSUME_ROLE_POLICY, null, "AWSElasticBeanstalkWebTier", "AWSElasticBeanstalkMulticontainerDocker", "AWSElasticBeanstalkWorkerTier");
+                "aws-elasticbeanstalk-service-role", Constants.ELASTICBEANSTALK_ASSUME_ROLE_POLICY, null, "AWSElasticBeanstalkService", "AWSElasticBeanstalkEnhancedHealth");
             if (!string.IsNullOrEmpty(serviceRole))
             {
                 int pos = serviceRole.LastIndexOf('/');
@@ -340,11 +406,25 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
                 {
                     Namespace = "aws:elasticbeanstalk:environment",
                     OptionName = "ServiceRole",
-                    Value = serviceRole
+                    Value = serviceRole 
                 });
             }
 
-            AddAdditionalOptions(createRequest.OptionSettings);
+            if (!string.IsNullOrWhiteSpace(loadBalancerType))
+            {
+                if (!EBConstants.ValidLoadBalancerType.Contains(loadBalancerType))
+                    throw new ElasticBeanstalkExceptions($"The loadbalancer type {loadBalancerType} is invalid. Valid values are: {string.Join(", ", EBConstants.ValidLoadBalancerType)}", ElasticBeanstalkExceptions.EBCode.InvalidLoadBalancerType);
+
+                createRequest.OptionSettings.Add(new ConfigurationOptionSetting()
+                {
+                    Namespace = "aws:elasticbeanstalk:environment",
+                    OptionName = "LoadBalancerType",
+                    Value = loadBalancerType
+                });
+            }
+           
+
+            AddAdditionalOptions(createRequest.OptionSettings, true, isWindowsEnvironment);
 
             var tags = ConvertToTagsCollection();
             if (tags != null && tags.Count > 0)
@@ -361,7 +441,7 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
             }
         }
 
-        private void AddAdditionalOptions(IList<ConfigurationOptionSetting> settings)
+        private void AddAdditionalOptions(IList<ConfigurationOptionSetting> settings, bool createEnvironmentMode, bool isWindowsEnvironment)
         {
             var additionalOptions = this.GetKeyValuePairOrDefault(this.DeployEnvironmentOptions.AdditionalOptions, EBDefinedCommandOptions.ARGUMENT_EB_ADDITIONAL_OPTIONS, false);
             if (additionalOptions != null && additionalOptions.Count > 0)
@@ -390,33 +470,140 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
                 {
                     Namespace = "aws:elasticbeanstalk:xray",
                     OptionName = "XRayEnabled",
-                    Value = enableXRay.Value.ToString()
+                    Value = enableXRay.Value.ToString(CultureInfo.InvariantCulture).ToLowerInvariant()
                 });
 
                 this.Logger?.WriteLine($"Enable AWS X-Ray: {enableXRay.Value}");
             }
+
+            var enhancedHealthType = this.GetStringValueOrDefault(this.DeployEnvironmentOptions.EnhancedHealthType, EBDefinedCommandOptions.ARGUMENT_ENHANCED_HEALTH_TYPE, false);
+            if(!string.IsNullOrWhiteSpace(enhancedHealthType))
+            {
+                if (!EBConstants.ValidEnhanceHealthType.Contains(enhancedHealthType))
+                    throw new ElasticBeanstalkExceptions($"The enhanced value type {enhancedHealthType} is invalid. Valid values are: {string.Join(", ", EBConstants.ValidEnhanceHealthType)}", ElasticBeanstalkExceptions.EBCode.InvalidEnhancedHealthType);
+
+                settings.Add(new ConfigurationOptionSetting()
+                {
+                    Namespace = "aws:elasticbeanstalk:healthreporting:system",
+                    OptionName = "SystemType",
+                    Value = enhancedHealthType
+                });
+            }
+
+            string environmentType, loadBalancerType;
+            DetermineEnvironment(out environmentType, out loadBalancerType);
+            var healthCheckURL = this.GetStringValueOrDefault(this.DeployEnvironmentOptions.HealthCheckUrl, EBDefinedCommandOptions.ARGUMENT_HEALTH_CHECK_URL, false);
+
+            // If creating a new load balanced environment then a heath check url must be set.
+            if (createEnvironmentMode && string.IsNullOrEmpty(healthCheckURL) && EBUtilities.IsLoadBalancedEnvironmentType(environmentType))
+            {
+                healthCheckURL = "/";
+            }
+
+            if (!string.IsNullOrEmpty(healthCheckURL))
+            {
+                settings.Add(new ConfigurationOptionSetting()
+                {
+                    Namespace = "aws:elasticbeanstalk:application",
+                    OptionName = "Application Healthcheck URL",
+                    Value = healthCheckURL
+                });
+
+                if (EBUtilities.IsLoadBalancedEnvironmentType(environmentType) && string.Equals(loadBalancerType, EBConstants.LOADBALANCER_TYPE_APPLICATION))
+                {
+                    settings.Add(new ConfigurationOptionSetting()
+                    {
+                        Namespace = "aws:elasticbeanstalk:environment:process:default",
+                        OptionName = "HealthCheckPath",
+                        Value = healthCheckURL
+                    });
+                }
+            }
+
+            if(!isWindowsEnvironment)
+            {
+                var proxyServer = this.GetStringValueOrDefault(this.DeployEnvironmentOptions.ProxyServer, EBDefinedCommandOptions.ARGUMENT_PROXY_SERVER, false);
+                if (!string.IsNullOrEmpty(proxyServer))
+                {
+                    if (!EBConstants.ValidProxyServer.Contains(proxyServer))
+                        throw new ElasticBeanstalkExceptions($"The proxy server {proxyServer} is invalid. Valid values are: {string.Join(", ", EBConstants.ValidProxyServer)}", ElasticBeanstalkExceptions.EBCode.InvalidProxyServer);
+
+                    Logger?.WriteLine($"Configuring reverse proxy to {proxyServer}");
+                    settings.Add(new ConfigurationOptionSetting()
+                    {
+                        Namespace = OPTIONS_NAMESPACE_ENVIRONMENT_PROXY,
+                        OptionName = OPTIONS_NAME_PROXY_SERVER,
+                        Value = proxyServer
+                    });
+
+                }
+
+                var applicationPort = this.GetIntValueOrDefault(this.DeployEnvironmentOptions.ApplicationPort, EBDefinedCommandOptions.ARGUMENT_APPLICATION_PORT, false);
+                if (applicationPort.HasValue)
+                {
+                    Logger?.WriteLine($"Application port to {applicationPort}");
+                    settings.Add(new ConfigurationOptionSetting()
+                    {
+                        Namespace = OPTIONS_NAMESPACE_APPLICATION_ENVIRONMENT,
+                        OptionName = OPTIONS_NAME_APPLICATION_PORT,
+                        Value = applicationPort.Value.ToString(CultureInfo.InvariantCulture)
+                    });
+                }
+            }
+
+            var enableStickySessions = this.GetBoolValueOrDefault(this.DeployEnvironmentOptions.EnableStickySessions, EBDefinedCommandOptions.ARGUMENT_ENABLE_STICKY_SESSIONS, false);
+            if (enableStickySessions.HasValue)
+            {
+                if(enableStickySessions.Value)
+                {
+                    Logger?.WriteLine($"Enabling sticky sessions");
+                }
+
+                settings.Add(new ConfigurationOptionSetting()
+                {
+                    Namespace = "aws:elasticbeanstalk:environment:process:default",
+                    OptionName = "StickinessEnabled",
+                    Value = enableStickySessions.Value.ToString(CultureInfo.InvariantCulture).ToLowerInvariant()
+                });
+            }
         }
 
-        private async Task<string> UpdateEnvironment(string application, string environment, string versionLabel)
+        private async Task<string> UpdateEnvironment(EnvironmentDescription environmentDescription, string versionLabel)
         {
-            this.Logger?.WriteLine("Updating environment {0} to new application version", environment);
+            this.Logger?.WriteLine("Updating environment {0} to new application version", environmentDescription.EnvironmentName);
             var updateRequest = new UpdateEnvironmentRequest
             {
-                ApplicationName = application,
-                EnvironmentName = environment,
+                ApplicationName = environmentDescription.ApplicationName,
+                EnvironmentName = environmentDescription.EnvironmentName,
                 VersionLabel = versionLabel
             };
 
-            AddAdditionalOptions(updateRequest.OptionSettings);
+            AddAdditionalOptions(updateRequest.OptionSettings, false, EBUtilities.IsSolutionStackWindows(environmentDescription.SolutionStackName));
 
             try
             {
-                var updateEnvironmentRespone = await this.EBClient.UpdateEnvironmentAsync(updateRequest);
-                return updateEnvironmentRespone.EnvironmentArn;
+                var updateEnvironmentResponse = await this.EBClient.UpdateEnvironmentAsync(updateRequest);
+                return updateEnvironmentResponse.EnvironmentArn;
             }
             catch(Exception e)
             {
                 throw new ElasticBeanstalkExceptions("Error updating environment: " + e.Message, ElasticBeanstalkExceptions.EBCode.FailedToUpdateEnvironment);
+            }
+        }
+
+        private void DetermineEnvironment(out string environmentType, out string loadBalancerType)
+        {
+            environmentType = this.GetStringValueOrDefault(this.DeployEnvironmentOptions.EnvironmentType, EBDefinedCommandOptions.ARGUMENT_ENVIRONMENT_TYPE, false);
+            loadBalancerType = this.GetStringValueOrDefault(this.DeployEnvironmentOptions.LoadBalancerType, EBDefinedCommandOptions.ARGUMENT_LOADBALANCER_TYPE, false);
+
+            if (string.IsNullOrWhiteSpace(environmentType))
+            {
+                environmentType = string.IsNullOrWhiteSpace(loadBalancerType) ? EBConstants.ENVIRONMENT_TYPE_SINGLEINSTANCE : EBConstants.ENVIRONMENT_TYPE_LOADBALANCED;
+            }
+
+            if (string.IsNullOrWhiteSpace(loadBalancerType) && EBUtilities.IsLoadBalancedEnvironmentType(environmentType))
+            {
+                loadBalancerType = EBConstants.LOADBALANCER_TYPE_APPLICATION;
             }
         }
 
@@ -428,19 +615,20 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
             return response.Applications.Count == 1;
         }
 
-        private async Task<bool> DoesEnvironmentExist(string applicationName, string environmentName)
+        private async Task<EnvironmentDescription> GetEnvironmentDescription(string applicationName, string environmentName)
         {
             var request = new DescribeEnvironmentsRequest { ApplicationName = applicationName };
             request.EnvironmentNames.Add(environmentName);
             var response = await this.EBClient.DescribeEnvironmentsAsync(request);
             if (response.Environments.Where(x => x.Status != EnvironmentStatus.Terminated && x.Status != EnvironmentStatus.Terminating).Count() != 1)
-                return false;
+                return null;
 
             var environment = response.Environments[0];
             if (environment.Status == EnvironmentStatus.Terminated || environment.Status == EnvironmentStatus.Terminating)
-                return false;
+                return null;
 
-            return true;
+            
+            return environment;
         }
 
         private async Task<bool> WaitForDeploymentCompletionAsync(string applicationName, string environmentName, DateTime startingEventDate)
@@ -534,8 +722,7 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
             if (!(await Utilities.EnsureBucketExistsAsync(this.Logger, this.S3Client, bucketName)))
                 throw new ElasticBeanstalkExceptions("Detected error in deployment bucket preparation; abandoning deployment", ElasticBeanstalkExceptions.EBCode.EnsureBucketExistsError );
 
-            this.Logger?.WriteLine("....uploading application deployment package to Amazon S3");
-            this.Logger?.WriteLine("......uploading from file path {0}, size {1} bytes", deploymentPackage, fileInfo.Length);
+            this.Logger?.WriteLine("... Uploading from file path {0}, size {1} bytes to Amazon S3", deploymentPackage, fileInfo.Length);
 
             using (var stream = File.OpenRead(deploymentPackage))
             {

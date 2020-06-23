@@ -167,7 +167,7 @@
             <Label
                 Grid.Row="1"
                 Margin="8,2,4,0"
-                Content="Container _type *:"
+                Content="_Container type *:"
                 Style="{DynamicResource awsWizardFieldLabelStyle}"
                 Target="{Binding ElementName=_solutionStack}" />
 
@@ -185,7 +185,7 @@
             <Label
                 Grid.Row="2"
                 Margin="8,2,4,0"
-                Content="Instance _type *:"
+                Content="_Instance type *:"
                 Style="{DynamicResource awsWizardFieldLabelStyle}"
                 Target="{Binding ElementName=_instanceTypesSelector}" />
 
@@ -227,7 +227,7 @@
             <Label
                 Grid.Row="3"
                 Margin="8,2,4,0"
-                Content="Use _custom AMI:"
+                Content="Use custom _AMI:"
                 Style="{DynamicResource awsWizardFieldLabelStyle}"
                 Target="{Binding ElementName=_customAMI}" />
 
@@ -271,7 +271,7 @@
                     IsChecked="{Binding EnableRollingDeployments}"
                     IsEnabled="{Binding ElementName=_singleInstanceMode, Path=IsChecked, Converter={StaticResource InverseBooleanConverter}}"
                     Style="{DynamicResource awsCheckboxButtonBaseStyle}">
-                    _Enable Rolling Deployments
+                    Enable _Rolling Deployments
                 </CheckBox>
 
             </StackPanel>

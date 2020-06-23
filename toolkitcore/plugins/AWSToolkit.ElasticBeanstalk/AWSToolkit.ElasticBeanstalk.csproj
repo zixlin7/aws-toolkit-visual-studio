@@ -73,7 +73,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\BaseBeanstalkDeployCommand.cs" />
     <Compile Include="Commands\DeployNewApplicationCommand.cs" />
+    <Compile Include="Commands\DeployWithEbToolsCommand.cs" />
     <Compile Include="Controller\ApplicationStatusController.cs" />
     <Compile Include="Controller\BaseDeleteApplicationController.cs" />
     <Compile Include="Controller\ChangeEnvironmentTypeController.cs" />
@@ -82,7 +84,6 @@
     <Compile Include="Controller\DeployApplicationVersionController.cs" />
     <Compile Include="Controller\DeploymentControllerObserver.cs" />
     <Compile Include="Controller\EnvironmentStatusController.cs" />
-    <Compile Include="Controller\GetConfigurationController.cs" />
     <Compile Include="Controller\RebuildEnvironmentController.cs" />
     <Compile Include="Controller\RestartAppController.cs" />
     <Compile Include="Controller\TerminateEnvironmentController.cs" />
@@ -98,6 +99,8 @@
     <Compile Include="Model\EnvironmentConfigModel.cs" />
     <Compile Include="Model\EnvironmentStatusModel.cs" />
     <Compile Include="Model\EventWrapper.cs" />
+    <Compile Include="Model\SecurityGroupInfo.cs" />
+    <Compile Include="Model\SelectableGroup.cs" />
     <Compile Include="Nodes\ApplicationViewMetaNode.cs" />
     <Compile Include="Nodes\ApplicationViewModel.cs" />
     <Compile Include="Nodes\ElasticBeanstalkRootViewMetaNode.cs" />
@@ -117,6 +120,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Utils\SolutionStackUtils.cs" />
     <Compile Include="View\ApplicationStatusControl.xaml.cs">
       <DependentUpon>ApplicationStatusControl.xaml</DependentUpon>
     </Compile>
@@ -222,24 +226,8 @@
     <Compile Include="WizardPages\PageUI\Deployment\VpcOptionsPage.xaml.cs">
       <DependentUpon>VpcOptionsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WizardPages\PageUI\LegacyDeployment\ApplicationPage.xaml.cs">
-      <DependentUpon>ApplicationPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="WizardPages\PageUI\LegacyDeployment\DatabasePage.xaml.cs">
-      <DependentUpon>DatabasePage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="WizardPages\PageUI\LegacyDeployment\EnvironmentPage.xaml.cs">
-      <DependentUpon>EnvironmentPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="WizardPages\PageUI\Deployment\FastTrackRepublishPage.xaml.cs">
       <DependentUpon>FastTrackRepublishPage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="WizardPages\PageUI\LegacyDeployment\AWSOptionsPage.xaml.cs">
-      <DependentUpon>AWSOptionsPage.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="WizardPages\PageUI\LegacyDeployment\LegacyVpcOptionsPage.xaml.cs">
-      <DependentUpon>LegacyVpcOptionsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="WizardPages\PageWorkers\QueryExistingDeploymentsWorker.cs" />
     <Compile Include="WizardPages\PageWorkers\QueryEnvironmentSettingsWorker.cs" />
@@ -301,6 +289,10 @@
       <Project>{687C1AA1-E4D2-4B17-8A5B-A9D57E311E5F}</Project>
       <Name>AWSToolkit</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\AmazonCLIExtensions\AmazonCLIExtensions.csproj">
+      <Project>{b4771f7a-a835-4b86-8b52-0e2fd560a48c}</Project>
+      <Name>AmazonCLIExtensions</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -472,39 +464,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WizardPages\PageUI\LegacyDeployment\ApplicationPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="WizardPages\PageUI\LegacyDeployment\DatabasePage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="WizardPages\PageUI\LegacyDeployment\EnvironmentPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="WizardPages\PageUI\Deployment\FastTrackRepublishPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="WizardPages\PageUI\LegacyDeployment\AWSOptionsPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="WizardPages\PageUI\LegacyDeployment\LegacyVpcOptionsPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
@@ -553,9 +517,7 @@
   <ItemGroup>
     <Resource Include="Resources\Images\refresh.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Utils\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\Images\SnapshotLogs.png" />
   </ItemGroup>

@@ -1,4 +1,8 @@
-﻿using ThirdParty.Json.LitJson;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+using ThirdParty.Json.LitJson;
 using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.ElasticBeanstalk.Tools

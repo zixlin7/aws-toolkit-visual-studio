@@ -43,6 +43,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ElasticBeanstalk\BeanstalkDeploymentEngineTests.cs" />
+    <Compile Include="ElasticBeanstalk\SolutionStackUtilsTests.cs" />
+    <Compile Include="ElasticBeanstalk\WizardToEbToolsCommandTests.cs" />
     <Compile Include="Lambda\LambdaModel.cs" />
     <Compile Include="PluginActivator\PluginActivatorUtilitiesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -61,9 +64,29 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\awsdeploy\client\AWSDeploymentLib\AWSDeploymentLib.csproj">
+      <Project>{dffe75f2-61cc-4cea-87a5-1c573436de9e}</Project>
+      <Name>AWSDeploymentLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\AmazonCLIExtensions\AmazonCLIExtensions.csproj">
+      <Project>{b4771f7a-a835-4b86-8b52-0e2fd560a48c}</Project>
+      <Name>AmazonCLIExtensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
+      <Project>{7e899d6e-07d6-4695-b5d5-f9e62e31d5f6}</Project>
+      <Name>AWSToolkit.Util</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\AWSToolkit\AWSToolkit.csproj">
       <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
       <Name>AWSToolkit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj">
+      <Project>{d4d5c421-6265-4674-a1f9-dc11a56fc030}</Project>
+      <Name>AWSToolkit.ElasticBeanstalk.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk\AWSToolkit.ElasticBeanstalk.csproj">
+      <Project>{aa98ec2e-ac7c-4080-993b-f80592d31037}</Project>
+      <Name>AWSToolkit.ElasticBeanstalk</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj">
       <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>
@@ -74,7 +97,34 @@
       <Name>AWSToolkit.Lambda</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="ElasticBeanstalk\Resources\single-instance-deploy-settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ElasticBeanstalk\Resources\application-load-balancer-settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ElasticBeanstalk\Resources\classic-load-balancer-settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ElasticBeanstalk\Resources\network-load-balancer-settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ElasticBeanstalk\Resources\nondefault-vpc-deploy-settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ElasticBeanstalk\Resources\self-contained-redeploy-no-proxy.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -30,16 +30,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
             set;
         }
 
-        public ActionHandlerWrapper.ActionHandler OnCreateConfig
-        {
-            get;
-            set;
-        }
-
         public override IList<ActionHandlerWrapper> Actions =>
             BuildActionHandlerList(
                 new ActionHandlerWrapper("View Status", OnEnvironmentStatus, null, true, this.GetType().Assembly, "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.environment_view.png"),
-                new ActionHandlerWrapper("Save Configuration", OnCreateConfig, null, false, this.GetType().Assembly, "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.import.png"),
                 null,
                 new ActionHandlerWrapper("Restart App", OnRestartApp, null, false, this.GetType().Assembly, "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.restart.png"),
                 new ActionHandlerWrapper("Rebuild Environment", OnRebuildingEnvironment, null, false, this.GetType().Assembly, "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.rebuild.png"),

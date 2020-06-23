@@ -228,7 +228,7 @@ namespace Amazon.AWSToolkit
             protected IDictionary<string, EndPoint> _endpoints;
             readonly HashSet<string> _restrictions;
 
-            internal RegionEndPoints(string systemName, string displayName, IDictionary<string, EndPoint> endpoints, string[] restrictions)
+            public RegionEndPoints(string systemName, string displayName, IDictionary<string, EndPoint> endpoints, string[] restrictions)
             {
                 this.SystemName = systemName;
                 this.DisplayName = displayName;

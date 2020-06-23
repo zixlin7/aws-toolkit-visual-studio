@@ -1117,9 +1117,9 @@ namespace Amazon.AWSToolkit.VisualStudio
                 if (beanstalk != null)
                 {
                     var collatedPages = new List<IAWSWizardPageController>(beanstalk.DeploymentService.ConstructDeploymentPages(wizard, false))
-                {
-                    new CommonUI.LegacyDeploymentWizard.PageControllers.DeploymentReviewPageController()
-                };
+                    {
+                        new CommonUI.LegacyDeploymentWizard.PageControllers.DeploymentReviewPageController()
+                    };
                     wizard.RegisterPageControllers(collatedPages, 0);
                 }
 
@@ -1647,27 +1647,48 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
             else
             {
-                bdc = new BeanstalkBuildAndDeployController(Dispatcher.CurrentDispatcher)
+                var useEbTool = false;
+                if(wizardProperties[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_UseEbToolsToDeploy] is bool)
                 {
-                    ServicePlugin = AWSBeanstalkPlugin,
-                    DeploymentProcessor = new BeanstalkDeploymentProcessor()
-                };
+                    useEbTool = (bool)wizardProperties[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_UseEbToolsToDeploy];
+                }
+
+                if(useEbTool)
+                {
+                    var processor = new EbToolsDeploymentProcessor();
+                    bdc = new BeanstalkBuildAndDeployController(Dispatcher.CurrentDispatcher)
+                    {
+                        ServicePlugin = AWSBeanstalkPlugin,
+                        DeploymentProcessor = processor,
+                        BuildProcessor = processor
+                    };
+                }
+                else
+                {
+                    bdc = new BeanstalkBuildAndDeployController(Dispatcher.CurrentDispatcher)
+                    {
+                        ServicePlugin = AWSBeanstalkPlugin,
+                        DeploymentProcessor = new BeanstalkDeploymentProcessor()
+                    };
+                }
             }
 
             bdc.HostServiceProvider = GetServiceOnUI;
 
-
-            switch (projectInfo.VsProjectType)
+            if(bdc.BuildProcessor == null)
             {
-                case VSWebProjectInfo.VsWebProjectType.WebApplicationProject:
-                    bdc.BuildProcessor = new WebAppProjectBuildProcessor();
-                    break;
-                case VSWebProjectInfo.VsWebProjectType.WebSiteProject:
-                    bdc.BuildProcessor = new WebSiteProjectBuildProcessor();
-                    break;
-                case VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject:
-                    bdc.BuildProcessor = new CoreCLRWebAppProjectBuildProcessor();
-                    break;
+                switch (projectInfo.VsProjectType)
+                {
+                    case VSWebProjectInfo.VsWebProjectType.WebApplicationProject:
+                        bdc.BuildProcessor = new WebAppProjectBuildProcessor();
+                        break;
+                    case VSWebProjectInfo.VsWebProjectType.WebSiteProject:
+                        bdc.BuildProcessor = new WebSiteProjectBuildProcessor();
+                        break;
+                    case VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject:
+                        bdc.BuildProcessor = new CoreCLRWebAppProjectBuildProcessor();
+                        break;
+                }
             }
 
             bdc.ProjectInfo = projectInfo;

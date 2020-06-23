@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
@@ -70,9 +71,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
 
             rootNode.ApplicationViewMetaNode.EnvironmentViewMetaNode.OnTerminateEnvironment =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<TerminateEnvironmentController>().Execute);
-
-            rootNode.ApplicationViewMetaNode.EnvironmentViewMetaNode.OnCreateConfig =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<GetConfigurationController>().Execute);
         }
 
         #region IAWSElasticBeanstalk Members
@@ -119,8 +117,19 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
             var selectedAccount = deploymentProperties[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
             ToolkitFactory.Instance.Navigator.UpdateAccountSelection(new Guid(selectedAccount.SettingsUniqueKey), false);
 
-            var command = new DeployNewApplicationCommand(deploymentPackage, deploymentProperties);
-            ThreadPool.QueueUserWorkItem(command.Execute);
+            // If the deployment package is a directory then that indicates we have the project location and we still need to build the project.
+            // In that case switch to use Amazon.ElasticBeanstalk.Tools to do the combined build and deployment. This is currently just done
+            // for Linux .NET Core deployments.
+            if(Directory.Exists(deploymentPackage))
+            {
+                var command = new DeployWithEbToolsCommand(deploymentPackage, deploymentProperties);
+                ThreadPool.QueueUserWorkItem(command.Execute);
+            }
+            else
+            {
+                var command = new DeployNewApplicationCommand(deploymentPackage, deploymentProperties);
+                ThreadPool.QueueUserWorkItem(command.Execute);
+            }
 
             return true;
         }

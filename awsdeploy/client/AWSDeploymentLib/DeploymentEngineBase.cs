@@ -146,11 +146,6 @@ namespace AWSDeployment
         /// </summary>
         public string UploadBucket { get; set; }
 
-        /// <summary>
-        /// If true, saves the configuration file corresponding to deployment.
-        /// </summary>
-        public string ConfigFileDestination { get; set; }
-
         #endregion
 
         #region AWS Clients
@@ -256,7 +251,6 @@ namespace AWSDeployment
             try
             {
                 serviceContainer = ExecuteDeployment();
-                SaveConfig();
             }
             catch (Exception e)
             {
@@ -290,7 +284,6 @@ namespace AWSDeployment
             try
             {
                 serviceContainer = ExecuteRedeployment();
-                SaveConfig();
             }
             catch (Exception e)
             {
@@ -321,7 +314,6 @@ namespace AWSDeployment
             try
             {
                 ExecuteUpdateStack();
-                SaveConfig();
             }
             catch (Exception e)
             {
@@ -465,18 +457,6 @@ namespace AWSDeployment
         /// Required override to perform an update stack
         /// </summary>
         protected abstract void ExecuteUpdateStack();
-
-        private void SaveConfig()
-        {
-            if (string.IsNullOrEmpty(ConfigFileDestination))
-                return;
-
-            Observer.Status("...Determining current configuration");
-            var config = GetConfiguration();
-
-            Observer.Status("...Saving configuration file to {0}", ConfigFileDestination);
-            DeploymentConfigurationWriter.WriteDeploymentToFile(config, ConfigFileDestination);
-        }
 
         private ConfigurationParameterSets GetConfiguration()
         {

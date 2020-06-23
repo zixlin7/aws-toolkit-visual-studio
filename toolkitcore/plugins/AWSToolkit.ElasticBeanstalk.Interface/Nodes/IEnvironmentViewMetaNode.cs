@@ -9,6 +9,5 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
         ActionHandlerWrapper.ActionHandler OnRestartApp { get; set; }
         ActionHandlerWrapper.ActionHandler OnTerminateEnvironment { get; set; }
         ActionHandlerWrapper.ActionHandler OnRebuildingEnvironment { get; set; }
-        ActionHandlerWrapper.ActionHandler OnCreateConfig { get; set; }
     }
 }

@@ -27,46 +27,5 @@ namespace Amazon.AWSToolkit.CommonUI.DeploymentWizard.PageUI
         }
 
         public bool OpenStatusOnClose => this._launchStatusWindow.IsChecked == true;
-
-        public string ConfigFileDestination
-        {
-            get
-            {
-                if (this._generateConfiguration.IsChecked.GetValueOrDefault())
-                {
-                    return this._configurationPath.Text;
-                }
-                return string.Empty;
-            }
-        }
-
-        private void Browse(object sender, RoutedEventArgs e)
-        {
-            var dlg = new SaveFileDialog
-            {
-                Title = "Save Configuration to File",
-                Filter = "Text Files|*.txt|All Files|*.*",
-                FileName = this._configurationPath.Text,
-                OverwritePrompt = true
-            };
-            if (dlg.ShowDialog().GetValueOrDefault())
-            {
-                this._configurationPath.Text = dlg.FileName;
-                this._generateConfiguration.IsChecked = true;
-            }
-        }
-
-        private void onHelpLinkNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            try
-            {
-                Process.Start(new ProcessStartInfo(this._helpLink.NavigateUri.AbsoluteUri));
-                e.Handled = true;
-            }
-            catch (Exception ex)
-            {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error navigating to object: " + ex.Message);
-            }
-        }
     }
 }

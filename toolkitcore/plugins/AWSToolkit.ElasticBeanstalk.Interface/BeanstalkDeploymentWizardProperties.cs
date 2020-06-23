@@ -44,6 +44,16 @@
             /// The Git repository will be created if needed.
             /// </summary>
             public static readonly string propkey_IncrementalPushRepositoryLocation = "incrementalPushRepositoryLocation";
+
+            /// <summary>
+            /// If set to true then use Amazon.ElasticBeanstalk.Tools to handle the deployment of the project.
+            /// </summary>
+            public static readonly string propKey_UseEbToolsToDeploy = "propKey_UseEbToolsToDeploy";
+
+            /// <summary>
+            /// If set to true the environment being deploy uses Linux EC2 instances.
+            /// </summary>
+            public static readonly string propKey_IsLinuxSolutionStack = "propKey_IsLinuxSolutionStack";
         }
 
         public static class EnvironmentProperties
@@ -85,6 +95,8 @@
             /// Boolean which if true tells the wizard to show the rolling deployment page.
             /// </summary>
             public static readonly string propkey_EnableRollingDeployments = "enableRollingDeployments";
+
+            public static readonly string propkey_ReverseProxyMode = "propkey_ReverseProxyMode";
         }
 
         public static class AWSOptionsProperties

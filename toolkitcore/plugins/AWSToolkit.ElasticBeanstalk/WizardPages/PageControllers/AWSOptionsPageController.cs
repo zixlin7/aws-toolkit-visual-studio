@@ -9,7 +9,8 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.EC2;
-using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.LegacyDeployment;
+using Amazon.AWSToolkit.ElasticBeanstalk.Model;
+using Amazon.AWSToolkit.ElasticBeanstalk.Utils;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
 using Amazon.AWSToolkit.SimpleWorkers;
 using Amazon.ElasticBeanstalk.Model;
@@ -22,10 +23,27 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(AWSOptionsPageController));
 
+        // HACK: We don't have a nice UX for Solution Stacks, because they are a flat string representing multiple variables
+        // TODO : Longer term, switch away from SolutionStack, use PlatformBranches/PlatformSummaries, and 
+        // provide a UX with multiple dropdowns, like the web console.
+        private static readonly Dictionary<string, int> SolutionStackOrder = new Dictionary<string, int>()
+        {
+            {BeanstalkConstants.SolutionStackNames.Systems.AmazonLinux, 0},
+            {BeanstalkConstants.SolutionStackNames.Systems.WindowsServer2019Core, 1},
+            {BeanstalkConstants.SolutionStackNames.Systems.WindowsServer2019, 2},
+            {BeanstalkConstants.SolutionStackNames.Systems.WindowsServer2016Core, 3},
+            {BeanstalkConstants.SolutionStackNames.Systems.WindowsServer2016, 4},
+            {BeanstalkConstants.SolutionStackNames.Systems.WindowsServer2012R2Core, 5},
+            {BeanstalkConstants.SolutionStackNames.Systems.WindowsServer2012R2, 6},
+            {BeanstalkConstants.SolutionStackNames.Systems.WindowsServer2012Core, 7},
+            {BeanstalkConstants.SolutionStackNames.Systems.WindowsServer2012, 8},
+            {BeanstalkConstants.SolutionStackNames.Systems.WindowsServer2008, 9},
+        };
+
         private AWSOptionsPage _pageUI;
         private string _lastSeenAccount = string.Empty;
         private string _lastSeenRegion = string.Empty;
-        private List<string> _windowsSolutionStacks;
+        private readonly List<string> _availableSolutionStacks = new List<string>();
 
         readonly object _syncLock = new object();
 
@@ -109,11 +127,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                 else
                 {
                     // may be same user, but might have gone back and changed template/environment type
-                    var stacks = FilterStacksForSingleInstanceEnvironment(_windowsSolutionStacks);
-                    stacks = FilterStacksForNetCoreSupport(stacks);
+                    var stacks = GetSolutionStacks().ToList();
 
                     var defaultStackName = DeploymentWizardHelper.PickDefaultSolutionStack(stacks);
-
+                    
                     _pageUI.SetSolutionStacks(stacks, defaultStackName);
                 }
             }
@@ -187,6 +204,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                     HostingWizard[DeploymentWizardProperties.AWSOptions.propkey_InstanceTypeName] = instanceType.Name;
                 }
 
+                // If deploying to a non windows solution stack then use Amazon.ElasticBeanstalk.Tools to handle deployment. Both propKey_IsLinuxSolutionStack and propKey_UseEbToolsToDeploy are used
+                // for now with the same value but in the future when we use EbTools for Windows .NET Core deployment they can differ.
+                HostingWizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_IsLinuxSolutionStack] = !Amazon.ElasticBeanstalk.Tools.EBUtilities.IsSolutionStackWindows(_pageUI.SolutionStack);
+                HostingWizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_UseEbToolsToDeploy] = !Amazon.ElasticBeanstalk.Tools.EBUtilities.IsSolutionStackWindows(_pageUI.SolutionStack);
+
+
                 string keypairName;
                 bool createNew;
                 _pageUI.QueryKeyPairSelection(out keypairName, out createNew);
@@ -257,7 +280,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             {
                 if ((bool)HostingWizard[BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_CreateNewEnv])
                 {
-                    HostingWizard[BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_SolutionStack] = _windowsSolutionStacks[0];
+                    HostingWizard[BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_SolutionStack] =
+                        _availableSolutionStacks.First(SolutionStackUtils.SolutionStackIsWindows);
                 }
 
                 // if the user has selected to launch into a vpc, should we switch this default instance type to a t2?
@@ -321,14 +345,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                 var beanstalkClient = DeploymentWizardHelper.GetBeanstalkClient(selectedAccount, region);
                 var response = beanstalkClient.ListAvailableSolutionStacks(new ListAvailableSolutionStacksRequest());
 
-                _windowsSolutionStacks = new List<string>();
-                foreach (var stack in response.SolutionStacks.Where(stack => stack.Contains(" Windows ")))
-                {
-                    _windowsSolutionStacks.Add(stack);
-                }
+                _availableSolutionStacks.Clear();
+                _availableSolutionStacks.AddRange(response.SolutionStacks);
 
-                var stacks = FilterStacksForSingleInstanceEnvironment(_windowsSolutionStacks);
-                stacks = FilterStacksForNetCoreSupport(stacks);
+                var stacks = GetSolutionStacks().ToList();
                 var defaultStackName = DeploymentWizardHelper.PickDefaultSolutionStack(stacks);
                 _pageUI.SetSolutionStacks(stacks, defaultStackName);
             }
@@ -376,46 +396,62 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             }
         }
 
-        // if the user requested a single-instance environment, filter out legacy non-cloudformation stacks
-        IEnumerable<string> FilterStacksForSingleInstanceEnvironment(IEnumerable<string> allWindowsSolutionStacks)
+        /// <summary>
+        /// Indicates if the current configuration would deploy a standard asp.net project
+        /// (.NET Framework)
+        /// </summary>
+        bool IsStandardWebProject()
         {
-            var singleInstanceEnvSelected = _pageUI.SingleInstanceEnvironment;
-            return allWindowsSolutionStacks.Where(stack => !stack.Contains("legacy") || !singleInstanceEnvSelected).ToList();
+            var projectType =
+                HostingWizard.GetProperty(DeploymentWizardProperties.SeedData.propkey_ProjectType) as string;
+            return projectType == null ||
+                   !projectType.Equals(DeploymentWizardProperties.NetCoreWebProject,
+                       StringComparison.OrdinalIgnoreCase);
         }
 
-        private static readonly Version MINIMUM_NET_CORE_SOLUTIONSTACK = new Version("1.2.0");
-        IEnumerable<string> FilterStacksForNetCoreSupport(IEnumerable<string> allWindowsSolutionStacks)
+        /// <summary>
+        /// Indicates if the current configuration would deploy a .NET Core project
+        /// </summary>
+        bool IsNetCoreWebProject()
         {
-            var projectType = HostingWizard.GetProperty(DeploymentWizardProperties.SeedData.propkey_ProjectType) as string;
-            if (projectType == null || !projectType.Equals(DeploymentWizardProperties.NetCoreWebProject, StringComparison.OrdinalIgnoreCase))
-                return allWindowsSolutionStacks;
-
-            List<string> filtered = new List<string>();
-            foreach(var stack in allWindowsSolutionStacks)
-            {
-                var version = GetVersionFromSolutionStack(stack);
-                var compare = MINIMUM_NET_CORE_SOLUTIONSTACK.CompareTo(version);
-                if (compare <= 0)
-                    filtered.Add(stack);
-            }
-
-            return filtered;
+            var projectType =
+                HostingWizard.GetProperty(DeploymentWizardProperties.SeedData.propkey_ProjectType) as string;
+            return projectType != null && projectType.Equals(DeploymentWizardProperties.NetCoreWebProject,
+                StringComparison.OrdinalIgnoreCase);
         }
 
-        Version GetVersionFromSolutionStack(string solutionStackName)
+        /// <summary>
+        /// Returns the SolutionStacks that are relevant to the current Beanstalk settings
+        /// </summary>
+        public IEnumerable<string> GetSolutionStacks()
         {
-            var tokens = solutionStackName.Split(' ');
-            foreach (var token in tokens)
+            IEnumerable<string> stacks = _availableSolutionStacks;
+
+            // if the user requested a single-instance environment, filter out legacy non-cloudformation stacks
+            if (_pageUI.SingleInstanceEnvironment)
             {
-                if (token.Length >= 2 && token[0] == 'v' && token.IndexOf('.') != -1)
-                {
-                    Version v;
-                    if (Version.TryParse(token.Substring(1), out v))
-                        return v;
-                }
+                stacks = stacks.Where(stack => !SolutionStackUtils.SolutionStackIsLegacy(stack));
             }
 
-            return new Version("1.0.0");
+            if (IsStandardWebProject())
+            {
+                stacks = stacks.Where(SolutionStackUtils.SolutionStackSupportsDotNetFramework);
+            } else if (IsNetCoreWebProject())
+            {
+                stacks = stacks.Where(SolutionStackUtils.SolutionStackSupportsDotNetCore);
+            }
+
+            // HACK: We don't have a nice UX for Solution Stacks, because they are a flat string representing multiple variables
+            // Group them by OS of interest, then by reverse order, so that the newest versions appear higher.
+            // TODO : Longer term, switch away from SolutionStack, use PlatformBranches/PlatformSummaries, and 
+            // provide a UX with multiple dropdowns, like the web console.
+            stacks = stacks.OrderBy(stack =>
+            {
+                var stackOrderPreference = SolutionStackOrder.FirstOrDefault(entry => stack.Contains(entry.Key));
+                return stackOrderPreference.Equals(default(KeyValuePair<string, int>)) ? SolutionStackOrder.Count : stackOrderPreference.Value;
+            }).ThenByDescending(stack => stack);
+
+            return stacks;
         }
 
         void LoadExistingKeyPairs(AccountViewModel selectedAccount, RegionEndPointsManager.RegionEndPoints region)

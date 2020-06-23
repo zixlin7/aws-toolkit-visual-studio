@@ -15,7 +15,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
@@ -34,56 +33,5 @@
                   Style="{DynamicResource awsCheckboxButtonBaseStyle}">
             _Open environment status window when wizard closes.
         </CheckBox>
-
-        <Grid Grid.Row="2" Margin="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
-            <Grid Grid.Row="0" Margin="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                
-                <CheckBox Grid.Column="0"
-                          Margin="5,5,5,5" Padding="5,0,5,0"
-                          Name="_generateConfiguration"
-                          Style="{DynamicResource awsCheckboxButtonBaseStyle}">
-                    _Generate AWSDeploy configuration
-                </CheckBox>
-
-                <Button Grid.Column="1"
-                        Margin="5,5,5,5" Padding="5,0,5,0"
-                        Click="Browse">
-                    Choose file
-                </Button>
-
-                <TextBox Grid.Column="2"
-                         Margin="5,5,5,5" Padding="5,0,5,0"
-                         Name="_configurationPath"
-                         IsEnabled="False"
-                         Style="{DynamicResource awsTextBoxStyle}"/>
-            </Grid>
-            
-            <Label Margin="4,8,4,4"
-                   Grid.Row="1"
-                   Style="{DynamicResource awsLabelBaseStyle}">
-                <TextBlock Style="{DynamicResource awsFieldHintTextStyle}" FontStyle="Italic">
-                    Note: This configuration file can be used to deploy this application through AWSDeploy.
-                    <LineBreak/>
-                    For more information, see the
-                    <Hyperlink
-                        NavigateUri="http://docs.amazonwebservices.com/AWSToolkitVS/latest/UserGuide/tkv-deployment-tool.html"
-                        RequestNavigate="onHelpLinkNavigate"
-                        Name="_helpLink"
-                        >
-                        AWS User Guide
-                    </Hyperlink>.
-                </TextBlock>
-            </Label>
-        </Grid>
     </Grid>
 </commonui:BaseAWSUserControl>

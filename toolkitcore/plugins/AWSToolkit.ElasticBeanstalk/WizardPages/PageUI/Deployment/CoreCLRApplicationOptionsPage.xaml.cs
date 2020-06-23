@@ -33,6 +33,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
             InitializeComponent();
             DataContext = this;
+
+            this.SelectedReverseProxyOption = this.ReverseProxyOptions[0];
         }
 
         public CoreCLRApplicationOptionsPage(IAWSWizardPageController pageController)
@@ -48,6 +50,40 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         public string SelectedBuildConfiguration { get; set; }
 
         public string IISAppPath { get; set; }
+
+        public List<string> ReverseProxyOptions { get; } = new List<string> { Amazon.ElasticBeanstalk.Tools.EBConstants.PROXY_SERVER_NGINX, Amazon.ElasticBeanstalk.Tools.EBConstants.PROXY_SERVER_NONE};
+
+        private string _selectedReverseProxyOption;
+        public string SelectedReverseProxyOption
+        {
+            get { return this._selectedReverseProxyOption; }
+            set
+            {
+                this._selectedReverseProxyOption = value;
+                NotifyPropertyChanged(nameof(SelectedReverseProxyOption));
+            }
+        }
+
+        public bool BuildSelfContainedBundle { get; set; }
+
+        private bool _isLinuxDeployment;
+        public bool IsLinuxDeployment
+        {
+            get { return this._isLinuxDeployment; }
+            set
+            {
+                this._isLinuxDeployment = value;
+                WindowsVisiblity = this._isLinuxDeployment ? Visibility.Collapsed : Visibility.Visible;
+                LinuxVisiblity = this._isLinuxDeployment ? Visibility.Visible : Visibility.Collapsed;
+
+                NotifyPropertyChanged(nameof(WindowsVisiblity));
+                NotifyPropertyChanged(nameof(LinuxVisiblity));
+            }
+        }
+
+        public Visibility WindowsVisiblity { get; set; } = Visibility.Visible;
+
+        public Visibility LinuxVisiblity { get; set; } = Visibility.Collapsed;
 
         public string TargetFramework
         {

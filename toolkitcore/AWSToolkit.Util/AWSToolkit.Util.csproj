@@ -78,6 +78,7 @@
     <Compile Include="Telemetry\Model\ProductEnvironment.cs" />
     <Compile Include="Telemetry\Internal\TelemetryClient.cs" />
     <Compile Include="Telemetry\Internal\TelemetryPublisher.cs" />
+    <Compile Include="Telemetry\TelemetryEvents.cs" />
     <Compile Include="Telemetry\TelemetryService.cs" />
     <Compile Include="ToolkitSettingsConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

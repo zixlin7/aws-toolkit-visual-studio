@@ -43,16 +43,14 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
                 Deployment.UploadBucket = bucketName;
 
-                string configFileDestination = getValue<string>(DeploymentWizardProperties.ReviewProperties.propkey_ConfigFileDestination);
-                Deployment.ConfigFileDestination = configFileDestination;
-
                 CopyContainerProperties();
                 CopyApplicationOptionProperties();
                 Deployment.Redeploy();
             }
             catch (Exception e)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError(e.Message);
+                var errMsg = $"Error redeploying application: {e.Message}";
+                ToolkitFactory.Instance.ShellProvider.ShowError("Redeploy Error", errMsg);
             }
         }
     }

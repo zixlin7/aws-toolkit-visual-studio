@@ -195,6 +195,97 @@ namespace Amazon.AWSToolkit.Telemetry
 
                 datum.AddMetadata("result", payload.Result);
 
+                if (payload.CredentialType.HasValue)
+                {
+                    datum.AddMetadata("credentialType", payload.CredentialType.Value);
+                }
+
+                telemetryEvent.Data.Add(datum);
+                telemetryLogger.Record(telemetryEvent);
+            }
+            catch (System.Exception e)
+            {
+                LOGGER.Error("Error recording telemetry event", e);
+                System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
+            }
+        }
+
+        /// Records Telemetry Event:
+        /// A region change occurred
+        public static void RecordAwsSetRegion(this ITelemetryLogger telemetryLogger, AwsSetRegion payload)
+        {
+            try
+            {
+                var telemetryEvent = new TelemetryEvent();
+                if (payload.CreatedOn.HasValue)
+                {
+                    telemetryEvent.CreatedOn = payload.CreatedOn.Value;
+                }
+                else
+                {
+                    telemetryEvent.CreatedOn = System.DateTime.Now;
+                }
+                telemetryEvent.Data = new List<Amazon.ToolkitTelemetry.Model.MetricDatum>();
+
+                var datum = new Amazon.ToolkitTelemetry.Model.MetricDatum();
+                datum.MetricName = "aws_setRegion";
+                datum.Unit = Amazon.ToolkitTelemetry.Unit.None;
+                if (payload.Value.HasValue)
+                {
+                    datum.Value = payload.Value.Value;
+                }
+                else
+                {
+                    datum.Value = 1;
+                }
+
+                datum.AddMetadata("result", payload.Result);
+
+                datum.AddMetadata("regionId", payload.RegionId);
+
+                telemetryEvent.Data.Add(datum);
+                telemetryLogger.Record(telemetryEvent);
+            }
+            catch (System.Exception e)
+            {
+                LOGGER.Error("Error recording telemetry event", e);
+                System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
+            }
+        }
+
+        /// Records Telemetry Event:
+        /// A partition change occurred
+        public static void RecordAwsSetPartition(this ITelemetryLogger telemetryLogger, AwsSetPartition payload)
+        {
+            try
+            {
+                var telemetryEvent = new TelemetryEvent();
+                if (payload.CreatedOn.HasValue)
+                {
+                    telemetryEvent.CreatedOn = payload.CreatedOn.Value;
+                }
+                else
+                {
+                    telemetryEvent.CreatedOn = System.DateTime.Now;
+                }
+                telemetryEvent.Data = new List<Amazon.ToolkitTelemetry.Model.MetricDatum>();
+
+                var datum = new Amazon.ToolkitTelemetry.Model.MetricDatum();
+                datum.MetricName = "aws_setPartition";
+                datum.Unit = Amazon.ToolkitTelemetry.Unit.None;
+                if (payload.Value.HasValue)
+                {
+                    datum.Value = payload.Value.Value;
+                }
+                else
+                {
+                    datum.Value = 1;
+                }
+
+                datum.AddMetadata("result", payload.Result);
+
+                datum.AddMetadata("partitionId", payload.PartitionId);
+
                 telemetryEvent.Data.Add(datum);
                 telemetryLogger.Record(telemetryEvent);
             }
@@ -552,6 +643,65 @@ namespace Amazon.AWSToolkit.Telemetry
                 else
                 {
                     datum.Value = 1;
+                }
+
+                telemetryEvent.Data.Add(datum);
+                telemetryLogger.Record(telemetryEvent);
+            }
+            catch (System.Exception e)
+            {
+                LOGGER.Error("Error recording telemetry event", e);
+                System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
+            }
+        }
+
+        /// Records Telemetry Event:
+        /// Called when deploying an application to Elastic Beanstalk
+        public static void RecordBeanstalkDeploy(this ITelemetryLogger telemetryLogger, BeanstalkDeploy payload)
+        {
+            try
+            {
+                var telemetryEvent = new TelemetryEvent();
+                if (payload.CreatedOn.HasValue)
+                {
+                    telemetryEvent.CreatedOn = payload.CreatedOn.Value;
+                }
+                else
+                {
+                    telemetryEvent.CreatedOn = System.DateTime.Now;
+                }
+                telemetryEvent.Data = new List<Amazon.ToolkitTelemetry.Model.MetricDatum>();
+
+                var datum = new Amazon.ToolkitTelemetry.Model.MetricDatum();
+                datum.MetricName = "beanstalk_deploy";
+                datum.Unit = Amazon.ToolkitTelemetry.Unit.None;
+                if (payload.Value.HasValue)
+                {
+                    datum.Value = payload.Value.Value;
+                }
+                else
+                {
+                    datum.Value = 1;
+                }
+
+                datum.AddMetadata("result", payload.Result);
+
+                datum.AddMetadata("regionId", payload.RegionId);
+
+                datum.AddMetadata("initialDeploy", payload.InitialDeploy);
+
+                datum.AddMetadata("name", payload.Name);
+
+                datum.AddMetadata("framework", payload.Framework);
+
+                if (payload.XrayEnabled.HasValue)
+                {
+                    datum.AddMetadata("xrayEnabled", payload.XrayEnabled.Value);
+                }
+
+                if (payload.EnhancedHealthEnabled.HasValue)
+                {
+                    datum.AddMetadata("enhancedHealthEnabled", payload.EnhancedHealthEnabled.Value);
                 }
 
                 telemetryEvent.Data.Add(datum);
@@ -1996,6 +2146,47 @@ namespace Amazon.AWSToolkit.Telemetry
         }
 
         /// Records Telemetry Event:
+        /// Create an S3 folder
+        public static void RecordS3CreateFolder(this ITelemetryLogger telemetryLogger, S3CreateFolder payload)
+        {
+            try
+            {
+                var telemetryEvent = new TelemetryEvent();
+                if (payload.CreatedOn.HasValue)
+                {
+                    telemetryEvent.CreatedOn = payload.CreatedOn.Value;
+                }
+                else
+                {
+                    telemetryEvent.CreatedOn = System.DateTime.Now;
+                }
+                telemetryEvent.Data = new List<Amazon.ToolkitTelemetry.Model.MetricDatum>();
+
+                var datum = new Amazon.ToolkitTelemetry.Model.MetricDatum();
+                datum.MetricName = "s3_createFolder";
+                datum.Unit = Amazon.ToolkitTelemetry.Unit.None;
+                if (payload.Value.HasValue)
+                {
+                    datum.Value = payload.Value.Value;
+                }
+                else
+                {
+                    datum.Value = 1;
+                }
+
+                datum.AddMetadata("result", payload.Result);
+
+                telemetryEvent.Data.Add(datum);
+                telemetryLogger.Record(telemetryEvent);
+            }
+            catch (System.Exception e)
+            {
+                LOGGER.Error("Error recording telemetry event", e);
+                System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
+            }
+        }
+
+        /// Records Telemetry Event:
         /// Download a single S3 object
         public static void RecordS3DownloadObject(this ITelemetryLogger telemetryLogger, S3DownloadObject payload)
         {
@@ -2362,6 +2553,9 @@ namespace Amazon.AWSToolkit.Telemetry
         /// schemas
         public static readonly ServiceType Schemas = new ServiceType("schemas");
 
+        /// stepfunctions
+        public static readonly ServiceType Stepfunctions = new ServiceType("stepfunctions");
+
         public ServiceType(string value)
         {
             this._value = value;
@@ -2454,6 +2648,54 @@ namespace Amazon.AWSToolkit.Telemetry
         }
     }
 
+    /// Metric field type
+    /// The type of credential that was selected
+    public struct CredentialType
+    {
+
+        private string _value;
+
+        /// staticProfile
+        public static readonly CredentialType StaticProfile = new CredentialType("staticProfile");
+
+        /// credentialProcessProfile
+        public static readonly CredentialType CredentialProcessProfile = new CredentialType("credentialProcessProfile");
+
+        /// assumeRoleProfile
+        public static readonly CredentialType AssumeRoleProfile = new CredentialType("assumeRoleProfile");
+
+        /// assumeMfaRoleProfile
+        public static readonly CredentialType AssumeMfaRoleProfile = new CredentialType("assumeMfaRoleProfile");
+
+        /// ssoProfile
+        public static readonly CredentialType SsoProfile = new CredentialType("ssoProfile");
+
+        /// envVars
+        public static readonly CredentialType EnvVars = new CredentialType("envVars");
+
+        /// windowsCredentialStore
+        public static readonly CredentialType WindowsCredentialStore = new CredentialType("windowsCredentialStore");
+
+        /// ecsMetatdata
+        public static readonly CredentialType EcsMetatdata = new CredentialType("ecsMetatdata");
+
+        /// ec2Metadata
+        public static readonly CredentialType Ec2Metadata = new CredentialType("ec2Metadata");
+
+        /// other
+        public static readonly CredentialType Other = new CredentialType("other");
+
+        public CredentialType(string value)
+        {
+            this._value = value;
+        }
+
+        public override string ToString()
+        {
+            return this._value;
+        }
+    }
+
     /// Copy the ARN of an AWS resource
     public sealed class AwsCopyArn : BaseMetricData
     {
@@ -2479,6 +2721,31 @@ namespace Amazon.AWSToolkit.Telemetry
 
         /// The result of the operation
         public Result Result;
+
+        /// Optional - The type of credential that was selected
+        public CredentialType? CredentialType;
+    }
+
+    /// A region change occurred
+    public sealed class AwsSetRegion : BaseMetricData
+    {
+
+        /// The result of the operation
+        public Result Result;
+
+        /// The ID of the region that was selected
+        public string RegionId;
+    }
+
+    /// A partition change occurred
+    public sealed class AwsSetPartition : BaseMetricData
+    {
+
+        /// The result of the operation
+        public Result Result;
+
+        /// The ID of the partition that was selected
+        public string PartitionId;
     }
 
     /// Open the credentials file
@@ -2536,6 +2803,32 @@ namespace Amazon.AWSToolkit.Telemetry
     /// Report an issue with the plugin
     public sealed class AwsReportPluginIssue : BaseMetricData
     {
+    }
+
+    /// Called when deploying an application to Elastic Beanstalk
+    public sealed class BeanstalkDeploy : BaseMetricData
+    {
+
+        /// The result of the operation
+        public Result Result;
+
+        /// The ID of the region that was selected
+        public string RegionId;
+
+        /// Whether or not the deploy targets a new destination (true) or an existing destination (false)
+        public bool InitialDeploy;
+
+        /// Optional - A generic name metadata
+        public string Name;
+
+        /// Optional - Application framework being used
+        public string Framework;
+
+        /// Optional - Whether or not AWS X-Ray is enabled
+        public System.Boolean? XrayEnabled;
+
+        /// Optional - Whether or not Elastic Beanstalk enhanced health reporting and monitoring is being used
+        public System.Boolean? EnhancedHealthEnabled;
     }
 
     /// Open the CloudWatch Logs group window. ServiceType indicates that it was opened from a different service (like directly from an ECS container)
@@ -2828,6 +3121,14 @@ namespace Amazon.AWSToolkit.Telemetry
 
     /// Delete a single S3 object
     public sealed class S3DeleteObject : BaseMetricData
+    {
+
+        /// The result of the operation
+        public Result Result;
+    }
+
+    /// Create an S3 folder
+    public sealed class S3CreateFolder : BaseMetricData
     {
 
         /// The result of the operation

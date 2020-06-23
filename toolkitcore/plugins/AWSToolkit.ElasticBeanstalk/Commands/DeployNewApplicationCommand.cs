@@ -14,6 +14,8 @@ using Amazon.AWSToolkit.ElasticBeanstalk.View.Components;
 using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
 using Amazon.AWSToolkit.EC2.Nodes;
 
+using Amazon.AWSToolkit.Telemetry;
+
 using Amazon.EC2;
 using Amazon.EC2.Model;
 using Amazon.ElasticBeanstalk;
@@ -28,26 +30,13 @@ using Amazon.AWSToolkit.MobileAnalytics;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 {
-    public class DeployNewApplicationCommand
+    public class DeployNewApplicationCommand : BaseBeanstalkDeployCommand
     {
-        public AccountViewModel Account { get; protected set; }
-        public string DeploymentPackage { get; protected set; }
-        public IDictionary<string, object> DeploymentProperties { get; protected set; }
-
         public BeanstalkDeploymentEngine Deployment { get; protected set; }
-        public DeploymentControllerObserver Observer { get; protected set; }
-
-        protected static ILog LOGGER;
-
-        const int MAX_REFRESH_RETRIES = 3;
-        const int SLEEP_TIME_BETWEEN_REFRESHES = 500;
 
         public DeployNewApplicationCommand(string deploymentPackage, IDictionary<string, object> deploymentProperties)
+            : base(deploymentProperties)
         {
-            DeploymentProperties = deploymentProperties;
-            this.Account = getValue<AccountViewModel>(CommonWizardProperties.AccountSelection.propkey_SelectedAccount);
-            LOGGER = LogManager.GetLogger(typeof(DeployNewApplicationCommand));
-            Observer = new DeploymentControllerObserver(LOGGER);
 
             Deployment
                 = DeploymentEngineFactory.CreateEngine(DeploymentEngineFactory.ElasticBeanstalkServiceName)
@@ -59,17 +48,21 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             Deployment.Region = (getValue<RegionEndPointsManager.RegionEndPoints>(CommonWizardProperties.AccountSelection.propkey_SelectedRegion)).SystemName;
         }
 
-        public void Execute(object state)
-        {
-            Execute();
-        }
-
-        public void Execute()
+        public override void Execute()
         {
             if (Account == null)
                 return;
 
             bool success = false;
+            var deployMetric = new BeanstalkDeploy()
+            {
+                Name = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_SolutionStack),
+                Framework = getValue<string>(DeploymentWizardProperties.AppOptions.propkey_TargetRuntime),
+                EnhancedHealthEnabled = false,
+                XrayEnabled = false,
+                InitialDeploy = !getValue<bool>(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy),
+                RegionId = Deployment.Region,
+            };
             try
             {
                 ToolkitFactory.Instance.Navigator.UpdateAccountSelection(new Guid(Account.SettingsUniqueKey), false);
@@ -103,7 +96,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 
                 Deployment.KeyPairName = getValue<string>(DeploymentWizardProperties.AWSOptions.propkey_KeyPairName);
                 if (getValue<bool>(DeploymentWizardProperties.AWSOptions.propkey_CreateKeyPair))
+                {
                     CreateKeyPair(Account, Deployment.RegionEndPoints, Deployment.KeyPairName);
+                }
+                    
 
                 Deployment.SolutionStack = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_SolutionStack);
                 Deployment.CustomAmiID = getValue<string>(DeploymentWizardProperties.AWSOptions.propkey_CustomAMIID);
@@ -133,6 +129,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 
                     if(Deployment.EnableXRayDaemon.GetValueOrDefault())
                     {
+                        deployMetric.XrayEnabled = true;
                         ToolkitEvent evnt = new ToolkitEvent();
                         evnt.AddProperty(AttributeKeys.XRayEnabled, "Beanstalk");
                         SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
@@ -146,6 +143,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 
                     if (Deployment.EnableEnhancedHealth.GetValueOrDefault())
                     {
+                        deployMetric.EnhancedHealthEnabled = true;
                         ToolkitEvent evnt = new ToolkitEvent();
                         evnt.AddProperty(AttributeKeys.BeanstalkEnhancedHealth, "true");
                         SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
@@ -196,9 +194,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 Deployment.VPCSecurityGroups = getValue<List<string>>(BeanstalkDeploymentWizardProperties.DatabaseOptions.propkey_VPCSecurityGroups);
                 Deployment.VPCGroupsAndReferencingDBInstances = getValue<Dictionary<string, List<int>>>(BeanstalkDeploymentWizardProperties.DatabaseOptions.propkey_VPCGroupsAndDBInstances);
 
-                var configFileDestination = getValue<string>(DeploymentWizardProperties.ReviewProperties.propkey_ConfigFileDestination);
-                Deployment.ConfigFileDestination = configFileDestination;
-
                 if (Deployment.DeploymentMode == DeploymentEngineBase.DeploymentModes.DeployNewApplication || 
                     Deployment.DeploymentMode == DeploymentEngineBase.DeploymentModes.DeployPriorVersion)
                     Deployment.Deploy();
@@ -219,6 +214,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             {
                 try
                 {
+                    deployMetric.Result = success ? Result.Succeeded : Result.Failed;
+                    ToolkitFactory.Instance.TelemetryLogger.RecordBeanstalkDeploy(deployMetric);
+
                     ToolkitFactory.Instance.ShellProvider.UpdateStatus(string.Empty);
                     if (success)
                     {
@@ -230,7 +228,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                         notifier.EnvironmentName = Deployment.EnvironmentName;
                         TaskWatcher.WatchAndNotify(TaskWatcher.DefaultPollInterval, notifier);
 
-                        SelectNewTreeItems();
+                        SelectNewTreeItems(Deployment.ApplicationName, Deployment.EnvironmentName);
                     }
                     else
                         Observer.Status("Publish to AWS Elastic Beanstalk environment '{0}' did not complete successfully", Deployment.EnvironmentName);
@@ -243,96 +241,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             }
         }
 
-        string ConfigureIAMRole(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
-        {
-            var roleTemplates = getValue<Amazon.AWSToolkit.CommonUI.Components.IAMCapabilityPicker.PolicyTemplate[]>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_PolicyTemplates);
-            if(roleTemplates != null)
-            {
-                var endpoint = region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
-                var config = new AmazonIdentityManagementServiceConfig();
-                endpoint.ApplyToClientConfig(config);
 
-                var client = new AmazonIdentityManagementServiceClient(account.Credentials, config);
-
-
-                var newRoleName = "aws-elasticbeanstalk-" + getValue<string>(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_EnvName);
-                var existingRoleNames = ExistingRoleNames(client);
-
-                if (existingRoleNames.Contains(newRoleName))
-                {
-                    var baseRoleName = newRoleName;
-                    for(int i = 0;true;i++)
-                    {
-                        var tempName = baseRoleName + "-" + i;
-                        if(!existingRoleNames.Contains(tempName))
-                        {
-                            newRoleName = tempName;
-                            break;
-                        }
-                    }
-                }
-
-                var role = client.CreateRole(new CreateRoleRequest
-                    {
-                        RoleName = newRoleName,
-                        AssumeRolePolicyDocument 
-                            = Constants.GetIAMRoleAssumeRolePolicyDocument(RegionEndPointsManager.EC2_SERVICE_NAME,
-                                                                           this.Deployment.RegionEndPoints)
-                    }).Role;
-                this.Observer.Status("Created IAM Role {0}", newRoleName);
-
-                var profile = client.CreateInstanceProfile(new CreateInstanceProfileRequest
-                    {
-                        InstanceProfileName = newRoleName
-                    }).InstanceProfile;
-                this.Observer.Status("Created IAM Instance Profile {0}", profile.InstanceProfileName);
-
-                client.AddRoleToInstanceProfile(new AddRoleToInstanceProfileRequest
-                    {
-                        InstanceProfileName = profile.InstanceProfileName,
-                        RoleName = role.RoleName
-                    });
-                this.Observer.Status("Adding role {0} to instance profile {1}", role.RoleName, profile.InstanceProfileName);
-
-                foreach(var template in roleTemplates)
-                {
-                    client.PutRolePolicy(new PutRolePolicyRequest
-                        {
-                            RoleName = role.RoleName,
-                            PolicyName = template.IAMCompatibleName,
-                            PolicyDocument = template.Body.Trim()
-                        });
-
-                    this.Observer.Status("Applied policy \"{0}\" to the role", template.Name);
-                }
-
-                return newRoleName;
-            }
-            else
-            {
-                return getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_InstanceProfileName);
-            }
-        }
-
-        HashSet<string> ExistingRoleNames(IAmazonIdentityManagementService client)
-        {
-            HashSet<string> roles = new HashSet<string>();
-
-            ListRolesResponse response = null;
-            do
-            {
-                ListRolesRequest request = new ListRolesRequest();
-                if (response != null)
-                    request.Marker = response.Marker;
-                response = client.ListRoles(request);
-                foreach(var role in response.Roles)
-                {
-                    roles.Add(role.RoleName);
-                }
-            } while (response.IsTruncated);
-
-            return roles;
-        }
 
         void CopyApplicationOptionProperties()
         {
@@ -387,63 +296,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                                                   getValue<string>(BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_NotificationEmail));
         }
 
-        void SelectNewTreeItems()
-        {
-            if (!Deployment.DeploymentCreatedApplication && !Deployment.DeploymentCreatedEnvironment)
-                return;
-
-            bool showStatus = false;
-            if (DeploymentProperties.ContainsKey(DeploymentWizardProperties.ReviewProperties.propkey_LaunchStatusOnClose))
-                showStatus = getValue<bool>(DeploymentWizardProperties.ReviewProperties.propkey_LaunchStatusOnClose);
-
-            var serviceRoot = Account.FindSingleChild<ElasticBeanstalkRootViewModel>(false);
-            ApplicationViewModel application = null;
-            EnvironmentViewModel environment = null;
-            for (int i = 0; (application == null || environment == null) && i < MAX_REFRESH_RETRIES; i++)
-            {
-                if (application == null)
-                {
-                    serviceRoot.Refresh(false);
-                    application = serviceRoot.FindSingleChild<ApplicationViewModel>(false, x => x.Application.ApplicationName == Deployment.ApplicationName);
-
-                    // If only the application was created then break out here.
-                    if (application != null && !Deployment.DeploymentCreatedEnvironment)
-                        break;
-                }
-
-                if (application != null)
-                {
-                    environment = application.FindSingleChild<EnvironmentViewModel>(false, x => x.Environment.EnvironmentName == Deployment.EnvironmentName);
-                    if (environment == null)
-                    {
-                        application.Refresh(false);
-                        environment = application.FindSingleChild<EnvironmentViewModel>(false, x => x.Environment.EnvironmentName == Deployment.EnvironmentName);
-                    }
-                    
-                    if (environment != null)
-                    {
-                        if (showStatus)
-                        {
-                            IEnvironmentViewMetaNode meta = environment.MetaNode as IEnvironmentViewMetaNode;
-                            if (meta.OnEnvironmentStatus != null)
-                            {
-                                meta.OnEnvironmentStatus(environment);
-                            }
-
-                            ToolkitFactory.Instance.Navigator.SelectedNode = environment;
-                        }
-                        // Found both application and environment so break out
-                        break;
-                    }
-                }
-
-                LOGGER.InfoFormat("Application {0} Found {1}, Environment {2} Found {3}, retrying since one wasn't found", 
-                    application, application != null, environment, environment != null);
-
-                // Didn't find the application or environment, sleeping a little to let the service catch up.
-                Thread.Sleep(SLEEP_TIME_BETWEEN_REFRESHES);
-            }
-        }
 
         static string DetermineBucketName(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
         {
@@ -475,75 +327,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 
             LOGGER.DebugFormat("Deployment uploads assigned to bucket {0}", bucketName);
             return bucketName;
-        }
-
-        public void CreateKeyPair(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region, string keyName)
-        {
-            Observer.Status("Creating keypair '{0}'", keyName);
-
-            var endpoint = region.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
-            var config = new AmazonEC2Config();
-            endpoint.ApplyToClientConfig(config);
-
-            using (var client = new AmazonEC2Client(account.Credentials, config))
-            {
-                var request = new CreateKeyPairRequest() { KeyName = keyName };
-                var response = client.CreateKeyPair(request);
-
-                IEC2RootViewModel ec2Root = Account.FindSingleChild<IEC2RootViewModel>(false);
-                KeyPairLocalStoreManager.Instance.SavePrivateKey(Account,
-                                                                Deployment.RegionEndPoints.SystemName,
-                                                                keyName,
-                                                                response.KeyPair.KeyMaterial);
-                LOGGER.Debug("key pair created with name " + keyName + " and stored in local store");
-            }
-        }
-
-        private string GetDefaultVPCSubnet(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
-        {
-            Observer.Status("Determining default VPC subnets for ELB load balancer.");
-
-            var endpoint = region.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
-            var config = new AmazonEC2Config();
-            endpoint.ApplyToClientConfig(config);
-
-            using (var client = new AmazonEC2Client(account.Credentials, config))
-            {
-                var defaultVpc = client.DescribeVpcs().Vpcs.Where(x => x.IsDefault).FirstOrDefault();
-                if (defaultVpc == null)
-                {
-                    LOGGER.Debug("No default VPC found when looking for default subnets");
-                    return null;
-                }
-
-                LOGGER.Debug("Default VPC found: " + defaultVpc.VpcId);
-
-
-                var allSubnets = client.DescribeSubnets(new DescribeSubnetsRequest
-                {
-                    Filters = new List<Filter> { new Filter { Name = "vpc-id", Values = new List<string> { defaultVpc.VpcId } } }
-                }).Subnets;
-
-
-                var defaultSubnetIds = allSubnets.Where(x => x.DefaultForAz).Select((subnet) => subnet.SubnetId);
-                var formattedSubnetIds = string.Join(",", defaultSubnetIds);
-
-                LOGGER.Debug("Default subnets found: " + formattedSubnetIds);
-
-                return formattedSubnetIds;
-            }
-        }
-
-        T getValue<T>(string key)
-        {
-            object value;
-            if (DeploymentProperties.TryGetValue(key, out value))
-            {
-                T convertedValue = (T)Convert.ChangeType(value, typeof(T));
-                return convertedValue;
-            }
-
-            return default(T);
         }
     }
 

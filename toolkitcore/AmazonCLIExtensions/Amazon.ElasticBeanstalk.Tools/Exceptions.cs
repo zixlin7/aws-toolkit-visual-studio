@@ -1,5 +1,7 @@
 ﻿using Amazon.Common.DotNetCli.Tools;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Amazon.ElasticBeanstalk.Tools
 {
@@ -16,8 +18,12 @@ namespace Amazon.ElasticBeanstalk.Tools
             FailedToUpdateTags,
             FailedToDeleteEnvironment,
             FailedToUpdateEnvironment,
+            FailedToDescribeEnvironmentSettings,
             FailedToCreateEnvironment,
             InvalidPackage,
+            InvalidEnhancedHealthType,
+            InvalidLoadBalancerType,
+            InvalidProxyServer,
         }
 
         public ElasticBeanstalkExceptions(string message, EBCode code) : base(message, code.ToString(), null)

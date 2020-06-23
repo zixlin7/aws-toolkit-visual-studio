@@ -90,6 +90,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
         string _originalHealthCheckUri = "/";
         bool _originalEnableXRayDaemon = false;
         bool _originalEnableEnhancedHealth = false;
+        string _originalProxyServer = Amazon.ElasticBeanstalk.Tools.EBConstants.PROXY_SERVER_NGINX;
 
         bool _needToFetchData;
 
@@ -101,6 +102,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             {
                 if (HostingWizard.IsPropertySet(DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath))
                     _pageUI.IISAppPath = HostingWizard[DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath] as string;
+
+
+                if(HostingWizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_IsLinuxSolutionStack] is bool)
+                {
+                    _pageUI.IsLinuxDeployment = (bool)HostingWizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_IsLinuxSolutionStack];
+                }
+                
 
                 DeploymentWizardHelper.ValidBeanstalkOptions validOptions = null;
                 var selectedAccount = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
@@ -189,10 +197,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                 beanstalkClient.DescribeConfigurationSettingsAsync(request).ContinueWith(task =>
                 {
                     var healthCheckUri = "/";
-                    var enable32Bit = false;
                     var isSingleInstanceEnvironment = false;
                     var enableXRayDaemon = false;
                     var enableEnhancedHealth = false;
+                    var proxyServer = Amazon.ElasticBeanstalk.Tools.EBConstants.PROXY_SERVER_NGINX;
                     var appSettings = new Dictionary<string, string>();
                     this._originalAppSettings.Clear();
 
@@ -229,14 +237,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                                         continue;
                                     }
 
-                                    if (optionSetting.Namespace == "aws:elasticbeanstalk:container:dotnet:apppool")
-                                    {
-                                        if (optionSetting.OptionName == "Enable 32-bit Applications")
-                                            bool.TryParse(optionSetting.Value, out enable32Bit);
-
-                                        continue;
-                                    }
-
                                     if (optionSetting.Namespace == "aws:elasticbeanstalk:xray")
                                     {
                                         if (optionSetting.OptionName == "XRayEnabled")
@@ -249,6 +249,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                                     {
                                         if (optionSetting.OptionName == "SystemType" && string.Equals(optionSetting.Value, "enhanced", StringComparison.OrdinalIgnoreCase))
                                             enableEnhancedHealth = true;
+
+                                        continue;
+                                    }
+
+                                    if (optionSetting.Namespace == "aws:elasticbeanstalk:environment:proxy")
+                                    {
+                                        if (optionSetting.OptionName == "ProxyServer")
+                                            proxyServer = optionSetting.Value;
 
                                         continue;
                                     }
@@ -271,6 +279,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 
                         this._originalEnableEnhancedHealth = enableEnhancedHealth;
                         this._pageUI.EnableEnhancedHealth = enableEnhancedHealth;
+
+                        this._originalProxyServer = proxyServer;
+                        this._pageUI.SelectedReverseProxyOption = proxyServer;
 
                         this._pageUI.ConfigureForEnvironmentType(isSingleInstanceEnvironment);
 
@@ -325,11 +336,16 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             else
                 HostingWizard[DeploymentWizardProperties.AppOptions.propkey_TargetRuntime] = null;
 
-            //HostingWizard[DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications] = _pageUI.Enable32BitAppPool;
-            if (string.IsNullOrEmpty(_pageUI.IISAppPath) || string.Equals(_pageUI.IISAppPath, "/"))
-                HostingWizard[DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath] = AWSDeployment.CommonParameters.DefaultIisAppPathFormat;
-            else
-                HostingWizard[DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath] = _pageUI.IISAppPath;
+            // Do not emit 32 bit applications related config -- Linux containers reject this, and IIS for .NET Core doesn't use it
+            HostingWizard.SetProperty(DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications, null);
+
+            if (!this._pageUI.IsLinuxDeployment)
+            {
+                if (string.IsNullOrEmpty(_pageUI.IISAppPath) || string.Equals(_pageUI.IISAppPath, "/"))
+                    HostingWizard[DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath] = AWSDeployment.CommonParameters.DefaultIisAppPathFormat;
+                else
+                    HostingWizard[DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath] = _pageUI.IISAppPath;
+            }
 
             HostingWizard[DeploymentWizardProperties.AppOptions.propkey_HealthCheckUrl] = _pageUI.HealthCheckUri;
             HostingWizard[DeploymentWizardProperties.AppOptions.propkey_SelectedBuildConfiguration] = _pageUI.SelectedBuildConfiguration;
@@ -342,6 +358,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 
             HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon] = this._pageUI.EnableXRayDaemon;
             HostingWizard[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableEnhancedHealth] = this._pageUI.EnableEnhancedHealth;
+
+            if (this._pageUI.IsLinuxDeployment)
+            {
+                HostingWizard[BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_ReverseProxyMode] = this._pageUI.SelectedReverseProxyOption;
+                HostingWizard[DeploymentWizardProperties.AppOptions.propkey_BuildSelfContainedBundle] = this._pageUI.BuildSelfContainedBundle;
+            }
         }
 
         private bool HasEnvironmentSettingsChanged

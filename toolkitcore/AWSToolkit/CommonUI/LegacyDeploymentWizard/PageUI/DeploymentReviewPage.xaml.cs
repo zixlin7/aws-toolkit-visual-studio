@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Navigation;
-using Microsoft.Win32;
 
 namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
 {
@@ -28,66 +27,13 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
 
         public bool OpenStatusOnClose => this._launchStatusWindow.IsChecked == true;
 
+        // TODO : Switch this to use <BooleanToVisibilityConverter x:Key="Bool2VisConverter" /> in XAML
         public bool IsNETCoreProjectType
         {
             get => this._ctlDotnetCliTools.Visibility == Visibility.Visible;
-            set
-            {
-                if(value)
-                {
-                    this._ctlAWSDeployPanel.Visibility = Visibility.Collapsed;
-                    this._ctlDotnetCliTools.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    this._ctlAWSDeployPanel.Visibility = Visibility.Visible;
-                    this._ctlDotnetCliTools.Visibility = Visibility.Collapsed;
-                }
-            }
-        }
-
-
-        public string ConfigFileDestination
-        {
-            get
-            {
-                if (this._generateConfiguration.IsChecked.GetValueOrDefault())
-                {
-                    return this._configurationPath.Text;
-                }
-                return string.Empty;
-            }
+            set => this._ctlDotnetCliTools.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public bool SaveBeanstalkTools => this._ctlDotnetCliPersistSettings.IsChecked.GetValueOrDefault();
-
-        private void Browse(object sender, RoutedEventArgs e)
-        {
-            var dlg = new SaveFileDialog
-            {
-                Title = "Save Configuration to File",
-                Filter = "Text Files|*.txt|All Files|*.*",
-                FileName = this._configurationPath.Text,
-                OverwritePrompt = true
-            };
-            if (dlg.ShowDialog().GetValueOrDefault())
-            {
-                this._configurationPath.Text = dlg.FileName;
-                this._generateConfiguration.IsChecked = true;
-            }
-        }
-
-        private void onHelpLinkNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            try
-            {
-                Process.Start(new ProcessStartInfo(this._helpLink.NavigateUri.AbsoluteUri));
-                e.Handled = true;
-            }
-            catch (Exception ex)
-            {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Error navigating to object: " + ex.Message);
-            }
-        }
     }
 }

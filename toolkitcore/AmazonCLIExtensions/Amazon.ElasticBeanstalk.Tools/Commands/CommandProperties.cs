@@ -2,6 +2,7 @@
 using Amazon.Common.DotNetCli.Tools.Options;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using ThirdParty.Json.LitJson;
 
 namespace Amazon.ElasticBeanstalk.Tools.Commands
@@ -10,6 +11,7 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
     {
         public string Configuration { get; set; }
         public string TargetFramework { get; set; }
+        public bool? SelfContained { get; set; }
         public string PublishOptions { get; set; }
         public string Application { get; set; }
         public string Environment { get; set; }
@@ -30,6 +32,12 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
         public string InstanceProfile { get; set; }
         public string ServiceRole { get; set; }
         public string VersionLabel { get; set; }
+        public string EnhancedHealthType { get; set; }
+        public string LoadBalancerType { get; set; }
+        public bool? EnableStickySessions { get; set; }
+
+        public string ProxyServer { get; set; }
+        public int? ApplicationPort { get; set; }
 
 
         internal void ParseCommandArguments(CommandOptions values)
@@ -39,6 +47,8 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
                 this.Configuration = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK.Switch)) != null)
                 this.TargetFramework = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_SELF_CONTAINED.Switch)) != null)
+                this.SelfContained = tuple.Item2.BoolValue;
             if ((tuple = values.FindCommandOption(CommonDefinedCommandOptions.ARGUMENT_PUBLISH_OPTIONS.Switch)) != null)
                 this.PublishOptions = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(EBDefinedCommandOptions.ARGUMENT_EB_APPLICATION.Switch)) != null)
@@ -76,6 +86,17 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
                 this.ServiceRole = tuple.Item2.StringValue;
             if ((tuple = values.FindCommandOption(EBDefinedCommandOptions.ARGUMENT_ENABLE_XRAY.Switch)) != null)
                 this.EnableXRay = tuple.Item2.BoolValue;
+            if ((tuple = values.FindCommandOption(EBDefinedCommandOptions.ARGUMENT_ENHANCED_HEALTH_TYPE.Switch)) != null)
+                this.EnhancedHealthType = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(EBDefinedCommandOptions.ARGUMENT_LOADBALANCER_TYPE.Switch)) != null)
+                this.LoadBalancerType = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(EBDefinedCommandOptions.ARGUMENT_ENABLE_STICKY_SESSIONS.Switch)) != null)
+                this.EnableStickySessions = tuple.Item2.BoolValue;
+
+            if ((tuple = values.FindCommandOption(EBDefinedCommandOptions.ARGUMENT_PROXY_SERVER.Switch)) != null)
+                this.ProxyServer = tuple.Item2.StringValue;
+            if ((tuple = values.FindCommandOption(EBDefinedCommandOptions.ARGUMENT_APPLICATION_PORT.Switch)) != null)
+                this.ApplicationPort = tuple.Item2.IntValue;
         }
 
 
@@ -83,6 +104,7 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
         {
             data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION.ConfigFileKey, command.GetStringValueOrDefault(this.Configuration, CommonDefinedCommandOptions.ARGUMENT_CONFIGURATION, false));
             data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK.ConfigFileKey, command.GetStringValueOrDefault(this.TargetFramework, CommonDefinedCommandOptions.ARGUMENT_FRAMEWORK, false));
+            data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_SELF_CONTAINED.ConfigFileKey, command.GetBoolValueOrDefault(this.SelfContained, CommonDefinedCommandOptions.ARGUMENT_SELF_CONTAINED, false));
             data.SetIfNotNull(CommonDefinedCommandOptions.ARGUMENT_PUBLISH_OPTIONS.ConfigFileKey, command.GetStringValueOrDefault(this.PublishOptions, CommonDefinedCommandOptions.ARGUMENT_PUBLISH_OPTIONS, false));
             data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_EB_APPLICATION.ConfigFileKey, command.GetStringValueOrDefault(this.Application, EBDefinedCommandOptions.ARGUMENT_EB_APPLICATION, false));
             data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_EB_ENVIRONMENT.ConfigFileKey, command.GetStringValueOrDefault(this.Environment, EBDefinedCommandOptions.ARGUMENT_EB_ENVIRONMENT, false));
@@ -90,16 +112,22 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
             data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_IIS_WEBSITE.ConfigFileKey, command.GetStringValueOrDefault(this.IISWebSite, EBDefinedCommandOptions.ARGUMENT_IIS_WEBSITE, false));
             data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_EB_TAGS.ConfigFileKey, ElasticBeanstalkToolsDefaults.FormatKeyValue(command.GetKeyValuePairOrDefault(this.Tags, EBDefinedCommandOptions.ARGUMENT_EB_TAGS, false)));
             data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_ENABLE_XRAY.ConfigFileKey, command.GetBoolValueOrDefault(this.EnableXRay, EBDefinedCommandOptions.ARGUMENT_ENABLE_XRAY, false));
+            data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_ENHANCED_HEALTH_TYPE.ConfigFileKey, command.GetStringValueOrDefault(this.EnhancedHealthType, EBDefinedCommandOptions.ARGUMENT_ENHANCED_HEALTH_TYPE, false));
             data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_EB_ADDITIONAL_OPTIONS.ConfigFileKey, ElasticBeanstalkToolsDefaults.FormatKeyValue(command.GetKeyValuePairOrDefault(this.AdditionalOptions, EBDefinedCommandOptions.ARGUMENT_EB_ADDITIONAL_OPTIONS, false)));
 
             data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_SOLUTION_STACK.ConfigFileKey, command.GetStringValueOrDefault(this.SolutionStack, EBDefinedCommandOptions.ARGUMENT_SOLUTION_STACK, false));
             data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_ENVIRONMENT_TYPE.ConfigFileKey, command.GetStringValueOrDefault(this.EnvironmentType, EBDefinedCommandOptions.ARGUMENT_ENVIRONMENT_TYPE, false));
+            data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_LOADBALANCER_TYPE.ConfigFileKey, command.GetStringValueOrDefault(this.LoadBalancerType, EBDefinedCommandOptions.ARGUMENT_LOADBALANCER_TYPE, false));
+            data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_ENABLE_STICKY_SESSIONS.ConfigFileKey, command.GetBoolValueOrDefault(this.EnableStickySessions, EBDefinedCommandOptions.ARGUMENT_ENABLE_STICKY_SESSIONS, false));
             data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_CNAME_PREFIX.ConfigFileKey, command.GetStringValueOrDefault(this.CNamePrefix, EBDefinedCommandOptions.ARGUMENT_CNAME_PREFIX, false));
             data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_INSTANCE_TYPE.ConfigFileKey, command.GetStringValueOrDefault(this.InstanceType, EBDefinedCommandOptions.ARGUMENT_INSTANCE_TYPE, false));
             data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_EC2_KEYPAIR.ConfigFileKey, command.GetStringValueOrDefault(this.EC2KeyPair, EBDefinedCommandOptions.ARGUMENT_EC2_KEYPAIR, false));
             data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_HEALTH_CHECK_URL.ConfigFileKey, command.GetStringValueOrDefault(this.HealthCheckUrl, EBDefinedCommandOptions.ARGUMENT_HEALTH_CHECK_URL, false));
             data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_INSTANCE_PROFILE.ConfigFileKey, command.GetStringValueOrDefault(this.InstanceProfile, EBDefinedCommandOptions.ARGUMENT_INSTANCE_PROFILE, false));
             data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_SERVICE_ROLE.ConfigFileKey, command.GetStringValueOrDefault(this.ServiceRole, EBDefinedCommandOptions.ARGUMENT_SERVICE_ROLE, false));
+
+            data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_PROXY_SERVER.ConfigFileKey, command.GetStringValueOrDefault(this.ProxyServer, EBDefinedCommandOptions.ARGUMENT_PROXY_SERVER, false));
+            data.SetIfNotNull(EBDefinedCommandOptions.ARGUMENT_APPLICATION_PORT.ConfigFileKey, command.GetIntValueOrDefault(this.ApplicationPort, EBDefinedCommandOptions.ARGUMENT_APPLICATION_PORT, false));
         }
     }
 

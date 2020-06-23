@@ -291,6 +291,8 @@
 
             public static readonly string propkey_EnvAccessKey = "envAccessKeyID";
             public static readonly string propkey_EnvSecretKey = "envSecretKey";
+
+            public static readonly string propkey_BuildSelfContainedBundle = "propkey_BuildSelfContainedBundle";
         }
 
         public static class ReviewProperties
@@ -311,8 +313,6 @@
             /// Boolean, if true a config file corresponding to the environment will
             /// be saved
             /// </summary>
-            public static readonly string propkey_ConfigFileDestination = "configFileDestination";
-
             public static readonly string propkey_SaveBeanstalkTools = "saveBeanstalkTools";
         }
     }

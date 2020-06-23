@@ -67,7 +67,6 @@ namespace Amazon.AWSToolkit.CommonUI.DeploymentWizard.PageControllers
                 if (_pageUI != null)
                 {
                     HostingWizard[DeploymentWizardProperties.ReviewProperties.propkey_LaunchStatusOnClose] = _pageUI.OpenStatusOnClose;
-                    HostingWizard[DeploymentWizardProperties.ReviewProperties.propkey_ConfigFileDestination] = _pageUI.ConfigFileDestination;
                 }
             }
             else

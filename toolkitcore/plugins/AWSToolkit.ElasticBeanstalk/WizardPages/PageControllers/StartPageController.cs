@@ -237,7 +237,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                 HostingWizard.SetProperty(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy, true);
                 HostingWizard[BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_CreateNewEnv] = false;
                 var selectedDeployment = _pageUI.SelectedDeployment;
+                var selectedEnvironment = selectedDeployment.Environments.FirstOrDefault(env => env.EnvironmentName == selectedDeployment.SelectedEnvironmentName);
                 HostingWizard.SetProperty(DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName, selectedDeployment.ApplicationName);
+                HostingWizard[BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_SolutionStack] =
+                    selectedEnvironment?.SolutionStackName;
 
                 // reform the new model into that used by the legacy wizard; some duplication here
                 var existingDeployment = new ExistingServiceDeployment
@@ -247,6 +250,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                 };
                 HostingWizard.SetProperty(DeploymentWizardProperties.DeploymentTemplate.propkey_RedeploymentInstance, existingDeployment);
                 HostingWizard[BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_EnvName] = selectedDeployment.SelectedEnvironmentName;
+
+                // If redeploying to a non windows solution stack then use Amazon.ElasticBeanstalk.Tools to handle deployment. Both propKey_IsLinuxSolutionStack and propKey_UseEbToolsToDeploy are used
+                // for now with the same value but in the future when we use EbTools for Windows .NET Core deployment they can differ.
+                HostingWizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_IsLinuxSolutionStack] = !selectedDeployment.IsSelectedEnvironmentWindowsSolutionStack;
+                HostingWizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_UseEbToolsToDeploy] = !selectedDeployment.IsSelectedEnvironmentWindowsSolutionStack;
 
                 // if a build configuration was recorded on last deployment for the environment, make it the default for the redeployment
                 if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_PreviousDeployments))
@@ -263,6 +271,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             }
             else
             {
+                HostingWizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_UseEbToolsToDeploy] = null;
                 HostingWizard.SetProperty(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy, false);
                 foreach (var t in _templatesByRegion[_pageUI.SelectedRegion.SystemName])
                 {

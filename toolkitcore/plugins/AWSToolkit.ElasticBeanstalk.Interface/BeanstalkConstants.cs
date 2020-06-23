@@ -31,5 +31,34 @@
         public const string EnvType_LoadBalanced = "LoadBalanced";
 
         public const string DEFAULT_INSTANCE_TYPE = "t3a.medium";
+
+        public static class SolutionStackNames
+        {
+            public static class Prefixes
+            {
+                public const string AmazonLinux2_64Bit = "64bit Amazon Linux 2";
+                public const string WindowsServer2019_64Bit = "64bit Windows Server 2019";
+
+                public static class WithVersionDecorator
+                {
+                    public static readonly string AmazonLinux2_64Bit = $"{Prefixes.AmazonLinux2_64Bit} v";
+                    public static readonly string WindowsServer2019_64Bit = $"{Prefixes.WindowsServer2019_64Bit} v";
+                }
+            }
+
+            public static class Systems
+            {
+                public const string AmazonLinux = "Amazon Linux";
+                public const string WindowsServer2019Core = "Windows Server Core 2019";
+                public const string WindowsServer2019 = "Windows Server 2019";
+                public const string WindowsServer2016Core = "Windows Server Core 2016";
+                public const string WindowsServer2016 = "Windows Server 2016";
+                public const string WindowsServer2012R2Core = "Windows Server Core 2012 R2";
+                public const string WindowsServer2012R2 = "Windows Server 2012 R2";
+                public const string WindowsServer2012Core = "Windows Server Core 2012";
+                public const string WindowsServer2012 = "Windows Server 2012";
+                public const string WindowsServer2008 = "Windows Server 2008";
+            }
+    }
     }
 }

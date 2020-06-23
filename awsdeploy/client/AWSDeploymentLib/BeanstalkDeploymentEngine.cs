@@ -472,7 +472,27 @@ namespace AWSDeployment
 
         private void SetupEC2GroupForRDS()
         {
-            var ec2SecurityGroupName = this.EnvironmentName + Amazon.AWSToolkit.Constants.BEANSTALK_RDS_SECURITY_GROUP_POSTFIX;
+            var securityGroup = SetupEC2GroupForRDS(Observer, EC2Client, RDSClient, this.EnvironmentName, VPCId, LaunchIntoVPC, RDSSecurityGroups, VPCSecurityGroups, VPCGroupsAndReferencingDBInstances);
+            var existingOption = configOptionSettings.FirstOrDefault(x => (x.Namespace == "aws:autoscaling:launchconfiguration" && x.OptionName == "SecurityGroups"));
+            if (existingOption == null)
+            {
+                configOptionSettings.Add(new ConfigurationOptionSetting()
+                {
+                    Namespace = "aws:autoscaling:launchconfiguration",
+                    OptionName = "SecurityGroups",
+                    Value = securityGroup
+                });
+            }
+            else
+            {
+                existingOption.Value += "," + securityGroup;
+            }
+        }
+
+        public static string SetupEC2GroupForRDS(DeploymentObserver observer, IAmazonEC2 ec2Client, IAmazonRDS rdsClient, string environmentName, string vpcId, bool launchIntoVPC,
+            IEnumerable<string> rdsSecurityGroups, IEnumerable<string> vpcSecurityGroups, Dictionary<string, List<int>> vpcGroupsAndReferencingDBInstances)
+        {
+            var ec2SecurityGroupName = environmentName + Amazon.AWSToolkit.Constants.BEANSTALK_RDS_SECURITY_GROUP_POSTFIX;
 
             SecurityGroup ec2SecurityGroup = null;
             try
@@ -481,15 +501,15 @@ namespace AWSDeployment
                 {
                     new Amazon.EC2.Model.Filter { Name = "group-name", Values = new List<string>{ec2SecurityGroupName}}
                 };
-                if (!string.IsNullOrEmpty(VPCId))
-                    filters.Add(new Amazon.EC2.Model.Filter { Name = "vpc-id", Values = new List<string>{ VPCId}});
+                if (!string.IsNullOrEmpty(vpcId))
+                    filters.Add(new Amazon.EC2.Model.Filter { Name = "vpc-id", Values = new List<string>{ vpcId } });
                 
                 var describeSecurityGroupsRequest = new DescribeSecurityGroupsRequest
                 {
                     Filters = filters
                 };
 
-                var describeSecurityGroupResult = this.EC2Client.DescribeSecurityGroups(describeSecurityGroupsRequest);
+                var describeSecurityGroupResult = ec2Client.DescribeSecurityGroups(describeSecurityGroupsRequest);
                 ec2SecurityGroup = describeSecurityGroupResult.SecurityGroups.FirstOrDefault();
             }
             catch { } // Bury exceptions since the describe call will throw exceptions if the group does not exist.
@@ -502,11 +522,11 @@ namespace AWSDeployment
                     GroupName = ec2SecurityGroupName,
                     Description = "Security Group created for Beanstalk Environment to give access to RDS instances"
                 };
-                if (!string.IsNullOrEmpty(VPCId))
-                    createSecurityGroupRequest.VpcId = VPCId;
+                if (!string.IsNullOrEmpty(vpcId))
+                    createSecurityGroupRequest.VpcId = vpcId;
 
-                ec2SecurityGroupId = this.EC2Client.CreateSecurityGroup(createSecurityGroupRequest).GroupId;
-                Observer.Status("...created EC2 security group for allowing access to RDS instances '{0}'", ec2SecurityGroupName);
+                ec2SecurityGroupId = ec2Client.CreateSecurityGroup(createSecurityGroupRequest).GroupId;
+                observer.Status("...created EC2 security group for allowing access to RDS instances '{0}'", ec2SecurityGroupName);
 
                 // allow for possible eventual consistency
                 const int maxRetryCount = 10;
@@ -516,18 +536,18 @@ namespace AWSDeployment
                     retry++;
                     try
                     {
-                        ec2SecurityGroup = EC2Client.DescribeSecurityGroups(new DescribeSecurityGroupsRequest {GroupIds = new List<string> {ec2SecurityGroupId}}).SecurityGroups.FirstOrDefault();
+                        ec2SecurityGroup = ec2Client.DescribeSecurityGroups(new DescribeSecurityGroupsRequest {GroupIds = new List<string> {ec2SecurityGroupId}}).SecurityGroups.FirstOrDefault();
                     }
                     catch
                     {
-                        Observer.Status("...waiting for creation of Amazon EC2 security group {0}", ec2SecurityGroupName);
+                        observer.Status("...waiting for creation of Amazon EC2 security group {0}", ec2SecurityGroupName);
                         Thread.Sleep(500);
                     }
                 }
 
                 if (ec2SecurityGroup == null)
                 {
-                    Observer.Status("...failed to confirm EC2 security group creation after {0} attempts; continuing with deployment", maxRetryCount);
+                    observer.Status("...failed to confirm EC2 security group creation after {0} attempts; continuing with deployment", maxRetryCount);
                 }
             }
             else
@@ -537,7 +557,7 @@ namespace AWSDeployment
 
             try
             {
-                this.EC2Client.AuthorizeSecurityGroupIngress(new AuthorizeSecurityGroupIngressRequest
+                ec2Client.AuthorizeSecurityGroupIngress(new AuthorizeSecurityGroupIngressRequest
                 {
                     GroupId = ec2SecurityGroupId,
                     IpPermissions = new List<IpPermission>
@@ -554,12 +574,12 @@ namespace AWSDeployment
             }
             catch (Exception e)
             {
-                Observer.Status("...error opening port 80 in security group '{0}': {1}", ec2SecurityGroupName, e.Message);
+                observer.Status("...error opening port 80 in security group '{0}': {1}", ec2SecurityGroupName, e.Message);
             }
 
-            if (RDSSecurityGroups.Any())
+            if (rdsSecurityGroups.Any())
             {
-                foreach (var rdsSecurityGroup in RDSSecurityGroups)
+                foreach (var rdsSecurityGroup in rdsSecurityGroups)
                 {
                     try
                     {
@@ -571,34 +591,34 @@ namespace AWSDeployment
                         };
 
                         // can't output to console as message potentially out-of-order now we're in a thread
-                        Observer.LogOnly("...adding EC2 security group '{0}' to RDS security group '{1}'", ec2SecurityGroupName, rdsSecurityGroup);
-                        RDSClient.AuthorizeDBSecurityGroupIngress(authIngressRequest);
+                        observer.LogOnly("...adding EC2 security group '{0}' to RDS security group '{1}'", ec2SecurityGroupName, rdsSecurityGroup);
+                        rdsClient.AuthorizeDBSecurityGroupIngress(authIngressRequest);
                     }
                     catch (AmazonRDSException e)
                     {
                         // can't output to console as message potentially out-of-order now we're in a thread
                         if (e is AuthorizationAlreadyExistsException)
-                            Observer.Status("......EC2 security group '{0}' already has ingress permissions in RDS security group '{1}'",
+                            observer.Status("......EC2 security group '{0}' already has ingress permissions in RDS security group '{1}'",
                                             ec2SecurityGroupName, rdsSecurityGroup);
                         else
-                            Observer.Status("......caught AmazonRDSException whilst adding EC2 security group '{0}' to RDS security group '{1}', skipped - {2}",
+                            observer.Status("......caught AmazonRDSException whilst adding EC2 security group '{0}' to RDS security group '{1}', skipped - {2}",
                                         ec2SecurityGroupName, rdsSecurityGroup, e.Message);
                     }
                 }
             }
 
-            if (VPCSecurityGroups.Any())
+            if (vpcSecurityGroups.Any())
             {
-                foreach (var vpcSecurityGroup in VPCSecurityGroups)
+                foreach (var vpcSecurityGroup in vpcSecurityGroups)
                 {
                     try
                     {
                         var ipPermissions = new List<IpPermission>();
-                        if (VPCGroupsAndReferencingDBInstances.ContainsKey(vpcSecurityGroup))
+                        if (vpcGroupsAndReferencingDBInstances.ContainsKey(vpcSecurityGroup))
                         {
                             // unlikely but not impossible that multiple instances might be using
                             // different ports in the same group, but we'd better handle it
-                            var ports = VPCGroupsAndReferencingDBInstances[vpcSecurityGroup];
+                            var ports = vpcGroupsAndReferencingDBInstances[vpcSecurityGroup];
                             foreach (var p in ports)
                             {
                                 var ipPermission = new IpPermission
@@ -620,7 +640,7 @@ namespace AWSDeployment
                             // don't think we'll ever get to here without the db port; rather than 
                             // open up all ports, log the fact we have skipped this. The user can always
                             // manually edit the group - better safe than insecure
-                            Observer.Info("...skipped updating of EC2-VPC security group '{0}' to allow deployed application access; not able to determine database port.", vpcSecurityGroup);
+                            observer.Info("...skipped updating of EC2-VPC security group '{0}' to allow deployed application access; not able to determine database port.", vpcSecurityGroup);
                         }
 
                         if (ipPermissions.Any())
@@ -632,33 +652,20 @@ namespace AWSDeployment
                             };
 
                             // can't output to console as message potentially out-of-order now we're in a thread
-                            Observer.LogOnly("...adding EC2 security group '{0}' to EC2-VPC security group for DB instance '{1}'", ec2SecurityGroupId, vpcSecurityGroup);
-                            EC2Client.AuthorizeSecurityGroupIngress(authIngressRequest);
+                            observer.LogOnly("...adding EC2 security group '{0}' to EC2-VPC security group for DB instance '{1}'", ec2SecurityGroupId, vpcSecurityGroup);
+                            ec2Client.AuthorizeSecurityGroupIngress(authIngressRequest);
                         }
                     }
                     catch (AmazonEC2Exception e)
                     {
                         // can't output to console as message potentially out-of-order now we're in a thread
-                        Observer.Status("......caught AmazonEC2Exception whilst adding EC2 security group '{0}' to EC2-VPC security group '{1}', skipped - {2}",
+                        observer.Status("......caught AmazonEC2Exception whilst adding EC2 security group '{0}' to EC2-VPC security group '{1}', skipped - {2}",
                                     ec2SecurityGroupId, vpcSecurityGroup, e.Message);
                     }
                 }
             }
 
-            var existingOption = configOptionSettings.FirstOrDefault(x => (x.Namespace == "aws:autoscaling:launchconfiguration" && x.OptionName == "SecurityGroups"));
-            if (existingOption == null)
-            {
-                configOptionSettings.Add(new ConfigurationOptionSetting()
-                {
-                    Namespace = "aws:autoscaling:launchconfiguration",
-                    OptionName = "SecurityGroups",
-                    Value = this.LaunchIntoVPC ? ec2SecurityGroupId : ec2SecurityGroupName
-                });
-            }
-            else
-            {
-                existingOption.Value += "," + (this.LaunchIntoVPC ? ec2SecurityGroupId : ec2SecurityGroupName);
-            }
+            return launchIntoVPC ? ec2SecurityGroupId : ec2SecurityGroupName;
         }
 
         protected override void ExecuteUpdateStack()
@@ -1085,7 +1092,7 @@ namespace AWSDeployment
             	if (!string.IsNullOrEmpty(RoleName) && configOptionSettings.FirstOrDefault(
                 	x => (x.Namespace == "aws:autoscaling:launchconfiguration" && x.OptionName == "IamInstanceProfile")) == null)
             	{
-                	string instanceProfileName = ConfigureRoleAndProfile(RoleName); // same name, but allow for one day may not be
+                	string instanceProfileName = ConfigureRoleAndProfile(IAMClient, RoleName, RegionEndPoints, Observer); // same name, but allow for one day may not be
                 	// if error, chosen to not use but proceed with launch - user can fix up via environment view later
                 	if (!string.IsNullOrEmpty(instanceProfileName))
                 	{
@@ -1101,7 +1108,7 @@ namespace AWSDeployment
                 if (!string.IsNullOrEmpty(ServiceRoleName) && configOptionSettings.FirstOrDefault(
                     x => (x.Namespace == "aws:elasticbeanstalk:environment" && x.OptionName == "ServiceRole")) == null)
                 {
-                    ConfigureServiceRole(ServiceRoleName);
+                    ConfigureServiceRole(IAMClient, ServiceRoleName, RegionEndPoints, Observer);
                     configOptionSettings.Add(new ConfigurationOptionSetting()
                     {
                         Namespace = "aws:elasticbeanstalk:environment",
@@ -1360,7 +1367,11 @@ namespace AWSDeployment
         /// </summary>
         /// <param name="roleOrProfileName"></param>
         /// <returns></returns>
-        string ConfigureRoleAndProfile(string roleOrProfileName)
+        public static string ConfigureRoleAndProfile(
+            IAmazonIdentityManagementService iamClient, 
+            string roleOrProfileName, 
+            RegionEndPointsManager.RegionEndPoints regionEndPoints, 
+            DeploymentObserver observer)
         {
             var instanceProfileName = string.Empty;
             try
@@ -1368,7 +1379,7 @@ namespace AWSDeployment
                 // if we've been handed an instance profile name, use it otherwise probe for
                 // a role matching the name and wrap a profile around it with the same name as
                 // the role
-                var ip = getInstanceProfile(roleOrProfileName);
+                var ip = getInstanceProfile(iamClient, roleOrProfileName);
                 if (ip != null)
                 {
                     return roleOrProfileName;
@@ -1376,7 +1387,7 @@ namespace AWSDeployment
 
                 // ensure the default or user-defined role exists
                 var isDefaultRole = roleOrProfileName == BeanstalkParameters.DefaultRoleName;
-                var role = getRole(roleOrProfileName);
+                var role = getRole(iamClient, roleOrProfileName);
                 if (role == null)
                 {
                     if (isDefaultRole)
@@ -1384,18 +1395,18 @@ namespace AWSDeployment
                         var ASSUME_ROLE_POLICY
                             = Amazon.AWSToolkit.Constants.GetIAMRoleAssumeRolePolicyDocument(
                                 RegionEndPointsManager.EC2_SERVICE_NAME,
-                                this.RegionEndPoints);
+                                regionEndPoints);
                         var request = new CreateRoleRequest
                         {
                             RoleName = roleOrProfileName,
                             Path = "/",
                             AssumeRolePolicyDocument = ASSUME_ROLE_POLICY
                         };
-                        IAMClient.CreateRole(request);
+                        iamClient.CreateRole(request);
                     }
                     else
                     {
-                        Observer.Warn(
+                        observer.Warn(
                             "Unable to find role with name '{0}'; launch configuration settings for role will be skipped.",
                             roleOrProfileName);
                         return string.Empty;
@@ -1432,15 +1443,15 @@ namespace AWSDeployment
                 }
                 */
 
-                ip = getInstanceProfile(roleOrProfileName);
+                ip = getInstanceProfile(iamClient, roleOrProfileName);
                 if (ip == null)
                 {
-                    ip = IAMClient.CreateInstanceProfile(new CreateInstanceProfileRequest()
+                    ip = iamClient.CreateInstanceProfile(new CreateInstanceProfileRequest()
                     {
                         InstanceProfileName = roleOrProfileName,
                         Path = "/"
                     }).InstanceProfile;
-                    IAMClient.AddRoleToInstanceProfile(
+                    iamClient.AddRoleToInstanceProfile(
                         new AddRoleToInstanceProfileRequest()
                         {
                             InstanceProfileName = roleOrProfileName,
@@ -1452,45 +1463,49 @@ namespace AWSDeployment
             }
             catch (AmazonIdentityManagementServiceException e)
             {
-                Observer.Error("Caught AmazonIdentityManagementServiceException whilst setting up role: {0}", e.Message);
+                observer.Error("Caught AmazonIdentityManagementServiceException whilst setting up role: {0}", e.Message);
             }
             catch (Exception e)
             {
-                Observer.Error("Caught Exception whilst setting up role: {0}", e.Message);
+                observer.Error("Caught Exception whilst setting up role: {0}", e.Message);
             }
 
             return instanceProfileName;
         }
 
-        void ConfigureServiceRole(string serviceRoleName)
+        public static void ConfigureServiceRole(
+            IAmazonIdentityManagementService iamClient, 
+            string serviceRoleName,
+            RegionEndPointsManager.RegionEndPoints regionEndPoints,
+            DeploymentObserver observer)
         {
             try
             {
                 // ensure the default or user-defined role exists
                 bool isDefaultRole = serviceRoleName == BeanstalkParameters.DefaultServiceRoleName;
-                Role role = getRole(serviceRoleName);
+                Role role = getRole(iamClient, serviceRoleName);
                 if (role == null)
                 {
                     if (isDefaultRole)
                     {
                         var ASSUME_ROLE_POLICY 
                             = Amazon.AWSToolkit.Constants.GetIAMRoleAssumeRolePolicyDocument(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME,
-                                                                                             this.RegionEndPoints);
+                                                                                             regionEndPoints);
                         var request = new CreateRoleRequest()
                         {
                             RoleName = serviceRoleName,
                             Path = "/",
                             AssumeRolePolicyDocument = ASSUME_ROLE_POLICY
                         };
-                        role = IAMClient.CreateRole(request).Role;
+                        role = iamClient.CreateRole(request).Role;
 
-                        IAMClient.AttachRolePolicy(new AttachRolePolicyRequest
+                        iamClient.AttachRolePolicy(new AttachRolePolicyRequest
                         {
                             PolicyArn = RolePolicies.ServiceRoleArns.AWSElasticBeanstalkService,
                             RoleName = serviceRoleName
                         });
 
-                        IAMClient.AttachRolePolicy(new AttachRolePolicyRequest
+                        iamClient.AttachRolePolicy(new AttachRolePolicyRequest
                         {
                             PolicyArn = RolePolicies.ServiceRoleArns.AWSElasticBeanstalkEnhancedHealth,
                             RoleName = serviceRoleName
@@ -1498,32 +1513,32 @@ namespace AWSDeployment
                     }
                     else
                     {
-                        Observer.Warn("Unable to find role with name '{0}'; environment settings for service role will be skipped.", serviceRoleName);
+                        observer.Warn("Unable to find role with name '{0}'; environment settings for service role will be skipped.", serviceRoleName);
                     }
                 }
             }
             catch (Exception e)
             {
-                Observer.Error("Caught Exception whilst setting up service role: {0}", e.Message);
+                observer.Error("Caught Exception whilst setting up service role: {0}", e.Message);
             }
         }
 
-        Role getRole(string roleName)
+        private static Role getRole(IAmazonIdentityManagementService iamClient, string roleName)
         {
             try
             {
-                return IAMClient.GetRole(new GetRoleRequest(){RoleName = roleName}).Role;
+                return iamClient.GetRole(new GetRoleRequest(){RoleName = roleName}).Role;
             }
             catch (Amazon.IdentityManagement.Model.NoSuchEntityException) { }
 
             return null;
         }
 
-        InstanceProfile getInstanceProfile(string profileName)
+        private static InstanceProfile getInstanceProfile(IAmazonIdentityManagementService iamClient, string profileName)
         {
             try
             {
-                return IAMClient.GetInstanceProfile(new GetInstanceProfileRequest(){InstanceProfileName = profileName}).InstanceProfile;
+                return iamClient.GetInstanceProfile(new GetInstanceProfileRequest(){InstanceProfileName = profileName}).InstanceProfile;
             }
             catch (Amazon.IdentityManagement.Model.NoSuchEntityException) { }
 

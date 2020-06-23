@@ -34,6 +34,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -91,6 +92,7 @@
                 Grid.Column="0"
                 Margin="8,2,4,0"
                 Content="App path:"
+                Visibility="{Binding WindowsVisiblity}"
                 Style="{DynamicResource awsWizardFieldLabelStyle}"
                 Target="{Binding ElementName=_iisAppPath}" />
 
@@ -100,12 +102,27 @@
                 Grid.Column="1"
                 Grid.ColumnSpan="3"
                 Margin="0,0,8,0"
+                Visibility="{Binding WindowsVisiblity}"
                 Style="{DynamicResource awsTextBoxStyle}"
                 Text="{Binding IISAppPath}" />
+
+            <CheckBox
+                Grid.Row="4"
+                Grid.ColumnSpan="3"
+                Margin="8,6,8,4"
+                IsChecked="{Binding BuildSelfContainedBundle}"
+                Visibility="{Binding LinuxVisiblity}"
+                ToolTip="Build a self contained deployment bundle including the .NET runtime the project is targeting. This allows newer versions of .NET to be used in Elastic Beanstalk then is preinstalled in the Beanstalk environment."
+                Style="{DynamicResource awsCheckboxButtonBaseStyle}">
+                Build _self contained deployment bundle
+            </CheckBox>
+            
+
         </Grid>
 
         <Grid Grid.Row="1" Visibility="{Binding EnvironmentOptionsPanelVisibility}">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -118,6 +135,7 @@
             <Label Margin="0,6,0,0" Style="{DynamicResource awsWizardGroupSubHeaderStyle}">
                 AWS Elastic Beanstalk Environment Options
             </Label>
+
 
             <CheckBox
                 Grid.Row="1"
@@ -146,6 +164,29 @@
             <TextBlock Grid.Row="2" Grid.Column="1" Margin="10,5" TextWrapping="WrapWithOverflow" Style="{DynamicResource awsInfoTextStyle}" Background="Transparent" Visibility="{Binding EnhancedHealthPanelVisibility}">
                 <Hyperlink NavigateUri="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/health-enhanced.html" RequestNavigate="Hyperlink_RequestNavigateEnhancedHealth">Learn More</Hyperlink>.
             </TextBlock>
+
+            <Label
+                x:Name="_reverseProxyLabel"
+                Grid.Row="3"
+                Grid.Column="0"
+                Margin="8,2,4,0"
+                ToolTip="By default Nginx is used as a reverse proxy in front of the .NET Core web server Kestrel. To use Kestrel as the front facing web server then select none as the reverse proxy."
+                Content="Reverse _Proxy:"
+                Visibility="{Binding LinuxVisiblity}"
+                Style="{DynamicResource awsWizardFieldLabelStyle}"
+                Target="{Binding ElementName=_reverseProxy}" />
+
+            <ComboBox
+                x:Name="reverseProxy"
+                Grid.Row="3"
+                Grid.Column="1"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Visibility="{Binding LinuxVisiblity}"
+                ItemsSource="{Binding ReverseProxyOptions}"
+                SelectedItem="{Binding SelectedReverseProxyOption}"
+                Style="{DynamicResource awsComboBoxStyle}" />
+            
         </Grid>
 
         <Grid Grid.Row="2">

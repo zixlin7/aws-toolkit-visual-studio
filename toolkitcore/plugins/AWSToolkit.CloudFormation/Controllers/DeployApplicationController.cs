@@ -88,15 +88,12 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                     }
                 }
 
-                string configFileDestination = getValue<string>(DeploymentWizardProperties.ReviewProperties.propkey_ConfigFileDestination);
-                Deployment.ConfigFileDestination = configFileDestination;
-
                 Deployment.Deploy();
                 stackID = Deployment.StackId;
             }
             catch (Exception e)
             {
-                string errMsg = string.Format("Error publishing application: {0}", e.Message);
+                string errMsg = $"Error publishing application: {e.Message}";
                 Observer.Error(errMsg);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Publish Error", errMsg);
             }

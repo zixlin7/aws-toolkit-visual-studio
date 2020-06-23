@@ -3,6 +3,7 @@ using Amazon.Common.DotNetCli.Tools.Options;
 using Amazon.ElasticBeanstalk.Model;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using ThirdParty.Json.LitJson;
 
@@ -33,7 +34,7 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
 
                 return this._deleteEnvironmentProperties;
             }
-            set => this._deleteEnvironmentProperties = value;
+            set { this._deleteEnvironmentProperties = value; }
         }
 
         public DeleteEnvironmentCommand(IToolLogger logger, string workingDirectory, string[] args)

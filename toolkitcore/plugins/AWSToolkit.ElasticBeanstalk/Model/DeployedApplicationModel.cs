@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Amazon.ElasticBeanstalk.Model;
 
@@ -27,5 +28,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Model
         }
 
         private DeployedApplicationModel() { }
+
+        public bool IsSelectedEnvironmentWindowsSolutionStack
+        {
+            get
+            {
+                var envDesc = this.Environments.FirstOrDefault(x => string.Equals(x.EnvironmentName, SelectedEnvironmentName, System.StringComparison.CurrentCultureIgnoreCase));
+                if (envDesc == null)
+                    return true;
+
+                return Amazon.ElasticBeanstalk.Tools.EBUtilities.IsSolutionStackWindows(envDesc.SolutionStackName);
+            }
+        }
     }
 }
