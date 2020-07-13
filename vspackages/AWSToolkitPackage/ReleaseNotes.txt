@@ -1,4 +1,7 @@
-﻿v1.18.0.0 (2020-06-23)
+﻿vNext
+* Fixed issue where certain error messages pop "under" other windows, and are not properly modal
+
+v1.18.0.0 (2020-06-23)
 * Added support to publish ASP.NET Core applications to the new ".NET Core on Linux" Beanstalk platform.
 * A banner is shown on first usage, indicating that information relating to Toolkit usage is collected.
 * Fixed an issue where first-time users of the Toolkit were not being shown the "Getting Started" dialog in Visual Studio 2019. All users will see this dialog the first time Visual Studio is opened after installing this version of the toolkit.

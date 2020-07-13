@@ -99,6 +99,8 @@
     <Compile Include="CommonUI\Converters\ConstantClassConverter.cs" />
     <Compile Include="CommonUI\Converters\HasItemsVisibilityConverter.cs" />
     <Compile Include="CommonUI\Converters\ValueConverterMarkupExtension.cs" />
+    <Compile Include="CommonUI\MessageBox\MessageBoxDefaultButton.cs" />
+    <Compile Include="CommonUI\MessageBox\WindowsMessageBox.cs" />
     <Compile Include="CommonUI\SelectableItem.cs" />
     <Compile Include="CommonUI\Components\IAMRolePicker.xaml.cs">
       <DependentUpon>IAMRolePicker.xaml</DependentUpon>

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.CommonUI.MessageBox;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Shared;
 using Microsoft.VisualStudio;
@@ -262,7 +263,14 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         public void ShowError(string title, string message)
         {
-            this.ExecuteOnUIThread(() => MessageBox.Show(_hostPackage.GetParentWindow(), message, title, MessageBoxButton.OK, MessageBoxImage.Error));
+            this.ExecuteOnUIThread(() =>
+            {
+                var ownerHandle = _hostPackage.GetParentWindowHandle();
+
+                WindowsMessageBox.Show(ownerHandle, title, message,
+                    MessageBoxButton.OK, MessageBoxImage.Error,
+                    MessageBoxResult.OK);
+            });
         }
 
         public void ShowErrorWithLinks(string title, string message)
@@ -272,7 +280,14 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         public void ShowMessage(string title, string message)
         {
-            this.ExecuteOnUIThread(() => MessageBox.Show(_hostPackage.GetParentWindow(), message, title, MessageBoxButton.OK, MessageBoxImage.Information));
+            this.ExecuteOnUIThread(() =>
+            {
+                var ownerHandle = _hostPackage.GetParentWindowHandle();
+
+                WindowsMessageBox.Show(ownerHandle, title, message,
+                    MessageBoxButton.OK, MessageBoxImage.Information,
+                    MessageBoxResult.OK);
+            });
         }
 
         public bool Confirm(string title, string message)
@@ -282,23 +297,15 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
         public bool Confirm(string title, string message, MessageBoxButton buttons)
         {
-            return this._hostPackage.JoinableTaskFactory.Run<bool>(async () =>
+            return this.ExecuteOnUIThread<bool>(() =>
             {
-                await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
-                var uiShell = (IVsUIShell)_hostPackage.GetVSShellService(typeof(SVsUIShell));
-                IntPtr parent;
-                if (uiShell.GetDialogOwnerHwnd(out parent) == VSConstants.S_OK)
-                {
-                    var host = new Window();
-                    var wih = new WindowInteropHelper(host);
-                    wih.Owner = parent;
+                var ownerHandle = _hostPackage.GetParentWindowHandle();
 
-                    var result = MessageBox.Show(host, message, title, buttons, MessageBoxImage.Exclamation);
-                    return result == MessageBoxResult.Yes || result == MessageBoxResult.OK;
-                }
+                var result = WindowsMessageBox.Show(ownerHandle, title, message,
+                    buttons, MessageBoxImage.Exclamation,
+                    MessageBoxResult.None);
 
-                Trace.Fail("Failed to get hwnd for error message: " + message);
-                return false;
+                return result == MessageBoxResult.Yes || result == MessageBoxResult.OK;
             });
         }
 

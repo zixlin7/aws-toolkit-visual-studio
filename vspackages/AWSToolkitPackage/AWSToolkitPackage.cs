@@ -1755,6 +1755,32 @@ namespace Amazon.AWSToolkit.VisualStudio
             return folder;
         }
 
+        /// <summary>
+        /// Returns an IDE handle that can be used as a parent to extension modal dialogs
+        /// </summary>
+        internal IntPtr GetParentWindowHandle()
+        {
+            return this.JoinableTaskFactory.Run<IntPtr>(async () =>
+            {
+                await this.JoinableTaskFactory.SwitchToMainThreadAsync();
+                IntPtr parentHwnd = IntPtr.Zero;
+
+                var uiShell = await GetServiceAsync(typeof(SVsUIShell)) as IVsUIShell;
+                if (uiShell == null)
+                {
+                    return parentHwnd;
+                }
+
+                var result = uiShell.GetDialogOwnerHwnd(out parentHwnd);
+                if (result != VSConstants.S_OK)
+                {
+                    LOGGER.Debug($"Unable to get GetDialogOwnerHwnd (result: {result})");
+                }
+
+                return parentHwnd;
+            });
+        }
+
         internal Window GetParentWindow()
         {
             return this.JoinableTaskFactory.Run<Window>(async () =>
