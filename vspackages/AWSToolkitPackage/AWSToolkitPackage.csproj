@@ -1201,36 +1201,6 @@
       <VSIXSubPath>ProjectTemplates</VSIXSubPath>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup Condition="'$(VisualStudioVersion)' == '14.0'">
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\ProjectJsonFunctionTemplate\ProjectJsonFunctionTemplate.csproj">
-      <Project>{1b68e98a-6d93-4ac2-bfa4-7a9553e9cd3d}</Project>
-      <Name>ProjectJsonFunctionTemplate</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\ProjectJsonFunctionWithTestsTemplate\ProjectJsonFunctionWithTestsTemplate.csproj">
-      <Project>{4632ab71-e5a7-4cc6-9142-76fb88a87751}</Project>
-      <Name>ProjectJsonFunctionWithTestsTemplate</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\ProjectJsonServerlessTemplate\ProjectJsonServerlessTemplate.csproj">
-      <Project>{8b4aeee3-87a0-445c-bbc9-d0ee91191a24}</Project>
-      <Name>ProjectJsonServerlessTemplate</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\lambda\ProjectJsonServerlessWithTestsTemplate\ProjectJsonServerlessWithTestsTemplate.csproj">
-      <Project>{a4422591-b589-4e2e-b06e-fbd74a3d7a79}</Project>
-      <Name>ProjectJsonServerlessWithTestsTemplate</Name>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <VSIXSubPath>ProjectTemplates</VSIXSubPath>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(BuildRoot)\vspackages\templates\TemplateWizard\TemplateWizard.csproj">
       <Project>{C854A806-ACE3-4401-8DA3-037A370190E5}</Project>

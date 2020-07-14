@@ -104,13 +104,8 @@
     <Compile Include="Msbuild\NETCoreFunctionWithTestsWizard.cs" />
     <Compile Include="Msbuild\ServerlessNETCoreFunctionWizard.cs" />
     <Compile Include="Msbuild\NETCoreFunctionWizard.cs" />
-    <Compile Include="ProjectJson\BaseNETCoreWizardImplementation.cs" />
     <Compile Include="Model\Blueprint.cs" />
     <Compile Include="Msbuild\BaseNetCoreMsbuildWizard.cs" />
-    <Compile Include="ProjectJson\NETCoreServerlessWithTestsWizardImplementation.cs" />
-    <Compile Include="ProjectJson\NETCoreProjectWithTestsWizardImplementation.cs" />
-    <Compile Include="ProjectJson\NETCoreServerlessWizardImplementation.cs" />
-    <Compile Include="ProjectJson\NETCoreProjectWizardImplementation.cs" />
     <Compile Include="ProjectCreatorUtilities.cs" />
     <Compile Include="NodeProjectWizardImplementation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
