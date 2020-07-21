@@ -27,7 +27,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 {
     public class UploadFunctionProgressPageController : IAWSWizardPageController, ILambdaFunctionUploadHelpers
     {
-        public enum Mode { Lamdba, Serverless }
+        public enum Mode { Lambda, Serverless }
         ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionProgressPageController));
 
         private UploadFunctionProgressPage _pageUI;

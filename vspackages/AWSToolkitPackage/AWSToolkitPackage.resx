@@ -154,8 +154,6 @@ This software includes third party software subject to the following copyrights:
   [http://logging.apache.org/log4net/license.html]
 - Putty for PPK to PEM conversion, MIT license 
   [http://www.chiark.greenend.org.uk/~sgtatham/putty/licence.html]
-- ICSharpCode.SharpZipLib, MIT License
-  [http://www.icsharpcode.net/opensource/sharpziplib/]
 - MPFProj for Visual Studio Project Framework
   [http://mpfproj10.codeplex.com/license]
 - JSON Checker for JSON validation

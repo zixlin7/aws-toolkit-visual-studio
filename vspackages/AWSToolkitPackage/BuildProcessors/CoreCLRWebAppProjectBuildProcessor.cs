@@ -5,10 +5,9 @@ using log4net;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
-using ICSharpCode.SharpZipLib.Zip;
-
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.Shared;
 using ThirdParty.Json.LitJson;
 
@@ -80,8 +79,7 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
                     TaskInfo.Logger.OutputMessage("..zipping publishing directory");
                     this._outputPackage = Path.Combine(outputLocation,
                         taskInfo.ProjectInfo.ProjectName + "-" + DateTime.Now.Ticks + ".zip");
-                    var zip = new FastZip();
-                    zip.CreateZip(this._outputPackage, packagingLocation, true, null);
+                    ZipUtil.CreateZip(_outputPackage, packagingLocation);
 
                     if (File.Exists(_outputPackage))
                     {

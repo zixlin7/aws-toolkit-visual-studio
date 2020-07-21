@@ -1,5 +1,7 @@
 ﻿vNext
 * Fixed "security group does not exist" issue when deploying .NET Core applications to Beanstalk that use an RDS security group
+* Fixed an issue where Beanstalk deployments can fail if the host Windows system is using non-US regional format settings
+* Fixed an issue where nodejs Lambda deployments can fail if the host Windows system is using non-US regional format settings
 * Fixed issue where certain error messages pop "under" other windows, and are not properly modal
 
 v1.18.0.0 (2020-06-23)
@@ -119,7 +121,7 @@ v1.14.1.2 (2018-02-12)
 
 v1.14.1.0 (2018-02-05)
 * Updated AWS Elastic Beanstalk deployment wizard to allow enabling application tracing with AWS X-Ray.
-* Updated AWS Lamdba deployment wizard to allow enabling application tracing with AWS X-Ray.
+* Updated AWS Lambda deployment wizard to allow enabling application tracing with AWS X-Ray.
 
 v1.14.0.1 (2018-01-22)
 * Fixed issue with the RDS Launch Instance wizard not showing all database engine types for an account.

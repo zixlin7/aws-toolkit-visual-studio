@@ -3,7 +3,7 @@ using Amazon.Lambda.Model;
 using Moq;
 using Xunit;
 
-namespace AWSTooklit.Tests.Lambda
+namespace AWSToolkit.Tests.Lambda
 {
     public class LambdaModel
     {

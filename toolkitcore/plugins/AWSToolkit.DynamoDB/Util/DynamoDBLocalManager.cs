@@ -7,10 +7,9 @@ using System.Net;
 using System.Threading;
 using System.Xml.Linq;
 using System.Diagnostics;
-
+using Amazon.AWSToolkit.Util;
 using Amazon.Runtime.Internal.Settings;
 
-using ICSharpCode.SharpZipLib.Zip;
 using log4net;
 
 namespace Amazon.AWSToolkit.DynamoDB.Util
@@ -128,8 +127,8 @@ namespace Amazon.AWSToolkit.DynamoDB.Util
 
                         try
                         {
-                            var zipFile = new FastZip();
-                            zipFile.ExtractZip(localZipFile, Path.Combine(BASE_LOCAL_DIRECTORY, version.Version), FastZip.Overwrite.Always, null, null, null, true);
+                            var targetDirectory = Path.Combine(BASE_LOCAL_DIRECTORY, version.Version);
+                            ZipUtil.ExtractZip(zipFile: localZipFile, destFolder: targetDirectory, overwriteFiles: true);
                             ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() => version.IsInstalled = true));
 
                             File.Delete(localZipFile);

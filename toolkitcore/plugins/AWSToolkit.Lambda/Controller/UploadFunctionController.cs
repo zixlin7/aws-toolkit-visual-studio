@@ -206,7 +206,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             {
                 new UploadFunctionDetailsPageController(),
                 new UploadFunctionAdvancedPageController(),
-                new UploadFunctionProgressPageController(UploadFunctionProgressPageController.Mode.Lamdba)
+                new UploadFunctionProgressPageController(UploadFunctionProgressPageController.Mode.Lambda)
             };
 
             wizard.RegisterPageControllers(defaultPages, 0);

@@ -5,7 +5,6 @@ using System.Linq;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 
-using ICSharpCode.SharpZipLib.Zip;
 using ThirdParty.Json.LitJson;
 
 namespace Amazon.AWSToolkit.Lambda
@@ -17,58 +16,6 @@ namespace Amazon.AWSToolkit.Lambda
 
         public const int MIN_TIMEOUT = 1;
         public const int MAX_TIMEOUT = 15 * 60;
-
-        public static string DetermineStartupFromPath(string sourcePath)
-        {
-            if (string.Equals(Path.GetExtension(sourcePath), ".js", StringComparison.InvariantCultureIgnoreCase))
-            {
-                return Path.GetFileName(sourcePath);
-            }
-            else if (string.Equals(Path.GetExtension(sourcePath), ".zip", StringComparison.InvariantCultureIgnoreCase))
-            {
-                var zip = new ZipFile(sourcePath);
-
-                var listOfJavascriptFiles = new List<string>();
-                foreach (ZipEntry entry in zip)
-                {
-                    if (!entry.IsFile || entry.Name.Contains('/'))
-                        continue;
-
-                    if (string.Equals(entry.Name, "app.js", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        return entry.Name;
-                    }
-                    else if (string.Equals(Path.GetExtension(entry.Name), ".js", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        listOfJavascriptFiles.Add(entry.Name);
-                    }
-                }
-
-                if (listOfJavascriptFiles.Count == 1)
-                    return listOfJavascriptFiles[0];
-            }
-            else if(Directory.Exists(sourcePath))
-            {
-                var listOfJavascriptFiles = new List<string>();
-                foreach (var fullFilePath in Directory.GetFiles(sourcePath))
-                {
-                    var fileName = Path.GetFileName(fullFilePath);
-                    if (string.Equals(fileName, "app.js", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        return fileName;
-                    }
-                    else if (string.Equals(Path.GetExtension(fileName), ".js", StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        listOfJavascriptFiles.Add(fileName);
-                    }
-                }
-
-                if (listOfJavascriptFiles.Count == 1)
-                    return listOfJavascriptFiles[0];
-            }
-
-            return null;
-        }
 
 
         public static int[] GetValidMemorySizes()

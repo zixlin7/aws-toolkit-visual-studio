@@ -47,6 +47,7 @@
     <Compile Include="ElasticBeanstalk\SolutionStackUtilsTests.cs" />
     <Compile Include="ElasticBeanstalk\WizardToEbToolsCommandTests.cs" />
     <Compile Include="Lambda\LambdaModel.cs" />
+    <Compile Include="Lambda\UploadGenericWorkerTests.cs" />
     <Compile Include="PluginActivator\PluginActivatorUtilitiesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -96,6 +97,10 @@
       <Project>{7102b4cf-9b9d-4827-adca-d23971cd84c3}</Project>
       <Name>AWSToolkit.Lambda</Name>
     </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj">
+      <Project>{aa57cb1d-f511-4bf5-9410-72a49d063365}</Project>
+      <Name>AWSToolkit.Tests.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="ElasticBeanstalk\Resources\single-instance-deploy-settings.json">
@@ -125,6 +130,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

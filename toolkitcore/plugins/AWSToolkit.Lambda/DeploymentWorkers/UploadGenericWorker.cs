@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AWSToolkit.Navigator;
-
+using Amazon.AWSToolkit.Util;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
-
-using ICSharpCode.SharpZipLib.Zip;
 
 using log4net;
 using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
@@ -19,14 +20,24 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 {
     public class UploadGenericWorker : BaseUploadWorker
     {
-        ILog LOGGER = LogManager.GetLogger(typeof(UploadGenericWorker));        
+        ILog LOGGER = LogManager.GetLogger(typeof(UploadGenericWorker));
+
+        public static readonly Regex[] ExcludedFiles =
+        {
+            new Regex(@"^.*\.njsproj$", RegexOptions.IgnoreCase),
+            new Regex(@"^.*\.sln$", RegexOptions.IgnoreCase),
+            new Regex(@"^.*\.suo$", RegexOptions.IgnoreCase),
+            new Regex(@"^.*ntvs[_]analysis\.dat$", RegexOptions.IgnoreCase),
+            new Regex(@"^\.git", RegexOptions.IgnoreCase),
+            new Regex(@"^\.svn", RegexOptions.IgnoreCase),
+            new Regex(@"^[_]testdriver\.js$", RegexOptions.IgnoreCase),
+            new Regex(@"^[_]sampleEvent\.json$", RegexOptions.IgnoreCase),
+        };
 
         public UploadGenericWorker(ILambdaFunctionUploadHelpers functionUploader, IAmazonLambda lambdaClient)
             :base(functionUploader, lambdaClient)
         {
         }
-
-        public const string ZIP_FILTER = @"-\.njsproj$;-\.sln$;-\.suo$;-.ntvs_analysis\.dat;-\.git;-\.svn;-_testdriver.js;-_sampleEvent\.json";
 
         public override void UploadFunction(UploadFunctionState uploadState)
         {
@@ -53,22 +64,33 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 zipFile = Path.GetTempFileName() + ".zip";
                 if (isSourceDir)
                 {
+                    // Zip up a folder
                     deleteZipWhenDone = true;
-                    var zip = new FastZip();
+                    var zipContents = GetProjectFilesToUpload(uploadState.SourcePath)
+                        .ToDictionary(
+                            file => file,
+                            file => file.Substring(uploadState.SourcePath.Length + 1)
+                        );
+
                     this.FunctionUploader.AppendUploadStatus("Starting to zip up {0}", uploadState.SourcePath);
-                    zip.CreateZip(zipFile, uploadState.SourcePath, true, ZIP_FILTER);
+                    ZipUtil.CreateZip(zipFile, zipContents);
                     this.FunctionUploader.AppendUploadStatus("Finished zipping up directory to {0} with file size {1} bytes.", zipFile, new FileInfo(zipFile).Length);
                 }
                 else if (string.Equals(Path.GetExtension(uploadState.SourcePath), ".zip", StringComparison.InvariantCultureIgnoreCase))
                 {
+                    // Use provided Zip file
                     zipFile = uploadState.SourcePath;
                     this.FunctionUploader.AppendUploadStatus("Selected source is a zip archive.");
                 }
                 else
                 {
+                    // Add single file to Zip
                     deleteZipWhenDone = true;
-                    var zip = new FastZip();
-                    zip.CreateZip(zipFile, Path.GetDirectoryName(uploadState.SourcePath), false, Path.GetFileName(uploadState.SourcePath));
+                    var zipContents = new Dictionary<string, string>()
+                    {
+                        {uploadState.SourcePath, Path.GetFileName(uploadState.SourcePath)}
+                    };
+                    ZipUtil.CreateZip(zipFile, zipContents);
                     this.FunctionUploader.AppendUploadStatus("Zipped up file {0}", uploadState.SourcePath);
                 }
 
@@ -117,7 +139,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 this.FunctionUploader.AppendUploadStatus("Upload stopped.");
 
                 lambdaDeploymentMetrics.QueueDeploymentFailure(e.Code, e.ServiceErrorCode, e.ServiceStatusCode);
-                this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading Lamdba function");
+                this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading Lambda function");
             }
             catch (Exception e)
             {
@@ -135,7 +157,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 LOGGER.Error("Error uploading Lambda function.", e);
 
                 lambdaDeploymentMetrics.QueueDeploymentFailure(ToolkitException.CommonErrorCode.UnexpectedError.ToString(), serviceCode);
-                this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading Lamdba function");
+                this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading Lambda function");
             }
             finally
             {
@@ -144,10 +166,21 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             }
         }
 
+        public static IList<string> GetProjectFilesToUpload(string projectFolder)
+        {
+            return Directory.GetFiles(projectFolder, "*.*", SearchOption.AllDirectories)
+                .Where(file =>
+                {
+                    var relativePath = file.Substring(projectFolder.Length + 1);
+                    return !ExcludedFiles.Any(regex => regex.IsMatch(relativePath));
+                })
+                .ToList();
+        }
+
         /// <summary>
         /// Creates a Lambda Function, and if it already exists, Updates it.
         ///
-        /// An exception is thrown if an issue arrises that isn't related to waiting on IAM
+        /// An exception is thrown if an issue arises that isn't related to waiting on IAM
         /// Permission propagation, or if we have reached the retry attempt limit.
         /// </summary>
         /// <returns>

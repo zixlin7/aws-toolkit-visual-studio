@@ -68,10 +68,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>$(BuildRoot)\thirdparty\ICSharpCode.SharpZipLib.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="YamlDotNet">
       <HintPath>$(BuildRoot)\thirdparty\YamlDotNet.dll</HintPath>
     </Reference>
@@ -555,11 +551,6 @@
     <Content Include="$(BuildRoot)\thirdparty\License.Newtonsoft.Json.txt">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>License.Newtonsoft.Json.txt</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="$(BuildRoot)\thirdparty\License.ICSharpCode.SharpZipLib.txt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Link>License.ICSharpCode.SharpZipLib.txt</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
   </ItemGroup>

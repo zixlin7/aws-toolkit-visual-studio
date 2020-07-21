@@ -48,6 +48,8 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -68,6 +70,7 @@
     <Compile Include="Telemetry\TestHelper.cs" />
     <Compile Include="TestUtil.cs" />
     <Compile Include="Util\ListExtensionMethodsTests.cs" />
+    <Compile Include="Util\ZipUtilTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
@@ -89,6 +92,10 @@
     <ProjectReference Include="..\..\toolkitcore\Telemetry\Client\AWSSDK.ToolkitTelemetry.csproj">
       <Project>{0669bb1c-8a7b-4db0-8410-ac27d471e77b}</Project>
       <Name>AWSSDK.ToolkitTelemetry</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj">
+      <Project>{aa57cb1d-f511-4bf5-9410-72a49d063365}</Project>
+      <Name>AWSToolkit.Tests.Common</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

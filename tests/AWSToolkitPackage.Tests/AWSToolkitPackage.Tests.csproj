@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FirstRun\FirstRunControllerTests.cs" />
+    <Compile Include="Lambda\ProjectCreatorUtilitiesTests.cs" />
     <Compile Include="Telemetry\TelemetryInfoBarTests.cs" />
     <Compile Include="UIThreadFixture.cs" />
     <Compile Include="Lambda\LambdaTesterUsageEmitterTests.cs" />
@@ -52,6 +53,14 @@
     <Compile Include="Utilities\DTE\ProjectExtensionMethodsTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\vspackages\lambda\AWSToolkit.Lambda.TemplateWizards\AWSToolkit.Lambda.TemplateWizards.csproj">
+      <Project>{783E4198-A8F1-4E74-AF3E-0001B0AD516B}</Project>
+      <Name>AWSToolkit.Lambda.TemplateWizards</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj">
+      <Project>{aa57cb1d-f511-4bf5-9410-72a49d063365}</Project>
+      <Name>AWSToolkit.Tests.Common</Name>
+    </ProjectReference>
     <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>

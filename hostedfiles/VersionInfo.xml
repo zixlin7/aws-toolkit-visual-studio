@@ -105,7 +105,7 @@
   </version>
   <version number="1.14.1.0" release-date="2018-02-05" prompt="false">
     <change>Updated AWS Elastic Beanstalk deployment wizard to allow enabling application tracing with AWS X-Ray.</change>
-    <change>Updated AWS Lamdba deployment wizard to allow enabling application tracing with AWS X-Ray.</change>
+    <change>Updated AWS Lambda deployment wizard to allow enabling application tracing with AWS X-Ray.</change>
   </version>   
   <version number="1.14.0.1" release-date="2018-01-22" prompt="false">
     <change>Fixed issue with the RDS Launch Instance wizard not showing all database engine types for an account.</change>

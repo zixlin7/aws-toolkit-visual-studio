@@ -198,29 +198,8 @@
 		
         <MakeDir Directories="$(AwsDeployDest)" />
         <ItemGroup>
-            <AWSDeployBinaries Include="$(BuildRoot)\awsdeploy\client\AWSDeploymentTool\bin\$(Configuration)\awsdeploy.exe" />
 			<AWSDeployBinaries Include="$(BuildRoot)\awsdeploy\client\AWSDeploymentLib\bin\$(Configuration)\AWSDeploymentLib.dll" />
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.Core.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.AutoScaling.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.CloudFormation.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.CloudWatch.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.CognitoIdentity.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.EC2.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.ElasticBeanstalk.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.ElasticLoadBalancing.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.IdentityManagement.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.KeyManagementService.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.Lambda.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.MobileAnalytics.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.RDS.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.S3.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.SimpleNotificationService.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.SQS.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSSDK.Extensions.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSToolkit.Util.dll"/>
-			<AWSDeployBinaries Include="$(BuildRoot)\Deployment\14.0\$(Configuration)\AWSToolkit.dll"/>
 			
-			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\ICSharpCode.SharpZipLib.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\solutions\packages\log4net*\lib\net45-full\log4net.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\System.Windows.Controls.DataVisualization.Toolkit.dll"/>
 			<AWSDeployBinaries Include="$(BuildRoot)\thirdparty\YamlDotNet.dll"/>

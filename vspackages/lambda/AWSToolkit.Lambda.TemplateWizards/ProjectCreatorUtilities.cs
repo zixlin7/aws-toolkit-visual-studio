@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using ICSharpCode.SharpZipLib.Zip;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.Lambda.TemplateWizards
 {
@@ -13,7 +13,9 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
         {
             var localZipFile = Path.GetTempFileName() + ".zip";
             using (Stream output = File.OpenWrite(localZipFile))
+            {
                 stream.CopyTo(output);
+            }
 
             try
             {
@@ -45,10 +47,11 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
         {
             var projectFolder = replacementsDictionary["$destinationdirectory$"] as string;
             if (!string.IsNullOrEmpty(relativePath))
+            {
                 projectFolder = Path.Combine(projectFolder, relativePath);
+            }
 
-            var zip = new FastZip();
-            zip.ExtractZip(zipFile, projectFolder, FastZip.Overwrite.Always, null, null, null, true);
+            ZipUtil.ExtractZip(zipFile: zipFile, destFolder: projectFolder, overwriteFiles: true);
         }
     }
 }
