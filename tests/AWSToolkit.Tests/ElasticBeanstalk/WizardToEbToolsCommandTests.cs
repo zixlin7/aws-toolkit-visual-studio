@@ -1,24 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.ElasticBeanstalk.Commands;
+using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
+using Amazon.AWSToolkit.Shared;
 using Amazon.ElasticBeanstalk.Tools.Commands;
 using Amazon.Common.DotNetCli.Tools;
 
 using CliConstants = Amazon.ElasticBeanstalk.Tools.EBConstants;
 using Amazon.AWSToolkit.Telemetry;
+using log4net;
+using Moq;
 
 namespace AWSToolkit.Tests.ElasticBeanstalk
 {
     public class WizardToEbToolsCommandTests
     {
-        RegionEndPointsManager.RegionEndPoints endPoints = new RegionEndPointsManager.RegionEndPoints("us-east-1", "US East", new Dictionary<string, RegionEndPointsManager.EndPoint>(), new string[0]);
+        protected static readonly ILog Logger = LogManager.GetLogger(typeof(WizardToEbToolsCommandTests));
+
+        private readonly Mock<IAWSToolkitShellProvider> _shellProvider = new Mock<IAWSToolkitShellProvider>();
+        private readonly RegionEndPointsManager.RegionEndPoints endPoints = new RegionEndPointsManager.RegionEndPoints("us-east-1", "US East", new Dictionary<string, RegionEndPointsManager.EndPoint>(), new string[0]);
+        private readonly DeploymentControllerObserver _observer;
+
+        private static readonly string _defaultVpcSubnets = "a,b,c";
+        private readonly BaseBeanstalkDeployCommand.GetDefaultVpcSubnetFunc _fnGetDefaultVpcSubnet = (a, b) => _defaultVpcSubnets;
+
+        public WizardToEbToolsCommandTests()
+        {
+            _observer = new DeploymentControllerObserver(Logger, _shellProvider.Object);
+        }
 
         [Fact]
         public void CompareSingleInstanceDeploy()
@@ -26,7 +39,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             var properties = LoadProperties("single-instance-deploy-settings.json");
 
             var cliCommand = new DeployEnvironmentCommand(new TestLogger(), string.Empty, new string[0]);
-            var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties);
+            var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties, _observer);
             toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, endPoints);
 
             Assert.Equal(CliConstants.ENVIRONMENT_TYPE_SINGLEINSTANCE, cliCommand.DeployEnvironmentOptions.EnvironmentType);
@@ -51,7 +64,9 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             Assert.Null(cliCommand.DeployEnvironmentOptions.IISWebSite);
             Assert.Null(cliCommand.DeployEnvironmentOptions.UrlPath);
             
-            Assert.Empty(cliCommand.DeployEnvironmentOptions.AdditionalOptions);
+            Assert.NotEmpty(cliCommand.DeployEnvironmentOptions.AdditionalOptions);
+            Assert.Equal("sg-9256f4ed", cliCommand.DeployEnvironmentOptions.AdditionalOptions[DeployWithEbToolsCommand.OptionSecurityGroups]);
+            Assert.Equal("subnet-8036a18c", cliCommand.DeployEnvironmentOptions.AdditionalOptions[DeployWithEbToolsCommand.OptionInstanceSubnets]);
         }
 
 
@@ -62,8 +77,8 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
 
 
             var cliCommand = new DeployEnvironmentCommand(new TestLogger(), string.Empty, new string[0]);
-            var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties);
-            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, endPoints);
+            var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties, _observer);
+            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, endPoints, _fnGetDefaultVpcSubnet);
 
             Assert.True(cliCommand.DeployEnvironmentOptions.EnableXRay);
             Assert.Equal(CliConstants.ENHANCED_HEALTH_TYPE_BASIC, cliCommand.DeployEnvironmentOptions.EnhancedHealthType);
@@ -73,7 +88,10 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             Assert.Equal(CliConstants.ENVIRONMENT_TYPE_LOADBALANCED, cliCommand.DeployEnvironmentOptions.EnvironmentType);
             Assert.Equal(CliConstants.LOADBALANCER_TYPE_APPLICATION, cliCommand.DeployEnvironmentOptions.LoadBalancerType);
 
-            Assert.Empty(cliCommand.DeployEnvironmentOptions.AdditionalOptions);
+            Assert.NotEmpty(cliCommand.DeployEnvironmentOptions.AdditionalOptions);
+            Assert.Equal("sg-9256f4ed", cliCommand.DeployEnvironmentOptions.AdditionalOptions[DeployWithEbToolsCommand.OptionSecurityGroups]);
+            Assert.Equal("subnet-8036a18c", cliCommand.DeployEnvironmentOptions.AdditionalOptions[DeployWithEbToolsCommand.OptionInstanceSubnets]);
+            Assert.Equal(_defaultVpcSubnets, cliCommand.DeployEnvironmentOptions.AdditionalOptions[DeployWithEbToolsCommand.OptionELBSubnets]);
         }
 
         [Fact]
@@ -83,8 +101,8 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
 
 
             var cliCommand = new DeployEnvironmentCommand(new TestLogger(), string.Empty, new string[0]);
-            var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties);
-            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, endPoints);
+            var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties, _observer);
+            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, endPoints, _fnGetDefaultVpcSubnet);
 
             Assert.True(cliCommand.DeployEnvironmentOptions.EnableXRay);
             Assert.Equal(CliConstants.ENHANCED_HEALTH_TYPE_BASIC, cliCommand.DeployEnvironmentOptions.EnhancedHealthType);
@@ -92,7 +110,10 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             Assert.Equal(CliConstants.ENVIRONMENT_TYPE_LOADBALANCED, cliCommand.DeployEnvironmentOptions.EnvironmentType);
             Assert.Equal(CliConstants.LOADBALANCER_TYPE_NETWORK, cliCommand.DeployEnvironmentOptions.LoadBalancerType);
 
-            Assert.Empty(cliCommand.DeployEnvironmentOptions.AdditionalOptions);
+            Assert.NotEmpty(cliCommand.DeployEnvironmentOptions.AdditionalOptions);
+            Assert.Equal("sg-9256f4ed", cliCommand.DeployEnvironmentOptions.AdditionalOptions[DeployWithEbToolsCommand.OptionSecurityGroups]);
+            Assert.Equal("subnet-8036a18c", cliCommand.DeployEnvironmentOptions.AdditionalOptions[DeployWithEbToolsCommand.OptionInstanceSubnets]);
+            Assert.Equal(_defaultVpcSubnets, cliCommand.DeployEnvironmentOptions.AdditionalOptions[DeployWithEbToolsCommand.OptionELBSubnets]);
         }
 
         [Fact]
@@ -102,8 +123,8 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
 
 
             var cliCommand = new DeployEnvironmentCommand(new TestLogger(), string.Empty, new string[0]);
-            var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties);
-            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, endPoints);
+            var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties, _observer);
+            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, endPoints, _fnGetDefaultVpcSubnet);
 
             Assert.False(cliCommand.DeployEnvironmentOptions.EnableXRay);
             Assert.Equal(CliConstants.ENHANCED_HEALTH_TYPE_BASIC, cliCommand.DeployEnvironmentOptions.EnhancedHealthType);
@@ -111,7 +132,10 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             Assert.Equal(CliConstants.ENVIRONMENT_TYPE_LOADBALANCED, cliCommand.DeployEnvironmentOptions.EnvironmentType);
             Assert.Equal(CliConstants.LOADBALANCER_TYPE_CLASSIC, cliCommand.DeployEnvironmentOptions.LoadBalancerType);
 
-            Assert.Empty(cliCommand.DeployEnvironmentOptions.AdditionalOptions);
+            Assert.NotEmpty(cliCommand.DeployEnvironmentOptions.AdditionalOptions);
+            Assert.Equal("sg-9256f4ed", cliCommand.DeployEnvironmentOptions.AdditionalOptions[DeployWithEbToolsCommand.OptionSecurityGroups]);
+            Assert.Equal("subnet-8036a18c", cliCommand.DeployEnvironmentOptions.AdditionalOptions[DeployWithEbToolsCommand.OptionInstanceSubnets]);
+            Assert.Equal(_defaultVpcSubnets, cliCommand.DeployEnvironmentOptions.AdditionalOptions[DeployWithEbToolsCommand.OptionELBSubnets]);
         }
 
         [Fact]
@@ -121,7 +145,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
 
 
             var cliCommand = new DeployEnvironmentCommand(new TestLogger(), string.Empty, new string[0]);
-            var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties);
+            var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties, _observer);
             toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, endPoints);
 
             Assert.Equal(CliConstants.ENVIRONMENT_TYPE_LOADBALANCED, cliCommand.DeployEnvironmentOptions.EnvironmentType);
@@ -139,7 +163,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             var properties = LoadProperties("self-contained-redeploy-no-proxy.json");
 
             var cliCommand = new DeployEnvironmentCommand(new TestLogger(), string.Empty, new string[0]);
-            var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties);
+            var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties, _observer);
             toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, endPoints);
 
             Assert.True(cliCommand.DeployEnvironmentOptions.SelfContained);

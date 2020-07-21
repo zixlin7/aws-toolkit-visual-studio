@@ -107,20 +107,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 Deployment.RoleName = ConfigureIAMRole(Account, Deployment.RegionEndPoints);
                 Deployment.ServiceRoleName = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ServiceRoleName);
 
-                Deployment.LaunchIntoVPC = getValue<bool>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_LaunchIntoVPC);
                 // if user did not choose to use a custom vpc and we are in a vpc-only environment, push through the default vpc id so we
                 // create resources in the right place from the get-go, and don't rely on the service to 'notice'
-                if (Deployment.LaunchIntoVPC)
-                    Deployment.VPCId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_VPCId);
-                else
-                {
-                    var isVpcByDefault = getValue<bool>(DeploymentWizardProperties.SeedData.propkey_VpcOnlyMode);
-                    if (isVpcByDefault)
-                    {
-                        Deployment.VPCId = getValue<string>(DeploymentWizardProperties.AWSOptions.propkey_DefaultVpcId);
-                        Deployment.LaunchIntoVPC = !string.IsNullOrEmpty(Deployment.VPCId);
-                    }
-                }
+                GetVpcDetails(out var launchIntoVpc, out var vpcId);
+                Deployment.LaunchIntoVPC = launchIntoVpc;
+                Deployment.VPCId = vpcId;
 
                 string enableXRayDaemon = getValue<string>(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon);
                 if (!string.IsNullOrEmpty(enableXRayDaemon))

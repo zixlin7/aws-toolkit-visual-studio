@@ -13,9 +13,7 @@ using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 {
@@ -30,15 +28,23 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 
         public DeploymentControllerObserver Observer { get; protected set; }
 
-        protected static ILog LOGGER;
+        protected static ILog LOGGER = LogManager.GetLogger(typeof(BaseBeanstalkDeployCommand));
 
-        public BaseBeanstalkDeployCommand(IDictionary<string, object> deploymentProperties)
+        public delegate string GetDefaultVpcSubnetFunc(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region);
+
+        protected BaseBeanstalkDeployCommand(IDictionary<string, object> deploymentProperties)
+            : this(deploymentProperties, null)
         {
+        }
+
+        protected BaseBeanstalkDeployCommand(
+            IDictionary<string, object> deploymentProperties, 
+            DeploymentControllerObserver observer)
+        {
+            Observer = observer ?? new DeploymentControllerObserver(LOGGER);
+
             DeploymentProperties = deploymentProperties;
             this.Account = getValue<AccountViewModel>(CommonWizardProperties.AccountSelection.propkey_SelectedAccount);
-            LOGGER = LogManager.GetLogger(typeof(BaseBeanstalkDeployCommand));
-
-            Observer = new DeploymentControllerObserver(LOGGER);
         }
 
 
@@ -257,6 +263,24 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 LOGGER.Debug("Default subnets found: " + formattedSubnetIds);
 
                 return formattedSubnetIds;
+            }
+        }
+
+        protected void GetVpcDetails(out bool launchIntoVpc, out string vpcId)
+        {
+            launchIntoVpc = getValue<bool>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_LaunchIntoVPC);
+            vpcId = null;
+
+            // if user did not choose to use a custom vpc and we are in a vpc-only environment, push through the default vpc id so we
+            // create resources in the right place from the get-go, and don't rely on the service to 'notice'
+            if (launchIntoVpc)
+            {
+                vpcId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_VPCId);
+            }
+            else if (getValue<bool>(DeploymentWizardProperties.SeedData.propkey_VpcOnlyMode))
+            {
+                vpcId = getValue<string>(DeploymentWizardProperties.AWSOptions.propkey_DefaultVpcId);
+                launchIntoVpc = !string.IsNullOrEmpty(vpcId);
             }
         }
     }

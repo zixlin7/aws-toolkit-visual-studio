@@ -1,18 +1,15 @@
-﻿using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Telemetry;
 using Amazon.Common.DotNetCli.Tools;
 using Amazon.ElasticBeanstalk.Tools.Commands;
-using log4net;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
 using AWSDeployment;
 
 
@@ -22,10 +19,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
     {
         private const string OptionCustomImageId = "aws:autoscaling:launchconfiguration,ImageId";
 
-        private const string OptionSecurityGroups = "aws:autoscaling:launchconfiguration,SecurityGroups";
-        private const string OptionInstanceSubnets = "aws:ec2:vpc,Subnets";
-        private const string OptionELBSubnets = "aws:ec2:vpc,ELBSubnets";
-        private const string OptionELBScheme = "aws:ec2:vpc,ELBScheme";
+        public const string OptionSecurityGroups = "aws:autoscaling:launchconfiguration,SecurityGroups";
+        public const string OptionInstanceSubnets = "aws:ec2:vpc,Subnets";
+        public const string OptionELBSubnets = "aws:ec2:vpc,ELBSubnets";
+        public const string OptionELBScheme = "aws:ec2:vpc,ELBScheme";
 
         private const string OptionRollingUpdateMaxBatchSize = "aws:autoscaling:updatepolicy:rollingupdate,MaxBatchSize";
         private const string OptionRollingUpdateMinInstancesInService = "aws:autoscaling:updatepolicy:rollingupdate,MinInstancesInService";
@@ -35,7 +32,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
         string _projectLocation;
 
         public DeployWithEbToolsCommand(string projectLocation, IDictionary<string, object> deploymentProperties)
-            : base(deploymentProperties)
+            : this(projectLocation, deploymentProperties, null)
+        {
+        }
+
+        public DeployWithEbToolsCommand(
+            string projectLocation, 
+            IDictionary<string, object> deploymentProperties, 
+            DeploymentControllerObserver observer)
+            : base(deploymentProperties, observer)
         {
             this._projectLocation = projectLocation;
         }
@@ -173,7 +178,19 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             }
         }
 
-        public void SetPropertiesForDeployCommand(BeanstalkDeploy deployMetric, DeployEnvironmentCommand command, RegionEndPointsManager.RegionEndPoints endPoints)
+        public void SetPropertiesForDeployCommand(
+            BeanstalkDeploy deployMetric,
+            DeployEnvironmentCommand command,
+            RegionEndPointsManager.RegionEndPoints endPoints)
+        {
+            SetPropertiesForDeployCommand(deployMetric, command, endPoints, GetDefaultVPCSubnet);
+        }
+
+        public void SetPropertiesForDeployCommand(
+            BeanstalkDeploy deployMetric, 
+            DeployEnvironmentCommand command, 
+            RegionEndPointsManager.RegionEndPoints endPoints,
+            GetDefaultVpcSubnetFunc fnGetDefaultVpcSubnet)
         {
             var redeployMode = getValue<bool>(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy);
             deployMetric.InitialDeploy = !redeployMode;
@@ -259,7 +276,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 command.DeployEnvironmentOptions.ServiceRole = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ServiceRoleName);
             }
 
-            command.DeployEnvironmentOptions.AdditionalOptions = BuildAdditionalOptionsCollection(endPoints, redeployMode, isLoadBalancedDeployment);
+            command.DeployEnvironmentOptions.AdditionalOptions = BuildAdditionalOptionsCollection(endPoints, redeployMode, isLoadBalancedDeployment, fnGetDefaultVpcSubnet);
 
             var rdsSecurityGroups = getValue<List<string>>(BeanstalkDeploymentWizardProperties.DatabaseOptions.propkey_RDSSecurityGroups);
             var vpcSecurityGroups = getValue<List<string>>(BeanstalkDeploymentWizardProperties.DatabaseOptions.propkey_VPCSecurityGroups);
@@ -271,18 +288,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 var ec2Client = this.Account.CreateServiceClient<Amazon.EC2.AmazonEC2Client>(endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME));
                 var rdsClient = this.Account.CreateServiceClient<Amazon.RDS.AmazonRDSClient>(endPoints.GetEndpoint(RegionEndPointsManager.RDS_SERVICE_NAME));
 
-                var launchIntoVpc = getValue<bool>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_LaunchIntoVPC);
-
-                string vpcId = null;
-                if (launchIntoVpc)
-                {
-                    vpcId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_VPCId);
-                }
-                else if (getValue<bool>(DeploymentWizardProperties.SeedData.propkey_VpcOnlyMode))
-                {
-                    vpcId = getValue<string>(DeploymentWizardProperties.AWSOptions.propkey_DefaultVpcId);
-                    launchIntoVpc = !string.IsNullOrEmpty(vpcId);
-                }
+                GetVpcDetails(out var launchIntoVpc, out var vpcId);
 
                 var securityGroup = AWSDeployment.BeanstalkDeploymentEngine.SetupEC2GroupForRDS(this.Observer, ec2Client, rdsClient,
                     command.DeployEnvironmentOptions.Environment, vpcId, launchIntoVpc,
@@ -306,8 +312,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 command.DeployEnvironmentOptions.AdditionalOptions[OptionSecurityGroups] = existingSecurityGroupValue;
             }
         }
- 
-        public Dictionary<string, string> BuildAdditionalOptionsCollection(RegionEndPointsManager.RegionEndPoints endpoints, bool redeployMode, bool isLoadBalanced)
+
+        public Dictionary<string, string> BuildAdditionalOptionsCollection(
+            RegionEndPointsManager.RegionEndPoints endpoints, bool redeployMode, bool isLoadBalanced,
+            GetDefaultVpcSubnetFunc fnGetDefaultVpcSubnet)
         {
             var options = new Dictionary<string, string>();
 
@@ -324,16 +332,25 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 addIfValueExists(OptionCustomImageId, DeploymentWizardProperties.AWSOptions.propkey_CustomAMIID);
 
                 // VPC Settings.
-                if (getValue<bool>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_LaunchIntoVPC))
+                GetVpcDetails(out var launchIntoVpc, out var vpcId);
+
+                if (launchIntoVpc)
                 {
                     addIfValueExists(OptionSecurityGroups, BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_VPCSecurityGroup);
                     addIfValueExists(OptionInstanceSubnets, BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_InstanceSubnet);
-                    addIfValueExists(OptionELBSubnets, BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ELBSubnet);
-                    addIfValueExists(OptionELBScheme, BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ELBScheme);
 
-                    if (string.IsNullOrEmpty(getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ELBSubnet)) && isLoadBalanced)
+                    if (isLoadBalanced)
                     {
-                        options[OptionELBSubnets] = GetDefaultVPCSubnet(Account, endpoints);
+                        addIfValueExists(OptionELBSubnets,
+                            BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ELBSubnet);
+                        addIfValueExists(OptionELBScheme,
+                            BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ELBScheme);
+
+                        if (string.IsNullOrEmpty(getValue<string>(BeanstalkDeploymentWizardProperties
+                            .AWSOptionsProperties.propkey_ELBSubnet)))
+                        {
+                            options[OptionELBSubnets] = fnGetDefaultVpcSubnet(Account, endpoints);
+                        }
                     }
                 }
 
