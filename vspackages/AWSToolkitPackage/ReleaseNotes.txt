@@ -1,4 +1,4 @@
-﻿vNext
+﻿v1.18.1.0 (2020-07-23)
 * Fixed "security group does not exist" issue when deploying .NET Core applications to Beanstalk that use an RDS security group
 * Fixed an issue where Beanstalk deployments can fail if the host Windows system is using non-US regional format settings
 * Fixed an issue where nodejs Lambda deployments can fail if the host Windows system is using non-US regional format settings
