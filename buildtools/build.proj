@@ -336,6 +336,7 @@
         
         <ItemGroup>
             <FileException Include="$(HostedFilesFolder)\ServiceEndPoints.xml" />
+            <FileException Include="$(HostedFilesFolder)\ServiceEndPoints.json" />
             <FileException Include="$(HostedFilesFolder)\flags\**\*.png" />
         </ItemGroup>
         
