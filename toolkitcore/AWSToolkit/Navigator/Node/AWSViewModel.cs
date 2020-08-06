@@ -56,14 +56,21 @@ namespace Amazon.AWSToolkit.Navigator.Node
 
         private void SetupCredentialWatchers()
         {
-            this._sdkCredentialWatcher = PersistenceManager.Instance.Watch(ToolkitSettingsConstants.RegisteredProfiles);
-            this._sdkCredentialWatcher.SettingsChanged += new EventHandler((o, e) =>
+            var persistenceManager = PersistenceManager.Instance as PersistenceManager;
+
+            if (persistenceManager == null)
             {
-                this._shellProvider.ExecuteOnUIThread((Action)(() => 
+                _logger.Error("Unable to access PersistenceManager - encrypted accounts may not automatically refresh in the Explorer");
+            }
+            else
+            {
+                this._sdkCredentialWatcher =
+                    persistenceManager.Watch(ToolkitSettingsConstants.RegisteredProfiles);
+                this._sdkCredentialWatcher.SettingsChanged += new EventHandler((o, e) =>
                 {
-                    this.Refresh();
-                }));
-            });
+                    this._shellProvider.ExecuteOnUIThread((Action) (() => { this.Refresh(); }));
+                });
+            }
 
             SetupSharedCredentialFileMonitoring();
         }

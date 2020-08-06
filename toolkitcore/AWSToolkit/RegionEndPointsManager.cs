@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-
+using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.VersionInfo;
 using Amazon.Runtime;
-using Amazon.Runtime.Internal.Settings;
 using log4net;
 
 namespace Amazon.AWSToolkit
@@ -127,7 +126,7 @@ namespace Amazon.AWSToolkit
 
         public RegionEndPoints GetDefaultRegionEndPoints()
         {
-            var regionSystemName = PersistenceManager.Instance.GetSetting(SETTINGS_KEY);
+            var regionSystemName = ToolkitSettings.Instance.LastSelectedRegion;
             if (string.IsNullOrEmpty(regionSystemName))
                 regionSystemName = DEFAULT_REGION;
 
@@ -137,7 +136,7 @@ namespace Amazon.AWSToolkit
 
         public void SetDefaultRegionEndPoints(RegionEndPoints region)
         {
-            PersistenceManager.Instance.SetSetting(SETTINGS_KEY, region.SystemName);
+            ToolkitSettings.Instance.LastSelectedRegion = region.SystemName;
         }
 
         public bool FailedToLoad => ErrorLoading != null;

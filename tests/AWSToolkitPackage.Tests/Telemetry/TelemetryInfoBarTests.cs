@@ -23,10 +23,10 @@ namespace AWSToolkitPackage.Tests.Telemetry
             _sut = new TelemetryInfoBar();
             _sut.RegisterInfoBarEvents(_element.Object);
 
-            _persistenceManager.Setup(mock => mock.GetSetting(TelemetryEnabledBackingFieldName))
+            _persistenceManager.Setup(mock => mock.GetString(TelemetryEnabledBackingFieldName))
                 .Returns<string>(name => _telemetryEnabledSetting);
 
-            _persistenceManager.Setup(mock => mock.SetSetting(TelemetryEnabledBackingFieldName, It.IsAny<string>()))
+            _persistenceManager.Setup(mock => mock.SetString(TelemetryEnabledBackingFieldName, It.IsAny<string>()))
                 .Callback<string, string>((name, value) =>
                 {
                     _telemetryEnabledSetting = value;

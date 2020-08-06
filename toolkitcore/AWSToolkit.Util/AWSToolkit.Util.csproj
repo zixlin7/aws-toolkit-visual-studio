@@ -65,7 +65,10 @@
     <Compile Include="MobileAnalytics\SimpleMobileAnalytics.cs" />
     <Compile Include="MobileAnalytics\ToolkitEvent.cs" />
     <Compile Include="ProjectFileUtilities.cs" />
+    <Compile Include="Settings\DynamoDbSettings.cs" />
     <Compile Include="Settings\IToolkitSettingsWatcher.cs" />
+    <Compile Include="Settings\MobileAnalyticsSettings.cs" />
+    <Compile Include="Settings\SettingsPersistenceBase.cs" />
     <Compile Include="Settings\SettingsPersistence.cs" />
     <Compile Include="Settings\ToolkitSettings.cs" />
     <Compile Include="Settings\ToolkitSettingsWatcher.cs" />

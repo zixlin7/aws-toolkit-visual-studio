@@ -91,8 +91,9 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 //if null or if it doesn't match the currently stored pool id, clear the cached cognito identity id (different than pool id)
                 //and write the newest identity pool id
                 //the next time a AnalyticsCognitoAWSCredentials object is called, it will handle caching a new identity id
-                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsCognitoIdentityId, "");
-                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsMostRecentlyUsedCognitoIdentityPoolId, AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID);
+                ToolkitSettings.Instance.MobileAnalytics.CognitoIdentityId = "";
+                ToolkitSettings.Instance.MobileAnalytics.LastUsedCognitoIdentityPoolId =
+                    AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID;
                 LOGGER.InfoFormat("AnalyticsMostRecentlyUsedCognitoIdentityPoolId needs set or updated. Clearing AnalyticsCognitoIdentityId and setting AnalyticsMostRecentlyUsedCognitoIdentityPoolId to {0} in MiscSettings", AMAConstants.AWS_COGNITO_IDENTITY_POOL_ID);
             }
 
@@ -370,7 +371,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                 //try to retrieve the most recently used cognito identity pool.
                 try
                 {
-                    return PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsMostRecentlyUsedCognitoIdentityPoolId);
+                    return ToolkitSettings.Instance.MobileAnalytics.LastUsedCognitoIdentityPoolId;
                 }
                 catch (Exception e)
                 {
@@ -378,7 +379,7 @@ namespace Amazon.AWSToolkit.MobileAnalytics
                     return null;
                 }
             }
-            set => PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsMostRecentlyUsedCognitoIdentityPoolId, value);
+            set => ToolkitSettings.Instance.MobileAnalytics.LastUsedCognitoIdentityPoolId = value;
         }
 
     }

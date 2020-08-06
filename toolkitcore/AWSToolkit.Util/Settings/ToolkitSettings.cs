@@ -13,7 +13,9 @@ namespace Amazon.AWSToolkit.Settings
 
         private const int TelemetryNoticeNeverShown = 0;
 
-        private readonly SettingsPersistence _settingsPersistence;
+        private readonly SettingsPersistenceBase _settingsPersistence;
+        private readonly MobileAnalyticsSettings _mobileAnalytics;
+        private readonly DynamoDbSettings _dynamoDbSettings;
 
         private static class SettingNames
         {
@@ -21,6 +23,7 @@ namespace Amazon.AWSToolkit.Settings
             public const string TelemetryNoticeVersionShown = "TelemetryNoticeVersionShown";
             public const string FirstRunFormShown = "FirstRunFormShown";
             public const string TelemetryClientId = "AnalyticsAnonymousCustomerId";
+            public const string LastSelectedRegion = "lastselectedregion";
         }
 
         public static class DefaultValues
@@ -29,19 +32,36 @@ namespace Amazon.AWSToolkit.Settings
             public const bool HasUserSeenFirstRunForm = false;
         }
 
+        static ToolkitSettings()
+        {
+            Initialize();
+        }
+
         public static void Initialize()
         {
             Initialize(new SettingsPersistence());
         }
 
-        public static void Initialize(SettingsPersistence settingsPersistence)
+        public static void Initialize(SettingsPersistenceBase settingsPersistence)
         {
             Instance = new ToolkitSettings(settingsPersistence);
         }
 
-        private ToolkitSettings(SettingsPersistence settingsPersistence)
+        private ToolkitSettings(SettingsPersistenceBase settingsPersistence)
         {
             _settingsPersistence = settingsPersistence;
+            _mobileAnalytics = new MobileAnalyticsSettings(_settingsPersistence);
+            _dynamoDbSettings = new DynamoDbSettings(_settingsPersistence);
+        }
+
+        public MobileAnalyticsSettings MobileAnalytics
+        {
+            get { return _mobileAnalytics; }
+        }
+
+        public DynamoDbSettings DynamoDb
+        {
+            get { return _dynamoDbSettings; }
         }
 
         /// <summary>
@@ -68,22 +88,10 @@ namespace Amazon.AWSToolkit.Settings
         /// </summary>
         public int TelemetryNoticeVersionShown
         {
-            get
-            {
-                var versionStr = GetMiscSetting(SettingNames.TelemetryNoticeVersionShown);
-                if (!int.TryParse(versionStr, NumberStyles.None, CultureInfo.InvariantCulture, out var version))
-                {
-                    return TelemetryNoticeNeverShown;
-                }
-
-                return version;
-            }
-
-            set
-            {
-                var version = value.ToString(CultureInfo.InvariantCulture);
-                SetMiscSetting(SettingNames.TelemetryNoticeVersionShown, version);
-            }
+            get =>
+                _settingsPersistence.GetInt(SettingNames.TelemetryNoticeVersionShown,
+                    TelemetryNoticeNeverShown);
+            set => _settingsPersistence.SetInt(SettingNames.TelemetryNoticeVersionShown, value);
         }
 
         /// <summary>
@@ -103,6 +111,24 @@ namespace Amazon.AWSToolkit.Settings
             }
 
             set => SetMiscSetting(SettingNames.FirstRunFormShown, AsString(value));
+        }
+
+        public string LastAccountSelectedKey
+        {
+            get => GetMiscSetting(ToolkitSettingsConstants.LastAcountSelectedKey);
+            set => SetMiscSetting(ToolkitSettingsConstants.LastAcountSelectedKey, value);
+        }
+        
+        public string LastSelectedRegion
+        {
+            get => GetMiscSetting(SettingNames.LastSelectedRegion);
+            set => SetMiscSetting(SettingNames.LastSelectedRegion, value);
+        }
+
+        public string HostedFilesLocation
+        {
+            get => GetMiscSetting(ToolkitSettingsConstants.HostedFilesLocation);
+            set => SetMiscSetting(ToolkitSettingsConstants.HostedFilesLocation, value);
         }
 
         /// <summary>
@@ -128,13 +154,13 @@ namespace Amazon.AWSToolkit.Settings
 
         private string GetMiscSetting(string name, string defaultValue = null)
         {
-            var value = _settingsPersistence.GetSetting(name);
+            var value = _settingsPersistence.GetString(name);
             return value ?? defaultValue;
         }
 
         private void SetMiscSetting(string name, string value)
         {
-            _settingsPersistence.SetSetting(name, value);
+            _settingsPersistence.SetString(name, value);
         }
 
         private string AsString(bool value)

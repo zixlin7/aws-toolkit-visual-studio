@@ -2,10 +2,8 @@ using System.Windows.Forms;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows.Forms.Integration;
-using Amazon.Runtime.Internal.Settings;
 using Microsoft.VisualStudio.Shell;
 
-using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.VisualStudio.ShellOptions;
 using Amazon.AWSToolkit.VisualStudio;
@@ -46,7 +44,7 @@ namespace Microsoft.Samples.VisualStudio.IDE.OptionsPage
             var optionsControl = _hostedControl.Child as GeneralOptionsPageControl;
             if (optionsControl == null) return;
 
-            var hostedFilesLocation = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.HostedFilesLocation);
+            var hostedFilesLocation = ToolkitSettings.Instance.HostedFilesLocation;
             optionsControl.HostedFilesLocation = hostedFilesLocation;
 
             optionsControl.TelemetryEnabled = ToolkitSettings.Instance.TelemetryEnabled;
@@ -89,8 +87,7 @@ namespace Microsoft.Samples.VisualStudio.IDE.OptionsPage
             if (optionsControl == null) return;
 
             var hostedFilesLocation = optionsControl.HostedFilesLocation;
-            PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.HostedFilesLocation,
-                hostedFilesLocation);
+            ToolkitSettings.Instance.HostedFilesLocation = hostedFilesLocation;
 
             ToolkitSettings.Instance.TelemetryEnabled = optionsControl.TelemetryEnabled;
         }

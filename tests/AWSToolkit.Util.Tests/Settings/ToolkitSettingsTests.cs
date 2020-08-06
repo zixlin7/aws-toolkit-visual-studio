@@ -1,44 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using Amazon.AWSToolkit.Settings;
-using Amazon.Runtime.Internal.Settings;
-using Moq;
+using Amazon.AWSToolkit.Tests.Common.Settings;
 using Xunit;
 
 namespace Amazon.AWSToolkit.Util.Tests.Settings
 {
-    public class ToolkitSettingsTests
+    public class ToolkitSettingsTests : IDisposable
     {
-        private readonly Mock<SettingsPersistence> _persistenceManager = new Mock<SettingsPersistence>();
-        private readonly Dictionary<string, string> _persistenceData = new Dictionary<string, string>();
+        private static class PersistenceFields
+        {
+            public const string LastAccountSelectedKey = ToolkitSettingsConstants.LastAcountSelectedKey;
+            public const string LastSelectedRegion = "lastselectedregion";
+            public const string HostedFilesLocation = ToolkitSettingsConstants.HostedFilesLocation;
+        }
+
+        private readonly FakeSettingsPersistence _settingsPersistence = new FakeSettingsPersistence();
 
         public ToolkitSettingsTests()
         {
-            _persistenceManager.Setup(mock => mock.GetSetting(It.IsAny<string>()))
-                .Returns<string>(name =>
-                {
-                    if (_persistenceData.TryGetValue(name, out string value))
-                    {
-                        return value;
-                    }
-
-                    return null;
-                });
-
-            _persistenceManager.Setup(mock => mock.SetSetting(It.IsAny<string>(), It.IsAny<string>()))
-                .Callback<string, string>((name, value)=>
-                {
-                    if (string.IsNullOrEmpty(value))
-                    {
-                        _persistenceData.Remove(name);
-                    }
-                    else
-                    {
-                        _persistenceData[name] = value;
-                    }
-                });
-
-            ToolkitSettings.Initialize(_persistenceManager.Object);
+            ToolkitSettings.Initialize(_settingsPersistence);
         }
 
         [Theory]
@@ -50,7 +30,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
         {
             if (persistedValue != null)
             {
-                _persistenceData["AnalyticsPermitted"] = persistedValue;
+                _settingsPersistence.PersistenceData["AnalyticsPermitted"] = persistedValue;
             }
 
             Assert.Equal(expectedValue, ToolkitSettings.Instance.TelemetryEnabled);
@@ -63,7 +43,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
         {
             ToolkitSettings.Instance.TelemetryEnabled = value;
 
-            Assert.Equal(persistedValue, _persistenceData["AnalyticsPermitted"]);
+            Assert.Equal(persistedValue, _settingsPersistence.PersistenceData["AnalyticsPermitted"]);
         }
 
         [Theory]
@@ -76,7 +56,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
         {
             if (persistedValue != null)
             {
-                _persistenceData["TelemetryNoticeVersionShown"] = persistedValue;
+                _settingsPersistence.PersistenceData["TelemetryNoticeVersionShown"] = persistedValue;
             }
 
             Assert.Equal(expectedValue, ToolkitSettings.Instance.TelemetryNoticeVersionShown);
@@ -89,7 +69,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
         {
             ToolkitSettings.Instance.TelemetryNoticeVersionShown = value;
 
-            Assert.Equal(persistedValue, _persistenceData["TelemetryNoticeVersionShown"]);
+            Assert.Equal(persistedValue, _settingsPersistence.PersistenceData["TelemetryNoticeVersionShown"]);
         }
 
         [Theory]
@@ -101,7 +81,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
         {
             if (persistedValue != null)
             {
-                _persistenceData["FirstRunFormShown"] = persistedValue;
+                _settingsPersistence.PersistenceData["FirstRunFormShown"] = persistedValue;
             }
 
             Assert.Equal(expectedValue, ToolkitSettings.Instance.HasUserSeenFirstRunForm);
@@ -114,7 +94,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
         {
             ToolkitSettings.Instance.HasUserSeenFirstRunForm = value;
 
-            Assert.Equal(persistedValue, _persistenceData["FirstRunFormShown"]);
+            Assert.Equal(persistedValue, _settingsPersistence.PersistenceData["FirstRunFormShown"]);
         }
 
         [Theory]
@@ -125,7 +105,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
         {
             if (persistedValue != null)
             {
-                _persistenceData["AnalyticsAnonymousCustomerId"] = persistedValue;
+                _settingsPersistence.PersistenceData["AnalyticsAnonymousCustomerId"] = persistedValue;
             }
 
             Assert.Equal(!isNull, ToolkitSettings.Instance.TelemetryClientId.HasValue);
@@ -137,7 +117,78 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
             var guid = Guid.NewGuid();
             ToolkitSettings.Instance.TelemetryClientId = guid;
 
-            Assert.Equal(guid.ToString(), _persistenceData["AnalyticsAnonymousCustomerId"]);
+            Assert.Equal(guid.ToString(), _settingsPersistence.PersistenceData["AnalyticsAnonymousCustomerId"]);
+        }
+
+        [Fact]
+        public void GetLastAccountSelectedKey()
+        {
+            _settingsPersistence.PersistenceData[PersistenceFields.LastAccountSelectedKey] = "hello";
+            Assert.Equal("hello", ToolkitSettings.Instance.LastAccountSelectedKey);
+        }
+
+        [Fact]
+        public void GetLastAccountSelectedKeyReturnsDefault()
+        {
+            Assert.Null(ToolkitSettings.Instance.LastAccountSelectedKey);
+        }
+
+        [Fact]
+        public void SetLastAccountSelectedKey()
+        {
+            ToolkitSettings.Instance.LastAccountSelectedKey = "hi";
+            Assert.Equal("hi",
+                _settingsPersistence.PersistenceData[
+                    PersistenceFields.LastAccountSelectedKey]);
+        }
+
+        [Fact]
+        public void GetLastSelectedRegion()
+        {
+            _settingsPersistence.PersistenceData[PersistenceFields.LastSelectedRegion] = "hello";
+            Assert.Equal("hello", ToolkitSettings.Instance.LastSelectedRegion);
+        }
+
+        [Fact]
+        public void GetLastSelectedRegionReturnsDefault()
+        {
+            Assert.Null(ToolkitSettings.Instance.LastSelectedRegion);
+        }
+
+        [Fact]
+        public void SetLastSelectedRegion()
+        {
+            ToolkitSettings.Instance.LastSelectedRegion = "hi";
+            Assert.Equal("hi",
+                _settingsPersistence.PersistenceData[PersistenceFields.LastSelectedRegion]);
+        }
+
+        [Fact]
+        public void GetHostedFilesLocation()
+        {
+            _settingsPersistence.PersistenceData[PersistenceFields.HostedFilesLocation] = "hello";
+            Assert.Equal("hello", ToolkitSettings.Instance.HostedFilesLocation);
+        }
+
+        [Fact]
+        public void GetHostedFilesLocationReturnsDefault()
+        {
+            Assert.Null(ToolkitSettings.Instance.HostedFilesLocation);
+        }
+
+        [Fact]
+        public void SetHostedFilesLocation()
+        {
+            ToolkitSettings.Instance.HostedFilesLocation = "hi";
+            Assert.Equal("hi",
+                _settingsPersistence.PersistenceData[
+                    PersistenceFields.HostedFilesLocation]);
+        }
+
+        public void Dispose()
+        {
+            // Reset ToolkitSettings away from In-Memory storage
+            ToolkitSettings.Initialize();
         }
     }
 }

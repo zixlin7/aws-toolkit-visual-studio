@@ -10,7 +10,6 @@ using Amazon.CloudFormation;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
-using Amazon.Runtime.Internal.Settings;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Persistence.Deployment;
@@ -21,6 +20,7 @@ using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageWorkers;
 
 using log4net;
 using Amazon.AWSToolkit.PluginServices.Deployment;
+using Amazon.AWSToolkit.Settings;
 
 namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
 {
@@ -121,7 +121,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
 
                 if (account == null) // go for the last-used (ie in-scope) toolkit account
                 {
-                    var lastAccountId = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.LastAcountSelectedKey);
+                    var lastAccountId = ToolkitSettings.Instance.LastAccountSelectedKey;
                     if (!string.IsNullOrEmpty(lastAccountId))
                         account = viewModel.AccountFromIdentityKey(lastAccountId);
 

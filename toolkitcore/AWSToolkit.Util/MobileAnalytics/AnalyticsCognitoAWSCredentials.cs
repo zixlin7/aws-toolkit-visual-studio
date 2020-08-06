@@ -1,5 +1,5 @@
-﻿using Amazon.CognitoIdentity;
-using Amazon.Runtime.Internal.Settings;
+﻿using Amazon.AWSToolkit.Settings;
+using Amazon.CognitoIdentity;
 
 namespace Amazon.AWSToolkit.MobileAnalytics
 {
@@ -11,17 +11,17 @@ namespace Amazon.AWSToolkit.MobileAnalytics
 
         public override void CacheIdentityId(string identityId)
         {
-            PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsCognitoIdentityId, identityId);
+            ToolkitSettings.Instance.MobileAnalytics.CognitoIdentityId = identityId;
         }
 
         public override void ClearIdentityCache()
         {
-            PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.AnalyticsCognitoIdentityId, "");
+            ToolkitSettings.Instance.MobileAnalytics.CognitoIdentityId = "";
         }
 
         public override string GetCachedIdentityId()
         {
-            return PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.AnalyticsCognitoIdentityId);
+            return ToolkitSettings.Instance.MobileAnalytics.CognitoIdentityId;
         }
     }
 }

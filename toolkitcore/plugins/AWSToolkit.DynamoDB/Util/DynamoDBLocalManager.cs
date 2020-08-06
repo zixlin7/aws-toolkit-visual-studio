@@ -7,8 +7,8 @@ using System.Net;
 using System.Threading;
 using System.Xml.Linq;
 using System.Diagnostics;
+using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Util;
-using Amazon.Runtime.Internal.Settings;
 
 using log4net;
 
@@ -211,12 +211,9 @@ namespace Amazon.AWSToolkit.DynamoDB.Util
 
         public int LastConfiguredPort
         {
-            get 
+            get
             {
-                var setting = PersistenceManager.Instance.GetSetting("LastDynamoDBConfiguredPort");
-                int port = 8000;
-                int.TryParse(setting, out port);
-                return port; 
+                return ToolkitSettings.Instance.DynamoDb.Port;
             }
         }
 
@@ -295,7 +292,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Util
 
         private void PersistLastConfiguredPort(int port)
         {
-            PersistenceManager.Instance.SetSetting("LastDynamoDBConfiguredPort", port.ToString());
+            ToolkitSettings.Instance.DynamoDb.Port = port;
         }
 
 

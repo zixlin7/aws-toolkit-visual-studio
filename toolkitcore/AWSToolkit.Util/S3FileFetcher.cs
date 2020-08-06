@@ -7,6 +7,7 @@ using Microsoft.Win32;
 using log4net;
 
 using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.AWSToolkit.Settings;
 using Amazon.Runtime.Internal.Settings;
 
 namespace Amazon.AWSToolkit
@@ -46,7 +47,7 @@ namespace Amazon.AWSToolkit
             {
                 var configLocation = _testHostingFilesLocation != null 
                     ? _testHostingFilesLocation.OriginalString
-                    : PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.HostedFilesLocation);
+                    : ToolkitSettings.Instance.HostedFilesLocation;
 
                 if (!string.IsNullOrEmpty(configLocation))
                 {

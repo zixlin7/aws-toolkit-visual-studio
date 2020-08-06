@@ -11,8 +11,8 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.VersionInfo;
-using Amazon.Runtime.Internal.Settings;
 using Amazon.Runtime.CredentialManagement.Internal;
 
 using log4net;
@@ -46,11 +46,11 @@ namespace Amazon.AWSToolkit.Navigator
 
             if (account == null)
             {
-                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.LastAcountSelectedKey, null);
+                ToolkitSettings.Instance.LastAccountSelectedKey = null;
             }
             else
             {
-                PersistenceManager.Instance.SetSetting(ToolkitSettingsConstants.LastAcountSelectedKey, account.SettingsUniqueKey);
+                ToolkitSettings.Instance.LastAccountSelectedKey = account.SettingsUniqueKey;
                 if (account.Children != null)
                 {
                     this._ctlResourceTree.ItemsSource = account.Children;
@@ -73,7 +73,7 @@ namespace Amazon.AWSToolkit.Navigator
                 this._ctlResourceTree.MouseRightButtonDown += new MouseButtonEventHandler(OnContextMenuOpening);
                 this._ctlResourceTree.MouseDoubleClick += new MouseButtonEventHandler(OnDoubleClick);
 
-                var lastAccountId = PersistenceManager.Instance.GetSetting(ToolkitSettingsConstants.LastAcountSelectedKey);
+                var lastAccountId = ToolkitSettings.Instance.LastAccountSelectedKey;
                 AccountViewModel accountViewModel = null;
                 if (!string.IsNullOrEmpty(lastAccountId))
                 {
