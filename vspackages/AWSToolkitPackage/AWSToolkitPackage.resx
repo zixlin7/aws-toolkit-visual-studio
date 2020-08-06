@@ -147,7 +147,7 @@
     <value>{0} {1}.
 {2}
 
-Release notes: https://aws-vs-toolkit.s3.amazonaws.com/versioninfo.html
+Release notes: https://github.com/aws/aws-toolkit-visual-studio/blob/master/CHANGELOG.md
 
 This software includes third party software subject to the following copyrights:
 - Logging from log4net, Apache License 
