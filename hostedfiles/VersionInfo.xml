@@ -1,9 +1,32 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <versions location="http://aws.amazon.com/visualstudio">
   <!-- 
-    Toolkit v1.17.0.0 is the last version to reference this release notes page.
-    Release notes are now packaged into newer Toolkit versions.
+    Toolkit v1.18.1.0 is the last version to reference this release notes page.
+    Release notes are now packaged into newer Toolkit versions, as well as the repo's CHANGELOG.md.
   -->
+
+  <version number="1.18.1.0" release-date="2020-07-23" prompt="false">
+    <change>Fixed "security group does not exist" issue when deploying .NET Core applications to Beanstalk that use an RDS security group</change>
+    <change>Fixed an issue where Beanstalk deployments can fail if the host Windows system is using non-US regional format settings</change>
+    <change>Fixed an issue where nodejs Lambda deployments can fail if the host Windows system is using non-US regional format settings</change>
+    <change>Fixed issue where certain error messages pop "under" other windows, and are not properly modal</change>
+  </version>
+  <version number="1.18.0.0" release-date="2020-06-23" prompt="false">
+    <change>Added support to publish ASP.NET Core applications to the new ".NET Core on Linux" Beanstalk platform.</change>
+    <change>A banner is shown on first usage, indicating that information relating to Toolkit usage is collected.</change>
+    <change>Fixed an issue where first-time users of the Toolkit were not being shown the "Getting Started" dialog in Visual Studio 2019. All users will see this dialog the first time Visual Studio is opened after installing this version of the toolkit.</change>
+    <change>Fixed an issue where the Toolkit-generated Beanstalk service role (aws-elasticbeanstalk-service-role) causes Beanstalk deployments to report a RED health status when they use multi-instance Application Load Balancers. Whenever the role is created, a service policy is now attached to it.</change>
+    <change>Fixed an issue where the Beanstalk deployment wizard would not populate roles on the Permissions page when trying to deploy to certain regions.</change>
+    <change>Removed the option to save Beanstalk configurations out to the old awsdeploy tool (awsdeploy.exe). This tool has been succeeded by the dotnet CLI tools package "Amazon.ElasticBeanstalk.Tools".</change>
+  </version>
+  <version number="1.17.1.0" release-date="2020-04-22" prompt="false">
+    <change>Fixed an issue where subnet and security groups would not show when viewing a Lambda Function.</change>
+    <change>Fixed an issue on toolkit startup that caused the following message to appear in Activity Log: SetSite failed for package AWSToolkitPackage Source: 'EnvDTE' ... EnvDTE.Events.get_DebuggerEvents</change>
+    <change>Fixed an issue where CodeCommit repos would not appear if the account did not have access permissions to all of them.</change>
+    <change>Fix dark theme support in the Beanstalk Advanced pane for Custom Availability Zones.</change>
+    <change>The Toolkit's welcome panel now has scroll bars that appear when the contents don't all fit in the view.</change>
+    <change>Improvements to the toolkits startup performance.</change>
+  </version>
   <version number="1.17.0.0" release-date="2020-03-31" prompt="false">
     <change>Added support .NET Core 3.1 Lambda support.</change>
     <change>Fixed some issues where a "File is already open" error would appear in versions of Visual Studio 2019 16.5 and newer.</change>
