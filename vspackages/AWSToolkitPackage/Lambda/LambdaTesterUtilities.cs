@@ -20,6 +20,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
             {
                 EnsureLambdaTesterConfigured(project, lambdaPlugin);
             }
+
+            LOGGER.Debug("Finished configuring Solution with Lambda Tester");
         }
 
         public static void EnsureLambdaTesterConfigured(Project project, IAWSLambda lambdaPlugin)

@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Xml.Linq;
-using System.Xml.XPath;
+using Amazon.AWSToolkit.Lambda.LambdaTester;
 using Amazon.Common.DotNetCli.Tools;
 using log4net;
 using Newtonsoft.Json;
@@ -26,6 +25,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
             { "netcoreapp3.1", new ToolConfig("Amazon.Lambda.TestTool-3.1", "dotnet-lambda-test-tool-3.1.exe" ) }
         };
 
+        static readonly ISet<string> InstalledTesterPackages = new HashSet<string>();
 
         public class ToolConfig
         {
@@ -39,62 +39,50 @@ namespace Amazon.AWSToolkit.Lambda.Util
             public string ToolExe { get; private set; }            
         }
 
+        /// <summary>
+        /// If the Lambda Tester is relevant to this project,
+        /// the tester is installed,
+        /// then the project's launch configuration is updated.
+        /// 
+        /// Function is not thread safe; expected to be called sequentially (used by LambdaTesterUtilities).
+        /// Unknown if the dotnet installer could handle concurrent executions, and the "tester installed"
+        /// state does not have concurrent locking.
+        /// </summary>
         public static void Install(string projectPath)
         {
             try
             {
-                var projectContent = File.ReadAllText(projectPath);
-                // Short circuit load the XML document if we know the project doesn't include an 
-                // AWSProjectType string. 
-                if (!projectContent.Contains("<AWSProjectType>"))
-                    return;
-
-                // The mock test tool does not currently support projects using 
-                // Amazon.Lambda.RuntimeSupport for custom runtimes.
-                if (projectContent.Contains("Amazon.Lambda.RuntimeSupport"))
-                    return;
-
-                var xdoc = XDocument.Parse(projectContent);
-                var awsProjectType = xdoc.XPathSelectElement("//PropertyGroup/AWSProjectType")?.Value;
-                if (string.IsNullOrEmpty(awsProjectType) || !awsProjectType.Contains("Lambda"))
-                    return;
-
-                var targetFramework = GetTargetFramework(xdoc);
-                ToolConfig toolConfig;
-                if (string.IsNullOrEmpty(targetFramework) || !ToolConfigs.TryGetValue(targetFramework, out toolConfig))
-                    return;
-
-                var lambdaTestToolInstallpath = GetLambdaTestToolPath(Path.GetDirectoryName(projectPath), toolConfig);
-                if (string.IsNullOrEmpty(lambdaTestToolInstallpath))
-                    return;
-
-
-                var getCurrentLaunchConfig = GetLaunchSettings(projectPath);
-
-                var root = JsonConvert.DeserializeObject(getCurrentLaunchConfig) as JObject;
-
-                var profiles = root["profiles"] as JObject;
-                if (profiles == null)
+                var project = new Project(projectPath);
+                if (!IsLambdaTesterSupported(project))
                 {
-                    profiles = new JObject();
-                    root["profiles"] = profiles;
+                    return;
                 }
 
-                var lambdaTester = profiles[LAUNCH_SETTINGS_NODE];
-                if (lambdaTester == null)
+                ToolConfig toolConfig = GetTesterConfiguration(project.TargetFramework);
+                if (toolConfig == null)
                 {
-                    lambdaTester = new JObject();
-                    lambdaTester["commandName"] = "Executable";
-                    lambdaTester["commandLineArgs"] = "--port 5050";
-
-                    profiles[LAUNCH_SETTINGS_NODE] = lambdaTester;
+                    return;
                 }
 
-                lambdaTester["workingDirectory"] = $".\\bin\\$(Configuration)\\{targetFramework}";
-                lambdaTester["executablePath"] = $"{lambdaTestToolInstallpath}";
+                // Only attempt to install the Lambda Tester once per IDE Session.
+                // This prevents slower load times when opening solutions with many projects.
+                if (!IsTesterInstalled(toolConfig))
+                {
+                    var retVal = InstallLambdaTester(toolConfig, Path.GetDirectoryName(projectPath));
+                    if (retVal == 0)
+                    {
+                        MarkTesterInstalled(toolConfig);
+                    }
+                }
+                else
+                {
+                    LOGGER.Debug($"Lambda Tester already installed: {toolConfig.Package}, Project: {projectPath}");
+                }
 
-                var updated = JsonConvert.SerializeObject(root, Formatting.Indented);
-                SaveLaunchSettings(projectPath, updated);
+                var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                var lambdaTestToolInstallPath = Path.Combine(Directory.GetParent(userProfile).FullName, "%USERNAME%", ".dotnet", "tools", toolConfig.ToolExe);
+
+                UpdateLaunchSettingsWithLambdaTester(projectPath, lambdaTestToolInstallPath, project.TargetFramework);
             }
             catch (Exception e)
             {
@@ -102,34 +90,125 @@ namespace Amazon.AWSToolkit.Lambda.Util
             }
         }
 
-        private static string GetLambdaTestToolPath(string projectDirectory, ToolConfig toolConfig)
+        /// <summary>
+        /// Gets the Tester tool associated with a given framework.
+        /// </summary>
+        /// <returns>Lambda Tester information; null if no applicable tester found</returns>
+        public static ToolConfig GetTesterConfiguration(string targetFramework)
         {
-            var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            var fullPath = Path.Combine(userProfile, ".dotnet", "tools", toolConfig.ToolExe);
-
-            if (!File.Exists(fullPath))
+            if (string.IsNullOrEmpty(targetFramework))
             {
-                if (RunToolCommand(projectDirectory, "install", toolConfig) != 0)
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                RunToolCommand(projectDirectory, "update", toolConfig);
+                return null;
             }
 
-            var variablePath = Path.Combine(Directory.GetParent(userProfile).FullName, "%USERNAME%", ".dotnet", "tools", toolConfig.ToolExe);
-            return variablePath;
+            if (!ToolConfigs.TryGetValue(targetFramework, out var toolConfig))
+            {
+                return null;
+            }
+
+            return toolConfig;
         }
 
-        private static string GetTargetFramework(XDocument xdocProject)
+        /// <summary>
+        /// Indicates whether or not the Lambda Tester is relevant to this project.
+        /// </summary>
+        internal static bool IsLambdaTesterSupported(Project project)
         {
-            var targetFramework = xdocProject.XPathSelectElement("//PropertyGroup/TargetFramework")?.Value;
-            return targetFramework;
+            // Short circuit if we know the project doesn't include an AWSProjectType string. 
+            if (!project.FileContents.Contains("<AWSProjectType>"))
+            {
+                return false;
+            }
+
+            // The mock test tool does not currently support projects using 
+            // Amazon.Lambda.RuntimeSupport for custom runtimes.
+            if (project.FileContents.Contains("Amazon.Lambda.RuntimeSupport"))
+            {
+                return false;
+            }
+
+            var awsProjectType = project.AwsProjectType;
+            if (string.IsNullOrEmpty(awsProjectType))
+            {
+                return false;
+            }
+
+            if (!awsProjectType.Contains("Lambda"))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(project.TargetFramework))
+            {
+                return false;
+            }
+
+            return true;
         }
 
+        /// <summary>
+        /// Installs or Updates the dotnet tool
+        /// </summary>
+        /// <param name="toolConfig">Lambda Tester to install</param>
+        /// <param name="workingDir">Where to run the install command from</param>
+        /// <returns>Installation return code</returns>
+        private static int InstallLambdaTester(ToolConfig toolConfig, string workingDir)
+        {
+            var installedTesterPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                ".dotnet", "tools", toolConfig.ToolExe
+            );
 
+            var cmd = File.Exists(installedTesterPath) ? "update" : "install";
+
+            LOGGER.Debug("Attempting to install or update Lambda Tester dotnet tool");
+            return RunToolCommand(workingDir, cmd, toolConfig);
+        }
+
+        private static void MarkTesterInstalled(ToolConfig toolConfig)
+        {
+            InstalledTesterPackages.Add(toolConfig.Package);
+        }
+
+        private static bool IsTesterInstalled(ToolConfig toolConfig)
+        {
+            return InstalledTesterPackages.Contains(toolConfig.Package);
+        }
+
+        /// <summary>
+        /// Initializes the project's launch settings if necessary, and
+        /// ensures they are referencing the tester tool's location.
+        /// </summary>
+        private static void UpdateLaunchSettingsWithLambdaTester(string projectPath, string lambdaTestToolInstallPath, string targetFramework)
+        {
+            var getCurrentLaunchConfig = GetLaunchSettings(projectPath);
+
+            var root = JsonConvert.DeserializeObject(getCurrentLaunchConfig) as JObject;
+
+            var profiles = root["profiles"] as JObject;
+            if (profiles == null)
+            {
+                profiles = new JObject();
+                root["profiles"] = profiles;
+            }
+
+            var lambdaTester = profiles[LAUNCH_SETTINGS_NODE];
+            if (lambdaTester == null)
+            {
+                lambdaTester = new JObject();
+                lambdaTester["commandName"] = "Executable";
+                // TODO : is this a suitable port initialization value? Should they be unique per project?
+                lambdaTester["commandLineArgs"] = "--port 5050";
+
+                profiles[LAUNCH_SETTINGS_NODE] = lambdaTester;
+            }
+
+            lambdaTester["workingDirectory"] = $".\\bin\\$(Configuration)\\{targetFramework}";
+            lambdaTester["executablePath"] = $"{lambdaTestToolInstallPath}";
+
+            var updated = JsonConvert.SerializeObject(root, Formatting.Indented);
+            SaveLaunchSettings(projectPath, updated);
+        }
 
         private static string GetLaunchSettings(string projectPath)
         {
