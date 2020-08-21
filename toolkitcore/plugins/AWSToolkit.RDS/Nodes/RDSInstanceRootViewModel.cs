@@ -35,7 +35,7 @@ namespace Amazon.AWSToolkit.RDS.Nodes
             var response = this.RDSClient.DescribeDBInstances(request);
             var items = response.DBInstances.Select(instance => new RDSInstanceViewModel((RDSInstanceViewMetaNode) this.MetaNode.FindChild<RDSInstanceViewMetaNode>(), this, new DBInstanceWrapper(instance))).Cast<IViewModel>().ToList();
 
-            BeginCopingChildren(items);
+            SetChildren(items);
         }
 
         public RegionEndPointsManager.EndPoint CurrentEndPoint => this._rootViewModel.CurrentEndPoint;

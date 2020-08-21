@@ -48,7 +48,7 @@ namespace Amazon.AWSToolkit.SQS.Nodes
                 var items = response.QueueUrls.Select(url => new SQSQueueViewModel(this._metaNode.SQSViewMetaNode, this, url)).Where(child => !this._removedChildren.ContainsKey(child.Name)).Cast<IViewModel>().ToList();
 
                 items.Sort(new Comparison<IViewModel>(AWSViewModel.CompareViewModel));
-                BeginCopingChildren(items);
+                SetChildren(items);
             }
             catch (Exception e)
             {

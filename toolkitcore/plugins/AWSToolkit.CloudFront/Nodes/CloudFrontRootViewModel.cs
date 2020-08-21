@@ -85,7 +85,7 @@ namespace Amazon.AWSToolkit.CloudFront.Nodes
             }
 
 
-            BeginCopingChildren(items);
+            SetChildren(items);
         }
     }
 }

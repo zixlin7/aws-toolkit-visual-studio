@@ -82,7 +82,7 @@ namespace Amazon.AWSToolkit.SNS.Nodes
                     }
                 } while (!string.IsNullOrEmpty(response.NextToken));
 
-                BeginCopingChildren(items);
+                SetChildren(items);
             }
             catch (Exception e)
             {

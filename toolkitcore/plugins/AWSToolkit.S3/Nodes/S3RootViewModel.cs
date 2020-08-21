@@ -59,7 +59,7 @@ namespace Amazon.AWSToolkit.S3.Nodes
                 items.Add(child);
             }
 
-            BeginCopingChildren(items);
+            SetChildren(items);
         }
 
 

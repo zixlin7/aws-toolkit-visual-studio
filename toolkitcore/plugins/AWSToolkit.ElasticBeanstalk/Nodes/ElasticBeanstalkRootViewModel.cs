@@ -74,7 +74,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
                 items.Add(new ApplicationViewModel(this._metaNode.ApplicationViewMetaNode, this, application, environments));
             }
 
-            BeginCopingChildren(items);
+            SetChildren(items);
 
         }
 

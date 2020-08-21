@@ -67,7 +67,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             children.Add(this._iamGroupRootViewModel);
             children.Add(this._iamRoleRootViewModel);
             children.Add(this._iamUserRootViewModel);
-            BeginCopingChildren(children);
+            SetChildren(children);
         }
     }
 }

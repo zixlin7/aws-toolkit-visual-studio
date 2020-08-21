@@ -113,7 +113,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
             bool isLocal = this.CurrentEndPoint.RegionSystemName == RegionEndPointsManager.GetInstance().LocalRegion.SystemName;
             if (isLocal && DynamoDBLocalManager.Instance.State == DynamoDBLocalManager.CurrentState.Stopped)
             {
-                BeginCopingChildren(new List<IViewModel>());
+                SetChildren(new List<IViewModel>());
                 return;
             }
 
@@ -142,13 +142,13 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
                 }
 
                 items.Sort(new Comparison<IViewModel>(AWSViewModel.CompareViewModel));
-                BeginCopingChildren(items);
+                SetChildren(items);
             }
             catch (Exception e)
             {
                 if (isLocal)
                 {
-                    BeginCopingChildren(new List<IViewModel>{new LocalConnectFailViewModel(this, DynamoDBLocalManager.Instance.LastConfiguredPort)});
+                    SetChildren(new List<IViewModel>{new LocalConnectFailViewModel(this, DynamoDBLocalManager.Instance.LastConfiguredPort)});
                 }
                 else
                 {

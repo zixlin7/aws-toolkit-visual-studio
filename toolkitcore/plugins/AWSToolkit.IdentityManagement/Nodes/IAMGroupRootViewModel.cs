@@ -41,7 +41,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             var response = this.IAMClient.ListGroups(request);
             var items = response.Groups.Select(@group => new IAMGroupViewModel(this._metaNode.IAMGroupViewMetaNode, this, @group)).Cast<IViewModel>().ToList();
 
-            BeginCopingChildren(items);
+            SetChildren(items);
         }    
     }
 }

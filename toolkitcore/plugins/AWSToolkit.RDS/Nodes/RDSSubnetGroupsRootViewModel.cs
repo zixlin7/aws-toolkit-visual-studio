@@ -34,7 +34,7 @@ namespace Amazon.AWSToolkit.RDS.Nodes
             var response = this.RDSClient.DescribeDBSubnetGroups();
             var items = response.DBSubnetGroups.Select(subnetGroup => new RDSSubnetGroupViewModel(this.MetaNode.FindChild<RDSSubnetGroupViewMetaNode>(), this, subnetGroup)).Cast<IViewModel>().ToList();
 
-            BeginCopingChildren(items);
+            SetChildren(items);
         }
 
         public RegionEndPointsManager.EndPoint CurrentEndPoint => this._rootViewModel.CurrentEndPoint;

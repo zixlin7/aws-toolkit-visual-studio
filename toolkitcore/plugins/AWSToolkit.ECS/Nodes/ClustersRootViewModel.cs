@@ -46,7 +46,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
                 listRequest.NextToken = listResponse.NextToken;
             } while (!string.IsNullOrEmpty(listRequest.NextToken));
 
-            BeginCopingChildren(items);
+            SetChildren(items);
         }
 
         public void RemoveClusterInstance(string clusterName)

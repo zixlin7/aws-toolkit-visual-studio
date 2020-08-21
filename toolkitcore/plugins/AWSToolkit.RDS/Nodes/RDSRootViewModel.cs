@@ -47,7 +47,7 @@ namespace Amazon.AWSToolkit.RDS.Nodes
                     new RDSSecurityGroupRootViewModel(this.MetaNode.FindChild<RDSSecurityGroupRootViewMetaNode>(), this)
                 };
 
-                BeginCopingChildren(items);
+                SetChildren(items);
             }
             catch (Exception e)
             {

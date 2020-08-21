@@ -59,7 +59,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
                 items.Add(new EnvironmentViewModel(this._metaNode.EnvironmentViewMetaNode, this, Environment));
             }
 
-            BeginCopingChildren(items);
+            SetChildren(items);
         }
 
         public override void LoadDnDObjects(IDataObject dndDataObjects)

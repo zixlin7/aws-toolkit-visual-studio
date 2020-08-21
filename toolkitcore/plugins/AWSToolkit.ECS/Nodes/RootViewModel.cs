@@ -61,7 +61,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
                     //new TaskDefinitionsRootViewModel(this.MetaNode.FindChild<TaskDefinitionsRootViewMetaNode>(), this),
                     new RepositoriesRootViewModel(this.MetaNode.FindChild<RepositoriesRootViewMetaNode>(), this),
                 };
-                BeginCopingChildren(items);
+                SetChildren(items);
             }
             catch (Exception e)
             {

@@ -33,7 +33,7 @@ namespace Amazon.AWSToolkit.EC2.Nodes
                 items.Add(new RouteTableViewModel(this.MetaNode.FindChild<RouteTableViewMetaNode>(), this));
                 items.Add(new NetworkAclViewModel(this.MetaNode.FindChild<NetworkAclViewMetaNode>(), this));
                 items.Add(new SecurityGroupsViewModel(this.MetaNode.FindChild<SecurityGroupsViewMetaNode>(), this));
-                BeginCopingChildren(items);
+                SetChildren(items);
             }
             catch (Exception e)
             {

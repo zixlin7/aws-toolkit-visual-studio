@@ -45,7 +45,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             var response = this.IAMClient.ListUsers(request);
             var items = response.Users.Select(user => new IAMUserViewModel(this._metaNode.IAMUserViewMetaNode, this, user)).Cast<IViewModel>().ToList();
 
-            BeginCopingChildren(items);
+            SetChildren(items);
         }
     }
 }

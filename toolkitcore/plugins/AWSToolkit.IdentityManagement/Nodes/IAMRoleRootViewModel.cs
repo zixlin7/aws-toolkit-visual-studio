@@ -43,7 +43,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             var response = this.IAMClient.ListRoles(request);
             var items = response.Roles.Select(role => new IAMRoleViewModel(this._metaNode.IAMRoleViewMetaNode, this, role)).Cast<IViewModel>().ToList();
 
-            BeginCopingChildren(items);
+            SetChildren(items);
         }    
     }
 }

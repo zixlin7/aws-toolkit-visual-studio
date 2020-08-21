@@ -36,7 +36,7 @@ namespace Amazon.AWSToolkit.RDS.Nodes
             var response = this.RDSClient.DescribeDBSecurityGroups(request);
             var items = response.DBSecurityGroups.Select(@group => new RDSSecurityGroupViewModel((RDSSecurityGroupViewMetaNode) this.MetaNode.FindChild<RDSSecurityGroupViewMetaNode>(), this, new DBSecurityGroupWrapper(@group))).Cast<IViewModel>().ToList();
 
-            BeginCopingChildren(items);
+            SetChildren(items);
         }
 
         public RegionEndPointsManager.EndPoint CurrentEndPoint => this._rootViewModel.CurrentEndPoint;

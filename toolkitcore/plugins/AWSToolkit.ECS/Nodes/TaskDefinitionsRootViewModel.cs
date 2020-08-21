@@ -43,7 +43,7 @@ namespace Amazon.AWSToolkit.ECS.Nodes
                 request.NextToken = response.NextToken;
             } while (!string.IsNullOrEmpty(request.NextToken));
 
-            BeginCopingChildren(items);
+            SetChildren(items);
         }
 
         public void RemoveTaskDefinitionInstance(string taskDefinitionArn)

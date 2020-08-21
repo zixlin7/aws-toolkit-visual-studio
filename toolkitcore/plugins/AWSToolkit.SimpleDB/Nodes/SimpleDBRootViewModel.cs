@@ -56,7 +56,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Nodes
                 } while (!string.IsNullOrEmpty(response.NextToken));
 
                 items.Sort(new Comparison<IViewModel>(AWSViewModel.CompareViewModel));
-                BeginCopingChildren(items);
+                SetChildren(items);
             }
             catch (Exception e)
             {

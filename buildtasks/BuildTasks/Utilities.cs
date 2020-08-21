@@ -36,7 +36,7 @@ namespace BuildTasks
             foreach (var file in Directory.GetFiles(source))
             {
                 var destinationFile = Path.Combine(target, Path.GetFileName(file));
-                Console.WriteLine("Coping {0} to {1}", file, destinationFile);
+                Console.WriteLine("Copying {0} to {1}", file, destinationFile);
                 File.Copy(file, destinationFile);
             }
         }

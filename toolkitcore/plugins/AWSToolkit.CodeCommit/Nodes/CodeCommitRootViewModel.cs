@@ -42,7 +42,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Nodes
                 items.Add(child);
             }
 
-            BeginCopingChildren(items);
+            SetChildren(items);
         }
 
         protected override void BuildClient(AWSCredentials credentials)

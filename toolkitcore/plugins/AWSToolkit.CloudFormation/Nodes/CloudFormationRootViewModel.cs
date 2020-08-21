@@ -72,7 +72,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
             } while (!string.IsNullOrEmpty(response.NextToken));
 
 
-            BeginCopingChildren(items);
+            SetChildren(items);
         }    
     }
 }

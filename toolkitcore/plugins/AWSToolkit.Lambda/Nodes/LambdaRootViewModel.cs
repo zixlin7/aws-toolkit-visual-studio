@@ -54,7 +54,7 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
                 } while (!string.IsNullOrEmpty(response.NextMarker));
 
                 items.Sort(new Comparison<IViewModel>(AWSViewModel.CompareViewModel));
-                BeginCopingChildren(items);
+                SetChildren(items);
             }
             catch (Exception e)
             {

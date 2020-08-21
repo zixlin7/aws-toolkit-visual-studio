@@ -33,7 +33,7 @@ namespace Amazon.AWSToolkit.EC2.Nodes
                 items.Add(new SecurityGroupsViewModel(this.MetaNode.FindChild<SecurityGroupsViewMetaNode>(), this));
                 items.Add(new EC2VolumesViewModel(this.MetaNode.FindChild<EC2VolumesViewMetaNode>(), this));
                 items.Add(new ElasticIPsViewModel(this.MetaNode.FindChild<ElasticIPsViewMetaNode>(), this));
-                BeginCopingChildren(items);
+                SetChildren(items);
             }
             catch (Exception e)
             {

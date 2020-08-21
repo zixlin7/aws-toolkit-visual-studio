@@ -114,7 +114,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
             return default(T);
         }
 
-        protected void BeginCopingChildren(IList<IViewModel> items)
+        protected void SetChildren(IList<IViewModel> items)
         {
             ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
