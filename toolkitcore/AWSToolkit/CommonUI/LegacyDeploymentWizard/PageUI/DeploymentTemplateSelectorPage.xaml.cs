@@ -304,42 +304,6 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
             }
         }
 
-        void _useOtherAccount_Click(object sender, RoutedEventArgs e)
-        {
-            RegisterAccountController command = new RegisterAccountController();
-            ActionResults results = command.Execute();
-            if (results.Success)
-            {
-                // a manual refresh is needed before the combo box updates...
-                RootViewModel.Refresh();
-                this._accounts.Clear();
-                AccountViewModel selectedAccount = null;
-                foreach (AccountViewModel account in RootViewModel.RegisteredAccounts)
-                {
-                    if (!account.HasRestrictions)
-                    {
-                        this._accounts.Add(account);
-
-                        if (string.Compare(account.AccountDisplayName, command.Model.DisplayName) == 0)
-                        {
-                            selectedAccount = account;
-                            return;
-                        }
-                    }
-                }
-
-                if (this.Accounts.Count > 0)
-                {
-                    _accountSelector.IsEnabled = true;
-
-                    if (selectedAccount != null)
-                    {
-                        SelectedAccount = selectedAccount;
-                    }
-                }
-            }
-        }
-
         void _accountEntryPopup_Loaded(object sender, RoutedEventArgs e)
         {
             if (_registerAccountController == null)
