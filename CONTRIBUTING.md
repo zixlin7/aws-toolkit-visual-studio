@@ -100,7 +100,7 @@ To send us a pull request, please:
 1. Modify the source; please focus on the specific change you are contributing. If you also reformat all the code, it will be hard for us to focus on your change.
 1. Ensure local tests pass.
 1. Commit to your fork using clear commit messages.
-1. Add user-facing changes to the top of the release notes file `vspackages\AWSToolkitPackage\ReleaseNotes.txt`. Write these from a user's perspective rather than as the author of the code change. Include the release notes change in your commit.
+1. Once you are done with your change, create a changelog entry with the command `msbuild buildtools\changelog.proj /t:newChange`. Follow the prompts, then commit the changelog item to your fork. Write the change description from a user's perspective rather than as the author of the code change.
 1. Send us a pull request, answering any default questions in the pull request interface.
 1. Pay attention to any automated CI failures reported in the pull request, and stay involved in the conversation.
 

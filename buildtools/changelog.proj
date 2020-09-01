@@ -1,0 +1,31 @@
+<Project ToolsVersion="14.0" DefaultTargets="full-build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <InternalBuildTools Condition="'$(InternalBuildTools)'==''">$(MSBuildProjectDirectory)\..\buildtasks</InternalBuildTools>
+  </PropertyGroup>
+
+  <Import Project="$(InternalBuildTools)\references.targets"
+          Condition="Exists('$(InternalBuildTools)\references.targets')" />
+  <Import Project="$(InternalBuildTools)\common.targets" Condition="Exists('$(InternalBuildTools)\common.targets')" />
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)'==''">Debug</Configuration>
+  </PropertyGroup>
+  <Target Name="newChange" DependsOnTargets="build-buildtasks">
+    <ChangeLogGeneratorTask RepositoryRoot="$(MSBuildProjectDirectory)\..">
+      <Output TaskParameter="NextReleasePath" PropertyName="nextReleasePath" />
+    </ChangeLogGeneratorTask>
+    <Exec Command="git add $(nextReleasePath)" />
+  </Target>
+  <Target Name="createRelease" DependsOnTargets="build-buildtasks">
+    <CreateReleaseTask RepositoryRoot="$(MSBuildProjectDirectory)\.." ReleaseVersion="$(ReleaseVersion)">
+      <Output TaskParameter="ChangeDirectoryPath" PropertyName="changeDirectory" />
+      <Output TaskParameter="NextReleasePath" PropertyName="nextRelease" />
+      <Output TaskParameter="ChangelogPath" PropertyName="changelog" />
+      <Output TaskParameter="ReleaseNotesPath" PropertyName="releaseNotes" />
+    </CreateReleaseTask>
+    <Exec Command="git add $(changeDirectory)" />
+    <Exec Command="git rm -rf $(nextRelease)" />
+    <Exec Command="git add $(changelog)" />
+    <Exec Command="git add $(releaseNotes)" />
+  </Target>
+</Project>

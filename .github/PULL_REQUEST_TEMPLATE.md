@@ -4,7 +4,7 @@ _Description of changes:_
 
 <!-- REMINDERS:
 
-If this is a user-facing change, add a release note entry to the top of vspackages\AWSToolkitPackage\ReleaseNotes.txt and include it in this PR.
+If this is a user-facing change, queue a changelog entry using the command `msbuild buildtools\changelog.proj /t:newChange`
 
 -->
 

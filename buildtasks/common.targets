@@ -1,27 +1,27 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-	<Target Name="clean">
-		<RemoveDir Directories="TestResults" />
-		<RemoveDir Directories="..\TestResults" />
+  <Target Name="clean">
+    <RemoveDir Directories="TestResults" />
+    <RemoveDir Directories="..\TestResults" />
 
-		<RemoveDir Directories="$(Deployment)" />
-		<MakeDir Directories="$(Deployment)" />
-    </Target>
+    <RemoveDir Directories="$(Deployment)" />
+    <MakeDir Directories="$(Deployment)" />
+  </Target>
 
-	<!-- COMMON CUSTOM TASKS -->
+  <!-- COMMON CUSTOM TASKS -->
 
-	<UsingTask
-		TaskName="WaitUntilAttached"
-		TaskFactory="CodeTaskFactory"
-		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll" >
+  <UsingTask
+    TaskName="WaitUntilAttached"
+    TaskFactory="CodeTaskFactory"
+    AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
 
-		<ParameterGroup />
-		<Task>
-			<Using Namespace="System"/>
-			<Using Namespace="System.Diagnostics"/>
-			<Using Namespace="System.Threading"/>
-			<Code Type="Fragment" Language="cs">
-				<![CDATA[
+    <ParameterGroup />
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.Diagnostics" />
+      <Using Namespace="System.Threading" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
 					Log.LogMessage("MSBuild process id: {0}", Process.GetCurrentProcess().Id);
 					int count = 5;
 					for(int i=0;i<count && !Debugger.IsAttached;i++)
@@ -31,63 +31,72 @@
 					}
 					Log.LogMessage("Debugger {0}, continuing", Debugger.IsAttached ? "attached" : "not attached");
 				]]>
-			</Code>
-		</Task>
-	</UsingTask>
+      </Code>
+    </Task>
+  </UsingTask>
 
-	<UsingTask TaskName="SetEnvironmentVariable" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
-		<ParameterGroup>
-			<VariableName ParameterType="System.String" Required="true" />
-			<VariableValue ParameterType="System.String" Required="false" />
-		</ParameterGroup>
-		<Task>
-			<Code Type="Fragment" Language="cs">
-				<![CDATA[
+  <UsingTask TaskName="SetEnvironmentVariable" TaskFactory="CodeTaskFactory"
+             AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <ParameterGroup>
+      <VariableName ParameterType="System.String" Required="true" />
+      <VariableValue ParameterType="System.String" Required="false" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
 					Log.LogMessage("Setting variable {0} = {1}", VariableName, VariableValue);
 					System.Environment.SetEnvironmentVariable(VariableName, VariableValue);
 				]]>
-			</Code>
-		</Task>
-	</UsingTask>
+      </Code>
+    </Task>
+  </UsingTask>
 
   <UsingTask
-		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
-		TaskName="BuildTasks.UpdateAwsSdkVersionsTask" />
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.UpdateAwsSdkVersionsTask" />
 
   <UsingTask
-		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
-		TaskName="BuildTasks.UpdatePowerShellVersionTask" />
-
-	<UsingTask
-		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
-		TaskName="BuildTasks.EC2QuickLaunchGeneratorTask" />
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.ChangeLog.ChangeLogGeneratorTask" />
 
   <UsingTask
-		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
-		TaskName="BuildTasks.UpdateAssemblyInfoVersionTask" />
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.ChangeLog.CreateReleaseTask" />
 
   <UsingTask
-		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
-		TaskName="BuildTasks.UpdateVSToolkitVersionTask" />
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.UpdatePowerShellVersionTask" />
 
   <UsingTask
-		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
-		TaskName="BuildTasks.UpdateInstallVersionsTask" />
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.EC2QuickLaunchGeneratorTask" />
 
   <UsingTask
-		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
-		TaskName="BuildTasks.PatchVsixManifestPackageIdTask" />
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.UpdateAssemblyInfoVersionTask" />
 
   <UsingTask
-		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
-		TaskName="BuildTasks.CFInvalidateTask" />
-		
-	<UsingTask
-		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
-		TaskName="BuildTasks.ReadInstallerVersionFileTask" />
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.UpdateVSToolkitVersionTask" />
 
-	<UsingTask
-		AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
-		TaskName="BuildTasks.IncrementInstallerPatchNumberTask" />
+  <UsingTask
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.UpdateInstallVersionsTask" />
 
-</Project>	
+  <UsingTask
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.PatchVsixManifestPackageIdTask" />
+
+  <UsingTask
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.CFInvalidateTask" />
+
+  <UsingTask
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.ReadInstallerVersionFileTask" />
+
+  <UsingTask
+    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
+    TaskName="BuildTasks.IncrementInstallerPatchNumberTask" />
+
+</Project>
