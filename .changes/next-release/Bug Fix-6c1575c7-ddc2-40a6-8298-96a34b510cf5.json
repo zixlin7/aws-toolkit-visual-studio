@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "The AWS .NET Mock Lambda Test Tool is now configured in launchSettings.json with a location based on %USERPROFILE% instead of %USERNAME%"
+}

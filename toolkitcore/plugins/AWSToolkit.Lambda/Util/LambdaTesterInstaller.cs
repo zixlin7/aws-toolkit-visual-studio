@@ -21,8 +21,8 @@ namespace Amazon.AWSToolkit.Lambda.Util
 
         static readonly IDictionary<string, ToolConfig> ToolConfigs = new Dictionary<string, ToolConfig>
         {
-            { "netcoreapp2.1", new ToolConfig("Amazon.Lambda.TestTool-2.1", "dotnet-lambda-test-tool-2.1.exe" ) },
-            { "netcoreapp3.1", new ToolConfig("Amazon.Lambda.TestTool-3.1", "dotnet-lambda-test-tool-3.1.exe" ) }
+            {"netcoreapp2.1", new ToolConfig("Amazon.Lambda.TestTool-2.1", "dotnet-lambda-test-tool-2.1.exe")},
+            {"netcoreapp3.1", new ToolConfig("Amazon.Lambda.TestTool-3.1", "dotnet-lambda-test-tool-3.1.exe")}
         };
 
         static readonly ISet<string> InstalledTesterPackages = new HashSet<string>();
@@ -36,7 +36,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
             }
 
             public string Package { get; private set; }
-            public string ToolExe { get; private set; }            
+            public string ToolExe { get; private set; }
         }
 
         /// <summary>
@@ -79,9 +79,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
                     LOGGER.Debug($"Lambda Tester already installed: {toolConfig.Package}, Project: {projectPath}");
                 }
 
-                var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                var lambdaTestToolInstallPath = Path.Combine(Directory.GetParent(userProfile).FullName, "%USERNAME%", ".dotnet", "tools", toolConfig.ToolExe);
-
+                var lambdaTestToolInstallPath = GenerateToolConfigCombinedPath("%USERPROFILE%", toolConfig);
                 UpdateLaunchSettingsWithLambdaTester(projectPath, lambdaTestToolInstallPath, project.TargetFramework);
             }
             catch (Exception e)
@@ -154,11 +152,9 @@ namespace Amazon.AWSToolkit.Lambda.Util
         /// <returns>Installation return code</returns>
         private static int InstallLambdaTester(ToolConfig toolConfig, string workingDir)
         {
-            var installedTesterPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                ".dotnet", "tools", toolConfig.ToolExe
-            );
-
+            var installedTesterPath =
+                GenerateToolConfigCombinedPath(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    toolConfig);
             var cmd = File.Exists(installedTesterPath) ? "update" : "install";
 
             LOGGER.Debug("Attempting to install or update Lambda Tester dotnet tool");
@@ -179,7 +175,8 @@ namespace Amazon.AWSToolkit.Lambda.Util
         /// Initializes the project's launch settings if necessary, and
         /// ensures they are referencing the tester tool's location.
         /// </summary>
-        private static void UpdateLaunchSettingsWithLambdaTester(string projectPath, string lambdaTestToolInstallPath, string targetFramework)
+        private static void UpdateLaunchSettingsWithLambdaTester(string projectPath, string lambdaTestToolInstallPath,
+            string targetFramework)
         {
             var getCurrentLaunchConfig = GetLaunchSettings(projectPath);
 
@@ -253,7 +250,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
             };
 
             StringWriter writer = new StringWriter();
-            var handler = (DataReceivedEventHandler)((o, e) =>
+            var handler = (DataReceivedEventHandler) ((o, e) =>
             {
                 if (string.IsNullOrEmpty(e.Data))
                     return;
@@ -286,5 +283,15 @@ namespace Amazon.AWSToolkit.Lambda.Util
             return exitCode;
         }
 
+        /// <summary>
+        /// Generates a path combining the base path with the toolconfig subpath
+        /// </summary>
+        /// <returns>combined path</returns>
+        private static string GenerateToolConfigCombinedPath(string basePath, ToolConfig toolConfig)
+        {
+            return Path.Combine(basePath,
+                ".dotnet", "tools", toolConfig.ToolExe
+            );
+        }
     }
 }
