@@ -1,6 +1,0 @@
-{
-    "file-description": "This file is used by the SDK Client Generator. See this folder's README.md for details",
-    "active": true,
-    "synopsis": "AWS IDEs Toolkits Telemetry",
-    "customization-file": "telemetry-2017-07-25.customizations.json"
-}

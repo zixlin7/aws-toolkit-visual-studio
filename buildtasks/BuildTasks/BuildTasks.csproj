@@ -1,8 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"
-          Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -63,8 +61,6 @@
     <Compile Include="EC2QuickLaunchGeneratorTask.cs" />
     <Compile Include="KeyScannerTask.cs" />
     <Compile Include="PatchVsixManifestPackageIdTask.cs" />
-    <Compile Include="Telemetry\CreateTelemetryClientProject.cs" />
-    <Compile Include="Telemetry\GetReferencedSdkCorePackageVersion.cs" />
     <Compile Include="UpdateAwsSdkVersionsTask.cs" />
     <Compile Include="UploadCredentials.cs" />
     <Compile Include="UploadToS3Task.cs" />
@@ -106,11 +102,6 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>12.0.3</Version>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Telemetry\TelemetryProjectTemplate.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

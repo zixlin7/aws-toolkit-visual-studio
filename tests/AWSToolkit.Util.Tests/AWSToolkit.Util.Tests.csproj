@@ -92,10 +92,6 @@
       <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>
       <Name>AWSToolkit.Lambda.Interface</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\toolkitcore\Telemetry\Client\AWSSDK.ToolkitTelemetry.csproj">
-      <Project>{0669bb1c-8a7b-4db0-8410-ac27d471e77b}</Project>
-      <Name>AWSSDK.ToolkitTelemetry</Name>
-    </ProjectReference>
     <ProjectReference Include="..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj">
       <Project>{aa57cb1d-f511-4bf5-9410-72a49d063365}</Project>
       <Name>AWSToolkit.Tests.Common</Name>
@@ -107,6 +103,9 @@
   <ItemGroup>
     <PackageReference Include="AWSSDK.Core">
       <Version>3.3.105.1</Version>
+    </PackageReference>
+    <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
+      <Version>0.0.53</Version>
     </PackageReference>
     <PackageReference Include="Castle.Core">
       <Version>4.2.1</Version>

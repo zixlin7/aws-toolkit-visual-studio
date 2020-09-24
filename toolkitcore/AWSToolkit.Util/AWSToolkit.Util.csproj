@@ -328,6 +328,9 @@
     <PackageReference Include="AWSSDK.CloudFormation">
       <Version>3.3.104.16</Version>
     </PackageReference>
+    <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
+      <Version>0.0.53</Version>
+    </PackageReference>
     <PackageReference Include="AWSSDK.CognitoIdentity">
       <Version>3.3.101.50</Version>
     </PackageReference>
@@ -348,11 +351,5 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <ProjectReference Include="..\Telemetry\Client\AWSSDK.ToolkitTelemetry.csproj">
-      <Project>{0669bb1c-8a7b-4db0-8410-ac27d471e77b}</Project>
-      <Name>AWSSDK.ToolkitTelemetry</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
