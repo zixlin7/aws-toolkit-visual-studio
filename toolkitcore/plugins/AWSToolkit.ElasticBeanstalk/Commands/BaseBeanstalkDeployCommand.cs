@@ -30,7 +30,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 
         protected static ILog LOGGER = LogManager.GetLogger(typeof(BaseBeanstalkDeployCommand));
 
-        public delegate string GetDefaultVpcSubnetFunc(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region);
+        public delegate string GetDefaultVpcSubnetFunc(AccountViewModel account,
+            RegionEndPointsManager.RegionEndPoints region);
 
         protected BaseBeanstalkDeployCommand(IDictionary<string, object> deploymentProperties)
             : this(deploymentProperties, null)
@@ -38,7 +39,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
         }
 
         protected BaseBeanstalkDeployCommand(
-            IDictionary<string, object> deploymentProperties, 
+            IDictionary<string, object> deploymentProperties,
             DeploymentControllerObserver observer)
         {
             Observer = observer ?? new DeploymentControllerObserver(LOGGER);
@@ -56,9 +57,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
         public abstract void Execute();
 
 
-        protected string ConfigureIAMRole(AccountViewModel account, RegionEndPointsManager.RegionEndPoints regionEndpoints)
+        protected string ConfigureIAMRole(AccountViewModel account,
+            RegionEndPointsManager.RegionEndPoints regionEndpoints)
         {
-            var roleTemplates = getValue<Amazon.AWSToolkit.CommonUI.Components.IAMCapabilityPicker.PolicyTemplate[]>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_PolicyTemplates);
+            var roleTemplates =
+                getValue<Amazon.AWSToolkit.CommonUI.Components.IAMCapabilityPicker.PolicyTemplate[]>(
+                    BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_PolicyTemplates);
             if (roleTemplates != null)
             {
                 var endpoint = regionEndpoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
@@ -68,7 +72,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 var client = new AmazonIdentityManagementServiceClient(account.Credentials, config);
 
 
-                var newRoleName = "aws-elasticbeanstalk-" + getValue<string>(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_EnvName);
+                var newRoleName = "aws-elasticbeanstalk-" +
+                                  getValue<string>(BeanstalkDeploymentWizardProperties.EnvironmentProperties
+                                      .propkey_EnvName);
                 var existingRoleNames = ExistingRoleNames(client);
 
                 if (existingRoleNames.Contains(newRoleName))
@@ -89,7 +95,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 {
                     RoleName = newRoleName,
                     AssumeRolePolicyDocument
-                            = Constants.GetIAMRoleAssumeRolePolicyDocument(RegionEndPointsManager.EC2_SERVICE_NAME, regionEndpoints)
+                        = Constants.GetIAMRoleAssumeRolePolicyDocument(RegionEndPointsManager.EC2_SERVICE_NAME,
+                            regionEndpoints)
                 }).Role;
                 this.Observer.Status("Created IAM Role {0}", newRoleName);
 
@@ -104,7 +111,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                     InstanceProfileName = profile.InstanceProfileName,
                     RoleName = role.RoleName
                 });
-                this.Observer.Status("Adding role {0} to instance profile {1}", role.RoleName, profile.InstanceProfileName);
+                this.Observer.Status("Adding role {0} to instance profile {1}", role.RoleName,
+                    profile.InstanceProfileName);
 
                 foreach (var template in roleTemplates)
                 {
@@ -122,7 +130,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             }
             else
             {
-                return getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_InstanceProfileName);
+                return getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties
+                    .propkey_InstanceProfileName);
             }
         }
 
@@ -151,7 +160,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             object value;
             if (DeploymentProperties.TryGetValue(key, out value))
             {
-                T convertedValue = (T)Convert.ChangeType(value, typeof(T));
+                T convertedValue = (T) Convert.ChangeType(value, typeof(T));
                 return convertedValue;
             }
 
@@ -161,7 +170,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
         protected void SelectNewTreeItems(string applicationName, string environmentName)
         {
             bool showStatus = false;
-            if (DeploymentProperties.ContainsKey(DeploymentWizardProperties.ReviewProperties.propkey_LaunchStatusOnClose))
+            if (DeploymentProperties.ContainsKey(
+                DeploymentWizardProperties.ReviewProperties.propkey_LaunchStatusOnClose))
                 showStatus = getValue<bool>(DeploymentWizardProperties.ReviewProperties.propkey_LaunchStatusOnClose);
 
             var serviceRoot = Account.FindSingleChild<ElasticBeanstalkRootViewModel>(false);
@@ -172,16 +182,19 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 if (application == null)
                 {
                     serviceRoot.Refresh(false);
-                    application = serviceRoot.FindSingleChild<ApplicationViewModel>(false, x => x.Application.ApplicationName == applicationName);
+                    application = serviceRoot.FindSingleChild<ApplicationViewModel>(false,
+                        x => x.Application.ApplicationName == applicationName);
                 }
 
                 if (application != null)
                 {
-                    environment = application.FindSingleChild<EnvironmentViewModel>(false, x => x.Environment.EnvironmentName == environmentName);
+                    environment = application.FindSingleChild<EnvironmentViewModel>(false,
+                        x => x.Environment.EnvironmentName == environmentName);
                     if (environment == null)
                     {
                         application.Refresh(false);
-                        environment = application.FindSingleChild<EnvironmentViewModel>(false, x => x.Environment.EnvironmentName == environmentName);
+                        environment = application.FindSingleChild<EnvironmentViewModel>(false,
+                            x => x.Environment.EnvironmentName == environmentName);
                     }
 
                     if (environment != null)
@@ -196,12 +209,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 
                             ToolkitFactory.Instance.Navigator.SelectedNode = environment;
                         }
+
                         // Found both application and environment so break out
                         break;
                     }
                 }
 
-                LOGGER.InfoFormat("Application {0} Found {1}, Environment {2} Found {3}, retrying since one wasn't found",
+                LOGGER.InfoFormat(
+                    "Application {0} Found {1}, Environment {2} Found {3}, retrying since one wasn't found",
                     application, application != null, environment, environment != null);
 
                 // Didn't find the application or environment, sleeping a little to let the service catch up.
@@ -209,7 +224,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             }
         }
 
-        public void CreateKeyPair(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region, string keyName)
+        public void CreateKeyPair(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region,
+            string keyName)
         {
             Observer.Status("Creating keypair '{0}'", keyName);
 
@@ -219,14 +235,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 
             using (var client = new AmazonEC2Client(account.Credentials, config))
             {
-                var request = new CreateKeyPairRequest() { KeyName = keyName };
+                var request = new CreateKeyPairRequest() {KeyName = keyName};
                 var response = client.CreateKeyPair(request);
 
                 IEC2RootViewModel ec2Root = Account.FindSingleChild<IEC2RootViewModel>(false);
                 KeyPairLocalStoreManager.Instance.SavePrivateKey(Account,
-                                                                region.SystemName,
-                                                                keyName,
-                                                                response.KeyPair.KeyMaterial);
+                    region.SystemName,
+                    keyName,
+                    response.KeyPair.KeyMaterial);
                 LOGGER.Debug("key pair created with name " + keyName + " and stored in local store");
             }
         }
@@ -253,7 +269,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 
                 var allSubnets = client.DescribeSubnets(new DescribeSubnetsRequest
                 {
-                    Filters = new List<Filter> { new Filter { Name = "vpc-id", Values = new List<string> { defaultVpc.VpcId } } }
+                    Filters = new List<Filter>
+                        {new Filter {Name = "vpc-id", Values = new List<string> {defaultVpc.VpcId}}}
                 }).Subnets;
 
 
@@ -268,7 +285,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 
         protected void GetVpcDetails(out bool launchIntoVpc, out string vpcId)
         {
-            launchIntoVpc = getValue<bool>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_LaunchIntoVPC);
+            launchIntoVpc =
+                getValue<bool>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_LaunchIntoVPC);
             vpcId = null;
 
             // if user did not choose to use a custom vpc and we are in a vpc-only environment, push through the default vpc id so we

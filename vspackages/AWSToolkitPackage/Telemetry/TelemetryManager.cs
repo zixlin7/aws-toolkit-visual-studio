@@ -6,6 +6,7 @@ using Amazon.AWSToolkit.Telemetry;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.CognitoIdentity;
 using log4net;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 
 namespace Amazon.AWSToolkit.VisualStudio.Telemetry
 {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Util;
 using Amazon.ToolkitTelemetry;
 using log4net;
@@ -38,13 +39,13 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
 
         private bool _disposed = false;
         private CancellationTokenSource _shutdownTokenSource = new CancellationTokenSource();
-        private volatile ConcurrentQueue<TelemetryEvent> _eventQueue;
+        private volatile ConcurrentQueue<Metrics> _eventQueue;
         private readonly Guid _clientId;
         private ITelemetryClient _telemetryClient;
 
         private DateTime _lastPublishedOn;
         private int _backoffLevel = 0;
-        private TelemetryEvent _resentEventMarker;
+        private Metrics _resentEventMarker;
         private bool _isShuttingDown = false;
 
         private readonly TimeProvider _timeProvider;
@@ -100,14 +101,14 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
             }
         }
 
-        public TelemetryPublisher(ConcurrentQueue<TelemetryEvent> eventQueue, Guid clientId)
+        public TelemetryPublisher(ConcurrentQueue<Metrics> eventQueue, Guid clientId)
             : this(eventQueue, clientId, new TimeProvider())
         {
         }
 
         // Overload for testing purposes
         public TelemetryPublisher(
-            ConcurrentQueue<TelemetryEvent> eventQueue,
+            ConcurrentQueue<Metrics> eventQueue,
             Guid clientId,
             TimeProvider timeProvider
         )
@@ -247,7 +248,7 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
         /// Transmits a batch of metrics
         /// </summary>
         /// <returns>true: the batch was transmitted, or otherwise successfully handled, false: the batch was not successfully handled.</returns>
-        private async Task<bool> Publish(List<TelemetryEvent> batch)
+        private async Task<bool> Publish(List<Metrics> batch)
         {
             bool backoffNextLoop = false;
             bool requeueBatch = false;
@@ -316,9 +317,9 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
         /// <summary>
         /// Pops a group of metrics from the queue and returns them
         /// </summary>
-        private List<TelemetryEvent> GetEventBatch()
+        private List<Metrics> GetEventBatch()
         {
-            var batch = new List<TelemetryEvent>();
+            var batch = new List<Metrics>();
 
             while (batch.Count < MAX_BATCH_SIZE && !_isShuttingDown)
             {

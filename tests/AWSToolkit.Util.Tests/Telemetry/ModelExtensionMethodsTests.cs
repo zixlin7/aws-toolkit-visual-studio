@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Amazon.AWSToolkit.Telemetry;
-using Amazon.ToolkitTelemetry;
-using Amazon.ToolkitTelemetry.Model;
-using Newtonsoft.Json;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Xunit;
 
 namespace Amazon.AWSToolkit.Util.Tests.Telemetry
@@ -14,21 +12,16 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         [Fact]
         public void AsMetricDatums()
         {
-            var telemetryEvent = new TelemetryEvent()
+            var telemetryMetric = new Metrics()
             {
                 CreatedOn = DateTime.Now,
                 Data = new List<MetricDatum>() {TestHelper.CreateSampleMetricDatum(2)}
             };
 
-            var timestamp = new DateTimeOffset(telemetryEvent.CreatedOn).ToUnixTimeMilliseconds();
-            telemetryEvent.Data.ToList().ForEach(x => x.EpochTimestamp = timestamp);
+            var timestamp = new DateTimeOffset(telemetryMetric.CreatedOn).ToUnixTimeMilliseconds();
 
-            var metricDatums = telemetryEvent.AsMetricDatums();
-
-            Assert.Equal(
-                JsonConvert.SerializeObject(telemetryEvent.Data),
-                JsonConvert.SerializeObject(metricDatums)
-            );
+            var metricDatums = telemetryMetric.AsMetricDatums();
+            Assert.Equal(telemetryMetric.Data.ToList().Count, metricDatums.Count(x => x.EpochTimestamp == timestamp));
         }
     }
 
@@ -70,7 +63,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
             var cleanMetricDatum = CreateCleanMetricDatum();
             var dirtyMetricDatum = CreateDirtyMetricDatum();
 
-            var telemetryEvent = new TelemetryEvent()
+            var telemetryMetric = new Metrics()
             {
                 CreatedOn = DateTime.Now,
                 Data = new List<MetricDatum>()
@@ -84,9 +77,9 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
                 }
             };
 
-            telemetryEvent.Sanitize();
+            telemetryMetric.Sanitize();
 
-            Assert.Equal(2, telemetryEvent.Data.Count);
+            Assert.Equal(2, telemetryMetric.Data.Count);
             AssertDirtyDatumIsClean(dirtyMetricDatum);
         }
 
@@ -123,12 +116,12 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         private static MetricDatum CreateDirtyMetricDatum()
         {
             var datum = new MetricDatum()
-                {
-                    MetricName = "hello world",
-                    Unit = null,
-                }
-                .AddMetadata("hello", "world")
-                .AddMetadata("", null);
+            {
+                MetricName = "hello world",
+                Unit = null,
+            };
+            datum.AddMetadata("hello", "world");
+            datum.AddMetadata("", null);
             return datum;
         }
 
@@ -139,6 +132,5 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
             Assert.Single(datum.Metadata);
             Assert.Equal("hello", datum.Metadata.First().Key);
         }
-
     }
 }

@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Telemetry.Model;
-using Amazon.ToolkitTelemetry;
 using Amazon.ToolkitTelemetry.Model;
+using MetricDatum = Amazon.ToolkitTelemetry.Model.MetricDatum;
 
 namespace Amazon.AWSToolkit.Telemetry
 {
@@ -14,21 +15,22 @@ namespace Amazon.AWSToolkit.Telemetry
         // The caret inverses to identify anything that is not a valid character
         static readonly Regex MetricNameIllegalChars = new Regex("[^\\w\\+\\-\\.\\:]");
 
-        public static IList<MetricDatum> AsMetricDatums(this TelemetryEvent telemetryEvent)
+        public static IList<MetricDatum> AsMetricDatums(this Metrics telemetryMetric)
         {
-            long epochTimestamp = new DateTimeOffset(telemetryEvent.CreatedOn).ToUnixTimeMilliseconds();
+            long epochTimestamp = new DateTimeOffset(telemetryMetric.CreatedOn).ToUnixTimeMilliseconds();
 
-            return telemetryEvent.Data.Select(eventData => new MetricDatum()
+            return telemetryMetric.Data.Select(eventData => new MetricDatum()
             {
                 MetricName = eventData.MetricName,
-                Unit = eventData.Unit ?? Unit.None,
+                Unit = new ToolkitTelemetry.Unit(eventData.Unit.Value),
                 Value = eventData.Value,
                 EpochTimestamp = epochTimestamp,
-                Metadata = eventData.Metadata,
+                Metadata = eventData.Metadata.Select(kvp => new MetadataEntry {Key = kvp.Key, Value = kvp.Value})
+                    .ToList(),
             }).ToList();
         }
 
-        public static IList<MetricDatum> AsMetricDatums(this IEnumerable<TelemetryEvent> telemetryEvents)
+        public static IList<MetricDatum> AsMetricDatums(this IEnumerable<Metrics> telemetryEvents)
         {
             return telemetryEvents
                 .SelectMany(telemetryEvent => telemetryEvent.AsMetricDatums())
@@ -47,25 +49,25 @@ namespace Amazon.AWSToolkit.Telemetry
         }
 
         /// <summary>
-        /// Cleans up properties on the given event.
+        /// Cleans up properties on the given metric.
         /// Removes invalid MetricDatums
         /// </summary>
-        public static void Sanitize(this TelemetryEvent telemetryEvent)
+        public static void Sanitize(this Metrics telemetryMetric)
         {
-            telemetryEvent.Data?.ToList().ForEach(Sanitize);
+            telemetryMetric.Data?.ToList().ForEach(Sanitize);
 
             // Remove any invalid data
-            telemetryEvent.Data?
+            telemetryMetric.Data?
                 .Where(d => !d.IsValid())
                 .ToList()
-                .ForEach(d => telemetryEvent.Data?.Remove(d));
+                .ForEach(d => telemetryMetric.Data?.Remove(d));
         }
 
         /// <summary>
         /// Cleans up properties on the given datum.
         /// This method cannot make an invalid datum valid.
         /// </summary>
-        public static void Sanitize(this MetricDatum metricDatum)
+        public static void Sanitize(this Amazon.AwsToolkit.Telemetry.Events.Core.MetricDatum metricDatum)
         {
             if (metricDatum.Unit == null)
             {
@@ -79,21 +81,24 @@ namespace Amazon.AWSToolkit.Telemetry
 
             // Remove any blank metadata entries
             metricDatum.Metadata?
-                .RemoveAll(data => string.IsNullOrEmpty(data.Key) && string.IsNullOrEmpty(data.Value));
+                .Where(data => string.IsNullOrEmpty(data.Key) && string.IsNullOrEmpty(data.Value))
+                .Select(data => data.Key)
+                .ToList()
+                .ForEach(blankKey => metricDatum.Metadata?.Remove(blankKey));
         }
 
-        public static bool IsValid(this TelemetryEvent telemetryEvent)
+        public static bool IsValid(this Metrics telemetryMetric)
         {
             // No Data
-            if (telemetryEvent.Data == null || telemetryEvent.Data.Count == 0)
+            if (telemetryMetric.Data == null || telemetryMetric.Data.Count == 0)
             {
                 return false;
             }
 
-            return telemetryEvent.Data.All(data => data.IsValid());
+            return telemetryMetric.Data.All(data => data.IsValid());
         }
 
-        public static bool IsValid(this MetricDatum metricDatum)
+        public static bool IsValid(this Amazon.AwsToolkit.Telemetry.Events.Core.MetricDatum metricDatum)
         {
             return !string.IsNullOrEmpty(metricDatum.MetricName);
         }

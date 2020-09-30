@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.Runtime;
 using Amazon.ToolkitTelemetry;
@@ -39,13 +40,13 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
 
         public async Task PostMetrics(
             Guid clientId,
-            IList<TelemetryEvent> telemetryEvents,
+            IList<Metrics> telemetryMetrics,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             var request = new PostMetricsRequest()
             {
                 ClientId = clientId,
-                TelemetryEvents = telemetryEvents,
+                TelemetryMetrics = telemetryMetrics,
                 ProductEnvironment = _productEnvironment,
             };
 
@@ -59,7 +60,7 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
             var clientRequest = new Amazon.ToolkitTelemetry.Model.PostMetricsRequest()
             {
                 ClientID = request.ClientId.ToString(),
-                MetricData = request.TelemetryEvents.AsMetricDatums().ToList(),
+                MetricData = request.TelemetryMetrics.AsMetricDatums().ToList(),
             };
 
             request.ProductEnvironment.ApplyTo(clientRequest);

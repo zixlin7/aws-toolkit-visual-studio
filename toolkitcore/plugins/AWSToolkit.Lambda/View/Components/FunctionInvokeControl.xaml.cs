@@ -7,9 +7,9 @@ using System.Text;
 using System.Windows;
 using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.Model;
-using Amazon.AWSToolkit.Telemetry;
 using log4net;
 using System.Xml.Linq;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.Lambda.View.Components
 {
@@ -52,24 +52,24 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
                 this._ctlPrettyPrint.IsEnabled = PrettyPrint(payload) != null;
                 success = true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 success = false;
                 LOGGER.Error(string.Format("Error invoking function {0}", this._controller.Model.FunctionName), e);
-                ToolkitFactory.Instance.ShellProvider.ShowError(string.Format("Error invoking function: {0}", e.Message));
+                ToolkitFactory.Instance.ShellProvider.ShowError(
+                    string.Format("Error invoking function: {0}", e.Message));
             }
             finally
             {
                 ToolkitFactory.Instance.TelemetryLogger.RecordLambdaInvokeRemote(new LambdaInvokeRemote()
                 {
                     Result = success ? Result.Succeeded : Result.Failed,
-                    Runtime = new Telemetry.Runtime(this._controller?.Model?.Runtime?.ToString())
+                    Runtime = new AwsToolkit.Telemetry.Events.Generated.Runtime(this._controller?.Model?.Runtime
+                        ?.ToString())
                 });
 
                 StopProgressBar();
             }
-
-
         }
 
         private void PrettyPrint_Click(object sender, RoutedEventArgs evnt)
@@ -110,6 +110,7 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
 
         const string SAMPLE_REQUESTS_PREFIX = "LambdaSampleFunctions/SampleRequests/";
         Dictionary<string, string> _sampleRequests = new Dictionary<string, string>();
+
         private void FillExampleRequests()
         {
             try
@@ -118,23 +119,23 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
                 XDocument xmlDoc = XDocument.Parse(content);
 
                 var query = from item in xmlDoc.Descendants("request")
-                            select new
-                            {
-                                Name = item.Element("name").Value,
-                                Filename = item.Element("filename").Value
-                            };
+                    select new
+                    {
+                        Name = item.Element("name").Value,
+                        Filename = item.Element("filename").Value
+                    };
 
                 var sampleEvents = from item in xmlDoc.Descendants("request")
                     select new SampleEvent
                     {
                         Group = item.Attribute("category")?.Value ?? string.Empty,
                         Name = item.Element("name")?.Value ?? string.Empty,
-                        Filename = item.Element("filename")?.Value ?? string.Empty, 
+                        Filename = item.Element("filename")?.Value ?? string.Empty,
                     };
 
                 _ctlSampleEvents.SetSampleEvents(sampleEvents);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 LOGGER.Error("Error filling example requests combo box.", e);
             }

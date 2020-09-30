@@ -3,9 +3,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Amazon.AWSToolkit.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Telemetry.Internal;
 using Amazon.AWSToolkit.Telemetry.Model;
-using Amazon.ToolkitTelemetry.Model;
 using Moq;
 using Xunit;
 
@@ -14,16 +14,16 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
     public class TelemetryServiceTests
     {
         private readonly Guid _clientId = Guid.NewGuid();
-        private readonly ConcurrentQueue<TelemetryEvent> _eventQueue = new ConcurrentQueue<TelemetryEvent>();
+        private readonly ConcurrentQueue<Metrics> _eventQueue = new ConcurrentQueue<Metrics>();
         private readonly Mock<ITelemetryClient> _telemetryClient = new Mock<ITelemetryClient>();
         private readonly Mock<ITelemetryPublisher> _telemetryPublisher = new Mock<ITelemetryPublisher>();
 
         private readonly TelemetryService _sut;
 
-        private readonly TelemetryEvent _sampleTelemetryEvent = new TelemetryEvent()
+        private readonly Metrics _sampleTelemetryEvent = new Metrics()
         {
             CreatedOn = DateTime.Now,
-            Data = new List<MetricDatum>() { TestHelper.CreateSampleMetricDatum(5) }
+            Data = new List<MetricDatum>() {TestHelper.CreateSampleMetricDatum(5)}
         };
 
         public TelemetryServiceTests()
@@ -147,6 +147,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
                 datum.Metadata.All(entry => entry.Key != MetadataKeys.AwsAccount))
             );
         }
+
 
         [Fact]
         public void Dispose()

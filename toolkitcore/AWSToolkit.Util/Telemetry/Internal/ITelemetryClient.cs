@@ -2,24 +2,24 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon.AWSToolkit.Telemetry.Model;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 
 namespace Amazon.AWSToolkit.Telemetry.Internal
 {
     public interface ITelemetryClient : IDisposable
     {
         /// <summary>
-        /// Sends telemetry events
+        /// Sends telemetry metrics
         /// </summary>
         Task PostMetrics(
             Guid clientId,
-            IList<TelemetryEvent> telemetryEvents,
+            IList<Metrics> telemetryMetrics,
             CancellationToken cancellationToken = default(CancellationToken)
         );
 
         /// <summary>
-        /// Sends telemetry events
-        /// Overloaded event to allow sending events from older sessions
+        /// Sends telemetry metrics
+        /// Overloaded metric to allow sending metrics from older sessions
         /// </summary>
         Task PostMetrics(
             PostMetricsRequest request,

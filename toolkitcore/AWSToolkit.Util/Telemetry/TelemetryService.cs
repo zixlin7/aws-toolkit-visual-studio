@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Telemetry.Internal;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.Runtime;
-using Amazon.ToolkitTelemetry.Model;
 using log4net;
 
 namespace Amazon.AWSToolkit.Telemetry
@@ -31,14 +30,14 @@ namespace Amazon.AWSToolkit.Telemetry
     public class TelemetryService : ITelemetryLogger, IDisposable
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(TelemetryService));
-        
+
 #if DEBUG
         const string DefaultTelemetryEndpoint = "https://7zftft3lj2.execute-api.us-east-1.amazonaws.com/Beta";
 #else
         const string DefaultTelemetryEndpoint = "https://client-telemetry.us-east-1.amazonaws.com";
 #endif
 
-        private readonly ConcurrentQueue<TelemetryEvent> _eventQueue;
+        private readonly ConcurrentQueue<Metrics> _eventQueue;
         private ProductEnvironment _productEnvironment;
         private ITelemetryClient _telemetryClient;
         private ITelemetryPublisher _telemetryPublisher;
@@ -48,11 +47,11 @@ namespace Amazon.AWSToolkit.Telemetry
         private bool _isTelemetryEnabled = false;
 
         public TelemetryService(ProductEnvironment productEnvironment) :
-            this(new ConcurrentQueue<TelemetryEvent>(), productEnvironment)
+            this(new ConcurrentQueue<Metrics>(), productEnvironment)
         {
         }
 
-        public TelemetryService(ConcurrentQueue<TelemetryEvent> eventQueue, ProductEnvironment productEnvironment)
+        public TelemetryService(ConcurrentQueue<Metrics> eventQueue, ProductEnvironment productEnvironment)
         {
             _eventQueue = eventQueue;
             _productEnvironment = productEnvironment;
@@ -127,17 +126,19 @@ namespace Amazon.AWSToolkit.Telemetry
         /// <summary>
         /// Queues metrics for transmission.
         /// </summary>
-        public void Record(TelemetryEvent telemetryEvent)
+        public void Record(Metrics telemetryMetric)
         {
             if (!_isTelemetryEnabled)
             {
                 return;
             }
 
-            ApplyMissingMetadata(telemetryEvent);
+            ApplyMissingMetadata(telemetryMetric);
 
-            _eventQueue.Enqueue(telemetryEvent);
+            _eventQueue.Enqueue(telemetryMetric);
         }
+
+        public ILog Logger => LOGGER;
 
         /// <summary>
         /// Shuts down the Service and cleans up
@@ -181,14 +182,14 @@ namespace Amazon.AWSToolkit.Telemetry
             }
         }
 
-        private void ApplyMissingMetadata(TelemetryEvent telemetryEvent)
+        private void ApplyMissingMetadata(Metrics telemetryMetric)
         {
             if (string.IsNullOrEmpty(_accountId))
             {
                 return;
             }
 
-            telemetryEvent.Data?.ToList().ForEach(ApplyMissingMetadata);
+            telemetryMetric.Data?.ToList().ForEach(ApplyMissingMetadata);
         }
 
         private void ApplyMissingMetadata(MetricDatum metricDatum)
@@ -199,37 +200,20 @@ namespace Amazon.AWSToolkit.Telemetry
             }
 
             EnsureAccountMetadataExists(metricDatum);
-
-            var accountEntry = metricDatum.Metadata
-                .First(entry => entry.Key == MetadataKeys.AwsAccount);
-
-            if (string.IsNullOrWhiteSpace(accountEntry.Value))
+            if (string.IsNullOrEmpty(metricDatum.Metadata[MetadataKeys.AwsAccount]))
             {
-                accountEntry.Value = _accountId;
+                metricDatum.Metadata[MetadataKeys.AwsAccount] = _accountId;
             }
         }
 
         private static void EnsureAccountMetadataExists(MetricDatum metricDatum)
         {
-            if (metricDatum.Metadata == null)
-            {
-                metricDatum.Metadata = new List<MetadataEntry>();
-            }
-
-            var accountEntry = metricDatum.Metadata
-                .FirstOrDefault(entry => entry.Key == MetadataKeys.AwsAccount);
-
-            if (accountEntry != null)
+            if (metricDatum.Metadata.ContainsKey(MetadataKeys.AwsAccount))
             {
                 return;
             }
 
-            accountEntry = new MetadataEntry()
-            {
-                Key = MetadataKeys.AwsAccount
-            };
-
-            metricDatum.Metadata.Add(accountEntry);
+            metricDatum.Metadata.Add(MetadataKeys.AwsAccount, "");
         }
     }
 }

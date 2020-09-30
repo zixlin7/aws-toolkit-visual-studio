@@ -56,7 +56,7 @@ using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.AWSToolkit.Settings;
-using Amazon.AWSToolkit.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.VisualStudio.Lambda;
 using Amazon.AWSToolkit.VisualStudio.Telemetry;

@@ -2,9 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using Amazon.AWSToolkit.Telemetry;
-using Amazon.ToolkitTelemetry;
-using Amazon.ToolkitTelemetry.Model;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 
 namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 {
@@ -22,24 +20,22 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
                 MetricName = Guid.NewGuid().ToString(),
                 Unit = Unit.Count,
                 Value = Randomizer.NextDouble(),
-                Metadata = Enumerable.Range(1, metadataCount).Select(x => new MetadataEntry()
-                {
-                    Key = $"SomeProp{x}",
-                    Value = Guid.NewGuid().ToString()
-                }).ToList()
             };
-
+            Enumerable.Range(1, metadataCount).ToList().ForEach(x =>
+            {
+                datum.Metadata[$"SomeProp{x}"] = Guid.NewGuid().ToString();
+            });
             return datum;
         }
 
-        public static void AddEventsToQueue(ConcurrentQueue<TelemetryEvent> queue, int quantity)
+        public static void AddEventsToQueue(ConcurrentQueue<Metrics> queue, int quantity)
         {
             for (int i = 0; i < quantity; i++)
             {
-                var telemetryEvent = new TelemetryEvent()
+                var telemetryEvent = new Metrics()
                 {
                     CreatedOn = DateTime.Now,
-                    Data = new List<MetricDatum>() { CreateSampleMetricDatum(5) }
+                    Data = new List<MetricDatum>() {CreateSampleMetricDatum(5)}
                 };
 
                 queue.Enqueue(telemetryEvent);
@@ -48,12 +44,8 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
         public static MetricDatum AddMetadata(this MetricDatum metricDatum, string key, string value)
         {
-            metricDatum.Metadata.Add(new MetadataEntry()
-            {
-                Key = key,
-                Value = value
-            });
-        
+            metricDatum.Metadata.Add(key, value);
+
             return metricDatum;
         }
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.AWSToolkit.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Telemetry.Internal;
 using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.ToolkitTelemetry;
@@ -19,6 +20,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         protected static readonly Random Randomizer = new Random();
         protected Mock<IAmazonToolkitTelemetry> TelemetrySdk = new Mock<IAmazonToolkitTelemetry>();
         protected TelemetryClient TelemetryClient;
+
         protected readonly ProductEnvironment ProductEnvironment = new ProductEnvironment()
         {
             AwsProduct = AWSProduct.AWSToolkitForVisualStudio,
@@ -52,7 +54,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
         public TelemetryClientPostMetricsTests() : base()
         {
-            var telemetryEvent = new TelemetryEvent()
+            var telemetryMetric = new Metrics()
             {
                 CreatedOn = DateTime.Now,
                 Data = Enumerable
@@ -63,14 +65,14 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
             _sampleClientRequest = new PostMetricsRequest()
             {
                 ClientId = Guid.NewGuid(),
-                TelemetryEvents = new List<TelemetryEvent>() {telemetryEvent},
+                TelemetryMetrics = new List<Metrics>() {telemetryMetric},
                 ProductEnvironment = ProductEnvironment
             };
 
             _sampleSdkRequest = new SdkPostMetricsRequest()
             {
                 ClientID = _sampleClientRequest.ClientId.ToString(),
-                MetricData = telemetryEvent.AsMetricDatums().ToList(),
+                MetricData = telemetryMetric.AsMetricDatums().ToList(),
             };
 
             ProductEnvironment.ApplyTo(_sampleSdkRequest);
@@ -79,7 +81,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         [Fact]
         public async Task WithClientIdAndEvents()
         {
-            await TelemetryClient.PostMetrics(_sampleClientRequest.ClientId, _sampleClientRequest.TelemetryEvents);
+            await TelemetryClient.PostMetrics(_sampleClientRequest.ClientId, _sampleClientRequest.TelemetryMetrics);
 
             TelemetrySdk.Verify(mock => mock.PostMetricsAsync(
                 It.Is<SdkPostMetricsRequest>(request => AreEqual(_sampleSdkRequest, request)),

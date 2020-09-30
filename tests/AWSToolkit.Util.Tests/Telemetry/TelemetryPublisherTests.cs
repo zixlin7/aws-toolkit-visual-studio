@@ -6,19 +6,20 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon.AWSToolkit.Telemetry;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Telemetry.Internal;
 using Amazon.Runtime;
 using Amazon.ToolkitTelemetry;
 using Moq;
 using Xunit;
 
+
 namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 {
     public class TelemetryPublisherTests
     {
         private readonly Guid _clientId = Guid.NewGuid();
-        private readonly ConcurrentQueue<TelemetryEvent> _eventQueue = new ConcurrentQueue<TelemetryEvent>();
+        private readonly ConcurrentQueue<Metrics> _eventQueue = new ConcurrentQueue<Metrics>();
         private readonly Mock<TimeProvider> _timeProvider = new Mock<TimeProvider>();
         private DateTime _currentTime = DateTime.Now;
         private readonly Mock<ITelemetryClient> _telemetryClient = new Mock<ITelemetryClient>();
@@ -76,7 +77,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             _telemetryClient.Verify(mock => mock.PostMetrics(
                     _clientId,
-                    It.IsAny<IList<TelemetryEvent>>(),
+                    It.IsAny<IList<Metrics>>(),
                     It.IsAny<CancellationToken>()
                 ),
                 Times.Exactly(2)
@@ -90,7 +91,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             _telemetryClient.Setup(mock => mock.PostMetrics(
                 _clientId,
-                It.IsAny<IList<TelemetryEvent>>(),
+                It.IsAny<IList<Metrics>>(),
                 It.IsAny<CancellationToken>()
             )).Throws(new AmazonToolkitTelemetryException("Simulating Http 4xx level error", ErrorType.Unknown, "", "",
                 HttpStatusCode.BadRequest));
@@ -112,7 +113,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             _telemetryClient.Setup(mock => mock.PostMetrics(
                 _clientId,
-                It.IsAny<IList<TelemetryEvent>>(),
+                It.IsAny<IList<Metrics>>(),
                 It.IsAny<CancellationToken>()
             )).Throws(new AmazonToolkitTelemetryException("Simulating Http 5xx level error", ErrorType.Unknown, "", "",
                 HttpStatusCode.InternalServerError));
@@ -142,7 +143,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             _telemetryClient.Setup(mock => mock.PostMetrics(
                 _clientId,
-                It.IsAny<IList<TelemetryEvent>>(),
+                It.IsAny<IList<Metrics>>(),
                 It.IsAny<CancellationToken>()
             )).Throws(new Exception("Simulating service call failure"));
 
@@ -167,7 +168,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             _telemetryClient.Setup(mock => mock.PostMetrics(
                 _clientId,
-                It.IsAny<IList<TelemetryEvent>>(),
+                It.IsAny<IList<Metrics>>(),
                 It.IsAny<CancellationToken>()
             )).Throws(new Exception("Simulating service call failure"));
 
@@ -195,7 +196,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
             // Make test explode if publish is attempted
             _telemetryClient.Setup(mock => mock.PostMetrics(
                 _clientId,
-                It.IsAny<IList<TelemetryEvent>>(),
+                It.IsAny<IList<Metrics>>(),
                 It.IsAny<CancellationToken>()
             )).Throws(new Exception("Publish should never happen"));
 
@@ -210,7 +211,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             _telemetryClient.Verify(mock => mock.PostMetrics(
                     _clientId,
-                    It.IsAny<IList<TelemetryEvent>>(),
+                    It.IsAny<IList<Metrics>>(),
                     It.IsAny<CancellationToken>()
                 ),
                 Times.Never
@@ -302,13 +303,15 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         private void WaitForMetricsPublishedEvent()
         {
             var timeout = Debugger.IsAttached ? -1 : 5000;
-            Assert.True(_publisherMetricsPublishedEvent.WaitOne(timeout), "MetricsPublished wasn't fired within expected time frame");
+            Assert.True(_publisherMetricsPublishedEvent.WaitOne(timeout),
+                "MetricsPublished wasn't fired within expected time frame");
         }
 
         private void WaitForPublishIntervalSkippedEvent()
         {
             var timeout = Debugger.IsAttached ? -1 : 2000;
-            Assert.True(_publisherIntervalSkippedEvent.WaitOne(timeout), "PublishIntervalSkipped wasn't fired within expected time frame");
+            Assert.True(_publisherIntervalSkippedEvent.WaitOne(timeout),
+                "PublishIntervalSkipped wasn't fired within expected time frame");
         }
 
         private void AdvancePublisherOuterLoop()
@@ -329,14 +332,14 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         {
             _telemetryClient.Verify(mock => mock.PostMetrics(
                     _clientId,
-                    It.Is<IList<TelemetryEvent>>(ExpectedCount(expectedEventCount)),
+                    It.Is<IList<Metrics>>(ExpectedCount(expectedEventCount)),
                     It.IsAny<CancellationToken>()
                 ),
                 expectedCallCount
             );
         }
 
-        private static Expression<Func<IList<TelemetryEvent>, bool>> ExpectedCount(int size)
+        private static Expression<Func<IList<Metrics>, bool>> ExpectedCount(int size)
         {
             return list => list.Count == size;
         }

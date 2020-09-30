@@ -2,31 +2,25 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
-
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.Notifications;
 using Amazon.AWSToolkit.Util;
-
 using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
 using Amazon.AWSToolkit.ElasticBeanstalk.View.Components;
 using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
 using Amazon.AWSToolkit.EC2.Nodes;
-
-using Amazon.AWSToolkit.Telemetry;
-
 using Amazon.EC2;
 using Amazon.EC2.Model;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
-
 using AWSDeployment;
-
 using log4net;
 using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 {
@@ -37,7 +31,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
         public DeployNewApplicationCommand(string deploymentPackage, IDictionary<string, object> deploymentProperties)
             : base(deploymentProperties)
         {
-
             Deployment
                 = DeploymentEngineFactory.CreateEngine(DeploymentEngineFactory.ElasticBeanstalkServiceName)
                     as BeanstalkDeploymentEngine;
@@ -45,7 +38,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             Deployment.AWSProfileName = Account.AccountDisplayName;
             Deployment.Observer = Observer;
             Deployment.DeploymentPackage = deploymentPackage;
-            Deployment.Region = (getValue<RegionEndPointsManager.RegionEndPoints>(CommonWizardProperties.AccountSelection.propkey_SelectedRegion)).SystemName;
+            Deployment.Region =
+                (getValue<RegionEndPointsManager.RegionEndPoints>(CommonWizardProperties.AccountSelection
+                    .propkey_SelectedRegion)).SystemName;
         }
 
         public override void Execute()
@@ -67,9 +62,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             {
                 ToolkitFactory.Instance.Navigator.UpdateAccountSelection(new Guid(Account.SettingsUniqueKey), false);
 
-                Deployment.ApplicationName = getValue<string>(DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName);
-                Deployment.ApplicationDescription = getValue<string>(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_AppDescription);
-                Deployment.VersionLabel = getValue<string>(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_VersionLabel);
+                Deployment.ApplicationName =
+                    getValue<string>(DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName);
+                Deployment.ApplicationDescription = getValue<string>(BeanstalkDeploymentWizardProperties
+                    .ApplicationProperties.propkey_AppDescription);
+                Deployment.VersionLabel =
+                    getValue<string>(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_VersionLabel);
 
                 if (getValue<bool>(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy))
                 {
@@ -87,25 +85,33 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 }
 
 
-                Deployment.CreateNewEnvironment = getValue<bool>(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_CreateNewEnv);
-                Deployment.EnvironmentName = getValue<string>(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_EnvName);
-                Deployment.EnvironmentDescription = getValue<string>(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_EnvDescription);
-                Deployment.EnvironmentCNAME = getValue<string>(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_CName);
-                Deployment.EnvironmentType = getValue<string>(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_EnvType);
-                Deployment.LoadBalancerType = getValue<string>(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_LoadBalancerType);
+                Deployment.CreateNewEnvironment =
+                    getValue<bool>(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_CreateNewEnv);
+                Deployment.EnvironmentName =
+                    getValue<string>(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_EnvName);
+                Deployment.EnvironmentDescription = getValue<string>(BeanstalkDeploymentWizardProperties
+                    .EnvironmentProperties.propkey_EnvDescription);
+                Deployment.EnvironmentCNAME =
+                    getValue<string>(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_CName);
+                Deployment.EnvironmentType =
+                    getValue<string>(BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_EnvType);
+                Deployment.LoadBalancerType = getValue<string>(BeanstalkDeploymentWizardProperties.EnvironmentProperties
+                    .propkey_LoadBalancerType);
 
                 Deployment.KeyPairName = getValue<string>(DeploymentWizardProperties.AWSOptions.propkey_KeyPairName);
                 if (getValue<bool>(DeploymentWizardProperties.AWSOptions.propkey_CreateKeyPair))
                 {
                     CreateKeyPair(Account, Deployment.RegionEndPoints, Deployment.KeyPairName);
                 }
-                    
 
-                Deployment.SolutionStack = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_SolutionStack);
+
+                Deployment.SolutionStack =
+                    getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_SolutionStack);
                 Deployment.CustomAmiID = getValue<string>(DeploymentWizardProperties.AWSOptions.propkey_CustomAMIID);
 
                 Deployment.RoleName = ConfigureIAMRole(Account, Deployment.RegionEndPoints);
-                Deployment.ServiceRoleName = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ServiceRoleName);
+                Deployment.ServiceRoleName =
+                    getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ServiceRoleName);
 
                 // if user did not choose to use a custom vpc and we are in a vpc-only environment, push through the default vpc id so we
                 // create resources in the right place from the get-go, and don't rely on the service to 'notice'
@@ -113,12 +119,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 Deployment.LaunchIntoVPC = launchIntoVpc;
                 Deployment.VPCId = vpcId;
 
-                string enableXRayDaemon = getValue<string>(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon);
+                string enableXRayDaemon = getValue<string>(BeanstalkDeploymentWizardProperties.ApplicationProperties
+                    .propkey_EnableXRayDaemon);
                 if (!string.IsNullOrEmpty(enableXRayDaemon))
                 {
                     Deployment.EnableXRayDaemon = Convert.ToBoolean(enableXRayDaemon);
 
-                    if(Deployment.EnableXRayDaemon.GetValueOrDefault())
+                    if (Deployment.EnableXRayDaemon.GetValueOrDefault())
                     {
                         deployMetric.XrayEnabled = true;
                         ToolkitEvent evnt = new ToolkitEvent();
@@ -127,7 +134,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                     }
                 }
 
-                string enableEnhancedHealth = getValue<string>(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableEnhancedHealth);
+                string enableEnhancedHealth = getValue<string>(BeanstalkDeploymentWizardProperties.ApplicationProperties
+                    .propkey_EnableEnhancedHealth);
                 if (!string.IsNullOrEmpty(enableEnhancedHealth))
                 {
                     Deployment.EnableEnhancedHealth = Convert.ToBoolean(enableEnhancedHealth);
@@ -141,59 +149,77 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                     }
                 }
 
-                Deployment.VPCSecurityGroupId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_VPCSecurityGroup);
-                Deployment.InstanceSubnetId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_InstanceSubnet);
-                Deployment.ELBSubnetId = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ELBSubnet);
-                Deployment.ELBScheme = getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ELBScheme);
+                Deployment.VPCSecurityGroupId = getValue<string>(BeanstalkDeploymentWizardProperties
+                    .AWSOptionsProperties.propkey_VPCSecurityGroup);
+                Deployment.InstanceSubnetId =
+                    getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_InstanceSubnet);
+                Deployment.ELBSubnetId =
+                    getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ELBSubnet);
+                Deployment.ELBScheme =
+                    getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ELBScheme);
 
-                if(string.IsNullOrEmpty(Deployment.ELBSubnetId) && string.Equals(Deployment.EnvironmentType, BeanstalkConstants.EnvType_LoadBalanced, StringComparison.OrdinalIgnoreCase))
+                if (string.IsNullOrEmpty(Deployment.ELBSubnetId) && string.Equals(Deployment.EnvironmentType,
+                    BeanstalkConstants.EnvType_LoadBalanced, StringComparison.OrdinalIgnoreCase))
                 {
                     Deployment.ELBSubnetId = GetDefaultVPCSubnet(Account, Deployment.RegionEndPoints);
                 }
 
-                Deployment.EnableConfigRollingDeployment = getValue<bool>(BeanstalkDeploymentWizardProperties.RollingDeployments.propKey_EnableConfigRollingDeployment);
+                Deployment.EnableConfigRollingDeployment = getValue<bool>(BeanstalkDeploymentWizardProperties
+                    .RollingDeployments.propKey_EnableConfigRollingDeployment);
                 if (Deployment.EnableConfigRollingDeployment)
                 {
-                    Deployment.ConfigRollingDeploymentMaximumBatchSize = getValue<int>(BeanstalkDeploymentWizardProperties.RollingDeployments.propKey_ConfigMaximumBatchSize);
-                    Deployment.ConfigRollingDeploymentMinimumInstancesInServices = getValue<int>(BeanstalkDeploymentWizardProperties.RollingDeployments.propKey_ConfigMinInstanceInServices);
+                    Deployment.ConfigRollingDeploymentMaximumBatchSize = getValue<int>(
+                        BeanstalkDeploymentWizardProperties.RollingDeployments.propKey_ConfigMaximumBatchSize);
+                    Deployment.ConfigRollingDeploymentMinimumInstancesInServices = getValue<int>(
+                        BeanstalkDeploymentWizardProperties.RollingDeployments.propKey_ConfigMinInstanceInServices);
                 }
 
-                if(DeploymentProperties.ContainsKey(BeanstalkDeploymentWizardProperties.RollingDeployments.propKey_AppBatchType))
+                if (DeploymentProperties.ContainsKey(BeanstalkDeploymentWizardProperties.RollingDeployments
+                    .propKey_AppBatchType))
                 {
-                    Deployment.AppRollingDeploymentBatchType = getValue<string>(BeanstalkDeploymentWizardProperties.RollingDeployments.propKey_AppBatchType);
-                    Deployment.AppRollingDeploymentBatchSize = getValue<int>(BeanstalkDeploymentWizardProperties.RollingDeployments.propKey_AppBatchSize);
+                    Deployment.AppRollingDeploymentBatchType = getValue<string>(BeanstalkDeploymentWizardProperties
+                        .RollingDeployments.propKey_AppBatchType);
+                    Deployment.AppRollingDeploymentBatchSize = getValue<int>(BeanstalkDeploymentWizardProperties
+                        .RollingDeployments.propKey_AppBatchSize);
                 }
-                
 
-                Deployment.UseIncrementalDeployment 
-                    = getValue<bool>(BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propkey_IncrementalDeployment);
+
+                Deployment.UseIncrementalDeployment
+                    = getValue<bool>(BeanstalkDeploymentWizardProperties.DeploymentModeProperties
+                        .propkey_IncrementalDeployment);
                 if (Deployment.UseIncrementalDeployment)
                 {
                     Deployment.IncrementalPushRepositoryLocation
-                        = getValue<string>(BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propkey_IncrementalPushRepositoryLocation);
+                        = getValue<string>(BeanstalkDeploymentWizardProperties.DeploymentModeProperties
+                            .propkey_IncrementalPushRepositoryLocation);
                 }
                 else
                 {
                     Deployment.UploadBucket = DetermineBucketName(Account, Deployment.RegionEndPoints);
                 }
 
-                Deployment.InstanceTypeID = getValue<string>(DeploymentWizardProperties.AWSOptions.propkey_InstanceTypeID);
+                Deployment.InstanceTypeID =
+                    getValue<string>(DeploymentWizardProperties.AWSOptions.propkey_InstanceTypeID);
 
                 CopyApplicationOptionProperties();
 
-                Deployment.RDSSecurityGroups = getValue<List<string>>(BeanstalkDeploymentWizardProperties.DatabaseOptions.propkey_RDSSecurityGroups);
-                Deployment.VPCSecurityGroups = getValue<List<string>>(BeanstalkDeploymentWizardProperties.DatabaseOptions.propkey_VPCSecurityGroups);
-                Deployment.VPCGroupsAndReferencingDBInstances = getValue<Dictionary<string, List<int>>>(BeanstalkDeploymentWizardProperties.DatabaseOptions.propkey_VPCGroupsAndDBInstances);
+                Deployment.RDSSecurityGroups =
+                    getValue<List<string>>(
+                        BeanstalkDeploymentWizardProperties.DatabaseOptions.propkey_RDSSecurityGroups);
+                Deployment.VPCSecurityGroups =
+                    getValue<List<string>>(
+                        BeanstalkDeploymentWizardProperties.DatabaseOptions.propkey_VPCSecurityGroups);
+                Deployment.VPCGroupsAndReferencingDBInstances =
+                    getValue<Dictionary<string, List<int>>>(BeanstalkDeploymentWizardProperties.DatabaseOptions
+                        .propkey_VPCGroupsAndDBInstances);
 
-                if (Deployment.DeploymentMode == DeploymentEngineBase.DeploymentModes.DeployNewApplication || 
+                if (Deployment.DeploymentMode == DeploymentEngineBase.DeploymentModes.DeployNewApplication ||
                     Deployment.DeploymentMode == DeploymentEngineBase.DeploymentModes.DeployPriorVersion)
                     Deployment.Deploy();
                 else
                     Deployment.Redeploy();
 
                 success = true;
-
-
             }
             catch (Exception e)
             {
@@ -211,7 +237,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                     ToolkitFactory.Instance.ShellProvider.UpdateStatus(string.Empty);
                     if (success)
                     {
-                        Observer.Status("Publish to AWS Elastic Beanstalk environment '{0}' completed successfully", Deployment.EnvironmentName);
+                        Observer.Status("Publish to AWS Elastic Beanstalk environment '{0}' completed successfully",
+                            Deployment.EnvironmentName);
 
                         DeploymentTaskNotifier notifier = new DeploymentTaskNotifier();
                         notifier.BeanstalkClient = Deployment.BeanstalkClient;
@@ -222,8 +249,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                         SelectNewTreeItems(Deployment.ApplicationName, Deployment.EnvironmentName);
                     }
                     else
-                        Observer.Status("Publish to AWS Elastic Beanstalk environment '{0}' did not complete successfully", Deployment.EnvironmentName);
-
+                        Observer.Status(
+                            "Publish to AWS Elastic Beanstalk environment '{0}' did not complete successfully",
+                            Deployment.EnvironmentName);
                 }
                 catch (Exception e)
                 {
@@ -231,7 +259,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 }
             }
         }
-
 
 
         void CopyApplicationOptionProperties()
@@ -245,46 +272,52 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             }
 
             if (DeploymentProperties.ContainsKey(DeploymentWizardProperties.AppOptions.propkey_HealthCheckUrl))
-                Deployment.ApplicationHealthcheckPath = getValue<string>(DeploymentWizardProperties.AppOptions.propkey_HealthCheckUrl);
+                Deployment.ApplicationHealthcheckPath =
+                    getValue<string>(DeploymentWizardProperties.AppOptions.propkey_HealthCheckUrl);
             else if (Deployment.DeploymentMode == DeploymentEngineBase.DeploymentModes.DeployNewApplication)
                 Deployment.ApplicationHealthcheckPath = "/";
 
-            string enable32Bit = getValue<string>(DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications);
+            string enable32Bit =
+                getValue<string>(DeploymentWizardProperties.AppOptions.propkey_Enable32BitApplications);
             if (!string.IsNullOrEmpty(enable32Bit))
                 Deployment.Enable32BitApplications = Convert.ToBoolean(enable32Bit);
             Deployment.TargetRuntime = getValue<string>(DeploymentWizardProperties.AppOptions.propkey_TargetRuntime);
 
             if (DeploymentProperties.ContainsKey(DeploymentWizardProperties.AppOptions.propkey_EnvAppSettings))
             {
-                var appSettings = DeploymentProperties[DeploymentWizardProperties.AppOptions.propkey_EnvAppSettings] as IDictionary<string, string>;
+                var appSettings =
+                    DeploymentProperties[DeploymentWizardProperties.AppOptions.propkey_EnvAppSettings] as
+                        IDictionary<string, string>;
 
-                foreach(var kvp in appSettings)
+                foreach (var kvp in appSettings)
                 {
-                    if(string.Equals(kvp.Key, DeploymentWizardProperties.AppOptions.propkey_EnvAccessKey))
+                    if (string.Equals(kvp.Key, DeploymentWizardProperties.AppOptions.propkey_EnvAccessKey))
                     {
                         Deployment.SetConfigurationOption("aws:elasticbeanstalk:application:environment",
-                                                      "AWS_ACCESS_KEY_ID",
-                                                      kvp.Value);
+                            "AWS_ACCESS_KEY_ID",
+                            kvp.Value);
                     }
                     else if (string.Equals(kvp.Key, DeploymentWizardProperties.AppOptions.propkey_EnvSecretKey))
                     {
                         Deployment.SetConfigurationOption("aws:elasticbeanstalk:application:environment",
-                                                      "AWS_SECRET_KEY",
-                                                      kvp.Value);
+                            "AWS_SECRET_KEY",
+                            kvp.Value);
                     }
                     else
                     {
                         Deployment.SetConfigurationOption("aws:elasticbeanstalk:application:environment",
-                                                          kvp.Key,
-                                                          kvp.Value);
+                            kvp.Key,
+                            kvp.Value);
                     }
                 }
             }
 
-            if (DeploymentProperties.ContainsKey(BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_NotificationEmail))
+            if (DeploymentProperties.ContainsKey(BeanstalkDeploymentWizardProperties.AppOptionsProperties
+                .propkey_NotificationEmail))
                 Deployment.SetConfigurationOption("aws:elasticbeanstalk:sns:topics",
-                                                  "Notification Endpoint",
-                                                  getValue<string>(BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_NotificationEmail));
+                    "Notification Endpoint",
+                    getValue<string>(BeanstalkDeploymentWizardProperties.AppOptionsProperties
+                        .propkey_NotificationEmail));
         }
 
 
@@ -306,13 +339,16 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             }
             catch (AmazonElasticBeanstalkException e)
             {
-                LOGGER.ErrorFormat("Exception {0} from CreateStorageLocation, falling back to manual construction of bucket name.", e.Message);
+                LOGGER.ErrorFormat(
+                    "Exception {0} from CreateStorageLocation, falling back to manual construction of bucket name.",
+                    e.Message);
             }
             finally
             {
                 if (string.IsNullOrEmpty(bucketName))
                 {
-                    bucketName = string.Format("elasticbeanstalk-{0}-{1}", region.SystemName, account.UniqueIdentifier).ToLower();
+                    bucketName = string.Format("elasticbeanstalk-{0}-{1}", region.SystemName, account.UniqueIdentifier)
+                        .ToLower();
                 }
             }
 
@@ -325,7 +361,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
     /// Internal class wraps checking for deployment completion and eventual notification if
     /// it succeeds
     /// </summary>
-    internal class DeploymentTaskNotifier : TaskWatcher.IQueryTaskCompletionProxy, TaskWatcher.INotifyTaskCompletionProxy
+    internal class DeploymentTaskNotifier : TaskWatcher.IQueryTaskCompletionProxy,
+        TaskWatcher.INotifyTaskCompletionProxy
     {
         public IAmazonElasticBeanstalk BeanstalkClient { get; set; }
         public string ApplicationName { get; set; }
@@ -341,20 +378,19 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             try
             {
                 var response = BeanstalkClient.DescribeEnvironments
-                               (new DescribeEnvironmentsRequest()
-                               {
-                                   EnvironmentNames = new List<string>() { this.EnvironmentName },
-                                   ApplicationName = this.ApplicationName
-                               });
+                (new DescribeEnvironmentsRequest()
+                {
+                    EnvironmentNames = new List<string>() {this.EnvironmentName},
+                    ApplicationName = this.ApplicationName
+                });
 
                 if (string.Compare(response.Environments[0].Health, "green", true) == 0)
                 {
                     completionState = TaskWatcher.TaskCompletionState.completed;
                     this._endpointUrl = string.Format("http://{0}/", response.Environments[0].CNAME);
                 }
-                else
-                    if (string.Compare(response.Environments[0].Health, "red", true) == 0)
-                        completionState = TaskWatcher.TaskCompletionState.error;
+                else if (string.Compare(response.Environments[0].Health, "red", true) == 0)
+                    completionState = TaskWatcher.TaskCompletionState.error;
             }
             catch (Exception)
             {
@@ -370,7 +406,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
         public void NotifyTaskCompletion(TaskWatcher callingNotifier)
         {
             bool success = callingNotifier.WatchingState == TaskWatcher.WatcherState.completedOK;
-            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action) (() =>
             {
                 AWSNotificationToaster toaster = new AWSNotificationToaster();
                 DeploymentNotificationPanel panel = new DeploymentNotificationPanel();

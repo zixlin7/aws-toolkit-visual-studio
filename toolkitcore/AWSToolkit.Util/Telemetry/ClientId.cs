@@ -11,9 +11,11 @@ namespace Amazon.AWSToolkit.Telemetry
     public class ClientId
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ClientId));
+
         public static ClientId Instance = new ClientId();
+
         // The service does not accept Guid.Empty, so we must use a fixed Guid to represent this fallback scenario.
-        public static readonly Guid UnknownClientId =  new Guid("ba00fe5f-16ef-4acb-9552-3750f843fe1d");
+        public static readonly Guid UnknownClientId = new Guid("ba00fe5f-16ef-4acb-9552-3750f843fe1d");
 
         private readonly Lazy<Guid> _clientId;
 

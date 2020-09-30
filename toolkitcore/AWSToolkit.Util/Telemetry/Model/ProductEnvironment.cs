@@ -23,6 +23,7 @@ namespace Amazon.AWSToolkit.Telemetry.Model
         /// Identifies the product making telemetry calls (eg: VS Toolkit)
         /// </summary>
         public string AwsProduct { get; set; }
+
         public string AwsProductVersion { get; set; }
 
         public string OperatingSystem { get; set; }
@@ -32,6 +33,7 @@ namespace Amazon.AWSToolkit.Telemetry.Model
         /// Identifies the IDE
         /// </summary>
         public string ParentProduct { get; set; }
+
         public string ParentProductVersion { get; set; }
     }
 }
