@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master, feature/* ]
+
+jobs:
+
+  build:
+    runs-on: windows-2016	
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Add msbuild to PATH
+      uses: warrenbuckley/Setup-MSBuild@v1
+
+    - name: Install AWS CLI
+      uses: crazy-max/ghaction-chocolatey@v1
+      with:
+        args: install -fy awscli --version 1.16.140
+
+    - name: Add CLI to PATH
+      run: echo "::add-path::C:\Program Files\Amazon\AWSCLI"
+
+    - name: Remove v16 Team Explorer project
+      run: |
+        [xml]$xml = Get-Content .\vspackages\manifests\15.0\source.extension.vsixmanifest
+        $ns = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
+        $ns.AddNamespace("ns", $xml.DocumentElement.NamespaceURI)
+        $ns.AddNamespace("d", "http://schemas.microsoft.com/developer/vsx-schema-design/2011")
+        $node = $xml.SelectSingleNode("//ns:PackageManifest/ns:Assets/ns:Asset[@d:ProjectName='AWSToolkit.CodeCommitTeamExplorer.v16']", $ns)
+        $node.ParentNode.RemoveChild($node)
+        $xml.save("$pwd\vspackages\manifests\15.0\source.extension.vsixmanifest")
+        dotnet sln solutions\AWSVisualStudioToolkit.sln remove vspackages\AWSToolkit.CodeCommitTeamExplorer.v16\AWSToolkit.CodeCommitTeamExplorer.v16.csproj
+        dotnet remove vspackages\AWSToolkitPackage\AWSToolkitPackage.csproj reference "`$(BuildRoot)\vspackages\AWSToolkit.CodeCommitTeamExplorer.v16\AWSToolkit.CodeCommitTeamExplorer.v16.csproj"
+
+    - name: Remove v15 Team Explorer project
+      run: |
+        [xml]$xml = Get-Content .\vspackages\manifests\15.0\source.extension.vsixmanifest
+        $ns = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
+        $ns.AddNamespace("ns", $xml.DocumentElement.NamespaceURI)
+        $ns.AddNamespace("d", "http://schemas.microsoft.com/developer/vsx-schema-design/2011")
+        $node = $xml.SelectSingleNode("//ns:PackageManifest/ns:Assets/ns:Asset[@d:ProjectName='AWSToolkit.CodeCommitTeamExplorer.v15']", $ns)
+        $node.ParentNode.RemoveChild($node)
+        $xml.save("$pwd\vspackages\manifests\15.0\source.extension.vsixmanifest")
+        dotnet sln solutions\AWSVisualStudioToolkit.sln remove vspackages\AWSToolkit.CodeCommitTeamExplorer.v15\AWSToolkit.CodeCommitTeamExplorer.v15.csproj
+        dotnet remove vspackages\AWSToolkitPackage\AWSToolkitPackage.csproj reference "`$(BuildRoot)\vspackages\AWSToolkit.CodeCommitTeamExplorer.v15\AWSToolkit.CodeCommitTeamExplorer.v15.csproj"
+
+    - name: Build
+      run: msbuild buildtools\build.proj /t:build-vstoolkit-2017
