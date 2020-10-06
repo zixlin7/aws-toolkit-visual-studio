@@ -6,7 +6,7 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.SNS.Model;
 using Amazon.AWSToolkit.SNS.Controller;
 using Amazon.AWSToolkit.SQS.Nodes;
-
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
 
 namespace Amazon.AWSToolkit.SNS.View
@@ -51,6 +51,14 @@ namespace Amazon.AWSToolkit.SNS.View
         }
 
         public override string UniqueId => this.Title;
+
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordSnsOpenSubscriptions(new SnsOpenSubscriptions()
+            {
+                Result = success ? Result.Succeeded : Result.Failed,
+            });
+        }
 
         #region Toolbar Actions
         private void onCreateSubscriptionClick(object sender, RoutedEventArgs evnt)

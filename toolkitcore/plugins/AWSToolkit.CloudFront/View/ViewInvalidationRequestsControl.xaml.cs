@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CloudFront.Model;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CloudFront.Controller;
 
 using log4net;
@@ -45,6 +46,14 @@ namespace Amazon.AWSToolkit.CloudFront.View
         {
             this._controller.LoadModel();
             return this._controller.Model;
+        }
+
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordCloudfrontOpenInvalidationRequest(new CloudfrontOpenInvalidationRequest()
+            {
+                Result = success ? Result.Succeeded : Result.Failed,
+            });
         }
 
         void onRefreshClick(object sender, RoutedEventArgs evnt)

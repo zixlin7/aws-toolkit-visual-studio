@@ -5,6 +5,7 @@ using System.Windows.Input;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.SQS.Model;
 using Amazon.AWSToolkit.SQS.Controller;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
 
 namespace Amazon.AWSToolkit.SQS.View
@@ -51,6 +52,14 @@ namespace Amazon.AWSToolkit.SQS.View
             return this._controller.Model ;
         }
 
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordSqsOpenQueue(new SqsOpenQueue()
+            {
+                SqsQueueType = SqsQueueType.Standard,
+            }); 
+        }
+        
         private void save_Click(object sender, RoutedEventArgs evnt)
         {
             try

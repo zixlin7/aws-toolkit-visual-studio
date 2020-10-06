@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.View
@@ -109,6 +110,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View
         public override string Title => "Env: " + this._controller.Model.EnvironmentName;
 
         public override string UniqueId => "EnvStatus" + this._controller.Model.EnvironmentId;
+
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordBeanstalkOpenEnvironment(new BeanstalkOpenEnvironment()
+            {
+                Result = success ? Result.Succeeded : Result.Failed
+            });
+        }
 
         public void CustomizeTabsForEnvironmentType(bool changingEnvironmentType)
         {

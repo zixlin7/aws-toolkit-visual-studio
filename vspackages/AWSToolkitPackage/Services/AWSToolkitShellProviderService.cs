@@ -111,10 +111,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
                 var openShell = _hostPackage.GetVSShellService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
 
-                ToolkitEvent toolkitEvent = new ToolkitEvent();
-                toolkitEvent.AddProperty(AttributeKeys.OpenViewFullIdentifier, editorControl.GetType().FullName);
-                _hostPackage.AnalyticsRecorder.QueueEventToBeRecorded(toolkitEvent);
-
                 var logicalView = VSConstants.LOGVIEWID_Primary;
                 var editorFactoryGuid = new Guid(GuidList.HostedEditorFactoryGuidString);
 
@@ -170,17 +166,20 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                     {
                         _hostPackage.ControlCache.Remove(controlId);
                         Trace.WriteLine(result);
+                        editorControl.OnEditorOpened(false);
                     }
                     else
                     {
                         frame.Show();
+                        editorControl.OnEditorOpened(true);
                     }
                 }
                 catch
                 {
                     _hostPackage.ControlCache.Remove(controlId);
+                    editorControl.OnEditorOpened(false);
                 }
-
+                
                 ThreadPool.QueueUserWorkItem(_hostPackage.ClearDeadWeakReferences, null);
             });
         }

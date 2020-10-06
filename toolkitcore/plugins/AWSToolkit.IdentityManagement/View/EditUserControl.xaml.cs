@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.IdentityManagement.Controller;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.IdentityManagement.View
 {
@@ -33,6 +34,14 @@ namespace Amazon.AWSToolkit.IdentityManagement.View
         {
             this._controller.LoadModel();            
             return this._controller.Model;
+        }
+
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordIamOpenUser(new IamOpenUser()
+            {
+                Result = success ? Result.Succeeded : Result.Failed,
+            });
         }
 
         void onDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)

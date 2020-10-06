@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Model;
-
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
 
 
@@ -36,6 +36,14 @@ namespace Amazon.AWSToolkit.EC2.View
         {
             this._controller.LoadModel();
             return this._controller.Model;
+        }
+
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordEc2OpenKeyPairs(new Ec2OpenKeyPairs()
+            {
+                Result = success ? Result.Succeeded : Result.Failed,
+            });
         }
 
         void onRefreshClick(object sender, RoutedEventArgs evnt)

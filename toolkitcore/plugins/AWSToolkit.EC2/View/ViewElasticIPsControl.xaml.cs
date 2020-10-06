@@ -6,7 +6,7 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
-
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
 
 namespace Amazon.AWSToolkit.EC2.View
@@ -53,6 +53,14 @@ namespace Amazon.AWSToolkit.EC2.View
             return this._controller.Model;
         }
 
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordEc2OpenElasticIPs(new Ec2OpenElasticIPs()
+            {
+                Result = success ? Result.Succeeded : Result.Failed,
+            });
+        }
+        
         void onRefreshClick(object sender, RoutedEventArgs evnt)
         {
             try

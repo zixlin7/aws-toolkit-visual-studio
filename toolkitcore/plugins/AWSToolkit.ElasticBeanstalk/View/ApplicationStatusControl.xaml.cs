@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.View
 {
@@ -27,6 +28,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View
             return this._controller.Model;
         }
 
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordBeanstalkOpenApplication(new BeanstalkOpenApplication()
+            {
+                Result = success ? Result.Succeeded : Result.Failed
+            });
+        }
+        
         public override string Title => "App: " + this._controller.Model.ApplicationName;
 
         public override string UniqueId => "AppStatus" + this._controller.Model.ApplicationName;

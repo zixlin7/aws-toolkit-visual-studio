@@ -8,6 +8,7 @@ using System.Windows.Input;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.DynamoDB.Controller;
 using Amazon.AWSToolkit.DynamoDB.View.Columns;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
 using Microsoft.Win32;
 
@@ -48,6 +49,14 @@ namespace Amazon.AWSToolkit.DynamoDB.View
             return this._controller.Model;
         }
 
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordDynamodbOpenTable(new DynamodbOpenTable()
+            {
+                Result = success ? Result.Succeeded : Result.Failed,
+            });
+        }
+        
         protected override void PostDataContextBound()
         {
             if (string.Equals(this._controller.Model.TableDescription.TableStatus, DynamoDBConstants.TABLE_STATUS_ACTIVE, StringComparison.InvariantCultureIgnoreCase))
@@ -59,7 +68,7 @@ namespace Amazon.AWSToolkit.DynamoDB.View
             if (e.Action == NotifyCollectionChangedAction.Remove)
                 this._ctlCommitChangesBtn.IsEnabled = true;
         }
-
+       
         private void updateUi()
         {
             ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() => 

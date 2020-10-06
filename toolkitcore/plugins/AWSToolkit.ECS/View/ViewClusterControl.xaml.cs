@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Amazon.AWSToolkit.ECS.Controller;
 using Amazon.AWSToolkit.ECS.Model;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
 
 namespace Amazon.AWSToolkit.ECS.View
@@ -39,6 +40,14 @@ namespace Amazon.AWSToolkit.ECS.View
             return this._controller.Model;
         }
 
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordEcsOpenCluster(new EcsOpenCluster()
+            {
+                Result = success ? Result.Succeeded : Result.Failed,
+            });
+        }
+        
         void onRefreshClick(object sender, RoutedEventArgs evnt)
         {
             try

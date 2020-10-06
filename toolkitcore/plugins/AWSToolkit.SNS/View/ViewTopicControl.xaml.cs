@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.SNS.Model;
 using Amazon.AWSToolkit.SNS.Controller;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 
 namespace Amazon.AWSToolkit.SNS.View
@@ -52,6 +53,14 @@ namespace Amazon.AWSToolkit.SNS.View
         public void SetUniqueId(string uniqueId)
         {
             this._uniqueId = uniqueId;
+        }
+
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordSnsOpenTopic(new SnsOpenTopic()
+            {
+                Result = success ? Result.Succeeded : Result.Failed,
+            });
         }
 
         private void onPublishToTopicClick(object sender, RoutedEventArgs evnt)

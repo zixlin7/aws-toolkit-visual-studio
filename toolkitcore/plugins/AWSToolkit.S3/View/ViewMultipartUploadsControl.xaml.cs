@@ -6,6 +6,7 @@ using System.Windows.Input;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.Controller;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using log4net;
 
@@ -30,6 +31,14 @@ namespace Amazon.AWSToolkit.S3.View
         public override string UniqueId => "multipart." + this._controller.Model.BucketName;
 
         public override bool SupportsBackGroundDataLoad => true;
+
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordS3OpenMultipartUpload(new S3OpenMultipartUpload()
+            {
+                Result = success ? Result.Succeeded : Result.Failed,
+            });
+        }
 
         void onRefreshClick(object sender, RoutedEventArgs e)
         {

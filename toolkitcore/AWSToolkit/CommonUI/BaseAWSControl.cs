@@ -92,6 +92,10 @@ namespace Amazon.AWSToolkit.CommonUI
             return null;
         }
 
+        public virtual void OnEditorOpened(bool success)
+        {
+        }
+
         public virtual bool SupportsBackGroundDataLoad => false;
 
         public void ExecuteBackGroundLoadDataLoad()

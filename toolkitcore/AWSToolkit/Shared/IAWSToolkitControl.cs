@@ -21,5 +21,7 @@ namespace Amazon.AWSToolkit.Shared
         object GetInitialData();
 
         bool SupportsDynamicOKEnablement { get; }
+
+        void OnEditorOpened(bool success);
     }
 }

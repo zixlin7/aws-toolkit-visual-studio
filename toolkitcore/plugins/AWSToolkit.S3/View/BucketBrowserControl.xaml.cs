@@ -26,6 +26,7 @@ using Amazon.AWSToolkit.S3.Clipboard;
 using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.Controller;
 using Amazon.AWSToolkit.S3.Jobs;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.S3.View
 {
@@ -75,6 +76,14 @@ namespace Amazon.AWSToolkit.S3.View
         {
             this._controller.StartFetchingObject();            
             return this._controller.Model;
+        }
+
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordS3OpenEditor(new S3OpenEditor()
+            {
+                Result = success ? Result.Succeeded : Result.Failed,
+            });
         }
 
         public BucketBrowserModel Model => this.DataContext as BucketBrowserModel;

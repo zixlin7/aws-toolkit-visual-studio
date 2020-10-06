@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CloudFront.Controller;
 
 using log4net;
@@ -34,6 +35,14 @@ namespace Amazon.AWSToolkit.CloudFront.View
         {
             this._controller.LoadModel();
             return this._controller.Model;
+        }
+
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordCloudfrontOpenStreamingDistribution(new CloudfrontOpenStreamingDistribution()
+            {
+                Result = success ? Result.Succeeded : Result.Failed,
+            });
         }
 
         private void onRefreshClick(object sender, RoutedEventArgs evnt)

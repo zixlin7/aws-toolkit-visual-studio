@@ -11,6 +11,7 @@ using Amazon.AWSToolkit.Lambda.Controller;
 using log4net;
 using Amazon.EC2.Model;
 using Amazon.AWSToolkit.EC2.Model;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.KeyManagementService.Model;
 
 namespace Amazon.AWSToolkit.Lambda.View
@@ -49,6 +50,14 @@ namespace Amazon.AWSToolkit.Lambda.View
         {
             this._controller.LoadModel();
             return this._controller.Model;
+        }
+
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordLambdaConfigure(new LambdaConfigure()
+            {
+                Result = success ? Result.Succeeded : Result.Failed,
+            });
         }
 
         public override void RefreshInitialData(object initialData)

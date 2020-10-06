@@ -9,7 +9,7 @@ using System.Windows.Navigation;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CloudFormation.Controllers;
 using Amazon.AWSToolkit.CloudFormation.View.Components;
-
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
 
 namespace Amazon.AWSToolkit.CloudFormation.View
@@ -120,6 +120,14 @@ namespace Amazon.AWSToolkit.CloudFormation.View
             this.onRefreshClick(this, new RoutedEventArgs());
         }
 
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordCloudformationOpen(new CloudformationOpen()
+            {
+                Result = success ? Result.Succeeded : Result.Failed,
+            });
+        }
+
         void onPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs evnt)
         {
             if (string.Equals(evnt.PropertyName, "TemplateWrapper"))
@@ -192,7 +200,7 @@ namespace Amazon.AWSToolkit.CloudFormation.View
 
 
         void onRefreshClick(object sender, RoutedEventArgs evnt)
-        {            
+        {
             if (Monitor.TryEnter(syncRoot, LOCK_WAIT))
             {
                 refreshed = false;
@@ -254,7 +262,7 @@ namespace Amazon.AWSToolkit.CloudFormation.View
         {
             refreshed = false;
 
-            if(Monitor.TryEnter(syncRoot, LOCK_WAIT))
+            if (Monitor.TryEnter(syncRoot, LOCK_WAIT))
             {
                 try
                 {
@@ -281,8 +289,8 @@ namespace Amazon.AWSToolkit.CloudFormation.View
                             checkIfTerminateAndDisable();
                         }
                         catch (Exception e)
-                        {                            
-                            if(this._controller.Model.Status == CloudFormationConstants.DeleteInProgressStatus)
+                        {
+                            if (this._controller.Model.Status == CloudFormationConstants.DeleteInProgressStatus)
                             {
                                 ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
                                 {
@@ -325,21 +333,21 @@ namespace Amazon.AWSToolkit.CloudFormation.View
                 return;
             }
 
-			if(this._pollingTimer != null)
-			{
-				if (this._controller.Model.Status == CloudFormationConstants.CreateInProgressStatus ||
-					this._controller.Model.Status == CloudFormationConstants.DeleteInProgressStatus ||
+            if (this._pollingTimer != null)
+            {
+                if (this._controller.Model.Status == CloudFormationConstants.CreateInProgressStatus ||
+                    this._controller.Model.Status == CloudFormationConstants.DeleteInProgressStatus ||
                     this._controller.Model.Status == CloudFormationConstants.UpdateInProgressStatus ||
                     this._controller.Model.Status == CloudFormationConstants.UpdateCompleteCleanupInProgressStatus ||
                     this._controller.Model.Status == CloudFormationConstants.UpdateRollbackInProgressStatus ||
                     this._controller.Model.Status == CloudFormationConstants.UpdateRollbackCompleteCleanupInProgressStatus ||
-					this._controller.Model.Status == CloudFormationConstants.RollbackInProgressStatus)			
-					this._pollingTimer.Interval = NON_READY_POLLING;
-				else
-					this._pollingTimer.Interval = READY_POLLING;
+                    this._controller.Model.Status == CloudFormationConstants.RollbackInProgressStatus)
+                    this._pollingTimer.Interval = NON_READY_POLLING;
+                else
+                    this._pollingTimer.Interval = READY_POLLING;
 
-				this._pollingTimer.Enabled = true;
-			}
+                this._pollingTimer.Enabled = true;
+            }
         }
 
         void checkIfTerminateAndDisable()

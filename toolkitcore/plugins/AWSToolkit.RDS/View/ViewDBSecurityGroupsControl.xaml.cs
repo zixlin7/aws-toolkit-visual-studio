@@ -6,7 +6,7 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.RDS.Controller;
 using Amazon.AWSToolkit.RDS.Model;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
-
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
 
 
@@ -90,6 +90,14 @@ namespace Amazon.AWSToolkit.RDS.View
         {
             this._controller.LoadModel();
             return this._controller.Model;
+        }
+
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordRdsOpenSecurityGroups(new RdsOpenSecurityGroups()
+            {
+                Result = success ? Result.Succeeded : Result.Failed,
+            });
         }
 
         void onRefreshClick(object sender, RoutedEventArgs evnt)

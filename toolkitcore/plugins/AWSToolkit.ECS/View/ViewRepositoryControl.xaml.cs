@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Amazon.AWSToolkit.ECS.Controller;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
 
 namespace Amazon.AWSToolkit.ECS.View
@@ -37,7 +38,15 @@ namespace Amazon.AWSToolkit.ECS.View
             this._controller.LoadModel();
             return this._controller.Model;
         }
-
+        
+        public override void OnEditorOpened(bool success)
+        {
+            ToolkitFactory.Instance.TelemetryLogger.RecordEcsOpenRepository(new EcsOpenRepository()
+            {
+                Result = success ? Result.Succeeded : Result.Failed,
+            });
+        }
+        
         void onLoadingRow(object sender, DataGridRowEventArgs e)
         {
             e.Row.Header = (e.Row.GetIndex() + 1).ToString();
