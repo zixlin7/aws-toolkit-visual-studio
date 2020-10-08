@@ -47,7 +47,7 @@
             Margin="8"
             Foreground="Red"
             Visibility="Hidden">
-            Upload Failed. Check progress window for errors.&quot;
+            Upload Failed. Check progress window for errors.
         </TextBlock>
 
         <TextBox
