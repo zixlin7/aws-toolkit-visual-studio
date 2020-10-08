@@ -10,7 +10,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
     public class ModelExtensionMethodsTests
     {
         [Fact]
-        public void AsMetricDatums()
+        public void AsMetricDatums_EpochTimestamp()
         {
             var telemetryMetric = new Metrics()
             {
@@ -22,6 +22,27 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             var metricDatums = telemetryMetric.AsMetricDatums();
             Assert.Equal(telemetryMetric.Data.ToList().Count, metricDatums.Count(x => x.EpochTimestamp == timestamp));
+        }
+
+        [Fact]
+        public void AsMetricDatums_Passive()
+        {
+            var telemetryMetric = new Metrics()
+            {
+                CreatedOn = DateTime.Now,
+                Data = new List<MetricDatum>()
+                {
+                    TestHelper.CreateSampleMetricDatum(2),
+                    TestHelper.CreateSampleMetricDatum(2),
+                }
+            };
+
+            telemetryMetric.Data[0].Passive = false;
+            telemetryMetric.Data[1].Passive = true;
+
+            var metricDatums = telemetryMetric.AsMetricDatums();
+            Assert.False(metricDatums[0].Passive);
+            Assert.True(metricDatums[1].Passive);
         }
     }
 

@@ -24,6 +24,7 @@ namespace Amazon.AWSToolkit.Telemetry
                 MetricName = eventData.MetricName,
                 Unit = new ToolkitTelemetry.Unit(eventData.Unit.Value),
                 Value = eventData.Value,
+                Passive = eventData.Passive,
                 EpochTimestamp = epochTimestamp,
                 Metadata = eventData.Metadata.Select(kvp => new MetadataEntry {Key = kvp.Key, Value = kvp.Value})
                     .ToList(),

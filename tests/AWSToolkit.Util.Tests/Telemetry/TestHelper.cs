@@ -19,6 +19,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
             {
                 MetricName = Guid.NewGuid().ToString(),
                 Unit = Unit.Count,
+                Passive = false,
                 Value = Randomizer.NextDouble(),
             };
             Enumerable.Range(1, metadataCount).ToList().ForEach(x =>
