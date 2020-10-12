@@ -1,18 +1,25 @@
-﻿using System.Collections.Generic;
-using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.CloudFormation.Nodes;
 using Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers;
+using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
+using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
+using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.PluginServices.Deployment;
+using System.Collections.Generic;
 
 namespace Amazon.AWSToolkit.CloudFormation.Controllers
 {
     public class CreateStackController : BaseStackController
     {
         CloudFormationRootViewModel _rootModel;
+
+        public CreateStackController()
+            : base(ToolkitFactory.Instance.TelemetryLogger)
+        {
+        }
+
         public override ActionResults Execute(IViewModel model)
         {
             this._rootModel = model as CloudFormationRootViewModel;

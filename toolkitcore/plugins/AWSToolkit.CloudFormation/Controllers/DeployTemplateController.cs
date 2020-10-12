@@ -1,19 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
-using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers;
-
-using Amazon.CloudFormation;
+using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
+using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
+using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.PluginServices.Deployment;
+using Amazon.CloudFormation;
+using System;
+using System.Collections.Generic;
 
 namespace Amazon.AWSToolkit.CloudFormation.Controllers
 {
     public class DeployTemplateController : BaseStackController
     {
+        public DeployTemplateController(ITelemetryLogger telemetryLogger)
+            : base(telemetryLogger)
+        {
+        }
+
         public DeployedTemplateData Execute(string templatePath, IDictionary<string, object> seedProperties, string templateName)
         {
             DeployedTemplateData persistableData = null;

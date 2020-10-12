@@ -68,7 +68,7 @@ namespace Amazon.AWSToolkit.CloudFormation
 
         public DeployedTemplateData DeployCloudFormationTemplate(string filepath, IDictionary<string, object> seedParameters)
         {
-            var controller = new DeployTemplateController();
+            var controller = new DeployTemplateController(ToolkitFactory.Instance.TelemetryLogger);
             return controller.Execute(filepath, seedParameters, new FileInfo(filepath).Name);
         }
 

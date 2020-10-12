@@ -330,7 +330,7 @@
       <Version>0.0.67</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>0.0.67</Version>
+      <Version>0.0.71</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CognitoIdentity">
       <Version>3.3.101.50</Version>

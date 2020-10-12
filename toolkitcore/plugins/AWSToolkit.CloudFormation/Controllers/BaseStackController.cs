@@ -1,18 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
-using Amazon.AWSToolkit.Account;
+using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Amazon.AWSToolkit.CloudFormation.Controllers
 {
     public abstract class BaseStackController : BaseContextCommand
     {
+        private readonly ITelemetryLogger _telemetryLogger;
+
+        protected BaseStackController(ITelemetryLogger telemetryLogger)
+        {
+            _telemetryLogger = telemetryLogger;
+        }
+
         public override ActionResults Execute(IViewModel model)
         {
             return new ActionResults().WithSuccess(true);
@@ -20,37 +29,52 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
         protected ActionResults UpdateStack(Account.AccountViewModel account, RegionEndPointsManager.RegionEndPoints region, Dictionary<string, object> collectedProperties)
         {
-            var wrapper = collectedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate] as CloudFormationTemplateWrapper;
-            if (wrapper == null)
-                return new ActionResults().WithSuccess(false);
+            var deployResult = Result.Failed;
 
             try
             {
+                var wrapper = collectedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate] as CloudFormationTemplateWrapper;
+                if (wrapper == null)
+                {
+                    return new ActionResults().WithSuccess(false);
+                }
+
                 var cfClient = account.CreateServiceClient<AmazonCloudFormationClient>(region);
                 var request = new UpdateStackRequest()
                 {
-                    StackName = collectedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName] as string,
-                    Capabilities = new List<string>() { "CAPABILITY_IAM", "CAPABILITY_NAMED_IAM" }
+                    StackName = collectedProperties[
+                        DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName] as string,
+                    Capabilities = new List<string>() {"CAPABILITY_IAM", "CAPABILITY_NAMED_IAM"}
                 };
-                
-                if (collectedProperties.ContainsKey(DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplateName))
+
+                if (collectedProperties.ContainsKey(DeploymentWizardProperties.DeploymentTemplate
+                    .propkey_SelectedTemplateName))
                 {
-                    string templateName = collectedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplateName] as string;
-                    request.TemplateURL = Util.CloudFormationUtil.UploadTemplateToS3(account, region, wrapper.TemplateContent, templateName, request.StackName);
+                    string templateName =
+                        collectedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplateName]
+                            as string;
+                    request.TemplateURL = Util.CloudFormationUtil.UploadTemplateToS3(account, region,
+                        wrapper.TemplateContent, templateName, request.StackName);
                 }
                 else
                 {
                     request.TemplateBody = wrapper.TemplateContent;
                 }
 
-                if (collectedProperties.ContainsKey(CloudFormationDeploymentWizardProperties.TemplateParametersProperties.propkey_TemplateParameterValues))
+                if (collectedProperties.ContainsKey(CloudFormationDeploymentWizardProperties
+                    .TemplateParametersProperties.propkey_TemplateParameterValues))
                 {
-                    var setParamterValues = collectedProperties[CloudFormationDeploymentWizardProperties.TemplateParametersProperties.propkey_TemplateParameterValues] as Dictionary<string, CloudFormationTemplateWrapper.TemplateParameter>;
+                    var setParamterValues =
+                        collectedProperties[
+                                CloudFormationDeploymentWizardProperties.TemplateParametersProperties
+                                    .propkey_TemplateParameterValues] as
+                            Dictionary<string, CloudFormationTemplateWrapper.TemplateParameter>;
                     if (setParamterValues != null)
                     {
                         foreach (var kvp in setParamterValues)
                         {
-                            var parameter = new Parameter() { ParameterKey = kvp.Key, ParameterValue = kvp.Value.OverrideValue };
+                            var parameter = new Parameter()
+                                {ParameterKey = kvp.Key, ParameterValue = kvp.Value.OverrideValue};
                             request.Parameters.Add(parameter);
                         }
                     }
@@ -82,25 +106,35 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                 {
                     ToolkitFactory.Instance.ShellProvider.UpdateStatus("Updating Stack");
                     cfClient.UpdateStack(request);
+                    deployResult = Result.Succeeded;
                 }
 
-                return new ActionResults().WithSuccess(true).WithFocalname(request.StackName).WithRunDefaultAction(true);
+                return new ActionResults().WithSuccess(true).WithFocalname(request.StackName)
+                    .WithRunDefaultAction(true);
             }
             catch (Exception e)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error updating stack: " + e.Message);
                 return new ActionResults().WithSuccess(false);
             }
+            finally
+            {
+                RecordDeployMetric(deployResult, region.SystemName, initialDeploy: false);
+            }
         }
 
         protected ActionResults CreateStack(Account.AccountViewModel account, RegionEndPointsManager.RegionEndPoints region, Dictionary<string, object> collectedProperties)
         {
-            var wrapper = collectedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate] as CloudFormationTemplateWrapper;
-            if (wrapper == null)
-                return new ActionResults().WithSuccess(false);
+            var deployResult = Result.Failed;
 
             try
             {
+                var wrapper = collectedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate] as CloudFormationTemplateWrapper;
+                if (wrapper == null)
+                {
+                    return new ActionResults().WithSuccess(false);
+                }
+
                 var cfClient = account.CreateServiceClient<AmazonCloudFormationClient>(region);
                 var request = new CreateStackRequest()
                 {
@@ -172,6 +206,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                 {
                     ToolkitFactory.Instance.ShellProvider.UpdateStatus("Creating Stack");
                     cfClient.CreateStack(request);
+                    deployResult = Result.Succeeded;
                 }
 
                 return new ActionResults().WithSuccess(true).WithFocalname(request.StackName).WithRunDefaultAction(true);
@@ -180,6 +215,10 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error creating stack: " + e.Message);
                 return new ActionResults().WithSuccess(false);
+            }
+            finally
+            {
+                RecordDeployMetric(deployResult, region.SystemName, initialDeploy: true);
             }
         }
 
@@ -269,6 +308,16 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             }
 
             return persistableData;
+        }
+
+        private void RecordDeployMetric(Result deployResult, string regionId, bool initialDeploy)
+        {
+            _telemetryLogger.RecordCloudformationDeploy(new CloudformationDeploy()
+            {
+                Result = deployResult,
+                RegionId = regionId,
+                InitialDeploy = initialDeploy,
+            });
         }
     }
 }
