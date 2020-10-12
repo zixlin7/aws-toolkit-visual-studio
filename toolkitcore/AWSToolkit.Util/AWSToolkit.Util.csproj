@@ -83,6 +83,7 @@
     <Compile Include="Telemetry\Internal\TelemetryClient.cs" />
     <Compile Include="Telemetry\Internal\TelemetryPublisher.cs" />
     <Compile Include="Telemetry\TelemetryService.cs" />
+    <Compile Include="Telemetry\ToolkitTelemetryEvents.generated.cs" />
     <Compile Include="ToolkitSettingsConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="S3FileFetcher.cs" />

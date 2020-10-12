@@ -91,6 +91,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\LambdaDeploymentMetrics.cs" />
     <Compile Include="Util\LambdaTesterInstaller.cs" />
+    <Compile Include="Util\MetricsUtils.cs" />
     <Compile Include="View\AddEventSourceControl.xaml.cs">
       <DependentUpon>AddEventSourceControl.xaml</DependentUpon>
     </Compile>

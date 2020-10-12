@@ -1,0 +1,10 @@
+{
+    "types": [],
+    "metrics": [
+        {
+            "name": "serverlessapplication_deploy",
+            "description": "Called when deploying a Serverless Application Project",
+            "metadata": [{ "type": "result" }, { "type": "regionId" }]
+        }
+    ]
+}

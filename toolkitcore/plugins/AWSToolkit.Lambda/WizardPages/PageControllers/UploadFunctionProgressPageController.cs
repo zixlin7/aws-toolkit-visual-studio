@@ -174,7 +174,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             }
 
 
-            var worker = new PublishServerlessApplicationWorker(this, s3Client, cloudFormationClient, settings);
+            var worker = new PublishServerlessApplicationWorker(this, s3Client, cloudFormationClient, settings,
+                ToolkitFactory.Instance.TelemetryLogger);
 
             ThreadPool.QueueUserWorkItem(x =>
             {

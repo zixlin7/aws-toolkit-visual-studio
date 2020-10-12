@@ -1,23 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using Amazon.S3;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Exceptions;
+using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.CloudFormation;
-
-using log4net;
-
 using Amazon.Common.DotNetCli.Tools;
 using Amazon.Lambda.Tools.Commands;
-
-using Amazon.AWSToolkit.Exceptions;
-using Amazon.AWSToolkit.Account;
-using System.IO;
-using Amazon.AWSToolkit.Lambda.Util;
+using Amazon.S3;
+using log4net;
+using System;
+using System.Collections.Generic;
 
 namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 {
     public class PublishServerlessApplicationWorker
     {
         ILog LOGGER = LogManager.GetLogger(typeof(UploadGenericWorker));
+
+        private readonly ITelemetryLogger _telemetryLogger;
 
         PublishServerlessApplicationWorkerSettings Settings { get; }
         ILambdaFunctionUploadHelpers Helpers { get; }
@@ -26,21 +26,19 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
         IAmazonS3 S3Client { get; }
 
         public PublishServerlessApplicationWorker(ILambdaFunctionUploadHelpers helpers, IAmazonS3 s3Client, IAmazonCloudFormation cloudFormationClient,
-            PublishServerlessApplicationWorkerSettings settings)
+            PublishServerlessApplicationWorkerSettings settings,
+            ITelemetryLogger telemetryLogger)
         {
             this.Helpers = helpers;
             this.S3Client = s3Client;
             this.CloudFormationClient = cloudFormationClient;
             this.Settings = settings;
+            this._telemetryLogger = telemetryLogger;
         }
 
         public void Publish()
         {
             var logger = new UploadNETCoreWorker.DeployToolLogger(Helpers);
-
-            var lambdaDeploymentMetrics =
-                new LambdaDeploymentMetrics(LambdaDeploymentMetrics.LambdaPublishMethod.Serverless,
-                    Settings.Framework);
 
             try
             {
@@ -62,6 +60,11 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
                 if (command.ExecuteAsync().Result)
                 {
+                    _telemetryLogger.RecordServerlessApplicationDeploy(
+                        Result.Succeeded,
+                        Settings.Region.SystemName
+                    );
+
                     this.Helpers.PublishServerlessAsyncCompleteSuccess(this.Settings);
                 }
                 else
@@ -79,20 +82,20 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             }
             catch (ToolsException e)
             {
-                lambdaDeploymentMetrics.QueueDeploymentFailure(e.Code, e.ServiceCode);
+                _telemetryLogger.RecordServerlessApplicationDeploy(Result.Failed, Settings.Region.SystemName);
                 this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
             }
             catch (ToolkitException e)
             {
                 logger.WriteLine(e.Message);
-                lambdaDeploymentMetrics.QueueDeploymentFailure(e.Code, e.ServiceErrorCode, e.ServiceStatusCode);
+                _telemetryLogger.RecordServerlessApplicationDeploy(Result.Failed, Settings.Region.SystemName);
                 this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
             }
             catch (Exception e)
             {
                 logger.WriteLine(e.Message);
                 LOGGER.Error("Error publishing AWS Serverless application.", e);
-                lambdaDeploymentMetrics.QueueDeploymentFailure(ToolkitException.CommonErrorCode.UnexpectedError.ToString(), null);
+                _telemetryLogger.RecordServerlessApplicationDeploy(Result.Failed, Settings.Region.SystemName);
                 this.Helpers.UploadFunctionAsyncCompleteError("Error publishing AWS Serverless application");
             }
         }

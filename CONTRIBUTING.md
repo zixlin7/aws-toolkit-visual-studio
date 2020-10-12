@@ -63,6 +63,10 @@ At this time, unit and component-level tests are available. UI Tests have not be
 
 Tests are run as part of the build steps in msbuild. You can also run tests from within Visual Studio by using the Test Explorer.
 
+### Adding Metrics
+
+Instructions for how to prototype and develop metrics specific to this Toolkit can be found on the [Toolkit Common repo](https://github.com/aws/aws-toolkit-common/tree/master/telemetry).
+
 ### Known Issues
 
 -   The Toolkit currently does not compile under Visual Studio 2019
