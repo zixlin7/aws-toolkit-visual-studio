@@ -90,10 +90,16 @@ namespace Amazon.AWSToolkit.ECS.WizardPages
             }
         }
 
-        internal static bool IsFargateLaunch(this IAWSWizard hostWizard)
+        public static bool IsFargateLaunch(this IAWSWizard hostWizard)
         {
             var launchType = hostWizard[PublishContainerToAWSWizardProperties.LaunchType] as string;
             return string.Equals(launchType, Amazon.ECS.LaunchType.FARGATE, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static bool IsEc2Launch(this IAWSWizard hostWizard)
+        {
+            var launchType = hostWizard[PublishContainerToAWSWizardProperties.LaunchType] as string;
+            return string.Equals(launchType, Amazon.ECS.LaunchType.EC2, StringComparison.OrdinalIgnoreCase);
         }
 
 

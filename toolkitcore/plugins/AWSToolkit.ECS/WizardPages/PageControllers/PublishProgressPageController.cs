@@ -101,21 +101,24 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
             bool persistSettings = false;
             if (HostingWizard[PublishContainerToAWSWizardProperties.PersistSettingsToConfigFile] is bool)
-                persistSettings = (bool)HostingWizard[PublishContainerToAWSWizardProperties.PersistSettingsToConfigFile];
+            {
+                persistSettings =
+                    (bool) HostingWizard[PublishContainerToAWSWizardProperties.PersistSettingsToConfigFile];
+            }
 
             WaitCallback threadPoolWorker = null;
+
+            var state = new EcsDeployState
+            {
+                Account = account,
+                Region = region,
+                HostingWizard = this.HostingWizard,
+                WorkingDirectory = workingDirectory,
+                PersistConfigFile = persistSettings
+            };
+
             if (mode == Constants.DeployMode.PushOnly)
             {
-                var state = new PushImageToECRWorker.State
-                {
-                    Account = account,
-                    Region = region,
-                    HostingWizard = this.HostingWizard,
-
-                    WorkingDirectory = workingDirectory,
-                    PersistConfigFile = persistSettings
-                };
-
                 var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECR_ENDPOINT_LOOKUP));
 
                 var worker = new PushImageToECRWorker(this, ecrClient);
@@ -123,18 +126,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             }
             else if(mode == Constants.DeployMode.DeployService)
             {
-                var state = new DeployServiceWorker.State
-                {
-                    Account = account,
-                    Region = region,
-                    WorkingDirectory = workingDirectory,
-                    HostingWizard = this.HostingWizard,
-
-
-                    PersistConfigFile = persistSettings
-                };
-
-
                 var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECR_ENDPOINT_LOOKUP));
                 var ecsClient = state.Account.CreateServiceClient<AmazonECSClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP));
                 var elbClient = state.Account.CreateServiceClient<AmazonElasticLoadBalancingV2Client>(state.Region.GetEndpoint(RegionEndPointsManager.ELB_SERVICE_NAME));
@@ -147,17 +138,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             }
             else if(mode == Constants.DeployMode.ScheduleTask)
             {
-                var state = new DeployScheduleTaskWorker.State
-                {
-                    Account = account,
-                    Region = region,
-                    WorkingDirectory = workingDirectory,
-                    HostingWizard = this.HostingWizard,
-
-
-                    PersistConfigFile = persistSettings
-                };
-
                 var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECR_ENDPOINT_LOOKUP));
                 var ecsClient = state.Account.CreateServiceClient<AmazonECSClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP));
                 var iamClient = state.Account.CreateServiceClient<AmazonIdentityManagementServiceClient>(state.Region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME));
@@ -169,23 +149,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             }
             else if(mode == Constants.DeployMode.RunTask)
             {
-                var state = new DeployTaskWorker.State
-                {
-                    Account = account,
-                    Region = region,
-                    WorkingDirectory = workingDirectory,
-                    HostingWizard = this.HostingWizard,
-
-
-                    PersistConfigFile = persistSettings
-                };
-
                 var ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECR_ENDPOINT_LOOKUP));
                 var ecsClient = state.Account.CreateServiceClient<AmazonECSClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP));
                 var iamClient = state.Account.CreateServiceClient<AmazonIdentityManagementServiceClient>(state.Region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME));
                 var cweClient = state.Account.CreateServiceClient<AmazonCloudWatchEventsClient>(state.Region.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_EVENT_SERVICE_NAME));
                 var cwlClient = state.Account.CreateServiceClient<AmazonCloudWatchLogsClient>(state.Region.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_LOGS_NAME));
-
 
                 var worker = new DeployTaskWorker(this, ecrClient, ecsClient, iamClient, cwlClient);
                 threadPoolWorker = x => worker.Execute(state);
@@ -218,26 +186,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             }));
         }
 
-        public void SendCompleteSuccessAsync(DeployScheduleTaskWorker.State state)
+        public void SendCompleteSuccessAsync(EcsDeployState state)
         {
             AddECSTools(state.PersistConfigFile.GetValueOrDefault());
             DefaultSuccessFinish();
             LoadClusterView(state.HostingWizard);
-        }
-
-        public void SendCompleteSuccessAsync(DeployTaskWorker.State state)
-        {
-            AddECSTools(state.PersistConfigFile.GetValueOrDefault());
-            DefaultSuccessFinish();
-            LoadClusterView(state.HostingWizard);
-        }
-
-        public void SendCompleteSuccessAsync(DeployServiceWorker.State state)
-        {
-            AddECSTools(state.PersistConfigFile.GetValueOrDefault());
-            DefaultSuccessFinish();
-            LoadClusterView(state.HostingWizard);
-
         }
 
         private void LoadClusterView(IAWSWizard hostingWizard)
@@ -286,7 +239,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         }
 
-        public void SendCompleteSuccessAsync(PushImageToECRWorker.State state)
+        public void SendImagePushCompleteSuccessAsync(EcsDeployState state)
         {
             AddECSTools(state.PersistConfigFile.GetValueOrDefault());
             DefaultSuccessFinish();

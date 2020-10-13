@@ -4,11 +4,9 @@
     {
         void AppendUploadStatus(string message, params object[] tokens);
 
-        void SendCompleteSuccessAsync(PushImageToECRWorker.State state);
+        void SendImagePushCompleteSuccessAsync(EcsDeployState state);
 
-        void SendCompleteSuccessAsync(DeployServiceWorker.State state);
-        void SendCompleteSuccessAsync(DeployScheduleTaskWorker.State state);
-        void SendCompleteSuccessAsync(DeployTaskWorker.State state);
+        void SendCompleteSuccessAsync(EcsDeployState state);
 
         void SendCompleteErrorAsync(string message);
     }

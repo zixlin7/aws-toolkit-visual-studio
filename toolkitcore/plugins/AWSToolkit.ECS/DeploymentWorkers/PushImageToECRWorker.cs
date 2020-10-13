@@ -1,60 +1,61 @@
-﻿using System;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.ECR;
 using Amazon.ECS.Tools.Commands;
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.MobileAnalytics;
-using Amazon.Common.DotNetCli.Tools;
+using log4net;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
-    public class PushImageToECRWorker : BaseWorker
+    public class PushImageToECRWorker : BaseWorker, IEcsDeploy
     {
-        IAmazonECR _ecrClient;
+        static readonly ILog Logger = LogManager.GetLogger(typeof(DeployTaskWorker));
+
+        readonly IAmazonECR _ecrClient;
+        readonly ITelemetryLogger _telemetryLogger;
 
         public PushImageToECRWorker(IDockerDeploymentHelper helper, IAmazonECR ecrClient)
+            : this(helper, ecrClient, ToolkitFactory.Instance.TelemetryLogger)
+        {
+        }
+
+        public PushImageToECRWorker(IDockerDeploymentHelper helper, IAmazonECR ecrClient,
+            ITelemetryLogger telemetryLogger)
             : base(helper, null)
         {
             this._ecrClient = ecrClient;
+            this._telemetryLogger = telemetryLogger;
         }
 
-        public void Execute(State state)
+        public void Execute(EcsDeployState state)
         {
+            Execute(state, this);
+        }
+
+        /// <summary>
+        /// Overload is for use in tests
+        /// </summary>
+        public void Execute(EcsDeployState state, IEcsDeploy ecsDeploy)
+        {
+            Result deployResult = Result.Failed;
+
             try
             {
-                var command = new PushDockerImageCommand(new ECSToolLogger(this.Helper), state.WorkingDirectory, new string[0])
+                if (ecsDeploy.Deploy(state).Result)
                 {
-                    Profile = state.Account.Name,
-                    Region = state.Region.SystemName,
+                    deployResult = Result.Succeeded;
 
-                    DisableInteractive = true,
-                    ECRClient = this._ecrClient,
-
-                    PushDockerImageProperties = ConvertToPushDockerImageProperties(state.HostingWizard),
-
-                    PersistConfigFile = state.PersistConfigFile
-                };
-
-                if (command.ExecuteAsync().Result)
-                {
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.ECSPushImage, "Success");
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
-                    this.Helper.SendCompleteSuccessAsync(state);
+                    this.Helper.SendImagePushCompleteSuccessAsync(state);
                     if (state.PersistConfigFile.GetValueOrDefault())
+                    {
                         base.PersistDeploymentMode(state.HostingWizard);
+                    }
                 }
                 else
                 {
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.ECSPushImage, command.LastToolsException is ToolsException ? ((ToolsException)command.LastToolsException).Code.ToString() : "Unknown");
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
-                    if (command.LastToolsException != null)
-                        this.Helper.SendCompleteErrorAsync("Error publishing container to AWS: " + command.LastToolsException.Message);
-                    else
-                        this.Helper.SendCompleteErrorAsync("Unknown error publishing container to AWS");
+                    this.Helper.SendCompleteErrorAsync("ECR image publish failed");
                 }
             }
             catch (Exception e)
@@ -62,19 +63,55 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 LOGGER.Error("Error pushing to ECR repository.", e);
                 this.Helper.SendCompleteErrorAsync("Error pushing to ECR repository: " + e.Message);
             }
+            finally
+            {
+                EmitImageDeploymentMetric(state.Region.SystemName, deployResult);
+            }
         }
 
-
-        public class State
+        private void EmitImageDeploymentMetric(string region, Result deployResult)
         {
-            public AccountViewModel Account { get; set; }
-            public RegionEndPointsManager.RegionEndPoints Region { get; set; }
+            try
+            {
+                _telemetryLogger.RecordEcrDeployImage(new EcrDeployImage()
+                {
+                    Result = deployResult,
+                    RegionId = region,
+                });
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Error logging metric", e);
+                Debug.Assert(false, $"Unexpected error while logging deployment metric: {e.Message}");
+            }
+        }
 
-            public IAWSWizard HostingWizard { get; set; }
+        async Task<bool> IEcsDeploy.Deploy(EcsDeployState state)
+        {
+            var command = new PushDockerImageCommand(new ECSToolLogger(this.Helper), state.WorkingDirectory, new string[0])
+            {
+                Profile = state.Account.Name,
+                Region = state.Region.SystemName,
 
-            public string WorkingDirectory { get; set; }
+                DisableInteractive = true,
+                ECRClient = this._ecrClient,
 
-            public bool? PersistConfigFile { get; set; }
+                PushDockerImageProperties = ConvertToPushDockerImageProperties(state.HostingWizard),
+
+                PersistConfigFile = state.PersistConfigFile
+            };
+
+            var result = await command.ExecuteAsync();
+
+            if (!result)
+            {
+                string errorContents = command.LastToolsException?.Message ?? "Unknown";
+                string errorMessage = $"Error publishing container to AWS: {errorContents}";
+
+                Helper.AppendUploadStatus(errorMessage);
+            }
+
+            return result;
         }
     }
 }

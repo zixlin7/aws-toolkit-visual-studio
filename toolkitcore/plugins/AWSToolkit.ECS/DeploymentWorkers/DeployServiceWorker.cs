@@ -1,5 +1,10 @@
-﻿using Amazon.AWSToolkit.Account;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.ECS.Util;
+using Amazon.AWSToolkit.ECS.WizardPages;
+using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.CloudWatchLogs;
 using Amazon.EC2;
 using Amazon.EC2.Model;
 using Amazon.ECR;
@@ -10,26 +15,26 @@ using Amazon.ElasticLoadBalancingV2;
 using Amazon.ElasticLoadBalancingV2.Model;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
+using log4net;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-
-using Amazon.AWSToolkit.ECS.WizardPages;
-using Amazon.AWSToolkit.MobileAnalytics;
-using Amazon.Common.DotNetCli.Tools;
-using Amazon.CloudWatchLogs;
+using System.Threading.Tasks;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
-    public class DeployServiceWorker : BaseWorker
+    public class DeployServiceWorker : BaseWorker, IEcsDeploy
     {
-        IAmazonECR _ecrClient;
-        IAmazonECS _ecsClient;
-        IAmazonEC2 _ec2Client;
-        IAmazonElasticLoadBalancingV2 _elbClient;
-        IAmazonCloudWatchLogs _cwlClient;
+        static readonly ILog Logger = LogManager.GetLogger(typeof(DeployServiceWorker));
 
+        private readonly IAmazonECR _ecrClient;
+        private readonly IAmazonECS _ecsClient;
+        private readonly IAmazonEC2 _ec2Client;
+        private readonly IAmazonElasticLoadBalancingV2 _elbClient;
+        private readonly IAmazonCloudWatchLogs _cwlClient;
+        private readonly ITelemetryLogger _telemetryLogger;
 
         public DeployServiceWorker(IDockerDeploymentHelper helper,
             IAmazonECR ecrClient,
@@ -38,6 +43,19 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             IAmazonElasticLoadBalancingV2 elbClient,
             IAmazonIdentityManagementService iamClient,
             IAmazonCloudWatchLogs cwlClient)
+            : this(helper, ecrClient, ecsClient, ec2Client, elbClient, iamClient, cwlClient,
+                ToolkitFactory.Instance.TelemetryLogger)
+        {
+        }
+
+        public DeployServiceWorker(IDockerDeploymentHelper helper,
+            IAmazonECR ecrClient,
+            IAmazonECS ecsClient,
+            IAmazonEC2 ec2Client,
+            IAmazonElasticLoadBalancingV2 elbClient,
+            IAmazonIdentityManagementService iamClient,
+            IAmazonCloudWatchLogs cwlClient,
+            ITelemetryLogger telemetryLogger)
             : base(helper, iamClient)
         {
             this._ecrClient = ecrClient;
@@ -45,119 +63,46 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             this._ec2Client = ec2Client;
             this._elbClient = elbClient;
             this._cwlClient = cwlClient;
+            this._telemetryLogger = telemetryLogger;
         }
 
-        public void Execute(State state)
+        public void Execute(EcsDeployState state)
         {
-            ConfigureLoadBalancerChangeTracker elbChanges = null;
+            Execute(state, this);
+        }
+
+        /// <summary>
+        /// Overload is for use in tests
+        /// </summary>
+        public void Execute(EcsDeployState state, IEcsDeploy ecsDeploy)
+        {
+            Result deployResult = Result.Failed;
+
             try
             {
-
-                var command = new DeployServiceCommand(new ECSToolLogger(this.Helper), state.WorkingDirectory, new string[0])
+                if (ecsDeploy.Deploy(state).Result)
                 {
-                    Profile = state.Account.Name,
-                    Region = state.Region.SystemName,
+                    deployResult = Result.Succeeded;
 
-                    DisableInteractive = true,
-                    ECRClient = this._ecrClient,
-                    ECSClient = this._ecsClient,
-                    CWLClient = this._cwlClient,
-
-                    PushDockerImageProperties = ConvertToPushDockerImageProperties(state.HostingWizard),
-                    TaskDefinitionProperties = ConvertToTaskDefinitionProperties(state.HostingWizard),
-                    DeployServiceProperties = ConvertToDeployServiceProperties(state.HostingWizard),
-                    ClusterProperties = ConvertToClusterProperties(state.HostingWizard),
-
-                    PersistConfigFile = state.PersistConfigFile
-                };
-
-                if ( !string.IsNullOrEmpty(command.ClusterProperties?.LaunchType))
-                {
-                    ToolkitEvent evnt = new ToolkitEvent();
-                    evnt.AddProperty(AttributeKeys.ECSLaunchType, command.ClusterProperties.LaunchType);
-                    SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-                }
-
-                elbChanges = ConfigureLoadBalancer(state);
-                if(!elbChanges.Success)
-                {
-                    throw new Exception(elbChanges.ErrorMessage);
-                }
-
-
-
-                if (elbChanges.CreatedServiceIAMRole)
-                {
-                    command.DeployServiceProperties.ELBServiceRole = elbChanges.ServiceIAMRole;
-                }
-                else
-                {
-                    command.DeployServiceProperties.ELBServiceRole = state.HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] as string;
-                }
-
-                if ((state.HostingWizard[PublishContainerToAWSWizardProperties.ShouldConfigureELB] is bool) &&
-                    ((bool)state.HostingWizard[PublishContainerToAWSWizardProperties.ShouldConfigureELB]))
-                {
-                    if (state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup] is bool &&
-                        ((bool)state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup]))
-                    {
-                        command.DeployServiceProperties.ELBTargetGroup = elbChanges.TargetGroup;
-
-                        // TODO Figure out container port
-                        command.DeployServiceProperties.ELBContainerPort = 80;
-                    }
-                    else if (state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] != null &&
-                        !string.IsNullOrEmpty(state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup].ToString()))
-                    {
-                        command.DeployServiceProperties.ELBTargetGroup =
-                            state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup].ToString();
-
-                        // TODO Figure out container port
-                        command.DeployServiceProperties.ELBContainerPort = 80;
-                    }
-                }
-                else
-                {
-                    command.OverrideIgnoreTargetGroup = true;
-                }
-
-                if (command.ExecuteAsync().Result)
-                {
                     this.Helper.SendCompleteSuccessAsync(state);
                     if (state.PersistConfigFile.GetValueOrDefault())
+                    {
                         base.PersistDeploymentMode(state.HostingWizard);
+                    }
                 }
                 else
                 {
-                    CleanupELBResources(elbChanges);
-                    if (command.LastToolsException != null)
-                    {
-                        ToolkitEvent evnt = new ToolkitEvent();
-                        evnt.AddProperty(AttributeKeys.ECSDeployService, command.LastToolsException is ToolsException ? ((ToolsException)command.LastToolsException).Code.ToString() : "Unknown");
-                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-                        this.Helper.SendCompleteErrorAsync("Error publishing container to AWS: " + command.LastToolsException.Message);
-                    }
-                    else
-                    {
-                        ToolkitEvent evnt = new ToolkitEvent();
-                        evnt.AddProperty(AttributeKeys.ECSDeployService, "Success");
-                        SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-                        this.Helper.SendCompleteErrorAsync("Unknown error publishing container to AWS");
-                    }
+                    this.Helper.SendCompleteErrorAsync("ECS Service deployment failed");
                 }
             }
             catch (Exception e)
             {
-                ToolkitEvent evnt = new ToolkitEvent();
-                evnt.AddProperty(AttributeKeys.ECSDeployService, "Unknown");
-                SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
-
-                if (elbChanges != null)
-                {
-                    CleanupELBResources(elbChanges);
-                    LOGGER.Error("Error deploying to ECS Cluster.", e);
-                    this.Helper.SendCompleteErrorAsync("Error deploying to ECS Cluster: " + e.Message);
-                }
+                LOGGER.Error("Error deploying ECS Service.", e);
+                this.Helper.SendCompleteErrorAsync("Error deploying ECS Service: " + e.Message);
+            }
+            finally
+            {
+                EmitTaskDeploymentMetric(state.Region.SystemName, deployResult, state.HostingWizard);
             }
         }
 
@@ -192,7 +137,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
         }
 
-        private string GenerateIAMRoleName(State state)
+        private string GenerateIAMRoleName(EcsDeployState state)
         {
             var baseName = "ecsServiceRole" + "-" + state.HostingWizard[PublishContainerToAWSWizardProperties.ClusterName];
 
@@ -216,7 +161,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             }
         }
 
-        private ConfigureLoadBalancerChangeTracker ConfigureLoadBalancer(State state)
+        private ConfigureLoadBalancerChangeTracker ConfigureLoadBalancer(EcsDeployState state)
         {
             var changeTracker = new ConfigureLoadBalancerChangeTracker();
             try
@@ -455,7 +400,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             return changeTracker;
         }
 
-        private List<string> DetermineSubnets(State state)
+        private List<string> DetermineSubnets(EcsDeployState state)
         {
             this.Helper.AppendUploadStatus("Determing subnets for new Application Load Balancer");
             var allSubnets = this._ec2Client.DescribeSubnets(new DescribeSubnetsRequest
@@ -485,7 +430,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             return selectedSubnets;
         }
 
-        private List<string> AssignELBSecurityGroupToEC2SecurityGroup(State state, string elbSecurityGroupId)
+        private List<string> AssignELBSecurityGroupToEC2SecurityGroup(EcsDeployState state, string elbSecurityGroupId)
         {
             List<string> groupIds = new List<string>();
 
@@ -555,7 +500,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             return groupIds;
         }
 
-        private string CreateSecurityGroup(State state)
+        private string CreateSecurityGroup(EcsDeployState state)
         {
             this.Helper.AppendUploadStatus("Fetching existing security groups to determine a new unique security group name");
             var existingSecurityGroups = this._ec2Client.DescribeSecurityGroups(new DescribeSecurityGroupsRequest
@@ -622,7 +567,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             return groupId;
         }
 
-        private void OpenListenerPort(State state, ConfigureLoadBalancerChangeTracker changes)
+        private void OpenListenerPort(EcsDeployState state, ConfigureLoadBalancerChangeTracker changes)
         {
             var loadBalancerArn = changes.CreatedLoadBalancer ? changes.LoadBalancer : state.HostingWizard[PublishContainerToAWSWizardProperties.LoadBalancer] as string;
             var loadBalancers = this._elbClient.DescribeLoadBalancers(new DescribeLoadBalancersRequest { LoadBalancerArns = new List<string> { loadBalancerArn } }).LoadBalancers;
@@ -821,16 +766,114 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             }
         }
 
-
-        public class State
+        private void EmitTaskDeploymentMetric(string region, Result deployResult, IAWSWizard awsWizard)
         {
-            public AccountViewModel Account { get; set; }
-            public RegionEndPointsManager.RegionEndPoints Region { get; set; }
-            public string WorkingDirectory { get; set; }
-            public IAWSWizard HostingWizard { get; set; }
+            try
+            {
+                _telemetryLogger.RecordEcsDeployService(new EcsDeployService()
+                {
+                    Result = deployResult,
+                    EcsLaunchType = EcsTelemetryUtils.GetMetricsEcsLaunchType(awsWizard),
+                    RegionId = region,
+                });
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Error logging metric", e);
+                Debug.Assert(false, $"Unexpected error while logging deployment metric: {e.Message}");
+            }
+        }
 
-            public bool? PersistConfigFile { get; set; }
+        async Task<bool> IEcsDeploy.Deploy(EcsDeployState state)
+        {
+            ConfigureLoadBalancerChangeTracker elbChanges = null;
+            try
+            {
+                var command = new DeployServiceCommand(new ECSToolLogger(this.Helper), state.WorkingDirectory, new string[0])
+                {
+                    Profile = state.Account.Name,
+                    Region = state.Region.SystemName,
 
+                    DisableInteractive = true,
+                    ECRClient = this._ecrClient,
+                    ECSClient = this._ecsClient,
+                    CWLClient = this._cwlClient,
+
+                    PushDockerImageProperties = ConvertToPushDockerImageProperties(state.HostingWizard),
+                    TaskDefinitionProperties = ConvertToTaskDefinitionProperties(state.HostingWizard),
+                    DeployServiceProperties = ConvertToDeployServiceProperties(state.HostingWizard),
+                    ClusterProperties = ConvertToClusterProperties(state.HostingWizard),
+
+                    PersistConfigFile = state.PersistConfigFile
+                };
+
+                elbChanges = ConfigureLoadBalancer(state);
+                if (!elbChanges.Success)
+                {
+                    throw new Exception(elbChanges.ErrorMessage);
+                }
+
+                if (elbChanges.CreatedServiceIAMRole)
+                {
+                    command.DeployServiceProperties.ELBServiceRole = elbChanges.ServiceIAMRole;
+                }
+                else
+                {
+                    command.DeployServiceProperties.ELBServiceRole = state.HostingWizard[PublishContainerToAWSWizardProperties.ServiceIAMRole] as string;
+                }
+
+                if ((state.HostingWizard[PublishContainerToAWSWizardProperties.ShouldConfigureELB] is bool) &&
+                    ((bool)state.HostingWizard[PublishContainerToAWSWizardProperties.ShouldConfigureELB]))
+                {
+                    if (state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup] is bool &&
+                        ((bool)state.HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTargetGroup]))
+                    {
+                        command.DeployServiceProperties.ELBTargetGroup = elbChanges.TargetGroup;
+
+                        // TODO Figure out container port
+                        command.DeployServiceProperties.ELBContainerPort = 80;
+                    }
+                    else if (state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup] != null &&
+                        !string.IsNullOrEmpty(state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup].ToString()))
+                    {
+                        command.DeployServiceProperties.ELBTargetGroup =
+                            state.HostingWizard[PublishContainerToAWSWizardProperties.TargetGroup].ToString();
+
+                        // TODO Figure out container port
+                        command.DeployServiceProperties.ELBContainerPort = 80;
+                    }
+                }
+                else
+                {
+                    command.OverrideIgnoreTargetGroup = true;
+                }
+
+                var result = await command.ExecuteAsync();
+
+                if (!result)
+                {
+                    string errorContents = command.LastToolsException?.Message ?? "Unknown";
+                    string errorMessage = $"Error while deploying ECS Service to AWS: {errorContents}";
+
+                    Helper.AppendUploadStatus(errorMessage);
+
+                    CleanupELBResources(elbChanges);
+                }
+
+                return result;
+            }
+            catch (Exception e)
+            {
+                string errorMessage = $"Error while deploying ECS Service to AWS: {e.Message}";
+                Helper.AppendUploadStatus(errorMessage);
+
+                if (elbChanges != null)
+                {
+                    CleanupELBResources(elbChanges);
+                }
+
+                return false;
+            }
         }
     }
 }

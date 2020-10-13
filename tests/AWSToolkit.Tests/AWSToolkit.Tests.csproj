@@ -49,6 +49,13 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ECS\DeployServiceWorkerTests.cs" />
+    <Compile Include="ECS\DeployScheduleTaskWorkerTests.cs" />
+    <Compile Include="ECS\EcsDeployTestFixture.cs" />
+    <Compile Include="ECS\PushImageToECRWorkerTests.cs" />
+    <Compile Include="ECS\DeployTaskWorkerTests.cs" />
+    <Compile Include="ECS\EcsTelemetryUtilsTests.cs" />
+    <Compile Include="ECS\EcsWizardUtilsTests.cs" />
     <Compile Include="ElasticBeanstalk\BeanstalkDeploymentEngineTests.cs" />
     <Compile Include="ElasticBeanstalk\SolutionStackUtilsTests.cs" />
     <Compile Include="ElasticBeanstalk\WizardToEbToolsCommandTests.cs" />
@@ -88,6 +95,14 @@
     <ProjectReference Include="..\..\toolkitcore\AWSToolkit\AWSToolkit.csproj">
       <Project>{687c1aa1-e4d2-4b17-8a5b-a9d57e311e5f}</Project>
       <Name>AWSToolkit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ECS.Interface\AWSToolkit.ECS.Interface.csproj">
+      <Project>{E3D3DFFD-6668-44BE-9D8E-823F53B58F29}</Project>
+      <Name>AWSToolkit.ECS.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ECS\AWSToolkit.ECS.csproj">
+      <Project>{a09c427c-dbf7-49c8-9590-e99ad60dece2}</Project>
+      <Name>AWSToolkit.ECS</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.ElasticBeanstalk.Interface\AWSToolkit.ElasticBeanstalk.Interface.csproj">
       <Project>{d4d5c421-6265-4674-a1f9-dc11a56fc030}</Project>
