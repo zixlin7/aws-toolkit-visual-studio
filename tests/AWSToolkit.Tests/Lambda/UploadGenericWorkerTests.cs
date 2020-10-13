@@ -1,15 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.DeploymentWorkers;
+using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AWSToolkit.Tests.Common.IO;
 using Amazon.AWSToolkit.Util;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Xunit;
+using Runtime = Amazon.Lambda.Runtime;
 
 namespace AWSToolkit.Tests.Lambda
 {
@@ -35,6 +39,7 @@ namespace AWSToolkit.Tests.Lambda
             "_sampleEvent.json",
         };
 
+        private readonly TelemetryFixture _telemetryFixture = new TelemetryFixture();
         private readonly TemporaryTestLocation _testLocation = new TemporaryTestLocation();
         private readonly Mock<ILambdaFunctionUploadHelpers> _uploadHelpers = new Mock<ILambdaFunctionUploadHelpers>();
         private readonly Mock<IAmazonLambda> _lambda = new Mock<IAmazonLambda>();
@@ -43,14 +48,21 @@ namespace AWSToolkit.Tests.Lambda
 
         public UploadGenericWorkerTests()
         {
-            _sut = new UploadGenericWorker(_uploadHelpers.Object, _lambda.Object);
+            _sut = new UploadGenericWorker(_uploadHelpers.Object, _lambda.Object,
+                _telemetryFixture.TelemetryLogger.Object);
 
             _uploadFunctionState = new UploadFunctionController.UploadFunctionState()
             {
                 Request = new CreateFunctionRequest()
                 {
                     Runtime = Runtime.Nodejs12X,
-                }
+                },
+
+                Region =
+                    new RegionEndPointsManager.RegionEndPoints(
+                        "us-east-1", "US East",
+                        new Dictionary<string, RegionEndPointsManager.EndPoint>(),
+                        null),
             };
 
             // Create a sample project and files to use in tests
@@ -102,6 +114,7 @@ namespace AWSToolkit.Tests.Lambda
 
             Assert.NotEmpty(unZippedFiles);
             Assert.DoesNotContain(unZippedFiles, file => UploadGenericWorker.ExcludedFiles.Any(regex => regex.IsMatch(file)));
+            AssertSuccessfulDeployMetric();
         }
 
         [Fact]
@@ -130,6 +143,7 @@ namespace AWSToolkit.Tests.Lambda
 
             // Check that our fake zip file was "uploaded"
             Assert.Equal(expectedZipContents, actualZipContents);
+            AssertSuccessfulDeployMetric();
         }
 
         [Fact]
@@ -158,6 +172,7 @@ namespace AWSToolkit.Tests.Lambda
             Assert.NotEmpty(unZippedFiles);
             Assert.Single(unZippedFiles);
             Assert.Equal("app.js", unZippedFiles.FirstOrDefault());
+            AssertSuccessfulDeployMetric();
         }
 
         public void Dispose()
@@ -180,6 +195,20 @@ namespace AWSToolkit.Tests.Lambda
         {
             return paths
                 .Select(path => path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar));
+        }
+
+        private void AssertSuccessfulDeployMetric()
+        {
+            _telemetryFixture.AssertTelemetryRecordCalls(1);
+            _telemetryFixture.AssertDeployLambdaMetrics(_telemetryFixture.LoggedMetrics.Single(),
+                Result.Succeeded,
+                new LambdaTelemetryUtils.RecordLambdaDeployProperties()
+                {
+                    RegionId = _uploadFunctionState.Region.SystemName,
+                    Runtime = _uploadFunctionState.Request.Runtime,
+                    TargetFramework = "",
+                    NewResource = true,
+                });
         }
     }
 }

@@ -3,35 +3,43 @@ using Amazon.Lambda.Tools.Commands;
 
 using log4net;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using Amazon.AWSToolkit.Lambda.Controller;
 using System.IO;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Lambda.Util;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 {
     public class UploadNETCoreWorker : BaseUploadWorker
     {
-        ILog LOGGER = LogManager.GetLogger(typeof(UploadGenericWorker));
+        ILog LOGGER = LogManager.GetLogger(typeof(UploadNETCoreWorker));
 
-        public UploadNETCoreWorker(ILambdaFunctionUploadHelpers functionHandler, IAmazonLambda lambdaClient)
+        private readonly ITelemetryLogger _telemetryLogger;
+
+        public UploadNETCoreWorker(ILambdaFunctionUploadHelpers functionHandler, IAmazonLambda lambdaClient,
+            ITelemetryLogger telemetryLogger)
             : base(functionHandler, lambdaClient)
         {
+            _telemetryLogger = telemetryLogger;
         }
 
         static readonly TimeSpan SLEEP_TIME_FOR_ROLE_PROPOGATION = TimeSpan.FromSeconds(15);
         public override void UploadFunction(UploadFunctionController.UploadFunctionState uploadState)
         {
             var logger = new DeployToolLogger(this.FunctionUploader);
-
-            var lambdaDeploymentMetrics =
-                new LambdaDeploymentMetrics(LambdaDeploymentMetrics.LambdaPublishMethod.NetCore,
-                    uploadState.Request.Runtime);
+            var deploymentProperties = new LambdaTelemetryUtils.RecordLambdaDeployProperties();
 
             try
             {
+                deploymentProperties.RegionId = uploadState.Region?.SystemName;
+                deploymentProperties.Runtime = uploadState.Request?.Runtime;
+                deploymentProperties.TargetFramework = uploadState.Framework;
+                deploymentProperties.NewResource = IsNewResource(uploadState);
 
                 var command = new DeployFunctionCommand(logger, uploadState.SourcePath, new string[0]);
                 command.DisableInteractive = true;
@@ -76,26 +84,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
                 if (command.ExecuteAsync().Result)
                 {
-                    var lambdaDeploymentProperties = new LambdaDeploymentMetrics.LambdaDeploymentProperties
-                    {
-                        TargetFramework = command.TargetFramework,
-                        MemorySize = command.MemorySize.GetValueOrDefault().ToString(),
-
-                    };
-
-                    if (string.Equals(command.TracingMode, TracingMode.Active, StringComparison.OrdinalIgnoreCase))
-                    {
-                        lambdaDeploymentProperties.XRayEnabled = true;
-                    }
-
-                    var zipArchivePath = Path.Combine(uploadState.SourcePath, "bin", uploadState.Configuration,
-                        uploadState.Framework, new DirectoryInfo(uploadState.SourcePath).Name + ".zip");
-                    if (File.Exists(zipArchivePath))
-                    {
-                        lambdaDeploymentProperties.BundleSize = new FileInfo(zipArchivePath).Length;
-                    }
-
-                    lambdaDeploymentMetrics.QueueDeploymentSuccess(lambdaDeploymentProperties);
+                    _telemetryLogger.RecordLambdaDeploy(Result.Succeeded, deploymentProperties);
 
                     this.FunctionUploader.UploadFunctionAsyncCompleteSuccess(uploadState);
                 }
@@ -114,21 +103,36 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
             catch (ToolsException e)
             {
-                lambdaDeploymentMetrics.QueueDeploymentFailure(e.Code, e.ServiceCode);
+                _telemetryLogger.RecordLambdaDeploy(Result.Failed, deploymentProperties);
                 this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading function");
             }
             catch (ToolkitException e)
             {
                 logger.WriteLine(e.Message);
-                lambdaDeploymentMetrics.QueueDeploymentFailure(e.Code, e.ServiceErrorCode, e.ServiceStatusCode);
+                _telemetryLogger.RecordLambdaDeploy(Result.Failed, deploymentProperties);
                 this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading function");
             }
             catch (Exception e)
             {
                 logger.WriteLine(e.Message);
                 LOGGER.Error("Error uploading Lambda function.", e);
-                lambdaDeploymentMetrics.QueueDeploymentFailure(ToolkitException.CommonErrorCode.UnexpectedError.ToString(), null);
+                _telemetryLogger.RecordLambdaDeploy(Result.Failed, deploymentProperties);
                 this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading function");
+            }
+        }
+
+        private bool IsNewResource(UploadFunctionController.UploadFunctionState uploadState)
+        {
+            try
+            {
+                var existingConfiguration = this.FunctionUploader.GetExistingConfiguration(this.LambdaClient, uploadState.Request.FunctionName);
+                return existingConfiguration == null;
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Error looking up lambda configuration", e);
+                Debug.Assert(false, $"Error looking up lambda configuration. Function will be considered new for metrics purposes: {e.Message}");
+                return true;
             }
         }
 

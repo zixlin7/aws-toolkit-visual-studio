@@ -62,6 +62,7 @@
     <Compile Include="Lambda\LambdaTesterInstallerTests.cs" />
     <Compile Include="Lambda\LambdaModel.cs" />
     <Compile Include="Lambda\ProjectTests.cs" />
+    <Compile Include="Lambda\TelemetryFixture.cs" />
     <Compile Include="Lambda\UploadGenericWorkerTests.cs" />
     <Compile Include="PluginActivator\PluginActivatorUtilitiesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

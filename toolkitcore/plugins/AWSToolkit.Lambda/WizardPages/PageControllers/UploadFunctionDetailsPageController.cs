@@ -120,7 +120,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             HostingWizard[UploadFunctionWizardProperties.Description] = _pageUI.Description;
             HostingWizard[UploadFunctionWizardProperties.Configuration] = _pageUI.Configuration;
             HostingWizard[UploadFunctionWizardProperties.Runtime] = _pageUI.RuntimeValue;
-            HostingWizard[UploadFunctionWizardProperties.Framework] = _pageUI.Framework;
+
+            // Other languages (like nodejs) do not have a valid framework value
+            HostingWizard[UploadFunctionWizardProperties.Framework] =
+                _pageUI.Runtime.IsNetCore ? _pageUI.Framework : string.Empty;
+
             HostingWizard[UploadFunctionWizardProperties.Handler] = _pageUI.FormattedHandler;
             HostingWizard[UploadFunctionWizardProperties.SourcePath] = _pageUI.SourcePath;
             HostingWizard[UploadFunctionWizardProperties.SaveSettings] = _pageUI.SaveSettings;

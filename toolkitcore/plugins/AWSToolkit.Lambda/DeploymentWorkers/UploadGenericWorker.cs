@@ -7,6 +7,8 @@ using System.Threading;
 using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AWSToolkit.Navigator;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Util;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
@@ -34,21 +36,28 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             new Regex(@"^[_]sampleEvent\.json$", RegexOptions.IgnoreCase),
         };
 
-        public UploadGenericWorker(ILambdaFunctionUploadHelpers functionUploader, IAmazonLambda lambdaClient)
-            :base(functionUploader, lambdaClient)
+        private readonly ITelemetryLogger _telemetryLogger;
+
+        public UploadGenericWorker(ILambdaFunctionUploadHelpers functionUploader,
+            IAmazonLambda lambdaClient,
+            ITelemetryLogger telemetryLogger)
+            : base(functionUploader, lambdaClient)
         {
+            _telemetryLogger = telemetryLogger;
         }
 
         public override void UploadFunction(UploadFunctionState uploadState)
         {
-            var lambdaDeploymentMetrics =
-                new LambdaDeploymentMetrics(LambdaDeploymentMetrics.LambdaPublishMethod.Generic,
-                    uploadState.Request.Runtime);
-
             string zipFile = null;
             bool deleteZipWhenDone = false;
+            var deploymentProperties = new LambdaTelemetryUtils.RecordLambdaDeployProperties();
+
             try
             {
+                deploymentProperties.RegionId = uploadState.Region?.SystemName;
+                deploymentProperties.Runtime = uploadState.Request?.Runtime;
+                deploymentProperties.TargetFramework = uploadState.Framework;
+
                 if (uploadState.SelectedRole != null)
                 {
                     uploadState.Request.Role = uploadState.SelectedRole.Arn;
@@ -107,6 +116,8 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 });
 
                 var existingConfiguration = this.FunctionUploader.GetExistingConfiguration(this.LambdaClient, uploadState.Request.FunctionName);
+                deploymentProperties.NewResource = existingConfiguration == null;
+
                 // Add retry logic in case the new IAM role has not propagated yet.
                 const int MAX_RETRIES = 10;
                 bool publishLambdaSuccess = false;
@@ -125,7 +136,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                     }
                 }
 
-                lambdaDeploymentMetrics.QueueDeploymentSuccess();
+                _telemetryLogger.RecordLambdaDeploy(Result.Succeeded, deploymentProperties);
 
                 this.FunctionUploader.AppendUploadStatus("Upload complete.");
 
@@ -138,7 +149,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 this.FunctionUploader.AppendUploadStatus(e.Message);
                 this.FunctionUploader.AppendUploadStatus("Upload stopped.");
 
-                lambdaDeploymentMetrics.QueueDeploymentFailure(e.Code, e.ServiceErrorCode, e.ServiceStatusCode);
+                _telemetryLogger.RecordLambdaDeploy(Result.Failed, deploymentProperties);
                 this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading Lambda function");
             }
             catch (Exception e)
@@ -156,7 +167,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
                 LOGGER.Error("Error uploading Lambda function.", e);
 
-                lambdaDeploymentMetrics.QueueDeploymentFailure(ToolkitException.CommonErrorCode.UnexpectedError.ToString(), serviceCode);
+                _telemetryLogger.RecordLambdaDeploy(Result.Failed, deploymentProperties);
                 this.FunctionUploader.UploadFunctionAsyncCompleteError("Error uploading Lambda function");
             }
             finally
