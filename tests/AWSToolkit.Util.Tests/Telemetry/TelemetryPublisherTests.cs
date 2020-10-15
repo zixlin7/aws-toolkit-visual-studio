@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq.Expressions;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
-using Amazon.AwsToolkit.Telemetry.Events.Core;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Telemetry.Internal;
 using Amazon.Runtime;
 using Amazon.ToolkitTelemetry;
 using Moq;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
-
 
 namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 {
-    public class TelemetryPublisherTests
+    public class TelemetryPublisherTests : IDisposable
     {
         private readonly Guid _clientId = Guid.NewGuid();
         private readonly ConcurrentQueue<Metrics> _eventQueue = new ConcurrentQueue<Metrics>();
@@ -24,70 +22,77 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         private DateTime _currentTime = DateTime.Now;
         private readonly Mock<ITelemetryClient> _telemetryClient = new Mock<ITelemetryClient>();
 
+        private int _timesPublished = 0;
+        private int _currentProcessorLoop = 0;
+        private readonly Dictionary<int, Action> _beforeProcessorLoopActions = new Dictionary<int, Action>();
+        private readonly Dictionary<int, Action> _processorLoopActions = new Dictionary<int, Action>();
+
         private readonly TelemetryPublisher _sut;
-        private readonly AutoResetEvent _publisherMetricsPublishedEvent = new AutoResetEvent(false);
-        private readonly AutoResetEvent _publisherIntervalSkippedEvent = new AutoResetEvent(false);
-        private readonly AutoResetEvent _taskDelayEvent = new AutoResetEvent(false);
 
         public TelemetryPublisherTests()
         {
             _timeProvider.Setup(mock => mock.GetCurrentTime()).Returns(() => _currentTime);
+
+            // The Processor sleeps after each processing loop.
+            // Hijack this to perform atomic operations during specific iterations.
             _timeProvider.Setup(mock => mock.Delay(It.IsAny<int>(), It.IsAny<CancellationToken>()))
+                .Callback<int, CancellationToken>((delayMs, token) =>
+                {
+                    if (_beforeProcessorLoopActions.TryGetValue(_currentProcessorLoop, out var action))
+                    {
+                        action();
+                    }
+                })
                 .Returns<int, CancellationToken>((delayMs, token) =>
                 {
-                    // Tests advance the Delay by calling AdvancePublisherOuterLoop
-                    _taskDelayEvent.WaitOne();
+                    var hasAction = _processorLoopActions.TryGetValue(_currentProcessorLoop, out var action);
+                    _currentProcessorLoop++;
+
+                    if (hasAction)
+                    {
+                        action();
+                    }
+
                     return Task.CompletedTask;
                 });
 
             _sut = new TelemetryPublisher(_eventQueue, _clientId, _timeProvider.Object);
             _sut.IsTelemetryEnabled = true;
-            _sut.MetricsPublished += (sender, args) => { _publisherMetricsPublishedEvent.Set(); };
-            _sut.PublishIntervalSkipped += (sender, args) => { _publisherIntervalSkippedEvent.Set(); };
+            _sut.MetricsPublished += (sender, args) => { _timesPublished++; };
         }
 
-        [Fact(Skip = "Blinking Tests")]
-        public void PublishOneEvent()
+        [Fact(Timeout = 1000)]
+        public async Task PublishOneEvent()
         {
+            BeforeProcessorLoop(0, () => AddEventsToQueue(1));
             _sut.Initialize(_telemetryClient.Object);
-            AddEventsToQueue(1);
 
-            AdvancePublisherOuterLoop();
+            await WaitForTimesPublished(1);
 
-            WaitForMetricsPublishedEvent();
             Assert.Empty(_eventQueue);
             VerifyPostMetricsCalls(1, Times.Once());
         }
 
-        [Fact(Skip = "Blinking Tests")]
-        public void PublishesInBatches()
+        [Fact(Timeout = 1000)]
+        public async Task PublishesInBatches()
         {
+            // Populate with more than one batch worth of events
+            BeforeProcessorLoop(0, () => AddEventsToQueue(TelemetryPublisher.MAX_BATCH_SIZE + 1));
+            BeforeProcessorLoop(1, () => Assert.Empty(_eventQueue));
+
             _sut.Initialize(_telemetryClient.Object);
 
-            // Ensure the Publisher's outer loop has started
-            AdvancePublisherOuterLoop();
-            WaitForPublishIntervalSkippedEvent();
-
-            // Populate with more than one batch worth of events
-            AddEventsToQueue(TelemetryPublisher.MAX_BATCH_SIZE + 1);
-            AdvancePublisherOuterLoop();
-            WaitForMetricsPublishedEvent();
+            await WaitForTimesPublished(1);
 
             Assert.Empty(_eventQueue);
-
-            _telemetryClient.Verify(mock => mock.PostMetrics(
-                    _clientId,
-                    It.IsAny<IList<Metrics>>(),
-                    It.IsAny<CancellationToken>()
-                ),
-                Times.Exactly(2)
-            );
+            VerifyPostMetricsTimesCalled(Times.AtLeast(2));
         }
 
-        [Fact(Skip = "Blinking Tests")]
-        public void Publish4xxFailuresDoNotReturnToQueue()
+        [Fact(Timeout = 1000)]
+        public async Task Publish4xxFailuresDoNotReturnToQueue()
         {
             const int elementCount = TelemetryPublisher.QUEUE_SIZE_THRESHOLD;
+            BeforeProcessorLoop(0, () => AddEventsToQueue(elementCount));
 
             _telemetryClient.Setup(mock => mock.PostMetrics(
                 _clientId,
@@ -97,19 +102,20 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
                 HttpStatusCode.BadRequest));
 
             _sut.Initialize(_telemetryClient.Object);
-            AddEventsToQueue(elementCount);
 
-            AdvancePublisherOuterLoop();
+            await WaitForTimesPublished(1);
 
-            WaitForMetricsPublishedEvent();
             Assert.Empty(_eventQueue);
             VerifyPostMetricsCalls(elementCount, Times.Once());
         }
 
-        [Fact(Skip = "Blinking Tests")]
-        public void Publish5xxFailuresReturnToQueue()
+        [Fact(Timeout = 1000)]
+        public async Task Publish5xxFailuresReturnToQueue()
         {
             const int elementCount = TelemetryPublisher.QUEUE_SIZE_THRESHOLD;
+            BeforeProcessorLoop(0, () => AddEventsToQueue(elementCount));
+            OnProcessorLoop(1,
+                () => throw new Exception("Kill processing loop to stop the queue from being re-processed."));
 
             _telemetryClient.Setup(mock => mock.PostMetrics(
                 _clientId,
@@ -120,13 +126,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             _sut.Initialize(_telemetryClient.Object);
 
-            // Ensure the Publisher's outer loop has started
-            AdvancePublisherOuterLoop();
-            WaitForPublishIntervalSkippedEvent();
-
-            AddEventsToQueue(elementCount);
-            AdvancePublisherOuterLoop();
-            WaitForMetricsPublishedEvent();
+            await WaitForTimesPublished(1);
 
             Assert.Equal(elementCount, _eventQueue.Count);
             // 5xx errors stop the publish loop
@@ -136,10 +136,14 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         /// <summary>
         /// Tests Non-http related exceptions (example: offline)
         /// </summary>
-        [Fact(Skip = "Blinking Tests")]
-        public void FailedBatchesReturnToQueue()
+        [Fact(Timeout = 1000)]
+        public async Task FailedBatchesReturnToQueue()
         {
-            const int elementCount = TelemetryPublisher.QUEUE_SIZE_THRESHOLD;
+            // const int elementCount = TelemetryPublisher.QUEUE_SIZE_THRESHOLD;
+            const int elementCount = 3;
+            BeforeProcessorLoop(0, () => AddEventsToQueue(elementCount));
+            OnProcessorLoop(1,
+                () => throw new Exception("Kill processing loop to stop the queue from being re-processed."));
 
             _telemetryClient.Setup(mock => mock.PostMetrics(
                 _clientId,
@@ -149,50 +153,18 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             _sut.Initialize(_telemetryClient.Object);
 
-            // Ensure the Publisher's outer loop has started
-            AdvancePublisherOuterLoop();
-            WaitForPublishIntervalSkippedEvent();
+            await WaitForTimesPublished(1);
 
-            AddEventsToQueue(elementCount);
-            AdvancePublisherOuterLoop();
-            WaitForMetricsPublishedEvent();
-
+            // If the Publisher infinite looped, we would never get a Metrics Published event (never get here)
             Assert.Equal(elementCount, _eventQueue.Count);
-            VerifyPostMetricsCalls(TelemetryPublisher.QUEUE_SIZE_THRESHOLD, Times.AtLeast(1));
+            VerifyPostMetricsCalls(elementCount, Times.AtLeast(1));
         }
 
-        [Fact(Skip = "Blinking Tests")]
-        public void ReQueuedBatchesDoNotInfiniteLoop()
-        {
-            const int elementCount = TelemetryPublisher.MAX_BATCH_SIZE + 1;
-
-            _telemetryClient.Setup(mock => mock.PostMetrics(
-                _clientId,
-                It.IsAny<IList<Metrics>>(),
-                It.IsAny<CancellationToken>()
-            )).Throws(new Exception("Simulating service call failure"));
-
-            _sut.Initialize(_telemetryClient.Object);
-
-            AdvancePublisherOuterLoop();
-            WaitForPublishIntervalSkippedEvent();
-
-            AddEventsToQueue(elementCount);
-            AdvancePublisherOuterLoop();
-
-            // If the Publisher infinite looped, we would never get a Metrics Published event
-            WaitForMetricsPublishedEvent();
-
-            Assert.Equal(elementCount, _eventQueue.Count);
-            // The first PostMetrics call gets 20 items
-            // The second call gets 1 item + 19 of the items from batch 1 that were re-queued, and the 
-            // loop is expected to stop afterwards.
-            VerifyPostMetricsCalls(TelemetryPublisher.MAX_BATCH_SIZE, Times.Exactly(2));
-        }
-
-        [Fact(Skip = "Blinking Tests")]
+        [Fact(Timeout = 1000)]
         public void DoesNotPublishWhenDisabled()
         {
+            BeforeProcessorLoop(0, () => AddEventsToQueue(1));
+
             // Make test explode if publish is attempted
             _telemetryClient.Setup(mock => mock.PostMetrics(
                 _clientId,
@@ -202,126 +174,107 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             _sut.IsTelemetryEnabled = false;
             _sut.Initialize(_telemetryClient.Object);
-            AddEventsToQueue(1);
 
-            AdvancePublisherOuterLoop();
+            // Let a couple of publish loops occur, queue should not get emptied
+            while (_currentProcessorLoop < 5)
+            {
+            }
 
-            WaitForPublishIntervalSkippedEvent();
             Assert.Single(_eventQueue);
-
-            _telemetryClient.Verify(mock => mock.PostMetrics(
-                    _clientId,
-                    It.IsAny<IList<Metrics>>(),
-                    It.IsAny<CancellationToken>()
-                ),
-                Times.Never
-            );
+            VerifyPostMetricsTimesCalled(Times.Never());
         }
 
-        [Fact(Skip = "Blinking Tests")]
-        public void PublishIfSizeThresholdExceeded()
+        [Fact(Timeout = 1000)]
+        public async Task PublishIfSizeThresholdExceeded()
         {
+            // The first loop will publish because there wasn't a prior publish (uses the time-based check)
+            BeforeProcessorLoop(0, () => AddEventsToQueue(1));
+            // Queue one and verify it does not publish (under size threshold)
+            BeforeProcessorLoop(1, () =>
+            {
+                Assert.Empty(_eventQueue);
+                AddEventsToQueue(1);
+            });
+            // Cross the size threshold, and expect a publish to occur
+            BeforeProcessorLoop(2, () =>
+            {
+                Assert.NotEmpty(_eventQueue); // should be not empty, checking that this fails test
+                AddEventsToQueue(TelemetryPublisher.QUEUE_SIZE_THRESHOLD - 1);
+            });
+
             _sut.Initialize(_telemetryClient.Object);
 
-            // Ensure the Publisher's outer loop has started
-            AdvancePublisherOuterLoop();
-            WaitForPublishIntervalSkippedEvent();
-
-            // The first loop will publish because there wasn't a prior publish (uses the time-based check)
-            AddEventsToQueue(1);
-            AdvancePublisherOuterLoop();
-            WaitForMetricsPublishedEvent();
-
-            // Queue one and verify it does not publish (under size threshold)
-            AddEventsToQueue(1);
-            AdvancePublisherOuterLoop();
-            WaitForPublishIntervalSkippedEvent();
-
-            // Cross the size threshold, expect to publish
-            AddEventsToQueue(TelemetryPublisher.QUEUE_SIZE_THRESHOLD - 1);
-            AdvancePublisherOuterLoop();
-            WaitForMetricsPublishedEvent();
+            await WaitForTimesPublished(2);
 
             Assert.Empty(_eventQueue);
+            VerifyPostMetricsCalls(1, Times.Once());
             VerifyPostMetricsCalls(TelemetryPublisher.QUEUE_SIZE_THRESHOLD, Times.Once());
         }
 
-        [Fact(Skip = "Blinking Tests")]
-        public void PublishIfTimeThresholdExceeded()
+        [Fact(Timeout = 1000)]
+        public async Task PublishIfTimeThresholdExceeded()
         {
             var startTime = DateTime.Now;
             _currentTime = startTime;
 
+            // The first loop will publish because there wasn't a prior publish (uses the time-based check)
+            BeforeProcessorLoop(0, () => AddEventsToQueue(1));
+            BeforeProcessorLoop(1, () =>
+            {
+                Assert.Empty(_eventQueue);
+                AddEventsToQueue(1);
+            });
+            BeforeProcessorLoop(2, () =>
+            {
+                // Verify the last queued item did not publish yet
+                Assert.NotEmpty(_eventQueue);
+            });
+
             _sut.Initialize(_telemetryClient.Object);
 
-            // Ensure the Publisher's outer loop has started
-            AdvancePublisherOuterLoop();
-            WaitForPublishIntervalSkippedEvent();
-
-            // The first loop will publish because there wasn't a prior publish (uses the time-based check)
-            AddEventsToQueue(1);
-            AdvancePublisherOuterLoop();
-            WaitForMetricsPublishedEvent();
+            await WaitForTimesPublished(1);
 
             // Check that under the time threshold does not publish
             _currentTime = startTime + new TimeSpan(0, 0, 1);
-            AddEventsToQueue(2);
-            AdvancePublisherOuterLoop();
-            WaitForPublishIntervalSkippedEvent();
+            while (_currentProcessorLoop < 2)
+            {
+            }
 
             // Cross the threshold, expect to publish
             _currentTime = startTime + TelemetryPublisher.MAX_PUBLISH_INTERVAL;
-            AdvancePublisherOuterLoop();
-            WaitForMetricsPublishedEvent();
+
+            await WaitForTimesPublished(2);
 
             Assert.Empty(_eventQueue);
-            VerifyPostMetricsCalls(2, Times.Once());
+            VerifyPostMetricsCalls(1, Times.Exactly(2));
         }
 
-        [Fact(Skip = "Blinking Tests")]
-        public void DisposeTest()
+        public void Dispose()
         {
-            _sut.Initialize(_telemetryClient.Object);
-
-            // Make sure the loop is up and running
-            AdvancePublisherOuterLoop();
-            WaitForPublishIntervalSkippedEvent();
-
-            // Now when we dispose, the cancellation token should end the outer loop
-            _timeProvider.Setup(mock => mock.Delay(It.IsAny<int>(), It.IsAny<CancellationToken>()))
-                .Returns<int, CancellationToken>((delayMs, token) =>
-                {
-                    // Disposing will cause the cancellation token to trigger
-                    Assert.Throws<TaskCanceledException>(() => { _taskDelayEvent.WaitOne(); });
-                    return Task.CompletedTask;
-                });
-
             _sut.Dispose();
-            _timeProvider.Verify(mock => mock.Delay(It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Exactly(2));
         }
 
-        private void WaitForMetricsPublishedEvent()
+        private void BeforeProcessorLoop(int iteration, Action action)
         {
-            var timeout = Debugger.IsAttached ? -1 : 5000;
-            Assert.True(_publisherMetricsPublishedEvent.WaitOne(timeout),
-                "MetricsPublished wasn't fired within expected time frame");
+            _beforeProcessorLoopActions[iteration] = action;
         }
 
-        private void WaitForPublishIntervalSkippedEvent()
+        private void OnProcessorLoop(int iteration, Action action)
         {
-            var timeout = Debugger.IsAttached ? -1 : 2000;
-            Assert.True(_publisherIntervalSkippedEvent.WaitOne(timeout),
-                "PublishIntervalSkipped wasn't fired within expected time frame");
-        }
-
-        private void AdvancePublisherOuterLoop()
-        {
-            _taskDelayEvent.Set();
+            _processorLoopActions[iteration] = action;
         }
 
         private void AddEventsToQueue(int quantity)
         {
             TestHelper.AddEventsToQueue(_eventQueue, quantity);
+        }
+
+        private async Task WaitForTimesPublished(int timesCalled)
+        {
+            while (_timesPublished < timesCalled)
+            {
+                await Task.Delay(1);
+            }
         }
 
         /// <summary>
@@ -333,6 +286,21 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
             _telemetryClient.Verify(mock => mock.PostMetrics(
                     _clientId,
                     It.Is<IList<Metrics>>(ExpectedCount(expectedEventCount)),
+                    It.IsAny<CancellationToken>()
+                ),
+                expectedCallCount
+            );
+        }
+
+        /// <summary>
+        /// Verifies that the telemetry client's "PostMetrics" method was called a specific
+        /// number of times.
+        /// </summary>
+        private void VerifyPostMetricsTimesCalled(Times expectedCallCount)
+        {
+            _telemetryClient.Verify(mock => mock.PostMetrics(
+                    _clientId,
+                    It.IsAny<IList<Metrics>>(),
                     It.IsAny<CancellationToken>()
                 ),
                 expectedCallCount
