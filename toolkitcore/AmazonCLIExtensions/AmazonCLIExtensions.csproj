@@ -105,34 +105,34 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.3.104.16</Version>
+      <Version>3.5.0.33</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatchEvents">
-      <Version>3.3.102.13</Version>
+      <Version>3.5.2.8</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CloudWatchLogs">
-      <Version>3.3.101.97</Version>
+      <Version>3.5.0.33</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.EC2">
-      <Version>3.3.168.5</Version>
+      <Version>3.5.10.4</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ECR">
-      <Version>3.3.103.29</Version>
+      <Version>3.5.0.33</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ECS">
-      <Version>3.3.115.4</Version>
+      <Version>3.5.0.33</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.ElasticBeanstalk">
-      <Version>3.3.100.147</Version>
+      <Version>3.5.1.4</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.IdentityManagement">
-      <Version>3.3.105.20</Version>
+      <Version>3.5.0.33</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Lambda">
-      <Version>3.3.108.13</Version>
+      <Version>3.5.0.33</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
-      <Version>3.3.110.38</Version>
+      <Version>3.5.3.9</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

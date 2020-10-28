@@ -94,7 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.EC2">
-      <Version>3.3.168.5</Version>
+      <Version>3.5.10.4</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.8</Version>
