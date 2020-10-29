@@ -88,7 +88,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
             VerifyPostMetricsTimesCalled(Times.AtLeast(2));
         }
 
-        [Fact(Timeout = 1000)]
+        [Fact(Timeout = 2000)]
         public async Task Publish4xxFailuresDoNotReturnToQueue()
         {
             const int elementCount = TelemetryPublisher.QUEUE_SIZE_THRESHOLD;
