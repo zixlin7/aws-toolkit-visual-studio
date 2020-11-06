@@ -98,6 +98,7 @@
     </Compile>
     <Compile Include="CommonUI\Converters\ConstantClassConverter.cs" />
     <Compile Include="CommonUI\Converters\HasItemsVisibilityConverter.cs" />
+    <Compile Include="CommonUI\Converters\LambdaStateConverter.cs" />
     <Compile Include="CommonUI\Converters\ValueConverterMarkupExtension.cs" />
     <Compile Include="CommonUI\MessageBox\MessageBoxDefaultButton.cs" />
     <Compile Include="CommonUI\MessageBox\WindowsMessageBox.cs" />

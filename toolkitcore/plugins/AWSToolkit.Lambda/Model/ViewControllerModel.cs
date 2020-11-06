@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
 using Amazon.Lambda.Model;
+using static Amazon.Lambda.LastUpdateStatus;
+using static Amazon.Lambda.State;
+
 
 namespace Amazon.AWSToolkit.Lambda.Model
 {
@@ -13,9 +18,11 @@ namespace Amazon.AWSToolkit.Lambda.Model
         {
             this.FunctionName = functionName;
             this.FunctionArn = functionArn;
+            this.PropertyChanged += OnPropertyChanged;
         }
 
         bool _isDirty;
+
         public bool IsDirty
         {
             get => this._isDirty;
@@ -35,6 +42,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         }
 
         string _functionName;
+
         public string FunctionName
         {
             get => this._functionName;
@@ -46,6 +54,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         }
 
         long _codeSize;
+
         public long CodeSize
         {
             get => this._codeSize;
@@ -58,6 +67,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         }
 
         bool _isEnabledActiveTracing;
+
         public bool IsEnabledActiveTracing
         {
             get => this._isEnabledActiveTracing;
@@ -69,6 +79,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         }
 
         string _dlqTargetArn;
+
         public string DLQTargetArn
         {
             get => this._dlqTargetArn;
@@ -82,6 +93,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         public string CodeSizeFormatted => string.Format("{0} bytes", this.CodeSize.ToString("0,0."));
 
         string _description;
+
         public string Description
         {
             get => this._description;
@@ -93,6 +105,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         }
 
         string _functionArn;
+
         public string FunctionArn
         {
             get => this._functionArn;
@@ -104,6 +117,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         }
 
         string _handler;
+
         public string Handler
         {
             get => this._handler;
@@ -118,6 +132,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         // property with change notifications so the UI can self-update
         // through data bind on the HandlerDescription property.
         Amazon.Lambda.Runtime _runtime;
+
         public Amazon.Lambda.Runtime Runtime
         {
             get => this._runtime;
@@ -129,10 +144,11 @@ namespace Amazon.AWSToolkit.Lambda.Model
             }
         }
 
-        const string NonDotNetCoreHandlerDescription 
+        const string NonDotNetCoreHandlerDescription
             = "The function that Lambda calls to begin executing prefixed by the file name containing the function. "
               + "The function name can be found at \"exports.<handlername> = function(..)\" in your code body.";
-        const string DotNetCoreHandlerDescription 
+
+        const string DotNetCoreHandlerDescription
             = "The Lambda handler field for .NET functions is <assembly>::<type>::<method>. "
               + "The handler field indicates to Lambda the .NET code to call for each invocation.";
 
@@ -140,7 +156,8 @@ namespace Amazon.AWSToolkit.Lambda.Model
         {
             get
             {
-                if (string.IsNullOrEmpty(Runtime) || !Runtime.ToString().StartsWith("dotnetcore", StringComparison.OrdinalIgnoreCase))
+                if (string.IsNullOrEmpty(Runtime) ||
+                    !Runtime.ToString().StartsWith("dotnetcore", StringComparison.OrdinalIgnoreCase))
                     return NonDotNetCoreHandlerDescription;
 
                 return DotNetCoreHandlerDescription;
@@ -148,6 +165,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         }
 
         DateTime _lastModified;
+
         public DateTime LastModified
         {
             get => this._lastModified;
@@ -159,6 +177,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         }
 
         int _memorySize;
+
         public int MemorySize
         {
             get => this._memorySize;
@@ -170,6 +189,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         }
 
         string _role;
+
         public string Role
         {
             get => this._role;
@@ -181,6 +201,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         }
 
         int _timeout;
+
         public int Timeout
         {
             get => this._timeout;
@@ -191,11 +212,138 @@ namespace Amazon.AWSToolkit.Lambda.Model
             }
         }
 
+        string _lastUpdateStatus;
+
+        public string LastUpdateStatus
+        {
+            get => this._lastUpdateStatus;
+            set
+            {
+                this._lastUpdateStatus = value;
+                this.NotifyPropertyChanged(nameof(LastUpdateStatus));
+            }
+        }
+
+        string _lastUpdateStatusReason;
+
+        public string LastUpdateStatusReason
+        {
+            get => this._lastUpdateStatusReason;
+            set
+            {
+                this._lastUpdateStatusReason = value;
+                this.NotifyPropertyChanged(nameof(LastUpdateStatusReason));
+            }
+        }
+
+        string _lastUpdateStatusReasonCode;
+
+        public string LastUpdateStatusReasonCode
+        {
+            get => this._lastUpdateStatusReasonCode;
+            set
+            {
+                this._lastUpdateStatusReasonCode = value;
+                this.NotifyPropertyChanged(nameof(LastUpdateStatusReasonCode));
+            }
+        }
+
+        string _state;
+
+        public string State
+        {
+            get => this._state;
+            set
+            {
+                this._state = value;
+                this.NotifyPropertyChanged(nameof(State));
+            }
+        }
+
+        string _stateReason;
+
+        public string StateReason
+        {
+            get => this._stateReason;
+            set
+            {
+                this._stateReason = value;
+                this.NotifyPropertyChanged(nameof(StateReason));
+            }
+        }
+
+        string _stateReasonCode;
+
+        public string StateReasonCode
+        {
+            get => this._stateReasonCode;
+            set
+            {
+                this._stateReasonCode = value;
+                this.NotifyPropertyChanged(nameof(StateReasonCode));
+            }
+        }
+
+
+        public bool CanInvoke
+        {
+            get
+            {
+                if (State != null && (State.Equals(Pending.Value) || State.Equals(Amazon.Lambda.State.Failed.Value)))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
+        string _invokeWarningText;
+
+        //used for info banner to notify user about lambda status
+        public string InvokeWarningText
+        {
+            get => this._invokeWarningText;
+            set
+            {
+                this._invokeWarningText = value;
+                this.NotifyPropertyChanged(nameof(InvokeWarningText));
+            }
+        }
+
+        string _invokeWarningTooltip;
+
+        //used for tooltip text to notify user about lambda status
+        public string InvokeWarningTooltip
+        {
+            get => this._invokeWarningTooltip;
+            set
+            {
+                this._invokeWarningTooltip = value;
+                this.NotifyPropertyChanged(nameof(InvokeWarningTooltip));
+            }
+        }
+
+        Visibility _invokeWarningVisibility;
+
+        //determine info banner visibility
+        public Visibility InvokeWarningVisibility
+        {
+            get => this._invokeWarningVisibility;
+            set
+            {
+                this._invokeWarningVisibility = value;
+                this.NotifyPropertyChanged(nameof(InvokeWarningVisibility));
+            }
+        }
+
+
         ObservableCollection<EventSourceWrapper> _eventSources = new ObservableCollection<EventSourceWrapper>();
         public ICollection<EventSourceWrapper> EventSources => this._eventSources;
 
         EventSourceWrapper _selectedEventSource;
-        public EventSourceWrapper SelectedEventSource 
+
+        public EventSourceWrapper SelectedEventSource
         {
             get => this._selectedEventSource;
             set
@@ -208,12 +356,50 @@ namespace Amazon.AWSToolkit.Lambda.Model
         ObservableCollection<LogStreamWrapper> _logs = new ObservableCollection<LogStreamWrapper>();
         public ObservableCollection<LogStreamWrapper> Logs => this._logs;
 
-        ObservableCollection<EnvironmentVariable> _environmentVariables = new ObservableCollection<EnvironmentVariable>();
+        ObservableCollection<EnvironmentVariable> _environmentVariables =
+            new ObservableCollection<EnvironmentVariable>();
+
         public ObservableCollection<EnvironmentVariable> EnvironmentVariables => this._environmentVariables;
 
         public VpcConfigDetail VpcConfig { get; internal set; }
 
         public string KMSKeyArn { get; internal set; }
 
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName.Equals(nameof(State)))
+            {
+                this.NotifyPropertyChanged(nameof(CanInvoke));
+                UpdateInvokeFields();
+            }
+
+            if (e.PropertyName.Equals(nameof(LastUpdateStatus)))
+            {
+                UpdateInvokeFields();
+            }
+        }
+
+        public void UpdateInvokeFields()
+        {
+            if (!CanInvoke)
+            {
+                InvokeWarningText = $"Lambda function cannot be invoked. {StateReason ?? string.Empty}";
+                InvokeWarningVisibility = Visibility.Visible;
+                InvokeWarningTooltip = InvokeWarningText;
+                return;
+            }
+
+            if (LastUpdateStatus != null && (LastUpdateStatus.Equals(InProgress.Value) ||
+                                             LastUpdateStatus.Equals(Amazon.Lambda.LastUpdateStatus.Failed.Value)))
+            {
+                InvokeWarningText = $"Lambda Update {LastUpdateStatus}. You might invoke an earlier version.";
+                InvokeWarningVisibility = Visibility.Visible;
+                InvokeWarningTooltip = InvokeWarningText;
+                return;
+            }
+
+            InvokeWarningVisibility = Visibility.Collapsed;
+            InvokeWarningTooltip = "Invoke Function";
+        }
     }
 }

@@ -64,6 +64,7 @@
     <Compile Include="Lambda\ProjectTests.cs" />
     <Compile Include="Lambda\TelemetryFixture.cs" />
     <Compile Include="Lambda\UploadGenericWorkerTests.cs" />
+    <Compile Include="Lambda\ViewFunctionControllerTests.cs" />
     <Compile Include="PluginActivator\PluginActivatorUtilitiesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

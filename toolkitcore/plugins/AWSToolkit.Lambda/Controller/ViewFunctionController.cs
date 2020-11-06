@@ -10,18 +10,13 @@ using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Lambda.View;
 using Amazon.AWSToolkit.Lambda.Model;
 using Amazon.AWSToolkit.Lambda.Nodes;
-
 using Amazon.Auth.AccessControlPolicy;
-
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
-
 using Amazon.EC2;
 using Amazon.EC2.Model;
-
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
-
 using log4net;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.SimpleWorkers;
@@ -51,6 +46,20 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         AmazonCloudWatchLogsClient _logsClient;
 
+        public ViewFunctionController()
+        {
+
+        }
+        /// <summary>
+        /// Test only constructor initializing a ViewFunctionModel
+        /// </summary>
+        /// <param name="functionName">function name for view function model</param>
+        /// <param name="functionArn">function arn for view function model</param>
+        public ViewFunctionController(string functionName, string functionArn)
+        {
+            this._model =new ViewFunctionModel(functionName, functionArn);
+        }
+
         public override ActionResults Execute(IViewModel model)
         {
             this._viewModel = model as LambdaFunctionViewModel;
@@ -64,15 +73,16 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
             this._control.PropertyChanged += _control_PropertyChanged;
 
-            this._account = ((LambdaFunctionViewModel)this._viewModel).LambdaRootViewModel.AccountViewModel;
-            this._region = ((LambdaFunctionViewModel)this._viewModel).LambdaRootViewModel.CurrentEndPoint.RegionSystemName;
+            this._account = ((LambdaFunctionViewModel) this._viewModel).LambdaRootViewModel.AccountViewModel;
+            this._region = ((LambdaFunctionViewModel) this._viewModel).LambdaRootViewModel.CurrentEndPoint
+                .RegionSystemName;
 
             ConstructClients();
 
             ToolkitFactory.Instance.ShellProvider.OpenInEditor(this._control);
 
             return new ActionResults()
-                    .WithSuccess(true);
+                .WithSuccess(true);
         }
 
         void _control_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -81,7 +91,8 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             {
                 if (this._control.SubnetsSpanVPCs)
                 {
-                    ToolkitFactory.Instance.ShellProvider.ShowError("Invalid Subnets Selection", "The selected subnets must belong to the same VPC.");
+                    ToolkitFactory.Instance.ShellProvider.ShowError("Invalid Subnets Selection",
+                        "The selected subnets must belong to the same VPC.");
                 }
                 else
                 {
@@ -117,8 +128,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                     // dirty if a user selected a different key
                     if (string.IsNullOrEmpty(this._model.KMSKeyArn))
                         this._model.IsDirty = true;
-                    else
-                        if (!this._model.KMSKeyArn.Equals(selectedKey.KeyArn))
+                    else if (!this._model.KMSKeyArn.Equals(selectedKey.KeyArn))
                         this._model.IsDirty = true;
                 }
             }
@@ -126,7 +136,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             if (e.PropertyName.Equals("DLQTargets", StringComparison.OrdinalIgnoreCase) && !this._model.IsDirty)
             {
                 var selectedArn = this._control.SelectedDLQTargetArn;
-                if(!string.Equals(selectedArn, this.Model.DLQTargetArn, StringComparison.Ordinal))
+                if (!string.Equals(selectedArn, this.Model.DLQTargetArn, StringComparison.Ordinal))
                 {
                     this._model.IsDirty = true;
                 }
@@ -200,7 +210,8 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         void ConstructClients()
         {
-            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.GetInstance().GetRegion(this._region);
+            RegionEndPointsManager.RegionEndPoints endPoints =
+                RegionEndPointsManager.GetInstance().GetRegion(this._region);
             var endpoint = endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_LOGS_NAME);
             if (endpoint != null)
             {
@@ -260,7 +271,12 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         public void RefreshFunctionConfiguration()
         {
-            var response = this._lambdaClient.GetFunctionConfiguration(this._model.FunctionName);
+            RefreshFunctionConfiguration(this._lambdaClient);
+        }
+
+        public void RefreshFunctionConfiguration(IAmazonLambda lambdaClient){
+
+            var response = lambdaClient.GetFunctionConfiguration(this._model.FunctionName);
 
             this._model.CodeSize = response.CodeSize;
             this._model.Description = response.Description;
@@ -271,6 +287,12 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             this._model.MemorySize = response.MemorySize;
             this._model.Role = response.Role;
             this._model.Timeout = response.Timeout;
+            this._model.State = response.State;
+            this._model.StateReasonCode = response.StateReasonCode;
+            this._model.StateReason = response.StateReason;
+            this._model.LastUpdateStatus = response.LastUpdateStatus;
+            this._model.LastUpdateStatusReasonCode = response.LastUpdateStatusReasonCode;
+            this._model.LastUpdateStatusReason = response.LastUpdateStatusReason;
             this._model.VpcConfig = response.VpcConfig;
             this._model.KMSKeyArn = response.KMSKeyArn;
 
@@ -289,7 +311,6 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                         Value = vars[k]
                     });
                 }
-
             }
 
             this._model.IsDirty = false;
@@ -332,7 +353,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                     }
                 }).ContinueWith(task4 =>
                 {
-                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
+                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action) (() =>
                     {
                         this._control.SetAvailableVpcSubnets(vpcs, subnets, this._model.VpcConfig?.SubnetIds);
                     }));
@@ -366,13 +387,16 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                     }
                     else
                     {
-                        LOGGER.Info("DescribeSecurityGroupsAsync: error getting available security groups for vpc " + vpcId, task.Exception);
+                        LOGGER.Info(
+                            "DescribeSecurityGroupsAsync: error getting available security groups for vpc " + vpcId,
+                            task.Exception);
                     }
                 }).ContinueWith(task2 =>
                 {
-                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
+                    ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action) (() =>
                     {
-                        this._control.SetAvailableSecurityGroups(groups, null, this._model.VpcConfig?.SecurityGroupIds);
+                        this._control.SetAvailableSecurityGroups(groups, null,
+                            this._model.VpcConfig?.SecurityGroupIds);
                     }));
                 });
             }
@@ -383,16 +407,16 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             if (_snsClient != null && this._sqsClient != null)
             {
                 new QueryDLQTargetsWorker(
-                                    this._snsClient,
-                                    this._sqsClient,
-                                    LOGGER,
-                                    OnDLQTargetsAvailable);
+                    this._snsClient,
+                    this._sqsClient,
+                    LOGGER,
+                    OnDLQTargetsAvailable);
             }
         }
 
         void OnDLQTargetsAvailable(QueryDLQTargetsWorker.QueryResults results)
         {
-            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action) (() =>
             {
                 this._control.SetAvailableDLQTargets(results.TopicArns, results.QueueArns, this.Model.DLQTargetArn);
             }));
@@ -402,13 +426,13 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         void RefreshKMSKeys()
         {
             new QueryKMSKeysWorker(_kmsClient,
-                                   LOGGER,
-                                   OnKMSKeysAvailable);
+                LOGGER,
+                OnKMSKeysAvailable);
         }
 
         void OnKMSKeysAvailable(IEnumerable<KeyListEntry> keys, IEnumerable<AliasListEntry> aliases)
         {
-            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action)(() =>
+            ToolkitFactory.Instance.ShellProvider.BeginExecuteOnUIThread((Action) (() =>
             {
                 this._control.SetAvailableKMSKeys(keys, aliases);
             }));
@@ -416,31 +440,31 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         void RefreshEnvironmentVariables()
         {
-
         }
 
         public void RefreshEventSources()
         {
-            var request = new ListEventSourceMappingsRequest{FunctionName = this._model.FunctionName};
+            var request = new ListEventSourceMappingsRequest {FunctionName = this._model.FunctionName};
             ListEventSourceMappingsResponse response = null;
 
             this._model.EventSources.Clear();
-            do {
-                if(response != null)
+            do
+            {
+                if (response != null)
                     request.Marker = response.NextMarker;
-                
+
                 response = this._lambdaClient.ListEventSourceMappings(request);
 
-                foreach(var eventSourceConfiguration in response.EventSourceMappings)
+                foreach (var eventSourceConfiguration in response.EventSourceMappings)
                 {
-                    if (!eventSourceConfiguration.State.Equals("enabled", StringComparison.OrdinalIgnoreCase) && !eventSourceConfiguration.State.Equals("creating", StringComparison.OrdinalIgnoreCase))
+                    if (!eventSourceConfiguration.State.Equals("enabled", StringComparison.OrdinalIgnoreCase) &&
+                        !eventSourceConfiguration.State.Equals("creating", StringComparison.OrdinalIgnoreCase))
                         continue;
 
                     var wrapper = new EventSourceWrapper(eventSourceConfiguration);
                     this._model.EventSources.Add(wrapper);
                 }
-
-            }while(!string.IsNullOrEmpty(response.NextMarker));
+            } while (!string.IsNullOrEmpty(response.NextMarker));
 
 
             var policyStr = GetPolicy();
@@ -450,7 +474,8 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                 foreach (var statement in policy.Statements)
                 {
                     // Unexpected statement that we don't know how to handle. The Lambda API should only allow one of each type.
-                    if (statement.Principals.Count != 1 || statement.Resources.Count != 1 || statement.Actions.Count != 1 || statement.Effect != Statement.StatementEffect.Allow ||
+                    if (statement.Principals.Count != 1 || statement.Resources.Count != 1 ||
+                        statement.Actions.Count != 1 || statement.Effect != Statement.StatementEffect.Allow ||
                         statement.Conditions.Count != 1 || statement.Conditions[0].Values.Count() != 1)
                         continue;
 
@@ -458,7 +483,6 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                     this._model.EventSources.Add(wrapper);
                 }
             }
-
         }
 
         // Lambda throws exception if the policy does not exist.
@@ -466,7 +490,8 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         {
             try
             {
-                return this._lambdaClient.GetPolicy(new GetPolicyRequest { FunctionName = this._model.FunctionName }).Policy;
+                return this._lambdaClient.GetPolicy(new GetPolicyRequest {FunctionName = this._model.FunctionName})
+                    .Policy;
             }
             catch (Exception)
             {
@@ -527,7 +552,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                 var request = new GetLogEventsRequest
                 {
                     LogGroupName = this.CloudWatchLogGroup,
-                    LogStreamName  = logStream
+                    LogStreamName = logStream
                 };
 
                 var response = this._logsClient.GetLogEvents(request);
@@ -580,20 +605,22 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                 Handler = this._model.Handler,
                 MemorySize = this._model.MemorySize,
                 Timeout = this._model.Timeout,
-                TracingConfig = new TracingConfig { Mode = this._model.IsEnabledActiveTracing ? TracingMode.Active : TracingMode.PassThrough },
+                TracingConfig = new TracingConfig
+                    {Mode = this._model.IsEnabledActiveTracing ? TracingMode.Active : TracingMode.PassThrough},
                 Environment = new Amazon.Lambda.Model.Environment
                 {
                     Variables = new Dictionary<string, string>()
                 }
             };
 
-            request.DeadLetterConfig = new DeadLetterConfig {TargetArn = this._control.SelectedDLQTargetArn ?? string.Empty };
+            request.DeadLetterConfig = new DeadLetterConfig
+                {TargetArn = this._control.SelectedDLQTargetArn ?? string.Empty};
 
             if (this._model.EnvironmentVariables.Any())
             {
                 foreach (var envvar in this._model.EnvironmentVariables)
                 {
-                    if(!string.IsNullOrWhiteSpace(envvar.Variable))
+                    if (!string.IsNullOrWhiteSpace(envvar.Variable))
                         request.Environment.Variables.Add(envvar.Variable, envvar.Value);
                 }
             }
@@ -627,18 +654,31 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                 };
             }
 
-            var response = this._lambdaClient.UpdateFunctionConfiguration(request);
+            UpdateConfiguration(this._lambdaClient, request);
 
-            this._model.LastModified = DateTime.Parse(response.LastModified);
-            this._model.IsDirty = false;
-
-            if(this._model.IsEnabledActiveTracing)
+            if (this._model.IsEnabledActiveTracing)
             {
                 ToolkitEvent evnt = new ToolkitEvent();
                 evnt.AddProperty(AttributeKeys.XRayEnabled, "Lambda");
                 SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
             }
         }
+
+        public void UpdateConfiguration(IAmazonLambda lambdaClient, UpdateFunctionConfigurationRequest request)
+        {
+
+            var response = lambdaClient.UpdateFunctionConfiguration(request);
+
+            this._model.LastModified = DateTime.Parse(response.LastModified);
+            this._model.State = response.State;
+            this._model.StateReasonCode = response.StateReasonCode;
+            this._model.StateReason = response.StateReason;
+            this._model.LastUpdateStatus = response.LastUpdateStatus;
+            this._model.LastUpdateStatusReasonCode = response.LastUpdateStatusReasonCode;
+            this._model.LastUpdateStatusReason = response.LastUpdateStatusReason;
+            this._model.IsDirty = false;
+        }
+
 
         public bool UploadNewFunctionSource()
         {
@@ -651,7 +691,8 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         public bool AddEventSource()
         {
             var controller = new AddEventSourceController();
-            return controller.Execute(this._lambdaClient, this._account, this._region, this._model.FunctionArn, this._model.Role);
+            return controller.Execute(this._lambdaClient, this._account, this._region, this._model.FunctionArn,
+                this._model.Role);
         }
 
         public void DeleteEventSource(EventSourceWrapper wrapper)
@@ -666,10 +707,10 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             }
             else
             {
-                var request = new RemovePermissionRequest 
-                { 
-                    FunctionName = this._model.FunctionName, 
-                    StatementId = wrapper.UUID 
+                var request = new RemovePermissionRequest
+                {
+                    FunctionName = this._model.FunctionName,
+                    StatementId = wrapper.UUID
                 };
                 this._lambdaClient.RemovePermission(request);
             }
@@ -685,15 +726,16 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                 LogType = LogType.Tail
             };
 
-            if(!string.IsNullOrEmpty(input))
+            if (!string.IsNullOrEmpty(input))
             {
                 request.Payload = request.Payload.Trim();
-                if(request.Payload[0] != '\"' && request.Payload[0] != '{' && request.Payload[0] != '[')
+                if (request.Payload[0] != '\"' && request.Payload[0] != '{' && request.Payload[0] != '[')
                 {
                     double d;
                     long l;
                     bool b;
-                    if(!double.TryParse(request.Payload, out d) && !long.TryParse(request.Payload, out l) && !bool.TryParse(request.Payload, out b))
+                    if (!double.TryParse(request.Payload, out d) && !long.TryParse(request.Payload, out l) &&
+                        !bool.TryParse(request.Payload, out b))
                     {
                         request.Payload = "\"" + request.Payload + "\"";
                     }
@@ -703,6 +745,5 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             var response = await this._lambdaClient.InvokeAsync(request);
             return response;
         }
-
     }
 }
