@@ -52,6 +52,11 @@ namespace Amazon.AWSToolkit.Shared
         void OpenInEditor(string fileName);
 
         /// <summary>
+        /// Returns an IDE handle that can be used as a parent to extension modal dialogs
+        /// </summary>
+        IntPtr GetParentWindowHandle();
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="hostedControl"></param>

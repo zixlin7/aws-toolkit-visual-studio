@@ -8,7 +8,23 @@ namespace Amazon.AWSToolkit.CommonUI
 {
     public static class DirectoryBrowserDlgHelper
     {
+        public static string ChooseDirectory(string description)
+        {
+            var parentHandle = ToolkitFactory.Instance.ShellProvider.GetParentWindowHandle();
+            var windowWrapper = new WindowWrapper(parentHandle);
+
+            return ChooseDirectory(windowWrapper, description);
+        }
+
         public static string ChooseDirectory(UIElement element, string description)
+        {
+            HwndSource source = PresentationSource.FromVisual(element) as HwndSource;
+            var windowWrapper = new WindowWrapper(source?.Handle ?? IntPtr.Zero);
+
+            return ChooseDirectory(windowWrapper, description);
+        }
+
+        private static string ChooseDirectory(System.Windows.Forms.IWin32Window owner, string description)
         {
             var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RecentUsages);
             var os = settings["DirectoryBrowserDlgHelper"];
@@ -17,8 +33,7 @@ namespace Amazon.AWSToolkit.CommonUI
             dlg.SelectedPath = os["LastDirectory"];
 
             dlg.Description = description;
-            HwndSource source = PresentationSource.FromVisual(element) as HwndSource;
-            System.Windows.Forms.DialogResult result = dlg.ShowDialog(new WindowWrapper(source.Handle));
+            System.Windows.Forms.DialogResult result = dlg.ShowDialog(owner);
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 os["LastDirectory"] = dlg.SelectedPath;

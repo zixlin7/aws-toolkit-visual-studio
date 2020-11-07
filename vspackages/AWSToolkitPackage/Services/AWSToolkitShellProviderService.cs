@@ -362,6 +362,11 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             return t;
         }
 
+        public IntPtr GetParentWindowHandle()
+        {
+            return _hostPackage.GetParentWindowHandle();
+        }
+
         public void OutputToHostConsole(string message)
         {
             _hostPackage.OutputToConsole(message, false);
