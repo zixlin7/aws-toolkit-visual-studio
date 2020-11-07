@@ -91,6 +91,8 @@
     <Compile Include="Account\View\RegisterServiceCredentialsControl.xaml.cs">
       <DependentUpon>RegisterServiceCredentialsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Commands\AsyncRelayCommand.cs" />
+    <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="CommonUI\AssociatedIconAttribute.cs" />
     <Compile Include="CommonUI\CommandHandler.cs" />
     <Compile Include="CommonUI\Components\RegisteredProfilesPicker.xaml.cs">
