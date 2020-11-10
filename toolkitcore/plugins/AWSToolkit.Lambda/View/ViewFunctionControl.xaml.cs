@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -11,6 +12,7 @@ using Amazon.AWSToolkit.Lambda.Controller;
 using log4net;
 using Amazon.EC2.Model;
 using Amazon.AWSToolkit.EC2.Model;
+using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.KeyManagementService.Model;
 
@@ -24,6 +26,7 @@ namespace Amazon.AWSToolkit.Lambda.View
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ViewFunctionControl));
 
         ViewFunctionController _controller;
+        private readonly CancellationTokenSource _tokenSource;
 
         public ViewFunctionControl(ViewFunctionController controller)
         {
@@ -38,6 +41,9 @@ namespace Amazon.AWSToolkit.Lambda.View
             this._ctlLogsComponent.Initialize(this._controller);
 
             this._ctlAdvancedSettingsComponent.PropertyChanged += _ctlAdvancedSettingsComponent_PropertyChanged;
+            _tokenSource = new CancellationTokenSource();
+            this.Loaded += OnLoaded;
+            this.Unloaded += OnUnloaded;
         }
 
         public override string Title => "Function: " + this._controller.Model.FunctionName;
@@ -151,6 +157,19 @@ namespace Amazon.AWSToolkit.Lambda.View
         {
             int i;
             e.Handled = !int.TryParse(e.Text, out i);
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            FunctionStateUtils.BeginStatePolling(this._controller, this._tokenSource.Token);
+            this.Loaded -= this.OnLoaded;
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            //cancel autorefresh for function state
+            this._tokenSource.Cancel();
+            this.Unloaded -= this.OnUnloaded;
         }
     }
 }

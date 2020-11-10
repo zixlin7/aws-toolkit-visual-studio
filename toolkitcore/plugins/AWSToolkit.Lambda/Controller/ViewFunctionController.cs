@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
@@ -259,6 +260,11 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         public void LoadModel()
         {
             Refresh();
+        }
+
+        public Task<GetFunctionConfigurationResponse> GetFunctionConfigurationAsync(CancellationToken cancellationToken)
+        {
+            return this._lambdaClient.GetFunctionConfigurationAsync(this._model.FunctionName, cancellationToken);
         }
 
         public void Refresh()

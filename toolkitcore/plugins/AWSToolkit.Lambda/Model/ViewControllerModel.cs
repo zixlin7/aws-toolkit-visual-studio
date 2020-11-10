@@ -220,7 +220,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
             set
             {
                 this._lastUpdateStatus = value;
-                this.NotifyPropertyChanged(nameof(LastUpdateStatus));
+                base.NotifyPropertyChanged(nameof(LastUpdateStatus));
             }
         }
 
@@ -232,7 +232,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
             set
             {
                 this._lastUpdateStatusReason = value;
-                this.NotifyPropertyChanged(nameof(LastUpdateStatusReason));
+                base.NotifyPropertyChanged(nameof(LastUpdateStatusReason));
             }
         }
 
@@ -244,7 +244,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
             set
             {
                 this._lastUpdateStatusReasonCode = value;
-                this.NotifyPropertyChanged(nameof(LastUpdateStatusReasonCode));
+                base.NotifyPropertyChanged(nameof(LastUpdateStatusReasonCode));
             }
         }
 
@@ -256,7 +256,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
             set
             {
                 this._state = value;
-                this.NotifyPropertyChanged(nameof(State));
+                base.NotifyPropertyChanged(nameof(State));
             }
         }
 
@@ -268,7 +268,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
             set
             {
                 this._stateReason = value;
-                this.NotifyPropertyChanged(nameof(StateReason));
+                base.NotifyPropertyChanged(nameof(StateReason));
             }
         }
 
@@ -280,7 +280,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
             set
             {
                 this._stateReasonCode = value;
-                this.NotifyPropertyChanged(nameof(StateReasonCode));
+                base.NotifyPropertyChanged(nameof(StateReasonCode));
             }
         }
 
@@ -307,7 +307,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
             set
             {
                 this._invokeWarningText = value;
-                this.NotifyPropertyChanged(nameof(InvokeWarningText));
+                base.NotifyPropertyChanged(nameof(InvokeWarningText));
             }
         }
 
@@ -320,7 +320,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
             set
             {
                 this._invokeWarningTooltip = value;
-                this.NotifyPropertyChanged(nameof(InvokeWarningTooltip));
+                base.NotifyPropertyChanged(nameof(InvokeWarningTooltip));
             }
         }
 
@@ -333,7 +333,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
             set
             {
                 this._invokeWarningVisibility = value;
-                this.NotifyPropertyChanged(nameof(InvokeWarningVisibility));
+                base.NotifyPropertyChanged(nameof(InvokeWarningVisibility));
             }
         }
 
@@ -369,7 +369,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         {
             if (e.PropertyName.Equals(nameof(State)))
             {
-                this.NotifyPropertyChanged(nameof(CanInvoke));
+                base.NotifyPropertyChanged(nameof(CanInvoke));
                 UpdateInvokeFields();
             }
 
