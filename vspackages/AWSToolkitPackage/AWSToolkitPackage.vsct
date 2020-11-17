@@ -109,6 +109,13 @@
       If you do not want an image next to your command, remove the Icon node or set it to <Icon guid="guidOfficeIcon" id="msotcidNoIcon" /> 
       -->
 
+      <Button guid="guid_VSPackageCmdSet" id="cmdidCodeArtifactSelectProfile" priority="0x0100" type="Button">
+        <Icon guid="guidImages" id="bmpAWSExplorer" />
+        <Strings>
+          <ButtonText>Select Profile for AWS CodeArtifact</ButtonText>
+        </Strings>
+      </Button>
+
       <Button guid="guid_VSPackageCmdSet" id="cmdidAWSNavigator" priority="0x0000" type="Button">
         <Icon guid="guidImages" id="bmpAWSExplorer" />
         <Strings>
@@ -350,6 +357,15 @@
       <Parent guid="guidSHLMainMenu" id="IDG_VS_VIEW_ORG_WINDOWS" />
     </CommandPlacement>
 
+    <!--
+    ***********************************************************************************************
+    * AWS CodeArtifact Select Profile Tool Window Command Placement
+    ***********************************************************************************************
+    -->
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidCodeArtifactSelectProfile" priority="0xFFFF">
+      <Parent guid="guidToolsGroup" id="idToolsGroup"/>
+    </CommandPlacement>
+
     <!-- 
     ***********************************************************************************************
     * Publish/Republish to AWS command placements
@@ -497,6 +513,7 @@
       <IDSymbol name="cmdidPublishToAWS" value="0x0102" />
       <IDSymbol name="cmdidRepublishToAWS" value="0x0103" />
       <IDSymbol name="cmdidPublishContainerToAWS" value="0x0104" />
+      <IDSymbol name="cmdidCodeArtifactSelectProfile" value="0x0105" />
 
       <IDSymbol name="cmdidDeployTemplateSolutionExplorer" value="0x0200" />
       <IDSymbol name="cmdidEstimateTemplateCostSolutionExplorer" value="0x0201" />
@@ -555,7 +572,10 @@
     <GuidSymbol name="guidManageConnections" value="{0A014553-A0AA-46DD-8D6B-B8E3178CA435}">
       <IDSymbol name="idManageConnections" value="0x1009"/>
     </GuidSymbol>
-
+    <GuidSymbol name="guidToolsGroup" value="{C0D88179-5D25-4982-BFE6-EC5FD59AC103}">
+      <IDSymbol name="idToolsGroup" value="0x200" />
+    </GuidSymbol>
+    
   </Symbols>
 
 </CommandTable>

@@ -63,6 +63,7 @@ using Amazon.AWSToolkit.VisualStudio.Telemetry;
 using Amazon.AWSToolkit.VisualStudio.Utilities;
 using Amazon.AWSToolkit.VisualStudio.Utilities.DTE;
 using Amazon.AWSToolkit.VisualStudio.Utilities.VsAppId;
+using Amazon.AWSToolkit.CodeArtifact.Controller;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -473,6 +474,11 @@ namespace Amazon.AWSToolkit.VisualStudio
             });
         }
 
+        internal void CodeArtifactSelectProfile(object sender, EventArgs e)
+        {
+            new CommandInstantiator<SelectProfileController>().Execute(ToolkitFactory.Instance.RootViewModel);
+        }
+
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
@@ -529,6 +535,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                     {
                         // Create the command for the tool window
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAWSNavigator, ShowToolWindow, null);
+                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidCodeArtifactSelectProfile, CodeArtifactSelectProfile, null);
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidPublishToAWS, PublishToAWS, PublishMenuCommand_BeforeQueryStatus);
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdIdRepublishToAWS, RepublishToAWS, RepublishMenuCommand_BeforeQueryStatus);
 

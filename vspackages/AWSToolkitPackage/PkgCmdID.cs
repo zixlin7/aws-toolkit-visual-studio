@@ -6,10 +6,11 @@ namespace Amazon.AWSToolkit.VisualStudio
     static class PkgCmdIDList
     {
         // command ids
-        public const uint cmdidAWSNavigator             = 0x101;
-        public const uint cmdidPublishToAWS             = 0x102;
-        public const uint cmdIdRepublishToAWS           = 0x103;
-        public const uint cmdidPublishContainerToAWS    = 0x104;
+        public const uint cmdidAWSNavigator                 = 0x101;
+        public const uint cmdidPublishToAWS                 = 0x102;
+        public const uint cmdIdRepublishToAWS               = 0x103;
+        public const uint cmdidPublishContainerToAWS        = 0x104;
+        public const uint cmdidCodeArtifactSelectProfile    = 0x105;
 
         public const uint cmdidDeployTemplateSolutionExplorer = 0x200;
         public const uint cmdidEstimateTemplateCostSolutionExplorer = 0x201;

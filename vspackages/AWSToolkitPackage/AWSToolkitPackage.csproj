@@ -341,6 +341,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuildProcessors\DotNetCLIWrapper.cs" />
+    <Compile Include="NuGet\CodeArtifactNuGetCredentialProvider.cs" />
     <Compile Include="Editors\CloudFormation\CloudFormationTemplateProjectFactory.cs" />
     <Compile Include="Editors\CloudFormation\CloudFormationTemplateProjectNode.cs" />
     <Compile Include="Editors\CloudFormation\TemplateEditorFactory.cs" />
@@ -506,6 +507,7 @@
     <EmbeddedResource Include="Resources\FirstRun\publishbeanstalk_dark.png" />
     <EmbeddedResource Include="Resources\FirstRun\publishlambda_dark.png" />
     <Resource Include="Resources\CodeCommit32x32.png" />
+    <Resource Include="Resources\CodeArtifact32x32.png" />
     <Resource Include="Resources\SignUp.png" />
   </ItemGroup>
   <ItemGroup>
@@ -704,6 +706,16 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <Visible>false</Visible>
     </Content>
+    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeArtifact.dll">
+      <Link>Plugins\AWSToolkit.CodeArtifact.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\Plugins\AWSToolkit.CodeArtifact.Interface.dll">
+      <Link>Plugins\AWSToolkit.CodeArtifact.Interface.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <Visible>false</Visible>
+    </Content>
     <Content Include="$(OutputRoot)\Plugins\AWSToolkit.SimpleDB.dll">
       <Link>Plugins\AWSToolkit.SimpleDB.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -816,6 +828,12 @@
     </Content>
     <Content Include="$(OutputRoot)\AWSSDK.CodeCommit.dll">
       <Link>AWSSDK.CodeCommit.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.CodeArtifact.dll">
+      <Link>AWSSDK.CodeArtifact.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
@@ -1052,6 +1070,14 @@
       <Project>{aa98ec2e-ac7c-4080-993b-f80592d31037}</Project>
       <Name>AWSToolkit.ElasticBeanstalk</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeArtifact.Interface\AWSToolkit.CodeArtifact.Interface.csproj">
+      <Project>{f1a54c06-a4a8-4e6b-b7fa-8469105408b3}</Project>
+      <Name>AWSToolkit.CodeArtifact.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeArtifact\AWSToolkit.CodeArtifact.csproj">
+      <Project>{a2f72d39-eef5-4c08-b573-d8c5740ced2c}</Project>
+      <Name>AWSToolkit.CodeArtifact</Name>
     </ProjectReference>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.CodeCommit.Interface\AWSToolkit.CodeCommit.Interface.csproj">
       <Project>{b8cfce12-d441-46a5-a415-c763e1e2beb0}</Project>
@@ -1377,6 +1403,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Validation">
       <Version>15.3.15</Version>
+    </PackageReference>
+    <PackageReference Include="NuGet.VisualStudio">
+      <Version>4.9.4</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">
       <Version>15.8.3252</Version>

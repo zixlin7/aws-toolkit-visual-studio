@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Added AWS CodeArtifact in AWS Explorer with option to copy NuGet source endpoint. Added NuGet Credential Provider for CodeArtifact."
+}

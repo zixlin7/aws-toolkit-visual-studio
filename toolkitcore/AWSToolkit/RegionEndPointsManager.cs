@@ -50,6 +50,7 @@ namespace Amazon.AWSToolkit
         public const string CLOUDWATCH_LOGS_NAME = "Logs";
         public const string KMS_SERVICE_NAME = "KMS";
         public const string CODECOMMIT_SERVICE_NAME = "CodeCommit";
+        public const string CODEARTIFACT_SERVICE_NAME = "CodeArtifact";
         public const string ECR_ENDPOINT_LOOKUP = "ECR";
         public const string ECS_ENDPOINT_LOOKUP = "ECS";
         public const string XRAY_ENDPOINT_LOOKUP = "XRay";

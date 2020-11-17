@@ -154,6 +154,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkitPackage.Tests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.Tests.Common", "..\tests\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj", "{AA57CB1D-F511-4BF5-9410-72A49D063365}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeArtifact", "..\toolkitcore\plugins\AWSToolkit.CodeArtifact\AWSToolkit.CodeArtifact.csproj", "{A2F72D39-EEF5-4C08-B573-D8C5740CED2C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AWSToolkit.CodeArtifact.Interface", "..\toolkitcore\plugins\AWSToolkit.CodeArtifact.Interface\AWSToolkit.CodeArtifact.Interface.csproj", "{F1A54C06-A4A8-4E6B-B7FA-8469105408B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -400,6 +404,14 @@ Global
 		{AA57CB1D-F511-4BF5-9410-72A49D063365}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA57CB1D-F511-4BF5-9410-72A49D063365}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA57CB1D-F511-4BF5-9410-72A49D063365}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2F72D39-EEF5-4C08-B573-D8C5740CED2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2F72D39-EEF5-4C08-B573-D8C5740CED2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2F72D39-EEF5-4C08-B573-D8C5740CED2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2F72D39-EEF5-4C08-B573-D8C5740CED2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1A54C06-A4A8-4E6B-B7FA-8469105408B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1A54C06-A4A8-4E6B-B7FA-8469105408B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1A54C06-A4A8-4E6B-B7FA-8469105408B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1A54C06-A4A8-4E6B-B7FA-8469105408B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -472,6 +484,8 @@ Global
 		{B5A5A4DC-8EF3-4C04-85FD-76E85C4EA4CB} = {73718FA9-C78C-4459-A1C0-E5964EE5F420}
 		{1D99DF2D-30AA-47F4-98B0-5E2F48258C44} = {73718FA9-C78C-4459-A1C0-E5964EE5F420}
 		{AA57CB1D-F511-4BF5-9410-72A49D063365} = {73718FA9-C78C-4459-A1C0-E5964EE5F420}
+		{A2F72D39-EEF5-4C08-B573-D8C5740CED2C} = {C261BDE7-0557-4579-A31E-EB2D5C5503B4}
+		{F1A54C06-A4A8-4E6B-B7FA-8469105408B3} = {62237430-5212-4823-924E-344007109D14}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50B40085-A3FF-4E79-90F0-ECAA786ECF93}

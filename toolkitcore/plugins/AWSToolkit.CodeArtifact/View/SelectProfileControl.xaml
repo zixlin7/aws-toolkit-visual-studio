@@ -1,0 +1,62 @@
+﻿<commonui:BaseAWSControl 
+    x:Class="Amazon.AWSToolkit.CodeArtifact.View.SelectProfileControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:components="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
+    mc:Ignorable="d" 
+    Width="345" Height="100">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="FontFamily" Value="VsFont.EnvironmentFontFamily"/>
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Image Grid.Row="0" 
+               Grid.Column="0"
+               VerticalAlignment="Center"
+               Source="/AWSToolkitPackage;component/Resources/CodeArtifact32x32.png" 
+                />
+
+        <TextBlock Grid.Row="0"
+                   Grid.Column="1"
+                   Style="{DynamicResource awsTextBlockBaseStyle}"
+                   TextWrapping="Wrap" Margin="9,0,0,0"
+                  >
+         Select an AWS credential profile from the below list to be used for AWS CodeArtifact credential provider.
+        </TextBlock>
+
+        <Label Grid.Row="1" 
+                Style="{DynamicResource awsLabelBaseStyle}" Margin="0,9,0,0">
+            _Profile:
+        </Label>
+        <components:RegisteredProfilesPicker 
+            Grid.Column="1"
+            Grid.Row="1"
+            x:Name="_accountSelector" 
+            VerticalAlignment="Center" Height="20" Margin="9,9,0,0" />
+
+    </Grid>
+</commonui:BaseAWSControl>
+
+ 
+
