@@ -99,7 +99,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("result", payload.Result);
 
-                datum.AddMetadata("packageType", payload.PackageType);
+                datum.AddMetadata("codeartifactPackageType", payload.CodeartifactPackageType);
 
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
@@ -143,7 +143,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
 
                 datum.AddMetadata("result", payload.Result);
 
-                datum.AddMetadata("packageType", payload.PackageType);
+                datum.AddMetadata("codeartifactPackageType", payload.CodeartifactPackageType);
 
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
@@ -175,7 +175,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         public Result Result;
         
         /// The CodeArtifact package type
-        public string PackageType;
+        public string CodeartifactPackageType;
     }
     
     /// Called when user get an endpoint url
@@ -186,6 +186,6 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         public Result Result;
         
         /// The CodeArtifact package type
-        public string PackageType;
+        public string CodeartifactPackageType;
     }
 }

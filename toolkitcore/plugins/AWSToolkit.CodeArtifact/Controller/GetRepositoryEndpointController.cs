@@ -45,7 +45,7 @@ namespace Amazon.AWSToolkit.CodeArtifact.Controller
                 _telemetryLogger.RecordCodeartifactGetRepoUrl(new CodeartifactGetRepoUrl()
                 {
                     Result = Result.Failed,
-                    PackageType = "nuget"
+                    CodeartifactPackageType = "nuget"
                 });
                 return new ActionResults().WithSuccess(false);
             }
@@ -60,7 +60,7 @@ namespace Amazon.AWSToolkit.CodeArtifact.Controller
                 _telemetryLogger.RecordCodeartifactGetRepoUrl(new CodeartifactGetRepoUrl()
                 {
                     Result = Result.Failed,
-                    PackageType = "nuget"
+                    CodeartifactPackageType = "nuget"
                 });
                 return new ActionResults().WithSuccess(false);
             }
@@ -68,7 +68,7 @@ namespace Amazon.AWSToolkit.CodeArtifact.Controller
             _telemetryLogger.RecordCodeartifactGetRepoUrl(new CodeartifactGetRepoUrl()
             {
                 Result = Result.Succeeded,
-                PackageType = "nuget"
+                CodeartifactPackageType = "nuget"
             });
             return new ActionResults().WithSuccess(true);
         }

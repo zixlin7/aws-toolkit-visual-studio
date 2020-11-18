@@ -1,6 +1,6 @@
 {
     "types": [{
-            "name": "packageType",
+            "name": "codeartifactPackageType",
             "type": "string",
             "description": "The CodeArtifact package type"
         }],
@@ -13,12 +13,12 @@
         {
             "name": "codeartifact_getRepoUrl",
             "description": "Called when user selects a profile",
-            "metadata": [{ "type": "result" }, { "type": "packageType" }]
+            "metadata": [{ "type": "result" }, { "type": "codeartifactPackageType" }]
         },
         {
             "name": "codeartifact_setRepoCredentialProfile",
             "description": "Called when user get an endpoint url",
-            "metadata": [{ "type": "result" }, { "type": "packageType" }]
+            "metadata": [{ "type": "result" }, { "type": "codeartifactPackageType" }]
         }
     ]
 }

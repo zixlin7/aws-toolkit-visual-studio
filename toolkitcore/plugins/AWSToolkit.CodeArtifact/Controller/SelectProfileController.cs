@@ -52,7 +52,7 @@ namespace Amazon.AWSToolkit.CodeArtifact.Controller
             _telemetryLogger.RecordCodeartifactSetRepoCredentialProfile(new CodeartifactSetRepoCredentialProfile()
             {
                 Result = Result.Failed,
-                PackageType = "nuget"
+                CodeartifactPackageType = "nuget"
             });
             return new ActionResults().WithSuccess(false);
         }
@@ -66,7 +66,7 @@ namespace Amazon.AWSToolkit.CodeArtifact.Controller
                     _telemetryLogger.RecordCodeartifactSetRepoCredentialProfile(new CodeartifactSetRepoCredentialProfile()
                     {
                         Result = Result.Failed,
-                        PackageType = "nuget"
+                        CodeartifactPackageType = "nuget"
                     });
                     return new ActionResults().WithSuccess(false);
                 }
@@ -75,7 +75,7 @@ namespace Amazon.AWSToolkit.CodeArtifact.Controller
                 _telemetryLogger.RecordCodeartifactSetRepoCredentialProfile(new CodeartifactSetRepoCredentialProfile()
                 {
                     Result = Result.Succeeded,
-                    PackageType = "nuget"
+                    CodeartifactPackageType = "nuget"
                 });
                 return new ActionResults()
                     .WithSuccess(true)
@@ -90,7 +90,7 @@ namespace Amazon.AWSToolkit.CodeArtifact.Controller
                 _telemetryLogger.RecordCodeartifactSetRepoCredentialProfile(new CodeartifactSetRepoCredentialProfile()
                 {
                     Result = Result.Failed,
-                    PackageType = "nuget"
+                    CodeartifactPackageType = "nuget"
                 });
                 return new ActionResults().WithSuccess(false);
             }

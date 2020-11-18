@@ -32,7 +32,7 @@ namespace AWSToolkit.Tests.CodeArtifact
 
             Assert.Equal(metricName, datum.MetricName);
             Assert.Equal(expectedResult.ToString(), datum.Metadata["result"]);
-            Assert.Equal(pkgType, datum.Metadata["packageType"]);
+            Assert.Equal(pkgType, datum.Metadata["codeartifactPackageType"]);
         }
     }
 }
