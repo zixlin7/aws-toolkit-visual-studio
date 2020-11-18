@@ -53,6 +53,7 @@
     <Compile Include="CodeArtifact\ConfigurationTests.cs" />
     <Compile Include="CodeArtifact\GetRepositoryEndpointControllerTests.cs" />
     <Compile Include="CodeArtifact\SelectProfileControllerTests.cs" />
+    <Compile Include="CodeArtifact\TelemetryFixture.cs" />
     <Compile Include="ECS\DeployServiceWorkerTests.cs" />
     <Compile Include="ECS\DeployScheduleTaskWorkerTests.cs" />
     <Compile Include="ECS\EcsDeployTestFixture.cs" />

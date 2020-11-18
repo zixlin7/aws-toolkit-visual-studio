@@ -1,4 +1,7 @@
-﻿using Amazon.AWSToolkit.CodeArtifact.Nodes;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.AWSToolkit.CodeArtifact.Nodes;
+using Amazon.AWSToolkit.CodeArtifact.Utils;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Shared;
@@ -14,12 +17,14 @@ namespace Amazon.AWSToolkit.CodeArtifact.Controller
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(GetRepositoryEndpointController));
         private IAWSToolkitShellProvider shellProvider;
+        private readonly ITelemetryLogger _telemetryLogger;
 
-        public GetRepositoryEndpointController() : this(ToolkitFactory.Instance.ShellProvider) { }
+        public GetRepositoryEndpointController() : this(ToolkitFactory.Instance.ShellProvider, ToolkitFactory.Instance.TelemetryLogger) { }
 
-        public GetRepositoryEndpointController(IAWSToolkitShellProvider shellProvider)
+        public GetRepositoryEndpointController(IAWSToolkitShellProvider shellProvider, ITelemetryLogger telemetryLogger)
         {
             this.shellProvider = shellProvider;
+            this._telemetryLogger = telemetryLogger;
         }
 
         public override ActionResults Execute(IViewModel model)
@@ -37,6 +42,11 @@ namespace Amazon.AWSToolkit.CodeArtifact.Controller
             var endpoint  = GenerateURL(codeArtifactClient, domainName, repoName);
             if(string.IsNullOrEmpty(endpoint))
             {
+                _telemetryLogger.RecordCodeartifactGetRepoUrl(new CodeartifactGetRepoUrl()
+                {
+                    Result = Result.Failed,
+                    PackageType = "nuget"
+                });
                 return new ActionResults().WithSuccess(false);
             }
             try
@@ -47,9 +57,19 @@ namespace Amazon.AWSToolkit.CodeArtifact.Controller
             {
                 LOGGER.Error("Error copying repository endpoint URL:", e);
                 shellProvider.ShowError("Error copying repository endpoint URL: " + e.Message);
+                _telemetryLogger.RecordCodeartifactGetRepoUrl(new CodeartifactGetRepoUrl()
+                {
+                    Result = Result.Failed,
+                    PackageType = "nuget"
+                });
                 return new ActionResults().WithSuccess(false);
             }
             shellProvider.UpdateStatus(string.Format("Copied NuGet Source to clipboard: {0}/{1}", domainName, repoName));
+            _telemetryLogger.RecordCodeartifactGetRepoUrl(new CodeartifactGetRepoUrl()
+            {
+                Result = Result.Succeeded,
+                PackageType = "nuget"
+            });
             return new ActionResults().WithSuccess(true);
         }
 

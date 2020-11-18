@@ -66,6 +66,94 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
             }
         }
+        
+        /// Records Telemetry Event:
+        /// Called when user selects a profile
+        public static void RecordCodeartifactGetRepoUrl(this ITelemetryLogger telemetryLogger, CodeartifactGetRepoUrl payload)
+        {
+            try
+            {
+                var metrics = new Metrics();
+                if (payload.CreatedOn.HasValue)
+                {
+                    metrics.CreatedOn = payload.CreatedOn.Value;
+                }
+                else
+                {
+                    metrics.CreatedOn = System.DateTime.Now;
+                }
+                metrics.Data = new List<MetricDatum>();
+
+                var datum = new MetricDatum();
+                datum.MetricName = "codeartifact_getRepoUrl";
+                datum.Unit = Unit.None;
+                datum.Passive = false;
+                if (payload.Value.HasValue)
+                {
+                    datum.Value = payload.Value.Value;
+                }
+                else
+                {
+                    datum.Value = 1;
+                }
+
+                datum.AddMetadata("result", payload.Result);
+
+                datum.AddMetadata("packageType", payload.PackageType);
+
+                metrics.Data.Add(datum);
+                telemetryLogger.Record(metrics);
+            }
+            catch (System.Exception e)
+            {
+                telemetryLogger.Logger.Error("Error recording telemetry event", e);
+                System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
+            }
+        }
+        
+        /// Records Telemetry Event:
+        /// Called when user get an endpoint url
+        public static void RecordCodeartifactSetRepoCredentialProfile(this ITelemetryLogger telemetryLogger, CodeartifactSetRepoCredentialProfile payload)
+        {
+            try
+            {
+                var metrics = new Metrics();
+                if (payload.CreatedOn.HasValue)
+                {
+                    metrics.CreatedOn = payload.CreatedOn.Value;
+                }
+                else
+                {
+                    metrics.CreatedOn = System.DateTime.Now;
+                }
+                metrics.Data = new List<MetricDatum>();
+
+                var datum = new MetricDatum();
+                datum.MetricName = "codeartifact_setRepoCredentialProfile";
+                datum.Unit = Unit.None;
+                datum.Passive = false;
+                if (payload.Value.HasValue)
+                {
+                    datum.Value = payload.Value.Value;
+                }
+                else
+                {
+                    datum.Value = 1;
+                }
+
+                datum.AddMetadata("result", payload.Result);
+
+                datum.AddMetadata("packageType", payload.PackageType);
+
+                metrics.Data.Add(datum);
+                telemetryLogger.Record(metrics);
+            }
+            catch (System.Exception e)
+            {
+                telemetryLogger.Logger.Error("Error recording telemetry event", e);
+                System.Diagnostics.Debug.Assert(false, "Error Recording Telemetry");
+            }
+        }
     }
     
     /// Called when deploying a Serverless Application Project
@@ -77,5 +165,27 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         
         /// The ID of the region that was selected
         public string RegionId;
+    }
+    
+    /// Called when user selects a profile
+    public sealed class CodeartifactGetRepoUrl : BaseTelemetryEvent
+    {
+        
+        /// The result of the operation
+        public Result Result;
+        
+        /// The CodeArtifact package type
+        public string PackageType;
+    }
+    
+    /// Called when user get an endpoint url
+    public sealed class CodeartifactSetRepoCredentialProfile : BaseTelemetryEvent
+    {
+        
+        /// The result of the operation
+        public Result Result;
+        
+        /// The CodeArtifact package type
+        public string PackageType;
     }
 }

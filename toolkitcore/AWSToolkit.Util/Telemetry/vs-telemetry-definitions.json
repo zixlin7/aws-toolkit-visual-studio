@@ -1,10 +1,24 @@
 {
-    "types": [],
+    "types": [{
+            "name": "packageType",
+            "type": "string",
+            "description": "The CodeArtifact package type"
+        }],
     "metrics": [
         {
             "name": "serverlessapplication_deploy",
             "description": "Called when deploying a Serverless Application Project",
             "metadata": [{ "type": "result" }, { "type": "regionId" }]
+        },
+        {
+            "name": "codeartifact_getRepoUrl",
+            "description": "Called when user selects a profile",
+            "metadata": [{ "type": "result" }, { "type": "packageType" }]
+        },
+        {
+            "name": "codeartifact_setRepoCredentialProfile",
+            "description": "Called when user get an endpoint url",
+            "metadata": [{ "type": "result" }, { "type": "packageType" }]
         }
     ]
 }
