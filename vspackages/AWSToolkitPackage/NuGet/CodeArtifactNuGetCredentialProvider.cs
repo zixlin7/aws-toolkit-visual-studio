@@ -78,6 +78,7 @@ namespace Amazon.AWSToolkit.NuGet
             catch (Exception e)
             {
                 // One of the cases of this exception might be that user is using wrong profile.
+                ToolkitFactory.Instance.ShellProvider.ShowError(string.Format("Failed to get authorization from CodeArtifact: {0}", e.Message));
                 LOGGER.Error("Failed to get CodeArtifact auth token", e);
                 return null;
             }
