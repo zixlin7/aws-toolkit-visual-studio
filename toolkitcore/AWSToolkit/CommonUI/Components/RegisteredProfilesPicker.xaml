@@ -33,8 +33,12 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="ComboBox">
-                            <Grid>
-                                <ToggleButton Grid.ColumnSpan="2"
+                            <Grid x:Name="MainGrid" SnapsToDevicePixels="true">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="0" MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" />
+                                </Grid.ColumnDefinitions>
+                                <ToggleButton Grid.Column="0" Grid.ColumnSpan="2"
                                               Background="{TemplateBinding Background}"
                                               BorderBrush="{TemplateBinding BorderBrush}"
                                               BorderThickness="{TemplateBinding Border.BorderThickness}"
@@ -42,6 +46,7 @@
                                               IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"/>
 
                                 <ContentPresenter IsHitTestVisible="false"
+                                                  Grid.Column="0"
                                                   Name="ContentSite"
                                                   Margin="{TemplateBinding Padding}"
                                                   Content="{TemplateBinding SelectionBoxItem}"
@@ -60,7 +65,7 @@
 
                                 <Popup Name="PART_Popup"
                                        AllowsTransparency="true"
-                                       Grid.ColumnSpan="2"
+                                       Grid.Column="0" Grid.ColumnSpan="2"
                                        Placement="Bottom"
                                        Margin="1"
                                        IsOpen="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
