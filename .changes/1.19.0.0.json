@@ -1,0 +1,22 @@
+{
+  "Date": "2020-11-23",
+  "Version": "1.19.0.0",
+  "Entries": [
+    {
+      "Type": "Bug Fix",
+      "Description": "The AWS .NET Mock Lambda Test Tool is now configured in launchSettings.json with a location based on %USERPROFILE% instead of %USERNAME%"
+    },
+    {
+      "Type": "Feature",
+      "Description": "Improved solution load times by only installing the Lambda Test tool once per IDE session instead of once per applicable project."
+    },
+    {
+      "Type": "Feature",
+      "Description": "Lambda Function View Panel now shows function's state and last updated status."
+    },
+    {
+      "Type": "Feature",
+      "Description": "Added AWS CodeArtifact in AWS Explorer with option to copy NuGet source endpoint. Added NuGet Credential Provider for CodeArtifact."
+    }
+  ]
+}
