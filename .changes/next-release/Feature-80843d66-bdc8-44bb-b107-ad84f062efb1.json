@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Improved solution load times by only installing the Lambda Test tool once per IDE session instead of once per applicable project."
-}
