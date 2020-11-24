@@ -81,11 +81,10 @@ namespace Amazon.AWSToolkit.CodeArtifact.Controller
                 Repository = repoName,
             };
 
-            //TODO (sankalbh@): Replace Maven packageFormat with Nuget once AWSSDK.CodeArtifact supports it
-            request.Format = PackageFormat.Maven;
+            request.Format = PackageFormat.Nuget;
             try
             {
-                var endpointUrl = codeArtifactClient.GetRepositoryEndpoint(request).RepositoryEndpoint.Replace("maven", "nuget");
+                var endpointUrl = codeArtifactClient.GetRepositoryEndpoint(request).RepositoryEndpoint;
                 endpointUrl = string.Format("{0}v3/index.json", endpointUrl);
                 return endpointUrl;
             }

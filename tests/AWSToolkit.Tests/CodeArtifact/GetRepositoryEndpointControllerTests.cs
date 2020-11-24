@@ -17,7 +17,7 @@ namespace AWSToolkit.Tests.CodeArtifact
         private readonly Mock<IAmazonCodeArtifact> _mockCodeArtifactClient = new Mock<IAmazonCodeArtifact>();
         private readonly Mock<IAWSToolkitShellProvider> _mockShell = new Mock<IAWSToolkitShellProvider>();
         private readonly GetRepositoryEndpointController _sut;
-        const string endpoint = "https://test-domain-123456789012.d.codeartifact.us-west-2.amazonaws.com/maven/test/";
+        const string endpoint = "https://test-domain-123456789012.d.codeartifact.us-west-2.amazonaws.com/nuget/test/";
 
         public GetRepositoryEndpointControllerTests()
         {
@@ -30,7 +30,7 @@ namespace AWSToolkit.Tests.CodeArtifact
         {
             SetupValidGetRepositoryEndpointCall();
             var results = _sut.Execute(_mockCodeArtifactClient.Object, "test-domain", "test");
-            string expectedEndpoint = string.Format("{0}v3/index.json", endpoint.Replace("maven", "nuget"));
+            string expectedEndpoint = string.Format("{0}v3/index.json", endpoint);
             Assert.Equal(Clipboard.GetText(), expectedEndpoint);
             _mockShell.Verify(x => x.UpdateStatus(It.IsAny<string>()), Times.Once);
             _mockShell.Verify(x => x.ShowError(It.IsAny<string>()), Times.Never);
@@ -43,7 +43,7 @@ namespace AWSToolkit.Tests.CodeArtifact
         {
             SetupValidGetRepositoryEndpointCall();
             string url = _sut.GenerateURL(_mockCodeArtifactClient.Object, "test-domain", "test");
-            string expectedEndpoint = string.Format("{0}v3/index.json", endpoint.Replace("maven", "nuget"));
+            string expectedEndpoint = string.Format("{0}v3/index.json", endpoint);
             Assert.Equal(url, expectedEndpoint);
         }
 
