@@ -1,5 +1,6 @@
 ﻿using System;
-using Amazon.AWSToolkit.MobileAnalytics;
+using System.Linq;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.VisualStudio.Lambda;
 using Moq;
 using Xunit;
@@ -9,11 +10,11 @@ namespace AWSToolkitPackage.Tests.Lambda
     public class LambdaTesterUsageEmitterTests
     {
         private readonly LambdaTesterUsageEmitter _sut;
-        private readonly Mock<ISimpleMobileAnalytics> _metrics = new Mock<ISimpleMobileAnalytics>();
+        private readonly Mock<ITelemetryLogger> TelemetryLogger = new Mock<ITelemetryLogger>();
 
         public LambdaTesterUsageEmitterTests()
         {
-            this._sut = new LambdaTesterUsageEmitter(_metrics.Object);
+            this._sut = new LambdaTesterUsageEmitter(TelemetryLogger.Object);
         }
 
         [Fact]
@@ -40,31 +41,24 @@ namespace AWSToolkitPackage.Tests.Lambda
         [InlineData("dotnet-lambda-test-tool", 123, true)]
         public void EmitIfLambdaTesterProducesMetric(string processName, int processId, bool metricExpected)
         {
-            _sut.EmitIfLambdaTester(processName, processId);
+            _sut.EmitIfLambdaTester(processName, processId, true);
 
             var expectedCallCount = metricExpected ? 1 : 0;
-
-            _metrics.Verify(
-                x => x.QueueEventToBeRecorded(It.IsAny<ToolkitEvent>()),
-                Times.Exactly(expectedCallCount)
-            );
+            TelemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Exactly(expectedCallCount));
+            
         }
 
         [Theory]
-        [InlineData("dotnet-lambda-test-tool", AttributeKeys.DotnetLambdaTestToolLaunch_UnknownVersion)]
-        [InlineData("dotnet-lambda-test-tool-2.1", AttributeKeys.DotnetLambdaTestToolLaunch_2_1)]
-        [InlineData("dotnet-lambda-test-tool-3.1", AttributeKeys.DotnetLambdaTestToolLaunch_3_1)]
-        public void EmitLambdaTestToolMetric(string processName, AttributeKeys expectedAttributeKey)
+        [InlineData("dotnet-lambda-test-tool", "unknown")]
+        [InlineData("dotnet-lambda-test-tool-2.1", "dotnetcore2.1")]
+        [InlineData("dotnet-lambda-test-tool-3.1", "dotnetcore3.1")]
+        [InlineData("dotnet-lambda-test-tool-5.0", "dotnet5.0")]
+        public void EmitLambdaTestToolMetric(string processName, string expectedRuntime)
         {
-            _sut.EmitIfLambdaTester(processName, 123);
+            _sut.EmitIfLambdaTester(processName, 123, true);
 
-            _metrics.Verify(
-                x => x.QueueEventToBeRecorded(
-                    It.Is<ToolkitEvent>(evnt =>
-                        evnt.Attributes.ContainsKey(expectedAttributeKey.ToString()))
-                ),
-                Times.Once()
-            );
+            TelemetryLogger.Verify(mock => mock.Record(It.Is<Metrics>(metrics=> metrics.Data.First().Metadata.Values.Contains(expectedRuntime)))
+                , Times.Once);
         }
 
         [Theory]
@@ -75,15 +69,11 @@ namespace AWSToolkitPackage.Tests.Lambda
             int subsequentProcessId,
             bool subsequentMetricExpected)
         {
-            _sut.EmitIfLambdaTester("dotnet-lambda-test-tool", processId);
-            _sut.EmitIfLambdaTester("dotnet-lambda-test-tool", subsequentProcessId);
+            _sut.EmitIfLambdaTester("dotnet-lambda-test-tool", processId, true);
+            _sut.EmitIfLambdaTester("dotnet-lambda-test-tool", subsequentProcessId, true);
 
             var expectedCallCount = subsequentMetricExpected ? 2 : 1;
-
-            _metrics.Verify(
-                x => x.QueueEventToBeRecorded(It.IsAny<ToolkitEvent>()),
-                Times.Exactly(expectedCallCount)
-            );
+            TelemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Exactly(expectedCallCount));
         }
     }
 }

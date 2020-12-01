@@ -1,6 +1,9 @@
 ﻿using Amazon.Common.DotNetCli.Tools;
+using Amazon.Common.DotNetCli.Tools.Commands;
 using Amazon.Common.DotNetCli.Tools.Options;
+using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Amazon.ECS.Tools.Commands
 {
@@ -16,19 +19,19 @@ namespace Amazon.ECS.Tools.Commands
         {
         }
 
-        PushDockerImageProperties _pushProperties;
-        public PushDockerImageProperties PushDockerImageProperties
+        BasePushDockerImageCommand<ECSToolsDefaults>.PushDockerImagePropertyContainer _pushProperties;
+        public BasePushDockerImageCommand<ECSToolsDefaults>.PushDockerImagePropertyContainer PushDockerImageProperties
         {
             get
             {
                 if (this._pushProperties == null)
                 {
-                    this._pushProperties = new PushDockerImageProperties();
+                    this._pushProperties = new BasePushDockerImageCommand<ECSToolsDefaults>.PushDockerImagePropertyContainer();
                 }
 
                 return this._pushProperties;
             }
-            set => this._pushProperties = value;
+            set { this._pushProperties = value; }
         }
 
         TaskDefinitionProperties _taskDefinitionProperties;
@@ -43,7 +46,7 @@ namespace Amazon.ECS.Tools.Commands
 
                 return this._taskDefinitionProperties;
             }
-            set => this._taskDefinitionProperties = value;
+            set { this._taskDefinitionProperties = value; }
         }
 
         ClusterProperties _clusterProperties;
@@ -58,7 +61,7 @@ namespace Amazon.ECS.Tools.Commands
 
                 return this._clusterProperties;
             }
-            set => this._clusterProperties = value;
+            set { this._clusterProperties = value; }
         }
 
     }

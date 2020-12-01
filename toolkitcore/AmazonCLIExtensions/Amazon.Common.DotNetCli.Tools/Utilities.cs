@@ -1,6 +1,7 @@
 ﻿using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Amazon.S3.Transfer;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -561,17 +562,18 @@ namespace Amazon.Common.DotNetCli.Tools
         {
             logger?.WriteLine($"Uploading to S3. (Bucket: {bucket} Key: {key})");
 
-            var request = new PutObjectRequest
+            var request = new TransferUtilityUploadRequest()
             {
                 BucketName = bucket,
                 Key = key,
-                InputStream = stream,
-                StreamTransferProgress = Utilities.CreateProgressHandler(logger)
+                InputStream = stream
             };
+
+            request.UploadProgressEvent += Utilities.CreateTransferUtilityProgressHandler(logger);
 
             try
             {
-                await s3Client.PutObjectAsync(request);
+                await new TransferUtility(s3Client).UploadAsync(request);
             }
             catch (Exception e)
             {
@@ -586,6 +588,23 @@ namespace Amazon.Common.DotNetCli.Tools
         {
             var percentToUpdateOn = UPLOAD_PROGRESS_INCREMENT;
             EventHandler<StreamTransferProgressArgs> handler = ((s, e) =>
+            {
+                if (e.PercentDone != percentToUpdateOn && e.PercentDone <= percentToUpdateOn) return;
+                
+                var increment = e.PercentDone % UPLOAD_PROGRESS_INCREMENT;
+                if (increment == 0)
+                    increment = UPLOAD_PROGRESS_INCREMENT;
+                percentToUpdateOn = e.PercentDone + increment;
+                logger?.WriteLine($"... Progress: {e.PercentDone}%");
+            });
+
+            return handler;
+        }
+        
+        private static EventHandler<UploadProgressArgs> CreateTransferUtilityProgressHandler(IToolLogger logger)
+        {
+            var percentToUpdateOn = UPLOAD_PROGRESS_INCREMENT;
+            EventHandler<UploadProgressArgs> handler = ((s, e) =>
             {
                 if (e.PercentDone != percentToUpdateOn && e.PercentDone <= percentToUpdateOn) return;
                 
@@ -722,6 +741,87 @@ namespace Amazon.Common.DotNetCli.Tools
                 }
             }
             return code.ToString().Trim();
+        }
+        
+        
+        public static void CopyDirectory(string sourceDirectory, string destinationDirectory, bool copySubDirectories)
+        {
+            // Get the subdirectories for the specified directory.
+            DirectoryInfo dir = new DirectoryInfo(sourceDirectory);
+
+            if (!dir.Exists)
+            {
+                throw new DirectoryNotFoundException(
+                    "Source directory does not exist or could not be found: "
+                    + sourceDirectory);
+            }
+            
+            // If the destination directory doesn't exist, create it.
+            if (!Directory.Exists(destinationDirectory))
+            {
+                Directory.CreateDirectory(destinationDirectory);
+            }
+
+            // Get the files in the directory and copy them to the new location.
+            FileInfo[] files = dir.GetFiles();
+            foreach (FileInfo file in files)
+            {
+                string tempPath = Path.Combine(destinationDirectory, file.Name);
+                file.CopyTo(tempPath, false);
+            }
+
+            // If copying subdirectories, copy them and their contents to new location.
+            if (copySubDirectories)
+            {
+                DirectoryInfo[] dirs = dir.GetDirectories();
+                foreach (DirectoryInfo subdirectory in dirs)
+                {
+                    string temppath = Path.Combine(destinationDirectory, subdirectory.Name);
+                    CopyDirectory(subdirectory.FullName, temppath, copySubDirectories);
+                }
+            }
+        }
+
+        public static bool TryGenerateECRRepositoryName(string projectName, out string repositoryName)
+        {
+            repositoryName = null;
+            if (Directory.Exists(projectName))
+            {
+                projectName = new DirectoryInfo(projectName).Name;
+            }
+            else if(File.Exists(projectName))
+            {
+                projectName = Path.GetFileNameWithoutExtension(projectName);
+            }
+
+            projectName = projectName.ToLower();
+            var sb = new StringBuilder();
+
+            foreach(var c in projectName)
+            {
+                if(char.IsLetterOrDigit(c))
+                {
+                    sb.Append(c);
+                }
+                else if(sb.Length > 0 && (c == '.' || c == '_' || c == '-'))
+                {
+                    sb.Append(c);
+                }
+            }
+
+            // Repository name must be at least 2 characters
+            if(sb.Length > 1)
+            {
+                repositoryName = sb.ToString();
+
+                // Max length of repository name is 256 characters.
+                if (Constants.MAX_ECR_REPOSITORY_NAME_LENGTH < repositoryName.Length)
+                {
+                    repositoryName = repositoryName.Substring(0, Constants.MAX_ECR_REPOSITORY_NAME_LENGTH);
+                }
+            }
+
+            return !string.IsNullOrEmpty(repositoryName);
         }
     }
 }

@@ -26,6 +26,7 @@ using Amazon.KeyManagementService;
 using Amazon.SimpleNotificationService;
 using Amazon.SQS;
 using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.ECR;
 
 namespace Amazon.AWSToolkit.Lambda.Controller
 {
@@ -41,6 +42,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         IAmazonKeyManagementService _kmsClient;
         IAmazonSimpleNotificationService _snsClient;
         IAmazonSQS _sqsClient;
+        IAmazonECR _ecrClient;
 
         AccountViewModel _account;
         string _region;
@@ -253,6 +255,8 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                 endpoint.ApplyToClientConfig(config);
                 this._sqsClient = new AmazonSQSClient(this._account.Credentials, config);
             }
+
+            this._ecrClient = this._account.CreateServiceClient<AmazonECRClient>(endPoints.GetEndpoint(RegionEndPointsManager.ECR_SERVICE_NAME));
         }
 
         public ViewFunctionModel Model => this._model;
@@ -284,6 +288,16 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
             var response = lambdaClient.GetFunctionConfiguration(this._model.FunctionName);
 
+            this._model.PackageType = response.PackageType;
+            if (response.PackageType == PackageType.Image)
+            {
+                this._model.ImageCommand = JoinByComma(response.ImageConfigResponse?.ImageConfig?.Command);
+                this._model.ImageEntrypoint = JoinByComma(response.ImageConfigResponse?.ImageConfig?.EntryPoint);
+                this._model.ImageWorkingDirectory = response.ImageConfigResponse?.ImageConfig?.WorkingDirectory ?? string.Empty;
+
+                var getFunctionResponse = lambdaClient.GetFunction(this._model.FunctionName);
+                this._model.ImageUri = getFunctionResponse?.Code?.ImageUri ?? string.Empty;
+            }
             this._model.CodeSize = response.CodeSize;
             this._model.Description = response.Description;
             this._model.FunctionArn = response.FunctionArn;
@@ -608,7 +622,6 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             {
                 Description = this._model.Description,
                 FunctionName = this._model.FunctionName,
-                Handler = this._model.Handler,
                 MemorySize = this._model.MemorySize,
                 Timeout = this._model.Timeout,
                 TracingConfig = new TracingConfig
@@ -618,6 +631,25 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                     Variables = new Dictionary<string, string>()
                 }
             };
+
+            if (_model.PackageType == PackageType.Zip)
+            {
+                request.Handler = this._model.Handler;
+            }
+
+            if (_model.PackageType == PackageType.Image)
+            {
+                var command = SplitByComma(_model.ImageCommand);
+                var entrypoint = SplitByComma(_model.ImageEntrypoint);
+                request.ImageConfig = new ImageConfig()
+                {
+                    Command = command,
+                    IsCommandSet = command != null,
+                    EntryPoint = entrypoint,
+                    IsEntryPointSet = entrypoint != null,
+                    WorkingDirectory = _model.ImageWorkingDirectory,
+                };
+            }
 
             request.DeadLetterConfig = new DeadLetterConfig
                 {TargetArn = this._control.SelectedDLQTargetArn ?? string.Empty};
@@ -675,6 +707,13 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
             var response = lambdaClient.UpdateFunctionConfiguration(request);
 
+            if (response.PackageType == PackageType.Image)
+            {
+                // Update the Image fields that may have been reformatted/trimmed
+                this._model.ImageCommand = JoinByComma(response.ImageConfigResponse?.ImageConfig?.Command);
+                this._model.ImageEntrypoint = JoinByComma(response.ImageConfigResponse?.ImageConfig?.EntryPoint);
+            }
+
             this._model.LastModified = DateTime.Parse(response.LastModified);
             this._model.State = response.State;
             this._model.StateReasonCode = response.StateReasonCode;
@@ -689,7 +728,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         public bool UploadNewFunctionSource()
         {
             var controller = new UploadFunctionController();
-            var results = controller.Execute(this._lambdaClient, this._model.FunctionName);
+            var results = controller.Execute(this._lambdaClient, this._ecrClient, this._model.FunctionName);
 
             return results.Success;
         }
@@ -750,6 +789,29 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
             var response = await this._lambdaClient.InvokeAsync(request);
             return response;
+        }
+
+        public static string JoinByComma(List<string> strings)
+        {
+            if (strings == null)
+            {
+                return string.Empty;
+            }
+
+            return string.Join(",", strings);
+        }
+
+        public static List<string> SplitByComma(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return null;
+            }
+
+            return text.Split(new char[] {','}, StringSplitOptions.None)
+                .Select(t => t.Trim())
+                .Where(t => !string.IsNullOrWhiteSpace(t))
+                .ToList();
         }
     }
 }

@@ -47,6 +47,7 @@
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeArtifact\CodeArtifactUriTests.cs" />
@@ -54,6 +55,9 @@
     <Compile Include="CodeArtifact\GetRepositoryEndpointControllerTests.cs" />
     <Compile Include="CodeArtifact\SelectProfileControllerTests.cs" />
     <Compile Include="CodeArtifact\TelemetryFixture.cs" />
+    <Compile Include="CommonUI\InverseBooleanToVisibilityConverterTests.cs" />
+    <Compile Include="CommonValidators\DockerTagValidatorTests.cs" />
+    <Compile Include="CommonValidators\EcsRepoNameValidatorTests.cs" />
     <Compile Include="ECS\DeployServiceWorkerTests.cs" />
     <Compile Include="ECS\DeployScheduleTaskWorkerTests.cs" />
     <Compile Include="ECS\EcsDeployTestFixture.cs" />
@@ -66,9 +70,15 @@
     <Compile Include="ElasticBeanstalk\WizardToEbToolsCommandTests.cs" />
     <Compile Include="Lambda\LambdaTesterInstallerTests.cs" />
     <Compile Include="Lambda\LambdaModel.cs" />
+    <Compile Include="Lambda\PackageTypeToVisibilityConverterTest.cs" />
     <Compile Include="Lambda\ProjectTests.cs" />
+    <Compile Include="Lambda\RuntimeOptionTests.cs" />
     <Compile Include="Lambda\TelemetryFixture.cs" />
+    <Compile Include="Lambda\UploadFunctionDetailsPageFixture.cs" />
+    <Compile Include="Lambda\UploadFunctionDetailsPageTests.cs" />
+    <Compile Include="Lambda\UploadFunctionViewModelTests.cs" />
     <Compile Include="Lambda\UploadGenericWorkerTests.cs" />
+    <Compile Include="Lambda\UploadNETCoreWorkerTests.cs" />
     <Compile Include="Lambda\ViewFunctionControllerTests.cs" />
     <Compile Include="PluginActivator\PluginActivatorUtilitiesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -5,6 +5,7 @@ using Amazon.AWSToolkit.Exceptions;
 using Amazon.AWSToolkit.Lambda.Util;
 using Amazon.CloudFormation;
 using Amazon.Common.DotNetCli.Tools;
+using Amazon.ECR;
 using Amazon.Lambda.Tools.Commands;
 using Amazon.S3;
 using log4net;
@@ -24,14 +25,16 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
         IAmazonCloudFormation CloudFormationClient { get; }
         IAmazonS3 S3Client { get; }
+        IAmazonECR ECRClient { get; }
 
-        public PublishServerlessApplicationWorker(ILambdaFunctionUploadHelpers helpers, IAmazonS3 s3Client, IAmazonCloudFormation cloudFormationClient,
+        public PublishServerlessApplicationWorker(ILambdaFunctionUploadHelpers helpers, IAmazonS3 s3Client, IAmazonCloudFormation cloudFormationClient, IAmazonECR ecrClient,
             PublishServerlessApplicationWorkerSettings settings,
             ITelemetryLogger telemetryLogger)
         {
             this.Helpers = helpers;
             this.S3Client = s3Client;
             this.CloudFormationClient = cloudFormationClient;
+            this.ECRClient = ecrClient;
             this.Settings = settings;
             this._telemetryLogger = telemetryLogger;
         }
@@ -46,6 +49,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 command.DisableInteractive = true;
                 command.S3Client = this.S3Client;
                 command.CloudFormationClient = this.CloudFormationClient;
+                command.ECRClient = this.ECRClient;
                 command.WaitForStackToComplete = false;
                 command.Profile = Settings.Account.DisplayName;
                 command.Region = Settings.Region.SystemName;

@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Windows;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
+using Amazon.Lambda;
 using Amazon.Lambda.Model;
 using static Amazon.Lambda.LastUpdateStatus;
 using static Amazon.Lambda.State;
@@ -14,6 +15,8 @@ namespace Amazon.AWSToolkit.Lambda.Model
 {
     public class ViewFunctionModel : BaseModel
     {
+        public const string CodeSizeNotApplicable = "Not Applicable";
+
         public ViewFunctionModel(string functionName, string functionArn)
         {
             this.FunctionName = functionName;
@@ -90,7 +93,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
             }
         }
 
-        public string CodeSizeFormatted => string.Format("{0} bytes", this.CodeSize.ToString("0,0."));
+        public string CodeSizeFormatted => GetFormattedCodeSize();
 
         string _description;
 
@@ -186,6 +189,14 @@ namespace Amazon.AWSToolkit.Lambda.Model
                 this._memorySize = value;
                 this.NotifyPropertyChanged("MemorySize");
             }
+        }
+
+        private PackageType _packageType = PackageType.Zip;
+
+        public PackageType PackageType
+        {
+            get => _packageType;
+            set { SetProperty(ref _packageType, value, () => PackageType); }
         }
 
         string _role;
@@ -298,6 +309,38 @@ namespace Amazon.AWSToolkit.Lambda.Model
             }
         }
 
+        private string _imageCommand = string.Empty;
+
+        public string ImageCommand
+        {
+            get => _imageCommand;
+            set { SetProperty(ref _imageCommand, value, () => ImageCommand); }
+        }
+
+        private string _imageEntrypoint = string.Empty;
+
+        public string ImageEntrypoint
+        {
+            get => _imageEntrypoint;
+            set { SetProperty(ref _imageEntrypoint, value, () => ImageEntrypoint); }
+        }
+
+        private string _imageWorkingDirectory = string.Empty;
+
+        public string ImageWorkingDirectory
+        {
+            get => _imageWorkingDirectory;
+            set { SetProperty(ref _imageWorkingDirectory, value, () => ImageWorkingDirectory); }
+        }
+
+        private string _imageUri = string.Empty;
+
+        public string ImageUri
+        {
+            get => _imageUri;
+            set { SetProperty(ref _imageUri, value, () => ImageUri); }
+        }
+
         string _invokeWarningText;
 
         //used for info banner to notify user about lambda status
@@ -337,6 +380,19 @@ namespace Amazon.AWSToolkit.Lambda.Model
             }
         }
 
+        public Visibility UploadSourceVisibility
+        {
+            get
+            {
+                if (Runtime!=null && Runtime.Value.StartsWith("nodejs", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Visibility.Visible;
+                }
+
+                return Visibility.Collapsed;
+            }
+        }
+
 
         ObservableCollection<EventSourceWrapper> _eventSources = new ObservableCollection<EventSourceWrapper>();
         public ICollection<EventSourceWrapper> EventSources => this._eventSources;
@@ -365,6 +421,16 @@ namespace Amazon.AWSToolkit.Lambda.Model
 
         public string KMSKeyArn { get; internal set; }
 
+        public string GetFormattedCodeSize()
+        {
+            if (PackageType == PackageType.Zip)
+            {
+                return string.Format("{0} bytes", this.CodeSize.ToString("0,0."));
+            }
+
+            return CodeSizeNotApplicable;
+        }
+
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName.Equals(nameof(State)))
@@ -376,6 +442,16 @@ namespace Amazon.AWSToolkit.Lambda.Model
             if (e.PropertyName.Equals(nameof(LastUpdateStatus)))
             {
                 UpdateInvokeFields();
+            }
+
+            if (e.PropertyName.Equals(nameof(PackageType)))
+            {
+                base.NotifyPropertyChanged(nameof(CodeSizeFormatted));
+            }
+
+            if (e.PropertyName.Equals(nameof(Runtime)))
+            {
+                base.NotifyPropertyChanged(nameof(UploadSourceVisibility));
             }
         }
 

@@ -445,6 +445,9 @@
 
     <SolidColorBrush x:Key="awsFieldHintTextForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ControlEditHintTextColorKey}}" />
 
+    <SolidColorBrush x:Key="awsFieldRequiredTextForegroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ControlEditRequiredHintTextColorKey}}" />
+    <SolidColorBrush x:Key="awsFieldRequiredBackgroundBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.ControlEditRequiredBackgroundColorKey}}" />
+
     <SolidColorBrush x:Key="awsDividerRuleBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.PanelSeparatorColorKey}}" />
 
     <SolidColorBrush x:Key="awsAccentBorderBrushKey" Color="{DynamicResource {x:Static platformui:EnvironmentColors.AccentBorderColorKey}}" />

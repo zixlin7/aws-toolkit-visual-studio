@@ -11,6 +11,7 @@ namespace AWSToolkit.Tests.Lambda
         [InlineData("netcoreapp1.0", null)]
         [InlineData("netcoreapp2.1", "Amazon.Lambda.TestTool-2.1")]
         [InlineData("netcoreapp3.1", "Amazon.Lambda.TestTool-3.1")]
+        [InlineData("net5.0", "Amazon.Lambda.TestTool-5.0")]
         public void GetTesterConfiguration(string targetFramework, string expectedPackage)
         {
             var configuration = LambdaTesterInstaller.GetTesterConfiguration(targetFramework);

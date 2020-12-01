@@ -16,6 +16,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
         public UploadFunctionProgressPageController PageController { get; }
 
+        //indicates if page is manually closed/unloaded by user
+        public bool IsUnloaded { get; set; }
+
         public UploadFunctionProgressPage()
         {
             InitializeComponent();
@@ -38,6 +41,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             {
                 _ctlOpenView.Content = "Open Lambda Function view after upload complete.";
             }
+            this.Unloaded += OnUnloaded;
         }
 
         public bool OpenView
@@ -82,6 +86,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 this._ctlProgressBar.Visibility = Visibility.Visible;
                 this._ctlUploadFailedMessage.Visibility = Visibility.Hidden;
             }
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            IsUnloaded = true;
+            this.Unloaded -= this.OnUnloaded;
         }
     }
 }

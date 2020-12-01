@@ -25,6 +25,12 @@
         public static readonly string LambdaClient = "lambdaClient";
 
         /// <summary>
+        /// If invoking from a function view, a correctly account and region bound
+        /// ECR client to use.
+        /// </summary>
+        public static readonly string ECRClient = "ecrClient";
+
+        /// <summary>
         /// The user account selected by the user (if control present) to own the
         /// uploaded function. This can also be used to select an account on entry
         /// to the wizard.
@@ -83,6 +89,32 @@
         /// 
         /// </summary>
         public static readonly string Runtime = "runtime";
+
+        /// <summary>
+        /// The deployment package type of the Lambda function
+        /// Valid values: Zip, Image
+        /// </summary>
+        public static readonly string PackageType = "packagetype";
+
+        /// <summary>
+        /// Image based Lambda function handler.
+        /// </summary>
+        public static readonly string ImageCommand = "imagecommand";
+
+        /// <summary>
+        /// Name of ECR repository to deploy the image to.
+        /// </summary>
+        public static readonly string ImageRepo = "imagerepo";
+
+        /// <summary>
+        /// Name and optionally a tag in the 'name:tag' format for the image.
+        /// </summary>
+        public static readonly string ImageTag = "imagetag";
+        
+        /// <summary>
+        /// Dockerfile associated with the image to be uploaded to Lambda.
+        /// </summary>
+        public static readonly string Dockerfile = "dockerfile";
 
         /// <summary>
         /// The selected IAM role for the function to assume when making calls to AWS.
@@ -160,7 +192,6 @@
         /// Type: Boolean.
         /// </summary>
         public static readonly string WizardResult = "wizardResult";
-
 
         public const string DeadLetterTargetArn = "DLQTargetArn";
         public const string TracingMode = "TracingMode";

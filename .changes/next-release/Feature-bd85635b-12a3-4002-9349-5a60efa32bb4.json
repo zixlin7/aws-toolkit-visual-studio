@@ -1,0 +1,4 @@
+{
+    "Type": "Feature",
+    "Description": "Added .NET Lambda Test Tool support for .NET 5 Lambda function projects"
+}

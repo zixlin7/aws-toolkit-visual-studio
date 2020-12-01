@@ -15,6 +15,7 @@ using Amazon.AWSToolkit.Lambda.WizardPages.PageControllers;
 using Amazon.Lambda.Tools;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
+using Amazon.ECR;
 
 namespace Amazon.AWSToolkit.Lambda.Controller
 {
@@ -41,13 +42,15 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             return _results;
         }
 
-        public ActionResults Execute(IAmazonLambda lambdaClient, string functionName)
+        public ActionResults Execute(IAmazonLambda lambdaClient, IAmazonECR ecrClient, string functionName)
         {
             var response = lambdaClient.GetFunctionConfiguration(functionName);
 
             var seedValues = new Dictionary<string, object>();
 
             seedValues[UploadFunctionWizardProperties.LambdaClient] = lambdaClient;
+            seedValues[UploadFunctionWizardProperties.ECRClient] = ecrClient;
+
             seedValues[UploadFunctionWizardProperties.UploadOriginator] = UploadOriginator.FromFunctionView;
             if (response.Runtime.Value.StartsWith("netcore", StringComparison.OrdinalIgnoreCase))
                 seedValues[UploadFunctionWizardProperties.DeploymentType] = DeploymentType.NETCore;
@@ -168,6 +171,15 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                             seedValues[UploadFunctionWizardProperties.DeadLetterTargetArn] = defaults.DeadLetterTargetArn;
                         if (!string.IsNullOrEmpty(defaults.TracingMode))
                             seedValues[UploadFunctionWizardProperties.TracingMode] = defaults.TracingMode;
+                        if (!string.IsNullOrEmpty(defaults.PackageType))
+                            seedValues[UploadFunctionWizardProperties.PackageType] = new PackageType(defaults.PackageType);
+                        if (!string.IsNullOrEmpty(defaults.ImageTag))
+                            seedValues[UploadFunctionWizardProperties.ImageTag] = defaults.ImageTag;
+                        if (!string.IsNullOrEmpty(defaults.ImageRepo))
+                            seedValues[UploadFunctionWizardProperties.ImageRepo] = defaults.ImageRepo;
+                        if (!string.IsNullOrEmpty(defaults.ImageCommand))
+                            seedValues[UploadFunctionWizardProperties.ImageCommand] = defaults.ImageCommand;
+
 
                         if (defaults.EnvironmentVariables != null)
                         {
@@ -289,6 +301,9 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             public string Configuration { get; set; }
             public string Framework { get; set; }
             public bool SaveSettings { get; set; }
+            public string ImageRepo { get; set; }
+            public string ImageTag { get; set; }
+            public string Dockerfile { get; set; }
         }
 
     }

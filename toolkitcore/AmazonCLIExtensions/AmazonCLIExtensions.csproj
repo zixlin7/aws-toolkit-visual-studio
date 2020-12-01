@@ -129,7 +129,7 @@
       <Version>3.5.0.33</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Lambda">
-      <Version>3.5.0.33</Version>
+      <Version>3.5.4</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.S3">
       <Version>3.5.3.9</Version>

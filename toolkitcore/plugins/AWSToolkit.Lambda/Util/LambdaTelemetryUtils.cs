@@ -3,6 +3,9 @@ using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
 using System;
 using System.Diagnostics;
+using Amazon.Lambda;
+using Amazon.AWSToolkit.Telemetry;
+using LambdaDeploy = Amazon.AWSToolkit.Telemetry.LambdaDeploy;
 
 namespace Amazon.AWSToolkit.Lambda.Util
 {
@@ -16,6 +19,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
             public Amazon.Lambda.Runtime Runtime { get; set; }
             public string RegionId { get; set; }
             public string TargetFramework { get; set; }
+            public PackageType LambdaPackageType { get; set; }
         }
 
         public static void RecordLambdaDeploy(this ITelemetryLogger telemetryLogger, Result deployResult, RecordLambdaDeployProperties lambdaDeploymentProperties)
@@ -24,6 +28,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
             {
                 telemetryLogger.RecordLambdaDeploy(new LambdaDeploy()
                 {
+                    LambdaPackageType = new LambdaPackageType(lambdaDeploymentProperties.LambdaPackageType?.Value ?? "unknown"),
                     InitialDeploy = lambdaDeploymentProperties.NewResource,
                     Result = deployResult,
                     RegionId = lambdaDeploymentProperties.RegionId ?? "unknown",

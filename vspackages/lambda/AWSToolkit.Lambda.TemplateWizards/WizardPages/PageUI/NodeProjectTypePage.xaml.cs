@@ -113,7 +113,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageUI
             var functionNames = new List<string>();
             foreach (var function in data)
             {
-                if (function.Runtime.Value.StartsWith("nodejs"))
+                if (function.Runtime!=null && function.Runtime.Value.StartsWith("nodejs"))
                     functionNames.Add(function.FunctionName);
             }
 

@@ -48,7 +48,7 @@ namespace AWSToolkit.Tests.Lambda
 
         public UploadGenericWorkerTests()
         {
-            _sut = new UploadGenericWorker(_uploadHelpers.Object, _lambda.Object,
+            _sut = new UploadGenericWorker(_uploadHelpers.Object, _lambda.Object, null,
                 _telemetryFixture.TelemetryLogger.Object);
 
             _uploadFunctionState = new UploadFunctionController.UploadFunctionState()

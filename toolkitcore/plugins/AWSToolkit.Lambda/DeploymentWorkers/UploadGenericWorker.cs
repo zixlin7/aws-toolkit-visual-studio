@@ -10,6 +10,7 @@ using Amazon.AWSToolkit.Navigator;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Util;
+using Amazon.ECR;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 
@@ -40,8 +41,9 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
         public UploadGenericWorker(ILambdaFunctionUploadHelpers functionUploader,
             IAmazonLambda lambdaClient,
+            IAmazonECR ecrClient,
             ITelemetryLogger telemetryLogger)
-            : base(functionUploader, lambdaClient)
+            : base(functionUploader, lambdaClient, ecrClient)
         {
             _telemetryLogger = telemetryLogger;
         }
@@ -57,6 +59,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 deploymentProperties.RegionId = uploadState.Region?.SystemName;
                 deploymentProperties.Runtime = uploadState.Request?.Runtime;
                 deploymentProperties.TargetFramework = uploadState.Framework;
+                deploymentProperties.LambdaPackageType = uploadState.Request?.PackageType;
 
                 if (uploadState.SelectedRole != null)
                 {

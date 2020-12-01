@@ -2277,17 +2277,30 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 var seedProperties = new Dictionary<string, object>();
                 seedProperties[UploadFunctionWizardProperties.SelectedProjectFile] = fullPath;
+                seedProperties[UploadFunctionWizardProperties.PackageType] = Amazon.Lambda.PackageType.Zip;
+                var dockerfilePath = Path.Combine(rootDirectory, "Dockerfile");
 
                 if(selectedProject != null)
                 {
                     IDictionary<string, IList<string>> suggestedMethods = VSLambdaUtility.SearchForLambdaFunctionSuggestions(selectedProject);
                     seedProperties[UploadFunctionWizardProperties.SuggestedMethods] = suggestedMethods;
                     seedProperties[UploadFunctionWizardProperties.SourcePath] = rootDirectory;
+                    if (File.Exists(dockerfilePath))
+                    {
+                        seedProperties[UploadFunctionWizardProperties.Dockerfile] = dockerfilePath;
+                        seedProperties[UploadFunctionWizardProperties.PackageType] = Amazon.Lambda.PackageType.Image;
+                    }
                 }
                 else if(File.Exists(fullPath))
                 {
                     seedProperties[UploadFunctionWizardProperties.SourcePath] = rootDirectory;
+                    if (File.Exists(dockerfilePath))
+                    {
+                        seedProperties[UploadFunctionWizardProperties.Dockerfile] = dockerfilePath;
+                        seedProperties[UploadFunctionWizardProperties.PackageType] = Amazon.Lambda.PackageType.Image;
+                    }
                 }
+
 
                 // Look to see if there is a Javascript Lambda function StartupFile and seed that as the suggested function handler.
                 var startupFile = selectedProject?.Properties.Item("StartupFile")?.Value as string;

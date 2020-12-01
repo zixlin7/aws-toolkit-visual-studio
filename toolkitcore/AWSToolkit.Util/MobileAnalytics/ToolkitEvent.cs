@@ -43,9 +43,6 @@ namespace Amazon.AWSToolkit.MobileAnalytics
         LambdaEventSourceSetupError,
 
         VisualStudioIdentifier,
-        DotnetLambdaTestToolLaunch_2_1,
-        DotnetLambdaTestToolLaunch_3_1,
-        DotnetLambdaTestToolLaunch_UnknownVersion,
 
         CodeCommitCloneStatus,
         CodeCommitCreateStatus,

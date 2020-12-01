@@ -3,6 +3,8 @@ using Amazon.ECR;
 using Amazon.ECR.Model;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 using Amazon.EC2.Model;
@@ -110,7 +112,7 @@ namespace Amazon.ECS.Tools
             }
             catch (Exception e)
             {
-                throw new DockerToolsException($"Error determing full repository path for the image {dockerImageTag}: {e.Message}", DockerToolsException.ECSErrorCode.FailedToExpandImageTag);
+                throw new DockerToolsException($"Error determining full repository path for the image {dockerImageTag}: {e.Message}", DockerToolsException.ECSErrorCode.FailedToExpandImageTag);
             }
         }
 

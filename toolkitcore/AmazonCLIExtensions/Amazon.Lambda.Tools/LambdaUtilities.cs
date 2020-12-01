@@ -53,6 +53,20 @@ namespace Amazon.Lambda.Tools
             return kvp.Key;
         }
 
+        public static Lambda.PackageType DeterminePackageType(string packageType)
+        {
+            if (string.IsNullOrEmpty(packageType) || string.Equals(packageType, Lambda.PackageType.Zip.Value, StringComparison.OrdinalIgnoreCase))
+            {
+                return Lambda.PackageType.Zip;
+            }
+            else if (string.Equals(packageType, Lambda.PackageType.Image.Value, StringComparison.OrdinalIgnoreCase))
+            {
+                return Lambda.PackageType.Image;
+            }
+
+            throw new LambdaToolsException($"Unknown value for package type {packageType}", ToolsException.CommonErrorCode.CommandLineParseError);
+        }
+
         /// <summary>
         /// Make sure nobody is trying to deploy a function based on a higher .NET Core framework than the Lambda runtime knows about.
         /// </summary>
@@ -577,11 +591,11 @@ namespace Amazon.Lambda.Tools
             }
         }
 
-        public static ConvertManifestToSdkManifestResult ConvertManifestToSdkManifest(string packageManifest)
+        public static ConvertManifestToSdkManifestResult ConvertManifestToSdkManifest(string targetFramework, string packageManifest)
         {
             var content = File.ReadAllText(packageManifest);
 
-            var result = ConvertManifestContentToSdkManifest(content);
+            var result = ConvertManifestContentToSdkManifest(targetFramework, content);
 
             if (!result.Updated)
             {
@@ -606,12 +620,14 @@ namespace Amazon.Lambda.Tools
             }
         }
 
-        public static ConvertManifestContentToSdkManifestResult ConvertManifestContentToSdkManifest(string packageManifestContent)
+        public static ConvertManifestContentToSdkManifestResult ConvertManifestContentToSdkManifest(string targetFramework, string packageManifestContent)
         {
             var originalDoc = XDocument.Parse(packageManifestContent);
 
-            var attr = originalDoc.Root.Attribute("Sdk");
-            if (string.Equals(attr?.Value, "Microsoft.NET.Sdk", StringComparison.OrdinalIgnoreCase))
+            var sdkType = originalDoc.Root.Attribute("Sdk")?.Value ?? "Microsoft.NET.Sdk";
+            var isWebSdk = string.Equals(sdkType, "Microsoft.NET.Sdk.Web", StringComparison.OrdinalIgnoreCase);
+
+            if (string.Equals("netcoreapp2.1", targetFramework) && !isWebSdk)
                 return new ConvertManifestContentToSdkManifestResult(false, packageManifestContent);
 
             
@@ -632,27 +648,43 @@ namespace Amazon.Lambda.Tools
                 throw new LambdaToolsException("Error detecting .NET SDK version: \n\t" + e.Message, LambdaToolsException.LambdaErrorCode.FailedToDetectSdkVersion, e );
             }
 
-            if (dotnetSdkVersion < LambdaConstants.MINIMUM_DOTNET_SDK_VERSION_FOR_ASPNET_LAYERS)
+
+            if (isWebSdk)
             {
-                throw new LambdaToolsException($"To create a runtime package store layer for an ASP.NET Core project " +
-                                               $"version {LambdaConstants.MINIMUM_DOTNET_SDK_VERSION_FOR_ASPNET_LAYERS} " + 
-                                               "or above of the .NET Core SDK must be installed. " +
-                                               "If a 2.1.X SDK is used then the \"dotnet store\" command will include all " +
-                                               "of the ASP.NET Core dependencies that are already available in Lambda.",
-                                                LambdaToolsException.LambdaErrorCode.LayerNetSdkVersionMismatch);
+                if(string.Equals("netcoreapp2.1", targetFramework, StringComparison.OrdinalIgnoreCase))
+                {
+                    if (dotnetSdkVersion < LambdaConstants.MINIMUM_DOTNET_SDK_VERSION_FOR_ASPNET_LAYERS)
+                    {
+                        throw new LambdaToolsException($"To create a runtime package store layer for an ASP.NET Core project " +
+                                                       $"version {LambdaConstants.MINIMUM_DOTNET_SDK_VERSION_FOR_ASPNET_LAYERS} " +
+                                                       "or above of the .NET Core SDK must be installed. " +
+                                                       "If a 2.1.X SDK is used then the \"dotnet store\" command will include all " +
+                                                       "of the ASP.NET Core dependencies that are already available in Lambda.",
+                            LambdaToolsException.LambdaErrorCode.LayerNetSdkVersionMismatch);
+                    }
+
+                    // These were added to make sure the ASP.NET Core dependencies are filter if any of the packages
+                    // depend on them.
+                    // See issue for more info: https://github.com/dotnet/cli/issues/10784
+                    var aspNerCorePackageReference = new XElement("PackageReference");
+                    aspNerCorePackageReference.SetAttributeValue("Include", "Microsoft.AspNetCore.App");
+                    itemGroup.Add(aspNerCorePackageReference);
+
+                    var aspNerCoreUpdatePackageReference = new XElement("PackageReference");
+                    aspNerCoreUpdatePackageReference.SetAttributeValue("Update", "Microsoft.NETCore.App");
+                    aspNerCoreUpdatePackageReference.SetAttributeValue("Publish", "false");
+                    itemGroup.Add(aspNerCoreUpdatePackageReference);
+                }   
+                else
+                {
+                    var frameworkReference = new XElement("FrameworkReference");
+                    frameworkReference.SetAttributeValue("Include", "Microsoft.AspNetCore.App");
+                    var frameworkReferenceGroupItemGroup = new XElement("ItemGroup");
+                    frameworkReferenceGroupItemGroup.Add(frameworkReference);
+                    root.Add(frameworkReferenceGroupItemGroup);
+                }
             }
-            
-            // These were added to make sure the ASP.NET Core dependencies are filter if any of the packages
-            // depend on them.
-            // See issue for more info: https://github.com/dotnet/cli/issues/10784
-            var aspNerCorePackageReference = new XElement("PackageReference");
-            aspNerCorePackageReference.SetAttributeValue("Include", "Microsoft.AspNetCore.App");
-            itemGroup.Add(aspNerCorePackageReference);
-            
-            var aspNerCoreUpdatePackageReference = new XElement("PackageReference");
-            aspNerCoreUpdatePackageReference.SetAttributeValue("Update", "Microsoft.NETCore.App");
-            aspNerCoreUpdatePackageReference.SetAttributeValue("Publish", "false");
-            itemGroup.Add(aspNerCoreUpdatePackageReference);
+
 
             foreach (var packageReference in originalDoc.XPathSelectElements("//ItemGroup/PackageReference"))
             {
@@ -667,6 +699,39 @@ namespace Amazon.Lambda.Tools
                 newRef.SetAttributeValue("Include", packageName);
                 newRef.SetAttributeValue("Version", version);
                 itemGroup.Add(newRef);
+            }
+            
+            // In .NET Core 3.1 the dotnet store command will include system dependencies like System.Runtime if 
+            // any of the packages referenced in the packages included explicit references system dependencies.
+            // This is common on older packages or versions of packages before .NET Core 2.1. Newtonsoft.Json version 9.0.1
+            // is an example of this behavior.
+            //
+            // To avoid these system dependencies getting added to the layer we need to inject the list of system
+            // dependency to prune from the store graph.
+            // 
+            // For further information on the issue check out this GitHub issue: https://github.com/dotnet/sdk/issues/10973 
+            if (string.Equals(targetFramework, "netcoreapp3.1", StringComparison.OrdinalIgnoreCase))
+            {
+                var lambdaAssembly = typeof(LambdaUtilities).Assembly;
+                string manifestName;
+                if (isWebSdk)
+                {
+                    manifestName = lambdaAssembly.GetManifestResourceNames().FirstOrDefault(x => x.EndsWith(LambdaConstants.PRUNE_LIST_SDKWEB_XML));
+                }
+                else
+                {
+                    manifestName = lambdaAssembly.GetManifestResourceNames().FirstOrDefault(x => x.EndsWith(LambdaConstants.PRUNE_LIST_SDK_XML));
+                }
+
+                string pruneListString;
+                using (var stream = lambdaAssembly.GetManifestResourceStream(manifestName))
+                {
+                    pruneListString = new StreamReader(stream).ReadToEnd();
+                }
+
+                var pruneListElement = XElement.Parse(pruneListString);
+                
+                root.Add(pruneListElement);
             }
             
             var updatedDoc = new XDocument(root);
@@ -694,6 +759,59 @@ namespace Amazon.Lambda.Tools
                 default:
                     return "linux-x64";
             }
+        }
+
+        public static async Task WaitTillFunctionAvailableAsync(IToolLogger logger, IAmazonLambda lambdaClient, string functionName)
+        {
+            const int POLL_INTERVAL = 3000;
+            const int MAX_TIMEOUT_MINUTES = 20;
+            try
+            {
+                var request = new GetFunctionConfigurationRequest
+                {
+                    FunctionName = functionName
+                };
+
+                GetFunctionConfigurationResponse response = null;
+
+                bool logInitialMessage = false;
+                var timeout = DateTime.UtcNow.AddMinutes(MAX_TIMEOUT_MINUTES);
+                var startTime = DateTime.UtcNow;
+                do
+                {
+                    response = await lambdaClient.GetFunctionConfigurationAsync(request);
+                    if (response.LastUpdateStatus != LastUpdateStatus.InProgress && response.State != State.Pending)
+                    {
+                        if(response.LastUpdateStatus == LastUpdateStatus.Failed)
+                        {
+                            // Not throwing exception because it is possible the calling code could be fixing the failed state.
+                            logger.WriteLine($"Warning: function {functionName} is currently in failed state: {response.LastUpdateStatusReason}");
+                        }
+
+                        return;
+                    }
+
+                    if(!logInitialMessage)
+                    {
+                        logger.WriteLine($"An update is currently in progress for Lambda function {functionName}. Waiting till update completes.");
+                        logInitialMessage = true;
+                    }
+                    else
+                    {
+                        var ts = DateTime.UtcNow - startTime;
+                        logger.WriteLine($"... Waiting ({ts.TotalSeconds.ToString("N2")} seconds)");
+                    }
+                    await Task.Delay(POLL_INTERVAL);                    
+
+                } while (DateTime.UtcNow < timeout);
+
+            }
+            catch(Exception e)
+            {
+                throw new LambdaToolsException($"Error waiting for Lambda function to be in available status: {e.Message}", LambdaToolsException.LambdaErrorCode.LambdaWaitTillFunctionAvailable);
+            }
+
+            throw new LambdaToolsException($"Timeout waiting for function {functionName} to become available", LambdaToolsException.LambdaErrorCode.LambdaWaitTillFunctionAvailable);
         }
     }
 }

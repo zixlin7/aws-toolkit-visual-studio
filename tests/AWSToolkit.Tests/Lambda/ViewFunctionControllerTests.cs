@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Amazon.AWSToolkit.Lambda.Controller;
+using Amazon.AWSToolkit.Lambda.Model;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 using Castle.Core.Internal;
@@ -11,11 +14,14 @@ namespace AWSToolkit.Tests.Lambda
 {
     public class ViewFunctionControllerTests
     {
+        private static readonly string SampleImageUri = "some-repo-uri";
+
         private readonly Mock<IAmazonLambda> _lambda = new Mock<IAmazonLambda>();
         private readonly ViewFunctionController _controller;
         private readonly GetFunctionConfigurationResponse _getPendingResponse;
         private readonly GetFunctionConfigurationResponse _getActiveResponse;
         private readonly GetFunctionConfigurationResponse _getInitialResponse;
+        private readonly GetFunctionConfigurationResponse _packageTypeImageResponse;
         private readonly UpdateFunctionConfigurationResponse _updateProgressResponse;
 
         public ViewFunctionControllerTests()
@@ -53,6 +59,33 @@ namespace AWSToolkit.Tests.Lambda
             {
                 State = State.Pending,
                 LastModified = "2015-12-11T12:28:30.45Z"
+            };
+
+            _packageTypeImageResponse = new GetFunctionConfigurationResponse()
+            {
+                State = State.Active,
+                PackageType = PackageType.Image,
+                ImageConfigResponse = new ImageConfigResponse()
+                {
+                    ImageConfig = new ImageConfig()
+                    {
+                        Command = new List<string>()
+                        {
+                            "command1",
+                            "command2",
+                            "command3",
+                        },
+                        EntryPoint = new List<string>()
+                        {
+                            "entry1",
+                            "entry2",
+                            "entry3",
+                        },
+                        WorkingDirectory = "/some/dir",
+                    }
+                },
+                CodeSize = 0,
+                LastModified = "2015-12-11T12:28:30.45Z",
             };
         }
 
@@ -138,6 +171,70 @@ namespace AWSToolkit.Tests.Lambda
             Assert.Equal(Collapsed, _controller.Model.InvokeWarningVisibility);
             Assert.True(_controller.Model.InvokeWarningText.IsNullOrEmpty());
             Assert.Contains("Invoke Function", _controller.Model.InvokeWarningTooltip);
+        }
+
+        [Fact]
+        public void RefreshFunctionConfiguration_ImageType()
+        {
+            _lambda.Setup(mock => mock.GetFunctionConfiguration(It.IsAny<String>()))
+                .Returns(_packageTypeImageResponse);
+
+            _lambda.Setup(mock => mock.GetFunction(It.IsAny<string>()))
+                .Returns(new GetFunctionResponse()
+                {
+                    Code = new FunctionCodeLocation()
+                    {
+                        ImageUri = SampleImageUri
+                    }
+                });
+
+            _controller.RefreshFunctionConfiguration(this._lambda.Object);
+
+            Assert.Equal(PackageType.Image, _controller.Model.PackageType);
+            Assert.Equal(SampleImageUri, _controller.Model.ImageUri);
+            Assert.Equal(ViewFunctionModel.CodeSizeNotApplicable, _controller.Model.CodeSizeFormatted);
+            Assert.Equal("command1,command2,command3", _controller.Model.ImageCommand);
+            Assert.Equal("entry1,entry2,entry3", _controller.Model.ImageEntrypoint);
+            Assert.Equal(_packageTypeImageResponse.ImageConfigResponse.ImageConfig.WorkingDirectory, _controller.Model.ImageWorkingDirectory);
+        }
+
+        [Theory]
+        [InlineData("aaa,bbb,ccc")]
+        [InlineData("aaa,,bbb,ccc")]
+        [InlineData("aaa, bbb ,ccc")]
+        [InlineData(" aaa , bbb , ccc ")]
+        public void SplitByComma(string text)
+        {
+            var expectedList = new List<string>() {"aaa", "bbb", "ccc"};
+
+            Assert.Equal(expectedList, ViewFunctionController.SplitByComma(text));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData(null)]
+        public void SplitByComma_WhenEmpty(string text)
+        {
+            Assert.Null(ViewFunctionController.SplitByComma(text));
+        }
+
+        [Fact]
+        public void JoinByComma()
+        {
+            var list = new List<string>() {"aaa", "bbb", "ccc"};
+            AssertJoinByComma(list, "aaa,bbb,ccc");
+
+            list = new List<string>() {" aaa ", " bbb ", " ccc "};
+            AssertJoinByComma(list, " aaa , bbb , ccc ");
+
+            list = new List<string>() {" aaa ", "", " bbb ", " ccc "};
+            AssertJoinByComma(list, " aaa ,, bbb , ccc ");
+        }
+
+        private void AssertJoinByComma(List<string> strings, string expectedText)
+        {
+            Assert.Equal(expectedText, ViewFunctionController.JoinByComma(strings));
         }
     }
 }

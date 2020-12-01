@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 using Task = System.Threading.Tasks.Task;
+
+using Amazon.ECR.Model;
 using Amazon.ECS.Model;
 using ThirdParty.Json.LitJson;
+using System.IO;
 using Amazon.Common.DotNetCli.Tools.Options;
 using Amazon.Common.DotNetCli.Tools;
 
@@ -59,7 +64,7 @@ namespace Amazon.ECS.Tools.Commands
 
                 return this._deployServiceProperties;
             }
-            set => this._deployServiceProperties = value;
+            set { this._deployServiceProperties = value; }
         }
 
 

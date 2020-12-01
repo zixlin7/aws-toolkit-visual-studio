@@ -1,0 +1,28 @@
+{
+    "types": [
+        {
+            "name": "lambdaPackageType",
+            "allowedValues": ["Zip", "Image"],
+            "description": "The Lambda Package type of the function"
+        }
+    ],
+    "metrics": [
+        {
+            "name": "lambda_deploy",
+            "description": "Called when deploying a Lambda Function",
+            "metadata": [
+                { "type": "lambdaPackageType" },
+                { "type": "result" },
+                { "type": "regionId" },
+                { "type": "initialDeploy" },
+                { "type": "runtime", "required": false },
+                { "type": "platform", "required": false }
+            ]
+        },
+        {
+            "name": "lambda_invokeLocal",
+            "description": "Called when invoking lambdas locally (with SAM in most toolkits)",
+            "metadata": [{ "type": "runtime", "required": false }, {"type": "lambdaPackageType"}, { "type": "result" }, { "type": "debug" }]
+        }
+    ]
+}

@@ -1,21 +1,22 @@
 ﻿using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Lambda.Controller;
 using Amazon.AWSToolkit.Lambda.Model;
 using Amazon.AWSToolkit.Lambda.Nodes;
+using Amazon.AWSToolkit.Lambda.ViewModel;
+using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Tasks;
+using Amazon.ECR;
 using Amazon.Lambda;
-using Amazon.Lambda.Model;
 using log4net;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using ThirdParty.Json.LitJson;
+using Amazon.Common.DotNetCli.Tools;
 using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
@@ -25,45 +26,79 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
     /// </summary>
     public partial class UploadFunctionDetailsPage : INotifyPropertyChanged
     {
-        const string HANDLER_DESCRIPTION_CUSTOM_RUNTIME = "For custom runtimes the handler field is optional. The value is made available to the Lambda function through the _HANDLER environment variable.";
-        const string HANDLER_DESCRIPTION_GENERIC = "The handler identifies the function within your code that Lambda calls to begin execution. For Node.js, it is the module-name.export value in your function. For .NET it will be: <assembly>::<type>::<method>";
+        const string HandlerTooltipBase = "The function within your code that Lambda calls to begin execution.";
+        const string HandlerTooltipDotNet = "For .NET, it is in the form: <assembly>::<type>::<method>";
+        const string HandlerTooltipGeneric = "For Node.js, it is the module-name.export value of your function.";
+        const string HandlerTooltipCustomRuntime = "For custom runtimes the handler field is optional. The value is made available to the Lambda function through the _HANDLER environment variable.";
 
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionDetailsPage));
+        private static readonly IDictionary<string, RuntimeOption> RuntimeByFramework =
+            new Dictionary<string, RuntimeOption>(StringComparer.OrdinalIgnoreCase)
+            {
+                {Frameworks.NetCoreApp21, RuntimeOption.NetCore_v2_1},
+                {Frameworks.NetCoreApp31, RuntimeOption.NetCore_v3_1},
+            };
+
+        private static readonly IDictionary<RuntimeOption, string> FrameworkByRuntime =
+            new Dictionary<RuntimeOption, string>()
+            {
+                {RuntimeOption.NetCore_v2_1, Frameworks.NetCoreApp21},
+                {RuntimeOption.NetCore_v3_1, Frameworks.NetCoreApp31},
+            };
 
         public IAWSWizardPageController PageController { get; }
+        private IAWSToolkitShellProvider _shellProvider;
 
-        Dictionary<string, FunctionConfiguration> _existingFunctions = new Dictionary<string, FunctionConfiguration>();
-
-        public DeploymentType DeploymentType { get; private set; }
         public UploadOriginator UploadOriginator { get; }
+        public UploadFunctionViewModel ViewModel { get; }
 
-        private string SeedFunctionName { get; set; }
-
-        public UploadFunctionDetailsPage()
+        public UploadFunctionDetailsPage() : this(ToolkitFactory.Instance.ShellProvider)
         {
+
+        }
+
+        public UploadFunctionDetailsPage(IAWSToolkitShellProvider shellProvider)
+        {
+            _shellProvider = shellProvider;
             InitializeComponent();
             DataContext = this;
+            ViewModel = new UploadFunctionViewModel(shellProvider)
+            {
+                PackageType = Amazon.Lambda.PackageType.Zip
+            };
+
+            ViewModel.PropertyChanged += OnViewModelPropertyChanged;
         }
 
         public UploadFunctionDetailsPage(IAWSWizardPageController pageController)
-            : this()
+            : this(pageController, ToolkitFactory.Instance.ShellProvider)
+        {
+        }
+
+        public UploadFunctionDetailsPage(IAWSWizardPageController pageController, 
+            IAWSToolkitShellProvider shellProvider)
+            : this(shellProvider)
         {
             PageController = pageController;
             var hostWizard = PageController.HostingWizard;
 
-            DeploymentType 
+            var deploymentType 
                 = (DeploymentType)hostWizard.CollectedProperties[UploadFunctionWizardProperties.DeploymentType];
             UploadOriginator
                 = (UploadOriginator)hostWizard.CollectedProperties[UploadFunctionWizardProperties.UploadOriginator];
 
-            this._ctlTypeName.DataContext = this;
-            this._ctlMethodName.DataContext = this;
+            RuntimeOption.ALL_OPTIONS.ToList().ForEach(r => ViewModel.Runtimes.Add(r));
 
-            this._ctlRuntime.ItemsSource = RuntimeOption.ALL_OPTIONS;
+            SetPanelsForOriginatorAndType();
 
-            this.ResetToDefaults();
+            ViewModel.Runtime = deploymentType == DeploymentType.NETCore
+                ? RuntimeOption.NetCore_v2_1
+                : RuntimeOption.NodeJS_v12_X;
 
-            SetPanelsForOriginatorAndType(true);
+            if (ViewModel.Runtime.IsNetCore)
+            {
+                InitializeNETCoreFields();
+            }
 
             var userAccount = hostWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
             var regionEndpoints = hostWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
@@ -72,404 +107,193 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             this._ctlAccountAndRegion.PropertyChanged += _ctlAccountAndRegion_PropertyChanged;
 
             var buildConfiguration = hostWizard[UploadFunctionWizardProperties.Configuration] as string;
-            if (!string.IsNullOrEmpty(buildConfiguration) && this._ctlConfigurationPicker.Items.Contains(buildConfiguration))
+            if (!string.IsNullOrEmpty(buildConfiguration) && ViewModel.Configurations.Contains(buildConfiguration))
             {
-                this.Configuration = buildConfiguration;
+                ViewModel.Configuration = buildConfiguration;
             }
 
             var targetFramework = hostWizard[UploadFunctionWizardProperties.Framework] as string;
-            if (!string.IsNullOrEmpty(targetFramework) && this._ctlFrameworkPicker.Items.Contains(targetFramework))
-            {
-                this.Framework = targetFramework;
-            }
+            ViewModel.SetFrameworkIfExists(targetFramework);
 
             if (UploadOriginator == UploadOriginator.FromSourcePath)
                 this.UpdateExistingFunctions();
 
             if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.FunctionName))
             {
-                this.SeedFunctionName = hostWizard.CollectedProperties[UploadFunctionWizardProperties.FunctionName] as string;
-                this._ctlFunctionNameText.Text = this.SeedFunctionName;
-                this._ctlFunctionNamePicker.Items.Add(this.SeedFunctionName);
-                this._ctlFunctionNamePicker.SelectedValue = this.SeedFunctionName;
+                ViewModel.FunctionName = hostWizard.CollectedProperties[UploadFunctionWizardProperties.FunctionName] as string;
             }
 
             if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.Handler))
             {
-                Handler = hostWizard.CollectedProperties[UploadFunctionWizardProperties.Handler] as string;
-
-                var tokens = this.Handler.Split(new string[] { "::" }, StringSplitOptions.RemoveEmptyEntries);
-                if(tokens.Length == 3)
-                {
-                    this.Assembly = tokens[0];
-                    this.TypeName = tokens[1];
-                    this.MethodName = tokens[2];
-                }
+                ViewModel.Handler = hostWizard.CollectedProperties[UploadFunctionWizardProperties.Handler] as string;
             }
 
             if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.SourcePath))
             {
-                SourcePath = hostWizard.CollectedProperties[UploadFunctionWizardProperties.SourcePath] as string;
+                ViewModel.SourceCodeLocation = hostWizard.CollectedProperties[UploadFunctionWizardProperties.SourcePath] as string;
             }
 
             if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.Description))
             {
-                Description = hostWizard.CollectedProperties[UploadFunctionWizardProperties.Description] as string;
+                ViewModel.Description = hostWizard.CollectedProperties[UploadFunctionWizardProperties.Description] as string;
             }
 
             if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.SuggestedMethods))
             {
-                _suggestionCache = hostWizard.CollectedProperties[UploadFunctionWizardProperties.SuggestedMethods] as IDictionary<string, IList<string>>;
-                if (_suggestionCache != null)
-                {
-                    var typeNames = _suggestionCache.Keys.ToArray();
+                PopulateSuggestionCache(
+                    hostWizard.CollectedProperties[UploadFunctionWizardProperties.SuggestedMethods] as
+                        IDictionary<string, IList<string>>);
 
+                _suggestionCache.Keys
+                    .Select(type => new
+                    {
+                        Type = type,
+                        Segments = type.Split('.').Length
+                    })
                     // Sort so that files higher up the namespace come first.
-                    Array.Sort(typeNames, (x, y) =>
-                    {
-                        var tokensX = x.Split('.').Length;
-                        var tokensY = y.Split('.').Length;
-
-                        if (tokensX < tokensY)
-                            return -1;
-                        else if (tokensY < tokensX)
-                            return 1;
-
-                        return string.Compare(x, y);
-                    });
-
-                    foreach (var type in typeNames)
-                    {
-                        SuggestedTypes.Add(type);
-                    }
-                }
+                    // Eg: Foo.Bar, then Alpha.Beta.Gamma
+                    .OrderBy(x => x.Segments)
+                    .ThenBy(x => x.Type)
+                    .ToList()
+                    .ForEach(x => ViewModel.HandlerTypeSuggestions.Add(x.Type));
             }
 
             if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.Runtime))
             {
-                Runtime = hostWizard[UploadFunctionWizardProperties.Runtime] as RuntimeOption;
+                var runtime = hostWizard[UploadFunctionWizardProperties.Runtime] as Amazon.Lambda.Runtime;
+                ViewModel.Runtime = ViewModel.Runtimes.FirstOrDefault(x => x.Value == runtime?.Value);
             }
 
-            this._ctlPersistSettings.IsChecked = true;
+            UpdateImageRepos().LogExceptionAndForget();
+
+            if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.PackageType))
+            {
+                ViewModel.PackageType =
+                    hostWizard.CollectedProperties[UploadFunctionWizardProperties.PackageType] as
+                        PackageType ?? Amazon.Lambda.PackageType.Zip;
+            }
+
+            if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.Dockerfile))
+            {
+                ViewModel.Dockerfile = hostWizard.CollectedProperties[UploadFunctionWizardProperties.Dockerfile] as string;
+            }
+
+            if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.ImageCommand))
+            {
+                ViewModel.ImageCommand = hostWizard.CollectedProperties[UploadFunctionWizardProperties.ImageCommand] as string;
+            }
+
+            if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.ImageRepo))
+            {
+                ViewModel.ImageRepo = hostWizard.CollectedProperties[UploadFunctionWizardProperties.ImageRepo] as string;
+            }
+
+            if (hostWizard.IsPropertySet(UploadFunctionWizardProperties.ImageTag))
+            {
+                ViewModel.ImageTag = hostWizard.CollectedProperties[UploadFunctionWizardProperties.ImageTag] as string;
+            }
+
+            ViewModel.SaveSettings = true;
         }
 
-        private void SetPanelsForOriginatorAndType(bool isFirstTimeConfig)
+        // todo : rename?
+        private void SetPanelsForOriginatorAndType()
         {
             switch (UploadOriginator)
             {
                 case UploadFunctionController.UploadOriginator.FromSourcePath:
                     this._ctlAccountPanel.Visibility = Visibility.Visible;
-                    this._ctlSourcePanel.Visibility = Visibility.Collapsed;
-                    this._ctlFunctionNamePicker.Visibility = Visibility.Visible;
-                    this._ctlFunctionNameText.Visibility = Visibility.Collapsed;
+                    ViewModel.ShowSourceLocation = false;
+                    ViewModel.CanEditPackageType = true;
                     break;
                 case UploadFunctionController.UploadOriginator.FromAWSExplorer:
                     this._ctlAccountPanel.Visibility = Visibility.Collapsed;
-                    this._ctlSourcePanel.Visibility = Visibility.Visible;
-                    this._ctlFunctionNamePicker.Visibility = Visibility.Collapsed;
-                    this._ctlFunctionNameText.Visibility = Visibility.Visible;
+                    ViewModel.ShowSourceLocation = true;
+
+                    // Entering the Lambda Deploy Wizard from the AWS Explorer does not
+                    // support image deploys at this time.
+                    ViewModel.PackageType = Amazon.Lambda.PackageType.Zip;
+                    ViewModel.CanEditPackageType = false;
                     break;
                 case UploadFunctionController.UploadOriginator.FromFunctionView:
                     this._ctlAccountPanel.Visibility = Visibility.Collapsed;
-                    this._ctlSourcePanel.Visibility = Visibility.Visible;
-                    this._ctlFunctionNamePicker.Visibility = Visibility.Collapsed;
-                    this._ctlFunctionNameText.Visibility = Visibility.Visible;
-                    this._ctlFunctionNameText.IsReadOnly = true;
-                    break;
-            }
+                    ViewModel.ShowSourceLocation = true;
+                    ViewModel.CanEditFunctionName = false;
 
-            switch (DeploymentType)
-            {
-                case UploadFunctionController.DeploymentType.Generic:
-                    this._ctlNETCoreFrameworkPanel.Visibility = Visibility.Collapsed;
-                    this._ctlNETCoreHandlerPanel.Visibility = Visibility.Collapsed;
-                    this._ctlGenericHandlerPanel.Visibility = Visibility.Visible;
-                    this._ctlPersistPanel.Visibility = Visibility.Collapsed;
-                    this._ctlGenericHandlerDescription.Text = HANDLER_DESCRIPTION_GENERIC;
-                    if (isFirstTimeConfig)
-                    {
-                        Runtime = RuntimeOption.NodeJS_v12_X;
-                    }
-                    break;
-                case UploadFunctionController.DeploymentType.NETCore:
-                    this._ctlNETCoreFrameworkPanel.Visibility = Visibility.Visible;
-                    if (this.Runtime == RuntimeOption.PROVIDED)
-                    {
-                        this._ctlNETCoreHandlerPanel.Visibility = Visibility.Collapsed;
-                        this._ctlGenericHandlerPanel.Visibility = Visibility.Visible;
-                        this._ctlPersistPanel.Visibility = Visibility.Visible;
-                        this._ctlGenericHandlerDescription.Text = HANDLER_DESCRIPTION_CUSTOM_RUNTIME;
-                        if (isFirstTimeConfig)
-                        {
-                            InitializeControlForNETCore(PageController.HostingWizard[UploadFunctionWizardProperties.SourcePath] as string);
-                            InitializeNETCoreFields();
-                        }
-                    }
-                    else
-                    {
-                        this._ctlNETCoreHandlerPanel.Visibility = Visibility.Visible;
-                        this._ctlGenericHandlerPanel.Visibility = Visibility.Collapsed;
-                        this._ctlPersistPanel.Visibility = Visibility.Visible;
-                        this._ctlGenericHandlerDescription.Text = string.Empty;
-                        if (isFirstTimeConfig)
-                        {
-                            Runtime = RuntimeOption.NetCore_v2_1;
-                            InitializeControlForNETCore(PageController.HostingWizard[UploadFunctionWizardProperties.SourcePath] as string);
-                            InitializeNETCoreFields();
-                        }
-                    }
+                    // Entering the Lambda Deploy Wizard from the the function view
+                    // only works with node-based managed runtimes.
+                    ViewModel.PackageType = Amazon.Lambda.PackageType.Zip;
+                    ViewModel.CanEditPackageType = false;
                     break;
             }
         }
 
-        IDictionary<string, IList<string>> _suggestionCache;
-        public ObservableCollection<string> SuggestedTypes { get; set; } = new ObservableCollection<string>();
-        public ObservableCollection<string> SuggestedMethods { get; set; } = new ObservableCollection<string>();
+        /// <summary>
+        /// Map of Handler "Type" values to Lists of related Function names
+        /// </summary>
+        private readonly IDictionary<string, IList<string>> _suggestionCache = new Dictionary<string, IList<string>>();
 
-        private void _ctlTypeName_TextChanged(object sender, TextChangedEventArgs e)
+        /// <summary>
+        /// Set the Handler Method field to a suggested method if there is one.
+        /// </summary>
+        private void UpdateHandlerMethodSuggestion()
         {
-            if (_suggestionCache == null)
-                return;
+            ViewModel.HandlerMethodSuggestions.Clear();
 
-            this.SuggestedMethods.Clear();
-            IList<string> methods;
-            if (_suggestionCache.TryGetValue(_ctlTypeName.Text, out methods))
+            if (!_suggestionCache.TryGetValue(ViewModel.HandlerType, out var methods))
             {
-                foreach (var method in methods)
-                {
-                    this.SuggestedMethods.Add(method);
-                }
+                return;
+            }
 
-                if(this.SuggestedMethods.Count == 1)
-                {
-                    this._ctlMethodName.Text = this.SuggestedMethods[0];
-                }
+            foreach (var method in methods)
+            {
+                ViewModel.HandlerMethodSuggestions.Add(method);
+            }
+
+            if (ViewModel.HandlerMethodSuggestions.Count > 0)
+            {
+                ViewModel.HandlerMethod = ViewModel.HandlerMethodSuggestions.First();
             }
         }
 
         private void InitializeNETCoreFields()
         {
-            this._ctlConfigurationPicker.Items.Add("Release");
-            this._ctlConfigurationPicker.Items.Add("Debug");
-            this.Configuration = "Release";
+            ViewModel.Configurations.Add("Release");
+            ViewModel.Configurations.Add("Debug");
+            ViewModel.Configuration = "Release";
 
             var projectFrameworks = this.PageController.HostingWizard[UploadFunctionWizardProperties.ProjectTargetFrameworks] as IList<string>;
             if(projectFrameworks != null && projectFrameworks.Count > 0)
             {
                 foreach(var framework in projectFrameworks)
                 {
-                    this._ctlFrameworkPicker.Items.Add(framework);
+                    ViewModel.Frameworks.Add(framework);
                 }
             }
             else
             {
-                this._ctlFrameworkPicker.Items.Add("netcoreapp1.0");
-                this._ctlFrameworkPicker.Items.Add("netcoreapp2.1");
+                ViewModel.Frameworks.Add(Frameworks.NetCoreApp10);
+                ViewModel.Frameworks.Add(Frameworks.NetCoreApp21);
             }
 
-            this._ctlFrameworkPicker.SelectedIndex = 0;
-            this.Framework = this._ctlFrameworkPicker.Items[0].ToString();
+            ViewModel.Framework = ViewModel.Frameworks.First();
         }
-
-        public string FunctionName
-        {
-            get
-            {
-                switch (UploadOriginator)
-                {
-                    case UploadFunctionController.UploadOriginator.FromSourcePath:
-                        return this._ctlFunctionNamePicker.Text;
-                    default:
-                        return this._ctlFunctionNameText.Text;
-                }
-            }
-        }
-
-        public bool SaveSettings => this._ctlPersistSettings.IsChecked.GetValueOrDefault();
 
         public AccountViewModel SelectedAccount => _ctlAccountAndRegion.SelectedAccount;
 
         public RegionEndPointsManager.RegionEndPoints SelectedRegion => _ctlAccountAndRegion.SelectedRegion;
 
-        string _configuration;
-        public string Configuration
+        private bool ShowDotNetHandlerComponents =>
+            ViewModel.Runtime != null && ViewModel.Runtime.IsNetCore && !ViewModel.Runtime.IsCustomRuntime;
+
+        private static RuntimeOption GetRuntimeOptionForFramework(string framework)
         {
-            get => _configuration;
-            set
+            if (!RuntimeByFramework.TryGetValue(framework, out var runtimeOption))
             {
-                _configuration = value;
-                NotifyPropertyChanged("Configuration");
+                runtimeOption = RuntimeOption.PROVIDED;
             }
-        }
 
-        bool _inRuntimeFrameworkEvent;
-
-        string _framework;
-        public string Framework
-        {
-            get => _framework;
-            set
-            {
-                _framework = value;
-                if(!_inRuntimeFrameworkEvent)
-                {
-                    _inRuntimeFrameworkEvent = true;
-                    try
-                    {
-                        NotifyPropertyChanged("Framework");
-                        if (string.Equals(_framework, "netcoreapp3.1", StringComparison.OrdinalIgnoreCase))
-                        {
-                            _runtime = RuntimeOption.NetCore_v3_1;
-                        }
-                        else if (string.Equals(_framework, "netcoreapp2.1", StringComparison.OrdinalIgnoreCase))
-                        {
-                            _runtime = RuntimeOption.NetCore_v2_1;
-                        }
-                        else
-                        {
-                            _runtime = RuntimeOption.PROVIDED;                            
-                        }
-
-                        this._ctlRuntime.SelectedItem = _runtime;
-                    }
-                    finally
-                    {
-                        _inRuntimeFrameworkEvent = false;
-                    }
-                }
-            }
-        }
-
-        RuntimeOption _runtime;
-        public RuntimeOption Runtime
-        {
-            get => _runtime;
-            set
-            {
-                _runtime = value;
-                if (!_inRuntimeFrameworkEvent)
-                {
-                    _inRuntimeFrameworkEvent = true;
-                    try
-                    {
-                        NotifyPropertyChanged("Runtime");
-                        if (RuntimeOption.NetCore_v3_1 == _runtime && this._ctlFrameworkPicker.Items.Contains("netcoreapp3.1"))
-                        {
-                            _framework = "netcoreapp3.1";
-                            this._ctlFrameworkPicker.SelectedItem = "netcoreapp3.1";
-                        }
-                        else if (RuntimeOption.NetCore_v2_1 == _runtime && this._ctlFrameworkPicker.Items.Contains("netcoreapp2.1"))
-                        {
-                            _framework = "netcoreapp2.1";
-                            this._ctlFrameworkPicker.SelectedItem = "netcoreapp2.1";
-                        }
-                    }
-                    finally
-                    {
-                        _inRuntimeFrameworkEvent = false;
-                    }
-                }
-            }
-        }
-
-        public string RuntimeValue
-        {
-            get
-            {
-                if (Runtime == null)
-                    return null;
-
-                return Runtime.Value;
-            }
-        }
-
-        string _sourcePath;
-        public string SourcePath
-        {
-            get => _sourcePath;
-            set
-            {
-                _sourcePath = value;
-                NotifyPropertyChanged("SourcePath");
-            }
-        }
-
-        string _description;
-        public string Description
-        {
-            get => _description;
-            set
-            {
-                _description = value;
-                NotifyPropertyChanged("Description");
-            }
-        }
-
-        string _handler;
-        public string Handler
-        {
-            get => _handler;
-            set
-            {
-                _handler = value;
-                NotifyPropertyChanged("Handler");
-            }
-        }
-
-        public string FormattedHandler
-        {
-            get
-            {
-                if (DeploymentType == DeploymentType.NETCore && this.Runtime != RuntimeOption.PROVIDED)
-                    return string.Format("{0}::{1}::{2}", Assembly, TypeName, MethodName);
-
-                return _handler;
-            }
-        }
-
-        string _assemblyName;
-        public string Assembly
-        {
-            get => _assemblyName;
-            set
-            {
-                _assemblyName = value;
-                NotifyPropertyChanged("Assembly");
-            }
-        }
-
-        string _typeName;
-        public string TypeName
-        {
-            get => _typeName;
-            set
-            {
-                _typeName = value;
-                NotifyPropertyChanged("TypeName");
-            }
-        }
-
-        string _methodName;
-        public string MethodName
-        {
-            get => _methodName;
-            set
-            {
-                _methodName = value;
-                NotifyPropertyChanged("MethodName");
-            }
-        }
-
-        void ResetToDefaults()
-        {
-            if (!string.IsNullOrEmpty(this.SeedFunctionName) && this._ctlFunctionNamePicker.Items.Contains(this.SeedFunctionName))
-            {
-                this._ctlFunctionNamePicker.SelectedValue = this.SeedFunctionName;
-            }
-            else
-            {
-                this._ctlFunctionNamePicker.SelectedValue = null;
-            }
+            return runtimeOption;
         }
 
         void _ctlAccountAndRegion_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -481,55 +305,71 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             PageController.HostingWizard.SetProperty(UploadFunctionWizardProperties.Region, this._ctlAccountAndRegion.SelectedRegion);
 
             this.UpdateExistingFunctions();
+            this.UpdateImageRepos().LogExceptionAndForget();
+            this.UpdateImageTags().LogExceptionAndForget();
         }
 
-        private bool _loadingExistingFunctions = false;
         private void UpdateExistingFunctions()
         {
-            this._loadingExistingFunctions = true;
-            this._existingFunctions.Clear();
-
             try
             {
-                if (this._ctlAccountAndRegion.SelectedAccount == null || this._ctlAccountAndRegion.SelectedRegion == null)
-                    return;
-
-                using (var lambdaClient = this._ctlAccountAndRegion.SelectedAccount.CreateServiceClient<AmazonLambdaClient>(this._ctlAccountAndRegion.SelectedRegion.GetEndpoint(RegionEndPointsManager.LAMBDA_SERVICE_NAME)))
+                if (_ctlAccountAndRegion.SelectedAccount == null ||
+                    _ctlAccountAndRegion.SelectedRegion == null)
                 {
-
-                    var response = new ListFunctionsResponse();
-
-                    do
-                    {
-                        response = lambdaClient.ListFunctions(new ListFunctionsRequest { Marker = response.NextMarker });
-                        foreach (var function in response.Functions)
-                        {
-                            this._existingFunctions[function.FunctionName] = function;
-                        }
-
-
-                    } while (!string.IsNullOrEmpty(response.NextMarker));
+                    return;
                 }
 
-                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
+                using (var lambdaClient =
+                    CreateServiceClient<AmazonLambdaClient>(RegionEndPointsManager.LAMBDA_SERVICE_NAME))
                 {
-                    this._ctlFunctionNamePicker.Items.Clear();
-                    if (!string.IsNullOrEmpty(this.SeedFunctionName))
-                    {
-                        this._ctlFunctionNamePicker.Items.Add(this.SeedFunctionName);
-                    }
+                    ViewModel.UpdateFunctionsList(lambdaClient).LogExceptionAndForget();
+                }
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Error refreshing existing lambda functions.", e);
+            }
+        }
 
-                    foreach (var functionName in this._existingFunctions.Keys.OrderBy(x => x.ToLowerInvariant()))
-                    {
-                        if (!string.Equals(functionName, this.SeedFunctionName, StringComparison.Ordinal))
-                        {
-                            this._ctlFunctionNamePicker.Items.Add(functionName);
-                        }
-                    }
+        private async Task UpdateImageRepos()
+        {
+            try
+            {
+                if (_ctlAccountAndRegion.SelectedAccount == null ||
+                    _ctlAccountAndRegion.SelectedRegion == null)
+                {
+                    return;
+                }
 
-                    this.ResetToDefaults();
-                    this._loadingExistingFunctions = false;
-                });
+                using (var ecrClient = CreateServiceClient<AmazonECRClient>(RegionEndPointsManager.ECR_SERVICE_NAME))
+                {
+                    // Reset ImageRepo to be re-selected or re-entered
+                    _shellProvider.ExecuteOnUIThread(() => { ViewModel.ImageRepo = string.Empty; });
+                    await ViewModel.UpdateImageRepos(ecrClient);
+                }
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Error refreshing existing lambda functions.", e);
+            }
+        }
+
+        private async Task UpdateImageTags()
+        {
+            try
+            {
+                if (_ctlAccountAndRegion.SelectedAccount == null ||
+                    _ctlAccountAndRegion.SelectedRegion == null)
+                {
+                    return;
+                }
+
+                using (var ecrClient = CreateServiceClient<AmazonECRClient>(RegionEndPointsManager.ECR_SERVICE_NAME))
+                {
+                    // Reset ImageTag to be re-selected or re-entered
+                    _shellProvider.ExecuteOnUIThread(() => { ViewModel.ImageTag = "latest"; });
+                    await ViewModel.UpdateImageTags(ecrClient);
+                }
             }
             catch (Exception e)
             {
@@ -541,115 +381,79 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         {
             get
             {
-                if (!File.Exists(this.SourcePath) && !Directory.Exists(this.SourcePath))
-                {
-                    return false;
-                }
-                if (string.IsNullOrEmpty(this.FunctionName))
+                if (string.IsNullOrEmpty(this.ViewModel.FunctionName))
                 {
                     return false;
                 }
 
-                if (DeploymentType == UploadFunctionController.DeploymentType.NETCore)
+                if (ViewModel.PackageType.Equals(Amazon.Lambda.PackageType.Zip))
                 {
-                    if (this.Runtime != RuntimeOption.PROVIDED)
-                    {
-                        if (string.IsNullOrEmpty(this.Assembly))
-                        {
-                            return false;
-                        }
-                        if (string.IsNullOrEmpty(this.TypeName))
-                        {
-                            return false;
-                        }
-                        if (string.IsNullOrEmpty(this.MethodName))
-                        {
-                            return false;
-                        }
-                    }
-                }
-                else
-                {
-                    if (string.IsNullOrEmpty(this.Handler))
-                    {
-                        return false;
-                    }
+                    return AllRequiredFieldsForZipAreSet();
                 }
 
-                return true;
+                return AllRequiredFieldsForImageAreSet();
             }
         }
 
-        private void BrowseDirectory_Click(object sender, RoutedEventArgs e)
+        private void OnViewModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            string directory = DirectoryBrowserDlgHelper.ChooseDirectory(this, "Select a directory containing the code for the Lambda function. This directory will be zipped up and uploaded to Lambda.");
-            if (string.IsNullOrEmpty(directory))
-                return;
-
-            this._ctlSource.Text = directory;
-        }
-
-        private void BrowseFile_Click(object sender, RoutedEventArgs e)
-        {
-            var dlg = new Microsoft.Win32.OpenFileDialog();
-            dlg.Title = "Select Lambda Function code";
-            dlg.CheckPathExists = true;
-            dlg.Multiselect = false;
-            dlg.Filter = "Lamda Functions (*.js, *.zip)|*.js;*.zip|All Files (*.*)|*";
-
-            if (!dlg.ShowDialog().GetValueOrDefault())
+            if (e.PropertyName == nameof(ViewModel.PackageType))
             {
-                return;
+                ViewModel.CanEditRuntime = ViewModel.PackageType == Amazon.Lambda.PackageType.Zip;
+                RecommendRepoNameIfEmpty();
             }
 
-            this._ctlSource.Text = dlg.FileName;
-        }
-
-        private void _ctlFunctionName_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            UpdateIfUsingExistingFunction();
-            if (_loadingExistingFunctions)
-                return;
-
-            NotifyPropertyChanged("FunctionName");
-        }
-
-        private void _ctlFunctionName_TextChanged(object sender, RoutedEventArgs e)
-        {
-            UpdateIfUsingExistingFunction();
-            NotifyPropertyChanged("FunctionName");
-        }
-
-        private void UpdateIfUsingExistingFunction()
-        {
-            IAWSWizard hostWizard = PageController.HostingWizard;
-            hostWizard.SetProperty(UploadFunctionWizardProperties.IsSelectedFunctionExisting, 
-                this._ctlFunctionNamePicker.SelectedValue != null && this._existingFunctions.ContainsKey(this._ctlFunctionNamePicker.SelectedValue as string));
-        }
-
-        private void _ctlFunctionNamePicker_DropDownClosed(object sender, EventArgs e)
-        {
-            FunctionConfiguration existingConfig;
-
-            if (this._ctlFunctionNamePicker.SelectedValue != null
-                    && this._existingFunctions.TryGetValue(this._ctlFunctionNamePicker.SelectedValue as string, out existingConfig))
+            if (e.PropertyName == nameof(ViewModel.Framework))
             {
-                Description = existingConfig.Description;
+                // Set the Runtime to a compatible value
+                ViewModel.Runtime = GetRuntimeOptionForFramework(ViewModel.Framework);
+            }
 
-                if (this._ctlHandler.Visibility == Visibility.Visible)
+            if (e.PropertyName == nameof(ViewModel.Runtime))
+            {
+                OnRuntimeChanged();
+            }
+
+            if (e.PropertyName == nameof(ViewModel.HandlerAssembly) ||
+                e.PropertyName == nameof(ViewModel.HandlerType) || e.PropertyName == nameof(ViewModel.HandlerMethod))
+            {
+                if (ShowDotNetHandlerComponents)
                 {
-                    this.Handler = existingConfig.Handler;
+                    ViewModel.Handler = ViewModel.CreateDotNetHandler();
                 }
-                else
-                {
-                    var handlerTokens = existingConfig.Handler.Split(new string[] { "::" }, StringSplitOptions.None);
-                    if (handlerTokens.Length == 3)
-                    {
-                        Assembly = handlerTokens[0];
-                        TypeName = handlerTokens[1];
-                        MethodName = handlerTokens[2];
-                    }
-                }
+            }
+
+            if (e.PropertyName == nameof(ViewModel.HandlerType))
+            {
+                UpdateHandlerMethodSuggestion();
+            }
+
+            if (e.PropertyName == nameof(ViewModel.Handler))
+            {
+                ViewModel.ApplyDotNetHandler(ViewModel.Handler);
+            }
+
+            if (e.PropertyName == nameof(ViewModel.FunctionName))
+            {
+                OnFunctionNameChanged();
+            }
+
+            if (e.PropertyName == nameof(ViewModel.ImageRepo))
+            {
+                UpdateImageTags().LogExceptionAndForget();
+            }
+        }
+
+        private void OnFunctionNameChanged()
+        {
+            if (ViewModel.TryGetFunctionConfig(this.ViewModel.FunctionName, out var existingConfig))
+            {
+                // Retrieve some of the Existing Function config so that a new
+                // publish does not clobber existing settings.
+                // TODO : Some of this could move to the Controller.
+                ViewModel.Description = existingConfig.Description;
+
+                ViewModel.Handler = existingConfig.Handler;
 
                 IAWSWizard hostWizard = PageController.HostingWizard;
                 hostWizard.SetProperty(UploadFunctionWizardProperties.Role, existingConfig.Role);
@@ -661,16 +465,16 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 if (existingConfig.DeadLetterConfig?.TargetArn != null)
                     hostWizard.SetProperty(UploadFunctionWizardProperties.DeadLetterTargetArn, existingConfig.DeadLetterConfig.TargetArn);
 
-                if(existingConfig.TracingConfig?.Mode != null)
+                if (existingConfig.TracingConfig?.Mode != null)
                     hostWizard.SetProperty(UploadFunctionWizardProperties.TracingMode, existingConfig.TracingConfig.Mode.ToString());
 
 
                 List<EnvironmentVariable> variables = new List<EnvironmentVariable>();
-                if(existingConfig?.Environment?.Variables != null)
-                { 
-                    foreach(var kvp in existingConfig?.Environment?.Variables)
+                if (existingConfig?.Environment?.Variables != null)
+                {
+                    foreach (var kvp in existingConfig?.Environment?.Variables)
                     {
-                        variables.Add(new EnvironmentVariable {Variable = kvp.Key, Value = kvp.Value });
+                        variables.Add(new EnvironmentVariable { Variable = kvp.Key, Value = kvp.Value });
                     }
                 }
                 hostWizard.SetProperty(UploadFunctionWizardProperties.EnvironmentVariables, variables);
@@ -688,71 +492,140 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
         }
 
-
-
-        private void InitializeControlForNETCore(string sourcePath)
+        private void PopulateSuggestionCache(IDictionary<string, IList<string>> suggestionCache)
         {
-            if (sourcePath == null)
-                return;
-
-            try
+            if (suggestionCache == null)
             {
-                var projectJsonPath = sourcePath;
-                if (!projectJsonPath.EndsWith("project.json"))
+                return;
+            }
+
+            foreach (var keyValuePair in suggestionCache)
+            {
+                _suggestionCache[keyValuePair.Key] = keyValuePair.Value;
+            }
+        }
+
+        private void OnRuntimeChanged()
+        {
+            // Set the Framework to a compatible value
+            if (ViewModel.Runtime != null && FrameworkByRuntime.TryGetValue(ViewModel.Runtime, out var framework))
+            {
+                ViewModel.SetFrameworkIfExists(framework);
+            }
+
+            ViewModel.HandlerTooltip = CreateHandlerTooltip();
+            ViewModel.DotNetHandlerVisibility = ShowDotNetHandlerComponents ? Visibility.Visible : Visibility.Collapsed;
+            ViewModel.HandlerVisibility = !ShowDotNetHandlerComponents ? Visibility.Visible : Visibility.Collapsed;
+            
+            // Toggle control visibilities
+            var showConfigAndFramework = ViewModel.Runtime?.IsNetCore ?? false;
+            ViewModel.ConfigurationVisibility = showConfigAndFramework ? Visibility.Visible : Visibility.Collapsed;
+            ViewModel.FrameworkVisibility = showConfigAndFramework ? Visibility.Visible : Visibility.Collapsed;
+            ViewModel.ShowSaveSettings = showConfigAndFramework;
+        }
+
+        private string CreateHandlerTooltip()
+        {
+            var tooltipText = "";
+            if (ViewModel.Runtime == RuntimeOption.PROVIDED)
+            {
+                tooltipText = HandlerTooltipCustomRuntime;
+            }
+            else if (ViewModel.Runtime?.IsNetCore ?? false)
+            {
+                tooltipText = HandlerTooltipDotNet;
+            }
+            else
+            {
+                tooltipText = HandlerTooltipGeneric;
+            }
+
+            return string.Format("{1}{0}{0}{2}",
+                Environment.NewLine,
+                HandlerTooltipBase,
+                tooltipText
+            );
+        }
+
+        private bool AllRequiredFieldsForZipAreSet()
+        {
+            if (!File.Exists(ViewModel.SourceCodeLocation) && !Directory.Exists(ViewModel.SourceCodeLocation))
+            {
+                return false;
+            }
+
+            if (ViewModel.Runtime == null)
+            {
+                return false;
+            }
+
+            if (ShowDotNetHandlerComponents)
+            {
+                if (string.IsNullOrEmpty(ViewModel.HandlerAssembly))
                 {
-                    projectJsonPath = Path.Combine(projectJsonPath, "project.json");
+                    return false;
                 }
 
-                string assemblyName = null;
-                JsonData rootData = JsonMapper.ToObject(File.ReadAllText(projectJsonPath));
-
-                JsonData frameworks = rootData["frameworks"];
-                if (frameworks != null)
+                if (string.IsNullOrEmpty(ViewModel.HandlerType))
                 {
-                    JsonData netcoreapp1_0 = frameworks["netcoreapp1.0"];
-                    if (netcoreapp1_0 != null)
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(ViewModel.HandlerMethod))
+                {
+                    return false;
+                }
+            }
+
+            if (ViewModel.Runtime != RuntimeOption.PROVIDED && string.IsNullOrEmpty(ViewModel.Handler))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool AllRequiredFieldsForImageAreSet()
+        {
+            if (!File.Exists(ViewModel.Dockerfile))
+            {
+                return false;
+            }
+            if (string.IsNullOrEmpty(ViewModel.ImageRepo))
+            {
+                return false;
+            }
+            if (string.IsNullOrEmpty(ViewModel.ImageTag))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private TServiceClient CreateServiceClient<TServiceClient>(string serviceName) where TServiceClient : class
+        {
+            return _ctlAccountAndRegion.SelectedAccount.CreateServiceClient<TServiceClient>(
+                _ctlAccountAndRegion.SelectedRegion.GetEndpoint(serviceName));
+        }
+
+        /// <summary>
+        /// Generate a repository name if repo name is empty and package type is image
+        /// </summary>
+        private void RecommendRepoNameIfEmpty()
+        {
+            var hostWizard = PageController?.HostingWizard;
+            if (hostWizard!=null && ViewModel.PackageType.Equals(Amazon.Lambda.PackageType.Image) &&
+                string.IsNullOrEmpty(ViewModel.ImageRepo))
+            {
+                var sourcePath = hostWizard.CollectedProperties[UploadFunctionWizardProperties.SourcePath] as string;
+                if (sourcePath != null)
+                {
+                    if (Utilities.TryGenerateECRRepositoryName(sourcePath, out var generatedRepositoryName))
                     {
-                        assemblyName = GetOuputNameFromBuildOptions(netcoreapp1_0["buildOptions"]);
+                        ViewModel.ImageRepo = generatedRepositoryName;
                     }
                 }
-
-                if (assemblyName == null)
-                {
-                    assemblyName = GetOuputNameFromBuildOptions(rootData["buildOptions"]);
-                }
-
-                if (assemblyName == null)
-                {
-                    assemblyName = Directory.GetParent(projectJsonPath).Name;
-                }
-
-                Assembly = assemblyName;
             }
-            catch (Exception e)
-            {
-                LOGGER.Error("Error searching for default assembly in " + sourcePath, e);
-            }
-        }
-
-        private string GetOuputNameFromBuildOptions(JsonData buildOptions)
-        {
-            if (buildOptions == null)
-                return null;
-
-            JsonData outputName = buildOptions["outputName"];
-            if (outputName == null)
-                return null;
-            return outputName.ToString();
-        }
-
-        private void _ctlRuntime_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var runtime = this._ctlRuntime.SelectedItem as RuntimeOption;
-            if (runtime == null)
-                return;
-
-            DeploymentType = runtime.IsNetCore ? DeploymentType.NETCore : DeploymentType.Generic;
-            SetPanelsForOriginatorAndType(false);
         }
     }
 }

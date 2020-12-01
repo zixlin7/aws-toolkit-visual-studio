@@ -4,14 +4,14 @@ namespace Amazon.AWSToolkit.Lambda.Model
 {
     public class RuntimeOption
     {
-        public static readonly RuntimeOption NodeJS_v8_10 = new RuntimeOption("nodejs8.10", "Node.js v8.10");
-        public static readonly RuntimeOption NodeJS_v10_X = new RuntimeOption("nodejs10.x", "Node.js v10");
-        public static readonly RuntimeOption NodeJS_v12_X = new RuntimeOption("nodejs12.x", "Node.js v12");
+        public static readonly RuntimeOption NodeJS_v8_10 = new RuntimeOption(Amazon.Lambda.Runtime.Nodejs810.Value, "Node.js v8.10");
+        public static readonly RuntimeOption NodeJS_v10_X = new RuntimeOption(Amazon.Lambda.Runtime.Nodejs10X.Value, "Node.js v10");
+        public static readonly RuntimeOption NodeJS_v12_X = new RuntimeOption(Amazon.Lambda.Runtime.Nodejs12X.Value, "Node.js v12");
 
-        public static readonly RuntimeOption NetCore_v2_1 = new RuntimeOption("dotnetcore2.1", ".NET Core v2.1");
-        public static readonly RuntimeOption NetCore_v3_1 = new RuntimeOption("dotnetcore3.1", ".NET Core v3.1");
+        public static readonly RuntimeOption NetCore_v2_1 = new RuntimeOption(Amazon.Lambda.Runtime.Dotnetcore21.Value, ".NET Core v2.1");
+        public static readonly RuntimeOption NetCore_v3_1 = new RuntimeOption(Amazon.Lambda.Runtime.Dotnetcore31.Value, ".NET Core v3.1");
 
-        public static readonly RuntimeOption PROVIDED = new RuntimeOption("provided", "Custom .NET Core Runtime");
+        public static readonly RuntimeOption PROVIDED = new RuntimeOption(Amazon.Lambda.Runtime.Provided.Value, "Custom .NET Core Runtime");
 
         public static readonly RuntimeOption[] ALL_OPTIONS = new RuntimeOption[] { NetCore_v2_1, NetCore_v3_1, NodeJS_v8_10, NodeJS_v10_X, NodeJS_v12_X, PROVIDED };
 
@@ -27,5 +27,7 @@ namespace Amazon.AWSToolkit.Lambda.Model
         public bool IsNetCore => this.Value.StartsWith("dotnetcore", StringComparison.OrdinalIgnoreCase) || this.Value.Equals(PROVIDED.Value, StringComparison.OrdinalIgnoreCase);
 
         public bool IsNode => this.Value.StartsWith("nodejs", StringComparison.OrdinalIgnoreCase);
+
+        public bool IsCustomRuntime => this.Value == PROVIDED.Value;
     }
 }

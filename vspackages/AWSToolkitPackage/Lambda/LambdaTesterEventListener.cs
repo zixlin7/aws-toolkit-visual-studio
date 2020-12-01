@@ -1,6 +1,5 @@
 ﻿using System;
 using Amazon.AWSToolkit.Lambda;
-using Amazon.AWSToolkit.MobileAnalytics;
 using EnvDTE;
 using log4net;
 using Microsoft.VisualStudio.Shell;
@@ -34,7 +33,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
 
             this._hostPackage = hostPackage;
 
-            this._usageEmitter = new LambdaTesterUsageEmitter(SimpleMobileAnalytics.Instance);
+            this._usageEmitter = new LambdaTesterUsageEmitter(ToolkitFactory.Instance.TelemetryLogger);
 
             this._lambdaPlugin = new Lazy<IAWSLambda>(() =>
                 hostPackage.ToolkitShellProviderService.QueryAWSToolkitPluginService(typeof(IAWSLambda)) as
@@ -124,8 +123,11 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
             try
             {
                 ThreadHelper.ThrowIfNotOnUIThread();
-
-                _usageEmitter.EmitIfLambdaTester(newProcess.Name, newProcess.ProcessID);
+                //determine configuration
+                var dte =(EnvDTE.DTE) newProgram.DTE;
+                var config = dte?.Solution?.SolutionBuild?.ActiveConfiguration?.Name ?? "Debug";
+                bool debug = string.Equals("Debug", config, StringComparison.OrdinalIgnoreCase);
+                _usageEmitter.EmitIfLambdaTester(newProcess.Name, newProcess.ProcessID, debug);
             }
             catch (Exception e)
             {

@@ -1,10 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+
+using Amazon;
+using Amazon.Runtime;
+using Amazon.Runtime.CredentialManagement;
+
 using Amazon.CloudWatchEvents;
 using Amazon.CloudWatchLogs;
 using Amazon.EC2;
 using Amazon.ECR;
+using Amazon.ECS;
+
+using System.Reflection;
+using ThirdParty.Json.LitJson;
+using System.Text;
+using System.IO;
 using Amazon.Common.DotNetCli.Tools.Commands;
 using Amazon.Common.DotNetCli.Tools;
 using Amazon.Common.DotNetCli.Tools.Options;
@@ -30,7 +42,7 @@ namespace Amazon.ECS.Tools.Commands
         {
         }
 
-        protected override string ToolName => "AWSECSToolsDotnet";
+        protected override string ToolName => Constants.TOOLNAME;
 
         IAmazonCloudWatchEvents _cweClient;
         public IAmazonCloudWatchEvents CWEClient
@@ -48,7 +60,7 @@ namespace Amazon.ECS.Tools.Commands
                 }
                 return this._cweClient;
             }
-            set => this._cweClient = value;
+            set { this._cweClient = value; }
         }
 
         IAmazonCloudWatchLogs _cwlClient;
@@ -67,26 +79,7 @@ namespace Amazon.ECS.Tools.Commands
                 }
                 return this._cwlClient;
             }
-            set => this._cwlClient = value;
-        }
-
-        IAmazonECR _ecrClient;
-        public IAmazonECR ECRClient
-        {
-            get
-            {
-                if (this._ecrClient == null)
-                {
-                    SetUserAgentString();
-
-                    var config = new AmazonECRConfig();
-                    config.RegionEndpoint = DetermineAWSRegion();
-
-                    this._ecrClient = new AmazonECRClient(DetermineAWSCredentials(), config);
-                }
-                return this._ecrClient;
-            }
-            set => this._ecrClient = value;
+            set { this._cwlClient = value; }
         }
 
         IAmazonECS _ecsClient;
@@ -105,7 +98,7 @@ namespace Amazon.ECS.Tools.Commands
                 }
                 return this._ecsClient;
             }
-            set => this._ecsClient = value;
+            set { this._ecsClient = value; }
         }
 
         IAmazonEC2 _ec2Client;
@@ -124,7 +117,7 @@ namespace Amazon.ECS.Tools.Commands
                 }
                 return this._ec2Client;
             }
-            set => this._ec2Client = value;
+            set { this._ec2Client = value; }
         }
 
         public bool IsFargateLaunch(string property)

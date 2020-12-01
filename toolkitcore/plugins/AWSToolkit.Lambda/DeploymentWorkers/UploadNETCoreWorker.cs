@@ -1,4 +1,5 @@
-﻿using Amazon.Lambda;
+﻿using Amazon.ECR;
+using Amazon.Lambda;
 using Amazon.Lambda.Tools.Commands;
 
 using log4net;
@@ -21,9 +22,9 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
         private readonly ITelemetryLogger _telemetryLogger;
 
-        public UploadNETCoreWorker(ILambdaFunctionUploadHelpers functionHandler, IAmazonLambda lambdaClient,
+        public UploadNETCoreWorker(ILambdaFunctionUploadHelpers functionHandler, IAmazonLambda lambdaClient, IAmazonECR ecrClient,
             ITelemetryLogger telemetryLogger)
-            : base(functionHandler, lambdaClient)
+            : base(functionHandler, lambdaClient, ecrClient)
         {
             _telemetryLogger = telemetryLogger;
         }
@@ -40,11 +41,12 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 deploymentProperties.Runtime = uploadState.Request?.Runtime;
                 deploymentProperties.TargetFramework = uploadState.Framework;
                 deploymentProperties.NewResource = IsNewResource(uploadState);
+                deploymentProperties.LambdaPackageType = uploadState.Request?.PackageType;
 
                 var command = new DeployFunctionCommand(logger, uploadState.SourcePath, new string[0]);
                 command.DisableInteractive = true;
-                command.SkipHandlerValidation = true;
                 command.LambdaClient = this.LambdaClient;
+                command.ECRClient = this.ECRClient;
                 command.PersistConfigFile = uploadState.SaveSettings;
                 command.Profile = uploadState.Account.DisplayName;
                 command.Region = uploadState.Region.SystemName;
@@ -55,12 +57,16 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 command.MemorySize = uploadState.Request.MemorySize;
                 command.Timeout = uploadState.Request.Timeout;
                 command.Configuration = uploadState.Configuration;
+                command.PackageType = uploadState.Request?.PackageType;
                 command.TargetFramework = uploadState.Framework;
                 command.Runtime = uploadState.Request.Runtime;
                 command.EnvironmentVariables = uploadState.Request?.Environment?.Variables;
                 command.KMSKeyArn = uploadState.Request?.KMSKeyArn;
                 command.TracingMode = uploadState.Request?.TracingConfig?.Mode;
                 command.DeadLetterTargetArn = uploadState.Request?.DeadLetterConfig?.TargetArn;
+                command.DockerFile = uploadState.Dockerfile;
+                command.DockerImageTag = GetDockerImageTag(uploadState);
+                command.ImageCommand = uploadState.Request?.ImageConfig?.Command?.ToArray();
 
                 if (uploadState.Request.VpcConfig != null)
                 {
@@ -154,6 +160,17 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
             {
                 WriteLine(string.Format(message, args));
             }
+        }
+
+        public static string GetDockerImageTag(UploadFunctionController.UploadFunctionState uploadState)
+        {
+            var dockerRepository = uploadState.ImageRepo;
+            var dockerTag = uploadState.ImageTag;
+            var dockerImageTag = string.IsNullOrEmpty(dockerRepository) ? "" : dockerRepository;
+            if (!string.IsNullOrEmpty(dockerTag))
+                dockerImageTag += ":" + dockerTag;
+
+            return dockerImageTag;
         }
     }
 }

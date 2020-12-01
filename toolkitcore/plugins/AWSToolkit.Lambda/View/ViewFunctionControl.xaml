@@ -8,6 +8,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:toolkit="http://schemas.microsoft.com/wpf/2008/toolkit"
+    xmlns:util="clr-namespace:Amazon.AWSToolkit.Lambda.Util"
+    xmlns:lambda="clr-namespace:Amazon.Lambda;assembly=AWSSDK.Lambda"
     Width="800"
     Height="300"
     mc:Ignorable="d">
@@ -32,6 +34,7 @@
             </Style>
             <commonuiConverters:LambdaStateConverter x:Key="LambdaStateConverter" />
             <commonuiConverters:ConstantClassConverter x:Key="ConstantClassConverter" />
+            <util:PackageTypeToVisibilityConverter x:Key="PackageTypeToVisibilityConverter" />
         </ResourceDictionary>
     </commonui:BaseAWSControl.Resources>
 
@@ -74,7 +77,7 @@
                         </WrapPanel>
                     </Button.Content>
                 </Button>
-                <Button Click="onUploadChangesClick">
+                <Button Click="onUploadChangesClick" Visibility="{Binding UploadSourceVisibility, FallbackValue={x:Static Visibility.Collapsed}}">
                     <Button.Content>
                         <WrapPanel>
                             <Image
@@ -152,19 +155,37 @@
                 </TextBox.Text>
             </TextBox>
 
+            <!-- Runtime and ImageUri overlap; only one will show once the model is assigned to the DataContext. -->
             <TextBlock
                 Grid.Row="3"
                 Grid.Column="0"
                 Margin="10,0,0,0"
                 Style="{DynamicResource awsTextBlockBaseStyle}"
+                Visibility="{Binding PackageType, Converter={StaticResource PackageTypeToVisibilityConverter}, ConverterParameter={x:Static lambda:PackageType.Zip}, FallbackValue={x:Static Visibility.Collapsed}}"
                 Text="Runtime:" />
+            <TextBlock
+                Grid.Row="3"
+                Grid.Column="0"
+                Margin="10,0,0,0"
+                Style="{DynamicResource awsTextBlockBaseStyle}"
+                Visibility="{Binding PackageType, Converter={StaticResource PackageTypeToVisibilityConverter}, ConverterParameter={x:Static lambda:PackageType.Image}, FallbackValue={x:Static Visibility.Collapsed}}"
+                Text="Image URI:" />
             <TextBox
                 Grid.Row="3"
                 Grid.Column="1"
                 Margin="5,0,0,0"
                 HorizontalAlignment="Stretch"
                 Style="{DynamicResource awsSelectableTextBoxStyle}"
+                Visibility="{Binding PackageType, Converter={StaticResource PackageTypeToVisibilityConverter}, ConverterParameter={x:Static lambda:PackageType.Zip}}"
                 Text="{Binding Runtime, Converter={StaticResource ConstantClassConverter}}" />
+            <TextBox
+                Grid.Row="3"
+                Grid.Column="1"
+                Margin="5,0,0,0"
+                HorizontalAlignment="Stretch"
+                Style="{DynamicResource awsSelectableTextBoxStyle}"
+                Visibility="{Binding PackageType, Converter={StaticResource PackageTypeToVisibilityConverter}, ConverterParameter={x:Static lambda:PackageType.Image}}"
+                Text="{Binding ImageUri}" />
 
             <TextBlock
                 Grid.Row="3"

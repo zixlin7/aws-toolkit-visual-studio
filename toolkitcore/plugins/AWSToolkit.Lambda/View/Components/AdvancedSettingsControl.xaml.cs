@@ -167,7 +167,11 @@ namespace Amazon.AWSToolkit.Lambda.View.Components
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
-            bool isDotnet = this.Controller.Model.Runtime.Value.StartsWith("dotnetcore", System.StringComparison.OrdinalIgnoreCase);
+            bool isDotnet = false;
+            if (this.Controller.Model.Runtime != null)
+            {
+                isDotnet = this.Controller.Model.Runtime.Value.StartsWith("dotnetcore", System.StringComparison.OrdinalIgnoreCase);
+            }
             Utility.LaunchXRayHelp(isDotnet);
         }
     }

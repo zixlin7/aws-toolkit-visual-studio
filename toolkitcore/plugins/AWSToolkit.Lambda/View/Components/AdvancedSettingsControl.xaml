@@ -6,6 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:localcomponents="clr-namespace:Amazon.AWSToolkit.Lambda.View.Components"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:util="clr-namespace:Amazon.AWSToolkit.Lambda.Util"
+    xmlns:lambda="clr-namespace:Amazon.Lambda;assembly=AWSSDK.Lambda"
     d:DesignHeight="600"
     d:DesignWidth="700"
     mc:Ignorable="d">
@@ -15,6 +17,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <util:PackageTypeToVisibilityConverter x:Key="PackageTypeToVisibilityConverter" />
         </ResourceDictionary>
     </commonui:BaseAWSUserControl.Resources>
 
@@ -45,10 +49,21 @@
                     Margin="0,0,0,7">
 
                     <Grid.RowDefinitions>
+                        <!-- "Execution" label -->
                         <RowDefinition Height="Auto" />
+                        <!-- Image Entrypoint -->
                         <RowDefinition Height="Auto" />
+                        <!-- Image Command -->
                         <RowDefinition Height="Auto" />
+                        <!-- Image Working Dir -->
                         <RowDefinition Height="Auto" />
+                        <!-- Handler -->
+                        <RowDefinition Height="Auto" />
+                        <!-- Description -->
+                        <RowDefinition Height="Auto" />
+                        <!-- Role -->
+                        <RowDefinition Height="Auto" />
+                        <!-- Memory/Timeout -->
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
@@ -68,6 +83,7 @@
                         Grid.Column="0"
                         Margin="8,5,0,0"
                         Style="{DynamicResource awsTextBlockBaseStyle}"
+                        Visibility="{Binding PackageType, Converter={StaticResource PackageTypeToVisibilityConverter}, ConverterParameter={x:Static lambda:PackageType.Zip}}"
                         Text="Handler:" />
                     <TextBox
                         Name="_ctlHandler"
@@ -79,6 +95,7 @@
                         Margin="5,0,0,0"
                         HorizontalAlignment="Stretch"
                         Style="{DynamicResource awsTextBoxStyle}"
+                        Visibility="{Binding PackageType, Converter={StaticResource PackageTypeToVisibilityConverter}, ConverterParameter={x:Static lambda:PackageType.Zip}}"
                         Text="{Binding Handler}"
                         ToolTip="{Binding HandlerDescriptionInfo}" />
 
@@ -87,9 +104,66 @@
                         Grid.Column="0"
                         Margin="8,5,0,0"
                         Style="{DynamicResource awsTextBlockBaseStyle}"
-                        Text="Description:" />
+                        Visibility="{Binding PackageType, Converter={StaticResource PackageTypeToVisibilityConverter}, ConverterParameter={x:Static lambda:PackageType.Image}}"
+                        Text="Entrypoint Override:" />
                     <TextBox
                         Grid.Row="2"
+                        Grid.Column="1"
+                        Grid.ColumnSpan="3"
+                        MinWidth="50"
+                        Height="23"
+                        Margin="5,0,0,0"
+                        HorizontalAlignment="Stretch"
+                        Style="{DynamicResource awsTextBoxStyle}"
+                        Visibility="{Binding PackageType, Converter={StaticResource PackageTypeToVisibilityConverter}, ConverterParameter={x:Static lambda:PackageType.Image}}"
+                        Text="{Binding ImageEntrypoint}" />
+
+                    <TextBlock
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Margin="8,5,0,0"
+                        Style="{DynamicResource awsTextBlockBaseStyle}"
+                        Visibility="{Binding PackageType, Converter={StaticResource PackageTypeToVisibilityConverter}, ConverterParameter={x:Static lambda:PackageType.Image}}"
+                        Text="Command Override:" />
+                    <TextBox
+                        Grid.Row="3"
+                        Grid.Column="1"
+                        Grid.ColumnSpan="3"
+                        MinWidth="50"
+                        Height="23"
+                        Margin="5,3,0,0"
+                        HorizontalAlignment="Stretch"
+                        Style="{DynamicResource awsTextBoxStyle}"
+                        Visibility="{Binding PackageType, Converter={StaticResource PackageTypeToVisibilityConverter}, ConverterParameter={x:Static lambda:PackageType.Image}}"
+                        Text="{Binding ImageCommand}" />
+
+                    <TextBlock
+                        Grid.Row="4"
+                        Grid.Column="0"
+                        Margin="8,5,0,0"
+                        Style="{DynamicResource awsTextBlockBaseStyle}"
+                        Visibility="{Binding PackageType, Converter={StaticResource PackageTypeToVisibilityConverter}, ConverterParameter={x:Static lambda:PackageType.Image}}"
+                        Text="Working Directory Override:" />
+                    <TextBox
+                        Grid.Row="4"
+                        Grid.Column="1"
+                        Grid.ColumnSpan="3"
+                        MinWidth="50"
+                        Height="23"
+                        Margin="5,3,0,0"
+                        HorizontalAlignment="Stretch"
+                        Style="{DynamicResource awsTextBoxStyle}"
+                        Visibility="{Binding PackageType, Converter={StaticResource PackageTypeToVisibilityConverter}, ConverterParameter={x:Static lambda:PackageType.Image}}"
+                        Text="{Binding ImageWorkingDirectory}" />
+
+                    <TextBlock
+                        Grid.Row="5"
+                        Grid.Column="0"
+                        Margin="8,5,0,0"
+                        Style="{DynamicResource awsTextBlockBaseStyle}"
+                        Text="Description:" />
+                    <TextBox
+                        Grid.Row="5"
                         Grid.Column="1"
                         Grid.ColumnSpan="3"
                         Name="_ctlDescription"
@@ -102,13 +176,13 @@
                         TextWrapping="Wrap" />
 
                     <TextBlock
-                        Grid.Row="3"
+                        Grid.Row="6"
                         Grid.Column="0"
                         Margin="8,5,0,0"
                         Style="{DynamicResource awsTextBlockBaseStyle}"
                         Text="Role:" />
                     <TextBox
-                        Grid.Row="3"
+                        Grid.Row="6"
                         Grid.Column="1"
                         Grid.ColumnSpan="3"
                         Margin="5,7,0,0"
@@ -116,14 +190,14 @@
                         Text="{Binding Role}" />
 
                     <TextBlock
-                        Grid.Row="4"
+                        Grid.Row="7"
                         Grid.Column="0"
                         Margin="8,5,0,0"
                         Style="{DynamicResource awsTextBlockBaseStyle}"
                         Text="Memory (MB):" />
                     <ComboBox
                         Name="_ctlMemory"
-                        Grid.Row="4"
+                        Grid.Row="7"
                         Grid.Column="1"
                         MinWidth="100"
                         Height="23"
@@ -135,14 +209,14 @@
                         ToolTip="Choose the memory available to your Lambda function. CPU will be assigned proportional to memory. The higher the setting, the more compute resources your code will have, which can improve its execution performance. You can specify memory in 64-MB increments. Changing this setting will impact your duration cost." />
 
                     <TextBlock
-                        Grid.Row="4"
+                        Grid.Row="7"
                         Grid.Column="2"
                         Margin="8,5,0,0"
                         Style="{DynamicResource awsTextBlockBaseStyle}"
                         Text="Timeout (Seconds):" />
                     <TextBox
                         Name="_ctlTimeout"
-                        Grid.Row="4"
+                        Grid.Row="7"
                         Grid.Column="3"
                         MinWidth="100"
                         Height="23"

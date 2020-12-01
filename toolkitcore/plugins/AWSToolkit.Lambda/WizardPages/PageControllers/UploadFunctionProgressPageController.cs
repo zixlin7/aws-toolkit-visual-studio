@@ -22,6 +22,7 @@ using Amazon.AWSToolkit.Lambda.DeploymentWorkers;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using System.IO;
 using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.ECR;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 {
@@ -143,6 +144,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
             IAmazonCloudFormation cloudFormationClient = account.CreateServiceClient<AmazonCloudFormationClient>(region.GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME));
             IAmazonS3 s3Client = account.CreateServiceClient<AmazonS3Client>(region.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME));
+            IAmazonECR ecrClient = account.CreateServiceClient<AmazonECRClient>(region.GetEndpoint(RegionEndPointsManager.ECR_SERVICE_NAME));
 
 
             var settings = new PublishServerlessApplicationWorkerSettings();
@@ -174,7 +176,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             }
 
 
-            var worker = new PublishServerlessApplicationWorker(this, s3Client, cloudFormationClient, settings,
+            var worker = new PublishServerlessApplicationWorker(this, s3Client, cloudFormationClient, ecrClient, settings,
                 ToolkitFactory.Instance.TelemetryLogger);
 
             ThreadPool.QueueUserWorkItem(x =>
@@ -213,6 +215,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             var subnets = HostingWizard[UploadFunctionWizardProperties.Subnets] as IEnumerable<SubnetWrapper>;
             var securityGroups = HostingWizard[UploadFunctionWizardProperties.SecurityGroups] as IEnumerable<SecurityGroupWrapper>;
 
+            var packageType = HostingWizard[UploadFunctionWizardProperties.PackageType] as PackageType;
+            var imageRepo = HostingWizard[UploadFunctionWizardProperties.ImageRepo] as string;
+            var imageTag = HostingWizard[UploadFunctionWizardProperties.ImageTag] as string;
+            var imageCommand = HostingWizard[UploadFunctionWizardProperties.ImageCommand] as string;
+            var dockerfile = HostingWizard[UploadFunctionWizardProperties.Dockerfile] as string;
+
             var environmentVariables = HostingWizard[UploadFunctionWizardProperties.EnvironmentVariables] as ICollection<EnvironmentVariable>;
 
             bool saveSettings = false;
@@ -222,16 +230,26 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             }
 
             var originator = (UploadOriginator)HostingWizard[UploadFunctionWizardProperties.UploadOriginator];
+            ImageConfig imageConfig = null;
+            var imageCommandList = SplitByComma(imageCommand);
+            if (packageType.Equals(Amazon.Lambda.PackageType.Image))
+            {
+                imageConfig = new ImageConfig();
+                imageConfig.Command = imageCommandList;
+                imageConfig.IsCommandSet = imageCommandList != null;
+            }
 
             var request = new CreateFunctionRequest
             {
                 Runtime = runtime,
                 FunctionName = functionName,
+                PackageType = packageType,
                 Description = description,
                 MemorySize = memorySize,
                 Timeout = timeout,
                 Handler = handler,
-                KMSKeyArn = kmsArn
+                KMSKeyArn = kmsArn,
+                ImageConfig = imageConfig
             };
 
             if (!string.IsNullOrEmpty(selectedDeadLetterTargetArn))
@@ -287,21 +305,31 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 SelectedRole = selectedRole,
                 SelectedManagedPolicy = selectedManagedPolicy,
                 Configuration = configuration,
-                Framework = framework
+                Framework = framework,
+                ImageRepo = imageRepo,
+                ImageTag = imageTag,
+                Dockerfile = dockerfile
             };
 
+            IAmazonECR ecrClient;
             IAmazonLambda lambdaClient;
             if (originator == UploadOriginator.FromFunctionView)
+            {
                 lambdaClient = HostingWizard[UploadFunctionWizardProperties.LambdaClient] as IAmazonLambda;
+                ecrClient = HostingWizard[UploadFunctionWizardProperties.ECRClient] as IAmazonECR;
+            }
             else
+            {
                 lambdaClient = state.Account.CreateServiceClient<AmazonLambdaClient>(state.Region.GetEndpoint(RegionEndPointsManager.LAMBDA_SERVICE_NAME));
+                ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECR_SERVICE_NAME));
+            }
 
             BaseUploadWorker worker;
 
             if (DetermineDeploymentType(state.SourcePath) == DeploymentType.NETCore)
-                worker = new UploadNETCoreWorker(this, lambdaClient, ToolkitFactory.Instance.TelemetryLogger);
+                worker = new UploadNETCoreWorker(this, lambdaClient, ecrClient, ToolkitFactory.Instance.TelemetryLogger);
             else
-                worker = new UploadGenericWorker(this, lambdaClient, ToolkitFactory.Instance.TelemetryLogger);
+                worker = new UploadGenericWorker(this, lambdaClient, ecrClient, ToolkitFactory.Instance.TelemetryLogger);
 
             ThreadPool.QueueUserWorkItem(x =>
             {
@@ -380,7 +408,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 }
                 
                 HostingWizard[UploadFunctionWizardProperties.WizardResult] = true;
-                if (_pageUI.AutoCloseWizard)
+                if (_pageUI.AutoCloseWizard && !_pageUI.IsUnloaded)
                     HostingWizard.CancelRun();
             }));
         }
@@ -413,7 +441,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 }
 
                 HostingWizard[UploadFunctionWizardProperties.WizardResult] = true;
-                if (_pageUI.AutoCloseWizard)
+                if (_pageUI.AutoCloseWizard && !_pageUI.IsUnloaded)
                     HostingWizard.CancelRun();
             }));
         }
@@ -510,6 +538,19 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
         GetFunctionConfigurationResponse ILambdaFunctionUploadHelpers.GetExistingConfiguration(IAmazonLambda lambdaClient, string functionName)
         {
             return GetExistingConfiguration(lambdaClient, functionName);
+        }
+
+        private List<string> SplitByComma(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return null;
+            }
+
+            return text.Split(new char[] { ',' }, StringSplitOptions.None)
+                .Select(t => t.Trim())
+                .Where(t => !string.IsNullOrWhiteSpace(t))
+                .ToList();
         }
     }
 }

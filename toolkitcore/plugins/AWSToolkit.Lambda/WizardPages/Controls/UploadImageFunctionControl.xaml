@@ -1,0 +1,246 @@
+﻿<commonUi:BaseAWSUserControl
+    x:Class="Amazon.AWSToolkit.Lambda.WizardPages.Controls.UploadImageFunctionControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Amazon.AWSToolkit.Lambda.WizardPages.Controls"
+    mc:Ignorable="d"
+    d:DesignHeight="300" d:DesignWidth="800">
+
+    <commonUi:BaseAWSUserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <commonUi:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+
+            <ControlTemplate x:Key="DataValidationTemplate">
+                <Grid MaxWidth="{Binding ElementName=AdornedElement, Path=ActualWidth}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border 
+                        Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                        BorderBrush="Red" BorderThickness="1">
+                        <AdornedElementPlaceholder Name="AdornedElement"  />
+                    </Border>
+                    <Border
+                        Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                        Background="{DynamicResource awsFieldRequiredBackgroundBrushKey}" />
+                    <Image 
+                        Grid.Row="1" Grid.Column="0"
+                        Height="16" Width="16" 
+                        Margin="3 3 0 0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        DataContext="{DynamicResource CommonIcons}"
+                        Source="{Binding WarningIcon16x16}" />
+                    <TextBlock 
+                        Grid.Row="1" Grid.Column="1"
+                        Margin="3 3 3 3" 
+                        TextWrapping="Wrap"
+                        MaxWidth="{Binding ElementName=Q, Path=ActualWidth}"
+                        Foreground="{DynamicResource awsFieldRequiredTextForegroundBrushKey}"
+                        Text="{Binding /ErrorContent}" />
+                </Grid>
+            </ControlTemplate>
+
+            <Style TargetType="TextBox" BasedOn="{StaticResource awsTextBoxStyle}">
+                <Setter Property="MinHeight" Value="23" />
+            </Style>
+            <Style x:Key="controlComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource awsComboBoxStyle}">
+                <Setter Property="MinHeight" Value="23" />
+            </Style>
+        </ResourceDictionary>
+    </commonUi:BaseAWSUserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition SharedSizeGroup="LeftControlLabel" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition SharedSizeGroup="LeftControlDecoration" />
+            <ColumnDefinition SharedSizeGroup="RightControlLabel" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition SharedSizeGroup="RightControlDecoration" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Label
+            Grid.Row="0" Grid.Column="0"
+            Content="Doc_kerfile:"
+            Margin="0 0 0 0"
+            Visibility="{Binding ShowSourceLocation, Converter={StaticResource BooleanToVisibilityConverter}}"
+            Style="{DynamicResource awsLabelBaseStyle}"
+            VerticalAlignment="Center"
+            Target="{Binding ElementName=Dockerfile}"
+            ToolTip="{Binding DockerfileTooltip}" />
+        <DockPanel
+            LastChildFill="True"
+            Grid.Row="0" Grid.Column="1"
+            Grid.ColumnSpan="4"
+            Margin="9 0 0 0"
+            Visibility="{Binding ShowSourceLocation, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Button
+                DockPanel.Dock="Right"
+                Margin="6 0 0 0"
+                Style="{DynamicResource awsButtonBaseStyle}"
+                Width="23" Height="23"
+                VerticalAlignment="Center"
+                Content="..."
+                Command="{Binding BrowseForDockerfile}"
+                ToolTip="Select a Dockerfile" />
+            <TextBox
+                Name="Dockerfile" x:FieldModifier="private"
+                Margin="0 0 0 0"
+                Text="{Binding Dockerfile}"
+                ToolTip="{Binding DockerfileTooltip}" />
+        </DockPanel>
+
+        <Label
+            Grid.Row="1" Grid.Column="0"
+            Content="_Function Name:"
+            Margin="0 9 0 0"
+            Style="{DynamicResource awsLabelBaseStyle}"
+            VerticalAlignment="Center"
+            Target="{Binding ElementName=FunctionName}"
+            ToolTip="{Binding FunctionNameTooltip}" />
+
+        <ComboBox
+            Name="FunctionName" x:FieldModifier="private"
+            Grid.Row="1" Grid.Column="1"
+            Grid.ColumnSpan="4"
+            Margin="9 9 0 0"
+            Validation.ErrorTemplate="{StaticResource DataValidationTemplate}"
+            IsReadOnly="{Binding CanEditFunctionName, Converter={StaticResource InverseBooleanConverter}}"
+            IsEditable="True"
+            IsEnabled="{Binding LoadingFunctions, Converter={StaticResource InverseBooleanConverter}}"
+            ItemsSource="{Binding Functions}"
+            ToolTip="{Binding FunctionNameTooltip}" >
+            <ComboBox.Style>
+                <Style TargetType="ComboBox" BasedOn="{StaticResource controlComboBoxStyle}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding LoadingFunctions}" Value="True">
+                            <Setter Property="Text" Value="Loading..." />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding LoadingFunctions}" Value="False">
+                            <Setter Property="Text"
+                                    Value="{Binding FunctionName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True, ValidatesOnDataErrors=True}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ComboBox.Style>
+        </ComboBox>
+
+        <Label
+            Grid.Row="2" Grid.Column="0"
+            Content="_Description:"
+            Margin="0 9 0 0"
+            Style="{DynamicResource awsLabelBaseStyle}"
+            VerticalAlignment="Center"
+            Target="{Binding ElementName=Description}" />
+
+        <TextBox
+            Name="Description" x:FieldModifier="private"
+            Grid.Row="2" Grid.Column="1"
+            Grid.ColumnSpan="4"
+            Margin="9 9 0 0"
+            Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+        <Label
+            Grid.Row="3" Grid.Column="0"
+            Content="Image _Command:"
+            Margin="0 9 0 0"
+            Style="{DynamicResource awsLabelBaseStyle}"
+            VerticalAlignment="Center"
+            Target="{Binding ElementName=ImageCommand}"
+            ToolTip="{Binding ImageCommandTooltip}" />
+
+        <TextBox
+            Name="ImageCommand" x:FieldModifier="private"
+            Grid.Row="3" Grid.Column="1"
+            Grid.ColumnSpan="4"
+            Margin="9 9 0 0"
+            Text="{Binding ImageCommand, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            ToolTip="{Binding ImageCommandTooltip}" />
+
+        <Label
+            Grid.Row="4" Grid.Column="0"
+            Content="Image _Repo:"
+            Margin="0 9 0 0"
+            Style="{DynamicResource awsLabelBaseStyle}"
+            VerticalAlignment="Center"
+            Target="{Binding ElementName=ImageRepo}"
+            ToolTip="{Binding ImageRepoTooltip}" />
+
+        <ComboBox
+            Name="ImageRepo" x:FieldModifier="private"
+            Grid.Row="4" Grid.Column="1"
+            Margin="9 9 0 0"
+            Validation.ErrorTemplate="{StaticResource DataValidationTemplate}"
+            IsEditable="True"
+            IsEnabled="{Binding LoadingImageRepos, Converter={StaticResource InverseBooleanConverter}}"
+            ItemsSource="{Binding ImageRepos}"
+            ToolTip="{Binding ImageRepoTooltip}">
+            <ComboBox.Style>
+                <Style TargetType="ComboBox" BasedOn="{StaticResource controlComboBoxStyle}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding LoadingImageRepos}" Value="True">
+                            <Setter Property="Text" Value="Loading..." />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding LoadingImageRepos}" Value="False">
+                            <Setter Property="Text" Value="{Binding ImageRepo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True, ValidatesOnDataErrors=True}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ComboBox.Style>
+        </ComboBox>
+
+        <Label
+            Grid.Row="4" Grid.Column="3"
+            Content="Image _Tag:"
+            Margin="9 9 0 0"
+            Style="{DynamicResource awsLabelBaseStyle}"
+            VerticalAlignment="Center"
+            Target="{Binding ElementName=ImageTag}"
+            ToolTip="{Binding ImageTagTooltip}" />
+
+        <ComboBox
+            Name="ImageTag" x:FieldModifier="private"
+            Grid.Row="4" Grid.Column="4"
+            Margin="6 9 0 0"
+            Validation.ErrorTemplate="{StaticResource DataValidationTemplate}"
+            IsEditable="True"
+            IsEnabled="{Binding LoadingImageTags, Converter={StaticResource InverseBooleanConverter}}"
+            ItemsSource="{Binding ImageTags}"
+            ToolTip="{Binding ImageTagTooltip}">
+            <ComboBox.Style>
+                <Style TargetType="ComboBox" BasedOn="{StaticResource controlComboBoxStyle}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding LoadingImageTags}" Value="True">
+                            <Setter Property="Text" Value="Loading..." />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding LoadingImageTags}" Value="False">
+                            <Setter Property="Text" Value="{Binding ImageTag, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True, ValidatesOnDataErrors=True}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ComboBox.Style>
+        </ComboBox>
+    </Grid>
+</commonUi:BaseAWSUserControl>

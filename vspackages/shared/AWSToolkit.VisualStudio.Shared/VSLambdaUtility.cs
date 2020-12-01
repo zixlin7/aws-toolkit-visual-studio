@@ -24,17 +24,26 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
             return suggestedMethods;
         }
 
-        private static void SearchForClasses(ProjectItems projectItems, IDictionary<string, IList<string>> suggestedMethods)
+        private static void SearchForClasses(ProjectItems projectItems,
+            IDictionary<string, IList<string>> suggestedMethods)
         {
             if (projectItems == null)
                 return;
 
             foreach (ProjectItem projectItem in projectItems)
             {
-                if (projectItem.Name != null && projectItem.Name.EndsWith(".cs") &&
-                        projectItem.FileCodeModel != null && projectItem.FileCodeModel.CodeElements != null)
+                if (projectItem.Kind == EnvDTE.Constants.vsProjectItemKindPhysicalFolder &&
+                    projectItem.ProjectItems != null)
                 {
-                    SearchForClasses(projectItem.FileCodeModel.CodeElements, suggestedMethods);
+                    SearchForClasses(projectItem.ProjectItems, suggestedMethods);
+                }
+                else
+                {
+                    if (projectItem.Name != null && projectItem.Name.EndsWith(".cs") &&
+                        projectItem.FileCodeModel != null && projectItem.FileCodeModel.CodeElements != null)
+                    {
+                        SearchForClasses(projectItem.FileCodeModel.CodeElements, suggestedMethods);
+                    }
                 }
             }
         }

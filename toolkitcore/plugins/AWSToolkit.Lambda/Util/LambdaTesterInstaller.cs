@@ -22,7 +22,8 @@ namespace Amazon.AWSToolkit.Lambda.Util
         static readonly IDictionary<string, ToolConfig> ToolConfigs = new Dictionary<string, ToolConfig>
         {
             {"netcoreapp2.1", new ToolConfig("Amazon.Lambda.TestTool-2.1", "dotnet-lambda-test-tool-2.1.exe")},
-            {"netcoreapp3.1", new ToolConfig("Amazon.Lambda.TestTool-3.1", "dotnet-lambda-test-tool-3.1.exe")}
+            {"netcoreapp3.1", new ToolConfig("Amazon.Lambda.TestTool-3.1", "dotnet-lambda-test-tool-3.1.exe")},
+            {"net5.0", new ToolConfig("Amazon.Lambda.TestTool-5.0", "dotnet-lambda-test-tool-5.0.exe")}
         };
 
         static readonly ISet<string> InstalledTesterPackages = new HashSet<string>();

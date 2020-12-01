@@ -47,6 +47,7 @@ namespace Amazon.Lambda.Tools
             LambdaGetLayerVersionDetails,
             LambdaDeleteLayerVersion,
             ParseLayerVersionArnFail,
+            LambdaWaitTillFunctionAvailable,
 
             UnknownLayerType,
             StoreCommandError,
@@ -64,7 +65,9 @@ namespace Amazon.Lambda.Tools
 
             FailedToFindZipProgram,
             FailedToDetectSdkVersion,
-            LayerNetSdkVersionMismatch
+            LayerNetSdkVersionMismatch,
+
+            DisabledSupportForNET31Layers
         }
 
         public LambdaToolsException(string message, LambdaErrorCode code) : base(message, code.ToString(), null)

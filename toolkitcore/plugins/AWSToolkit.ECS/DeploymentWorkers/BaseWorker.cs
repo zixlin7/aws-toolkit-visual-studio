@@ -13,6 +13,7 @@ using Amazon.AWSToolkit.ECS.WizardPages;
 
 using ThirdParty.Json.LitJson;
 using System.IO;
+using Amazon.Common.DotNetCli.Tools.Commands;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
@@ -61,9 +62,9 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             }
         }
 
-        public PushDockerImageProperties ConvertToPushDockerImageProperties(IAWSWizard hostingWizard)
+        public BasePushDockerImageCommand<Amazon.ECS.Tools.ECSToolsDefaults>.PushDockerImagePropertyContainer ConvertToPushDockerImageProperties(IAWSWizard hostingWizard)
         {
-            var properties = new PushDockerImageProperties();
+            var properties = new BasePushDockerImageCommand<Amazon.ECS.Tools.ECSToolsDefaults>.PushDockerImagePropertyContainer();
 
             properties.Configuration = hostingWizard[PublishContainerToAWSWizardProperties.Configuration] as string;
 

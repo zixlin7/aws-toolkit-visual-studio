@@ -1,0 +1,4 @@
+{
+    "Type": "Feature",
+    "Description": "Container Image Support in Lambda: Deploy Image-based Lambda functions to AWS Lambda"
+}

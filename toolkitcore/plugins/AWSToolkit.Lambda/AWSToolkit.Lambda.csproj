@@ -62,9 +62,6 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
-    <Reference Include="WPFTextBoxAutoComplete">
-      <HintPath>$(BuildRoot)\thirdparty\WPFTextBoxAutoComplete.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controller\AddEventSourceController.cs" />
@@ -79,6 +76,7 @@
     <Compile Include="LambdaActivator.cs" />
     <Compile Include="LambdaTester\Project.cs" />
     <Compile Include="Model\EventSourceWrapper.cs" />
+    <Compile Include="Model\Frameworks.cs" />
     <Compile Include="Model\KeyAndAliasWrapper.cs" />
     <Compile Include="Model\LogStreamWrapper.cs" />
     <Compile Include="Model\RuntimeOption.cs" />
@@ -92,6 +90,8 @@
     <Compile Include="Util\FunctionStateUtils.cs" />
     <Compile Include="Util\LambdaTesterInstaller.cs" />
     <Compile Include="Util\LambdaTelemetryUtils.cs" />
+    <Compile Include="Util\PackageTypeToVisibilityConverter.cs" />
+    <Compile Include="ViewModel\UploadFunctionViewModel.cs" />
     <Compile Include="View\AddEventSourceControl.xaml.cs">
       <DependentUpon>AddEventSourceControl.xaml</DependentUpon>
     </Compile>
@@ -138,6 +138,15 @@
     <Compile Include="View\DesignData\LambdaDesignTimeData.cs" />
     <Compile Include="View\ViewFunctionControl.xaml.cs">
       <DependentUpon>ViewFunctionControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\Controls\UploadImageFunctionControl.xaml.cs">
+      <DependentUpon>UploadImageFunctionControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\Controls\UploadNetFunctionHandlerControl.xaml.cs">
+      <DependentUpon>UploadNetFunctionHandlerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WizardPages\Controls\UploadZipFunctionControl.xaml.cs">
+      <DependentUpon>UploadZipFunctionControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="WizardPages\PageControllers\PublishServerlessDetailsPageController.cs" />
     <Compile Include="WizardPages\PageControllers\ServerlessTemplateParametersPageController.cs" />
@@ -257,6 +266,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="WizardPages\Controls\UploadImageFunctionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\Controls\UploadNetFunctionHandlerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WizardPages\Controls\UploadZipFunctionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WizardPages\PageUI\PublishServerlessDetailsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -324,7 +345,7 @@
       <Version>3.5.0.33</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.Lambda">
-      <Version>3.5.0.33</Version>
+      <Version>3.5.4</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.MobileAnalytics">
       <Version>3.5.0.33</Version>

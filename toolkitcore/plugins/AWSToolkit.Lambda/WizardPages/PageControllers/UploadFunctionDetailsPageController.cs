@@ -2,6 +2,7 @@
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
 using log4net;
 using System.Windows.Controls;
+using Amazon.Lambda;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 {
@@ -64,6 +65,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             if (_pageUI == null)
             {
                 _pageUI = new UploadFunctionDetailsPage(this);
+                _pageUI.ViewModel.PropertyChanged += _pageUI_PropertyChanged;
                 _pageUI.PropertyChanged += _pageUI_PropertyChanged;
             }
 
@@ -116,24 +118,41 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             var xrayEndpoint = _pageUI.SelectedRegion.GetEndpoint(RegionEndPointsManager.XRAY_ENDPOINT_LOOKUP);
             HostingWizard.SetProperty(UploadFunctionWizardProperties.XRayAvailable, xrayEndpoint != null);
 
-            HostingWizard[UploadFunctionWizardProperties.FunctionName] = _pageUI.FunctionName;
-            HostingWizard[UploadFunctionWizardProperties.Description] = _pageUI.Description;
-            HostingWizard[UploadFunctionWizardProperties.Configuration] = _pageUI.Configuration;
-            HostingWizard[UploadFunctionWizardProperties.Runtime] = _pageUI.RuntimeValue;
+            HostingWizard[UploadFunctionWizardProperties.FunctionName] = _pageUI.ViewModel.FunctionName;
+            HostingWizard[UploadFunctionWizardProperties.Description] = _pageUI.ViewModel.Description;
+            HostingWizard[UploadFunctionWizardProperties.PackageType] = _pageUI.ViewModel.PackageType;
 
-            // Other languages (like nodejs) do not have a valid framework value
-            HostingWizard[UploadFunctionWizardProperties.Framework] =
-                _pageUI.Runtime.IsNetCore ? _pageUI.Framework : string.Empty;
+            if (_pageUI.ViewModel.PackageType.Equals(PackageType.Zip))
+            {
+                HostingWizard[UploadFunctionWizardProperties.Configuration] = _pageUI.ViewModel.Configuration;
+                HostingWizard[UploadFunctionWizardProperties.Runtime] = _pageUI.ViewModel.Runtime.Value;
 
-            HostingWizard[UploadFunctionWizardProperties.Handler] = _pageUI.FormattedHandler;
-            HostingWizard[UploadFunctionWizardProperties.SourcePath] = _pageUI.SourcePath;
-            HostingWizard[UploadFunctionWizardProperties.SaveSettings] = _pageUI.SaveSettings;
+                // Other languages (like nodejs) do not have a valid framework value
+                HostingWizard[UploadFunctionWizardProperties.Framework] =
+                    _pageUI.ViewModel.Runtime.IsNetCore ? _pageUI.ViewModel.Framework : string.Empty;
 
+                HostingWizard[UploadFunctionWizardProperties.Handler] = _pageUI.ViewModel.Handler;
+                HostingWizard[UploadFunctionWizardProperties.SourcePath] = _pageUI.ViewModel.SourceCodeLocation;
+            }
+            else
+            {
+                HostingWizard[UploadFunctionWizardProperties.Dockerfile] = _pageUI.ViewModel.Dockerfile;
+                HostingWizard[UploadFunctionWizardProperties.ImageCommand] = _pageUI.ViewModel.ImageCommand;
+                HostingWizard[UploadFunctionWizardProperties.ImageRepo] = _pageUI.ViewModel.ImageRepo;
+                HostingWizard[UploadFunctionWizardProperties.ImageTag] = _pageUI.ViewModel.ImageTag;
+            }
+            HostingWizard[UploadFunctionWizardProperties.SaveSettings] = _pageUI.ViewModel.SaveSettings;
             return true;
         }
 
         private void _pageUI_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
+            if (e.PropertyName == nameof(_pageUI.ViewModel.FunctionName))
+            {
+                HostingWizard.SetProperty(UploadFunctionWizardProperties.IsSelectedFunctionExisting,
+                    _pageUI.ViewModel.FunctionExists);
+            }
+
             TestForwardTransitionEnablement();
         }
    }

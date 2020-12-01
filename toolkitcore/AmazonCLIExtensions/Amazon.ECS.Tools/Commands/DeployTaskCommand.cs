@@ -2,6 +2,8 @@
 using Amazon.Common.DotNetCli.Tools.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using ThirdParty.Json.LitJson;
 
@@ -50,7 +52,7 @@ namespace Amazon.ECS.Tools.Commands
 
                 return this._deployTaskProperties;
             }
-            set => this._deployTaskProperties = value;
+            set { this._deployTaskProperties = value; }
         }
 
         public DeployTaskCommand(IToolLogger logger, string workingDirectory, string[] args)
