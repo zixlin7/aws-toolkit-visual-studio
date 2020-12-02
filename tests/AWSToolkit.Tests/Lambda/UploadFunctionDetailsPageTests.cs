@@ -165,6 +165,7 @@ namespace AWSToolkit.Tests.Lambda
             AssertFrameworkSetsRuntime(Frameworks.NetCoreApp10, RuntimeOption.PROVIDED);
             AssertFrameworkSetsRuntime(Frameworks.NetCoreApp21, RuntimeOption.NetCore_v2_1);
             AssertFrameworkSetsRuntime(Frameworks.NetCoreApp31, RuntimeOption.NetCore_v3_1);
+            AssertFrameworkSetsRuntime(Frameworks.Net50, RuntimeOption.PROVIDED);
         }
 
         [StaFact]

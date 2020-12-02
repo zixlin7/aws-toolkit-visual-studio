@@ -269,14 +269,25 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 {
                     ViewModel.Frameworks.Add(framework);
                 }
+
+                ViewModel.Framework = ViewModel.Frameworks.First();
             }
             else
             {
                 ViewModel.Frameworks.Add(Frameworks.NetCoreApp10);
                 ViewModel.Frameworks.Add(Frameworks.NetCoreApp21);
-            }
+                ViewModel.Frameworks.Add(Frameworks.NetCoreApp31);
+                ViewModel.Frameworks.Add(Frameworks.Net50);
 
-            ViewModel.Framework = ViewModel.Frameworks.First();
+                if (_shellProvider.ShellName == Constants.VS2017HostShell.ShellName)
+                {
+                    ViewModel.Framework = ViewModel.Frameworks.First(x => x.MatchesFramework(Frameworks.NetCoreApp21));
+                }
+                else
+                {
+                    ViewModel.Framework = ViewModel.Frameworks.Last();
+                }
+            }
         }
 
         public AccountViewModel SelectedAccount => _ctlAccountAndRegion.SelectedAccount;
