@@ -323,6 +323,7 @@
     <None Include="$(BuildRoot)\hostedfiles\stockamis.json">
       <Link>HostedFiles\stockamis.json</Link>
     </None>
+    <None Include="HostedFiles\.editorconfig" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFormation">

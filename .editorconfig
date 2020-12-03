@@ -1,0 +1,27 @@
+﻿# You might find the following Visual Studio Extension useful if you are working on .editorconfig files:
+# https://marketplace.visualstudio.com/items?itemName=MadsKristensen.EditorConfig
+
+root = true
+
+[*]
+end_of_line = crlf
+charset = utf-8-bom
+
+[*.{appxmanifest,axml,build,config,csproj,dbml,discomap,dtd,jsproj,lsproj,njsproj,nuspec,proj,props,proto,resw,resx,StyleCop,targets,tasks,vbproj,xml,xsd}]
+indent_style = tab
+tab_width = 4
+
+[*.{asax,ascx,aspx,cs,cshtml,css,htm,html,js,jsx,master,razor,skin,ts,tsx,vb,xaml,xamlx,xoml}]
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+
+[*.{json,resjson}]
+indent_size = 4
+indent_style = space
+
+[*.cs]
+trim_trailing_whitespace = true
+
+# TODO : Incrementally onboard additional C# formatting rules
+# Reference: https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/

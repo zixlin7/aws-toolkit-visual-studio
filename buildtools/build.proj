@@ -337,6 +337,7 @@
         <ItemGroup>
             <FileException Include="$(HostedFilesFolder)\ServiceEndPoints.xml" />
             <FileException Include="$(HostedFilesFolder)\ServiceEndPoints.json" />
+            <FileException Include="$(HostedFilesFolder)\.editorconfig" />
             <FileException Include="$(HostedFilesFolder)\flags\**\*.png" />
         </ItemGroup>
         
@@ -401,7 +402,7 @@
 				RegionValue="$(HostedFilesBucketRegion)"
 				Bucket="$(HostedFilesBucket)"
 				S3Path=""
-				KeyExceptions="ServiceEndPoints.xml;ServiceEndPoints.json"
+				KeyExceptions="ServiceEndPoints.xml;ServiceEndPoints.json;.editorconfig"
 				LocalPath="$(HostedFilesFolder)">
 			<Output TaskParameter="KeysToInvalidate" PropertyName="HostedFilesInvalidationKeys" />
 		</UploadHostedFilesTask>
