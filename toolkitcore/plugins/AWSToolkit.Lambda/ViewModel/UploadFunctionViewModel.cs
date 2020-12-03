@@ -490,12 +490,8 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
                     request.Marker = response.NextMarker;
                 } while (!string.IsNullOrEmpty(request.Marker));
 
-                _shellProvider.ExecuteOnUIThread(() =>
-                {
-                    _functionConfigs.Keys.OrderBy(x => x.ToLowerInvariant())
-                        .ToList()
-                        .ForEach(functionName => { Functions.Add(functionName); });
-                });
+                UiThreadFilterFunctions();
+
             }
             catch (Exception e)
             {
@@ -628,6 +624,35 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
             return false;
         }
 
+        /// <summary>
+        /// Filters existing functions by selected package type
+        /// </summary>
+        public void FilterExistingFunctions()
+        {
+            // Clearing Functions can wipe FunctionName, explicitly restore it afterwards
+            var currentFunctionName = FunctionName;
+            try
+            {
+                if (Functions.Count != 0)
+                {
+                    UiThreadClearFunctions();
+                }
+
+                UiThreadFilterFunctions();
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Error refreshing existing lambda functions.", e);
+            }
+            finally
+            {
+                if (string.IsNullOrEmpty(FunctionName))
+                {
+                    UiThreadFunctionName = currentFunctionName;
+                }
+            }
+        }
+
         private void BrowseSourceCodeFolder(object parameter)
         {
             var directory = DirectoryBrowserDlgHelper.ChooseDirectory(
@@ -698,6 +723,23 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         private void UiThreadClearImageTags()
         {
             _shellProvider.ExecuteOnUIThread(() => { ImageTags.Clear(); });
+        }
+
+        /// <summary>
+        /// Filters existing functions by current selected package type
+        /// on the UI thread
+        /// </summary>
+        private void UiThreadFilterFunctions()
+        {
+            _shellProvider.ExecuteOnUIThread(() =>
+            {
+                _functionConfigs
+                    .Where(functionConfig => functionConfig.Value.PackageType.Equals(PackageType))
+                    .Select(x=>x.Key)
+                    .OrderBy(x => x.ToLowerInvariant())
+                    .ToList()
+                    .ForEach(functionName => { Functions.Add(functionName); });
+            });
         }
 
         #region IDataErrorInfo

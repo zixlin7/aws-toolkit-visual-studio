@@ -38,7 +38,8 @@ namespace AWSToolkit.Tests.Lambda
             {
                 new FunctionConfiguration()
                 {
-                    FunctionName = SampleFunctionName
+                    FunctionName = SampleFunctionName,
+                    PackageType = PackageType.Zip
                 }
             };
 
@@ -105,10 +106,25 @@ namespace AWSToolkit.Tests.Lambda
         [Fact]
         public async Task UpdateFunctionsList()
         {
+            _sut.PackageType = PackageType.Zip;
             await _sut.UpdateFunctionsList(_lambdaClient.Object);
 
             Assert.Single(_sut.Functions);
             Assert.Equal(SampleFunctionName, _sut.Functions.First());
+        }
+
+        [Fact]
+        public async Task FilterExistingFunctions()
+        {
+            _sut.PackageType = PackageType.Zip;
+            await _sut.UpdateFunctionsList(_lambdaClient.Object);
+
+            Assert.Single(_sut.Functions);
+            Assert.Equal(SampleFunctionName, _sut.Functions.First());
+
+            _sut.PackageType = PackageType.Image;
+            _sut.FilterExistingFunctions();
+            Assert.Empty(_sut.Functions);
         }
 
         [Fact]
@@ -139,6 +155,7 @@ namespace AWSToolkit.Tests.Lambda
         [Fact]
         public async Task FunctionExists()
         {
+            _sut.PackageType = PackageType.Zip;
             await _sut.UpdateFunctionsList(_lambdaClient.Object);
 
             _sut.FunctionName = "fakeFunction";
@@ -151,6 +168,7 @@ namespace AWSToolkit.Tests.Lambda
         [Fact]
         public async Task TryGetFunctionConfig()
         {
+            _sut.PackageType = PackageType.Zip;
             await _sut.UpdateFunctionsList(_lambdaClient.Object);
 
             Assert.False(_sut.TryGetFunctionConfig("fakeFunction", out _));

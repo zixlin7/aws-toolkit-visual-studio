@@ -411,6 +411,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             if (e.PropertyName == nameof(ViewModel.PackageType))
             {
                 ViewModel.CanEditRuntime = ViewModel.PackageType == Amazon.Lambda.PackageType.Zip;
+                ViewModel.FilterExistingFunctions();
                 RecommendRepoNameIfEmpty();
             }
 
