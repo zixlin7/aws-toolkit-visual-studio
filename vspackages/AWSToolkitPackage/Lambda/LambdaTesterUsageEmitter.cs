@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
-using Amazon.AWSToolkit.MobileAnalytics;
-using Amazon.AWSToolkit.Telemetry;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
-using LambdaInvokeLocal = Amazon.AWSToolkit.Telemetry.LambdaInvokeLocal;
 
 namespace Amazon.AWSToolkit.VisualStudio.Lambda
 {
     public class LambdaTesterUsageEmitter
     {
-        private readonly ISimpleMobileAnalytics _metrics;
         private int _lastDebugProcessId = -1;
 
         private readonly ITelemetryLogger _telemetryLogger;
@@ -44,22 +40,22 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
                 var runtime = "unknown";
                 if (processName.Contains("dotnet-lambda-test-tool-2.1"))
                 {
-                    runtime = AWSToolkit.Telemetry.Runtime.Dotnetcore21.ToString();
+                    runtime = AwsToolkit.Telemetry.Events.Generated.Runtime.Dotnetcore21.ToString();
                 }
                 else if (processName.Contains("dotnet-lambda-test-tool-3.1"))
                 {
-                    runtime = AWSToolkit.Telemetry.Runtime.Dotnetcore31.ToString();
+                    runtime = AwsToolkit.Telemetry.Events.Generated.Runtime.Dotnetcore31.ToString();
                 }
                 else if (processName.Contains("dotnet-lambda-test-tool-5.0"))
                 {
-                    runtime = AWSToolkit.Telemetry.Runtime.Dotnet50.ToString();
+                    runtime = AwsToolkit.Telemetry.Events.Generated.Runtime.Dotnet50.ToString();
                 }
 
                 try
                 {
                     _telemetryLogger.RecordLambdaInvokeLocal(new LambdaInvokeLocal()
                     {
-                        Runtime = new AWSToolkit.Telemetry.Runtime(runtime),
+                        Runtime = new AwsToolkit.Telemetry.Events.Generated.Runtime(runtime),
                         Debug = debug,
                         Result = Result.Succeeded,
                         LambdaPackageType = LambdaPackageType.Zip

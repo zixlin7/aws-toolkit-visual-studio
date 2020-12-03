@@ -105,10 +105,10 @@
       <Version>3.5.1.31</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>0.0.75</Version>
+      <Version>0.0.81</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>0.0.75</Version>
+      <Version>0.0.81</Version>
     </PackageReference>
     <PackageReference Include="Castle.Core">
       <Version>4.2.1</Version>

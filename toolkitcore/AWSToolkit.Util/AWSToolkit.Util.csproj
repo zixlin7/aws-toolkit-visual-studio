@@ -76,7 +76,6 @@
     <Compile Include="Telemetry\ClientId.cs" />
     <Compile Include="Telemetry\Internal\ITelemetryClient.cs" />
     <Compile Include="Telemetry\Internal\ITelemetryPublisher.cs" />
-    <Compile Include="Telemetry\LambdaImageTelemetry.cs" />
     <Compile Include="Telemetry\ModelExtensionMethods.cs" />
     <Compile Include="Telemetry\Model\MetadataKeys.cs" />
     <Compile Include="Telemetry\Internal\PostMetricsRequest.cs" />
@@ -330,10 +329,10 @@
       <Version>3.5.0.33</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>0.0.75</Version>
+      <Version>0.0.81</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>0.0.75</Version>
+      <Version>0.0.81</Version>
     </PackageReference>
     <PackageReference Include="AWSSDK.CognitoIdentity">
       <Version>3.5.0.33</Version>

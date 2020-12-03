@@ -1,11 +1,9 @@
-using Amazon.AwsToolkit.Telemetry.Events.Core;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
 using System;
 using System.Diagnostics;
 using Amazon.Lambda;
-using Amazon.AWSToolkit.Telemetry;
-using LambdaDeploy = Amazon.AWSToolkit.Telemetry.LambdaDeploy;
 
 namespace Amazon.AWSToolkit.Lambda.Util
 {
