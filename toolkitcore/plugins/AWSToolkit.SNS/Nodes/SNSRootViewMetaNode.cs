@@ -48,6 +48,6 @@ namespace Amazon.AWSToolkit.SNS.Nodes
                 new ActionHandlerWrapper("View Subscriptions", OnViewSubscriptions, null, false,
                     this.GetType().Assembly, "Amazon.AWSToolkit.SNS.Resources.EmbeddedImages.view_subscription.png"));
 
-        public override string MarketingWebSite => "http://aws.amazon.com/sns/";
+        public override string MarketingWebSite => "https://aws.amazon.com/sns/";
     }
 }

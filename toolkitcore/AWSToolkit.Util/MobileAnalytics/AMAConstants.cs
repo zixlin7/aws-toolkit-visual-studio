@@ -50,7 +50,7 @@
         /// Event version number required by Mobile Analytics Service.
         /// 
         /// NOTE: Do NOT change MOBILE_ANALYTICS_EVENT_VERSION_NUMBER!!
-        /// See Version documentation here: http://docs.aws.amazon.com/mobileanalytics/latest/ug/PutEvents.html
+        /// See Version documentation here: https://docs.aws.amazon.com/mobileanalytics/latest/ug/PutEvents.html
         /// </summary>
         public const string MOBILE_ANALYTICS_EVENT_VERSION_NUMBER = "v2.0";
 

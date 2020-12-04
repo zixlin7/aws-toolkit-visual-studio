@@ -45,6 +45,6 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
 
         public LambdaFunctionViewMetaNode LambdaFunctionViewMetaNode => this.FindChild<LambdaFunctionViewMetaNode>();
 
-        public override string MarketingWebSite => "http://aws.amazon.com/lambda/";
+        public override string MarketingWebSite => "https://aws.amazon.com/lambda/";
     }
 }

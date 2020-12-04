@@ -20,7 +20,7 @@ namespace Amazon.AWSToolkit.RDS.Nodes
         }
 
 
-        public override string MarketingWebSite => "http://aws.amazon.com/rds/";
+        public override string MarketingWebSite => "https://aws.amazon.com/rds/";
 
         public ActionHandlerWrapper.ActionHandler OnLaunchDBInstance
         {

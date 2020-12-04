@@ -16,6 +16,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
 
         public override string EndPointSystemName => BEANSTALK_ENDPOINT_LOOKUP;
 
-        public override string MarketingWebSite => "http://aws.amazon.com/elasticbeanstalk/";
+        public override string MarketingWebSite => "https://aws.amazon.com/elasticbeanstalk/";
     }
 }

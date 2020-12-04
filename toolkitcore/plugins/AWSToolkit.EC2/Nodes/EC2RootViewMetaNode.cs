@@ -32,6 +32,6 @@ namespace Amazon.AWSToolkit.EC2.Nodes
             BuildActionHandlerList(new ActionHandlerWrapper("Launch instance...", OnLaunch, new ActionHandlerWrapper.ActionResponseHandler(this.OnLaunchResponse), false, 
                 this.GetType().Assembly, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.launch-instance.png"));
 
-        public override string MarketingWebSite => "http://aws.amazon.com/ec2/";
+        public override string MarketingWebSite => "https://aws.amazon.com/ec2/";
     }
 }

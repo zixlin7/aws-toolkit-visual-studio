@@ -196,7 +196,7 @@
                 Margin="3,10,0,5"
                 Style="{DynamicResource awsTextBlockBaseStyle}"
                                     >
-                <Hyperlink NavigateUri="http://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html" RequestNavigate="onCronLearnMoreClick">
+                <Hyperlink NavigateUri="https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html" RequestNavigate="onCronLearnMoreClick">
                     <TextBlock
                             Style="{DynamicResource awsTextBlockBoldStyle}"
                             Text="Cron syntax" />

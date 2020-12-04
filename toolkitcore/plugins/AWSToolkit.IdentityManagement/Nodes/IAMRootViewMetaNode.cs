@@ -22,6 +22,6 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             return new IAMRootViewModel(account);
         }
 
-        public override string MarketingWebSite => "http://aws.amazon.com/iam/";
+        public override string MarketingWebSite => "https://aws.amazon.com/iam/";
     }
 }

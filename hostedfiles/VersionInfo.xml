@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<versions location="http://aws.amazon.com/visualstudio">
+<versions location="https://aws.amazon.com/visualstudio">
   <!-- 
     Toolkit v1.18.1.0 is the last version to reference this release notes page.
     Release notes are now packaged into newer Toolkit versions, as well as the repo's CHANGELOG.md.
@@ -397,7 +397,7 @@
 	<change>Fixed issue with C# project templates not showing up correctly.</change>
   </version>
   <version number="1.9.0.0" release-date="2015-03-05" prompt="true">
-	<change>Added support for testing and deploying AWS Lambda functions. This requires that the Node.js Tools are installed. For more information: http://blogs.aws.amazon.com/net/post/Tx381XNNQALP8BA/</change>
+	<change>Added support for testing and deploying AWS Lambda functions. This requires that the Node.js Tools are installed. For more information: https://blogs.aws.amazon.com/net/post/Tx381XNNQALP8BA/</change>
 	<change>Added support to Amazon S3 bucket properties to configure event notifications.</change>
   </version>
   <version number="1.8.2.1" release-date="2015-02-10" prompt="false">

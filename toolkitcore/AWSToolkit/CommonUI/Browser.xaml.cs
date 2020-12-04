@@ -8,7 +8,7 @@ namespace Amazon.AWSToolkit.CommonUI
     public partial class Browser : BaseAWSControl
     {
         public Browser()
-            : this("http://aws.amazon.com/")
+            : this("https://aws.amazon.com/")
         {
             InitializeComponent();
         }

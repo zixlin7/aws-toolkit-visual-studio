@@ -285,7 +285,7 @@
             <LineBreak />
             <LineBreak />
             <Run>For more information visit</Run>
-            <Hyperlink NavigateUri="http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_NET.sdlc.html#vpc" RequestNavigate="onVPCDocumentationRequestNavigate">AWS Elastic Beanstalk Developer Guide</Hyperlink>
+            <Hyperlink NavigateUri="https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/vpc.html" RequestNavigate="onVPCDocumentationRequestNavigate">AWS Elastic Beanstalk Developer Guide</Hyperlink>
         </TextBlock>
     </Grid>
     

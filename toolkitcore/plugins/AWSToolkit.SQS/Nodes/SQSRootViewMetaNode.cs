@@ -34,6 +34,6 @@ namespace Amazon.AWSToolkit.SQS.Nodes
             BuildActionHandlerList(new ActionHandlerWrapper("Create Queue...", OnCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateResponse), false, this.GetType().Assembly,
                 "Amazon.AWSToolkit.SimpleDB.Resources.EmbeddedImages.queue-add.png"));
 
-        public override string MarketingWebSite => "http://aws.amazon.com/sqs/";
+        public override string MarketingWebSite => "https://aws.amazon.com/sqs/";
     }
 }

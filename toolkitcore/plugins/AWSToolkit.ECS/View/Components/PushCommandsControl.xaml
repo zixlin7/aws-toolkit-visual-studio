@@ -136,7 +136,7 @@
                                     </Run>
                                     <Hyperlink
                                         IsEnabled="True"
-                                        NavigateUri="http://docs.aws.amazon.com/AmazonECS/latest/developerguide/docker-basics.html"
+                                        NavigateUri="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/docker-basics.html"
                                         RequestNavigate="HelpLink_OnRequestNavigate">
                                         here
                                     </Hyperlink>
@@ -281,7 +281,7 @@
                                     </Run>
                                     <Hyperlink
                                         IsEnabled="True"
-                                        NavigateUri="http://docs.aws.amazon.com/AmazonECS/latest/developerguide/docker-basics.html"
+                                        NavigateUri="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/docker-basics.html"
                                         RequestNavigate="HelpLink_OnRequestNavigate">
                                         here
                                     </Hyperlink>

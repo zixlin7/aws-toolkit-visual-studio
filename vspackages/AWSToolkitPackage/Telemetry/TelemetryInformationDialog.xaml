@@ -21,7 +21,7 @@
             By letting AWS know which Toolkit features are used, this data helps improve the AWS Toolkit and other Amazon products and services. AWS handles this data in accordance with the
             <Hyperlink IsEnabled="True"
                        RequestNavigate="AWSPrivacyPolicyLink_RequestNavigate" 
-                       NavigateUri="http://aws.amazon.com/privacy/">
+                       NavigateUri="https://aws.amazon.com/privacy/">
                 AWS Privacy Policy
             </Hyperlink>. When available, an AWS Account ID is associated with this information.
         </TextBlock>

@@ -19,7 +19,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
         }
 
 
-        public override string MarketingWebSite => "http://aws.amazon.com/cloudformation/";
+        public override string MarketingWebSite => "https://aws.amazon.com/cloudformation/";
 
         public ActionHandlerWrapper.ActionHandler OnCreate
         {

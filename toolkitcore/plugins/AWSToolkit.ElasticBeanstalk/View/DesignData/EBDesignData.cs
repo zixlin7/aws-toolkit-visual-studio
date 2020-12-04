@@ -18,19 +18,19 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.DesignData
             app1.Environments.Add(new EnvironmentDescription
                     {
                         EnvironmentName = "Development",
-                        CNAME = "http://development.mymvcapp.elasticbeanstalk.com",
+                        CNAME = "https://development.mymvcapp.elasticbeanstalk.com",
                         Status = EnvironmentStatus.Ready
                     });
             app1.Environments.Add(new EnvironmentDescription
                     {
                         EnvironmentName = "Staging",
-                        CNAME = "http://staging.mymvcapp.elasticbeanstalk.com",
+                        CNAME = "https://staging.mymvcapp.elasticbeanstalk.com",
                         Status = EnvironmentStatus.Ready
                     });
             app1.Environments.Add(new EnvironmentDescription
                     {
                         EnvironmentName = "Prod",
-                        CNAME = "http://mymvcapp.elasticbeanstalk.com",
+                        CNAME = "https://mymvcapp.elasticbeanstalk.com",
                         Status = EnvironmentStatus.Ready
                     });
 
@@ -38,7 +38,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.View.DesignData
             app2.Environments.Add(new EnvironmentDescription
                     {
                         EnvironmentName = "Development",
-                        CNAME = "http://development.mymvcapp.elasticbeanstalk.com",
+                        CNAME = "https://development.mymvcapp.elasticbeanstalk.com",
                         Status = EnvironmentStatus.Ready
                     });
 

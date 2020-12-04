@@ -17,6 +17,6 @@ namespace Amazon.AWSToolkit.CodeCommit.Nodes
             return new CodeCommitRootViewModel(account);
         }
 
-        public override string MarketingWebSite => "http://aws.amazon.com/CodeCommit/";
+        public override string MarketingWebSite => "https://aws.amazon.com/codecommit/";
     }
 }

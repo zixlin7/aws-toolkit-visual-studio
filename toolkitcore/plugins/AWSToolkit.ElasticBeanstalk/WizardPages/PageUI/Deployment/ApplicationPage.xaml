@@ -160,7 +160,7 @@
                         VerticalAlignment="Bottom"
                         FontStyle="Italic"
                         Style="{DynamicResource awsTextBlockBaseStyle}"
-                        Text="http:" />
+                        Text="http://" />
                     <TextBox
                         Grid.Column="1"
                         Width="300"

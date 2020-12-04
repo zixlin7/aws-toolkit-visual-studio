@@ -21,7 +21,7 @@ namespace Amazon.AWSToolkit.DynamoDB.View.CreateTableWizard.PageUI
 
         private void aboutDynamoDB_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start(new ProcessStartInfo("http://aws.amazon.com/dynamodb/#pricing"));
+            Process.Start(new ProcessStartInfo("https://aws.amazon.com/dynamodb/#pricing"));
             e.Handled = true;
         }
 

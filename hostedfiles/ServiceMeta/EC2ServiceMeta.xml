@@ -2,8 +2,8 @@
 <EC2MetaInfo>
 
 	<!--
-		Info on instance types can be found at http://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/instance-types.html.
-		Info on max instance store volumes per type can be found at http://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/InstanceStorage.html#StorageOnInstanceTypes.
+		Info on instance types can be found at https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/instance-types.html.
+		Info on max instance store volumes per type can be found at https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/InstanceStorage.html#instance-store-volumes.
 	-->
 
 	<DefaultInstanceType id="m1.small" />

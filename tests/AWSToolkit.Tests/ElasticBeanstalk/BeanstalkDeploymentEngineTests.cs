@@ -16,10 +16,10 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             new RegionEndPointsManager.RegionEndPoints("us-east-1", "US East",
                 new Dictionary<string, RegionEndPointsManager.EndPoint>()
                 {
-                    {RegionEndPointsManager.EC2_SERVICE_NAME, new RegionEndPointsManager.EndPoint("foo", "http://foo")},
+                    {RegionEndPointsManager.EC2_SERVICE_NAME, new RegionEndPointsManager.EndPoint("foo", "https://foo")},
                     {
                         RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME,
-                        new RegionEndPointsManager.EndPoint("foo", "http://foo")
+                        new RegionEndPointsManager.EndPoint("foo", "https://foo")
                     },
                 }, new string[0]);
         protected readonly Mock<DeploymentObserver> _observer = new Mock<DeploymentObserver>();

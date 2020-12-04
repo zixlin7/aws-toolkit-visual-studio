@@ -219,7 +219,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
 
         void RedirectToMarketingSiteSignUp(string serviceName)
         {
-            string marketingWebSite = "http://aws.amazon.com"; // fallback in case we can't find service site
+            string marketingWebSite = "https://aws.amazon.com"; // fallback in case we can't find service site
             string serviceDisplayName = serviceName;
 
             // we don't reference plugin assemblies, so have to walk and match on name as best we can

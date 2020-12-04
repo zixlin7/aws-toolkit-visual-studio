@@ -16,6 +16,6 @@ namespace Amazon.AWSToolkit.EC2.Nodes
             return new VPCRootViewModel(account);
         }
 
-        public override string MarketingWebSite => "http://aws.amazon.com/vpc/";
+        public override string MarketingWebSite => "https://aws.amazon.com/vpc/";
     }
 }

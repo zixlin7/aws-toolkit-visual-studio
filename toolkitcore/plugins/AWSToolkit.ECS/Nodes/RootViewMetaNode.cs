@@ -53,6 +53,6 @@ namespace Amazon.AWSToolkit.ECS.Nodes
                 this.GetType().Assembly, 
                 "Amazon.AWSToolkit.ECS.Resources.EmbeddedImages.launch-cluster.png"));
 
-        public override string MarketingWebSite => "http://aws.amazon.com/ecs/";
+        public override string MarketingWebSite => "https://aws.amazon.com/ecs/";
     }
 }

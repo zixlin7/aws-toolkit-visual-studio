@@ -38,7 +38,7 @@ namespace Amazon.AWSToolkit.S3.Nodes
             BuildActionHandlerList(new ActionHandlerWrapper("Create Bucket...", OnCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnCreateResponse), false, 
                 this.GetType().Assembly, "Amazon.AWSToolkit.S3.Resources.EmbeddedImages.new-bucket.png"));
 
-        public override string MarketingWebSite => "http://aws.amazon.com/s3/";
+        public override string MarketingWebSite => "https://aws.amazon.com/s3/";
 
         /// <summary>
         /// Adds a bucket to the list of buckets being deleted.

@@ -44,7 +44,7 @@ namespace Amazon.AWSToolkit.CloudFront.View.Components
 
         void onRequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            string url = "http://docs.amazonwebservices.com/AmazonCloudFront/latest/DeveloperGuide/CNAMEs.html";
+            string url = "https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/CNAMEs.html";
             Process.Start(new ProcessStartInfo(url));
             e.Handled = true;
         }

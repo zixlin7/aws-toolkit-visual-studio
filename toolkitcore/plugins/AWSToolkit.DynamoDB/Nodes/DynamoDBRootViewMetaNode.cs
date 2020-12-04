@@ -65,6 +65,6 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
                 new ActionHandlerWrapper("Connect to DynamoDB Local", OnStartLocal, new ActionHandlerWrapper.ActionResponseHandler(this.OnDynamoDBLocalStartResponse), false, null, null),
                 new ActionHandlerWrapper("Stop DynamoDB Local", OnStopLocal, new ActionHandlerWrapper.ActionResponseHandler(this.OnDynamoDBLocalStopResponse), false, null, null));
 
-        public override string MarketingWebSite => "http://aws.amazon.com/";
+        public override string MarketingWebSite => "https://aws.amazon.com/";
     }
 }

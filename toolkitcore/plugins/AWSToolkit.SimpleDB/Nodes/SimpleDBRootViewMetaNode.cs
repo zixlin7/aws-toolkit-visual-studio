@@ -35,6 +35,6 @@ namespace Amazon.AWSToolkit.SimpleDB.Nodes
             BuildActionHandlerList(new ActionHandlerWrapper("Create Domain...",
                 OnDomainCreate, new ActionHandlerWrapper.ActionResponseHandler(this.OnDomainCreateResponse), false, this.GetType().Assembly, "Amazon.AWSToolkit.SimpleDB.Resources.EmbeddedImages.domain-create.png"));
 
-        public override string MarketingWebSite => "http://aws.amazon.com/simpledb/";
+        public override string MarketingWebSite => "https://aws.amazon.com/simpledb/";
     }
 }

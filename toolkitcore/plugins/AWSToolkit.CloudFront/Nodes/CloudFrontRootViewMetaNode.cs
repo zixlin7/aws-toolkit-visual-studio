@@ -47,6 +47,6 @@ namespace Amazon.AWSToolkit.CloudFront.Nodes
                 new ActionHandlerWrapper("View Origin Access Identities...", OnViewOriginAccessIdentities, null, false, null, null));
 
 
-        public override string MarketingWebSite => "http://aws.amazon.com/cloudfront/";
+        public override string MarketingWebSite => "https://aws.amazon.com/cloudfront/";
     }
 }

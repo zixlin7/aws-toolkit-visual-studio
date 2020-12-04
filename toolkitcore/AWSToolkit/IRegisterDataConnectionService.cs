@@ -16,7 +16,7 @@ namespace Amazon.AWSToolkit
         public static RegisterDataConnectionException CreateMySQLMissingProvider(Exception innerException)
         {
             return new RegisterDataConnectionException("Data provider for connecting to MySQL was not found.  The data provider can be downloaded from the following link.", innerException, 
-                "http://dev.mysql.com/tech-resources/articles/mysql-installer-for-windows.html");
+                "https://dev.mysql.com/downloads/installer/");
         }
 
         RegisterDataConnectionException(string message, Exception innerException, string url)

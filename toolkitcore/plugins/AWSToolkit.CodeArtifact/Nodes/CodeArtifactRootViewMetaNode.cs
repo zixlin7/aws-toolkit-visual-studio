@@ -28,7 +28,7 @@ namespace Amazon.AWSToolkit.CodeArtifact.Nodes
             BuildActionHandlerList(new ActionHandlerWrapper("Select Profile...", SelectProfile, null, false,
                 this.GetType().Assembly, null));
 
-        public override string MarketingWebSite => "http://aws.amazon.com/codeartifact/";
+        public override string MarketingWebSite => "https://aws.amazon.com/codeartifact/";
 
     }
 }

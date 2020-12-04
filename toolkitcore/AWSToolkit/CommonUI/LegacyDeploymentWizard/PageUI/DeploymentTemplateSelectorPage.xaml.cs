@@ -430,7 +430,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageUI
             else
             {
                 /* DEPLOYMENT_TODO
-                string marketingWebSite = "http://aws.amazon.com"; // fallback in case we can't find service site
+                string marketingWebSite = "https://aws.amazon.com"; // fallback in case we can't find service site
 
                 CloudFormationRootViewModel rootViewModel = account.FindSingleChild<CloudFormationRootViewModel>(false);
                 if (rootViewModel != null)

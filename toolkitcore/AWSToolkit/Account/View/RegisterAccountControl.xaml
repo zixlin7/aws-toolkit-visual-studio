@@ -109,10 +109,10 @@
         <WrapPanel Grid.Column="0" Grid.Row="10" Grid.ColumnSpan="2" Margin="0,4,0,0">
             <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}">Account information can found at:</TextBlock>
             <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}" Margin="4,0,0,0">
-            <Hyperlink NavigateUri="http://aws.amazon.com/developers/access-keys/" RequestNavigate="onRequestNavigate">
+            <Hyperlink NavigateUri="https://aws.amazon.com/developers/access-keys/" RequestNavigate="onRequestNavigate">
                 <TextBlock Style="{DynamicResource awsUrlTextFieldStyle}" 
                            Name="_ctlAWSLink" 
-                           Text="http://aws.amazon.com/developers/access-keys/"
+                           Text="https://aws.amazon.com/developers/access-keys/"
                            />
             </Hyperlink></TextBlock>
 
