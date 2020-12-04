@@ -22,6 +22,7 @@ using Amazon.CloudWatchEvents.Model;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Lambda.View;
 using Amazon.AWSToolkit.MobileAnalytics;
+using AddPermissionRequest = Amazon.Lambda.Model.AddPermissionRequest;
 
 namespace Amazon.AWSToolkit.Lambda.Controller
 {
@@ -144,14 +145,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
             string sourceArn = string.Format("arn:aws:s3:::{0}", this._control.Resource);
 
-            this._lambdaClient.AddPermission(new Amazon.Lambda.Model.AddPermissionRequest
-            {
-                FunctionName = this._functionARN,
-                Action = "lambda:InvokeFunction",
-                Principal = "s3.amazonaws.com",
-                SourceArn = sourceArn,
-                StatementId = Guid.NewGuid().ToString() + "-vstoolkit"
-            });
+            this._lambdaClient.AddPermission(CreateAddEventSourcePermissionRequest(sourceArn, "s3.amazonaws.com", this._functionARN, this._accountNumber));
 
             var getResponse = bucketS3Client.GetBucketNotification(this._control.Resource);
 
@@ -209,15 +203,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                 Endpoint = this._functionARN
             });
 
-            this._lambdaClient.AddPermission(new Amazon.Lambda.Model.AddPermissionRequest
-            {
-                FunctionName = this._functionARN,
-                Action = "lambda:InvokeFunction",
-                Principal = "sns.amazonaws.com",
-                SourceArn = this._control.Resource,
-                StatementId = Guid.NewGuid().ToString() + "-vstoolkit"
-            });
-
+            this._lambdaClient.AddPermission(CreateAddEventSourcePermissionRequest(this._control.Resource, "sns.amazonaws.com", this._functionARN, this._accountNumber));
             return true;
         }
 
@@ -244,16 +230,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                 }
             });
 
-            this._lambdaClient.AddPermission(new Amazon.Lambda.Model.AddPermissionRequest
-            {
-                FunctionName = this._functionARN,
-                Action = "lambda:InvokeFunction",
-                Principal = "events.amazonaws.com",
-                SourceArn = putResponse.RuleArn,
-                StatementId = Guid.NewGuid().ToString() + "-vstoolkit"
-            });
-
-
+            this._lambdaClient.AddPermission(CreateAddEventSourcePermissionRequest(putResponse.RuleArn, "events.amazonaws.com", this._functionARN, this._accountNumber));
             return true;
         }
 
@@ -451,6 +428,26 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
             streams = new List<string>(streams.OrderBy(x => x));
             return streams;
+        }
+
+        /// <summary>
+        /// Create an add permission request for the specified event source 
+        /// </summary>
+        public static AddPermissionRequest CreateAddEventSourcePermissionRequest(string sourceArn, string principal, string functionArn, string accountNumber)
+        {
+            var request = new AddPermissionRequest
+            {
+                FunctionName = functionArn,
+                Action = "lambda:InvokeFunction",
+                Principal = principal,
+                SourceArn = sourceArn,
+                StatementId = Guid.NewGuid().ToString() + "-vstoolkit"
+            };
+            if (principal.StartsWith("s3", StringComparison.OrdinalIgnoreCase))
+            {
+                request.SourceAccount = accountNumber;
+            }
+            return request;
         }
     }
 }
