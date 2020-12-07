@@ -31,7 +31,6 @@ namespace AWSDeployment
     public class CloudFormationDeploymentEngine : DeploymentEngineBase
     {
         static Regex paramPattern = new Regex(@"^PARAM\d$");
-        const string TEMPLATES_URI = "http://vstoolkit.amazonwebservices.com/CloudFormationTemplates/";
 
         private const string EVENT_DEPLOY_FAIL_MESSAGE = "Deploy failed";
         private const string EVENT_DIGEST_MISMATCH_MESSAGE = "Digest mismatch";
@@ -184,89 +183,6 @@ namespace AWSDeployment
                 ProcessTemplateParameterKey(key, val, lineNo);
             else
                 Observer.Warn("Unrecognised settings section '{0}', contents ignored.", section);
-        }
-
-        public override int PostProcessConfigurationSettings(bool isRedeploy)
-        {
-            int ret = DeploymentEngineBase.CONFIGURATION_ERROR;
-            string templateURI = null;
-
-            string templateLocation = Template;
-            string region = Region.Equals("us-east-1") ? "" : Region;
-
-            if (templateLocation.Equals("SingleInstance") || Template.Equals("LoadBalanced"))
-            {
-                templateURI = String.Format("{0}{1}{2}{3}.template",
-                    TEMPLATES_URI, templateLocation, region.Length > 0 ? "-" : "", region);
-                Observer.Info("Retrieving standard template {0}", templateLocation);
-            }
-            else if (templateLocation.StartsWith("http://") || templateLocation.StartsWith("https://"))
-            {
-                templateURI = templateLocation;
-                Observer.Info("Retrieving custom template from {0}", templateLocation);
-            }
-
-            if (templateURI != null)
-            {
-                var request = HttpWebRequest.Create(templateURI) as HttpWebRequest;
-
-                for (int i = 1; i < 4; i++)
-                {
-                    try
-                    {
-                        var response = request.GetResponse() as HttpWebResponse;
-                        using (var wStream = response.GetResponseStream())
-                        {
-                            var sr = new StreamReader(wStream);
-                            Template = sr.ReadToEnd();
-                            Observer.Info("Download complete");
-
-                            if (!string.IsNullOrEmpty(this.ContainerType))
-                            {
-                                 // override ami id in template from the specified container default
-                                string amiOverride 
-                                    = ToolkitAMIManifest.Instance.QueryWebDeploymentAMI(ToolkitAMIManifest.HostService.CloudFormation, 
-                                                                                        this.Region, 
-                                                                                        this.ContainerType);
-                                if (!string.IsNullOrEmpty(amiOverride))
-                                    this.TemplateParameters["AmazonMachineImage"] = amiOverride;
-                            }
-
-                            ret = DeploymentEngineBase.SUCCESS;
-                            break;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Observer.Warn("Failed download attempt {0}: {1}", i, e.Message);
-                        int delay = (int)Math.Pow(4, i) * 100;
-                        System.Threading.Thread.Sleep(delay);
-                    }
-                }
-            }
-            else // Assume it is a file path
-            {
-                if (File.Exists(templateLocation))
-                {
-                    Observer.Info("Reading custom template from {0}", templateLocation);
-
-                    try
-                    {
-                        using (Stream fStream = File.OpenRead(templateLocation))
-                        {
-                            StreamReader sr = new StreamReader(fStream);
-                            Template = sr.ReadToEnd().Trim();
-                        }
-                        ret = DeploymentEngineBase.SUCCESS;
-                    }
-                    catch (Exception e)
-                    {
-                        Observer.Error("Error reading file: {0}", e.Message);
-                    }
-                }
-            }
-
-            return ret;
         }
 
         protected override void ExecuteUpdateStack()

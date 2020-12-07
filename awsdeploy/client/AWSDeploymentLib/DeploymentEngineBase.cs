@@ -224,16 +224,6 @@ namespace AWSDeployment
         }
 
         /// <summary>
-        /// Called when all of the supplied configuration file data has been read
-        /// </summary>
-        /// <param name="isRedeploy">True if we are operating in redeployment mode</param>
-        /// <returns>0 to continue deployment, non-zero on error (stops processing)</returns>
-        public virtual int PostProcessConfigurationSettings(bool isRedeploy)
-        {
-            return SUCCESS;
-        }
-
-        /// <summary>
         /// Initiate new deployment of an application, returning the service object representing
         /// the deployment (CloudFormation Stack or Beanstalk Environment)
         /// </summary>
@@ -335,23 +325,6 @@ namespace AWSDeployment
         public virtual int WaitForCompletion()
         {
             return 0;
-        }
-
-        public static ConfigurationParameterSets CaptureEnvironmentConfig(Dictionary<string, object> settings)
-        {
-            DeploymentEngineBase engine;
-            if (settings.ContainsKey(CloudFormationDeploymentEngine.STACK_NAME))
-                engine = new CloudFormationDeploymentEngine();
-            else if (settings.ContainsKey(BeanstalkDeploymentEngine.APPLICATION_NAME))
-                engine = new BeanstalkDeploymentEngine();
-            else
-                throw new InvalidOperationException("Cannot determine engine!");
-
-            engine.PopulateEngineBase(settings);
-            engine.PopulateEngine(settings);
-
-            var config = engine.GetConfiguration();
-            return config;
         }
 
         #endregion

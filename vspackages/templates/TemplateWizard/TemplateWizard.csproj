@@ -82,7 +82,6 @@
       <DependentUpon>ProjectSetupControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RegionEndPointsManager.cs" />
     <Compile Include="ThirdParty\Json\IJsonWrapper.cs" />
     <Compile Include="ThirdParty\Json\JsonData.cs" />
     <Compile Include="ThirdParty\Json\JsonException.cs" />
@@ -92,17 +91,6 @@
     <Compile Include="ThirdParty\Json\Lexer.cs" />
     <Compile Include="ThirdParty\Json\ParserToken.cs" />
     <Compile Include="UserCrypto.cs" />
-    <Compile Include="UserInputForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UserInputForm.Designer.cs">
-      <DependentUpon>UserInputForm.cs</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="UserInputForm.resx">
-      <DependentUpon>UserInputForm.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="templatewizard.snk" />
