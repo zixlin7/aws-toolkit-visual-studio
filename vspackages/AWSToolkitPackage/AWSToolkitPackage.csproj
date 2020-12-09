@@ -29,7 +29,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>DEBUG;;VS2017;VS2017_OR_LATER;VS2015_OR_LATER;VS2013_OR_LATER</DefineConstants>
+    <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CreateVsixContainer>True</CreateVsixContainer>

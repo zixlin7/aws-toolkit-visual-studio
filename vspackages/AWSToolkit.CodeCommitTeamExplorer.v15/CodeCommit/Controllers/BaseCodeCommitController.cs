@@ -15,6 +15,8 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
     /// </summary>
     internal abstract class BaseCodeCommitController
     {
+        const string TeamExplorerGitKey = @"SOFTWARE\Microsoft\VisualStudio\15.0\TeamFoundation\GitSourceControl";
+
         protected IAWSCodeCommit CodeCommitPlugin { get; set; }
         protected AccountViewModel Account { get; set; }
         protected RegionEndPointsManager.RegionEndPoints Region { get; set; }
@@ -54,13 +56,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
 
             try
             {
-#if VS2017_OR_LATER
-                const string TEGitKey = @"SOFTWARE\Microsoft\VisualStudio\15.0\TeamFoundation\GitSourceControl";
-#else
-                const string TEGitKey = @"SOFTWARE\Microsoft\VisualStudio\14.0\TeamFoundation\GitSourceControl";
-#endif
-
-                using (var key = Registry.CurrentUser.OpenSubKey(TEGitKey + "\\General", true))
+                using (var key = Registry.CurrentUser.OpenSubKey(TeamExplorerGitKey + "\\General", true))
                 {
                     clonePath = (string)key?.GetValue("DefaultRepositoryPath", string.Empty, RegistryValueOptions.DoNotExpandEnvironmentNames);
                 }

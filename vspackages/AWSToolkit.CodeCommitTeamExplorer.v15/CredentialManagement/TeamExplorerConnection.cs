@@ -425,7 +425,6 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
 
         private static RegistryKey OpenTEGitSourceControlRegistryKey(string path)
         {
-#if VS2017
             string TEGitKey;
             if (string.Equals(ToolkitFactory.Instance?.ShellProvider.ShellVersion, "2019"))
             {
@@ -450,12 +449,6 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             }
 
             LOGGER.Info($"Using regkey {TEGitKey} to look for TeamFoundation\\GitSourceControl for VS {ToolkitFactory.Instance?.ShellProvider.ShellVersion}");
-
-#elif VS2015
-            const string TEGitKey = @"Software\Microsoft\VisualStudio\14.0\TeamFoundation\GitSourceControl";
-#else
-#error "No VS20xx conditional defined in package.build.targets - cannot set Team Explorer registry key in TeamExplorerConnection::RefreshRepositories()."
-#endif
 
             try
             {

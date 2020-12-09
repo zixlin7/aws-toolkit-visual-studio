@@ -25,30 +25,6 @@
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetShell)' == '15.0' Or '$(TargetShell)' == 'awsstudio'">
-    <BuildConstants>$(BuildConstants);VS2017;VS2017_OR_LATER;VS2015_OR_LATER;VS2013_OR_LATER</BuildConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetShell)' == '14.0'">
-    <BuildConstants>$(BuildConstants);VS2015;VS2015_OR_LATER;VS2013_OR_LATER</BuildConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetShell)' == '12.0'">
-    <BuildConstants>$(BuildConstants);VS2013;VS2013_OR_LATER</BuildConstants>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <VSCTDefinitions Condition="'$(TargetShell)' == '15.0'">VS2017;VS2013_OR_LATER</VSCTDefinitions>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <VSCTDefinitions Condition="'$(TargetShell)' == '14.0'">VS2015;VS2013_OR_LATER</VSCTDefinitions>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <VSCTDefinitions Condition="'$(TargetShell)' == '12.0'">VS2013;VS2013_OR_LATER</VSCTDefinitions>
-  </PropertyGroup>
-
   <PropertyGroup Condition="$(SuppressCommonAssemblyMetadata)">
     <BuildConstants>$(BuildConstants);SUPPRESS_COMMON_ASSEMBLY_METADATA</BuildConstants>
   </PropertyGroup>

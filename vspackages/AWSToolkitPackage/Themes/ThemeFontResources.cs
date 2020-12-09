@@ -17,161 +17,31 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         public static object CaptionFontWeightKey => VsFonts.CaptionFontWeightKey;
 
-        public static object Environment122PercentFontSizeKey
-        {
-            get
-            {
-#if VS2013
-                return "dtEnvironment122PercentFontSizeKey";
-#else
-                return VsFonts.Environment122PercentFontSizeKey;
-#endif
-            }
-        }
+        public static object Environment122PercentFontSizeKey => VsFonts.Environment122PercentFontSizeKey;
 
-        public static object Environment122PercentFontWeightKey
-        {
-            get
-            {
-#if VS2013
-                return "dtEnvironment122PercentFontWeightKey";
-#else
-                return VsFonts.Environment122PercentFontWeightKey;
-#endif
-            }
-        }
+        public static object Environment122PercentFontWeightKey => VsFonts.Environment122PercentFontWeightKey;
 
-        public static object Environment133PercentFontSizeKey
-        {
-            get
-            {
-#if VS2013
-                return "dtEnvironment133PercentFontSizeKey";
-#else
-                return VsFonts.Environment133PercentFontSizeKey;
-#endif
-            }
-        }
+        public static object Environment133PercentFontSizeKey => VsFonts.Environment133PercentFontSizeKey;
 
-        public static object Environment133PercentFontWeightKey
-        {
-            get
-            {
-#if VS2013
-                return "dtEnvironment133PercentFontWeightKey";
-#else
-                return VsFonts.Environment133PercentFontWeightKey;
-#endif
-            }
-        }
+        public static object Environment133PercentFontWeightKey => VsFonts.Environment133PercentFontWeightKey;
 
-        public static object Environment155PercentFontSizeKey
-        {
-            get
-            {
-#if VS2013
-                return "dtEnvironment155PercentFontSizeKey";
-#else
-                return VsFonts.Environment155PercentFontSizeKey;
-#endif
-            }
-        }
+        public static object Environment155PercentFontSizeKey => VsFonts.Environment155PercentFontSizeKey;
 
-        public static object Environment155PercentFontWeightKey
-        {
-            get
-            {
-#if VS2013
-                return "dtEnvironment155PercentFontWeightKey";
-#else
-                return VsFonts.Environment155PercentFontWeightKey;
-#endif
-            }
-        }
+        public static object Environment155PercentFontWeightKey => VsFonts.Environment155PercentFontWeightKey;
 
-        public static object Environment200PercentFontSizeKey
-        {
-            get
-            {
-#if VS2013
-                return "dtEnvironment200PercentFontSizeKey";
-#else
-                return VsFonts.Environment200PercentFontSizeKey;
-#endif
-            }
-        }
+        public static object Environment200PercentFontSizeKey => VsFonts.Environment200PercentFontSizeKey;
 
-        public static object Environment200PercentFontWeightKey
-        {
-            get
-            {
-#if VS2013
-                return "dtEnvironment200PercentFontWeightKey";
-#else
-                return VsFonts.Environment200PercentFontWeightKey;
-#endif
-            }
-        }
+        public static object Environment200PercentFontWeightKey => VsFonts.Environment200PercentFontWeightKey;
 
-        public static object Environment310PercentFontSizeKey
-        {
-            get
-            {
-#if VS2013
-                return "dtEnvironment310PercentFontSizeKey";
-#else
-                return VsFonts.Environment310PercentFontSizeKey;
-#endif
-            }
-        }
+        public static object Environment310PercentFontSizeKey => VsFonts.Environment310PercentFontSizeKey;
 
-        public static object Environment310PercentFontWeightKey
-        {
-            get
-            {
-#if VS2013
-                return "dtEnvironment310PercentFontWeightKey";
-#else
-                return VsFonts.Environment310PercentFontWeightKey;
-#endif
-            }
-        }
+        public static object Environment310PercentFontWeightKey => VsFonts.Environment310PercentFontWeightKey;
 
-        public static object Environment375PercentFontSizeKey
-        {
-            get
-            {
-#if VS2013
-                return "dtEnvironment375PercentFontSizeKey";
-#else
-                return VsFonts.Environment375PercentFontSizeKey;
-#endif
-            }
-        }
+        public static object Environment375PercentFontSizeKey => VsFonts.Environment375PercentFontSizeKey;
 
-        public static object Environment375PercentFontWeightKey
-        {
-            get
-            {
-#if VS2013
-                return "dtEnvironment375PercentFontWeightKey";
-#else
-                return VsFonts.Environment375PercentFontWeightKey;
-#endif
-            }
-        }
+        public static object Environment375PercentFontWeightKey => VsFonts.Environment375PercentFontWeightKey;
 
-        public static object EnvironmentBoldFontWeightKey
-        {
-            get
-            {
-#if VS2013
-                return "dtEnvironmentBoldFontWeightKey";
-#else
-                return VsFonts.EnvironmentBoldFontWeightKey;
-#endif
-            }
-        }
+        public static object EnvironmentBoldFontWeightKey => VsFonts.EnvironmentBoldFontWeightKey;
 
         public static object EnvironmentFontFamilyKey => VsFonts.EnvironmentFontFamilyKey;
 
