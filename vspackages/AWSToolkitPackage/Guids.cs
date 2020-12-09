@@ -6,15 +6,18 @@ namespace Amazon.AWSToolkit.VisualStudio
 {
     static class GuidList
     {
-#if VS2013
-        public const string guidPackageString = "9510184f-8135-4f8a-ab8a-23be77c345e2";
-#elif VS2015
-        public const string guidPackageString = "f2884b07-5122-4e23-acd7-4d93df18709e";
-#elif VS2017
+        /// <summary>
+        /// This Guid MUST stay in sync with VsixGuid in buildtools\Package.Build.targets
+        ///
+        /// If this repo needs to produce different Toolkit products in the future, ifdef could be used
+        /// by setting up BuildConstants in buildtools\Common.Build.CSharp.settings
+        ///
+        /// Previous VS Toolkit GUIDs:
+        /// VS 2013: 9510184f-8135-4f8a-ab8a-23be77c345e2
+        /// VS 2015: f2884b07-5122-4e23-acd7-4d93df18709e
+        /// VS 2017 (current Toolkit): 12ed248b-6d4a-47eb-be9e-8eabea0ff119
+        /// </summary>
         public const string guidPackageString = "12ed248b-6d4a-47eb-be9e-8eabea0ff119";
-#else
-#error "No VS20xx conditional defined - cannot assign guidPackageString (see package.build.targets)"
-#endif
 
         public static readonly Guid guidPackage = new Guid(guidPackageString);
 

@@ -554,13 +554,9 @@ namespace Amazon.AWSToolkit.VisualStudio
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployToLambdaSolutionExplorer, UploadToLambda, UploadToLambdaMenuCommand_BeforeQueryStatus);
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAddAWSServerlessTemplate, AddAWSServerlessTemplate, AddAWSServerlessTemplate_BeforeQueryStatus);
 
-#if VS2015_OR_LATER
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidTeamExplorerConnect, AddTeamExplorerConnection, null);
-#endif
 
-#if VS2017_OR_LATER
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidPublishContainerToAWS, PublishContainerToAWS, PublishContainerToAWS_BeforeQueryStatus);
-#endif
 
                         var shellService = await GetServiceAsync(typeof(SVsShell)) as IVsShell;
                         if (shellService != null)
@@ -2388,12 +2384,10 @@ namespace Amazon.AWSToolkit.VisualStudio
 
 #region Team Explorer Command
 
-#if VS2015_OR_LATER
         void AddTeamExplorerConnection(object sender, EventArgs e)
         {
             Amazon.AWSToolkit.CodeCommit.ConnectServiceManager.ConnectService?.OpenConnection();
         }
-#endif
 
 #endregion
 
@@ -2463,18 +2457,8 @@ namespace Amazon.AWSToolkit.VisualStudio
         // assemblies at the project level otherwise package attribute definitions collide,
         // so we include a specific named copy of each file with just the namespace
         // changed (oh for nested xaml files!)
-#if VS2013
-        static readonly Uri _vsshellThemeOverridesUri = new Uri("/AWSToolkitPackage;component/Themes/_AWSToolkitDefaultTheme.12.0.xaml",
-                                                                UriKind.RelativeOrAbsolute);
-#elif VS2015
-        static readonly Uri _vsshellThemeOverridesUri = new Uri("/AWSToolkitPackage;component/Themes/_AWSToolkitDefaultTheme.14.0.xaml",
-                                                                UriKind.RelativeOrAbsolute);
-#elif VS2017
         static readonly Uri _vsshellThemeOverridesUri = new Uri("/AWSToolkitPackage;component/Themes/_AWSToolkitDefaultTheme.15.0.xaml",
                                                                 UriKind.RelativeOrAbsolute);
-#else
-#error "No shell-specific _AWSToolkitDefaultTheme.xx.y.xaml file to assign to _vsshellThemeOverridesUri"
-#endif
 
         public void QueryShellThemeOverrides(out IEnumerable<Uri> apply, out IEnumerable<Uri> remove)
         {
