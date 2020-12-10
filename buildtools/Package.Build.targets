@@ -12,35 +12,55 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- Package Guids; These need to be the same as the GUIDs in Guids.cs and AWSVisualStudioToolkit.$(VSTarget).vsct -->
-    <VsixGuid Condition="'$(VisualStudioVersion)' == '12.0' ">9510184f-8135-4f8a-ab8a-23be77c345e2</VsixGuid>
-    <VsixGuid Condition="'$(VisualStudioVersion)' == '14.0' ">f2884b07-5122-4e23-acd7-4d93df18709e</VsixGuid>
-    <VsixGuid Condition="'$(VisualStudioVersion)' == '15.0' ">12ed248b-6d4a-47eb-be9e-8eabea0ff119</VsixGuid>
+    <!-- 
+      Package Guids; These need to be the same as the GUIDs in Guids.cs and AWSVisualStudioToolkit.$(VisualStudioVersion).vsct
+    
+      If this repo needs to produce different Toolkit products in the future, conditionals could be used
+      example: <VsixGuid Condition="'$(VisualStudioVersion)' == 'SOME_VERSION' ">TOOLKIT_GUID</VsixGuid>
+
+      VS Toolkit GUIDs:
+      - VS 2013: 9510184f-8135-4f8a-ab8a-23be77c345e2
+      - VS 2015: f2884b07-5122-4e23-acd7-4d93df18709e
+      - VS 2017 (current Toolkit): 12ed248b-6d4a-47eb-be9e-8eabea0ff119
+    -->
+    <VsixGuid>12ed248b-6d4a-47eb-be9e-8eabea0ff119</VsixGuid>
   </PropertyGroup>
 
   <PropertyGroup>
-    <VsixDisplayName Condition="'$(VisualStudioVersion)' == '12.0' ">AWS Toolkit for Visual Studio 2013</VsixDisplayName>
-    <VsixDisplayName Condition="'$(VisualStudioVersion)' == '14.0' ">AWS Toolkit for Visual Studio 2015</VsixDisplayName>
-    <VsixDisplayName Condition="'$(Configuration)' == 'Release' And '$(VisualStudioVersion)' == '15.0' ">AWS Toolkit for Visual Studio 2017 and 2019</VsixDisplayName>
-	<VsixDisplayName Condition="'$(Configuration)' == 'Debug' And '$(VisualStudioVersion)' == '15.0' ">AWSToolkitDev</VsixDisplayName>
+    <!-- 
+      Past/Present Toolkit VSIX Names:
+      - 12.0 / VS 2013: AWS Toolkit for Visual Studio 2013
+      - 14.0 / VS 2015: AWS Toolkit for Visual Studio 2015
+      - VS 2017 (current Toolkit): AWS Toolkit for Visual Studio 2017 and 2019
+     -->
+    <VsixDisplayName Condition="'$(Configuration)' == 'Release'">AWS Toolkit for Visual Studio 2017 and 2019</VsixDisplayName>
+	  <VsixDisplayName Condition="'$(Configuration)' == 'Debug'">AWSToolkitDev</VsixDisplayName>
   </PropertyGroup>
 
   <PropertyGroup>
-    <VsixVsTarget Condition="'$(VisualStudioVersion)' == '12.0' ">[$(VSTarget)]</VsixVsTarget>
-    <VsixVsTarget Condition="'$(VisualStudioVersion)' == '14.0' ">[$(VSTarget),)</VsixVsTarget>
-    <VsixVsTarget Condition="'$(VisualStudioVersion)' == '15.0' ">[$(VSTarget),17.0)</VsixVsTarget>
+    <!-- 
+      Past/Present Supported VS version ranges [Inclusive] (Exclusive)
+
+      If this repo needs to produce different Toolkit products in the future, conditionals could
+      be used in buildtools\Common.Build.settings to set a build variable and reference it here.
+
+      - 12.0 / VS 2013: [12.0]
+      - 14.0 / VS 2015: [14.0,)   (I think this was inadvertently open-ended)
+      - VS 2017 (current Toolkit): [15.0, 17.0)
+     -->
+    <VsixVsTarget>[15.0,17.0)</VsixVsTarget>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <ExperimentalBuild>true</ExperimentalBuild>
-    <InstalledByMsi Condition="'$(VisualStudioVersion)' != '15.0'">true</InstalledByMsi>
-    <InstalledByMsi Condition="'$(VisualStudioVersion)' == '15.0'">false</InstalledByMsi>
+    <!-- Prior to VS2017, the Toolkit was installed via MSI -->
+    <InstalledByMsi>false</InstalledByMsi>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <ExperimentalBuild>false</ExperimentalBuild>
-    <InstalledByMsi Condition="'$(VisualStudioVersion)' != '15.0'">true</InstalledByMsi>
-    <InstalledByMsi Condition="'$(VisualStudioVersion)' == '15.0'">false</InstalledByMsi>
+    <!-- Prior to VS2017, the Toolkit was installed via MSI -->
+    <InstalledByMsi>false</InstalledByMsi>
   </PropertyGroup>
   
   <!-- Returns the current build version metadata. Used in .vsixmanifests to substitute our build version
