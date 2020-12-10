@@ -59,7 +59,7 @@ namespace Amazon.AWSToolkit
             if (INSTANCE != null)
                 throw new ApplicationException("Toolkit has already been initialized");
 
-            Amazon.Util.Internal.InternalSDKUtils.SetUserAgent(shellProvider.ShellName, Constants.VERSION_NUMBER);
+            Amazon.Util.Internal.InternalSDKUtils.SetUserAgent(shellProvider.HostInfo.Name, Constants.VERSION_NUMBER);
             ProxyUtilities.ApplyCurrentProxySettings();
 
             var pluginActivators = await PluginActivatorUtilities.LoadPluginActivators(

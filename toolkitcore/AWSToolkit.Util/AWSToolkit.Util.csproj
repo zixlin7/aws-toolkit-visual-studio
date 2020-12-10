@@ -93,6 +93,7 @@
     <Compile Include="Utility.cs" />
     <Compile Include="Util\DebounceDispatcher.cs" />
     <Compile Include="Util\HttpStatusCodeExtensionMethods.cs" />
+    <Compile Include="Util\IToolkitHostInfo.cs" />
     <Compile Include="Util\IToolkitTimer.cs" />
     <Compile Include="Util\ListExtensionMethods.cs" />
     <Compile Include="Util\IPAddressUtil.cs" />

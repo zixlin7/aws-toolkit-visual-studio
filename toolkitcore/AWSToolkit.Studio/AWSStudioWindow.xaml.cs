@@ -33,15 +33,7 @@ namespace Amazon.AWSToolkit.Studio
             });
         }
 
-        public string ShellName
-        {
-            get { return AWSToolkit.Constants.AWSStudioHostShell.ShellName; }
-        }
-
-        public string ShellVersion
-        {
-            get { return "2017"; }
-        }
+        public IToolkitHostInfo HostInfo => ToolkitHosts.AwsStudio;
 
         private void CloseTab(object source, RoutedEventArgs args)
         {

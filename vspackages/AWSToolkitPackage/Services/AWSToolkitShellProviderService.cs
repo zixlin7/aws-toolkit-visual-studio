@@ -8,6 +8,7 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.MessageBox;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Util;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -28,64 +29,48 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
     {
         private AWSToolkitPackage _hostPackage;
         private string _shellVersion;
+        private readonly IToolkitHostInfo _toolkitHostInfo;
 
         public AWSToolkitShellProviderService(AWSToolkitPackage hostPackage, string shellVersion)
         {
             _hostPackage = hostPackage;
             _shellVersion = shellVersion;
+            _toolkitHostInfo = GetToolkitHostInfo(_shellVersion);
+        }
+
+        private static IToolkitHostInfo GetToolkitHostInfo(string shellVersion)
+        {
+            if (string.IsNullOrWhiteSpace(shellVersion))
+            {
+                return ToolkitHosts.VsMinimumSupportedVersion;
+            }
+
+            if (shellVersion.StartsWith("12"))
+            {
+                return ToolkitHosts.Vs2013;
+            }
+
+            if (shellVersion.StartsWith("14"))
+            {
+                return ToolkitHosts.Vs2015;
+            }
+
+            if (shellVersion.StartsWith("15"))
+            {
+                return ToolkitHosts.Vs2017;
+            }
+
+            if (shellVersion.StartsWith("16"))
+            {
+                return ToolkitHosts.Vs2019;
+            }
+
+            return ToolkitHosts.VsMinimumSupportedVersion;
         }
 
         #region IAWSToolkitShellProvider
 
-        string _knownShell = null;
-        public string ShellName
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(_knownShell))
-                {
-                    if (_shellVersion != null) // null can happen during initialization
-                    {
-                        if (_shellVersion.StartsWith("12"))
-                            _knownShell = Constants.VS2013HostShell.ShellName;
-                        else if (_shellVersion.StartsWith("14"))
-                            _knownShell = Constants.VS2015HostShell.ShellName;
-                        else if (_shellVersion.StartsWith("14"))
-                            _knownShell = Constants.VS2015HostShell.ShellName;
-                        else if (_shellVersion.StartsWith("15"))
-                            _knownShell = Constants.VS2017HostShell.ShellName;
-                        else
-                            _knownShell = Constants.VS2019HostShell.ShellName;
-                    }
-                }
-
-                return _knownShell ?? Constants.VS2013HostShell.ShellName;
-            }
-        }
-
-        string _shellDisplayVersion = null;
-        public string ShellVersion
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(_shellDisplayVersion))
-                {
-                    if (_shellVersion != null) // null can happen during initialization
-                    {
-                        if (_shellVersion.StartsWith("12"))
-                            _shellDisplayVersion = "2013";
-                        else if (_shellVersion.StartsWith("14"))
-                            _shellDisplayVersion = "2015";
-                        else if (_shellVersion.StartsWith("15"))
-                            _shellDisplayVersion = "2017";
-                        else
-                            _shellDisplayVersion = "2019";
-                    }
-                }
-
-                return _shellDisplayVersion ?? "2013";
-            }
-        }
+        public IToolkitHostInfo HostInfo => _toolkitHostInfo;
 
         public void OpenShellWindow(ShellWindows window)
         {

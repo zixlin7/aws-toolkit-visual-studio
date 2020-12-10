@@ -426,17 +426,17 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
         private static RegistryKey OpenTEGitSourceControlRegistryKey(string path)
         {
             string TEGitKey;
-            if (string.Equals(ToolkitFactory.Instance?.ShellProvider.ShellVersion, "2019"))
+            if (string.Equals(ToolkitFactory.Instance?.ShellProvider.HostInfo.Version, ToolkitHosts.Vs2019.Version))
             {
                 TEGitKey = @"Software\Microsoft\VisualStudio\16.0\TeamFoundation\GitSourceControl";
             }
-            else if (string.Equals(ToolkitFactory.Instance?.ShellProvider.ShellVersion, "2017"))
+            else if (string.Equals(ToolkitFactory.Instance?.ShellProvider.HostInfo.Version, ToolkitHosts.Vs2017.Version))
             {
                 TEGitKey = @"Software\Microsoft\VisualStudio\15.0\TeamFoundation\GitSourceControl";
             }
             else
             {
-                var errorMessage = $"Error unable to determine TeamFoundation\\GitSourceControl for shell {ToolkitFactory.Instance?.ShellProvider.ShellVersion}";
+                var errorMessage = $"Error unable to determine TeamFoundation\\GitSourceControl for shell {ToolkitFactory.Instance?.ShellProvider.HostInfo.Version}";
                 LOGGER.Error(errorMessage);
 
 // If we are debug mode throw a fatal exception so we know to update this code when adding support for a new shell.
@@ -448,7 +448,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
 #endif
             }
 
-            LOGGER.Info($"Using regkey {TEGitKey} to look for TeamFoundation\\GitSourceControl for VS {ToolkitFactory.Instance?.ShellProvider.ShellVersion}");
+            LOGGER.Info($"Using regkey {TEGitKey} to look for TeamFoundation\\GitSourceControl for VS {ToolkitFactory.Instance?.ShellProvider.HostInfo.Version}");
 
             try
             {
