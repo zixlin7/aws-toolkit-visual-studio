@@ -9,7 +9,6 @@ namespace Amazon.AWSToolkit
     public static class Constants
     {
         public const string SERVICE_ENDPOINT_FILE = @"ServiceEndPoints.xml";
-        public const string VERSION_INFO_FILE = @"VersionInfo.xml";
         public const string ACCOUNTTYPES_INFO_FILE = @"AccountTypes.xml";
 
         public const string AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME = "serverless.template";
