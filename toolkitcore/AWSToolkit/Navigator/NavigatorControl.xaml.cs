@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,7 +11,6 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Settings;
-using Amazon.AWSToolkit.VersionInfo;
 using Amazon.Runtime.CredentialManagement.Internal;
 
 using log4net;
@@ -30,7 +28,6 @@ namespace Amazon.AWSToolkit.Navigator
         public NavigatorControl()
         {
             InitializeComponent();
-            this.Loaded += new RoutedEventHandler(onNavigatorLoad);
             this._ctlAccounts.PropertyChanged += _ctlAccounts_PropertyChanged;
         }
 
@@ -158,16 +155,6 @@ namespace Amazon.AWSToolkit.Navigator
                     this._ctlEditAccount.IsEnabled = enabled;
                     this._ctlDeleteAccount.IsEnabled = enabled;
                 }));
-        }
-
-        void onNavigatorLoad(object sender, RoutedEventArgs e)
-        {
-            var shellVersion = ToolkitFactory.Instance.ShellProvider.ShellVersion;
-            if (shellVersion == "2013" || shellVersion == "2015")
-            {
-                VersionManager vm = new VersionManager();
-                ThreadPool.QueueUserWorkItem(new WaitCallback(vm.CheckVersion));
-            }
         }
 
         void addAccount(object sender, RoutedEventArgs e)

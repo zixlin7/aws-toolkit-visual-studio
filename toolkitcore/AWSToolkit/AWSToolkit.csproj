@@ -323,9 +323,6 @@
     <Compile Include="Util\RangeObservableCollection.cs" />
     <Compile Include="Util\RolePolicyFilter.cs" />
     <Compile Include="Util\ServiceSpecificCredentialStore.cs" />
-    <Compile Include="VersionInfo\NewVersionAlertControl.xaml.cs">
-      <DependentUpon>NewVersionAlertControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="VersionInfo\VersionManager.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -563,12 +560,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="VersionInfo\NewVersionAlertControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

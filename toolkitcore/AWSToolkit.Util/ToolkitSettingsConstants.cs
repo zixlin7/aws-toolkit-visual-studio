@@ -22,9 +22,6 @@
 
         public const string LastAcountSelectedKey = "LastAcountSelectedKey";
 
-        public const string VersionCheck = "VersionCheck";
-        public const string LastVersionDoNotRemindMe = "LastVersionDoNotRemindMe";
-
         public const string HostedFilesLocation = "HostedFilesLocation";
 
         public const string EC2ConnectSettings = "EC2ConnectSettings";

@@ -19,8 +19,5 @@
 
 
         public const string LastAcountSelectedKey = "LastAcountSelectedKey";
-
-        public const string VersionCheck = "VersionCheck";
-        public const string LastVersionDoNotRemindMe = "LastVersionDoNotRemindMe";
     }
 }
