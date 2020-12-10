@@ -16,6 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using Amazon.AWSToolkit.Util;
 using Amazon.Common.DotNetCli.Tools;
 using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
 
@@ -279,8 +280,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 ViewModel.Frameworks.Add(Frameworks.NetCoreApp31);
                 ViewModel.Frameworks.Add(Frameworks.Net50);
 
-                if (_shellProvider.ShellName == Constants.VS2017HostShell.ShellName)
+                if (_shellProvider.HostInfo.Name == ToolkitHosts.Vs2017.Name)
                 {
+                    // Select a framework supported by VS2017
                     ViewModel.Framework = ViewModel.Frameworks.First(x => x.MatchesFramework(Frameworks.NetCoreApp21));
                 }
                 else

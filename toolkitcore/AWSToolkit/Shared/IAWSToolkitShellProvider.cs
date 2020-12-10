@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Runtime.InteropServices;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.Shared
 {
@@ -24,14 +25,9 @@ namespace Amazon.AWSToolkit.Shared
     public interface IAWSToolkitShellProvider
     {
         /// <summary>
-        /// 
+        /// Describes the Shell Host of the Toolkit
         /// </summary>
-        string ShellName { get; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        string ShellVersion { get; }
+        IToolkitHostInfo HostInfo { get; }
 
         /// <summary>
         /// 

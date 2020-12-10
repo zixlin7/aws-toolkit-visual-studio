@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Amazon.AWSToolkit.Util;
 using log4net;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -32,8 +33,10 @@ namespace Amazon.AWSToolkit.CloudFormation.EditorExtensions
             {
                 // VS 2012 already adds the closing quotes and brackets so only activate
                 // this extension if we are inside VS 2012
-                if (ToolkitFactory.Instance.ShellProvider.ShellName != AWSToolkit.Constants.VS2010HostShell.ShellName)
+                if (ToolkitFactory.Instance.ShellProvider.HostInfo.Name != ToolkitHosts.Vs2010.Name)
+                {
                     return;
+                }
 
                 _textView = textView;
                 _componentContext = componentContext;

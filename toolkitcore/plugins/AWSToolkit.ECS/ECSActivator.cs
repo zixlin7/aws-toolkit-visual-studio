@@ -13,12 +13,6 @@ namespace Amazon.AWSToolkit.ECS
 
         public bool SupportedInThisVersionOfVS()
         {
-            var shellVersion = ToolkitFactory.Instance.ShellProvider.ShellVersion;
-            if (shellVersion == "2013" || shellVersion == "2015")
-            {
-                return false;
-            }
-
             return true;
         }
 

@@ -53,47 +53,6 @@ namespace Amazon.AWSToolkit
             }
         }
 
-        // Per-shell global constants for shells known at this time
-        public static class AWSStudioHostShell
-        {
-            public static readonly string ShellName = "AWSToolkit.Studio";
-        }
-
-        public static class VS2008HostShell
-        {
-            public static readonly string ShellName = "AWSToolkit.VS2008";
-        }
-
-        public static class VS2010HostShell
-        {
-            public static readonly string ShellName = "AWSToolkitPackage.VS2010";
-        }
-
-        public static class VS2012HostShell
-        {
-            public static readonly string ShellName = "AWSToolkitPackage.VS2012";
-        }
-
-        public static class VS2013HostShell
-        {
-            public static readonly string ShellName = "AWSToolkitPackage.VS2013";
-        }
-
-        public static class VS2015HostShell
-        {
-            public static readonly string ShellName = "AWSToolkitPackage.VS2015";
-        }
-
-        public static class VS2017HostShell
-        {
-            public static readonly string ShellName = "AWSToolkitPackage.VS2017";
-        }
-
-        public static class VS2019HostShell
-        {
-            public static readonly string ShellName = "AWSToolkitPackage.VS2019";
-        }
-
         public static void AWSExplorerDescribeUserAgentRequestEventHandler(object sender, RequestEventArgs args)
         {
             if (args is WebServiceRequestEventArgs)

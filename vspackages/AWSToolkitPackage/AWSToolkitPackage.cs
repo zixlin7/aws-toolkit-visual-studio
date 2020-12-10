@@ -1310,7 +1310,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
             finally
             {
-                seedProperties.Add(CommonWizardProperties.propkey_HostShellVersion, ToolkitShellProviderService.ShellVersion);
+                seedProperties.Add(CommonWizardProperties.propkey_HostShellVersion, ToolkitShellProviderService.HostInfo.Version);
 
                 if (!seedProperties.ContainsKey(DeploymentWizardProperties.SeedData.propkey_SeedName))
                 {
@@ -1411,7 +1411,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             catch { }
             finally
             {
-                seedProperties.Add(CommonWizardProperties.propkey_HostShellVersion, ToolkitShellProviderService.ShellVersion);
+                seedProperties.Add(CommonWizardProperties.propkey_HostShellVersion, ToolkitShellProviderService.HostInfo.Version);
 
                 if (projectInfo.VsProjectType != VSWebProjectInfo.VsWebProjectType.CoreCLRWebProject)
                 {
@@ -2427,7 +2427,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         int IVsInstalledProduct.OfficialName(out string pbstrName)
         {
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            pbstrName = string.Format("{0} {1}", fileVersionInfo.FileDescription, ToolkitShellProviderService.ShellVersion);
+            pbstrName = string.Format("{0} {1}", fileVersionInfo.FileDescription, ToolkitShellProviderService.HostInfo.Version);
 
             return VSConstants.S_OK;
         }
@@ -2437,7 +2437,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             var fileVersionInfo= FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location);
             pbstrProductDetails = string.Format(GetResourceString("@112"),
                                                     fileVersionInfo.FileDescription,
-                                                    ToolkitShellProviderService.ShellVersion,
+                                                    ToolkitShellProviderService.HostInfo.Version,
                                                     fileVersionInfo.LegalCopyright);
             return VSConstants.S_OK;
         }
