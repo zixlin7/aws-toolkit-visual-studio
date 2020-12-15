@@ -24,8 +24,8 @@ Before you start, you will need the following:
 
 -   Open a Developer Command Prompt for VS 2017
 -   change directories to the repo root
--   Typical command: `msbuild buildtools\build.proj /t:build-vstoolkit`
--   Mode comprehensive rebuild: `msbuild buildtools\build.proj /t:build-tools;clean;build-vstoolkit`
+-   Typical command: `msbuild buildtools\build.proj /t:restore;compile;test`
+-   More comprehensive rebuild: `msbuild buildtools\build.proj /t:build-tools;clean;build-vstoolkit`
 
 ### Debug
 

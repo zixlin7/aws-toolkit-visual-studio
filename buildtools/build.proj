@@ -16,6 +16,7 @@
 
         <!-- default location for artifacts consolidation -->
         <Deployment Condition="'$(Deployment)'==''">$(BuildRoot)\Deployment</Deployment>
+        <TestResults Condition="'$(TestResults)'==''">$(BuildRoot)\TestResults</TestResults>
 
         <RunKeyScan Condition="'$(RunKeyScan)'==''">false</RunKeyScan>
 
@@ -40,19 +41,37 @@
         <BuildVSToolkit2017>true</BuildVSToolkit2017>
     </PropertyGroup>
 
+    <!-- 
+        AWS VISUAL STUDIO TOOLKIT GENERAL TARGETS 
+
+        Common commands used during development: clean, restore, compile, test
+    -->
+
+    <!-- restore - Restore nuget packages for the Visual Studio Toolkit solution -->
+    <Target Name="restore">
+        <Message Text="Restoring nuget packages"/>
+        <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSVisualStudioToolkit.sln" />
+    </Target>
+
+    <!-- compile - restores and compiles the Visual Studio Toolkit solution; does not run tests -->
+    <Target Name="compile" DependsOnTargets="restore">
+        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=15.0;Configuration=$(Configuration)" />
+	</Target>
+
+    <!-- test - runs the Visual Studio Toolkit solution tests; does not compile first -->
+    <Target Name="test">
+        <CallTarget Targets="run-tests"/>
+	</Target>
+
+    <!-- AWS VISUAL STUDIO TOOLKIT UTILITY TARGETS -->
+
     <Target Name="update-awssdk" DependsOnTargets="build-tools">
         <UpdateAwsSdkVersionsTask RootLocation="$(BuildRoot)" WaitForDebugger="$(WaitForDebugger)"/>
     </Target>
   
-	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-latest-endpoint-data;restore-nuget;update-version;build-vstoolkit;run-tests;keyscan;copy-artifacts;sign-packages;save-build">
+	<Target Name="full-build" DependsOnTargets="build-tools;clean;get-latest-endpoint-data;restore;update-version;build-vstoolkit;run-tests;keyscan;copy-artifacts;sign-packages;save-build">
 		<Message Text="Builds all components of the AWS Toolkit for Visual Studio"/>
 	</Target>
-
-    <!-- Restore nuget packages for the Visual Studio Toolkit solution -->
-    <Target Name="restore-nuget">
-        <Message Text="Restoring nuget packages"/>
-        <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSVisualStudioToolkit.sln" />
-    </Target>
 
     <Target Name="build-awsstudio">
 		<Message Text="------------------------------------------------------------------------------" />
@@ -66,26 +85,17 @@
         <MSBuild Projects="..\solutions\AWSStudioToolkit.sln" Properties="Configuration=$(Configuration)" />
     </Target>
 
-    <Target Name="build-vstoolkit" DependsOnTargets="patch-vsixmanifest">
+    <Target Name="build-vstoolkit" DependsOnTargets="restore;patch-vsixmanifest" Condition="'$(BuildVSToolkit2017)'=='true'">
         <Message Text="Building AWS Toolkit for Visual Studio"/>
 
-        <CallTarget Targets="build-vstoolkit-2017"/>
-	</Target>
-	
-    <!-- Compile and test -->
-	<Target Name="build-vstoolkit-2017" DependsOnTargets="restore-nuget;patch-vsixmanifest" Condition="'$(BuildVSToolkit2017)'=='true'">
-		<Message Text="------------------------------------------------------------------------------" />
-        <Message Text="| Visual Studio 2017 Toolkit - $(Configuration)" />
-		<Message Text="------------------------------------------------------------------------------" />
-        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=15.0;Configuration=$(Configuration)" />
-
-        <CallTarget Targets="run-tests"/>
+        <CallTarget Targets="compile"/>
+        <CallTarget Targets="test"/>
 	</Target>
 	
     <!-- ======================================== Test Related ======================================== -->
 
     <!-- Use NuGet to grab the xunit runner -->
-    <Target Name="get-test-runner">
+    <Target Name="restore-test-runner">
         <Message Text="Restoring nuget packages for the test runner"/>
         <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe install xunit.runner.msbuild -Version 2.4.1 -OutputDirectory $(BuildRoot)\solutions\packages" />
 	</Target>
@@ -97,7 +107,7 @@
         />
 
     <!-- Run tests with the current compiled code -->
-    <Target Name="run-tests" DependsOnTargets="get-test-runner">
+    <Target Name="run-tests" DependsOnTargets="restore-test-runner">
         <Message Text="$(Configuration) - running unit tests."/>
 
         <ItemGroup>
@@ -107,8 +117,9 @@
             <TestAssemblies Include="..\tests\AWSToolkit.Util.Tests\bin\$(Configuration)\AWSToolkit.Util.Tests.dll" />
             <TestAssemblies Include="..\tests\AWSToolkitPackage.Tests\bin\$(Configuration)\AWSToolkitPackage.Tests.dll" />
         </ItemGroup>        
-        
-        <xunit Assemblies="@(TestAssemblies)" />
+
+        <MakeDir Directories="$(TestResults)" />
+        <xunit Assemblies="@(TestAssemblies)" Html="$(TestResults)\toolkit-test-results.html" Xml="$(TestResults)\toolkit-test-results.xml" Reporter="verbose" />
     </Target>
 
     <!-- ======================================== END Test Related ======================================== -->
