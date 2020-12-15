@@ -9,6 +9,8 @@ on:
 jobs:
     build:
         runs-on: windows-2016
+        env:
+            TEST_REPORT_HTML: TestResults/toolkit-test-results.html
 
         steps:
             - uses: actions/checkout@v2
@@ -16,14 +18,6 @@ jobs:
               uses: microsoft/setup-msbuild@v1.0.2
               with:
                   vs-version: "[15.0,16.0)"
-
-            - name: Install AWS CLI
-              uses: crazy-max/ghaction-chocolatey@v1
-              with:
-                  args: install -fy awscli --version 1.16.140
-
-            - name: Add CLI to PATH
-              run: echo "C:\Program Files\Amazon\AWSCLI" >> $GITHUB_PATH
 
             - name: Remove v16 Team Explorer project
               run: |
@@ -49,5 +43,18 @@ jobs:
                   dotnet sln solutions\AWSVisualStudioToolkit.sln remove vspackages\AWSToolkit.CodeCommitTeamExplorer.v15\AWSToolkit.CodeCommitTeamExplorer.v15.csproj
                   dotnet remove vspackages\AWSToolkitPackage\AWSToolkitPackage.csproj reference "`$(BuildRoot)\vspackages\AWSToolkit.CodeCommitTeamExplorer.v15\AWSToolkit.CodeCommitTeamExplorer.v15.csproj"
 
-            - name: Build
-              run: msbuild buildtools\build.proj /t:build-vstoolkit-2017
+            - name: Restore
+              run: msbuild buildtools\build.proj /t:restore
+
+            - name: Compile
+              run: msbuild buildtools\build.proj /t:compile
+
+            - name: Test
+              run: msbuild buildtools\build.proj /t:test
+
+            - name: Attach Test Report as Build Artifact
+              if: always()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: test-reports
+                  path: ${{ env.TEST_REPORT_HTML }}
