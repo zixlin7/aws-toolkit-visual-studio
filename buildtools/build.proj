@@ -55,7 +55,7 @@
 
     <!-- compile - restores and compiles the Visual Studio Toolkit solution; does not run tests -->
     <Target Name="compile" DependsOnTargets="restore">
-        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="VisualStudioVersion=15.0;Configuration=$(Configuration)" />
+        <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="Configuration=$(Configuration)" />
 	</Target>
 
     <!-- test - runs the Visual Studio Toolkit solution tests; does not compile first -->
