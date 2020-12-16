@@ -9,6 +9,11 @@ using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
 {
+    /// <summary>
+    /// MEF Activated
+    /// Manages the panel that lets users connect to CodeCommit.
+    /// If user connects, this panel is hidden, and <see cref="ConnectionSection"/> is shown.
+    /// </summary>
     [TeamExplorerServiceInvitation(TeamExplorerInvitationSectionId, CodeCommitInvitationSectionPriority)]
     [PartCreationPolicy(CreationPolicy.NonShared)]
     public class InvitationSection : TeamExplorerInvitationBase

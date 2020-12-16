@@ -8,6 +8,12 @@ using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
 {
+    /// <summary>
+    /// MEF Activated
+    /// Manages the panel that shows CodeCommit repos in an AWS Account.
+    /// (where you can Clone/Create repos)
+    /// If user signs out, this panel is hidden, and <see cref="InvitationSection"/> is shown.
+    /// </summary>
     [TeamExplorerSection(TeamExplorerConnectionSectionId, TeamExplorerPageIds.Connect, 10)]
     [PartCreationPolicy(CreationPolicy.NonShared)]
     public class ConnectionSection : TeamExplorerSectionBase
