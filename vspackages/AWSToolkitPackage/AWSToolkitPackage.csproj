@@ -32,6 +32,7 @@
     <WarningLevel>4</WarningLevel>
     <CreateVsixContainer>True</CreateVsixContainer>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <StartAction>Program</StartAction>
     <StartProgram>$(DevEnvDir)devenv.exe</StartProgram>
     <StartArguments>/rootsuffix Exp</StartArguments>
     <CopyVsixExtensionFiles>False</CopyVsixExtensionFiles>
@@ -347,10 +348,29 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="$(BuildRoot)\thirdparty\License.log4net.txt">
+    <Content Include="$(BuildRoot)\thirdparty\License.JsonChecker.txt">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>License.JsonChecker.txt</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="$(BuildRoot)\thirdparty\License.JsonChecker.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>License.JsonChecker.txt</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <InstallRoot>MSBuild</InstallRoot>
+      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+    </Content>
+    <Content Include="$(BuildRoot)\thirdparty\License.log4net.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>License.log4net.txt</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="$(BuildRoot)\thirdparty\License.log4net.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>License.log4net.txt</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <InstallRoot>MSBuild</InstallRoot>
+      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
     </Content>
     <Content Include="$(BuildRoot)\thirdparty\License.libgit2sharp.txt">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -361,22 +381,6 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>License.Newtonsoft.Json.txt</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="$(BuildRoot)\thirdparty\License.log4net.txt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Link>License.JsonChecker.txt</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <InstallRoot>MSBuild</InstallRoot>
-      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
-    </Content>
-    <Content Include="$(BuildRoot)\thirdparty\License.JsonChecker.txt">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <Link>License.JsonChecker.txt</Link>
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <InstallRoot>MSBuild</InstallRoot>
-      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
     </Content>
   </ItemGroup>
   <ItemGroup>
