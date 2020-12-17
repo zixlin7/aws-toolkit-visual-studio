@@ -325,7 +325,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.CloudFront">
-      <Version>3.5.5.4</Version>
+      <Version>3.5.5.20</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.8</Version>
