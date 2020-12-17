@@ -53,9 +53,6 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="UIAutomationProvider">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>4.5</RequiredTargetFramework>
     </Reference>
@@ -219,11 +216,6 @@
       <Name>AWSToolkit.CloudFront.Interface</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj">
-      <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>
-      <Name>AWSToolkit.Lambda.Interface</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.PolicyEditor\AWSToolkit.PolicyEditor.csproj">
       <Project>{12910BAF-29C4-48CA-B50D-4CCABDFB879A}</Project>
       <Name>AWSToolkit.PolicyEditor</Name>
@@ -232,11 +224,6 @@
     <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.S3.Interface\AWSToolkit.S3.Interface.csproj">
       <Project>{C2D616BD-C2AB-4130-93E5-2ADA2172A08A}</Project>
       <Name>AWSToolkit.S3.Interface</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.SNS.Interface\AWSToolkit.SNS.Interface.csproj">
-      <Project>{4D9293CF-0D56-4BB9-B50D-BC829E53C16F}</Project>
-      <Name>AWSToolkit.SNS.Interface</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">

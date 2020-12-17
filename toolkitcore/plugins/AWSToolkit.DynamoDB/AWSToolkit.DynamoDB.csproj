@@ -54,9 +54,6 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="UIAutomationProvider">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>4.5</RequiredTargetFramework>
     </Reference>
@@ -152,11 +149,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
-      <Project>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</Project>
-      <Name>AWSSDK.Extensions</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.DynamoDB.Interface\AWSToolkit.DynamoDB.Interface.csproj">
       <Project>{59D6F9BE-5344-496A-9E03-A2A0020DAAC4}</Project>
       <Name>AWSToolkit.DynamoDB.Interface</Name>

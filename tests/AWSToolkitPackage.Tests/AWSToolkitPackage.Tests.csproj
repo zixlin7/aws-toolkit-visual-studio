@@ -61,9 +61,6 @@
       <Project>{aa57cb1d-f511-4bf5-9410-72a49d063365}</Project>
       <Name>AWSToolkit.Tests.Common</Name>
     </ProjectReference>
-    <Reference Include="EnvDTE, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </Reference>
     <ProjectReference Include="..\..\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
       <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
       <Name>AWSToolkit.Util</Name>
@@ -108,7 +105,7 @@
       <Version>2.4.1</Version>
     </PackageReference>
     <PackageReference Include="xunit.runner.visualstudio">
-      <Version>2.3.1</Version>
+      <Version>2.4.1</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

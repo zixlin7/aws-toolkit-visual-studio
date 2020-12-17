@@ -54,9 +54,6 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="UIAutomationProvider">
-      <RequiredTargetFramework>4.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>4.5</RequiredTargetFramework>
     </Reference>
@@ -467,11 +464,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
-      <Project>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</Project>
-      <Name>AWSSDK.Extensions</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\plugins\AWSToolkit.EC2.Interface\AWSToolkit.EC2.Interface.csproj">
       <Project>{B8C28B72-63C0-406B-B5C6-405667DB1D6D}</Project>
       <Name>AWSToolkit.EC2.Interface</Name>
@@ -997,9 +989,6 @@
     <Resource Include="Resources\Images\networkacl.png" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.CloudFormation">
-      <Version>3.5.0.33</Version>
-    </PackageReference>
     <PackageReference Include="AWSSDK.EC2">
       <Version>3.5.10.4</Version>
     </PackageReference>

@@ -151,11 +151,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSSDK.Extensions\AWSSDK.Extensions.csproj">
-      <Project>{20C1F223-EEF5-4EAB-9E2D-8DF31BB3FF45}</Project>
-      <Name>AWSSDK.Extensions</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="$(BuildRoot)\toolkitcore\AWSToolkit.Util\AWSToolkit.Util.csproj">
       <Project>{7E899D6E-07D6-4695-B5D5-F9E62E31D5F6}</Project>
       <Name>AWSToolkit.Util</Name>

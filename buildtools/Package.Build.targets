@@ -13,7 +13,7 @@
 
   <PropertyGroup>
     <!-- 
-      Package Guids; These need to be the same as the GUIDs in Guids.cs and AWSVisualStudioToolkit.$(VisualStudioVersion).vsct
+      Package Guids; These need to be the same as the GUIDs in Guids.cs and AWSVisualStudioToolkit.*.vsct
     
       If this repo needs to produce different Toolkit products in the future, conditionals could be used
       example: <VsixGuid Condition="'$(VisualStudioVersion)' == 'SOME_VERSION' ">TOOLKIT_GUID</VsixGuid>
