@@ -31,13 +31,15 @@
           <DevEnvDir>$(VS150COMNTOOLS)..\IDE\</DevEnvDir>
         </PropertyGroup>
     </When>
-    <!-- TODO : This will need some attention to support compilation from VS2017 and VS2019 -->
     <When Condition="'$(SolutionName)' == 'AWSVisualStudioToolkit'">
       <PropertyGroup>
-        <VisualStudioVersion>15.0</VisualStudioVersion>
-        <OutputTarget>15.0</OutputTarget>
+        <!-- Visual Studio will provide VisualStudioVersion but if it is missing, fill in the latest version the repo is developed with -->
+        <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">16.0</VisualStudioVersion>
+        <!-- Maintain separate output folders -->
+        <OutputTarget>$(VisualStudioVersion)</OutputTarget>
         <VSToolsPath>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-        <DevEnvDir>$(VS150COMNTOOLS)..\IDE\</DevEnvDir>
+        <DevEnvDir Condition="'$(VisualStudioVersion)' == '15.0'">$(VS150COMNTOOLS)..\IDE\</DevEnvDir>
+        <DevEnvDir Condition="'$(VisualStudioVersion)' == '16.0'">$(VS160COMNTOOLS)..\IDE\</DevEnvDir>
       </PropertyGroup>
     </When>
   </Choose>
