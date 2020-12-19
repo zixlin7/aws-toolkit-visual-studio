@@ -60,7 +60,7 @@
         public static readonly string MaximumPercent = "maximumPercent";
 
         public static readonly string VpcId = "VpcId";
-
+        public static readonly string PlatformVersion = "PlatformVersion";
         public static readonly string ShouldConfigureELB = "ShouldConfigureELB";
         public static readonly string CreateNewIAMRole = "CreateNewIAMRole";
         public static readonly string ServiceIAMRole = "ServiceIAMRole";

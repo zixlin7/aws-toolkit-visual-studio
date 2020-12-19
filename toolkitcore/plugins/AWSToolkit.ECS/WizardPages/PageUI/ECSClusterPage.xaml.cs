@@ -292,14 +292,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
             else
             {
-                if(!this.PageController.IsFargateSupported)
-                {
-                    this._ctlLaunchTypeDescription.Text = $"Fargate is currently not supported in this region. Fargate is supported in the regions: {string.Join(", ", ECSWizardUtils.GetFargateSupportedRegions().ToArray())}";
-                }
-                else
-                {
-                    this._ctlLaunchTypeDescription.Text = "With the EC2 launch type, the application will run on the registered container instances for the cluster.";
-                }
+              
+                this._ctlLaunchTypeDescription.Text = "With the EC2 launch type, the application will run on the registered container instances for the cluster.";
                 this._ctlTaskCPU.ItemsSource = new TaskCPUItemValue[0];
                 this._ctlTaskMemory.Items.Clear();
             }

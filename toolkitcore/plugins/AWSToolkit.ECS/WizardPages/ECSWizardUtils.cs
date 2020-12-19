@@ -152,41 +152,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages
             }
         }
 
-        public static bool IsFargateSupportInRegion(string region)
-        {
-            return GetFargateSupportedRegions().Contains(region);
-        }
-
-        static IList<String> _fargateRegions;
-        public static IList<String> GetFargateSupportedRegions()
-        {
-            if (_fargateRegions == null)
-            {
-                try
-                {
-                    var content = S3FileFetcher.Instance.GetFileContent("ServiceMeta/ECSServiceMeta.json");
-                    var rootData = JsonMapper.ToObject(content);
-
-                    var regions = new List<String>();
-                    var allowedRegions = rootData["FargateSupportedRegions"];
-                    foreach (JsonData region in allowedRegions)
-                    {
-                        regions.Add(region.ToString());
-                    }
-
-                    _fargateRegions = regions;
-                }
-                catch(Exception e)
-                {
-                    LOGGER.Error("Error loading Fargate allowed regions", e);
-                    return new List<string>();
-                }
-            }
-
-            return _fargateRegions;
-        }
-
-
         public class TaskCPUItemValue
         {
             public string DisplayName { get; set; }
