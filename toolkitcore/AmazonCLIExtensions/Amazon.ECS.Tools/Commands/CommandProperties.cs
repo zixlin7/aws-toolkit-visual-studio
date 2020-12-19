@@ -47,13 +47,19 @@ namespace Amazon.ECS.Tools.Commands
             var tag = command.GetStringValueOrDefault(this.DockerImageTag, ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG, false);
             if (!string.IsNullOrEmpty(tag))
             {
-                // Strip the full ECR URL name.
-                int pos = tag.LastIndexOf('/');
-                if (pos != -1)
+                // Strip the full ECR URL name of form - protocol://aws_account_id.dkr.ecr.region.amazonaws.domain/repository:tag
+                // irrespective of domain
+                int dkrPos = tag.IndexOf(".dkr.ecr");
+                if (dkrPos != -1)
                 {
-                    tag = tag.Substring(pos + 1);
+                    tag = tag.Substring(dkrPos + 1);
+                    int pos = tag.IndexOf('/');
+                    if (pos != -1)
+                    {
+                        tag = tag.Substring(pos + 1);
+                    }
                 }
-
+                
                 data.SetIfNotNull(ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG.ConfigFileKey, tag);
             }
 
