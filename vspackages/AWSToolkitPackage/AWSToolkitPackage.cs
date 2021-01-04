@@ -2033,48 +2033,70 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         void FormatTemplateSolutionExplorer(object sender, EventArgs e)
         {
-            try
+            JoinableTaskFactory.Run(async () =>
             {
-                var prjItem = VSUtility.GetSelectedProjectItem();
-                if (prjItem == null)
-                    return;
+                try
+                {
+                    await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                    var prjItem = VSUtility.GetSelectedProjectItem();
+                    if (prjItem == null)
+                        return;
 
 
-                if (prjItem.Document != null && prjItem.Document.Object("TextDocument") != null)
-                {
-                    var txtDocument = (EnvDTE.TextDocument)prjItem.Document.Object("TextDocument");
-                    FormatTemplate(txtDocument);
+                    if (prjItem.Document != null && prjItem.Document.Object("TextDocument") != null)
+                    {
+                        var txtDocument = (EnvDTE.TextDocument) prjItem.Document.Object("TextDocument");
+                        FormatTemplate(txtDocument);
+                    }
+                    else
+                    {
+                        FormatTemplate(prjItem);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    FormatTemplate(prjItem);
+                    LOGGER.Error("Failed to format document", ex);
                 }
-            }
-            catch { }
+            });
         }
 
 
         void FormatTemplateActiveDocument(object sender, EventArgs e)
         {
-            try
+            JoinableTaskFactory.Run(async () =>
             {
-                var dte = GetGlobalService(typeof(EnvDTE.DTE)) as EnvDTE.DTE;
-                var txtDocument = (EnvDTE.TextDocument)dte.ActiveDocument.Object("TextDocument");
-                if (txtDocument != null)
+                try
                 {
-                    FormatTemplate(txtDocument);
+                    await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                    if (!(GetGlobalService(typeof(EnvDTE.DTE)) is DTE dte))
+                    {
+                        return;
+                    }
+
+                    var txtDocument = (EnvDTE.TextDocument) dte.ActiveDocument.Object("TextDocument");
+                    if (txtDocument != null)
+                    {
+                        FormatTemplate(txtDocument);
+                    }
+                    else
+                    {
+                        var prjItem = dte.ActiveDocument.ProjectItem;
+                        FormatTemplate(prjItem);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    var prjItem = dte.ActiveDocument.ProjectItem;
-                    FormatTemplate(prjItem);
+                    LOGGER.Error("Failed to format document", ex);
                 }
-            }
-            catch { }
+            });
         }
 
         void FormatTemplate(EnvDTE.ProjectItem prjItem)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             if (!prjItem.Saved)
                 prjItem.Save();
 
@@ -2094,6 +2116,8 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         void FormatTemplate(EnvDTE.TextDocument txtDocument)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var startPoint = txtDocument.StartPoint.CreateEditPoint();
             var endPoint = txtDocument.EndPoint.CreateEditPoint();
 
@@ -2118,9 +2142,10 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
             catch (Exception e)
             {
-                var shell = GetService(typeof(SAWSToolkitShellProvider)) as IAWSToolkitShellProvider;
-                if (shell != null)
+                if (GetService(typeof(SAWSToolkitShellProvider)) is IAWSToolkitShellProvider shell)
+                {
                     shell.ShowError("Error", e.Message);
+                }
 
                 return null;
             }
@@ -2191,13 +2216,15 @@ namespace Amazon.AWSToolkit.VisualStudio
 
 #region Add Serverless Template
 
-        void AddAWSServerlessTemplate(object sender, EventArgs evnt)
+        void AddAWSServerlessTemplate(object sender, EventArgs eventArgs)
         {
             try
             {
                 var projectLocation = VSUtility.GetSelectedProjectLocation();
                 if (string.IsNullOrEmpty(projectLocation))
+                {
                     return;
+                }
 
                 var destinationFile = Path.Combine(projectLocation, Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME);
                 using (var stream = new StreamReader(this.GetType().Assembly.GetManifestResourceStream("Amazon.AWSToolkit.VisualStudio.Resources.basic-serverless.template")))
@@ -2206,12 +2233,18 @@ namespace Amazon.AWSToolkit.VisualStudio
                     outputStream.Write(stream.ReadToEnd());
                 }
 
-                var dte = (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
-                dte.ItemOperations.OpenFile(destinationFile);
+                JoinableTaskFactory.Run(async () =>
+                {
+                    await JoinableTaskFactory.SwitchToMainThreadAsync();
+                    if (await GetServiceAsync(typeof(DTE)) is DTE dte)
+                    {
+                        dte.ItemOperations.OpenFile(destinationFile);
+                    }
+                });
             }
             catch (Exception e)
             {
-                LOGGER.Error("Error creating severless.template", e);
+                LOGGER.Error($"Error creating {Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME}", e);
             }
         }
 
@@ -2244,28 +2277,37 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         void UploadToLambda(object sender, EventArgs e)
         {
-            if (this.LambdaPluginAvailable)
+            if (!this.LambdaPluginAvailable)
             {
+                return;
+            }
+
+            JoinableTaskFactory.Run(async () =>
+            {
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+
                 // selectedProject can be null if the user is right clicking on a serverless.template file.
                 var selectedProject = VSUtility.GetSelectedProject();
 
                 var fullPath = selectedProject?.FullName;
-                if(fullPath == null)
+                if (fullPath == null)
                 {
                     var fileItem = VSUtility.GetSelectedProjectItem();
-                    if(string.Equals(fileItem?.Name, Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME))
+                    if (string.Equals(fileItem?.Name, Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME))
                     {
                         fullPath = VSUtility.GetSelectedItemFullPath();
                     }
                 }
-                
+
 
 
                 if (fullPath == null || !File.Exists(fullPath))
                 {
-                    var shell = GetService(typeof(SAWSToolkitShellProvider)) as IAWSToolkitShellProvider;
-                    if (shell != null)
+                    if (await GetServiceAsync(typeof(SAWSToolkitShellProvider)) is IAWSToolkitShellProvider shell)
+                    {
                         shell.ShowError("The selected item is not a project that can be deployed to AWS Lambda");
+                    }
+
                     return;
                 }
 
@@ -2276,9 +2318,10 @@ namespace Amazon.AWSToolkit.VisualStudio
                 seedProperties[UploadFunctionWizardProperties.PackageType] = Amazon.Lambda.PackageType.Zip;
                 var dockerfilePath = Path.Combine(rootDirectory, "Dockerfile");
 
-                if(selectedProject != null)
+                if (selectedProject != null)
                 {
-                    IDictionary<string, IList<string>> suggestedMethods = VSLambdaUtility.SearchForLambdaFunctionSuggestions(selectedProject);
+                    IDictionary<string, IList<string>> suggestedMethods =
+                        VSLambdaUtility.SearchForLambdaFunctionSuggestions(selectedProject);
                     seedProperties[UploadFunctionWizardProperties.SuggestedMethods] = suggestedMethods;
                     seedProperties[UploadFunctionWizardProperties.SourcePath] = rootDirectory;
                     if (File.Exists(dockerfilePath))
@@ -2287,7 +2330,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                         seedProperties[UploadFunctionWizardProperties.PackageType] = Amazon.Lambda.PackageType.Image;
                     }
                 }
-                else if(File.Exists(fullPath))
+                else if (File.Exists(fullPath))
                 {
                     seedProperties[UploadFunctionWizardProperties.SourcePath] = rootDirectory;
                     if (File.Exists(dockerfilePath))
@@ -2297,11 +2340,10 @@ namespace Amazon.AWSToolkit.VisualStudio
                     }
                 }
 
-
                 // Look to see if there is a Javascript Lambda function StartupFile and seed that as the suggested function handler.
-                var startupFile = selectedProject?.Properties.Item("StartupFile")?.Value as string;
+                var startupFile = selectedProject?.Properties?.Item("StartupFile")?.Value as string;
                 if (!string.IsNullOrEmpty(startupFile))
-                {                    
+                {
                     string relativePath;
                     if (startupFile.StartsWith(rootDirectory))
                         relativePath = startupFile.Substring(rootDirectory.Length + 1);
@@ -2310,22 +2352,18 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                     if (!relativePath.StartsWith("_"))
                     {
-                        seedProperties[UploadFunctionWizardProperties.Handler] = System.IO.Path.GetFileNameWithoutExtension(relativePath) + ".app.js";
-                    }                        
+                        seedProperties[UploadFunctionWizardProperties.Handler] =
+                            System.IO.Path.GetFileNameWithoutExtension(relativePath) + ".app.js";
+                    }
                 }
 
                 // Make sure all open editors are saved before deploying.
-                try
+                if (!TrySaveAllDocuments())
                 {
-                    var dte = (EnvDTE.DTE)GetService(typeof(EnvDTE.DTE));
-                    dte.Documents.SaveAll();
-                }
-                catch(Exception ex)
-                {
-                    LOGGER.Warn("Error while saving all opening documents before uploading to Lambda", ex);
+                    LOGGER.Warn("Unable to save open documents, outdated code might get uploaded to Lambda");
                 }
 
-                if(selectedProject != null)
+                if (selectedProject != null)
                 {
                     var projectFrameworks = VSUtility.GetSelectedNetCoreProjectFrameworks();
                     if (projectFrameworks != null && projectFrameworks.Count > 0)
@@ -2335,6 +2373,28 @@ namespace Amazon.AWSToolkit.VisualStudio
                 }
 
                 this.LambdaPlugin.UploadFunctionFromPath(seedProperties);
+            });
+        }
+
+        private bool TrySaveAllDocuments()
+        {
+            try
+            {
+                ThreadHelper.ThrowIfNotOnUIThread();
+
+                if (!(GetService(typeof(EnvDTE.DTE)) is DTE dte))
+                {
+                    return false;
+                }
+
+                dte.Documents.SaveAll();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LOGGER.Warn("Error while saving all open documents", ex);
+                return false;
             }
         }
 
