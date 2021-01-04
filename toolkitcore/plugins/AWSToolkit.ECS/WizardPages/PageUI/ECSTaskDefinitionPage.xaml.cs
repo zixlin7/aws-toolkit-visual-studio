@@ -14,6 +14,8 @@ using Amazon.ECS.Model;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Windows.Navigation;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.AWSToolkit.CommonValidators;
@@ -60,7 +62,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             UpdateExistingTaskDefinition();
             LoadPreviousValues(PageController.HostingWizard);
-            LoadPlatformVersions();
 
             string role = null;
             if (PageController.HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.TaskRole))
@@ -71,7 +72,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public bool IsFargateLaunch => this.PageController.HostingWizard.IsFargateLaunch();
 
-        private string _platformVersion;
+        private string _platformVersion = "LATEST";
         public string PlatformVersion
         {
             get => _platformVersion;
@@ -118,8 +119,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     this.MemoryHardLimit = taskMemory;
                 }
             }
+            
+            if (hostWizard[PublishContainerToAWSWizardProperties.PlatformVersion] is string)
+            {
+                this.PlatformVersion = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.PlatformVersion] as string;
+            }
 
-            if(hostWizard[PublishContainerToAWSWizardProperties.TaskExecutionRole] is string)
+            if (hostWizard[PublishContainerToAWSWizardProperties.TaskExecutionRole] is string)
             {
                 this.TaskExecutionRole = hostWizard[PublishContainerToAWSWizardProperties.TaskExecutionRole] as string;
             }
@@ -695,6 +701,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public ObservableCollection<EnvironmentVariableItem> EnvironmentVariables { get; }
 
+        private void OnRequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            e.Handled = true;
+        }
+
         private void AddEnvironmentVariable_Click(object sender, RoutedEventArgs e)
         {
             EnvironmentVariables.Add(new EnvironmentVariableItem());
@@ -748,27 +760,6 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             NotifyPropertyChanged("EnvironmentVariable3s");
         }
 
-
-        public ObservableCollection<string> PlatformVersions { get; } = new ObservableCollection<string>();
- 
-        private void LoadPlatformVersions()
-        {
-            PlatformVersions.Clear();
-            PlatformVersions.Add("LATEST");
-            PlatformVersions.Add("1.4.0");
-            PlatformVersions.Add("1.3.0");
-            PlatformVersions.Add("1.2.0");
-            PlatformVersions.Add("1.1.0");
-            PlatformVersions.Add("1.0.0");
-            PlatformVersion = PlatformVersions.First();
-
-            string previousValue = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.PlatformVersion] as string;
-            if (!string.IsNullOrWhiteSpace(previousValue))
-            {
-                PlatformVersion = previousValue;
-            }
-        }
-        
         public bool CreateNewTaskExecutionRole => this._ctlExecutionRole.SelectedIndex == 0;
 
         public string TaskExecutionRole

@@ -60,6 +60,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             {
                 this._ctlLaunchTypePicker.SelectedItem = Amazon.ECS.LaunchType.FindValue(previousLaunchType);
             }
+
+            LoadPreviousValues();
         }
 
         public void PageActivated()
@@ -128,6 +130,36 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
 
                 return true;
+            }
+        }
+
+
+        private void LoadPreviousValues()
+        {
+            var previousCPU =
+                this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskCPU] as string;
+            if (!string.IsNullOrEmpty(previousCPU))
+            {
+                var item = TaskCPUAllowedValues.FirstOrDefault(x =>
+                    string.Equals(x.SystemName, previousCPU, StringComparison.Ordinal));
+                if (item != null)
+                {
+                    this._ctlTaskCPU.SelectedItem = item;
+                }
+            }
+
+            var previousMemory = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskMemory] as string;
+            if (!string.IsNullOrEmpty(previousMemory))
+            {
+                var cpu = this._ctlTaskCPU.SelectedItem as TaskCPUItemValue;
+                if (cpu != null)
+                {
+                    var itemMemory = cpu.MemoryOptions.FirstOrDefault(x => string.Equals(x.SystemName, previousMemory, StringComparison.Ordinal));
+                    if (itemMemory != null)
+                    {
+                        this._ctlTaskMemory.SelectedItem = itemMemory;
+                    }
+                }
             }
         }
 

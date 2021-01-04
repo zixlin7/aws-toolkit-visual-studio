@@ -223,17 +223,34 @@
                 Content="_Platform Version:">
             </Label>
 
-            <ComboBox
-                Name="_ctlPlatformVersionPicker" x:FieldModifier="private"
+            <TextBox
+                Name="_ctlPlatformVersionTextBox" x:FieldModifier="private"
                 Grid.Row="3"
                 Grid.Column="1"
                 Margin="16,2,4,2"
-                IsEditable="True"
                 Validation.ErrorTemplate="{StaticResource DataValidationTemplate}"
                 Visibility="{Binding IsFargateLaunch, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Text="{Binding PlatformVersion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True, ValidatesOnDataErrors=True}"
-                ItemsSource="{Binding PlatformVersions}"
-                Style="{DynamicResource awsComboBoxStyle}" />
+                Style="{DynamicResource awsTextBoxStyle}" />
+            
+            <TextBlock
+                Name="_ctlPlatformVersionInformation"
+                Grid.Row="4"
+                Grid.Column="0"
+                Grid.ColumnSpan="4"
+                Margin="30,4,10,2"
+                FontStyle="Italic"
+                Visibility="{Binding IsFargateLaunch, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Style="{DynamicResource awsInfoTextStyle}"
+                TextWrapping="Wrap">
+                To learn more about Platform Versions, visit this
+                <Hyperlink
+                    NavigateUri="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html"  RequestNavigate="OnRequestNavigate">
+                    link
+                </Hyperlink>
+            </TextBlock>
+
+
         </Grid>
 
         <Grid Grid.Row="1">

@@ -73,9 +73,9 @@ namespace Amazon.AWSToolkit.ECS.Controller
                     }
                 };
 
-                if (defaults.GetValueAsString(ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG) != null)
+                if (defaults.GetValueAsString(CommonDefinedCommandOptions.ARGUMENT_DOCKER_TAG) != null)
                 {
-                    var fullName = defaults.GetValueAsString(ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG);
+                    var fullName = defaults.GetValueAsString(CommonDefinedCommandOptions.ARGUMENT_DOCKER_TAG);
 
                     if (fullName.Contains(":"))
                     {
