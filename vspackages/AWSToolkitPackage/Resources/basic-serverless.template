@@ -1,4 +1,4 @@
-{
+﻿{
   "AWSTemplateFormatVersion" : "2010-09-09",
   "Transform" : "AWS::Serverless-2016-10-31",
   "Description" : "Starting template for an AWS Serverless Application.",
@@ -15,7 +15,7 @@
         "MemorySize": 256,
         "Timeout": 30,
         "Role": null,
-        "Policies": [ "AWSLambdaFullAccess" ],
+        "Policies": [ "AWSLambda_FullAccess" ],
         "Events": {
           "ProxyResource": {
             "Type": "Api",
