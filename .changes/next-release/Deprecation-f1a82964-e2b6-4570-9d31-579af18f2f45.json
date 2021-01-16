@@ -1,0 +1,4 @@
+{
+  "Type": "Deprecation",
+  "Description": "Updated all references of the deprecated AWSLambdaFullAccess and AWSLambdaReadOnlyAccess managed policies to AWSLambda_FullAccess and AWSLambda_ReadOnlyAccess."
+}
