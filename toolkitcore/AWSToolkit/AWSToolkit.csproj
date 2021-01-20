@@ -107,6 +107,7 @@
       <DependentUpon>IAMRolePicker.xaml</DependentUpon>
     </Compile>
     <Compile Include="CommonValidators\DockerTagValidator.cs" />
+    <Compile Include="CommonValidators\EcsPlatformVersionValidator.cs" />
     <Compile Include="CommonValidators\EcsRepoNameValidator.cs" />
     <Compile Include="PluginServices\Activators\PluginActivatorUtilities.cs" />
     <Compile Include="Shared\*.cs" />

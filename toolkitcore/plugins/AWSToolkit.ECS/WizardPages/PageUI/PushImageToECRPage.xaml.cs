@@ -228,7 +228,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     if (!string.IsNullOrWhiteSpace(previousValue) && items.Contains(previousValue))
                         this._ctlDockerTagPicker.SelectedItem = previousValue;
                     else
-                        this._ctlDockerTagPicker.Text = "";
+                        this._ctlDockerTagPicker.Text = "latest";
                 }));
             });
         }

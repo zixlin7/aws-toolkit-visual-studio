@@ -14,8 +14,11 @@ using Amazon.ECS.Model;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Windows.Navigation;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CommonUI.Components;
+using Amazon.AWSToolkit.CommonValidators;
 using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
@@ -23,7 +26,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
     /// <summary>
     /// Interaction logic for ECSTaskDefinitionPage.xaml
     /// </summary>
-    public partial class ECSTaskDefinitionPage : BaseAWSUserControl, INotifyPropertyChanged
+    public partial class ECSTaskDefinitionPage : BaseAWSUserControl, INotifyPropertyChanged, IDataErrorInfo
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ECSTaskDefinitionPage));
 
@@ -46,7 +49,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             PageController = pageController;
 
-            if(PageController.HostingWizard[PublishContainerToAWSWizardProperties.IsWebProject] is bool &&
+            if (PageController.HostingWizard[PublishContainerToAWSWizardProperties.IsWebProject] is bool &&
                 (bool)PageController.HostingWizard[PublishContainerToAWSWizardProperties.IsWebProject])
             {
                 EnvironmentVariables.Add(new EnvironmentVariableItem { Variable = "ASPNETCORE_ENVIRONMENT", Value = "Production" });
@@ -67,19 +70,21 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             IntializeIAMPickerForAccountAsync(role);
         }
 
-        public Visibility MemorySettingsVisibility
-        {
-            get
-            {
-                if (this.PageController.HostingWizard.IsFargateLaunch())
-                    return Visibility.Collapsed;
+        public bool IsFargateLaunch => this.PageController.HostingWizard.IsFargateLaunch();
 
-                return Visibility.Visible;
+        private string _platformVersion = "LATEST";
+        public string PlatformVersion
+        {
+            get => _platformVersion;
+            set
+            {
+                this._platformVersion = value;
+                NotifyPropertyChanged(nameof(PlatformVersion));
             }
         }
 
         public void PageActivated()
-        {
+       {
             if(this.PageController.HostingWizard.IsFargateLaunch())
             {
                 this._ctlFargatePortMappings.Visibility = Visibility.Visible;
@@ -96,7 +101,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 this._ctlExecutionRoleDescription.Visibility = Visibility.Collapsed;
                 this._ctlExecutionRoleLabel.Visibility = Visibility.Collapsed;
             }
-        }
+       }
 
         private void LoadPreviousValues(IAWSWizard hostWizard)
         {
@@ -114,8 +119,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     this.MemoryHardLimit = taskMemory;
                 }
             }
+            
+            if (hostWizard[PublishContainerToAWSWizardProperties.PlatformVersion] is string)
+            {
+                this.PlatformVersion = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.PlatformVersion] as string;
+            }
 
-            if(hostWizard[PublishContainerToAWSWizardProperties.TaskExecutionRole] is string)
+            if (hostWizard[PublishContainerToAWSWizardProperties.TaskExecutionRole] is string)
             {
                 this.TaskExecutionRole = hostWizard[PublishContainerToAWSWizardProperties.TaskExecutionRole] as string;
             }
@@ -437,7 +447,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                 if (this.PageController.HostingWizard.IsFargateLaunch() && string.IsNullOrEmpty(this.TaskExecutionRole) && !this.CreateNewTaskExecutionRole)
                     return false;
 
-                if (!this.PageController.HostingWizard.IsFargateLaunch() && !this.MemoryHardLimit.HasValue && !this.MemorySoftLimit.HasValue)
+                if (!this.PageController.HostingWizard.IsFargateLaunch() && !this.MemoryHardLimit.HasValue && !this.MemorySoftLimit.HasValue && !string.IsNullOrEmpty(this.PlatformVersion))
                     return false;
 
                 return true;
@@ -691,6 +701,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public ObservableCollection<EnvironmentVariableItem> EnvironmentVariables { get; }
 
+        private void OnRequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            e.Handled = true;
+        }
+
         private void AddEnvironmentVariable_Click(object sender, RoutedEventArgs e)
         {
             EnvironmentVariables.Add(new EnvironmentVariableItem());
@@ -764,6 +780,24 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             NotifyPropertyChanged("CreateNewTaskExecutionRole");
             NotifyPropertyChanged("TaskExecutionRole");
         }
+
+        #region IDataErrorInfo
+
+        public string this[string columnName]
+        {
+            get
+            {
+                if (columnName == nameof(PlatformVersion))
+                {
+                    return EcsPlatformVersionValidator.Validate(PlatformVersion);
+                }
+                return null;
+            }
+        }
+
+        public string Error => null;
+
+        #endregion
     }
 
     public class PortMappingItem

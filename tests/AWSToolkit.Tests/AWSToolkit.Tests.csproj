@@ -56,6 +56,7 @@
     <Compile Include="CodeArtifact\TelemetryFixture.cs" />
     <Compile Include="CommonUI\InverseBooleanToVisibilityConverterTests.cs" />
     <Compile Include="CommonValidators\DockerTagValidatorTests.cs" />
+    <Compile Include="CommonValidators\EcsPlatformVersionValidatorTests.cs" />
     <Compile Include="CommonValidators\EcsRepoNameValidatorTests.cs" />
     <Compile Include="ECS\DeployServiceWorkerTests.cs" />
     <Compile Include="ECS\DeployScheduleTaskWorkerTests.cs" />

@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:Amazon.AWSToolkit.ECS.WizardPages.PageUI"
     xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI;assembly=AWSToolkit"
     xmlns:commoncomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components;assembly=AWSToolkit"
+    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters;assembly=AWSToolkit"
     mc:Ignorable="d" 
     d:DesignHeight="400"
     d:DesignWidth="600">
@@ -15,6 +16,44 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+            <ControlTemplate x:Key="DataValidationTemplate">
+                <Grid MaxWidth="{Binding ElementName=AdornedElement, Path=ActualWidth}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border 
+                        Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                        BorderBrush="Red" BorderThickness="1">
+                        <AdornedElementPlaceholder Name="AdornedElement"  />
+                    </Border>
+                    <Border
+                        Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                        Background="{DynamicResource awsFieldRequiredBackgroundBrushKey}" />
+                    <Image 
+                        Grid.Row="1" Grid.Column="0"
+                        Height="16" Width="16" 
+                        Margin="3 3 0 0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        DataContext="{DynamicResource CommonIcons}"
+                        Source="{Binding WarningIcon16x16}" />
+                    <TextBlock 
+                        Grid.Row="1" Grid.Column="1"
+                        Margin="3 3 3 3" 
+                        TextWrapping="Wrap"
+                        MaxWidth="{Binding ElementName=Q, Path=ActualWidth}"
+                        Foreground="{DynamicResource awsFieldRequiredTextForegroundBrushKey}"
+                        Text="{Binding /ErrorContent}" />
+                </Grid>
+            </ControlTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -37,6 +76,7 @@
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
@@ -111,7 +151,7 @@
                 Grid.Column="0"
                 Margin="10,2,4,2"
                 VerticalAlignment="Center"
-                Visibility="{Binding MemorySettingsVisibility}"
+                Visibility="{Binding IsFargateLaunch, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
                 Style="{DynamicResource awsLabelBaseStyle}">
                 _Memory (MiB):
             </Label>
@@ -120,7 +160,7 @@
                 Grid.Row="2"
                 Grid.Column="1"
                 Grid.ColumnSpan="3"
-                Visibility="{Binding MemorySettingsVisibility}"
+                Visibility="{Binding IsFargateLaunch, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
                 Orientation="Horizontal"
                 >
 
@@ -172,6 +212,43 @@
                 </TextBlock>
 
             </StackPanel>
+            <Label
+                Grid.Row="3"
+                Grid.Column="0"
+                Margin="10,2,4,2"
+                Visibility="{Binding IsFargateLaunch, Converter={StaticResource BooleanToVisibilityConverter}}"
+                VerticalAlignment="Center"
+                Style="{DynamicResource awsLabelBaseStyle}"
+                Target="{Binding ElementName=_ctlPlatformVersionPicker}"
+                Content="_Platform Version:">
+            </Label>
+
+            <TextBox
+                Name="_ctlPlatformVersionTextBox" x:FieldModifier="private"
+                Grid.Row="3"
+                Grid.Column="1"
+                Margin="16,2,4,2"
+                Validation.ErrorTemplate="{StaticResource DataValidationTemplate}"
+                Visibility="{Binding IsFargateLaunch, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Text="{Binding PlatformVersion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True, ValidatesOnDataErrors=True}"
+                Style="{DynamicResource awsTextBoxStyle}" />
+            
+            <TextBlock
+                Name="_ctlPlatformVersionInformation"
+                Grid.Row="4"
+                Grid.Column="0"
+                Grid.ColumnSpan="4"
+                Margin="30,4,10,2"
+                FontStyle="Italic"
+                Visibility="{Binding IsFargateLaunch, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Style="{DynamicResource awsInfoTextStyle}"
+                TextWrapping="Wrap">
+                To learn more about Platform Versions, visit this
+                <Hyperlink
+                    NavigateUri="https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html"  RequestNavigate="OnRequestNavigate">
+                    link
+                </Hyperlink>
+            </TextBlock>
 
 
         </Grid>

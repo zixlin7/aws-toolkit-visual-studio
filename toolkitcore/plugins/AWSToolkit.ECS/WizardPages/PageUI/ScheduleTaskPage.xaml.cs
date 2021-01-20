@@ -36,7 +36,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             PageController = pageController;
 
-
+            
             this.RunIntervalValue = 10;
 
             foreach (var item in RunIntervalUnitItem.ValidValues)
@@ -50,9 +50,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             IsRunTypeCronExpression = false;
 
             this.DesiredCount = 1;
+            LoadPreviousValues();
         }
-
-
 
         public bool AllRequiredFieldsAreSet
         {
@@ -295,6 +294,14 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             this.FixedIntervalVisiblity = this._ctlRunTypeFixedInterval.IsChecked.GetValueOrDefault() ? Visibility.Visible : Visibility.Collapsed;
             this.CronExpressionVisiblity = this._ctlRunTypeCronExpression.IsChecked.GetValueOrDefault() ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void LoadPreviousValues()
+        {
+            if (this.PageController.HostingWizard.IsPropertySet(PublishContainerToAWSWizardProperties.DesiredCount))
+            {
+                this.DesiredCount = (int)PageController.HostingWizard[PublishContainerToAWSWizardProperties.DesiredCount];
+            }
         }
 
         Dictionary<string, Role> _existingRoles = new Dictionary<string, Role>();

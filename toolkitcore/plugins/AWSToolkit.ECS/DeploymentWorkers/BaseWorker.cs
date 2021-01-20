@@ -145,6 +145,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
                 properties.TaskCPU = hostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskCPU] as string;
                 properties.TaskMemory = hostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskMemory] as string;
+                properties.TaskPlatformVersion = hostingWizard[PublishContainerToAWSWizardProperties.PlatformVersion] as string ?? "LATEST";
             }
             else
             {

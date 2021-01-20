@@ -121,12 +121,13 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
                 HostingWizard[PublishContainerToAWSWizardProperties.TaskExecutionRole] = _pageUI.TaskExecutionRole;
                 HostingWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit] = null;
                 HostingWizard[PublishContainerToAWSWizardProperties.MemorySoftLimit] = null;
+                HostingWizard[PublishContainerToAWSWizardProperties.PlatformVersion] = _pageUI.PlatformVersion;
             }
             else
             {
                 HostingWizard[PublishContainerToAWSWizardProperties.CreateNewTaskExecutionRole] = false;
                 HostingWizard[PublishContainerToAWSWizardProperties.TaskExecutionRole] = null;
-
+                HostingWizard[PublishContainerToAWSWizardProperties.PlatformVersion] = null;
                 if (this._pageUI.MemoryHardLimit.GetValueOrDefault() > 0)
                 {
                     HostingWizard[PublishContainerToAWSWizardProperties.MemoryHardLimit] = _pageUI.MemoryHardLimit;

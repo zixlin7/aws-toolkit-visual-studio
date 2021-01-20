@@ -117,9 +117,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             HostingWizard[PublishContainerToAWSWizardProperties.DeploymentMode] = _pageUI.DeploymentOption.Mode;
 
             HostingWizard[PublishContainerToAWSWizardProperties.PersistSettingsToConfigFile] = _pageUI.PersistSettingsToConfigFile;
-
-            HostingWizard[PublishContainerToAWSWizardProperties.IsFargateSupported] = ECSWizardUtils.IsFargateSupportInRegion(this._pageUI.SelectedRegion.SystemName) && _pageUI.DeploymentOption.Mode != Constants.DeployMode.ScheduleTask;
-
+            HostingWizard[PublishContainerToAWSWizardProperties.IsFargateSupported] = true;
             if (resetForwardPages)
             {
                 this.HostingWizard.NotifyForwardPagesReset(this);

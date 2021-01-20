@@ -73,9 +73,9 @@ namespace Amazon.AWSToolkit.ECS.Controller
                     }
                 };
 
-                if (defaults.GetValueAsString(ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG) != null)
+                if (defaults.GetValueAsString(CommonDefinedCommandOptions.ARGUMENT_DOCKER_TAG) != null)
                 {
-                    var fullName = defaults.GetValueAsString(ECSDefinedCommandOptions.ARGUMENT_DOCKER_TAG);
+                    var fullName = defaults.GetValueAsString(CommonDefinedCommandOptions.ARGUMENT_DOCKER_TAG);
 
                     if (fullName.Contains(":"))
                     {
@@ -107,6 +107,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_TYPE, PublishContainerToAWSWizardProperties.LaunchType);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_TD_CPU, PublishContainerToAWSWizardProperties.AllocatedTaskCPU);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_TD_MEMORY, PublishContainerToAWSWizardProperties.AllocatedTaskMemory);
+                copyValues(ECSDefinedCommandOptions.ARGUMENT_TD_PLATFORM_VERSION, PublishContainerToAWSWizardProperties.PlatformVersion);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SUBNETS, PublishContainerToAWSWizardProperties.LaunchSubnets);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_SECURITYGROUPS, PublishContainerToAWSWizardProperties.LaunchSecurityGroups);
                 copyValues(ECSDefinedCommandOptions.ARGUMENT_LAUNCH_ASSIGN_PUBLIC_IP, PublishContainerToAWSWizardProperties.AssignPublicIpAddress);

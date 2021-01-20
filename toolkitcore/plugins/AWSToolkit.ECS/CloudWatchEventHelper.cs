@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Amazon.CloudWatchEvents;
@@ -30,14 +31,7 @@ namespace Amazon.AWSToolkit.ECS
                         try
                         {
                             var targets = cweClient.ListTargetsByRule(new ListTargetsByRuleRequest { Rule = ruleName }).Targets;
-                            List<Target> ecsTargets = new List<Target>();
-                            foreach (var target in targets)
-                            {
-                                if (target.EcsParameters != null)
-                                {
-                                    ecsTargets.Add(target);
-                                }
-                            }
+                            var ecsTargets = targets.Where(target => target.EcsParameters != null && target.Arn.Equals(clusterArn)).ToList();
 
                             if (ecsTargets.Count > 0)
                             {

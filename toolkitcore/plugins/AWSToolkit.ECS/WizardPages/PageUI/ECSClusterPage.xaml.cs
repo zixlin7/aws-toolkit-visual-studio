@@ -60,6 +60,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             {
                 this._ctlLaunchTypePicker.SelectedItem = Amazon.ECS.LaunchType.FindValue(previousLaunchType);
             }
+
+            LoadPreviousValues();
         }
 
         public void PageActivated()
@@ -128,6 +130,36 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
 
                 return true;
+            }
+        }
+
+
+        private void LoadPreviousValues()
+        {
+            var previousCPU =
+                this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskCPU] as string;
+            if (!string.IsNullOrEmpty(previousCPU))
+            {
+                var item = TaskCPUAllowedValues.FirstOrDefault(x =>
+                    string.Equals(x.SystemName, previousCPU, StringComparison.Ordinal));
+                if (item != null)
+                {
+                    this._ctlTaskCPU.SelectedItem = item;
+                }
+            }
+
+            var previousMemory = this.PageController.HostingWizard[PublishContainerToAWSWizardProperties.AllocatedTaskMemory] as string;
+            if (!string.IsNullOrEmpty(previousMemory))
+            {
+                var cpu = this._ctlTaskCPU.SelectedItem as TaskCPUItemValue;
+                if (cpu != null)
+                {
+                    var itemMemory = cpu.MemoryOptions.FirstOrDefault(x => string.Equals(x.SystemName, previousMemory, StringComparison.Ordinal));
+                    if (itemMemory != null)
+                    {
+                        this._ctlTaskMemory.SelectedItem = itemMemory;
+                    }
+                }
             }
         }
 
@@ -292,14 +324,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             }
             else
             {
-                if(!this.PageController.IsFargateSupported)
-                {
-                    this._ctlLaunchTypeDescription.Text = $"Fargate is currently not supported in this region. Fargate is supported in the regions: {string.Join(", ", ECSWizardUtils.GetFargateSupportedRegions().ToArray())}";
-                }
-                else
-                {
-                    this._ctlLaunchTypeDescription.Text = "With the EC2 launch type, the application will run on the registered container instances for the cluster.";
-                }
+              
+                this._ctlLaunchTypeDescription.Text = "With the EC2 launch type, the application will run on the registered container instances for the cluster.";
                 this._ctlTaskCPU.ItemsSource = new TaskCPUItemValue[0];
                 this._ctlTaskMemory.Items.Clear();
             }

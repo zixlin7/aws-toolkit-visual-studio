@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Added support to deploy fargate based scheduled tasks on ECS cluster."
+}
