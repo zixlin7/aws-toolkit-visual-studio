@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Fixed ECS Cluster View Panel to show scheduled tasks registered with the cluster being viewed."
-}

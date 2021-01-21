@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "Added ability in Publish Container to AWS wizard to load previous deployment settings stored in aws-ecs-tools-defaults.json "
-}
