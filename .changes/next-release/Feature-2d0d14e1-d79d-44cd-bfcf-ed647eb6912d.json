@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Source account is now included in the event source policy when creating S3 event sources for Lambda functions."
+}

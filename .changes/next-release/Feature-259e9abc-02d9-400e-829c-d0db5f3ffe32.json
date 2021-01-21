@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Upload Lambda Function dialog now filters the existing function list based on selected package type."
+}
