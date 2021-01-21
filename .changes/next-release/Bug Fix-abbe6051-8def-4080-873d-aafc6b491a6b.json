@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": " Fixed issue where incorrect tag value was saved in the defaults file when Docker Repository name contained a `/`"
-}

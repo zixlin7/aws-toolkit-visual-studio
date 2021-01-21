@@ -1,0 +1,34 @@
+{
+  "Date": "2021-01-21",
+  "Version": "1.20.1.0",
+  "Entries": [
+    {
+      "Type": "Bug Fix",
+      "Description": "Fixed ECS Cluster View Panel to show scheduled tasks registered with the cluster being viewed."
+    },
+    {
+      "Type": "Bug Fix",
+      "Description": "Fixed issue where incorrect tag value was saved in the defaults file when Docker Repository name contained a `/`"
+    },
+    {
+      "Type": "Deprecation",
+      "Description": "Updated all references of the deprecated AWSLambdaFullAccess and AWSLambdaReadOnlyAccess managed policies to AWSLambda_FullAccess and AWSLambda_ReadOnlyAccess."
+    },
+    {
+      "Type": "Feature",
+      "Description": "Upload Lambda Function dialog now filters the existing function list based on selected package type."
+    },
+    {
+      "Type": "Feature",
+      "Description": "Source account is now included in the event source policy when creating S3 event sources for Lambda functions."
+    },
+    {
+      "Type": "Feature",
+      "Description": "Added ability in Publish Container to AWS wizard to load previous deployment settings stored in aws-ecs-tools-defaults.json "
+    },
+    {
+      "Type": "Feature",
+      "Description": "Added support to deploy fargate based scheduled tasks on ECS cluster."
+    }
+  ]
+}
