@@ -55,6 +55,7 @@
     <Compile Include="Exceptions\LambdaToolkitException.cs" />
     <Compile Include="Exceptions\ToolkitException.cs" />
     <Compile Include="HostedFileContentLoader.cs" />
+    <Compile Include="HostedFilesSettings.cs" />
     <Compile Include="HostManagerClientRequest.cs" />
     <Compile Include="IAMUtilities.cs" />
     <Compile Include="MobileAnalytics\AMAConstants.cs" />
@@ -65,6 +66,18 @@
     <Compile Include="MobileAnalytics\SimpleMobileAnalytics.cs" />
     <Compile Include="MobileAnalytics\ToolkitEvent.cs" />
     <Compile Include="ProjectFileUtilities.cs" />
+    <Compile Include="ResourceFetchers\AssemblyResourceFetcher.cs" />
+    <Compile Include="ResourceFetchers\CachingResourceFetcher.cs" />
+    <Compile Include="ResourceFetchers\CallbackResourceFetcher.cs" />
+    <Compile Include="ResourceFetchers\ChainedResourceFetcher.cs" />
+    <Compile Include="ResourceFetchers\ConditionalResourceFetcher.cs" />
+    <Compile Include="ResourceFetchers\FileResourceFetcher.cs" />
+    <Compile Include="ResourceFetchers\HostedFilesResourceFetcher.cs" />
+    <Compile Include="ResourceFetchers\HttpResourceFetcher.cs" />
+    <Compile Include="ResourceFetchers\HttpResourceFetcherOptions.cs" />
+    <Compile Include="ResourceFetchers\IResourceFetcher.cs" />
+    <Compile Include="ResourceFetchers\RelativeFileResourceFetcher.cs" />
+    <Compile Include="ResourceFetchers\RelativeHttpResourceFetcher.cs" />
     <Compile Include="Settings\DynamoDbSettings.cs" />
     <Compile Include="Settings\IToolkitSettingsWatcher.cs" />
     <Compile Include="Settings\MobileAnalyticsSettings.cs" />
