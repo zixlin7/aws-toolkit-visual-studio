@@ -80,9 +80,16 @@ csharp_space_between_square_brackets = false
 csharp_preserve_single_line_statements = false
 csharp_preserve_single_line_blocks = true
 
+################################################################################
+# C# Formatting: Using options
+################################################################################
+csharp_using_directive_placement = outside_namespace
 
-# TODO : Incrementally onboard additional C# formatting rules
-# Reference: https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/formatting-rules
+################################################################################
+# .NET Formatting: Using options
+################################################################################
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = true
 
 # TODO : Incrementally onboard additional C# style rules
 # Reference: https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/
