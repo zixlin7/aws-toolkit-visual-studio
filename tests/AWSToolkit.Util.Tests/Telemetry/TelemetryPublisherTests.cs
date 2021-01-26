@@ -12,11 +12,14 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 {
     public class TelemetryPublisherTests : IDisposable
     {
+        private readonly ITestOutputHelper _testOutput;
+
         private readonly Guid _clientId = Guid.NewGuid();
         private readonly ConcurrentQueue<Metrics> _eventQueue = new ConcurrentQueue<Metrics>();
         private readonly Mock<TimeProvider> _timeProvider = new Mock<TimeProvider>();
@@ -28,13 +31,19 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         private readonly Dictionary<int, Action> _beforeProcessorLoopActions = new Dictionary<int, Action>();
         private readonly Dictionary<int, Action> _processorLoopActions = new Dictionary<int, Action>();
 
-        private object _syncObj = new object();
+        private readonly object _timesPublishedSyncObj = new object();
+        private readonly ManualResetEvent _timesPublishedThresholdEvent = new ManualResetEvent(false);
+        private int _timesPublishedThreshold = int.MaxValue;
+
+        private readonly object _syncObj = new object();
         private readonly List<int> _queueSizeBeforeProcessorLoop = new List<int>();
 
         private readonly TelemetryPublisher _sut;
 
-        public TelemetryPublisherTests()
+        public TelemetryPublisherTests(ITestOutputHelper testOutput)
         {
+            _testOutput = testOutput;
+
             _timeProvider.Setup(mock => mock.GetCurrentTime()).Returns(() => _currentTime);
 
             // The Processor sleeps after each processing loop.
@@ -42,23 +51,31 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
             _timeProvider.Setup(mock => mock.Delay(It.IsAny<int>(), It.IsAny<CancellationToken>()))
                 .Callback<int, CancellationToken>((delayMs, token) =>
                 {
+                    _testOutput.WriteLine($"Starting processor loop {_currentProcessorLoop}");
+
+                    UpdateTimesPublishedEvent();
+
                     if (_beforeProcessorLoopActions.TryGetValue(_currentProcessorLoop, out var action))
                     {
+                        _testOutput.WriteLine($"Running an action before processor loop {_currentProcessorLoop}");
                         action();
                     }
 
                     lock (_syncObj)
                     {
+                        _testOutput.WriteLine($"Queue size: {_eventQueue.Count}");
                         _queueSizeBeforeProcessorLoop.Add(_eventQueue.Count);
                     }
                 })
                 .Returns<int, CancellationToken>((delayMs, token) =>
                 {
+                    _testOutput.WriteLine($"Completing processor loop {_currentProcessorLoop}");
                     var hasAction = _processorLoopActions.TryGetValue(_currentProcessorLoop, out var action);
                     _currentProcessorLoop++;
 
                     if (hasAction)
                     {
+                        _testOutput.WriteLine($"Running an action after processor loop {_currentProcessorLoop}");
                         action();
                     }
 
@@ -67,23 +84,28 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             _sut = new TelemetryPublisher(_eventQueue, _clientId, _timeProvider.Object);
             _sut.IsTelemetryEnabled = true;
-            _sut.MetricsPublished += (sender, args) => { _timesPublished++; };
+            _sut.MetricsPublished += (sender, args) =>
+            {
+                _timesPublished++;
+                _testOutput.WriteLine($"Metrics now published {_timesPublished} times");
+                UpdateTimesPublishedEvent();
+            };
         }
 
         [Fact(Timeout = 1000)]
-        public async Task PublishOneEvent()
+        public void PublishOneEvent()
         {
             BeforeProcessorLoop(0, () => AddEventsToQueue(1));
             _sut.Initialize(_telemetryClient.Object);
 
-            await WaitForTimesPublished(1);
+            WaitForTimesPublished(1);
 
             Assert.Empty(_eventQueue);
             VerifyPostMetricsCalls(1, Times.Once());
         }
 
         [Fact(Timeout = 2000)]
-        public async Task PublishesInBatches()
+        public void PublishesInBatches()
         {
             // Populate with more than one batch worth of events
             var testEventCount = TelemetryPublisher.MAX_BATCH_SIZE + 1;
@@ -91,7 +113,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             _sut.Initialize(_telemetryClient.Object);
 
-            await WaitForTimesPublished(1);
+            WaitForTimesPublished(1);
 
             lock (_syncObj)
             {
@@ -107,7 +129,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         }
 
         [Fact(Timeout = 2000)]
-        public async Task Publish4xxFailuresDoNotReturnToQueue()
+        public void Publish4xxFailuresDoNotReturnToQueue()
         {
             const int elementCount = TelemetryPublisher.QUEUE_SIZE_THRESHOLD;
             BeforeProcessorLoop(0, () => AddEventsToQueue(elementCount));
@@ -116,19 +138,23 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
                 _clientId,
                 It.IsAny<IList<Metrics>>(),
                 It.IsAny<CancellationToken>()
-            )).Throws(new AmazonToolkitTelemetryException("Simulating Http 4xx level error", ErrorType.Unknown, "", "",
+            )).Callback(() =>
+            {
+                _testOutput.WriteLine("Telemetry PostMetrics was called, simulating a 4xx throw.");
+            }).Throws(new AmazonToolkitTelemetryException("Simulating Http 4xx level error", ErrorType.Unknown, "", "",
                 HttpStatusCode.BadRequest));
 
+            _testOutput.WriteLine("Initializing the Telemetry Publisher");
             _sut.Initialize(_telemetryClient.Object);
 
-            await WaitForTimesPublished(1);
+            WaitForTimesPublished(1);
 
             Assert.Empty(_eventQueue);
             VerifyPostMetricsCalls(elementCount, Times.Once());
         }
 
         [Fact(Timeout = 1000)]
-        public async Task Publish5xxFailuresReturnToQueue()
+        public void Publish5xxFailuresReturnToQueue()
         {
             const int elementCount = TelemetryPublisher.QUEUE_SIZE_THRESHOLD;
             BeforeProcessorLoop(0, () => AddEventsToQueue(elementCount));
@@ -144,7 +170,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             _sut.Initialize(_telemetryClient.Object);
 
-            await WaitForTimesPublished(1);
+            WaitForTimesPublished(1);
 
             Assert.Equal(elementCount, _eventQueue.Count);
             // 5xx errors stop the publish loop
@@ -155,7 +181,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         /// Tests Non-http related exceptions (example: offline)
         /// </summary>
         [Fact(Timeout = 1000)]
-        public async Task FailedBatchesReturnToQueue()
+        public void FailedBatchesReturnToQueue()
         {
             // const int elementCount = TelemetryPublisher.QUEUE_SIZE_THRESHOLD;
             const int elementCount = 3;
@@ -171,7 +197,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             _sut.Initialize(_telemetryClient.Object);
 
-            await WaitForTimesPublished(1);
+            WaitForTimesPublished(1);
 
             // If the Publisher infinite looped, we would never get a Metrics Published event (never get here)
             Assert.Equal(elementCount, _eventQueue.Count);
@@ -203,7 +229,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         }
 
         [Fact(Timeout = 2000)]
-        public async Task PublishIfSizeThresholdExceeded()
+        public void PublishIfSizeThresholdExceeded()
         {
             // The first loop will publish because there wasn't a prior publish (uses the time-based check)
             BeforeProcessorLoop(0, () => AddEventsToQueue(1));
@@ -215,7 +241,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             _sut.Initialize(_telemetryClient.Object);
 
-            await WaitForTimesPublished(2);
+            WaitForTimesPublished(2);
 
             // Nothing should be left to publish
             Assert.Empty(_eventQueue);
@@ -240,7 +266,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         }
 
         [Fact(Timeout = 2000)]
-        public async Task PublishIfTimeThresholdExceeded()
+        public void PublishIfTimeThresholdExceeded()
         {
             var startTime = DateTime.Now;
             _currentTime = startTime;
@@ -253,7 +279,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             _sut.Initialize(_telemetryClient.Object);
 
-            await WaitForTimesPublished(1);
+            WaitForTimesPublished(1);
 
             // Allow some processor loops to pass
             _currentTime = startTime + new TimeSpan(0, 0, 1);
@@ -267,7 +293,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
             // Cross the time threshold, expect to publish
             _currentTime = startTime + TelemetryPublisher.MAX_PUBLISH_INTERVAL;
 
-            await WaitForTimesPublished(2);
+            WaitForTimesPublished(2);
 
             Assert.Empty(_eventQueue);
             VerifyPostMetricsCalls(1, Times.Exactly(2));
@@ -276,6 +302,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         public void Dispose()
         {
             _sut.Dispose();
+            _timesPublishedThresholdEvent.Dispose();
         }
 
         private void BeforeProcessorLoop(int iteration, Action action)
@@ -290,14 +317,33 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
         private void AddEventsToQueue(int quantity)
         {
+            _testOutput.WriteLine($"Adding {quantity} event(s) to queue");
             TestHelper.AddEventsToQueue(_eventQueue, quantity);
         }
 
-        private async Task WaitForTimesPublished(int timesCalled)
+        private void WaitForTimesPublished(int timesCalled)
         {
-            while (_timesPublished < timesCalled)
+            lock (_timesPublishedSyncObj)
             {
-                await Task.Delay(1);
+                _testOutput.WriteLine($"Waiting for metrics to be published at least {timesCalled} time(s)");
+                _timesPublishedThreshold = timesCalled;
+                _timesPublishedThresholdEvent.Reset();
+            }
+
+            _timesPublishedThresholdEvent.WaitOne();
+            
+            _testOutput.WriteLine($"Metrics were published at least {timesCalled} times (actual: {_timesPublished})");
+        }
+
+        private void UpdateTimesPublishedEvent()
+        {
+            lock (_timesPublishedSyncObj)
+            {
+                if (_timesPublished >= _timesPublishedThreshold)
+                {
+                    _testOutput.WriteLine("Times Published Threshold has been met");
+                    _timesPublishedThresholdEvent.Set();
+                }
             }
         }
 
