@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Web;
+
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.ResourceFetchers
@@ -25,8 +29,10 @@ namespace Amazon.AWSToolkit.ResourceFetchers
         /// <returns>Stream of contents, null if there was an error or no contents were available.</returns>
         public virtual Stream Get(string url)
         {
-            bool result = true;
-            int errorCode = -1;
+            ToolkitGetExternalResource metric = new ToolkitGetExternalResource()
+            {
+                Url = url, Result = Result.Succeeded,
+            };
 
             try
             {
@@ -51,22 +57,19 @@ namespace Amazon.AWSToolkit.ResourceFetchers
             }
             catch (Exception e)
             {
-                result = false;
+                metric.Result = Result.Failed;
                 Logger.Error($"Failed to load resource: {url}", e);
 
                 if (e is HttpException httpException)
                 {
-                    errorCode = httpException.ErrorCode;
+                    metric.Reason = httpException.ErrorCode.ToString(CultureInfo.InvariantCulture);
                 }
 
                 return null;
             }
             finally
             {
-                if (_options.TelemetryPublisher != null)
-                {
-                    // TODO : Telemetry (toolkit_fetchUrl(url, result, errorCode))
-                }
+                _options.TelemetryLogger?.RecordToolkitGetExternalResource(metric);
             }
         }
     }

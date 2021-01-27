@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using Amazon.AWSToolkit.ResourceFetchers;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Moq;
 using Xunit;
 
 namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
@@ -11,7 +13,15 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
     public class HttpResourceFetcherTests
     {
         private readonly string _baseUrl = S3FileFetcher.CLOUDFRONT_CONFIG_FILES_LOCATION;
-        private readonly HttpResourceFetcher _sut = new HttpResourceFetcher(new HttpResourceFetcherOptions());
+        private readonly Mock<ITelemetryLogger> _telemetryLogger = new Mock<ITelemetryLogger>();
+        private readonly HttpResourceFetcherOptions _fetcherOptions = new HttpResourceFetcherOptions();
+        private readonly HttpResourceFetcher _sut;
+
+        public HttpResourceFetcherTests()
+        {
+            _fetcherOptions.TelemetryLogger = _telemetryLogger.Object;
+            _sut = new HttpResourceFetcher(_fetcherOptions);
+        }
 
         [Fact]
         public void Get_ValidUrl()
@@ -26,6 +36,8 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
                 var text = reader.ReadToEnd();
                 Assert.NotEmpty(text);
             }
+
+            _telemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Once);
         }
 
         [Fact]

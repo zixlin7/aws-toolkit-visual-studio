@@ -1,9 +1,9 @@
-﻿using Amazon.AWSToolkit.Telemetry.Internal;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
 
 namespace Amazon.AWSToolkit.ResourceFetchers
 {
     public class HttpResourceFetcherOptions
     {
-        public ITelemetryPublisher TelemetryPublisher { get; set; }
+        public ITelemetryLogger TelemetryLogger { get; set; }
     }
 }
