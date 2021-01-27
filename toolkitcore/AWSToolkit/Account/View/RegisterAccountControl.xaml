@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"
     xmlns:view="clr-namespace:Amazon.AWSToolkit.Account.View"
-    Height="350" Width="500"
+    Height="300" Width="500"
     Background="Transparent">
 
     <commonui:BaseAWSControl.Resources>
@@ -31,8 +31,6 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
@@ -93,20 +91,16 @@
                 Click="OnClickImportFromCSV">
             Import from csv file...
         </Button>
-        
-        <Label Grid.Column="0" Grid.Row="7" Target="{Binding ElementName=_ctlAccountNumber}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Bottom">A_ccount Number*:</Label>
-        <TextBox Margin="4" Grid.Column="1" Grid.Row="7" x:Name="_ctlAccountNumber" 
-                 Text="{Binding AccountNumber, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource awsTextBoxStyle}"/>
 
-        <Label Grid.Column="0" Grid.Row="8" Target="{Binding ElementName=_ctlAccountNumber}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Center">Account _Type:</Label>
-        <ComboBox Margin="4" Grid.Column="1" Grid.Row="8" 
+        <Label Grid.Column="0" Grid.Row="7" Target="{Binding ElementName=_ctlTypeOfAccount}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Center">Account _Type:</Label>
+        <ComboBox Margin="4" Grid.Column="1" Grid.Row="7" 
                   x:Name="_ctlTypeOfAccount" 
                   SelectedItem="{Binding SelectedAccountType}" 
                   ItemsSource="{Binding AllAccountTypes}"
                   DisplayMemberPath="DisplayName"
                   Style="{DynamicResource awsComboBoxStyle}"/>
         
-        <WrapPanel Grid.Column="0" Grid.Row="10" Grid.ColumnSpan="2" Margin="0,4,0,0">
+        <WrapPanel Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="2" Margin="0,4,0,0">
             <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}">Account information can found at:</TextBlock>
             <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}" Margin="4,0,0,0">
             <Hyperlink NavigateUri="https://aws.amazon.com/developers/access-keys/" RequestNavigate="onRequestNavigate">
@@ -117,9 +111,5 @@
             </Hyperlink></TextBlock>
 
         </WrapPanel>
-
-        <TextBlock Grid.Column="0" Grid.Row="11" Grid.ColumnSpan="2" Margin="4" TextWrapping="Wrap" Style="{DynamicResource awsTextBlockBaseStyle}">
-            * Account Number is an optional field used for constructing amazon resource names (ARN).
-        </TextBlock>
     </Grid>
 </commonui:BaseAWSControl>

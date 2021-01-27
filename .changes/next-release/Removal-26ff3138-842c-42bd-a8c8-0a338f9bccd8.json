@@ -1,0 +1,4 @@
+{
+  "Type": "Removal",
+  "Description": "Removed optional account number field from credential profile dialogs."
+}

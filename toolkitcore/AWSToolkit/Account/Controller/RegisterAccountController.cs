@@ -78,7 +78,6 @@ namespace Amazon.AWSToolkit.Account.Controller
                 os[ToolkitSettingsConstants.AccessKeyField] = this.Model.AccessKey.Trim();
                 os[ToolkitSettingsConstants.DisplayNameField] = this.Model.DisplayName.Trim();
                 os[ToolkitSettingsConstants.SecretKeyField] = this.Model.SecretKey.Trim();
-                os[ToolkitSettingsConstants.AccountNumberField] = this.Model.AccountNumber == null ? null : this.Model.AccountNumber.Trim();
                 os[ToolkitSettingsConstants.Restrictions] = this.Model.SelectedAccountType.SystemName;
 
                 PersistenceManager.Instance.SaveSettings(ToolkitSettingsConstants.RegisteredProfiles, settings);
@@ -101,7 +100,6 @@ namespace Amazon.AWSToolkit.Account.Controller
                 var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.NonNetSDKCredentialStoreMetadata);
                 var os = settings.NewObjectSettings(this.Model.UniqueKey.ToString());
 
-                os[ToolkitSettingsConstants.AccountNumberField] = (this.Model.AccountNumber ?? string.Empty).Trim();
                 os[ToolkitSettingsConstants.Restrictions] = this.Model.SelectedAccountType.SystemName;
 
                 PersistenceManager.Instance.SaveSettings(ToolkitSettingsConstants.NonNetSDKCredentialStoreMetadata, settings);

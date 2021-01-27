@@ -15,12 +15,11 @@ namespace Amazon.AWSToolkit.Account.Model
         {            
         }
 
-        public RegisterAccountModel(Guid uniqueKey, string displayName, string accessKey, string secretKey, string accountNumber)
+        public RegisterAccountModel(Guid uniqueKey, string displayName, string accessKey, string secretKey)
         {
             this.UniqueKey = uniqueKey;
             this.DisplayName = displayName;
             this.AccessKey = accessKey;
-            this.AccountNumber = accountNumber;
         }
 
         public Guid UniqueKey { get; set; }
@@ -39,8 +38,6 @@ namespace Amazon.AWSToolkit.Account.Model
             get => _secretKey;
             set { _secretKey = value; OnPropertyChanged(); }
         }
-
-        public string AccountNumber { get; set; }
 
         public override string ToString()
         {

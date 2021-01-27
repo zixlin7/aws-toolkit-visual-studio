@@ -144,24 +144,6 @@ namespace Amazon.AWSToolkit.EC2.View
         {
             Func<string, string, string> formatter = (accountNumber, accountDisplayName) => { return string.Format("{0} ({1})", accountNumber.Replace("-", "").Trim(), accountDisplayName); };
 
-            Dictionary<string, string> accountIds = new Dictionary<string, string>();
-            foreach (var account in ToolkitFactory.Instance.RootViewModel.RegisteredAccounts)
-            {
-                if (!string.IsNullOrEmpty(account.AccountNumber))
-                {
-                    var num = account.AccountNumber.Replace("-", "").Trim();
-                    if (!accountIds.ContainsKey(num))
-                    {
-                        accountIds.Add(num, formatter(account.AccountNumber, account.AccountDisplayName));
-                    }
-                }
-            }
-
-            foreach (var value in accountIds.Values.OrderBy(x => x))
-            {
-                this._ctlAccountID.Items.Add(value);
-            }
-
             if (this._controller.CurrentAccount != null && !string.IsNullOrEmpty(this._controller.CurrentAccount.AccountNumber))
             {
                 this._controller.Model.UserId = formatter(this._controller.CurrentAccount.AccountNumber, this._controller.CurrentAccount.AccountDisplayName);

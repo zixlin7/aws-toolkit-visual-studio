@@ -52,12 +52,6 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
             set { _secretKey = value; OnPropertyChanged(); }
         }
 
-        public string AccountNumber
-        {
-            get => _accountNumber;
-            set { _accountNumber = value; OnPropertyChanged(); }
-        }
-
         public bool IsValid
         {
             get => _isValid;
@@ -101,7 +95,6 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
             os[ToolkitSettingsConstants.DisplayNameField] = ProfileName.Trim();
             os[ToolkitSettingsConstants.AccessKeyField] = AccessKey.Trim();
             os[ToolkitSettingsConstants.SecretKeyField] = SecretKey.Trim();
-            os[ToolkitSettingsConstants.AccountNumberField] = AccountNumber?.Trim();
             os[ToolkitSettingsConstants.Restrictions] = SelectedAccountType.SystemName;
 
             PersistenceManager.Instance.SaveSettings(ToolkitSettingsConstants.RegisteredProfiles, settings);
@@ -203,7 +196,6 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
         private string _profileName = "default";
         private string _accessKey;
         private string _secretKey;
-        private string _accountNumber;
         private bool _collectAnalytics = ToolkitSettings.DefaultValues.TelemetryEnabled;
         private bool _isValid;
         private bool _openAwsExplorerOnClose = true;

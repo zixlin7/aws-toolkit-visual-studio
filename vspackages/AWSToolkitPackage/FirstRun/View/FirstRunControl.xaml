@@ -253,7 +253,6 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             
                             <Label Grid.Row="0" Style="{DynamicResource awsLabelBaseStyle}">
@@ -288,19 +287,10 @@
                                 />
 
                             <Label Grid.Row="3" Style="{DynamicResource awsLabelBaseStyle}">
-                                Account _Number:
-                            </Label>
-                            <TextBox
-                                Grid.Row="3"
-                                Grid.Column="1"
-                                Style="{DynamicResource awsTextBoxStyle}"
-                                Text="{Binding AccountNumber, Mode=TwoWay}"/>
-
-                            <Label Grid.Row="4" Style="{DynamicResource awsLabelBaseStyle}">
                                 Account _Type:
                             </Label>
                             <ComboBox
-                                Grid.Row="4"
+                                Grid.Row="3"
                                 Grid.Column="1"
                                 VerticalAlignment="Center"
                                 DisplayMemberPath="DisplayName"
@@ -309,7 +299,7 @@
                                 Style="{DynamicResource awsComboBoxStyle}" />
 
                             <Button
-                                Grid.Row="5"
+                                Grid.Row="4"
                                 Grid.Column="1"
                                 Padding="4,2"
                                 Margin="0,8,0,0"

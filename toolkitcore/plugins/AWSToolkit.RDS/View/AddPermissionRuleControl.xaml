@@ -43,9 +43,9 @@
                      Style="{DynamicResource awsRadioButtonBaseStyle}">EC2 Security Group</RadioButton>
 
         <Label Grid.Row="3" Grid.Column="0" Margin="20,5,5,5" Style="{DynamicResource awsLabelBaseStyle}">AWS Account ID:</Label>
-        <ComboBox Grid.Row="3" Grid.Column="1"  LostFocus="_ctlAccountID_LostFocus" Margin="5" Name="_ctlAccountID" 
-                  Text="{Binding AWSUser}" IsEnabled="{Binding ElementName=_ctlGroup, Path=IsChecked}"
-                  Style="{DynamicResource awsComboBoxStyle}"/>
+        <TextBox Grid.Row="3" Grid.Column="1"  LostFocus="_ctlAccountID_LostFocus" Margin="5" Name="_ctlAccountID" 
+                 Text="{Binding AWSUser}" IsEnabled="{Binding ElementName=_ctlGroup, Path=IsChecked}"
+                 Style="{DynamicResource awsTextBoxStyle}"/>
 
         <Label Grid.Row="4" Grid.Column="0" Margin="20,5,5,5" Style="{DynamicResource awsLabelBaseStyle}">EC2 Security Group:</Label>
         <ComboBox Grid.Row="4" Grid.Column="1" Margin="5" Name="_ctlSecurityGroups" Text="{Binding EC2SecurityGroupName}" 
