@@ -62,6 +62,10 @@ namespace Amazon.AWSToolkit
             Amazon.Util.Internal.InternalSDKUtils.SetUserAgent(shellProvider.HostInfo.Name, Constants.VERSION_NUMBER);
             ProxyUtilities.ApplyCurrentProxySettings();
 
+            // TODO : set up region provider when ready to integrate
+            // var regionProvider = new RegionProvider();
+            // regionProvider.Initialize();
+
             var pluginActivators = await PluginActivatorUtilities.LoadPluginActivators(
                 typeof(ToolkitFactory).Assembly.Location,
                 additionalPluginPaths);

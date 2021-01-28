@@ -1,0 +1,330 @@
+﻿{
+    "file-notes":  "This file is a SAMPLE containing partial endpoints data for testing purposes." ,
+    "partitions": [
+        {
+            "defaults": {
+                "hostname": "{service}.{region}.{dnsSuffix}",
+                "protocols": [ "https" ],
+                "signatureVersions": [ "v4" ]
+            },
+            "dnsSuffix": "amazonaws.com",
+            "partition": "aws",
+            "partitionName": "AWS Standard",
+            "regionRegex": "^(us|eu|ap|sa|ca|me|af)\\-\\w+\\-\\d+$",
+            "regions": {
+                "af-south-1": {
+                    "description": "Africa (Cape Town)"
+                },
+                "ap-east-1": {
+                    "description": "Asia Pacific (Hong Kong)"
+                },
+                "ap-northeast-1": {
+                    "description": "Asia Pacific (Tokyo)"
+                },
+                "ap-northeast-2": {
+                    "description": "Asia Pacific (Seoul)"
+                },
+                "ap-south-1": {
+                    "description": "Asia Pacific (Mumbai)"
+                },
+                "ap-southeast-1": {
+                    "description": "Asia Pacific (Singapore)"
+                },
+                "ap-southeast-2": {
+                    "description": "Asia Pacific (Sydney)"
+                },
+                "ca-central-1": {
+                    "description": "Canada (Central)"
+                },
+                "eu-central-1": {
+                    "description": "Europe (Frankfurt)"
+                },
+                "eu-north-1": {
+                    "description": "Europe (Stockholm)"
+                },
+                "eu-south-1": {
+                    "description": "Europe (Milan)"
+                },
+                "eu-west-1": {
+                    "description": "Europe (Ireland)"
+                },
+                "eu-west-2": {
+                    "description": "Europe (London)"
+                },
+                "eu-west-3": {
+                    "description": "Europe (Paris)"
+                },
+                "me-south-1": {
+                    "description": "Middle East (Bahrain)"
+                },
+                "sa-east-1": {
+                    "description": "South America (Sao Paulo)"
+                },
+                "us-east-1": {
+                    "description": "US East (N. Virginia)"
+                },
+                "us-east-2": {
+                    "description": "US East (Ohio)"
+                },
+                "us-west-1": {
+                    "description": "US West (N. California)"
+                },
+                "us-west-2": {
+                    "description": "US West (Oregon)"
+                }
+            },
+            "services": {
+                "ec2": {
+                    "defaults": {
+                        "protocols": [ "http", "https" ]
+                    },
+                    "endpoints": {
+                        "af-south-1": {},
+                        "ap-east-1": {},
+                        "ap-northeast-1": {},
+                        "ap-northeast-2": {},
+                        "ap-south-1": {},
+                        "ap-southeast-1": {},
+                        "ap-southeast-2": {},
+                        "ca-central-1": {},
+                        "eu-central-1": {},
+                        "eu-north-1": {},
+                        "eu-south-1": {},
+                        "eu-west-1": {},
+                        "eu-west-2": {},
+                        "eu-west-3": {},
+                        "fips-ca-central-1": {
+                            "credentialScope": {
+                                "region": "ca-central-1"
+                            },
+                            "hostname": "ec2-fips.ca-central-1.amazonaws.com"
+                        },
+                        "fips-us-east-1": {
+                            "credentialScope": {
+                                "region": "us-east-1"
+                            },
+                            "hostname": "ec2-fips.us-east-1.amazonaws.com"
+                        },
+                        "fips-us-east-2": {
+                            "credentialScope": {
+                                "region": "us-east-2"
+                            },
+                            "hostname": "ec2-fips.us-east-2.amazonaws.com"
+                        },
+                        "fips-us-west-1": {
+                            "credentialScope": {
+                                "region": "us-west-1"
+                            },
+                            "hostname": "ec2-fips.us-west-1.amazonaws.com"
+                        },
+                        "fips-us-west-2": {
+                            "credentialScope": {
+                                "region": "us-west-2"
+                            },
+                            "hostname": "ec2-fips.us-west-2.amazonaws.com"
+                        },
+                        "me-south-1": {},
+                        "sa-east-1": {},
+                        "us-east-1": {},
+                        "us-east-2": {},
+                        "us-west-1": {},
+                        "us-west-2": {}
+                    }
+                },
+                "iam": {
+                    "endpoints": {
+                        "aws-global": {
+                            "credentialScope": {
+                                "region": "us-east-1"
+                            },
+                            "hostname": "iam.amazonaws.com"
+                        },
+                        "iam-fips": {
+                            "credentialScope": {
+                                "region": "us-east-1"
+                            },
+                            "hostname": "iam-fips.amazonaws.com"
+                        }
+                    },
+                    "isRegionalized": false,
+                    "partitionEndpoint": "aws-global"
+                },
+                "lambda": {
+                    "endpoints": {
+                        "af-south-1": {},
+                        "ap-east-1": {},
+                        "ap-northeast-1": {},
+                        "ap-northeast-2": {},
+                        "ap-south-1": {},
+                        "ap-southeast-1": {},
+                        "ap-southeast-2": {},
+                        "ca-central-1": {},
+                        "eu-central-1": {},
+                        "eu-north-1": {},
+                        "eu-south-1": {},
+                        "eu-west-1": {},
+                        "eu-west-2": {},
+                        "eu-west-3": {},
+                        "fips-us-east-1": {
+                            "credentialScope": {
+                                "region": "us-east-1"
+                            },
+                            "hostname": "lambda-fips.us-east-1.amazonaws.com"
+                        },
+                        "fips-us-east-2": {
+                            "credentialScope": {
+                                "region": "us-east-2"
+                            },
+                            "hostname": "lambda-fips.us-east-2.amazonaws.com"
+                        },
+                        "fips-us-west-1": {
+                            "credentialScope": {
+                                "region": "us-west-1"
+                            },
+                            "hostname": "lambda-fips.us-west-1.amazonaws.com"
+                        },
+                        "fips-us-west-2": {
+                            "credentialScope": {
+                                "region": "us-west-2"
+                            },
+                            "hostname": "lambda-fips.us-west-2.amazonaws.com"
+                        },
+                        "me-south-1": {},
+                        "sa-east-1": {},
+                        "us-east-1": {},
+                        "us-east-2": {},
+                        "us-west-1": {},
+                        "us-west-2": {}
+                    }
+                },
+                "s3": {
+                    "defaults": {
+                        "protocols": [ "http", "https" ],
+                        "signatureVersions": [ "s3v4" ]
+                    },
+                    "endpoints": {
+                        "af-south-1": {},
+                        "ap-east-1": {},
+                        "ap-northeast-1": {
+                            "hostname": "s3.ap-northeast-1.amazonaws.com",
+                            "signatureVersions": [ "s3", "s3v4" ]
+                        },
+                        "ap-northeast-2": {},
+                        "ap-south-1": {},
+                        "ap-southeast-1": {
+                            "hostname": "s3.ap-southeast-1.amazonaws.com",
+                            "signatureVersions": [ "s3", "s3v4" ]
+                        },
+                        "ap-southeast-2": {
+                            "hostname": "s3.ap-southeast-2.amazonaws.com",
+                            "signatureVersions": [ "s3", "s3v4" ]
+                        },
+                        "aws-global": {
+                            "credentialScope": {
+                                "region": "us-east-1"
+                            },
+                            "hostname": "s3.amazonaws.com",
+                            "signatureVersions": [ "s3", "s3v4" ]
+                        },
+                        "ca-central-1": {},
+                        "eu-central-1": {},
+                        "eu-north-1": {},
+                        "eu-south-1": {},
+                        "eu-west-1": {
+                            "hostname": "s3.eu-west-1.amazonaws.com",
+                            "signatureVersions": [ "s3", "s3v4" ]
+                        },
+                        "eu-west-2": {},
+                        "eu-west-3": {},
+                        "me-south-1": {},
+                        "s3-external-1": {
+                            "credentialScope": {
+                                "region": "us-east-1"
+                            },
+                            "hostname": "s3-external-1.amazonaws.com",
+                            "signatureVersions": [ "s3", "s3v4" ]
+                        },
+                        "sa-east-1": {
+                            "hostname": "s3.sa-east-1.amazonaws.com",
+                            "signatureVersions": [ "s3", "s3v4" ]
+                        },
+                        "us-east-1": {
+                            "hostname": "s3.us-east-1.amazonaws.com",
+                            "signatureVersions": [ "s3", "s3v4" ]
+                        },
+                        "us-east-2": {},
+                        "us-west-1": {
+                            "hostname": "s3.us-west-1.amazonaws.com",
+                            "signatureVersions": [ "s3", "s3v4" ]
+                        },
+                        "us-west-2": {
+                            "hostname": "s3.us-west-2.amazonaws.com",
+                            "signatureVersions": [ "s3", "s3v4" ]
+                        }
+                    },
+                    "isRegionalized": true,
+                    "partitionEndpoint": "aws-global"
+                }
+            }
+        },
+        {
+            "defaults": {
+                "hostname": "{service}.{region}.{dnsSuffix}",
+                "protocols": [ "https" ],
+                "signatureVersions": [ "v4" ]
+            },
+            "dnsSuffix": "amazonaws.com.cn",
+            "partition": "aws-cn",
+            "partitionName": "AWS China",
+            "regionRegex": "^cn\\-\\w+\\-\\d+$",
+            "regions": {
+                "cn-north-1": {
+                    "description": "China (Beijing)"
+                },
+                "cn-northwest-1": {
+                    "description": "China (Ningxia)"
+                }
+            },
+            "services": {
+                "ec2": {
+                    "defaults": {
+                        "protocols": [ "http", "https" ]
+                    },
+                    "endpoints": {
+                        "cn-north-1": {},
+                        "cn-northwest-1": {}
+                    }
+                },
+                "iam": {
+                    "endpoints": {
+                        "aws-cn-global": {
+                            "credentialScope": {
+                                "region": "cn-north-1"
+                            },
+                            "hostname": "iam.cn-north-1.amazonaws.com.cn"
+                        }
+                    },
+                    "isRegionalized": false,
+                    "partitionEndpoint": "aws-cn-global"
+                },
+                "lambda": {
+                    "endpoints": {
+                        "cn-north-1": {},
+                        "cn-northwest-1": {}
+                    }
+                },
+                "s3": {
+                    "defaults": {
+                        "protocols": [ "http", "https" ],
+                        "signatureVersions": [ "s3v4" ]
+                    },
+                    "endpoints": {
+                        "cn-north-1": {},
+                        "cn-northwest-1": {}
+                    }
+                }
+            }
+        }
+    ],
+    "version": 3
+}

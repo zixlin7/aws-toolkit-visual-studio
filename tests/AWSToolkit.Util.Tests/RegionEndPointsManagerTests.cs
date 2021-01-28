@@ -5,6 +5,7 @@ using System.Net;
 using Xunit;
 using Moq;
 using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.AWSToolkit.Util.Tests.Resources;
 
 namespace Amazon.AWSToolkit.Util.Tests
 {
@@ -75,11 +76,7 @@ namespace Amazon.AWSToolkit.Util.Tests
         [Fact]
         public void TestManagerRollsbackToResourcesOnCorruptedEndpointsXml()
         {
-            string badEndpointsXml;
-            using (var reader = new StreamReader(TestUtil.LoadInvalidXmlEndpointsFile("InvalidXmlEndpointsFile.xml")))
-            {
-                badEndpointsXml = reader.ReadToEnd();
-            }
+            string badEndpointsXml = TestResources.LoadResourceFileText("InvalidXmlEndpointsFile.xml");
 
             // use a random subfolder so tests can run in parallel
             var dummyEndpointsPath = Path.Combine(_testWorkspaceFolder, Constants.SERVICE_ENDPOINT_FILE);

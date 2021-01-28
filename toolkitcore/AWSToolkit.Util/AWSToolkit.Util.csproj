@@ -66,6 +66,15 @@
     <Compile Include="MobileAnalytics\SimpleMobileAnalytics.cs" />
     <Compile Include="MobileAnalytics\ToolkitEvent.cs" />
     <Compile Include="ProjectFileUtilities.cs" />
+    <Compile Include="Regions\Manifest\Endpoints.cs" />
+    <Compile Include="Regions\IRegionProvider.cs" />
+    <Compile Include="Regions\Manifest\EndpointsExtensionMethods.cs" />
+    <Compile Include="Regions\Manifest\Partition.cs" />
+    <Compile Include="Regions\Manifest\Region.cs" />
+    <Compile Include="Regions\Manifest\Service.cs" />
+    <Compile Include="Regions\RegionProvider.cs" />
+    <Compile Include="Regions\ServiceName.cs" />
+    <Compile Include="Regions\ToolkitRegion.cs" />
     <Compile Include="ResourceFetchers\AssemblyResourceFetcher.cs" />
     <Compile Include="ResourceFetchers\CachingResourceFetcher.cs" />
     <Compile Include="ResourceFetchers\CallbackResourceFetcher.cs" />
@@ -339,6 +348,11 @@
     <None Include="HostedFiles\.editorconfig" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(BuildRoot)\thirdparty\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <PackageReference Include="AWSSDK.CloudFormation">
       <Version>3.5.2.7</Version>
     </PackageReference>
