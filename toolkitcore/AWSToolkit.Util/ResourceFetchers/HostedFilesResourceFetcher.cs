@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using log4net;
 
 namespace Amazon.AWSToolkit.ResourceFetchers
@@ -48,6 +49,8 @@ namespace Amazon.AWSToolkit.ResourceFetchers
             /// or if contents should be retrieved from a fallback location.
             /// </summary>
             public Func<Stream, bool> ResourceValidator { get; set; } = null;
+
+            public ITelemetryLogger TelemetryLogger { get; set; }
         }
 
         static readonly ILog Logger = LogManager.GetLogger(typeof(HostedFilesResourceFetcher));
@@ -141,7 +144,11 @@ namespace Amazon.AWSToolkit.ResourceFetchers
                 string hostedFilesUrl = hostedFilesSource.ToString();
 
                 httpFetcherChain.Add(new CachingResourceFetcher(
-                    new RelativeHttpResourceFetcher(new RelativeHttpResourceFetcher.Options() {BasePath = hostedFilesUrl}),
+                    new RelativeHttpResourceFetcher(new RelativeHttpResourceFetcher.Options()
+                    {
+                        BasePath = hostedFilesUrl,
+                        TelemetryLogger = _options.TelemetryLogger,
+                    }),
                     FnGetFullCachePath));
             }
 
@@ -150,7 +157,11 @@ namespace Amazon.AWSToolkit.ResourceFetchers
             {
                 httpFetcherChain.Add(new CachingResourceFetcher(
                     new RelativeHttpResourceFetcher(
-                        new RelativeHttpResourceFetcher.Options() {BasePath = _options.CloudFrontBaseUrl}),
+                        new RelativeHttpResourceFetcher.Options()
+                        {
+                            BasePath = _options.CloudFrontBaseUrl,
+                            TelemetryLogger = _options.TelemetryLogger,
+                        }),
                     FnGetFullCachePath));
             }
 
@@ -161,7 +172,11 @@ namespace Amazon.AWSToolkit.ResourceFetchers
             {
                 httpFetcherChain.Add(new CachingResourceFetcher(
                     new RelativeHttpResourceFetcher(
-                        new RelativeHttpResourceFetcher.Options() {BasePath = _options.S3BaseUrl}),
+                        new RelativeHttpResourceFetcher.Options()
+                        {
+                            BasePath = _options.S3BaseUrl,
+                            TelemetryLogger = _options.TelemetryLogger,
+                        }),
                     FnGetFullCachePath));
             }
 

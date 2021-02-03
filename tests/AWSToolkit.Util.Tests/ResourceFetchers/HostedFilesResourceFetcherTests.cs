@@ -2,13 +2,16 @@
 using System.IO;
 using Amazon.AWSToolkit.ResourceFetchers;
 using Amazon.AWSToolkit.Settings;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AWSToolkit.Tests.Common.Settings;
+using Moq;
 using Xunit;
 
 namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
 {
     public class HostedFilesResourceFetcherTests : IDisposable
     {
+        private readonly Mock<ITelemetryLogger> _telemetryLogger = new Mock<ITelemetryLogger>();
         private readonly FakeSettingsPersistence _settingsPersistence = new FakeSettingsPersistence();
         private readonly ResourceFetchersFixture _fixture = new ResourceFetchersFixture();
         private readonly ToolkitSettings _toolkitSettings;
@@ -30,6 +33,7 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
             _options.LoadFromDownloadCache = true;
             _options.DownloadOncePerSession = false;
             _options.DownloadIfNewer = false;
+            _options.TelemetryLogger = _telemetryLogger.Object;
             _sut = new HostedFilesResourceFetcher(_options, _hostedFilesSettings);
         }
 
@@ -57,6 +61,7 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
 
             var stream = _sut.Get(ServiceEndpointsPath);
             AssertStreamIsServiceEndpoints(stream);
+            _telemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Once);
 
             // File gets cached
             Assert.True(File.Exists(Path.Combine(_hostedFilesSettings.DownloadedCacheFolder, ServiceEndpointsPath)));
@@ -93,6 +98,7 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
 
             var stream = _sut.Get(ServiceEndpointsPath);
             AssertStreamIsServiceEndpoints(stream);
+            _telemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Once);
         }
 
         [Fact]
@@ -108,6 +114,7 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
 
             var stream = _sut.Get(ServiceEndpointsPath);
             AssertStreamIsServiceEndpoints(stream);
+            _telemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Never);
         }
 
         public void Dispose()
