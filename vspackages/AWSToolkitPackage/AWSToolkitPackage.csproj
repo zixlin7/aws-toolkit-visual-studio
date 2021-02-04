@@ -1083,7 +1083,7 @@
       <Version>0.0.86</Version>
     </PackageReference>
     <PackageReference Include="log4net">
-      <Version>2.0.8</Version>
+      <Version>2.0.12</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Data.Services">
       <Version>9.0.21023</Version>
