@@ -94,7 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="log4net">
-      <Version>2.0.8</Version>
+      <Version>2.0.12</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(BuildRoot)\vspackages\shared\MPFProjDir\Src\CSharp\ProjectBase.files" />
