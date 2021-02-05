@@ -47,14 +47,18 @@
         Common commands used during development: clean, restore, compile, test
     -->
 
-    <!-- restore - Restore nuget packages for the Visual Studio Toolkit solution -->
+    <!-- restore - Restore nuget packages for the Visual Studio Toolkit solution and fetches remote assets -->
     <Target Name="restore">
         <Message Text="Restoring nuget packages"/>
         <Exec IgnoreExitCode="true" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe restore $(BuildRoot)\solutions\AWSVisualStudioToolkit.sln" />
+
+        <!-- We want builds that are published to always work with the latest endpoints, so we ensure this through the restore target -->
+        <Message Text="Fetching endpoints manifest"/>
+        <CallTarget Targets="get-latest-endpoint-data"/>
     </Target>
 
-    <!-- compile - restores and compiles the Visual Studio Toolkit solution; does not run tests -->
-    <Target Name="compile" DependsOnTargets="restore">
+    <!-- compile - compiles the Visual Studio Toolkit solution; does not restore, does not run tests -->
+    <Target Name="compile">
         <MSBuild Projects="..\solutions\AWSVisualStudioToolkit.sln" Properties="Configuration=$(Configuration)" />
 	</Target>
 
@@ -337,7 +341,7 @@
 
     <!-- only care about packaging updated endpoints and flags for release builds -->
     <Target Name="get-latest-endpoint-data">
-        <Message Text="Fetching latest endpoints and flags from S3" />
+        <Message Text="Fetching latest endpoints manifest from S3" />
         <Exec Command="powershell.exe $(MSBuildThisFileDirectory)updateEndpoints.ps1 -configuration $(Configuration) -s3BucketName $(HostedFilesBucket) -s3BucketRegion $(HostedFilesBucketRegion) -hostedfilesFolder $(HostedFilesFolder)" />
     </Target>
     

@@ -383,4 +383,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup Condition="!Exists('$(BuildRoot)\hostedfiles\ServiceEndPoints.xml')">
+    <PreBuildEvent>"$(MSBuildToolsPath)\msbuild.exe" "$(SolutionDir)\..\buildtools\build.proj" -t:get-latest-endpoint-data</PreBuildEvent>
+  </PropertyGroup>
 </Project>
