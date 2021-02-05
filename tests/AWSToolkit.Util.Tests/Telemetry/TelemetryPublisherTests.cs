@@ -18,6 +18,8 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 {
     public class TelemetryPublisherTests : IDisposable
     {
+        private const int WaitForPublishMs = 1500;
+
         private readonly ITestOutputHelper _testOutput;
 
         private readonly Guid _clientId = Guid.NewGuid();
@@ -156,23 +158,40 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         [Fact(Timeout = 1000)]
         public void Publish5xxFailuresReturnToQueue()
         {
+            ManualResetEvent afterPublishEvent = new ManualResetEvent(false);
+            int queueCountAfterPublish = -1;
+
             const int elementCount = TelemetryPublisher.QUEUE_SIZE_THRESHOLD;
             BeforeProcessorLoop(0, () => AddEventsToQueue(elementCount));
             OnProcessorLoop(1,
-                () => throw new Exception("Kill processing loop to stop the queue from being re-processed."));
+                () =>
+                {
+                    // Drain the queue so that iterative processor loops don't process
+                    // them. Used to verify PostMetrics call.
+                    queueCountAfterPublish = ClearEventQueue().Count;
+                    afterPublishEvent.Set();
+                });
 
             _telemetryClient.Setup(mock => mock.PostMetrics(
                 _clientId,
                 It.IsAny<IList<Metrics>>(),
                 It.IsAny<CancellationToken>()
-            )).Throws(new AmazonToolkitTelemetryException("Simulating Http 5xx level error", ErrorType.Unknown, "", "",
+            )).Callback(() =>
+            {
+                _testOutput.WriteLine("Telemetry PostMetrics was called, simulating a 5xx throw.");
+            }).Throws(new AmazonToolkitTelemetryException("Simulating Http 5xx level error", ErrorType.Unknown, "", "",
                 HttpStatusCode.InternalServerError));
 
+            _testOutput.WriteLine("Initializing the Telemetry Publisher");
             _sut.Initialize(_telemetryClient.Object);
 
             WaitForTimesPublished(1);
 
-            Assert.Equal(elementCount, _eventQueue.Count);
+            _testOutput.WriteLine("Waiting for post processor loop to complete");
+            afterPublishEvent.WaitOne(WaitForPublishMs);
+
+            _testOutput.WriteLine("Verifying state");
+            Assert.Equal(elementCount, queueCountAfterPublish);
             // 5xx errors stop the publish loop
             VerifyPostMetricsCalls(elementCount, Times.Once());
         }
@@ -180,28 +199,48 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         /// <summary>
         /// Tests Non-http related exceptions (example: offline)
         /// </summary>
-        [Fact(Timeout = 1000)]
+        [Fact(Timeout = 2000)]
         public void FailedBatchesReturnToQueue()
         {
-            // const int elementCount = TelemetryPublisher.QUEUE_SIZE_THRESHOLD;
             const int elementCount = 3;
             BeforeProcessorLoop(0, () => AddEventsToQueue(elementCount));
-            OnProcessorLoop(1,
-                () => throw new Exception("Kill processing loop to stop the queue from being re-processed."));
+
+            int queuedElementsAfterPublish = 0;
+            ManualResetEvent afterPublishEvent = new ManualResetEvent(false);
+
+            // Measure the state after the first metrics publish takes place
+            void OneTimeMetricsPublishedHandler(object sender, EventArgs args)
+            {
+                _testOutput.WriteLine("After Metrics Published handler");
+                _sut.MetricsPublished -= OneTimeMetricsPublishedHandler;
+
+                // See how many items are in the queue after the publish event
+                // Clear the queue so the processor loop does not continue to try publishing them.
+                queuedElementsAfterPublish = ClearEventQueue().Count;
+
+                afterPublishEvent.Set();
+            }
+
+            _sut.MetricsPublished += OneTimeMetricsPublishedHandler;
 
             _telemetryClient.Setup(mock => mock.PostMetrics(
-                _clientId,
-                It.IsAny<IList<Metrics>>(),
-                It.IsAny<CancellationToken>()
-            )).Throws(new Exception("Simulating service call failure"));
+                    _clientId,
+                    It.IsAny<IList<Metrics>>(),
+                    It.IsAny<CancellationToken>()
+                ))
+                .Callback(() => _testOutput.WriteLine("Simulating a failure in the PostMetrics call"))
+                .Throws(new Exception("Simulating service call failure"));
 
+            _testOutput.WriteLine("Initializing the Telemetry Publisher");
             _sut.Initialize(_telemetryClient.Object);
 
-            WaitForTimesPublished(1);
+            _testOutput.WriteLine("Waiting for post processor loop to complete");
+            afterPublishEvent.WaitOne(WaitForPublishMs);
 
-            // If the Publisher infinite looped, we would never get a Metrics Published event (never get here)
-            Assert.Equal(elementCount, _eventQueue.Count);
-            VerifyPostMetricsCalls(elementCount, Times.AtLeast(1));
+            Assert.Equal(elementCount, queuedElementsAfterPublish);
+
+            // PostMetrics is called twice due to metrics-resend detection
+            VerifyPostMetricsCalls(elementCount, Times.Exactly(2));
         }
 
         [Fact(Timeout = 1000)]
@@ -330,9 +369,25 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
                 _timesPublishedThresholdEvent.Reset();
             }
 
-            _timesPublishedThresholdEvent.WaitOne();
+            _timesPublishedThresholdEvent.WaitOne(WaitForPublishMs);
             
             _testOutput.WriteLine($"Metrics were published at least {timesCalled} times (actual: {_timesPublished})");
+        }
+
+        /// <summary>
+        /// Clears the event queue, returning all of the popped items
+        /// </summary>
+        private IList<Metrics> ClearEventQueue()
+        {
+            var metrics = new List<Metrics>();
+
+            while (_eventQueue.TryDequeue(out var metric))
+            {
+                metrics.Add(metric);
+            }
+
+            _testOutput.WriteLine($"Cleared {metrics.Count} items from the processor queue");
+            return metrics;
         }
 
         private void UpdateTimesPublishedEvent()
