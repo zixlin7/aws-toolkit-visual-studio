@@ -125,7 +125,7 @@
       <Private>False</Private>
     </Reference>
     <PackageReference Include="AWSSDK.CodeArtifact">
-      <Version>3.5.2.8</Version>
+      <Version>3.5.2.31</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
