@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.ResourceFetchers;
 using Amazon.AWSToolkit.Util.Tests.Resources;
@@ -7,7 +8,7 @@ using Xunit;
 
 namespace Amazon.AWSToolkit.Util.Tests.Regions
 {
-    public class RegionProviderTests
+    public class RegionProviderTests : IDisposable
     {
         private const string EndpointsFilename = "sample-endpoints.json";
         private const string FakeRegionId = "us-moon-1";
@@ -85,6 +86,12 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
             var unexpectedPartitionRegions = _sut.GetRegions("fake-partition");
             Assert.NotNull(unexpectedPartitionRegions);
             Assert.Empty(unexpectedPartitionRegions);
+        }
+
+        public void Dispose()
+        {
+            // "Reset" the SDK's endpoints data because these tests mess with it
+            RegionEndpoint.Reload(null);
         }
 
         private void InitializeAndWaitForUpdateEvents()
