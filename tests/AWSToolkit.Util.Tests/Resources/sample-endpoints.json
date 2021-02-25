@@ -74,6 +74,16 @@
                 }
             },
             "services": {
+                "test-service": {
+                    "defaults": {
+                        "protocols": [ "http", "https" ]
+                    },
+                    "endpoints": {
+                        "us-west-2": {
+                            "hostname": "test-hostname.amazonaws.com"
+                        }
+                    }
+                },
                 "ec2": {
                     "defaults": {
                         "protocols": [ "http", "https" ]

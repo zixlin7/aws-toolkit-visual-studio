@@ -341,7 +341,7 @@
 
     <!-- only care about packaging updated endpoints and flags for release builds -->
     <Target Name="get-latest-endpoint-data">
-        <Message Text="Fetching latest endpoints manifest from S3" />
+        <Message Text="Fetching latest endpoints manifest files..." />
         <Exec Command="powershell.exe $(MSBuildThisFileDirectory)updateEndpoints.ps1 -configuration $(Configuration) -s3BucketName $(HostedFilesBucket) -s3BucketRegion $(HostedFilesBucketRegion) -hostedfilesFolder $(HostedFilesFolder)" />
     </Target>
     
@@ -352,6 +352,7 @@
         <ItemGroup>
             <FileException Include="$(HostedFilesFolder)\ServiceEndPoints.xml" />
             <FileException Include="$(HostedFilesFolder)\ServiceEndPoints.json" />
+            <FileException Include="$(HostedFilesFolder)\endpoints.json" />
             <FileException Include="$(HostedFilesFolder)\.editorconfig" />
             <FileException Include="$(HostedFilesFolder)\flags\**\*.png" />
         </ItemGroup>
@@ -417,7 +418,7 @@
 				RegionValue="$(HostedFilesBucketRegion)"
 				Bucket="$(HostedFilesBucket)"
 				S3Path=""
-				KeyExceptions="ServiceEndPoints.xml;ServiceEndPoints.json;.editorconfig"
+				KeyExceptions="ServiceEndPoints.xml;ServiceEndPoints.json;endpoints.json;.editorconfig"
 				LocalPath="$(HostedFilesFolder)">
 			<Output TaskParameter="KeysToInvalidate" PropertyName="HostedFilesInvalidationKeys" />
 		</UploadHostedFilesTask>

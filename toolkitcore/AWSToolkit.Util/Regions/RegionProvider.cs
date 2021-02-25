@@ -134,13 +134,24 @@ namespace Amazon.AWSToolkit.Regions
             try
             {
                 using (var stream = endpointsFetcher.Get(EndpointsFile))
+                using (var streamCopy = new MemoryStream())
                 {
-                    var endpoints = Endpoints.Load(stream);
-                    if (endpoints == null)
+                    stream.CopyTo(streamCopy);
+                    streamCopy.Position = 0;
+
+                    Endpoints endpoints = null;
+
+                    // Endpoints.Load destroys the stream, give it a copy
+                    using (var endpointsStream = new MemoryStream(streamCopy.GetBuffer()))
                     {
-                        throw new Exception("No endpoints data received.");
+                        endpoints = Endpoints.Load(endpointsStream);
+                        if (endpoints == null)
+                        {
+                            throw new Exception("No endpoints data received.");
+                        }
                     }
 
+                    UpdateSdk(streamCopy);
                     Update(endpoints);
                 }
             }
@@ -170,13 +181,30 @@ namespace Amazon.AWSToolkit.Regions
         }
 
         /// <summary>
+        /// Updates the AWS SDK with the provided endpoints.json data
+        /// </summary>
+        /// <param name="stream"></param>
+        private void UpdateSdk(Stream stream)
+        {
+            try
+            {
+                Logger.Debug("Updating AWS SDK with endpoints data...");
+                RegionEndpoint.Reload(stream);
+                Logger.Debug("Finished updating AWS SDK with endpoints data");
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to update the AWS SDK region endpoints. Toolkit may have difficulties accessing services.", e);
+            }
+        }
+
+        /// <summary>
         /// Registers the given endpoints data as current
         /// </summary>
         private void Update(Endpoints endpoints)
         {
             _endpoints = endpoints ?? throw new ArgumentNullException(nameof(endpoints));
 
-            // TODO : Pass into .NET SDK
             RaiseRegionProviderUpdated();
         }
 

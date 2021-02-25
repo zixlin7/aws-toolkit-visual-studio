@@ -31,6 +31,39 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
         }
 
         [Fact]
+        public void InitializeUpdatesAwsSdk()
+        {
+            // Sample endpoints file contains a test service entry in us-west-2
+            // check that this service is available after a Reload
+            var testServiceRegionId = "us-west-2";
+            var testServiceName = "test-service";
+            var testServiceHostname = "test-hostname";
+
+            // Sample endpoints file does not contain govcloud partition data
+            // check that a govcloud region isn't available after a Reload
+            var testPartition = "aws-us-gov";
+            var testRegion = "us-gov-east-1";
+
+            var beforeReloadRegion = RegionEndpoint.GetBySystemName(testRegion);
+            Assert.Equal(testPartition, beforeReloadRegion.PartitionName);
+            Assert.NotEqual("Unknown", beforeReloadRegion.DisplayName);
+
+            var beforeReloadEndpoints = RegionEndpoint.GetBySystemName(testServiceRegionId)
+                .GetEndpointForService(testServiceName);
+            Assert.DoesNotContain(testServiceHostname, beforeReloadEndpoints.Hostname);
+
+            InitializeAndWaitForUpdateEvents();
+
+            var afterReloadRegion = RegionEndpoint.GetBySystemName(testRegion);
+            Assert.NotEqual(testPartition, afterReloadRegion.PartitionName);
+            Assert.Equal("Unknown", afterReloadRegion.DisplayName);
+
+            var afterReloadEndpoints = RegionEndpoint.GetBySystemName(testServiceRegionId)
+                .GetEndpointForService(testServiceName);
+            Assert.Contains(testServiceHostname, afterReloadEndpoints.Hostname);
+        }
+
+        [Fact]
         public void GetPartitionId()
         {
             InitializeAndWaitForUpdateEvents();

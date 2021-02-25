@@ -170,6 +170,9 @@
     <Resource Include="$(BuildRoot)\hostedfiles\ServiceEndPoints.xml">
       <Link>HostedFiles\ServiceEndPoints.xml</Link>
     </Resource>
+    <Resource Include="$(BuildRoot)\hostedfiles\endpoints.json">
+      <Link>HostedFiles\endpoints.json</Link>
+    </Resource>
     <Resource Include="$(BuildRoot)\hostedfiles\AccountTypes.xml">
       <Link>HostedFiles\AccountTypes.xml</Link>
     </Resource>
