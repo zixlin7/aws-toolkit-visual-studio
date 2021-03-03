@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Source account is now included in the resource policy when creating event notifications for S3 buckets."
+}

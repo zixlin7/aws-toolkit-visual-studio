@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 
 using Amazon.Auth.AccessControlPolicy;
-
+using Amazon.Auth.AccessControlPolicy.ActionIdentifiers;
 using Amazon.S3;
 using Amazon.S3.Model;
 
@@ -19,6 +20,8 @@ using Amazon.Lambda;
 using Amazon.Lambda.Model;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.S3.View;
+
+using Statement = Amazon.Auth.AccessControlPolicy.Statement;
 
 namespace Amazon.AWSToolkit.S3.Controller
 {
@@ -98,7 +101,7 @@ namespace Amazon.AWSToolkit.S3.Controller
                 case AddEventConfigurationControl.ServiceType.SNS:
                     if (this._control.AddPermissions)
                     {
-                        this._snsClient.AuthorizeS3ToPublish(this._control.ResourceArn, this._bucketName);
+                        CreateS3PublishPermissionForSns(this._snsClient, this._control.ResourceArn, this._bucketName);
                     }
                     var topicConfig = new TopicConfiguration{Topic = this._control.ResourceArn};
                     topicConfig.Events.Add(this._control.Event);
@@ -110,7 +113,7 @@ namespace Amazon.AWSToolkit.S3.Controller
                     var queueUrl = this._queueArnsToQueueURls[this._control.ResourceArn];
                     if (this._control.AddPermissions)
                     {
-                        this._sqsClient.AuthorizeS3ToSendMessage(queueUrl, this._bucketName);
+                        CreateS3PublishPermissionForSqs(this._sqsClient, queueUrl, this._bucketName);
                     }
                     var queueConfig = new QueueConfiguration{Queue = this._control.ResourceArn};
                     queueConfig.Events.Add(this._control.Event);
@@ -127,8 +130,99 @@ namespace Amazon.AWSToolkit.S3.Controller
             this._success = true;
         }
 
+        private static void CreateS3PublishPermissionForSqs(IAmazonSQS sqsClient, string queueUrl, string bucket)
+        {
+            var queueAttributes = sqsClient.GetQueueAttributes(new GetQueueAttributesRequest()
+            {
+                QueueUrl = queueUrl,
+                AttributeNames = new List<string>() { "All" }
+            });
+           var policy = string.IsNullOrEmpty(queueAttributes.Policy) ? new Policy() : Policy.FromJson(queueAttributes.Policy);
+           var policyJson = CreatePolicyStatement(policy, "sqs:SendMessage", queueAttributes.QueueARN ,bucket);
+           if (!string.IsNullOrWhiteSpace(policyJson))
+           {
+               sqsClient.SetQueueAttributes(new SetQueueAttributesRequest()
+               {
+                   QueueUrl = queueUrl,
+                   Attributes = new Dictionary<string, string>()
+                   {
+                       {
+                           "Policy",
+                           policyJson
+                       }
+                   }
+               });
+            }
+        }
+
+        private static void CreateS3PublishPermissionForSns(IAmazonSimpleNotificationService snsClient, string topicArn, string bucket)
+        {
+            var attributes = snsClient.GetTopicAttributes(new GetTopicAttributesRequest
+            {
+                TopicArn = topicArn
+            }).Attributes;
+
+            Policy policy;
+            if (attributes.ContainsKey("Policy") && !string.IsNullOrEmpty(attributes["Policy"]))
+            {
+                policy = Policy.FromJson(attributes["Policy"]);
+            }
+            else
+            {
+                policy = new Policy();
+            }
+            var policyJson = CreatePolicyStatement(policy, "sns:Publish", topicArn, bucket);
+            if (!string.IsNullOrWhiteSpace(policyJson))
+            {
+                snsClient.SetTopicAttributes(new SetTopicAttributesRequest
+                {
+                    TopicArn = topicArn,
+                    AttributeName = "Policy",
+                    AttributeValue = policyJson
+                });
+            }
+        }
+
+        private static string CreatePolicyStatement(Policy policy, string actionName, string resourceArn,
+            string bucket)
+        {
+            if (string.IsNullOrWhiteSpace(resourceArn))
+            {
+                return null;
+            }
+            var tokens = resourceArn.Split(':');
+            if (tokens.Length < 6)
+            {
+                return null;
+            }
+
+            var accountNumber = tokens[4];
+            string arnPattern = string.Format((IFormatProvider) CultureInfo.InvariantCulture, "arn:aws:s3:*:*:{0}",
+                (object) bucket);
+            var statement = new Statement(Statement.StatementEffect.Allow);
+            statement.Actions.Add(new ActionIdentifier(actionName));
+            statement.Resources.Add(new Resource(resourceArn));
+            statement.Conditions.Add(ConditionFactory.NewSourceArnCondition(arnPattern));
+            statement.Principals.Add(new Principal("*"));
+            statement.Conditions.Add(ConditionFactory.NewCondition(ConditionFactory.StringComparisonType.StringEquals,
+                "aws:SourceAccount", accountNumber));
+
+
+            if (!policy.CheckIfStatementExists(statement))
+            {
+                policy.Statements.Add(statement);
+                string json = policy.ToJson();
+                return json;
+            }
+
+            return null;
+        }
+
+
         private void AddLambdaConfiguration(PutBucketNotificationRequest putRequest, S3KeyFilter filter)
         {
+            var tokens = this._control.ResourceArn.Split(':');
+            var accountNumber = tokens[4];
             if (this._control.AddPermissions)
             {
                 this._lambdaClient.AddPermission(new Amazon.Lambda.Model.AddPermissionRequest
@@ -137,6 +231,7 @@ namespace Amazon.AWSToolkit.S3.Controller
                     Action = "lambda:InvokeFunction",
                     Principal = "s3.amazonaws.com",
                     SourceArn = string.Format("arn:aws:s3:::{0}", this._bucketName),
+                    SourceAccount = accountNumber,
                     StatementId = Guid.NewGuid().ToString() + "-vstoolkit"
                 });
             }
