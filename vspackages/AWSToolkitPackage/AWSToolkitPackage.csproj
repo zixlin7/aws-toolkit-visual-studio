@@ -1100,6 +1100,15 @@
     <PackageReference Include="Microsoft.VisualStudio.SDK.Analyzers">
       <Version>15.8.33</Version>
     </PackageReference>
+    <!-- 
+      Microsoft.VisualStudio.SDK.EmbedInteropTypes is a special package for working with VSSDK.
+      From NuGet Package Description: 
+      When referencing VS SDK NuGet packages using PackageReference, assemblies are referenced instead of linked. 
+      This package corrects that.
+     -->
+    <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes">
+      <Version>15.0.36</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Shell.15.0">
       <Version>15.0.26201</Version>
     </PackageReference>
