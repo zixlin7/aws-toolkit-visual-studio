@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fixed issue where CloudFormation Stacks could not be viewed from AWS Explorer when they contained yaml short form notation"
+}

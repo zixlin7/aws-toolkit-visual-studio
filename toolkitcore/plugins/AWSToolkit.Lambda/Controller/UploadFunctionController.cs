@@ -126,7 +126,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                         }
                         catch(Exception e)
                         {
-                            ToolkitFactory.Instance.ShellProvider.ShowMessage("Error parsing JSON CloudFormation Template", $"Error parsing JSON CloudFormation Template {templateFile}: {e.Message}");
+                            ToolkitFactory.Instance.ShellProvider.ShowMessage("Error parsing CloudFormation Template", $"Error parsing CloudFormation Template {templateFile}: {e.Message}");
                             LOGGER.Error($"Error parsing template {templateFile}", e);
                             return _results;
                         }

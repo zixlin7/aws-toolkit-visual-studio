@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using ThirdParty.Json.LitJson;
 using log4net;
 using Amazon.AWSToolkit.PluginServices.Deployment;
+using YamlDotNet.RepresentationModel;
 
 namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating
 {
@@ -43,6 +44,11 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating
             get
             {
                 LoadAndParse();
+                if (Parameters == null)
+                {
+                    return false;
+                }
+
                 foreach (TemplateParameter tp in Parameters.Values)
                 {
                     if (!tp.Hidden)
@@ -126,92 +132,45 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating
 
         private void ParseYamlFormat()
         {
-            var data = new YamlDotNet.Serialization.Deserializer().Deserialize(new StringReader(this.TemplateContent)) as IDictionary<object, object>;
+            var yamlStream = new YamlStream();
+            yamlStream.Load(new StringReader(TemplateContent));
 
-            if (data.ContainsKey("Description"))
-                this.TemplateDescription = data["Description"].ToString();
-
-            if (data.ContainsKey("Transform"))
-                this.TemplateTransformation = data["Transform"].ToString();
-
-            if (data.ContainsKey("Description"))
-                this.TemplateDescription = data["Description"].ToString();
-
-
-            this.Parameters = new Dictionary<string, TemplateParameter>();
-
-            if (data.ContainsKey("Parameters"))
+            if (!(yamlStream.Documents.FirstOrDefault()?.RootNode is YamlMappingNode rootNode))
             {
-                var parameters = data["Parameters"] as IDictionary<object, object>;
+                return;
+            }
 
-                foreach (var kvp in parameters)
+            if (rootNode.Children.ContainsKey("Description"))
+            {
+                TemplateDescription = rootNode.Children["Description"].ToString();
+            }
+
+            if (rootNode.Children.ContainsKey("Transform"))
+            {
+                TemplateTransformation = rootNode.Children["Transform"].ToString();
+            }
+
+            var parameters = new List<TemplateParameter>();
+            if (rootNode.Children.ContainsKey("Parameters"))
+            {
+                if (rootNode.Children["Parameters"] is YamlMappingNode parametersNode)
                 {
-                    var parameter = kvp.Value as IDictionary<object, object>;
-                    string description = null;
-                    string type = null;
-                    string defaultValue = null;
-                    bool noEcho = false;
-                    string[] allowedValues = null;
-
-                    int? minLength = null;
-                    int? maxLength = null;
-                    double? minValue = null;
-                    double? maxValue = null;
-                    string allowedPattern = null;
-                    string constraintDescription = null;
-
-                    if (parameter.ContainsKey("Description"))
-                        description = parameter["Description"].ToString();
-                    if (parameter.ContainsKey("Type"))
-                        type = parameter["Type"].ToString();
-                    if (parameter.ContainsKey("Default"))
-                        defaultValue = parameter["Default"].ToString();
-                    if (parameter.ContainsKey("NoEcho"))
-                        noEcho = string.Equals(parameter["NoEcho"].ToString(), "true", StringComparison.InvariantCultureIgnoreCase);
-                    if (parameter.ContainsKey("AllowedValues") && parameter["AllowedValues"] is IEnumerable<object>)
+                    foreach (var parameter in parametersNode.Children)
                     {
-                        var values = parameter["AllowedValues"] as IEnumerable<object>;
-                        allowedValues = new string[values.Count()];
-                        int i = 0;
-                        foreach(var value in values)
+                        if (!(parameter.Value is YamlMappingNode parameterValue))
                         {
-                            allowedValues[i] = value.ToString();
-                            i++;
+                            continue;
                         }
-                    }
 
-                    if (parameter.ContainsKey("MinLength"))
-                    {
-                        int value;
-                        if (int.TryParse(parameter["MinLength"].ToString(), out value))
-                            minLength = value;
-                    }
-                    if (parameter.ContainsKey("MaxLength"))
-                    {
-                        int value;
-                        if (int.TryParse(parameter["MaxLength"].ToString(), out value))
-                            maxLength = value;
-                    }
-                    if (parameter.ContainsKey("MinValue"))
-                    {
-                        double value;
-                        if (double.TryParse(parameter["MinValue"].ToString(), out value))
-                            minValue = value;
-                    }
-                    if (parameter.ContainsKey("MaxValue"))
-                    {
-                        double value;
-                        if (double.TryParse(parameter["MaxValue"].ToString(), out value))
-                            maxValue = value;
-                    }
-                    if (parameter.ContainsKey("AllowedPattern"))
-                        allowedPattern = parameter["AllowedPattern"].ToString();
-                    if (parameter.ContainsKey("ConstraintDescription"))
-                        constraintDescription = parameter["ConstraintDescription"].ToString();
+                        var parameterName = parameter.Key.ToString();
+                        var templateParameter = TemplateParameter.Load(parameterName, parameterValue);
 
-                    this.Parameters.Add(kvp.Key.ToString(), new TemplateParameter(kvp.Key.ToString(), description, type, defaultValue, noEcho, allowedValues, minLength, maxLength, minValue, maxValue, allowedPattern, constraintDescription));
+                        parameters.Add(templateParameter);
+                    }
                 }
             }
+
+            Parameters = parameters.ToDictionary(p => p.Name);
         }
 
         private void ParseJsonFormat()
@@ -389,6 +348,100 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating
                 this.MaxValue = maxValue;
                 this.AllowedPattern = allowedPattern;
                 this.ConstraintDescription = constraintDescription;
+            }
+
+            internal static TemplateParameter Load(string parameterName, YamlMappingNode node)
+            {
+                var properties = node.Children;
+
+                string description = null;
+                string type = null;
+                string defaultValue = null;
+                bool noEcho = false;
+                string[] allowedValues = null;
+
+                int? minLength = null;
+                int? maxLength = null;
+                double? minValue = null;
+                double? maxValue = null;
+                string allowedPattern = null;
+                string constraintDescription = null;
+
+                if (properties.ContainsKey("Description"))
+                {
+                    description = properties["Description"].ToString();
+                }
+
+                if (properties.ContainsKey("Type"))
+                {
+                    type = properties["Type"].ToString();
+                }
+
+                if (properties.ContainsKey("Default"))
+                {
+                    defaultValue = properties["Default"].ToString();
+                }
+
+                if (properties.ContainsKey("NoEcho"))
+                {
+                    noEcho = string.Equals(properties["NoEcho"].ToString(), "true",
+                        StringComparison.InvariantCultureIgnoreCase);
+                }
+
+                if (properties.ContainsKey("AllowedValues") && properties["AllowedValues"] is IEnumerable<object>)
+                {
+                    if (properties["AllowedValues"] is IEnumerable<object> values)
+                    {
+                        allowedValues = values.Select(value => value.ToString()).ToArray();
+                    }
+                }
+
+                if (properties.ContainsKey("MinLength"))
+                {
+                    if (int.TryParse(properties["MinLength"].ToString(), out var value))
+                    {
+                        minLength = value;
+                    }
+                }
+
+                if (properties.ContainsKey("MaxLength"))
+                {
+                    if (int.TryParse(properties["MaxLength"].ToString(), out var value))
+                    {
+                        maxLength = value;
+                    }
+                }
+
+                if (properties.ContainsKey("MinValue"))
+                {
+                    if (double.TryParse(properties["MinValue"].ToString(), out var value))
+                    {
+                        minValue = value;
+                    }
+                }
+
+                if (properties.ContainsKey("MaxValue"))
+                {
+                    if (double.TryParse(properties["MaxValue"].ToString(), out var value))
+                    {
+                        maxValue = value;
+                    }
+                }
+
+                if (properties.ContainsKey("AllowedPattern"))
+                {
+                    allowedPattern = properties["AllowedPattern"].ToString();
+                }
+
+                if (properties.ContainsKey("ConstraintDescription"))
+                {
+                    constraintDescription = properties["ConstraintDescription"].ToString();
+                }
+
+                return new TemplateParameter(parameterName, description, type, defaultValue,
+                    noEcho, allowedValues,
+                    minLength, maxLength, minValue, maxValue,
+                    allowedPattern, constraintDescription);
             }
 
             public string Name

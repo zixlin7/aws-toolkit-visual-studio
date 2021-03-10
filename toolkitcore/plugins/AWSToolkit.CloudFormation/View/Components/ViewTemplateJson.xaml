@@ -14,9 +14,15 @@
     </UserControl.Resources>    
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
         <TextBox Grid.Row="0" Grid.Column="0" Style="{DynamicResource awsSelectableTextBoxStyle}" 
-                 FontWeight="{DynamicResource {x:Static toolkitThemes:ShellProviderThemeResources.EnvironmentBoldFontWeightKey}}"
-                 BorderThickness="2" FontFamily="Lucida Console" FontSize="11"
+                 FontWeight="Regular"
+                 BorderThickness="2" FontFamily="Cascadia Code, Lucida Console" FontSize="14"
                  VerticalAlignment="Stretch" Margin="5,5,5,5" 
                  Text="{Binding TemplateBody, Mode=OneWay}" TextWrapping="WrapWithOverflow"
                  ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto"                 

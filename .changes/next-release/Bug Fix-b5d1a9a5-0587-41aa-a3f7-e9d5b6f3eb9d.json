@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fixed issue where yaml based CloudFormation templates could not be deployed when they contained short form notation"
+}
