@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Amazon.AWSToolkit.Account;
@@ -124,12 +125,11 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
 
         void UpdateExistingStacksCallback(ICollection<StackSummary> data)
         {
-            var stackNames = new List<string>();
-            foreach (var stack in data)
-            {
-                if (CloudFormationConstants.IsUpdateableStatus(stack.StackStatus))
-                    stackNames.Add(stack.StackName);
-            }
+            var stackNames = data
+                .Where(stack => CloudFormationConstants.IsUpdateableStatus(stack.StackStatus))
+                .Select(stack => stack.StackName)
+                .OrderBy(name => name)
+                .ToList();
 
             this._ctlExistingStacks.ItemsSource = stackNames;
 
