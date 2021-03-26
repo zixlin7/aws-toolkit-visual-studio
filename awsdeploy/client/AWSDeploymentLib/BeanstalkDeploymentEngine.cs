@@ -1331,7 +1331,7 @@ namespace AWSDeployment
 
                         iamClient.AttachRolePolicy(new AttachRolePolicyRequest
                         {
-                            PolicyArn = RolePolicies.ServiceRoleArns.AWSElasticBeanstalkService,
+                            PolicyArn = RolePolicies.ServiceRoleArns.AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy,
                             RoleName = serviceRoleName
                         });
 

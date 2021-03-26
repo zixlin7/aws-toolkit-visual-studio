@@ -159,7 +159,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             _iamClient.Verify(mock => mock.CreateRole(It.IsAny<CreateRoleRequest>()), Times.Once);
             _iamClient.Verify(
                 mock => mock.AttachRolePolicy(It.Is<AttachRolePolicyRequest>(request =>
-                    request.PolicyArn == RolePolicies.ServiceRoleArns.AWSElasticBeanstalkService)), Times.Once);
+                    request.PolicyArn == RolePolicies.ServiceRoleArns.AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy)), Times.Once);
             _iamClient.Verify(
                 mock => mock.AttachRolePolicy(It.Is<AttachRolePolicyRequest>(request =>
                     request.PolicyArn == RolePolicies.ServiceRoleArns.AWSElasticBeanstalkEnhancedHealth)), Times.Once);

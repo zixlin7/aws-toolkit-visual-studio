@@ -1,0 +1,4 @@
+﻿{
+    "Type": "Deprecation",
+    "Description": "Updated all references of the deprecated AWSElasticBeanstalkService managed policy to AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy. Users are encouraged to update any roles having the deprecated AWSElasticBeanstalkService managed policy. For more information, please see - https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/security-iam-awsmanpol.html"
+}

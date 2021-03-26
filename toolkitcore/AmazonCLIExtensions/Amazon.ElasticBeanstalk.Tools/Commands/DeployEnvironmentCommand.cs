@@ -244,7 +244,7 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
             string environmentArn;
             if(environmentDescription != null)
             {                
-                environmentArn = await UpdateEnvironment(environmentDescription, versionLabel);
+                 environmentArn = await UpdateEnvironment(environmentDescription, versionLabel);
             }
             else
             {
@@ -393,7 +393,7 @@ namespace Amazon.ElasticBeanstalk.Tools.Commands
             }
 
             var serviceRole = this.GetServiceRoleOrCreateIt(this.DeployEnvironmentOptions.ServiceRole, EBDefinedCommandOptions.ARGUMENT_SERVICE_ROLE, 
-                "aws-elasticbeanstalk-service-role", Constants.ELASTICBEANSTALK_ASSUME_ROLE_POLICY, null, "AWSElasticBeanstalkService", "AWSElasticBeanstalkEnhancedHealth");
+                "aws-elasticbeanstalk-service-role", Constants.ELASTICBEANSTALK_ASSUME_ROLE_POLICY, null, "AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy", "AWSElasticBeanstalkEnhancedHealth");
             if (!string.IsNullOrEmpty(serviceRole))
             {
                 int pos = serviceRole.LastIndexOf('/');
