@@ -8,6 +8,8 @@ information to effectively respond to your bug report or contribution.
 
 ## Getting Started
 
+You might be interested in reading about the Toolkit's [architecture](./designs/toolkit-architecture/README.md).
+
 ### Setup
 
 Before you start, you will need the following:
