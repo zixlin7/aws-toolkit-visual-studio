@@ -107,13 +107,15 @@ namespace Amazon.AWSToolkit.EC2.Controller
             var client = new AmazonEC2Client(account.Credentials, config);
 
             var response = client.DescribeSecurityGroups(new DescribeSecurityGroupsRequest());
+
+            var currentSelectedAccount = CurrentAccount.AccountNumber ?? string.Empty;
             foreach (var group in response.SecurityGroups)
             {
                 // filter out 'self' references to group we're editing if we're listing
                 // groups owned by our initial account
                 if (string.IsNullOrEmpty(this._group.VpcId))
                 {
-                    if (CurrentAccount.AccountNumber.Equals(accountNumber) 
+                    if (currentSelectedAccount.Equals(accountNumber) 
                             && group.GroupName.Equals(this._group.GroupName, StringComparison.OrdinalIgnoreCase))
                         continue;
 
@@ -121,7 +123,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
                 }
                 else if (string.Equals(group.VpcId, this._group.VpcId))
                 {
-                    if (CurrentAccount.AccountNumber.Equals(accountNumber)
+                    if (currentSelectedAccount.Equals(accountNumber)
                             && group.GroupId.Equals(this._group.GroupId, StringComparison.OrdinalIgnoreCase))
                         continue;
                     
