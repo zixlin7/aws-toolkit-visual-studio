@@ -1,0 +1,30 @@
+{
+  "Date": "2021-04-07",
+  "Version": "1.20.2.0",
+  "Entries": [
+    {
+      "Type": "Bug Fix",
+      "Description": "Improved the legibility of the Template tab in the CloudFormation stack viewer"
+    },
+    {
+      "Type": "Bug Fix",
+      "Description": "Fixed issue where yaml based CloudFormation templates could not be deployed when they contained short form notation"
+    },
+    {
+      "Type": "Bug Fix",
+      "Description": "Fixed issue where CloudFormation Stacks could not be viewed from AWS Explorer when they contained yaml short form notation"
+    },
+    {
+      "Type": "Deprecation",
+      "Description": "IAM Roles created when deploying to Beanstalk will now reference the managed policy AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy instead of AWSElasticBeanstalkService, which is deprecated. Users are encouraged to update any roles having the deprecated managed policy AWSElasticBeanstalkService. For more information, please see - https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/security-iam-awsmanpol.html"
+    },
+    {
+      "Type": "Feature",
+      "Description": "Source account is now included in the resource policy when creating event notifications for S3 buckets."
+    },
+    {
+      "Type": "Removal",
+      "Description": "Removed optional account number field from credential profile dialogs."
+    }
+  ]
+}

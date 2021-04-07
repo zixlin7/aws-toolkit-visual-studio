@@ -1,4 +1,0 @@
-﻿{
-    "Type": "Deprecation",
-    "Description": "IAM Roles created when deploying to Beanstalk will now reference the managed policy AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy instead of AWSElasticBeanstalkService, which is deprecated. Users are encouraged to update any roles having the deprecated managed policy AWSElasticBeanstalkService. For more information, please see - https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/security-iam-awsmanpol.html"
-}
