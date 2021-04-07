@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using Amazon.Runtime.Internal.Settings;
 
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Tasks;
 using Amazon.AWSToolkit.Util;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement.Internal;
@@ -28,12 +30,12 @@ namespace Amazon.AWSToolkit.Account
         AWSCredentials _credentials;
         CredentialProfile _profile;
         ICredentialProfileStore _profileStore;
-
+        private string _accountNumber;
         string _displayName;
 
         ObservableCollection<IViewModel> _serviceViewModels;
 
-        private Dictionary<string, ServiceSpecificCredentials> _cachedServiceCredentials 
+        private Dictionary<string, ServiceSpecificCredentials> _cachedServiceCredentials
             = new Dictionary<string, ServiceSpecificCredentials>(StringComparer.OrdinalIgnoreCase);
 
         public AccountViewModel(AccountViewMetaNode metaNode, AWSViewModel awsViewModel, ICredentialProfileStore profileStore, CredentialProfile profile)
@@ -46,7 +48,7 @@ namespace Amazon.AWSToolkit.Account
             this._displayName = profile.Name;
 
             this._credentials = this._profile.GetAWSCredentials(this._profileStore);
-
+            DetermineAccountNumber();
             this.CreateServiceChildren();
         }
 
@@ -136,27 +138,11 @@ namespace Amazon.AWSToolkit.Account
 
         public string AccountNumber
         {
-            get
-            {
-                SettingsCollection settings = null;
-                if(this.ProfileStore is NetSDKCredentialsFile)
-                {
-                    settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
-                }
-                else if (this.ProfileStore is SharedCredentialsFile)
-                {
-                    settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.NonNetSDKCredentialStoreMetadata);
-                }
-
-                if(settings != null)
-                {
-                    var os = settings[this.SettingsUniqueKey];
-                    return os?[ToolkitSettingsConstants.AccountNumberField];
-                }
-
-                return null;
-            }
+            get => _accountNumber;
+            set => _accountNumber = value;
         }
+
+
 
         public string UniqueIdentifier
         {
@@ -315,6 +301,54 @@ namespace Amazon.AWSToolkit.Account
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// NOTE:This method is introduced as a stop gap to set the account number till the new credential system is integrated
+        /// Determines and sets the account number for this account
+        /// </summary>
+        private void DetermineAccountNumber()
+        {
+            Task.Run(async () =>
+            {
+                await DetermineAccountNumberAsync();
+            }).LogExceptionAndForget();
+        }
+
+        /// <summary>
+        /// Determines and sets the value of the account number associated with this view model asynchronously
+        /// </summary>
+        private async Task DetermineAccountNumberAsync()
+        {
+            try
+            {
+                string accountNumber = null;
+                SettingsCollection settings = null;
+                if (this.ProfileStore is NetSDKCredentialsFile)
+                {
+                    settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
+                }
+                else if (this.ProfileStore is SharedCredentialsFile)
+                {
+                    settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants
+                        .NonNetSDKCredentialStoreMetadata);
+                }
+
+                if (settings != null)
+                {
+                    var os = settings[this.SettingsUniqueKey];
+                    accountNumber = os?[ToolkitSettingsConstants.AccountNumberField];
+                }
+
+                //NOTE: The sts call to the account manager is used as a stop gap till the new credential system is integrated
+                this._accountNumber = accountNumber ?? await ToolkitFactory.Instance.AccountManager.GetAccountId(this);
+            }
+            catch(Exception e)
+            {
+                LOGGER.Error(e);
+                this._accountNumber = null;
+            }
+           
         }
     }
 }

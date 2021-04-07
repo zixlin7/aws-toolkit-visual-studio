@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+
+using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
@@ -29,6 +31,7 @@ namespace Amazon.AWSToolkit
         readonly NavigatorControl _navigator;
         readonly IAWSToolkitShellProvider _shellProvider;
         private readonly ITelemetryLogger _telemetryLogger;
+        private readonly AccountManager _accountManager;
 
         private readonly AWSViewMetaNode _rootViewMetaNode = new AWSViewMetaNode();
         AWSViewModel _rootViewModel;
@@ -38,11 +41,12 @@ namespace Amazon.AWSToolkit
 
         private ToolkitFactory(NavigatorControl navigator,
             ITelemetryLogger telemetryLogger,
-            IAWSToolkitShellProvider shellProvider)
+            IAWSToolkitShellProvider shellProvider, AccountManager accountManager)
         {
             this._navigator = navigator;
             this._shellProvider = shellProvider;
             this._telemetryLogger = telemetryLogger;
+            this._accountManager = accountManager;
 
             if (ServicePointManager.DefaultConnectionLimit < 100)
             {
@@ -50,9 +54,10 @@ namespace Amazon.AWSToolkit
             }
         }
 
-        public static async Task InitializeToolkit(NavigatorControl navigator,
+        public static async Task InitializeToolkit(NavigatorControl navigator, 
             ITelemetryLogger telemetryLogger,
             IAWSToolkitShellProvider shellProvider,
+            AccountManager accountManager,
             string additionalPluginPaths,
             Action initializeCompleteCallback)
         {
@@ -70,7 +75,7 @@ namespace Amazon.AWSToolkit
                 typeof(ToolkitFactory).Assembly.Location,
                 additionalPluginPaths);
 
-            INSTANCE = new ToolkitFactory(navigator, telemetryLogger, shellProvider);
+            INSTANCE = new ToolkitFactory(navigator, telemetryLogger, shellProvider, accountManager);
 
             INSTANCE.InitializePluginActivators(pluginActivators);
 
@@ -178,6 +183,8 @@ namespace Amazon.AWSToolkit
         public AWSViewMetaNode RootViewMetaNode => this._rootViewMetaNode;
 
         public AWSViewModel RootViewModel => this._rootViewModel;
+
+        public AccountManager AccountManager => this._accountManager;
 
         public object QueryPluginService(Type serviceType)
         {

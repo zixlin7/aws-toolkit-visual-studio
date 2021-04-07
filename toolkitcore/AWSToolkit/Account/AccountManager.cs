@@ -75,7 +75,7 @@ namespace Amazon.AWSToolkit.Account
         /// <remarks>
         /// It is the caller's responsibility to catch Exceptions
         /// </remarks>
-        private async Task<string> GetAccountId(AccountViewModel account)
+        public async Task<string> GetAccountId(AccountViewModel account)
         {
             var sts = new AmazonSecurityTokenServiceClient(account.Credentials, GetStsRegion(account));
 

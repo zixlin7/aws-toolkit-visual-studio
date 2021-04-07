@@ -589,6 +589,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                     navigator,
                     _telemetryManager.TelemetryLogger,
                     ToolkitShellProviderService as IAWSToolkitShellProvider,
+                    accountManager,
                     additionalPluginFolders,
                     () =>
                     {
