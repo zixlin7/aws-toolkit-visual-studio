@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Account;
+using Amazon.CloudFormation;
 
 using log4net;
 
@@ -11,6 +12,8 @@ namespace Amazon.AWSToolkit.PluginServices.Deployment
         public const string CloudFormationServiceName = "CloudFormation";
         public const string BeanstalkServiceName = "ElasticBeanstalk";
         public const string LambdaServiceName = "Lambda";
+
+        public static readonly string ToolkitCloudFormationServiceName = new AmazonCloudFormationConfig().RegionEndpointServiceName;
     }
 
     public abstract class DeploymentTypeIdentifiers

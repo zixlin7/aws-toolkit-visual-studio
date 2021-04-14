@@ -13,7 +13,6 @@
         public const string AccessKeyField = "AWSAccessKey";
         public const string SecretKeyField = "AWSSecretKey";
         public const string AccountNumberField = "AccountNumber";
-        public const string Restrictions = "Restrictions";
 
         public const string SecretKeyRepository = "SecretKeyRepository";
 

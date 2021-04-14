@@ -24,6 +24,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
     public class ElasticBeanstalkActivator : AbstractPluginActivator, IAWSElasticBeanstalk, IAWSToolkitDeploymentService
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ElasticBeanstalkActivator));
+        private static readonly string ElasticBeanstalkServiceName = new AmazonElasticBeanstalkConfig().RegionEndpointServiceName;
 
         public override string PluginName => "Beanstalk";
 
@@ -55,7 +56,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
         void setupContextMenuHooks(ElasticBeanstalkRootViewMetaNode rootNode)
         {
             rootNode.ApplicationViewMetaNode.OnApplicationStatus =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ApplicationStatusController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ApplicationStatusController(ToolkitContext)).Execute);
 
             rootNode.ApplicationViewMetaNode.OnDeleteApplication =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteApplicationController>().Execute);
@@ -87,7 +88,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
         {
             if (fastTrackRedeployment)
             {
-                return new IAWSWizardPageController[] { new FastTrackRepublishPageController() };
+                return new IAWSWizardPageController[] { new FastTrackRepublishPageController(ToolkitContext) };
             }
 
             var isCoreCLRProject = false;
@@ -99,7 +100,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
 
             return new IAWSWizardPageController[]
             {
-                new StartPageController(),
+                new StartPageController(ToolkitContext),
                 new ApplicationPageController(),
                 new AWSOptionsPageController(),
                 new VpcOptionsPageController(),
@@ -113,9 +114,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
 
         bool IAWSToolkitDeploymentService.Deploy(string deploymentPackage, IDictionary<string, object> deploymentProperties)
         {
-            // keep navigator up-to-date with the final account selection in the wizard
-            var selectedAccount = deploymentProperties[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
-            ToolkitFactory.Instance.Navigator.UpdateAccountSelection(new Guid(selectedAccount.SettingsUniqueKey), false);
+            // keep navigator up-to-date with the final account/region selection in the wizard
+            var selectedAccount = CommonWizardProperties.AccountSelection.GetSelectedAccount(deploymentProperties);
+            var selectedRegion =  CommonWizardProperties.AccountSelection.GetSelectedRegion(deploymentProperties);
+            var navigator = ToolkitFactory.Instance.Navigator;
+            if (navigator.SelectedAccount != selectedAccount || navigator.SelectedRegion != selectedRegion)
+            {
+                ToolkitContext.ConnectionManager.ChangeConnectionSettings(selectedAccount?.Identifier, selectedRegion);
+            }
 
             // If the deployment package is a directory then that indicates we have the project location and we still need to build the project.
             // In that case switch to use Amazon.ElasticBeanstalk.Tools to do the combined build and deployment. This is currently just done
@@ -127,14 +133,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
             }
             else
             {
-                var command = new DeployNewApplicationCommand(deploymentPackage, deploymentProperties);
+                var command = new DeployNewApplicationCommand(deploymentPackage, deploymentProperties, ToolkitContext);
                 ThreadPool.QueueUserWorkItem(command.Execute);
             }
 
             return true;
         }
 
-        bool IAWSToolkitDeploymentService.IsRedeploymentTargetValid(AccountViewModel account, string region, IDictionary<string, object> environmentDetails)
+        bool IAWSToolkitDeploymentService.IsRedeploymentTargetValid(AccountViewModel account, string regionId, IDictionary<string, object> environmentDetails)
         {
             string applicationName = null;
             string environmentName = null;
@@ -149,12 +155,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
                                                             BeanstalkConstants.DeploymentTargetQueryParam_ApplicationName,
                                                             BeanstalkConstants.DeploymentTargetQueryParam_EnvironmentName));
 
-            var endpoint = RegionEndPointsManager.GetInstance().GetRegion(region)
-                            .GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME);
-            var config = new AmazonElasticBeanstalkConfig();
-            endpoint.ApplyToClientConfig(config);
+            var region = ToolkitContext.RegionProvider.GetRegion(regionId);
 
-            var client = new AmazonElasticBeanstalkClient(account.Credentials, config);
+            var client = account.CreateServiceClient<AmazonElasticBeanstalkClient>(region);
             bool isValid = false;
             try
             {
@@ -182,22 +185,21 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk
         /// Returns the set of AWS Toolkit deployments in existence for this service
         /// </summary>
         /// <param name="account"></param>
-        /// <param name="region"></param>
+        /// <param name="regionId"></param>
         /// <param name="logger"></param>
         /// <returns></returns>
-        IEnumerable<ExistingServiceDeployment> IAWSToolkitDeploymentService.QueryToolkitDeployments(AccountViewModel account, string region, ILog logger)
+        IEnumerable<ExistingServiceDeployment> IAWSToolkitDeploymentService.QueryToolkitDeployments(AccountViewModel account, string regionId, ILog logger)
         {
             var deployments = new List<ExistingServiceDeployment>();
-            var endpoint = RegionEndPointsManager.GetInstance().GetRegion(region).GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME);
-            if (endpoint == null)
+            if (!ToolkitContext.RegionProvider.IsServiceAvailable(ElasticBeanstalkServiceName, regionId))
+            {
                 return deployments;
+            }
 
             try
             {
-
-                var config = new AmazonElasticBeanstalkConfig();
-                endpoint.ApplyToClientConfig(config);
-                var client = new AmazonElasticBeanstalkClient(account.Credentials, config);
+                var region = ToolkitContext.RegionProvider.GetRegion(regionId);
+                var client = account.CreateServiceClient<AmazonElasticBeanstalkClient>(region);
 
                 var response = client.DescribeApplications(new DescribeApplicationsRequest());
                 foreach (var application in response.Applications)

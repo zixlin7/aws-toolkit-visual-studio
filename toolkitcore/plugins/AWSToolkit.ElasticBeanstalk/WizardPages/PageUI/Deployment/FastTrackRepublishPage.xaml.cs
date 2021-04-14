@@ -9,6 +9,7 @@ using System.ComponentModel;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
+using Amazon.AWSToolkit.Regions;
 using Amazon.ElasticBeanstalk.Model;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
@@ -71,7 +72,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         public string TargetFramework { get; set; }
 
         public void SetRedeploymentMessaging(AccountViewModel account, 
-                                             RegionEndPointsManager.RegionEndPoints region, 
+                                             ToolkitRegion region, 
                                              EnvironmentDescription envDescription)
         {
             _envDetailsPanel.Children.Clear();

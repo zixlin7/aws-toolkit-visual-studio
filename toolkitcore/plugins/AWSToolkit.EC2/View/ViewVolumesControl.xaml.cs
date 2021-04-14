@@ -50,7 +50,7 @@ namespace Amazon.AWSToolkit.EC2.View
 
         public override string Title => String.Format("{0} EBS Volumes", this._controller.RegionDisplayName);
 
-        public override string UniqueId => "Volumes_" + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
+        public override string UniqueId => "Volumes_" + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.Identifier.Id;
 
         public override bool SupportsBackGroundDataLoad => true;
 

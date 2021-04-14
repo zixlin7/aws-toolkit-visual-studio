@@ -68,9 +68,9 @@ namespace Amazon.AWSToolkit.VisualStudio.DeploymentProcessors
                 data["comment"] = "This file is used to help set default values when using the dotnet CLI extension Amazon.ElasticBeanstalk.Tools. For more information run \"dotnet eb --help\" from the project root.";
             }
 
-            data["profile"] = (taskInfo.Options[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel).DisplayName;
-            data["region"] = (taskInfo.Options[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints).SystemName;
-
+            data["profile"] = CommonWizardProperties.AccountSelection.GetSelectedAccount(taskInfo.Options)?.Identifier?.ProfileName;
+            data["region"] = CommonWizardProperties.AccountSelection.GetSelectedRegion(taskInfo.Options).Id;
+            
             Action<string, string> copyValue = (jsonKey, wizardOption) => 
             {
                 if (taskInfo.Options.ContainsKey(wizardOption))

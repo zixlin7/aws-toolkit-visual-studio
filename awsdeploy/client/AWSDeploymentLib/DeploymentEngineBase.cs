@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Amazon.AWSToolkit;
+using Amazon;
 using Amazon.EC2;
 using Amazon.EC2.Model;
 using Amazon.S3;
@@ -150,24 +150,6 @@ namespace AWSDeployment
 
         #region AWS Clients
 
-        RegionEndPointsManager.RegionEndPoints _regionEndPoints = null;
-        /// <summary>
-        /// Return the endpoints object for a given region addressed by system name
-        /// </summary>
-        [Browsable(false)]
-        public RegionEndPointsManager.RegionEndPoints RegionEndPoints
-        {
-            get
-            {
-                if (_regionEndPoints == null)
-                {
-                    _regionEndPoints = RegionEndPointsManager.GetInstance().GetRegion(Region);
-                }
-
-                return _regionEndPoints;
-            }
-        }
-
         IAmazonS3 _s3Client = null;
         [Browsable(false)]
         protected IAmazonS3 S3Client
@@ -176,9 +158,7 @@ namespace AWSDeployment
             {
                 if (this._s3Client == null)
                 {
-                    var s3Config = new AmazonS3Config ();
-                    RegionEndPoints.GetEndpoint("S3").ApplyToClientConfig(s3Config);
-                    this._s3Client = new AmazonS3Client(Credentials, s3Config);
+                    this._s3Client = new AmazonS3Client(Credentials, RegionEndpoint.GetBySystemName(Region));
                 }
 
                 return this._s3Client;
@@ -192,9 +172,7 @@ namespace AWSDeployment
             {
                 if (this._ec2Client == null)
                 {
-                    var ec2Config = new AmazonEC2Config ();
-                    RegionEndPoints.GetEndpoint("EC2").ApplyToClientConfig(ec2Config);
-                    this._ec2Client = new AmazonEC2Client(Credentials, ec2Config);
+                    this._ec2Client = new AmazonEC2Client(Credentials, RegionEndpoint.GetBySystemName(Region));
                 }
 
                 return this._ec2Client;
@@ -333,21 +311,6 @@ namespace AWSDeployment
         public const string ACCESS_KEY = "AWSAccessKey";
         public const string SECRET_KEY = "AWSSecretKey";
         public const string REGION = "Region";
-
-        private void PopulateEngineBase(Dictionary<string, object> settings)
-        {
-            object profileName;
-            if (settings.TryGetValue(ACCOUNT_PROFILE_NAME, out profileName) && !string.IsNullOrWhiteSpace(profileName as string))
-            {
-                SetCredentialsFromProfileName(profileName as string);
-            }
-            else
-            {
-                this.AWSAccessKey = settings[ACCESS_KEY] as string;
-                this.AWSSecretKey = settings[SECRET_KEY] as string;
-            }
-            this.Region = settings[REGION] as string;
-        }
 
         public void SetCredentialsFromProfileName(string profileName)
         {
@@ -492,7 +455,7 @@ namespace AWSDeployment
             Observer.Info("...making sure upload bucket '{0}' exists", bucketName);
             try
             {
-                var response = S3Client.PutBucket(new PutBucketRequest() { BucketName = bucketName, BucketRegionName = RegionEndPoints.SystemName });
+                var response = S3Client.PutBucket(new PutBucketRequest() { BucketName = bucketName, BucketRegionName = Region });
                 ret = true;
             }
             catch (AmazonS3Exception exc)

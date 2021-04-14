@@ -144,9 +144,9 @@ namespace Amazon.AWSToolkit.EC2.View
         {
             Func<string, string, string> formatter = (accountNumber, accountDisplayName) => { return string.Format("{0} ({1})", accountNumber.Replace("-", "").Trim(), accountDisplayName); };
 
-            if (this._controller.CurrentAccount != null && !string.IsNullOrEmpty(this._controller.CurrentAccount.AccountNumber))
+            if (ToolkitFactory.Instance.AwsConnectionManager != null && !string.IsNullOrEmpty(ToolkitFactory.Instance.AwsConnectionManager.ActiveAccountId))
             {
-                this._controller.Model.UserId = formatter(this._controller.CurrentAccount.AccountNumber, this._controller.CurrentAccount.AccountDisplayName);
+                this._controller.Model.UserId = formatter(ToolkitFactory.Instance.AwsConnectionManager.ActiveAccountId, ToolkitFactory.Instance.AwsConnectionManager.ActiveCredentialIdentifier.DisplayName);
                 this._ctlAccountID.Text = this._controller.Model.UserId;
                 updateAvailableSecurityGroups();
             }

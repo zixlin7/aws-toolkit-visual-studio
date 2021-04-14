@@ -1,0 +1,4 @@
+{
+    "Type": "Feature",
+    "Description": "When credentials profiles are loaded by the Toolkit, the Output pane indicates how many profiles were loaded, and which profiles are unsupported/invalid. The Toolkit logs contain details to diagnose why a profile cannot be used."
+}

@@ -82,7 +82,7 @@ namespace Amazon.AWSToolkit.RDS.View
 
         public override string Title => string.Format("{0} DB Security Groups", this._controller.RegionDisplayName);
 
-        public override string UniqueId => "RDSDBSecurityGroups_" + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
+        public override string UniqueId => "RDSDBSecurityGroups_" + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.Identifier.Id;
 
         public override bool SupportsBackGroundDataLoad => true;
 

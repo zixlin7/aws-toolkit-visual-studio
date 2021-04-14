@@ -4,20 +4,22 @@
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
+using Amazon.SimpleNotificationService;
 
 namespace Amazon.AWSToolkit.SNS.Nodes
 {
     public class SNSRootViewMetaNode : ServiceRootViewMetaNode, ISNSRootViewMetaNode
-    {        
-        public const string SNS_ENDPOINT_LOOKUP = "SNS";
+    {
+        private static readonly string SNSServiceName = new AmazonSimpleNotificationServiceConfig().RegionEndpointServiceName;
 
         public SNSTopicViewMetaNode SNSTopicViewMetaNode => this.FindChild<SNSTopicViewMetaNode>();
 
-        public override string EndPointSystemName => SNS_ENDPOINT_LOOKUP;
+        public override string SdkEndpointServiceName => SNSServiceName;
 
-        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
+        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account, ToolkitRegion region)
         {
-            return new SNSRootViewModel(account);
+            return new SNSRootViewModel(account, region);
         }
 
         public ActionHandlerWrapper.ActionHandler OnCreateTopic

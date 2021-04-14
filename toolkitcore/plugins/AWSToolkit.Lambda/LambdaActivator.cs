@@ -28,11 +28,11 @@ namespace Amazon.AWSToolkit.Lambda
         void setupContextMenuHooks(LambdaRootViewMetaNode rootNode)
         {
             rootNode.OnUploadFunction =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<UploadFunctionController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new UploadFunctionController(ToolkitContext)).Execute);
 
 
             rootNode.LambdaFunctionViewMetaNode.OnOpen =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewFunctionController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewFunctionController(ToolkitContext)).Execute);
             rootNode.LambdaFunctionViewMetaNode.OnDelete =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteFunctionController>().Execute);
         }
@@ -50,7 +50,7 @@ namespace Amazon.AWSToolkit.Lambda
             if (seedProperties == null)
                 seedProperties = new Dictionary<string, object>();
 
-            var controller = new UploadFunctionController();
+            var controller = new UploadFunctionController(ToolkitContext);
             controller.UploadFunctionFromPath(seedProperties);
         }
 

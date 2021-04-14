@@ -19,6 +19,7 @@ using Amazon.IdentityManagement.Model;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.S3.View;
 
 using Statement = Amazon.Auth.AccessControlPolicy.Statement;
@@ -29,7 +30,6 @@ namespace Amazon.AWSToolkit.S3.Controller
     {
 
         bool _success;
-        string _region;
         IAmazonS3 _s3Client;
         string _bucketName;
         AddEventConfigurationControl _control;
@@ -38,29 +38,18 @@ namespace Amazon.AWSToolkit.S3.Controller
         IAmazonSimpleNotificationService _snsClient;
         IAmazonSQS _sqsClient;
         IAmazonLambda _lambdaClient;
+        ToolkitRegion _region;
 
-        public bool Execute(IAmazonS3 s3Client, string bucketName, string region, AccountViewModel account)
+        public bool Execute(IAmazonS3 s3Client, string bucketName, ToolkitRegion region, AccountViewModel account)
         {
             this._s3Client = s3Client;
             this._bucketName = bucketName;
             this._region = region;
-            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.GetInstance().GetRegion(region);
 
-            var iamConfig = new AmazonIdentityManagementServiceConfig();
-            endPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).ApplyToClientConfig(iamConfig);
-            this._iamClient = new AmazonIdentityManagementServiceClient(account.Credentials, iamConfig);
-
-            var sqsConfig = new AmazonSQSConfig();
-            endPoints.GetEndpoint(RegionEndPointsManager.SQS_SERVICE_NAME).ApplyToClientConfig(sqsConfig);
-            this._sqsClient = new AmazonSQSClient(account.Credentials, sqsConfig);
-
-            var snsConfig = new AmazonSimpleNotificationServiceConfig();
-            endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME).ApplyToClientConfig(snsConfig);
-            this._snsClient = new AmazonSimpleNotificationServiceClient(account.Credentials, snsConfig);
-
-            var lambdaConfig = new AmazonLambdaConfig();
-            endPoints.GetEndpoint(RegionEndPointsManager.LAMBDA_SERVICE_NAME).ApplyToClientConfig(lambdaConfig);
-            this._lambdaClient = new AmazonLambdaClient(account.Credentials, lambdaConfig);
+            this._iamClient = account.CreateServiceClient<AmazonIdentityManagementServiceClient>(_region);
+            this._sqsClient = account.CreateServiceClient<AmazonSQSClient>(_region);
+            this._snsClient = account.CreateServiceClient<AmazonSimpleNotificationServiceClient>(_region);
+            this._lambdaClient = account.CreateServiceClient<AmazonLambdaClient>(_region);
 
             this._control = new AddEventConfigurationControl(this);
             ToolkitFactory.Instance.ShellProvider.ShowModal(this._control);
@@ -285,7 +274,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             foreach (var queue in response.QueueUrls)
             {
                 var tokens = queue.Split('/');
-                var arn = string.Format("arn:aws:sqs:{0}:{1}:{2}", this._region, tokens[tokens.Length - 2], tokens[tokens.Length - 1]);
+                var arn = string.Format("arn:aws:sqs:{0}:{1}:{2}", this._region.Id, tokens[tokens.Length - 2], tokens[tokens.Length - 1]);
                 queues.Add(arn);
 
                 this._queueArnsToQueueURls[arn] = queue;

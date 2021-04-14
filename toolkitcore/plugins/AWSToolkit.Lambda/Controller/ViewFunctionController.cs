@@ -12,6 +12,7 @@ using Amazon.AWSToolkit.Lambda.View;
 using Amazon.AWSToolkit.Lambda.Model;
 using Amazon.AWSToolkit.Lambda.Nodes;
 using Amazon.Auth.AccessControlPolicy;
+using Amazon.AWSToolkit.Context;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 using Amazon.EC2;
@@ -26,6 +27,7 @@ using Amazon.KeyManagementService;
 using Amazon.SimpleNotificationService;
 using Amazon.SQS;
 using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.AWSToolkit.Regions;
 using Amazon.ECR;
 
 namespace Amazon.AWSToolkit.Lambda.Controller
@@ -33,6 +35,19 @@ namespace Amazon.AWSToolkit.Lambda.Controller
     public class ViewFunctionController : BaseContextCommand
     {
         static ILog LOGGER = LogManager.GetLogger(typeof(ViewFunctionController));
+
+        private static readonly string CloudWatchLogsServiceName =
+            new AmazonCloudWatchLogsConfig().RegionEndpointServiceName;
+        private static readonly string Ec2ServiceName =
+            new AmazonEC2Config().RegionEndpointServiceName;
+        private static readonly string KmsServiceName =
+            new AmazonKeyManagementServiceConfig().RegionEndpointServiceName;
+        private static readonly string SnsServiceName =
+            new AmazonSimpleNotificationServiceConfig().RegionEndpointServiceName;
+        private static readonly string SqsServiceName =
+            new AmazonSQSConfig().RegionEndpointServiceName;
+
+        private readonly ToolkitContext _toolkitContext;
 
         ViewFunctionModel _model;
         ViewFunctionControl _control;
@@ -45,14 +60,15 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         IAmazonECR _ecrClient;
 
         AccountViewModel _account;
-        string _region;
+        ToolkitRegion _region;
 
         AmazonCloudWatchLogsClient _logsClient;
 
-        public ViewFunctionController()
+        public ViewFunctionController(ToolkitContext toolkitContext)
         {
-
+            _toolkitContext = toolkitContext;
         }
+
         /// <summary>
         /// Test only constructor initializing a ViewFunctionModel
         /// </summary>
@@ -77,8 +93,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             this._control.PropertyChanged += _control_PropertyChanged;
 
             this._account = ((LambdaFunctionViewModel) this._viewModel).LambdaRootViewModel.AccountViewModel;
-            this._region = ((LambdaFunctionViewModel) this._viewModel).LambdaRootViewModel.CurrentEndPoint
-                .RegionSystemName;
+            this._region = ((LambdaFunctionViewModel) this._viewModel).LambdaRootViewModel.Region;
 
             ConstructClients();
 
@@ -213,50 +228,32 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         void ConstructClients()
         {
-            RegionEndPointsManager.RegionEndPoints endPoints =
-                RegionEndPointsManager.GetInstance().GetRegion(this._region);
-            var endpoint = endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_LOGS_NAME);
-            if (endpoint != null)
+            if (_toolkitContext.RegionProvider.IsServiceAvailable(CloudWatchLogsServiceName, _region.Id))
             {
-                var logsConfig = new AmazonCloudWatchLogsConfig();
-                endpoint.ApplyToClientConfig(logsConfig);
-                this._logsClient = new AmazonCloudWatchLogsClient(this._account.Credentials, logsConfig);
+                _logsClient = _account.CreateServiceClient<AmazonCloudWatchLogsClient>(_region);
             }
 
-            endpoint = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
-            if (endpoint != null)
+            if (_toolkitContext.RegionProvider.IsServiceAvailable(Ec2ServiceName, _region.Id))
             {
-                var ec2Config = new AmazonEC2Config();
-                endpoint.ApplyToClientConfig(ec2Config);
-                this._ec2Client = new AmazonEC2Client(this._account.Credentials, ec2Config);
+                _ec2Client = _account.CreateServiceClient<AmazonEC2Client>(_region);
             }
 
-            endpoint = endPoints.GetEndpoint(RegionEndPointsManager.KMS_SERVICE_NAME);
-            if (endpoint != null)
+            if (_toolkitContext.RegionProvider.IsServiceAvailable(KmsServiceName, _region.Id))
             {
-                var kmsConfig = new AmazonKeyManagementServiceConfig();
-                endpoint.ApplyToClientConfig(kmsConfig);
-                this._kmsClient = new AmazonKeyManagementServiceClient(this._account.Credentials, kmsConfig);
+                _kmsClient = _account.CreateServiceClient<AmazonKeyManagementServiceClient>(_region);
             }
 
-
-            endpoint = endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME);
-            if (endpoint != null)
+            if (_toolkitContext.RegionProvider.IsServiceAvailable(SnsServiceName, _region.Id))
             {
-                var config = new AmazonSimpleNotificationServiceConfig();
-                endpoint.ApplyToClientConfig(config);
-                this._snsClient = new AmazonSimpleNotificationServiceClient(this._account.Credentials, config);
+                _snsClient = _account.CreateServiceClient<AmazonSimpleNotificationServiceClient>(_region);
             }
 
-            endpoint = endPoints.GetEndpoint(RegionEndPointsManager.SQS_SERVICE_NAME);
-            if (endpoint != null)
+            if (_toolkitContext.RegionProvider.IsServiceAvailable(SqsServiceName, _region.Id))
             {
-                var config = new AmazonSQSConfig();
-                endpoint.ApplyToClientConfig(config);
-                this._sqsClient = new AmazonSQSClient(this._account.Credentials, config);
+                _sqsClient = _account.CreateServiceClient<AmazonSQSClient>(_region);
             }
 
-            this._ecrClient = this._account.CreateServiceClient<AmazonECRClient>(endPoints.GetEndpoint(RegionEndPointsManager.ECR_SERVICE_NAME));
+            _ecrClient = _account.CreateServiceClient<AmazonECRClient>(_region);
         }
 
         public ViewFunctionModel Model => this._model;
@@ -727,7 +724,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         public bool UploadNewFunctionSource()
         {
-            var controller = new UploadFunctionController();
+            var controller = new UploadFunctionController(_toolkitContext);
             var results = controller.Execute(this._lambdaClient, this._ecrClient, this._model.FunctionName);
 
             return results.Success;
@@ -735,7 +732,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
         public bool AddEventSource()
         {
-            var controller = new AddEventSourceController();
+            var controller = new AddEventSourceController(_toolkitContext);
             return controller.Execute(this._lambdaClient, this._account, this._region, this._model.FunctionArn,
                 this._model.Role);
         }

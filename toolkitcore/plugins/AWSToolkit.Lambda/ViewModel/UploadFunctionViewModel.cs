@@ -17,6 +17,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using Amazon.AWSToolkit.CommonUI.Components;
+using Amazon.AWSToolkit.Context;
 using Environment = System.Environment;
 
 namespace Amazon.AWSToolkit.Lambda.ViewModel
@@ -24,6 +26,8 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
     public class UploadFunctionViewModel : BaseModel, IDataErrorInfo
     {
         private static readonly ILog Logger = LogManager.GetLogger(typeof(UploadFunctionViewModel));
+
+        private readonly AccountAndRegionPickerViewModel _connectionViewModel;
 
         private readonly Dictionary<string, FunctionConfiguration> _functionConfigs =
             new Dictionary<string, FunctionConfiguration>();
@@ -66,13 +70,14 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         private string _imageTag = "latest";
         private bool _loadingImageTags;
 
-        public UploadFunctionViewModel() : this(ToolkitFactory.Instance.ShellProvider)
+        public UploadFunctionViewModel() : this(ToolkitFactory.Instance.ShellProvider, ToolkitFactory.Instance.ToolkitContext)
         {
         }
 
-        public UploadFunctionViewModel(IAWSToolkitShellProvider shellProvider)
+        public UploadFunctionViewModel(IAWSToolkitShellProvider shellProvider, ToolkitContext toolkitContext)
         {
             _shellProvider = shellProvider;
+            _connectionViewModel = new AccountAndRegionPickerViewModel(toolkitContext);
         }
 
         public bool CanEditFunctionName
@@ -108,6 +113,11 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         {
             get => _configurationVisibility;
             set { SetProperty(ref _configurationVisibility, value, () => ConfigurationVisibility); }
+        }
+
+        public AccountAndRegionPickerViewModel Connection
+        {
+            get => _connectionViewModel;
         }
 
         public string Description

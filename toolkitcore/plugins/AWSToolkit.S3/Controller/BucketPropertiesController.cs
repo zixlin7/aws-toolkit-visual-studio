@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+
+using Amazon.AWSToolkit.Context;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.AWSToolkit.S3.View;
@@ -15,24 +17,15 @@ namespace Amazon.AWSToolkit.S3.Controller
 {
     public class BucketPropertiesController : BaseContextCommand
     {
+        private readonly ToolkitContext _toolkitContext;
         IAmazonS3 _s3Client;
         BucketPropertiesModel _model;
         BucketPropertiesControl _control;
         S3BucketViewModel _bucketModel;
 
-        public BucketPropertiesController()
+        public BucketPropertiesController(ToolkitContext toolkitContext)
         {
-        }
-
-        public BucketPropertiesController(IAmazonS3 s3Client, string bucketName)
-            : this(s3Client, new BucketPropertiesModel(bucketName))
-        {
-        }
-
-        public BucketPropertiesController(IAmazonS3 s3Client, BucketPropertiesModel model)
-        {
-            this._s3Client = s3Client;
-            this._model = model;
+            _toolkitContext = toolkitContext;
         }
 
         public IAmazonS3 S3Client => this._s3Client;
@@ -74,7 +67,8 @@ namespace Amazon.AWSToolkit.S3.Controller
         public void AddEventConfiguration()
         {
             var controller = new AddEventConfigurationController();
-            if (controller.Execute(this.S3Client, this.Model.BucketName, this._bucketModel.OverrideRegion, this._bucketModel.AccountViewModel))
+            var region = _toolkitContext.RegionProvider.GetRegion(this._bucketModel.OverrideRegion);
+            if (region != null & controller.Execute(this.S3Client, this.Model.BucketName, region, this._bucketModel.AccountViewModel))
             {
                 this.RefreshNotifications();
             }
@@ -365,8 +359,7 @@ namespace Amazon.AWSToolkit.S3.Controller
                 this._model.RegionSystemName = "eu-west-1";
             else
                 this._model.RegionSystemName = locationResponse.Location;
-
-            var region = RegionEndPointsManager.GetInstance().GetRegion(this._model.RegionSystemName);
+            var region = _toolkitContext.RegionProvider.GetRegion(this._model.RegionSystemName);
             if (region != null)
             {
                 this._model.RegionDisplayName = region.DisplayName;

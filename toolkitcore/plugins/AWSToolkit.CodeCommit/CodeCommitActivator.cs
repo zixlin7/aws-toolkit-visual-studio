@@ -23,13 +23,14 @@ using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using LibGit2Sharp;
 using Amazon.AWSToolkit.MobileAnalytics;
-using Amazon.Runtime;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.CodeCommit
 {
     public class CodeCommitActivator : AbstractPluginActivator, IAWSCodeCommit
     {
         private static readonly ILog LOGGER = LogManager.GetLogger(typeof(CodeCommitActivator));
+        private ToolkitRegion _fallbackRegion;
         private const string CodeCommitUrlPrefix = "git-codecommit.";
 
         public override string PluginName => "CodeCommit";
@@ -88,8 +89,8 @@ namespace Amazon.AWSToolkit.CodeCommit
                         ServiceSpecificCredentialStore.CodeCommitServiceName);
         }
 
-        public ServiceSpecificCredentials ObtainGitCredentials(AccountViewModel account, 
-                                                               RegionEndPointsManager.RegionEndPoints region,
+        public ServiceSpecificCredentials ObtainGitCredentials(AccountViewModel account,
+                                                               ToolkitRegion region,
                                                                bool ignoreCurrent)
         {
             ServiceSpecificCredentials svcCredentials = null;
@@ -129,9 +130,10 @@ namespace Amazon.AWSToolkit.CodeCommit
         }
 
         public ICodeCommitRepository PromptForRepositoryToClone(AccountViewModel account,
-                                                                RegionEndPointsManager.RegionEndPoints initialRegion,
+                                                                ToolkitRegion initialRegion,
                                                                 string defaultCloneFolderRoot)
         {
+            initialRegion = initialRegion ?? GetFallbackRegion();
             var controller = new CloneRepositoryController(account, initialRegion, defaultCloneFolderRoot);
             return !controller.Execute().Success
                 ? null
@@ -139,9 +141,10 @@ namespace Amazon.AWSToolkit.CodeCommit
         }
 
         public INewCodeCommitRepositoryInfo PromptForRepositoryToCreate(AccountViewModel account,
-                                                                        RegionEndPointsManager.RegionEndPoints initialRegion,
+                                                                        ToolkitRegion initialRegion,
                                                                         string defaultFolderRoot)
         {
+            initialRegion = initialRegion ?? GetFallbackRegion();
             var controller = new CreateRepositoryController(account, initialRegion, defaultFolderRoot);
             return !controller.Execute().Success
                 ? null
@@ -173,13 +176,12 @@ namespace Amazon.AWSToolkit.CodeCommit
             return false;
         }
 
-        public string GetRepositoryRegion(string repoPath)
+        public ToolkitRegion GetRepositoryRegion(string repoPath)
         {
             TestValidRepo(repoPath);
 
             var codeCommitRemoteUrl = FindCommitRemoteUrl(repoPath);
-            string repoName, region;
-            ExtractRepoNameAndRegion(codeCommitRemoteUrl, out repoName, out region);
+            ExtractRepoNameAndRegion(codeCommitRemoteUrl, out var repoName, out ToolkitRegion region);
             return region;
         }
 
@@ -195,11 +197,15 @@ namespace Amazon.AWSToolkit.CodeCommit
             var repositoryNameAndPathByRegion = GroupLocalRepositoriesByRegion(pathsToRepositories);
 
             // Load local Repos for each region
-            var tasks = repositoryNameAndPathByRegion.Keys.Select(async region =>
+            var tasks = repositoryNameAndPathByRegion.Keys.Select(async regionId =>
             {
-                validRepositories.AddRange(
-                    await LoadLocalReposForRegion(region, account.Credentials, repositoryNameAndPathByRegion)
-                );
+                var region = ToolkitContext?.RegionProvider.GetRegion(regionId);
+                if (region != null)
+                {
+                    validRepositories.AddRange(
+                        await LoadLocalReposForRegion(region, account, repositoryNameAndPathByRegion)
+                    );
+                }
             });
 
             await Task.WhenAll(tasks);
@@ -213,16 +219,16 @@ namespace Amazon.AWSToolkit.CodeCommit
         }
 
         private static async Task<IList<ICodeCommitRepository>> LoadLocalReposForRegion(
-            string region,
-            AWSCredentials accountCredentials, 
+            ToolkitRegion region,
+            AccountViewModel account, 
             Dictionary<string, Dictionary<string, List<string>>> repositoryNameAndPathByRegion)
         {
             List<ICodeCommitRepository> validRepositories = new List<ICodeCommitRepository>();
 
             try
             {
-                var client = BaseRepositoryModel.GetClientForRegion(accountCredentials, region);
-                var repoNameToLocalPaths = repositoryNameAndPathByRegion[region];
+                var client = BaseRepositoryModel.GetClientForRegion(account, region);
+                var repoNameToLocalPaths = repositoryNameAndPathByRegion[region.Id];
 
                 var repositoryMetadatas = await client.GetRepositoryMetadata(repoNameToLocalPaths.Keys.ToList());
 
@@ -238,7 +244,7 @@ namespace Amazon.AWSToolkit.CodeCommit
             }
             catch (Exception e)
             {
-                LOGGER.Error($"Exception batch querying for repos in region {region}", e);
+                LOGGER.Error($"Exception batch querying for repos in region {region?.Id}", e);
             }
 
             return validRepositories;
@@ -246,11 +252,11 @@ namespace Amazon.AWSToolkit.CodeCommit
 
         public ICodeCommitRepository GetRepository(string repositoryName,
                                                    AccountViewModel account,
-                                                   RegionEndPointsManager.RegionEndPoints region)
+                                                   ToolkitRegion region)
         {
             try
             {
-                var client = BaseRepositoryModel.GetClientForRegion(account.Credentials, region.SystemName);
+                var client = BaseRepositoryModel.GetClientForRegion(account, region);
                 var response = client.GetRepository(new GetRepositoryRequest {RepositoryName = repositoryName});
                 return new CodeCommitRepository(response.RepositoryMetadata);
             }
@@ -371,16 +377,13 @@ namespace Amazon.AWSToolkit.CodeCommit
         /// </summary>
         /// <returns></returns>
         public ServiceSpecificCredentials ProbeIamForServiceSpecificCredentials(AccountViewModel account,
-                                                                                RegionEndPointsManager.RegionEndPoints region)
+                                                                                ToolkitRegion region)
         {
-            const string iamEndpointsName = "IAM";
             const int maxServiceSpecificCredentials = 2;
 
             try
             {
-                var iamConfig = new AmazonIdentityManagementServiceConfig();
-                region.GetEndpoint(iamEndpointsName).ApplyToClientConfig(iamConfig);
-                var iamClient = new AmazonIdentityManagementServiceClient(account.Credentials, iamConfig);
+                var iamClient = account.CreateServiceClient<AmazonIdentityManagementServiceClient>(region);
 
                 // First, is the user running as an iam user or as root? If the latter, we can't help them
                 var getUserResponse = iamClient.GetUser();
@@ -565,6 +568,17 @@ namespace Amazon.AWSToolkit.CodeCommit
             return remote?.Url;
         }
 
+        private void ExtractRepoNameAndRegion(string codeCommitRemoteUrl, out string repoName, out ToolkitRegion region)
+        {
+            region = null;
+            ExtractRepoNameAndRegion(codeCommitRemoteUrl, out repoName, out string regionId);
+
+            if (!string.IsNullOrWhiteSpace(regionId))
+            {
+                region = ToolkitContext.RegionProvider.GetRegion(regionId);
+            }
+        }
+
         private void ExtractRepoNameAndRegion(string codeCommitRemoteUrl, out string repoName, out string region)
         {
             // possibly fragile, but expecting host to be 'git-codecommit.REGION.suffix/.../reponame
@@ -638,6 +652,16 @@ namespace Amazon.AWSToolkit.CodeCommit
 
             if (!Repository.IsValid(repoPath))
                 throw new Exception(string.Format("Repository path {0} does not exist.", repoPath));
+        }
+
+        private ToolkitRegion GetFallbackRegion()
+        {
+            if (_fallbackRegion == null)
+            {
+                _fallbackRegion = ToolkitContext?.RegionProvider.GetRegion(RegionEndpoint.USEast1.SystemName);
+            }
+
+            return _fallbackRegion;
         }
     }
 }

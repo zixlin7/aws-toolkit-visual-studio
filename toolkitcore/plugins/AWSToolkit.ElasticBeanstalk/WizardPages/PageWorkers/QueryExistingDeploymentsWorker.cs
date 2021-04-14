@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Linq;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
+using Amazon.AWSToolkit.Regions;
+using Amazon.ElasticBeanstalk;
 using log4net;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
@@ -24,12 +26,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
         struct WorkerData
         {
             public AccountViewModel Account { get; set; }
-            public RegionEndPointsManager.RegionEndPoints Region { get; set; }
+            public ToolkitRegion Region { get; set; }
             public ILog Logger { get; set; }
         }
 
         public QueryExistingDeploymentsWorker(AccountViewModel accountViewModel,
-                                              RegionEndPointsManager.RegionEndPoints region,
+                                              ToolkitRegion region,
                                               ILog logger,
                                               DataAvailableCallback callback)
         {
@@ -54,7 +56,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
 
             try
             {
-                var beanstalkClient = DeploymentWizardHelper.GetBeanstalkClient(workerData.Account, workerData.Region);
+                var beanstalkClient =
+                    workerData.Account.CreateServiceClient<AmazonElasticBeanstalkClient>(workerData.Region);
                 var response = beanstalkClient.DescribeEnvironments();
                 var validEnvironments 
                     = response.Environments.Where(environment => environment.Status == BeanstalkConstants.STATUS_READY 
@@ -81,7 +84,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
                 workerData.Logger.Error(GetType().FullName + ", exception in Worker", exc);
             }
 
-            e.Result = new object[] { workerData.Account, workerData.Region.SystemName, applicationEnvironments.Values.ToList() };
+            e.Result = new object[] { workerData.Account, workerData.Region.Id, applicationEnvironments.Values.ToList() };
         }
 
         void WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

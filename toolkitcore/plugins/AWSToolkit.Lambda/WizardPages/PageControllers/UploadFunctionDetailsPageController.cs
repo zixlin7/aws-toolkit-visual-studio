@@ -2,6 +2,8 @@
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
 using log4net;
 using System.Windows.Controls;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Regions;
 using Amazon.Lambda;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
@@ -14,6 +16,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
     public class UploadFunctionDetailsPageController : IAWSWizardPageController
     {
         ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionDetailsPageController));
+
+        private readonly ToolkitContext _toolkitContext;
 
         private UploadFunctionDetailsPage _pageUI;
 
@@ -45,6 +49,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         public string ShortPageTitle => null;
 
+        public UploadFunctionDetailsPageController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
+
         public bool AllowShortCircuit()
         {
             return IsForwardsNavigationAllowed;
@@ -66,6 +75,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             {
                 _pageUI = new UploadFunctionDetailsPage(this);
                 _pageUI.ViewModel.PropertyChanged += _pageUI_PropertyChanged;
+                _pageUI.ViewModel.Connection.PropertyChanged += _pageUI_PropertyChanged;
                 _pageUI.PropertyChanged += _pageUI_PropertyChanged;
             }
 
@@ -112,11 +122,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             if (_pageUI == null)
                 return false;
 
-            HostingWizard[UploadFunctionWizardProperties.UserAccount] = _pageUI.SelectedAccount;
-            HostingWizard[UploadFunctionWizardProperties.Region] = _pageUI.SelectedRegion;
+            HostingWizard.SetSelectedAccount(_pageUI.SelectedAccount, UploadFunctionWizardProperties.UserAccount);
+            HostingWizard.SetSelectedRegion(_pageUI.SelectedRegion, UploadFunctionWizardProperties.Region);
 
-            var xrayEndpoint = _pageUI.SelectedRegion.GetEndpoint(RegionEndPointsManager.XRAY_ENDPOINT_LOOKUP);
-            HostingWizard.SetProperty(UploadFunctionWizardProperties.XRayAvailable, xrayEndpoint != null);
+            var regionHasXray = _toolkitContext.RegionProvider.IsServiceAvailable(ServiceNames.Xray, _pageUI.SelectedRegion.Id);
+            HostingWizard.SetProperty(UploadFunctionWizardProperties.XRayAvailable, regionHasXray);
 
             HostingWizard[UploadFunctionWizardProperties.FunctionName] = _pageUI.ViewModel.FunctionName;
             HostingWizard[UploadFunctionWizardProperties.Description] = _pageUI.ViewModel.Description;

@@ -42,7 +42,7 @@ namespace Amazon.AWSToolkit.Account
             }
             if (results.GetParameter<bool>(EditAccountController.CREDENTIALS_CHANGE_PARAMETER, false))
             {
-                model.ReloadFromPersistence();
+                model.ReloadFromPersistence(model.DisplayName);
                 model.FullReload(true);
             }
         }

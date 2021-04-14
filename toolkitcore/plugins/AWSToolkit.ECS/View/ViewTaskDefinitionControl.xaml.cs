@@ -22,7 +22,7 @@ namespace Amazon.AWSToolkit.ECS.View
 
         public override string Title => string.Format("{0} ECS Task Definition", this._controller.RegionDisplayName);
 
-        public override string UniqueId => "Task Definition: " + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
+        public override string UniqueId => "Task Definition: " + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.Identifier.Id;
 
         public override bool SupportsBackGroundDataLoad => true;
 

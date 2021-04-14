@@ -40,14 +40,9 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
             try
             {
-                this._cweClient = this.Account.CreateServiceClient<AmazonCloudWatchEventsClient>
-                    (RegionEndPointsManager.GetInstance().GetRegion(this.RegionSystemName).GetEndpoint(RegionEndPointsManager.CLOUDWATCH_EVENT_SERVICE_NAME));
-                this._elbClient = this.Account.CreateServiceClient<AmazonElasticLoadBalancingV2Client>
-                    (RegionEndPointsManager.GetInstance().GetRegion(this.RegionSystemName).GetEndpoint(RegionEndPointsManager.ELB_SERVICE_NAME));
-                this._ec2Client = this.Account.CreateServiceClient<AmazonEC2Client>
-                    (RegionEndPointsManager.GetInstance().GetRegion(this.RegionSystemName).GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME));
-
-
+                this._cweClient = this.Account.CreateServiceClient<AmazonCloudWatchEventsClient>(this.Region);
+                this._elbClient = this.Account.CreateServiceClient<AmazonElasticLoadBalancingV2Client>(this.Region);
+                this._ec2Client = this.Account.CreateServiceClient<AmazonEC2Client>(this.Region);
                 this._clusterArn = clusterViewModel.Cluster.ClusterArn;
 
                 this.Refresh();

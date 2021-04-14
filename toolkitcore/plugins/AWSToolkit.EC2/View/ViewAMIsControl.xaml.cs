@@ -7,7 +7,10 @@ using Amazon.AWSToolkit.EC2.Controller;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.Utils;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
+using Amazon.EC2;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.EC2.View
@@ -17,6 +20,9 @@ namespace Amazon.AWSToolkit.EC2.View
     /// </summary>
     public partial class ViewAMIsControl : BaseAWSView
     {
+        private static readonly string Ec2ServiceName =
+            new AmazonEC2Config().RegionEndpointServiceName;
+
         const string COLUMN_USERSETTINGS_KEY = "ViewAMIMainGrid";
 
         static readonly string DEFAULT_COLUMN_DEFINITIONS;
@@ -24,6 +30,7 @@ namespace Amazon.AWSToolkit.EC2.View
 
         ViewAMIsController _controller;
         Guid _lastTextFilterChangeToken;
+        private IRegionProvider _regionProvider;
 
         static ViewAMIsControl()
         {
@@ -41,11 +48,12 @@ namespace Amazon.AWSToolkit.EC2.View
                 "]";
         }                                                    
 
-        public ViewAMIsControl(ViewAMIsController controller)
+        public ViewAMIsControl(ViewAMIsController controller, IRegionProvider regionProvider)
         {
             InitializeComponent();            
 
             this._controller = controller;
+            this._regionProvider = regionProvider;
             this._ctlCommonFilters.ItemsSource = CommonImageFilters.AllFilters;
             this._ctlPlatformFilters.ItemsSource = PlatformPicker.AllPlatforms;
 
@@ -60,7 +68,7 @@ namespace Amazon.AWSToolkit.EC2.View
 
         public override string Title => string.Format("{0} EC2 AMIs", this._controller.RegionDisplayName);
 
-        public override string UniqueId => "AMIs: " + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
+        public override string UniqueId => "AMIs: " + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.Identifier.Id;
 
         public override bool SupportsBackGroundDataLoad => true;
 
@@ -86,11 +94,6 @@ namespace Amazon.AWSToolkit.EC2.View
             });
         }
 
-        void buildColumns()
-        {
-
-        }
-
         void onGridContextMenu(object sender, RoutedEventArgs evnt)
         {
             try
@@ -104,27 +107,19 @@ namespace Amazon.AWSToolkit.EC2.View
                 deregisterImage.Click += this.onDeregisterClick;
                 deregisterImage.Icon = IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.deregisterami.png");
 
-                MenuItem copyAmi = new MenuItem() { Header = "Copy to Region" };                
-                foreach (var item in RegionEndPointsManager.GetInstance().Regions)
-                {                    
-                    if (_controller.RegionSystemName.Equals(item.SystemName) || item.HasRestrictions)
+                MenuItem copyAmi = new MenuItem() { Header = "Copy to Region" };
+                foreach (var item in _regionProvider.GetRegions(PartitionIds.AWS))
+                {
+                    //Skip the region if it is the current region, is not in aws partition and does not support ec2
+                    if (!string.Equals(_controller.Region.Id, item.Id) &&
+                        _regionProvider.IsServiceAvailable(Ec2ServiceName, item.Id))
                     {
-                        // Skip the current region and the regions with restrictions.
-                        continue;
+                        var regionItem = new MenuItem { Header = item.DisplayName, Tag = item };
+                        regionItem.Click += this.onCopyAmiClick;
+
+                        copyAmi.Items.Add(regionItem);
                     }
-
-                    if (item.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME) == null)
-                    {
-                        // Skip the region if it does not have a EC2 service.
-                        continue;
-                    }
-
-                    var regionItem = new MenuItem { Header = item.DisplayName, Tag = item };
-                    regionItem.Click += this.onCopyAmiClick;
-
-                    copyAmi.Items.Add(regionItem);
                 }
- 
                 MenuItem editPermission = new MenuItem() { Header = "Edit Permission" };
                 editPermission.Click += this.onEditPermissionClick;
                 editPermission.Icon = IconHelper.GetIcon(this.GetType().Assembly, "Amazon.AWSToolkit.EC2.Resources.EmbeddedImages.ami_permissions.png");
@@ -196,8 +191,8 @@ namespace Amazon.AWSToolkit.EC2.View
         {
             try
             {
-                var sourceRegion = (sender as Control).Tag as RegionEndPointsManager.RegionEndPoints;
-                this._controller.CopyAmi(this._ctlDataGrid.GetSelectedItems<ImageWrapper>()[0],sourceRegion);
+                var sourceRegion = (sender as Control).Tag as ToolkitRegion;
+                this._controller.CopyAmi(this._ctlDataGrid.GetSelectedItems<ImageWrapper>()[0], sourceRegion);
             }
             catch (Exception e)
             {

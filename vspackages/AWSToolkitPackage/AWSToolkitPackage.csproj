@@ -100,6 +100,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Images\VsImageProvider.cs" />
     <Compile Include="NativeMethods.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -167,14 +168,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\basic-serverless.template" />
-    <Resource Include="$(BuildRoot)\hostedfiles\ServiceEndPoints.xml">
-      <Link>HostedFiles\ServiceEndPoints.xml</Link>
-    </Resource>
     <Resource Include="$(BuildRoot)\hostedfiles\endpoints.json">
       <Link>HostedFiles\endpoints.json</Link>
-    </Resource>
-    <Resource Include="$(BuildRoot)\hostedfiles\AccountTypes.xml">
-      <Link>HostedFiles\AccountTypes.xml</Link>
     </Resource>
     <Content Include="log4net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -738,6 +733,18 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Visible>False</Visible>
     </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.SSO.dll">
+      <Link>AWSSDK.SSO.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.SSOOIDC.dll">
+      <Link>AWSSDK.SSOOIDC.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
   </ItemGroup>
   <!-- Additional dependency content for the tasks, which we handle in the package project 
        right now, as trying to flag this as 'content' in the cloudformation.msbuldtasks project
@@ -1090,6 +1097,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Data.Services">
       <Version>9.0.21023</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.ImageCatalog">
+      <Version>15.0.26606</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Imaging">
       <Version>15.0.26201</Version>

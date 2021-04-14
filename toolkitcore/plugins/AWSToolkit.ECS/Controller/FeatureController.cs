@@ -2,6 +2,7 @@
 using Amazon.AWSToolkit.ECS.Model;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
 using Amazon.ECS;
 using Amazon.ECR;
 
@@ -21,7 +22,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
             if (this._featureViewModel == null)
                 return new ActionResults().WithSuccess(false);
 
-            this._endpointUniqueIdentifier = ((IEndPointSupport)this._featureViewModel.Parent).CurrentEndPoint.UniqueIdentifier;
+            this._endpointUniqueIdentifier = ((IEndPointSupport)this._featureViewModel.Parent).Region.Id;
             this._ecsClient = this._featureViewModel.ECSClient;
             this._model = new M();
 
@@ -52,8 +53,8 @@ namespace Amazon.AWSToolkit.ECS.Controller
 
         public AccountViewModel Account => this._featureViewModel.AccountViewModel;
 
-        public string RegionDisplayName => this._featureViewModel.RegionDisplayName;
+        public string RegionDisplayName => this._featureViewModel.Region.DisplayName ?? string.Empty;
 
-        public string RegionSystemName => this.FeatureViewModel.RegionSystemName;
+        public ToolkitRegion Region => this.FeatureViewModel.Region;
     }
 }

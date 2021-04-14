@@ -10,8 +10,10 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
 {
     /// <summary>
     /// MEF Activated
-    /// Manages the panel that shows CodeCommit repos in an AWS Account.
-    /// (where you can Clone/Create repos)
+    /// This manages the panel that is shown when users are connected to CodeCommit
+    /// with credentials. That panel allows users to Clone and Create CodeCommit repos,
+    /// and shows repos that have been previously pulled locally.
+    /// 
     /// If user signs out, this panel is hidden, and <see cref="InvitationSection"/> is shown.
     /// </summary>
     [TeamExplorerSection(TeamExplorerConnectionSectionId, TeamExplorerPageIds.Connect, 10)]
@@ -70,13 +72,11 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
             _view.DataContext = _viewModel;
         }
 
-        // triggers a change of visibility of the section, and a refresh of the repos collection
-        // in the panel
-        private void OnTeamExplorerBindingChanged(TeamExplorerConnection connection)
+        // triggers a change of visibility of the section
+        private void OnTeamExplorerBindingChanged(TeamExplorerConnection oldConnection, TeamExplorerConnection newConnection)
         {
             LOGGER.Info("CodeCommit Connect OnTeamExplorerBindingChanged");
-            IsVisible = connection != null;
-            //_viewModel?.RefreshRepositoriesList();
+            IsVisible = newConnection != null;
         }
     }
 }

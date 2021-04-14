@@ -87,7 +87,7 @@ namespace Amazon.AWSToolkit.RDS.View
 
         public override string Title => string.Format("{0} DB Subnet Groups", this._controller.RegionDisplayName);
 
-        public override string UniqueId => "RDSDBSubnetGroups_" + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
+        public override string UniqueId => "RDSDBSubnetGroups_" + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.Identifier.Id;
 
         public override bool SupportsBackGroundDataLoad => true;
 

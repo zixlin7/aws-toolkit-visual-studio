@@ -1,25 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
 {
     public class ElasticBeanstalkRootViewModel : ServiceRootViewModel, IElasticBeanstalkRootViewModel
     {
-        ElasticBeanstalkRootViewMetaNode _metaNode;
-        AccountViewModel _accountViewModel;
+        private readonly ElasticBeanstalkRootViewMetaNode _metaNode;
+        private readonly Lazy<IAmazonElasticBeanstalk> _beanstalkClient;
 
-        IAmazonElasticBeanstalk _beanstalkClient;
-
-        public ElasticBeanstalkRootViewModel(AccountViewModel accountViewModel)
-            : base(accountViewModel.MetaNode.FindChild<ElasticBeanstalkRootViewMetaNode>(), accountViewModel, "AWS Elastic Beanstalk")
+        public ElasticBeanstalkRootViewModel(AccountViewModel accountViewModel, ToolkitRegion region)
+            : base(accountViewModel.MetaNode.FindChild<ElasticBeanstalkRootViewMetaNode>(), accountViewModel, "AWS Elastic Beanstalk", region)
         {
-            this._metaNode = base.MetaNode as ElasticBeanstalkRootViewMetaNode;
-            this._accountViewModel = accountViewModel;            
+            _metaNode = base.MetaNode as ElasticBeanstalkRootViewMetaNode;
+            _beanstalkClient = new Lazy<IAmazonElasticBeanstalk>(CreateBeanstalkClient);
         }
 
         public override string ToolTip =>
@@ -31,14 +31,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
 
         protected override string IconName => "Amazon.AWSToolkit.ElasticBeanstalk.Resources.EmbeddedImages.rootviewnode.png";
 
-        protected override void BuildClient(AWSCredentials awsCredentials)
-        {
-            var config = new AmazonElasticBeanstalkConfig();
-            this.CurrentEndPoint.ApplyToClientConfig(config);
-            this._beanstalkClient = new AmazonElasticBeanstalkClient(awsCredentials, config);
-        }
-
-        public IAmazonElasticBeanstalk BeanstalkClient => this._beanstalkClient;
+        public IAmazonElasticBeanstalk BeanstalkClient => this._beanstalkClient.Value;
 
 
         protected override void LoadChildren()
@@ -81,6 +74,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
         public void RemoveApplication(string applicationName)
         {
             base.RemoveChild(applicationName);
+        }
+
+        private IAmazonElasticBeanstalk CreateBeanstalkClient()
+        {
+            return AccountViewModel.CreateServiceClient<AmazonElasticBeanstalkClient>(Region);
         }
     }
 }

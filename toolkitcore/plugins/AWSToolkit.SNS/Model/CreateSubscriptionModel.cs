@@ -6,6 +6,8 @@ namespace Amazon.AWSToolkit.SNS.Model
 {
     public class CreateSubscriptionModel : BaseModel
     {
+        private readonly Dictionary<string, string> _sqsArnToUrl = new Dictionary<string, string>();
+
         string _region;
         string _topicArn;
         SubscriptionProtocol _protocol;
@@ -54,7 +56,7 @@ namespace Amazon.AWSToolkit.SNS.Model
 
         public List<string> PossibleTopicArns => this._possibleTopicArns;
 
-        public List<string> PossibleSQSEndpoints => this._possibleSQSEndpoints;
+        public IEnumerable<string> PossibleSQSEndpoints => this._possibleSQSEndpoints;
 
         public List<string> PossibleLambdaEndpoints => this._possibleLambdaEndpoints;
 
@@ -72,7 +74,7 @@ namespace Amazon.AWSToolkit.SNS.Model
         {
             get 
             {
-                if (!string.Equals(this._region, RegionEndPointsManager.US_EAST_1))
+                if (!string.Equals(this._region, RegionEndpoint.USEast1.SystemName))
                 {
                     var list = new List<SubscriptionProtocol>();
                     foreach (var prot in SubscriptionProtocol.ALL_PROTOCOLS)
@@ -120,6 +122,29 @@ namespace Amazon.AWSToolkit.SNS.Model
             {
                 this._endpoint = value;
                 NotifyPropertyChanged("Endpoint");
+            }
+        }
+
+        public string EndpointSqsUrl
+        {
+            get
+            {
+                if (!_sqsArnToUrl.TryGetValue(Endpoint, out var url))
+                {
+                    return null;
+                }
+
+                return url;
+            }
+        }
+
+        public void AddSqsEndpoint(string queueUrl, string queueArn)
+        {
+            _sqsArnToUrl[queueArn] = queueUrl;
+
+            if (!_possibleSQSEndpoints.Contains(queueArn))
+            {
+                _possibleSQSEndpoints.Add(queueArn);
             }
         }
     }

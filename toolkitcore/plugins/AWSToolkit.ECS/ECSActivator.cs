@@ -85,7 +85,7 @@ namespace Amazon.AWSToolkit.ECS
             if (seedProperties == null)
                 seedProperties = new Dictionary<string, object>();
 
-            var controller = new PublishContainerToAWSController();
+            var controller = new PublishContainerToAWSController(ToolkitContext);
             controller.Execute(seedProperties);
         }
     }

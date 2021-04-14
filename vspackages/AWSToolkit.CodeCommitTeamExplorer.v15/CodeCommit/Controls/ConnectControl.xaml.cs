@@ -8,8 +8,8 @@ using log4net;
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls
 {
     /// <summary>
-    /// "Login" control to associate a credential profile with an
-    /// active connection to the CodeCommit provider in Team Explorer.
+    /// "Login" control that prompts users to select which credentials to 
+    /// use to connect to the CodeCommit provider in Team Explorer.
     /// </summary>
     public partial class ConnectControl
     {

@@ -2,6 +2,7 @@
 using Amazon.AWSToolkit.Util;
 
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.RDS.Model;
 using Amazon.AWSToolkit.RDS.Nodes;
@@ -23,6 +24,12 @@ namespace Amazon.AWSToolkit.RDS.Controller
         DBSecurityGroupWrapper _dbSecurityGroup;
         IAmazonRDS _rdsClient;
         RDSSecurityGroupRootViewModel _securityRootViewModel;
+        private readonly ToolkitContext _toolkitContext;
+
+        public AddPermissionRuleController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         public ActionResults Execute(IAmazonRDS rdsClient, DBSecurityGroupWrapper dbSecurityGroup, RDSSecurityGroupRootViewModel securityRootViewModel)
         {
@@ -44,8 +51,6 @@ namespace Amazon.AWSToolkit.RDS.Controller
         }
 
         public DBSecurityGroupWrapper SecurityGroup => this._dbSecurityGroup;
-
-        public AccountViewModel CurrentAccount => this._securityRootViewModel.AccountViewModel;
 
         public AddPermissionRuleModel Model => this._model;
 
@@ -94,16 +99,16 @@ namespace Amazon.AWSToolkit.RDS.Controller
             accountNumber = stripDisplayNameFromAccountNumber(accountNumber);
             List<string> securityGroups = new List<string>();
 
-            var account = ToolkitFactory.Instance.RootViewModel.AccountFromAccountNumber(accountNumber);
-            if (account == null)
+            var currentAccountNumber = _toolkitContext.ConnectionManager.ActiveAccountId;
+            if (string.IsNullOrEmpty(currentAccountNumber) || !accountNumber.Equals(currentAccountNumber))
+            {
                 return securityGroups;
+            }
 
-            var endPoints = RegionEndPointsManager.GetInstance().GetRegion(this._securityRootViewModel.CurrentEndPoint.RegionSystemName);
-            var endPoint = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
-
-            var config = new AmazonEC2Config();
-            endPoint.ApplyToClientConfig(config);
-            var client = new AmazonEC2Client(account.Credentials, config);
+            var credentialId = _toolkitContext.ConnectionManager.ActiveCredentialIdentifier;
+            var client = _toolkitContext.ServiceClientManager.CreateServiceClient<AmazonEC2Client>(
+                credentialId,
+                _securityRootViewModel.Region);
 
             var response = client.DescribeSecurityGroups(new DescribeSecurityGroupsRequest());
             foreach (var group in response.SecurityGroups)

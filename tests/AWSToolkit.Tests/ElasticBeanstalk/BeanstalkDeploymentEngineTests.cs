@@ -10,18 +10,10 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
 {
     public class BaseBeanstalkDeploymentEngineTests
     {
+        protected const string SampleRegionId = "us-east-1";
+
         protected readonly Mock<IAmazonIdentityManagementService> _iamClient = new Mock<IAmazonIdentityManagementService>();
 
-        protected readonly RegionEndPointsManager.RegionEndPoints _regionEndPoints =
-            new RegionEndPointsManager.RegionEndPoints("us-east-1", "US East",
-                new Dictionary<string, RegionEndPointsManager.EndPoint>()
-                {
-                    {RegionEndPointsManager.EC2_SERVICE_NAME, new RegionEndPointsManager.EndPoint("foo", "https://foo")},
-                    {
-                        RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME,
-                        new RegionEndPointsManager.EndPoint("foo", "https://foo")
-                    },
-                }, new string[0]);
         protected readonly Mock<DeploymentObserver> _observer = new Mock<DeploymentObserver>();
 
         public BaseBeanstalkDeploymentEngineTests()
@@ -83,7 +75,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             var response = BeanstalkDeploymentEngine.ConfigureRoleAndProfile(
                 _iamClient.Object,
                 roleOrProfileName,
-                _regionEndPoints,
+                SampleRegionId,
                 _observer.Object);
 
             _iamClient.Verify(mock => mock.CreateRole(It.IsAny<CreateRoleRequest>()), Times.Once);
@@ -101,7 +93,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             var response = BeanstalkDeploymentEngine.ConfigureRoleAndProfile(
                 _iamClient.Object,
                 roleOrProfileName,
-                _regionEndPoints,
+                SampleRegionId,
                 _observer.Object);
 
             Assert.Equal(roleOrProfileName, response);
@@ -117,7 +109,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             var response = BeanstalkDeploymentEngine.ConfigureRoleAndProfile(
                 _iamClient.Object,
                 roleOrProfileName,
-                _regionEndPoints,
+                SampleRegionId,
                 _observer.Object);
 
             _iamClient.Verify(mock => mock.CreateRole(It.IsAny<CreateRoleRequest>()), Times.Never);
@@ -138,7 +130,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             BeanstalkDeploymentEngine.ConfigureServiceRole(
                 _iamClient.Object,
                 serviceRoleName,
-                _regionEndPoints,
+                SampleRegionId,
                 _observer.Object);
 
             _iamClient.Verify(mock => mock.CreateRole(It.IsAny<CreateRoleRequest>()), Times.Never);
@@ -153,7 +145,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
             BeanstalkDeploymentEngine.ConfigureServiceRole(
                 _iamClient.Object,
                 serviceRoleName,
-                _regionEndPoints,
+                SampleRegionId,
                 _observer.Object);
 
             _iamClient.Verify(mock => mock.CreateRole(It.IsAny<CreateRoleRequest>()), Times.Once);

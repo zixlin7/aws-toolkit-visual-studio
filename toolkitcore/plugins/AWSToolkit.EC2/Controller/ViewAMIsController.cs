@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.EC2.Nodes;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.View;
 using Amazon.AWSToolkit.EC2.View.DataGrid;
 using Amazon.AWSToolkit.EC2.Utils;
+using Amazon.AWSToolkit.Regions;
 using Amazon.EC2.Model;
 
 namespace Amazon.AWSToolkit.EC2.Controller
@@ -15,10 +18,16 @@ namespace Amazon.AWSToolkit.EC2.Controller
         ViewAMIsControl _control;
         Dictionary<CommonImageFilters, List<Image>> _describeCache = new Dictionary<CommonImageFilters, List<Image>>();
         IEnumerable<IEC2Column> _columnsToSearch;
+        private ToolkitContext _toolkitContext;
+
+        public ViewAMIsController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         protected override void DisplayView()
         {
-            this._control = new ViewAMIsControl(this);
+            this._control = new ViewAMIsControl(this, _toolkitContext.RegionProvider);
             ToolkitFactory.Instance.ShellProvider.OpenInEditor(this._control);
         }
 
@@ -104,9 +113,9 @@ namespace Amazon.AWSToolkit.EC2.Controller
             return true;
         }
 
-        public void CopyAmi(ImageWrapper image,RegionEndPointsManager.RegionEndPoints destination)
+        public void CopyAmi(ImageWrapper image, ToolkitRegion destination)
         {
-            var controller = new CopyAmiController(this.RegionSystemName, destination, this.FeatureViewModel.AccountViewModel);
+            var controller = new CopyAmiController(this.Region.Id, destination, this.FeatureViewModel.AccountViewModel);
             controller.Execute(this.EC2Client, new List<ImageWrapper> { image });
         }
 

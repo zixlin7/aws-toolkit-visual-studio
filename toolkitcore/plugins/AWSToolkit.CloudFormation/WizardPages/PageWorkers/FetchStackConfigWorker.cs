@@ -11,6 +11,7 @@ using Amazon.EC2.Model;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 using Amazon.AutoScaling;
+using Amazon.AWSToolkit.Regions;
 using Amazon.ElasticLoadBalancing;
 using ThirdParty.Json.LitJson;
 using log4net;
@@ -38,17 +39,17 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageWorkers
 
         class ClientFactory
         {
-            public ClientFactory(AccountViewModel account, RegionEndPointsManager.RegionEndPoints regionEndPoints)
+            public ClientFactory(AccountViewModel account, ToolkitRegion region)
             {
                 _account = account;
-                _regionEndPoints = regionEndPoints;
+                _region = region;
             }
 
             AccountViewModel _account;
             public AccountViewModel Account => _account;
 
-            RegionEndPointsManager.RegionEndPoints _regionEndPoints;
-            public RegionEndPointsManager.RegionEndPoints RegionEndPoints => _regionEndPoints;
+            ToolkitRegion _region;
+            public ToolkitRegion Region => _region;
 
             IAmazonAutoScaling _autoScalingClient;
             public IAmazonAutoScaling AutoScalingClient
@@ -57,9 +58,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageWorkers
                 {
                     if (_autoScalingClient == null)
                     {
-                        var asConfig = new AmazonAutoScalingConfig ();
-                        RegionEndPoints.GetEndpoint(RegionEndPointsManager.AUTOSCALING_SERVICE_NAME).ApplyToClientConfig(asConfig);
-                        _autoScalingClient = new AmazonAutoScalingClient(Account.Credentials, asConfig);
+                        _autoScalingClient = Account.CreateServiceClient<AmazonAutoScalingClient>(Region);
                     }
 
                     return _autoScalingClient;
@@ -73,9 +72,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageWorkers
                 {
                     if (_s3Client == null)
                     {
-                        var s3Config = new AmazonS3Config ();
-                        RegionEndPoints.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME).ApplyToClientConfig(s3Config);
-                        _s3Client = new AmazonS3Client(Account.Credentials, s3Config);
+                        _s3Client = Account.CreateServiceClient<AmazonS3Client>(Region);
                     }
 
                     return _s3Client;
@@ -89,9 +86,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageWorkers
                 {
                     if (_ec2Client == null)
                     {
-                        var ec2Config = new AmazonEC2Config ();
-                        RegionEndPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).ApplyToClientConfig(ec2Config);
-                        _ec2Client = new AmazonEC2Client(Account.Credentials, ec2Config);
+                        _ec2Client = Account.CreateServiceClient<AmazonEC2Client>(Region);
                     }
 
                     return _ec2Client;
@@ -105,9 +100,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageWorkers
                 {
                     if (_cloudFormationClient == null)
                     {
-                        var cfConfig = new AmazonCloudFormationConfig ();
-                        RegionEndPoints.GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME).ApplyToClientConfig(cfConfig);
-                        _cloudFormationClient = new AmazonCloudFormationClient(Account.Credentials, cfConfig);
+                        _cloudFormationClient = Account.CreateServiceClient<AmazonCloudFormationClient>(Region);
                     }
 
                     return _cloudFormationClient;
@@ -121,9 +114,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageWorkers
                 {
                     if (_elbClient == null)
                     {
-                        var elbConfig = new AmazonElasticLoadBalancingConfig ();
-                        RegionEndPoints.GetEndpoint(RegionEndPointsManager.ELB_SERVICE_NAME).ApplyToClientConfig(elbConfig);
-                        _elbClient = new AmazonElasticLoadBalancingClient(Account.Credentials, elbConfig);
+                        _elbClient = Account.CreateServiceClient<AmazonElasticLoadBalancingClient>(Region);
                     }
 
                     return _elbClient;
@@ -134,8 +125,8 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageWorkers
             private ClientFactory() { }
         }
 
-        public FetchStackConfigWorker(AccountViewModel accountViewModel, 
-                                      RegionEndPointsManager.RegionEndPoints regionEndPoints,
+        public FetchStackConfigWorker(AccountViewModel accountViewModel,
+                                      ToolkitRegion region,
                                       Stack runningStack,
                                       ILog logger,
                                       DataAvailableCallback callback)
@@ -151,9 +142,9 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageWorkers
 
             bw.RunWorkerAsync(new WorkerData
             {
-                Factory = new ClientFactory(accountViewModel, regionEndPoints),
+                Factory = new ClientFactory(accountViewModel, region),
                 RunningStack = runningStack,
-                DefaultBucketName = DeploymentControllerBase.DefaultBucketName(accountViewModel, regionEndPoints.SystemName),
+                DefaultBucketName = DeploymentControllerBase.DefaultBucketName(accountViewModel, region),
                 DefaultConfigFileKey = DeploymentControllerBase.DefaultConfigFileKey(runningStack.StackName),
                 Logger = logger
             });

@@ -11,7 +11,7 @@ namespace Amazon.AWSToolkit.S3
 
         public override void RegisterMetaNodes()
         {
-            var rootMetaNode = new S3RootViewMetaNode();
+            var rootMetaNode = new S3RootViewMetaNode(ToolkitContext);
             var bucketMetaNode = new S3BucketViewMetaNode();
 
             rootMetaNode.Children.Add(bucketMetaNode);
@@ -27,13 +27,13 @@ namespace Amazon.AWSToolkit.S3
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<CreateBucketController>().Execute);
 
             rootNode.S3BucketViewMetaNode.OnBrowse =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<BucketBrowserController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new BucketBrowserController(ToolkitContext)).Execute);
 
             rootNode.S3BucketViewMetaNode.OnDelete =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteBucketController>().Execute);
 
             rootNode.S3BucketViewMetaNode.OnProperties =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<BucketPropertiesController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new BucketPropertiesController(ToolkitContext)).Execute);
 
             rootNode.S3BucketViewMetaNode.OnViewMultipartUploads =
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewMultipartUploadsController>().Execute);

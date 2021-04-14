@@ -1,4 +1,6 @@
 ﻿using System;
+
+using Amazon.AWSToolkit.Regions;
 using Amazon.S3;
 using Amazon.S3.Model;
 
@@ -6,7 +8,10 @@ namespace Amazon.AWSToolkit.S3
 {
     public static class S3Utils
     {
-        public static void BuildS3ClientForBucket(Account.AccountViewModel account, IAmazonS3 startingClient, string bucketName, out IAmazonS3 regionSpecificClient, ref string overrideRegion)
+        private static readonly string S3ServiceName =
+            new AmazonS3Config().RegionEndpointServiceName;
+
+        public static void BuildS3ClientForBucket(Account.AccountViewModel account, IAmazonS3 startingClient, string bucketName, IRegionProvider regionProvider, out IAmazonS3 regionSpecificClient, ref string overrideRegion)
         {
 
             try
@@ -29,35 +34,19 @@ namespace Amazon.AWSToolkit.S3
 
                 }
 
-                var region = RegionEndPointsManager.GetInstance().GetRegion(overrideRegion);
-                if (region == null || region.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME) == null)
+                var region = regionProvider.GetRegion(overrideRegion);
+                if (region == null || !regionProvider.IsServiceAvailable(S3ServiceName, overrideRegion))
                 {
                     regionSpecificClient = startingClient;
                     return;
                 }
-
-                var endPoint = region.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME);
-                var config = BuildS3Config(endPoint);
-                regionSpecificClient = new AmazonS3Client(account.Credentials, config);
+                regionSpecificClient = account.CreateServiceClient<AmazonS3Client>(region);
             }
             catch (Exception)
             {
                 regionSpecificClient = startingClient;
                 return;
             }
-        }
-
-        public static AmazonS3Config BuildS3Config(RegionEndPointsManager.EndPoint endpoint)
-        {
-            var config = new AmazonS3Config();
-            endpoint.ApplyToClientConfig(config);
-            return config;
-        }
-
-        public static AmazonS3Config BuildS3Config(string endpointUrl)
-        {
-            var config = new AmazonS3Config { ServiceURL = endpointUrl };
-            return config;
         }
     }
 }

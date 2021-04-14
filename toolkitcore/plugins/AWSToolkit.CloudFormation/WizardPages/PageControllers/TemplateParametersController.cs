@@ -11,6 +11,7 @@ using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI;
 using Amazon.AWSToolkit.PluginServices.Deployment;
+using Amazon.AWSToolkit.Regions;
 
 using log4net;
 
@@ -162,7 +163,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
                     return;
 
                 var accountModel = HostingWizard.GetProperty<AccountViewModel>(CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedAccount);
-                var region = HostingWizard.GetProperty<RegionEndPointsManager.RegionEndPoints>(CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedRegion);
+                var region = HostingWizard.GetProperty<ToolkitRegion>(CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedRegion);
 
                 var stackName = HostingWizard.GetProperty<string>(DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName);
 

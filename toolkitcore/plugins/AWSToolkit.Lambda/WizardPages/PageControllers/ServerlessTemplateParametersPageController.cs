@@ -150,8 +150,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
                 if (createStack)
                     return;
 
-                var accountModel = HostingWizard.GetProperty<AccountViewModel>(UploadFunctionWizardProperties.UserAccount);
-                var region = HostingWizard.GetProperty<RegionEndPointsManager.RegionEndPoints>(UploadFunctionWizardProperties.Region);
+                var accountModel = HostingWizard.GetSelectedAccount(UploadFunctionWizardProperties.UserAccount);
+                var region = HostingWizard.GetSelectedRegion(UploadFunctionWizardProperties.Region);
 
                 var stackName = HostingWizard.GetProperty<string>(UploadFunctionWizardProperties.StackName);
 

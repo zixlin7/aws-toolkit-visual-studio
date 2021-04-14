@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Amazon;
 using Amazon.Runtime;
 using Amazon.Util;
 using Amazon.AWSToolkit;
@@ -107,9 +108,7 @@ namespace AWSDeployment
             {
                 if (this._cfClient == null)
                 {
-                    var cfConfig = new AmazonCloudFormationConfig();
-                    RegionEndPoints.GetEndpoint("CloudFormation").ApplyToClientConfig(cfConfig);
-                    this._cfClient = new AmazonCloudFormationClient(Credentials, cfConfig);
+                    this._cfClient = new AmazonCloudFormationClient(Credentials, RegionEndpoint.GetBySystemName(Region));
                 }
 
                 return _cfClient;
@@ -123,9 +122,7 @@ namespace AWSDeployment
             {
                 if (this._asClient == null)
                 {
-                    var asConfig = new AmazonAutoScalingConfig ();
-                    RegionEndPoints.GetEndpoint("AutoScaling").ApplyToClientConfig(asConfig);
-                    this._asClient = new AmazonAutoScalingClient(Credentials, asConfig);
+                    this._asClient = new AmazonAutoScalingClient(Credentials, RegionEndpoint.GetBySystemName(Region));
                 }
 
                 return this._asClient;
@@ -139,9 +136,7 @@ namespace AWSDeployment
             {
                 if (this._elbClient == null)
                 {
-                    var elbConfig = new AmazonElasticLoadBalancingConfig ();
-                    RegionEndPoints.GetEndpoint("ELB").ApplyToClientConfig(elbConfig);
-                    this._elbClient = new AmazonElasticLoadBalancingClient(Credentials, elbConfig);
+                    this._elbClient = new AmazonElasticLoadBalancingClient(Credentials, RegionEndpoint.GetBySystemName(Region));
                 }
 
                 return this._elbClient;

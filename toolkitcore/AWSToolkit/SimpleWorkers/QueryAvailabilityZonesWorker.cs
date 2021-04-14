@@ -6,6 +6,7 @@ using Amazon.EC2;
 using Amazon.EC2.Model;
 
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Regions;
 
 using log4net;
 
@@ -32,7 +33,7 @@ namespace Amazon.AWSToolkit.SimpleWorkers
         }
 
         public QueryAvailabilityZonesWorker(AccountViewModel account,
-                                            RegionEndPointsManager.RegionEndPoints regionEndPoints,
+                                            ToolkitRegion region,
                                             ILog logger,
                                             DataAvailableCallback callback)
         {
@@ -41,12 +42,7 @@ namespace Amazon.AWSToolkit.SimpleWorkers
             BackgroundWorker bw = new BackgroundWorker();
             bw.DoWork += new DoWorkEventHandler(Worker);
             bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(WorkerCompleted);
-
-            var region = regionEndPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
-            var ec2Config = new AmazonEC2Config();
-            region.ApplyToClientConfig(ec2Config);
-
-            IAmazonEC2 ec2Client = new AmazonEC2Client(account.Credentials, ec2Config);
+            var ec2Client = account.CreateServiceClient<AmazonEC2Client>(region);
 
             bw.RunWorkerAsync(new object[] { ec2Client, logger });
         }

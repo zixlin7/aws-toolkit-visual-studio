@@ -1,0 +1,4 @@
+{
+    "Type": "Breaking Change",
+    "Description": "Support for working in region sets (aka Partitions) like GovCloud or China has changed. If your account is based in a different partition (like GovCloud or China), you will need to set the `region` field in your credentials profile so that the Toolkit is able to work with the proper set of regions. Previously, this was adjusted using the 'Account Type' field in the add/edit Profile dialog."
+}

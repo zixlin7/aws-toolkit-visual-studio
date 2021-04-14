@@ -4,12 +4,15 @@ using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.IdentityManagement.View;
 using Amazon.AWSToolkit.IdentityManagement.Model;
 using Amazon.AWSToolkit.IdentityManagement.Nodes;
+using Amazon.EC2;
 using Amazon.IdentityManagement.Model;
 
 namespace Amazon.AWSToolkit.IdentityManagement.Controller
 {
     public class CreateRoleController : BaseContextCommand
     {
+        private static readonly string Ec2ServiceName = new AmazonEC2Config().RegionEndpointServiceName;
+
         CreateRoleControl _control;
         CreateRoleModel _model;
         IAMRoleRootViewModel _rootModel;
@@ -34,12 +37,13 @@ namespace Amazon.AWSToolkit.IdentityManagement.Controller
 
         public void Persist()
         {
+            var assumeRolePolicyDocument = Constants.GetIAMRoleAssumeRolePolicyDocument(
+                Ec2ServiceName,
+                this._rootModel.IAMRootViewModel.Region.Id);
             var roleRequest = new CreateRoleRequest()
             {
                 RoleName = this.Model.RoleName.Trim(),
-                AssumeRolePolicyDocument 
-                    = Constants.GetIAMRoleAssumeRolePolicyDocument(RegionEndPointsManager.EC2_SERVICE_NAME, 
-                                                                   this._rootModel.IAMRootViewModel.CurrentRegion)
+                AssumeRolePolicyDocument = assumeRolePolicyDocument,
             };
             var createResponse = this._rootModel.IAMClient.CreateRole(roleRequest);
 

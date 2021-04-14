@@ -10,13 +10,16 @@ using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.EC2;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.PluginServices.Deployment;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Settings;
+using Amazon.AWSToolkit.Util;
 using log4net;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
@@ -24,8 +27,16 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
     public class StartPageController : IAWSWizardPageController
     {
         StartPage _pageUI;
+        private bool _pageUiActivated = false;
+
         readonly object _syncLock = new object();
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(StartPageController));
+
+        private readonly ToolkitContext _toolkitContext;
+
+        private const int AccountRegionChangedDebounceMs = 250;
+
+        private readonly DebounceDispatcher _accountRegionChangeDebounceDispatcher = new DebounceDispatcher();
 
         readonly Dictionary<string, List<DeploymentTemplateWrapperBase>> _templatesByRegion 
             = new Dictionary<string, List<DeploymentTemplateWrapperBase>>();
@@ -63,6 +74,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 
         public string PageDescription => "Publish can create a new application/environment or redeploy to an existing environment.";
 
+        public StartPageController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
+
         public void ResetPage()
         {
 
@@ -77,8 +93,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
         {
             if (_pageUI == null)
             {
-                _pageUI = new StartPage(this);
-                 _pageUI.PropertyChanged += OnPagePropertyChanged;
+                _pageUI = new StartPage(_toolkitContext);
+                _pageUI.PropertyChanged += OnPagePropertyChanged;
 
                 string templateManifest = S3FileFetcher.Instance.GetFileContent(DeploymentTemplateWrapperBase.TEMPLATEMANIFEST_FILE);
                 if (!string.IsNullOrEmpty(templateManifest))
@@ -94,10 +110,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 
         public void PageActivated(AWSWizardConstants.NavigationReason navigationReason)
         {
-            if (_pageUI.RootViewModel == null) // first-time activation
+            if (!_pageUiActivated) // first-time activation
             {
                 var viewModel = HostingWizard[CommonWizardProperties.propkey_NavigatorRootViewModel] as AWSViewModel;
-                _pageUI.RootViewModel = viewModel;
 
                 AccountViewModel account = null;
                 if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_SeedAccountGuid))
@@ -108,9 +123,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 
                 if (account == null) // go for the last-used (ie in-scope) toolkit account
                 {
-                    var lastAccountId = ToolkitSettings.Instance.LastAccountSelectedKey;
-                    if (!string.IsNullOrEmpty(lastAccountId))
-                        account = viewModel.AccountFromIdentityKey(lastAccountId);
+                    var lastSelectedCredentialId = ToolkitSettings.Instance.LastSelectedCredentialId;
+                    if (!string.IsNullOrEmpty(lastSelectedCredentialId))
+                    {
+                       account = viewModel.AccountFromCredentialId(lastSelectedCredentialId);
+                    }
 
                     // if we came from the account registration landing page, the wizard has 
                     // CommonWizardProperties.AccountSelection.propkey_SelectedAccount already set however
@@ -119,9 +136,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                         account = viewModel.RegisteredAccounts[0];
                 }
 
-                HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] = account;
+                HostingWizard.SetSelectedAccount(account);
 
-                _pageUI.Initialize(account);
+                _pageUI.Connection.Account = account;
+                _pageUI.Connection.Region =
+                    _toolkitContext.RegionProvider.GetRegion(ToolkitSettings.Instance.LastSelectedRegion) ??
+                    _toolkitContext.RegionProvider.GetRegion(RegionEndpoint.USEast1.SystemName);
+
 
                 //_accountSignUpValidation.ValidateSignUps(viewModel.RegisteredAccounts, DeploymentServiceIdentifiers.BeanstalkServiceName);
 
@@ -134,8 +155,10 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 
                 if (!string.IsNullOrEmpty(lastRegionDeployedTo))
                 {
-                    _pageUI.SelectedRegion = RegionEndPointsManager.GetInstance().GetRegion(lastRegionDeployedTo);
+                    _pageUI.SelectedRegionId = lastRegionDeployedTo;
                 }
+
+                _pageUiActivated = true;
             }
 
             // since our default is to deploy a new app environment, we can enable forward nav immediately
@@ -179,6 +202,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                     return false;
                 }
 
+                if (!_pageUI.Connection.ConnectionIsValid || _pageUI.Connection.IsValidating)
+                {
+                    return false;
+                }
+
                 var fwdsOK = _pageUI.SelectedRegion != null && _pageUI.SelectedAccount != null;
 
                 if (fwdsOK && _pageUI.RedeploySelected)
@@ -200,11 +228,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 
         void StorePageData()
         {
-            HostingWizard.SetProperty(CommonWizardProperties.AccountSelection.propkey_SelectedAccount, _pageUI.SelectedAccount);
-            HostingWizard.SetProperty(CommonWizardProperties.AccountSelection.propkey_SelectedRegion, _pageUI.SelectedRegion);
+            HostingWizard.SetSelectedAccount(_pageUI.SelectedAccount);
+            HostingWizard.SetSelectedRegion(_pageUI.SelectedRegion);
 
-            var xrayEndpoint = _pageUI.SelectedRegion.GetEndpoint(RegionEndPointsManager.XRAY_ENDPOINT_LOOKUP);
-            HostingWizard.SetProperty(BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_XRayAvailable, xrayEndpoint != null);
+            var regionHasXray = _toolkitContext.RegionProvider.IsServiceAvailable(ServiceNames.Xray, _pageUI.SelectedRegionId);
+            HostingWizard.SetProperty(BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_XRayAvailable, regionHasXray);
 
             // this wizard is locked to Beanstalk deployments for now
             HostingWizard.SetProperty(DeploymentWizardProperties.DeploymentTemplate.propkey_TemplateServiceOwner, DeploymentServiceIdentifiers.BeanstalkServiceName);
@@ -218,7 +246,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 
             // pass the collection of existing deployments for the selected user account/region to the downstream pages,
             // to avoid the need to requery
-            var cachedDeploymentsKey = ConstructCachedDeploymentsKey(_pageUI.SelectedAccount, _pageUI.SelectedRegion.SystemName);
+            var cachedDeploymentsKey = ConstructCachedDeploymentsKey(_pageUI.SelectedAccount, _pageUI.SelectedRegionId);
             HostingWizard.SetProperty(DeploymentWizardProperties.DeploymentTemplate.propkey_ExistingAppDeploymentsInRegion,
                                         _deploymentsByUserRegion.ContainsKey(cachedDeploymentsKey)
                                             ? _deploymentsByUserRegion[cachedDeploymentsKey]
@@ -229,7 +257,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             var vpcOnly = true;
             var ec2PluginService = ToolkitFactory.Instance.QueryPluginService(typeof(IAWSEC2)) as IAWSEC2;
             if (ec2PluginService != null)
-                vpcOnly = ec2PluginService.IsVpcOnly(_pageUI.SelectedAccount, RegionEndpoint.GetBySystemName(_pageUI.SelectedRegion.SystemName));
+                vpcOnly = ec2PluginService.IsVpcOnly(_pageUI.SelectedAccount, _pageUI.SelectedRegion);
             HostingWizard.SetProperty(DeploymentWizardProperties.SeedData.propkey_VpcOnlyMode, vpcOnly);
 
             if (_pageUI.RedeploySelected)
@@ -260,7 +288,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                 if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_PreviousDeployments))
                 {
                     var bdh = DeploymentWizardHelper.DeploymentHistoryForAccountAndRegion(_pageUI.SelectedAccount.AccountViewModel, 
-                                                                                          _pageUI.SelectedRegion.SystemName, 
+                                                                                          _pageUI.SelectedRegionId, 
                                                                                           HostingWizard.CollectedProperties);
                     if (bdh != null
                             && bdh.ApplicationName.Equals(selectedDeployment.ApplicationName, StringComparison.Ordinal)
@@ -273,7 +301,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             {
                 HostingWizard[BeanstalkDeploymentWizardProperties.DeploymentModeProperties.propKey_UseEbToolsToDeploy] = null;
                 HostingWizard.SetProperty(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy, false);
-                foreach (var t in _templatesByRegion[_pageUI.SelectedRegion.SystemName])
+                foreach (var t in _templatesByRegion[_pageUI.SelectedRegionId])
                 {
                     if (t.ServiceOwner.Equals(DeploymentServiceIdentifiers.BeanstalkServiceName, StringComparison.Ordinal))
                     {
@@ -301,21 +329,29 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 
         private void OnPagePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName.Equals(StartPage.uiProperty_Account, StringComparison.Ordinal)
-                || e.PropertyName.Equals(StartPage.uiProperty_Region, StringComparison.Ordinal))
+            if (e.PropertyName.Equals(nameof(StartPage.Connection), StringComparison.Ordinal))
             {
-                LoadDeploymentsForAccountAndRegion(_pageUI.SelectedAccount, _pageUI.SelectedRegion);
+                if (_pageUI.Connection.ConnectionIsValid)
+                {
+                    _accountRegionChangeDebounceDispatcher.Debounce(AccountRegionChangedDebounceMs, _ =>
+                    {
+                        ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
+                        {
+                            LoadDeploymentsForAccountAndRegion(_pageUI.SelectedAccount, _pageUI.SelectedRegion);
+                        });
+                    });
+                }
             }
 
             TestForwardTransitionEnablement();
         }
 
-        void LoadDeploymentsForAccountAndRegion(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
+        void LoadDeploymentsForAccountAndRegion(AccountViewModel account, ToolkitRegion region)
         {
             if (account == null || region == null)
                 return;
 
-            var cachedDeploymentsKey = ConstructCachedDeploymentsKey(account, region.SystemName);
+            var cachedDeploymentsKey = ConstructCachedDeploymentsKey(account, region.Id);
             if (_deploymentsByUserRegion.ContainsKey(cachedDeploymentsKey))
             {
                 _pageUI.LoadAvailableDeployments(_deploymentsByUserRegion[cachedDeploymentsKey]);
@@ -340,16 +376,18 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 
         void ParseTemplatesFromManifest(XElement templateManifest)
         {
-            foreach (var region in RegionEndPointsManager.GetInstance().Regions)
-            {
-                RegionEndPointsManager.RegionEndPoints rep = region;
+            var knownRegions = _toolkitContext.RegionProvider.GetPartitions()
+                .SelectMany(p => _toolkitContext.RegionProvider.GetRegions(p.Id))
+                .ToList();
 
+            foreach (var region in knownRegions)
+            {
                 var templateList = new List<DeploymentTemplateWrapperBase>();
-                _templatesByRegion.Add(region.SystemName, templateList);
+                _templatesByRegion.Add(region.Id, templateList);
 
                 // sure you can probably do this in one query but this will do for now
                 var regions = from el in templateManifest.Elements("region")
-                                   where (string) el.Attribute("systemname") == rep.SystemName
+                                   where (string) el.Attribute("systemname") == region.Id
                                    select el;
                 if (regions.Any())
                 {
@@ -361,7 +399,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                     if (regions.Count() > 1)
                         LOGGER.ErrorFormat(
                             "Found more than 1 region element satisfying attribute match on systemname for region '{0}', will use first returned node set",
-                            rep.SystemName);
+                            region.Id);
 
                     var templates = from el in regions.ElementAt(0).Elements("template")
                         select el;

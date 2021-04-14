@@ -30,7 +30,7 @@ namespace Amazon.AWSToolkit.ECS.View
 
         public override string Title => string.Format("ECS Cluster: {0}", this._controller.FeatureViewModel.Name);
 
-        public override string UniqueId => "Cluster: " + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey + "_" + this._controller.FeatureViewModel.Name;
+        public override string UniqueId => "Cluster: " + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.Identifier.Id + "_" + this._controller.FeatureViewModel.Name;
 
         public override bool SupportsBackGroundDataLoad => true;
 

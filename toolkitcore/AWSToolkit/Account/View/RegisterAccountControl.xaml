@@ -3,7 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"
     xmlns:view="clr-namespace:Amazon.AWSToolkit.Account.View"
-    Height="300" Width="500"
+    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters"
+    Height="400" Width="500"
     Background="Transparent">
 
     <commonui:BaseAWSControl.Resources>
@@ -13,11 +14,12 @@
             </ResourceDictionary.MergedDictionaries>
 
             <BooleanToVisibilityConverter x:Key="bool2VisConverter" />
+            <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
         </ResourceDictionary>
     </commonui:BaseAWSControl.Resources>
 
     <Grid>
-        
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="120"/>
             <ColumnDefinition Width="1*"/>
@@ -34,12 +36,13 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
         <Label Grid.Column="0" Grid.Row="0" Target="{Binding ElementName=_ctlDisplayName}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Bottom">Profile _Name:</Label>
         <TextBox Margin="4" Name="_ctlDisplayName" Grid.Column="1" Grid.Row="0" 
-                 Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}" 
-                 TextChanged="MandatoryFieldTextChanged" Style="{DynamicResource awsTextBoxStyle}"
+                 Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" 
+                 Style="{DynamicResource awsTextBoxStyle}"
                  Tag="Required"/>
 
         <TextBlock Grid.Row="1" Grid.Column="1" 
@@ -72,16 +75,14 @@
 
 
         <Label Grid.Column="0" Grid.Row="4" Target="{Binding ElementName=_ctlAccessKey}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Bottom">_Access Key ID:</Label>
-        <TextBox Margin="4" Grid.Column="1" Grid.Row="4" x:Name="_ctlAccessKey" 
-                 Text="{Binding AccessKey, UpdateSourceTrigger=PropertyChanged}" 
-                 TextChanged="MandatoryFieldTextChanged" Style="{DynamicResource awsTextBoxStyle}"
-                 Tag="Required"/>
+        <PasswordBox Margin="4" Grid.Column="1" Grid.Row="4" x:Name="_ctlAccessKey" 
+                     PasswordChanged="CtlAccessKey_OnPasswordChanged"
+                     Style="{DynamicResource awsPasswordBoxStyle}"/>
 
         <Label Grid.Column="0" Grid.Row="5" Target="{Binding ElementName=_ctlSecretKey}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Bottom">_Secret Access Key:</Label>
-        <TextBox Margin="4" Grid.Column="1" Grid.Row="5" x:Name="_ctlSecretKey" 
-                 Text="{Binding SecretKey, UpdateSourceTrigger=PropertyChanged}" 
-                 TextChanged="MandatoryFieldTextChanged" Style="{DynamicResource awsTextBoxStyle}"
-                 Tag="Required"/>
+        <PasswordBox Margin="4" Grid.Column="1" Grid.Row="5" x:Name="_ctlSecretKey" 
+                     PasswordChanged="CtlSecretKey_OnPasswordChanged"
+                     Style="{DynamicResource awsPasswordBoxStyle}"/>
 
         <Button Grid.Column="1" Grid.Row="6" 
                 HorizontalAlignment="Right"
@@ -92,24 +93,70 @@
             Import from csv file...
         </Button>
 
-        <Label Grid.Column="0" Grid.Row="7" Target="{Binding ElementName=_ctlTypeOfAccount}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Center">Account _Type:</Label>
-        <ComboBox Margin="4" Grid.Column="1" Grid.Row="7" 
-                  x:Name="_ctlTypeOfAccount" 
-                  SelectedItem="{Binding SelectedAccountType}" 
-                  ItemsSource="{Binding AllAccountTypes}"
-                  DisplayMemberPath="DisplayName"
-                  Style="{DynamicResource awsComboBoxStyle}"/>
-        
-        <WrapPanel Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="2" Margin="0,4,0,0">
-            <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}">Account information can found at:</TextBlock>
-            <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}" Margin="4,0,0,0">
-            <Hyperlink NavigateUri="https://aws.amazon.com/developers/access-keys/" RequestNavigate="onRequestNavigate">
+        <!-- Partition -->
+        <Label
+            Grid.Row="7" Grid.Column="0"
+            Content="Partition:"
+            Visibility="{Binding IsPartitionEnabled, Converter={StaticResource bool2VisConverter}}"
+            Style="{DynamicResource awsLabelBaseStyle}"
+            VerticalAlignment="Center"
+            ToolTip="Partitions are a collection of regions.&#x0a;If your account is based in a different partition, select a different partition to see its associated regions."
+            Target="{Binding ElementName=Partition}"
+        />
+
+        <ComboBox
+            Name="Partition" x:FieldModifier="private"
+            Grid.Row="7" Grid.Column="1"
+            Margin="4" 
+            Visibility="{Binding IsPartitionEnabled, Converter={StaticResource bool2VisConverter}}"
+            Style="{DynamicResource awsComboBoxStyle}"
+            IsEditable="False"
+            ItemsSource="{Binding Partitions}"
+            SelectedItem="{Binding Partition, UpdateSourceTrigger=PropertyChanged}"
+            DisplayMemberPath="DisplayName"
+        />
+        <!-- Region -->
+        <Label
+            Grid.Row="8" Grid.Column="0"
+            Content="Region:"
+            Style="{DynamicResource awsLabelBaseStyle}"
+            VerticalAlignment="Center"
+            Target="{Binding ElementName=Region}"
+        />
+
+        <ComboBox
+            Name="Region" x:FieldModifier="private"
+            Grid.Row="8" Grid.Column="1"
+            Margin="4" 
+            Style="{DynamicResource awsComboBoxStyle}"
+            IsEditable="False"
+            ItemsSource="{Binding Regions}"
+            SelectedItem="{Binding Region, UpdateSourceTrigger=PropertyChanged}"
+            DisplayMemberPath="DisplayName">
+        </ComboBox>
+
+
+        <WrapPanel Grid.Column="1" Grid.Row="9" Margin="4,4,0,0" Visibility="{Binding IsPartitionEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+            <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}">Don't see your region?</TextBlock>
+            <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}" Margin="8,0,0,0">
+            <Hyperlink NavigateUri="https://aws.amazon.com/developers/access-keys/" RequestNavigate="OnRequestRegions">
                 <TextBlock Style="{DynamicResource awsUrlTextFieldStyle}" 
-                           Name="_ctlAWSLink" 
-                           Text="https://aws.amazon.com/developers/access-keys/"
+                           Text="Show more regions"
                            />
             </Hyperlink></TextBlock>
 
         </WrapPanel>
+
+        <WrapPanel Grid.Column="0" Grid.Row="10" Grid.ColumnSpan="2" Margin="6,15,0,0" VerticalAlignment="Bottom">
+            <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}">Account information can found at:</TextBlock>
+            <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}" Margin="4,0,0,0">
+                <Hyperlink NavigateUri="https://aws.amazon.com/developers/access-keys/" RequestNavigate="onRequestNavigate">
+                    <TextBlock Style="{DynamicResource awsUrlTextFieldStyle}" 
+                               Name="_ctlAWSLink" 
+                               Text="https://aws.amazon.com/developers/access-keys/"
+                     />
+                </Hyperlink></TextBlock>
+        </WrapPanel>
+
     </Grid>
 </commonui:BaseAWSControl>

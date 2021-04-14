@@ -1,286 +1,184 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.Account.Controller;
-using Amazon.AWSToolkit.Account.View;
-
-using Amazon.AWSToolkit.Navigator;
-using Amazon.AWSToolkit.Navigator.Node;
+using System.Windows.Data;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.State;
 
 namespace Amazon.AWSToolkit.CommonUI.Components
 {
     /// <summary>
-    /// Interaction logic for AccountAndRegionPicker.xaml
+    /// This is a reusable control that allows users to select
+    /// a Credentials and Region pairing, much like the AWS Explorer.
+    /// To use this control, data bind it with a <see cref="AccountAndRegionPickerViewModel"/> object.
     /// </summary>
-    public partial class AccountAndRegionPicker : INotifyPropertyChanged
+    public partial class AccountAndRegionPicker
     {
-        // property names used with NotifyPropertyChanged
-        public static readonly string uiProperty_Region = "region";
-        public static readonly string uiProperty_Account = "account";
+        /// <summary>
+        /// Indicates that a Connection (Credentials-Region pairing) or its validity has changed.
+        /// </summary>
+        public event EventHandler ConnectionChanged;
 
-        readonly object _syncObj = new object();
-        RegisterAccountController _registerAccountController = null;
-        IEnumerable<string> _serviceNames;
-
-        readonly HashSet<string> _verifiedAccounts = new HashSet<string>();
+        private AccountAndRegionPickerViewModel _viewModel;
+        private AwsConnectionManager _connectionManager;
 
         public AccountAndRegionPicker()
         {
             InitializeComponent();
+            Loaded += OnLoaded;
         }
 
-        public void SwitchToVerticalLayout()
+        private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            this._ctlHorizontalLayout.Visibility = Visibility.Collapsed;
-            this._ctlVerticalLayout.Visibility = Visibility.Visible;
+            Loaded -= OnLoaded;
+            Unloaded += OnUnloaded;
+            DataContextChanged += OnDataContextChanged;
+            _accountSelector.PropertyChanged += _accountSelector_PropertyChanged;
 
-            this._ctlHorizontalHolderAccount.Children.Remove(this._ctlAccount);
-            this._ctlHorizontalHolderRegion.Children.Remove(this._regionSelector);
-
-            this._ctlVerticalHolderAccount.Children.Add(this._ctlAccount);
-            this._ctlVerticalHolderRegion.Children.Add(this._regionSelector);
+            SetViewModel(DataContext as AccountAndRegionPickerViewModel);
         }
 
-        public void Initialize()
+        private void OnUnloaded(object sender, RoutedEventArgs e)
         {
-            Initialize(ToolkitFactory.Instance.Navigator.SelectedAccount, ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints, null);
+            Unloaded -= OnUnloaded;
+            // Unfortunately we have to re-listen for Loaded events, because some wizard flows can 
+            // go "back" a page to one that contains this picker, and we have to re-set it up.
+            Loaded += OnLoaded;
+
+            DataContextChanged -= OnDataContextChanged;
+            _accountSelector.PropertyChanged -= _accountSelector_PropertyChanged;
+            SetViewModel(null);
         }
 
-        public void Initialize(AccountViewModel selectedAccount, RegionEndPointsManager.RegionEndPoints selectedRegion, IEnumerable<string> serviceNames)
+        /// <summary>
+        /// Hold onto the viewmodel whenever one is assigned as the DataContext
+        /// </summary>
+        private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            _rootViewModel = ToolkitFactory.Instance.RootViewModel;
-            this._serviceNames = serviceNames;
+            SetViewModel(e.NewValue as AccountAndRegionPickerViewModel);
+        }
 
-            this._accountSelector.PropertyChanged += _accountSelector_PropertyChanged;
-            this._accountSelector.PopulateComboBox(this.Accounts);
-            if (selectedAccount != null)
+        private void SetViewModel(AccountAndRegionPickerViewModel viewModel)
+        {
+            // Un-register the existing viewmodel/state
+            if (_viewModel != null) { _viewModel.PropertyChanged -= ViewModel_PropertyChanged; }
+            if (_connectionManager != null)
             {
-                this._accountSelector.SelectedAccount = selectedAccount;
-                NotifyPropertyChanged(uiProperty_Account);
+                _connectionManager.ConnectionStateChanged -= ConnectionManager_ConnectionStateChanged;
+                _connectionManager.Dispose();
             }
 
-            UpdateRegions(selectedRegion);
+            _viewModel = viewModel;
 
-        }
-
-        private void UpdateRegions(RegionEndPointsManager.RegionEndPoints selectedRegion)
-        {
-            var regions = new List<RegionEndPointsManager.RegionEndPoints>();
-            foreach (RegionEndPointsManager.RegionEndPoints rep in RegionEndPointsManager.GetInstance().Regions)
+            // Register and setup the viewmodel/state
+            if (_viewModel != null)
             {
-                if (this.SelectedAccount == null)
-                    continue;
+                _viewModel.PropertyChanged += ViewModel_PropertyChanged;
+                _connectionManager = _viewModel.CreateConnectionManager();
+                _connectionManager.ConnectionStateChanged += ConnectionManager_ConnectionStateChanged;
 
-                if (this.SelectedAccount.HasRestrictions || rep.HasRestrictions)
-                {
-                    if (!rep.ContainAnyRestrictions(this.SelectedAccount.Restrictions))
-                    {
-                        continue;
-                    }
-                }
-
-                if (this._serviceNames == null)
-                {
-                    regions.Add(rep);
-                }
-                else
-                {
-                    foreach (var name in this._serviceNames)
-                    {
-                        if (rep.GetEndpoint(name) != null)
-                        {
-                            regions.Add(rep);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            this._regionSelector.ItemsSource = regions;
-            if (this._regionSelector.Items.Count != 0)
-            {
-                RegionEndPointsManager.RegionEndPoints region = null;
-                if (selectedRegion != null)
-                {
-                    // if the requested selection does not exist in our subset, attempt fallback to us-east-1
-                    // (regardless of any toolkit default) for safety and if that doesn't exist, go with the
-                    // first available region in the subset
-                    foreach (var r in regions.Where(r => r.SystemName.Equals(selectedRegion.SystemName, StringComparison.OrdinalIgnoreCase)))
-                    {
-                        region = r;
-                        break;
-                    }
-
-                    if (region == null)
-                        region = regions.FirstOrDefault(r => r.SystemName.Equals(RegionEndPointsManager.US_EAST_1, StringComparison.OrdinalIgnoreCase));
-
-                    if (region == null)
-                        region = regions[0];
-                }
-                else
-                {
-                    region = RegionEndPointsManager.GetInstance().GetDefaultRegionEndPoints();
-                }
-
-                this._regionSelector.SelectedItem = region;
+                // Populate ListBoxes and Initialize UI
+                _viewModel.Accounts = ToolkitFactory.Instance.RootViewModel.RegisteredAccounts;
+                OnRegionChanged();
+                OnAccountChanged();
             }
         }
 
-
-
-        AWSViewModel _rootViewModel;
-
-        public AWSViewModel RootViewModel
+        private void ConnectionManager_ConnectionStateChanged(object sender, Credentials.Utils.ConnectionStateChangeArgs e)
         {
-            get => IsInitialized ? _rootViewModel : null;
-            set
+            Dispatcher.Invoke(() =>
             {
-                this._rootViewModel = value;
-                this._accountSelector.IsEnabled = this.Accounts.Count != 0;
+                _viewModel.ConnectionIsValid = e.State is ConnectionState.ValidConnection;
+                _viewModel.IsValidating = e.State is ConnectionState.ValidatingConnection;
+                _viewModel.ValidationMessage = e.State.Message;
+                _viewModel.ConnectionIsBad = !_viewModel.ConnectionIsValid && e.State.IsTerminal;
+
+                RaiseConnectionChanged();
+            });
+        }
+
+        private void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(_viewModel.Accounts))
+            {
+                OnAccountsChanged();
+            }
+            else if (e.PropertyName == nameof(_viewModel.Account))
+            {
+                OnAccountChanged();
+            }
+            else if (e.PropertyName == nameof(_viewModel.PartitionId))
+            {
+                OnPartitionIdChanged();
+            }
+            else if (e.PropertyName == nameof(_viewModel.Region))
+            {
+                OnRegionChanged();
             }
         }
 
-        ObservableCollection<AccountViewModel> _accounts;
-        public ObservableCollection<AccountViewModel> Accounts
+        private void OnAccountsChanged()
         {
-            get
-            {
-                if (RootViewModel == null)
-                    return null;
-
-                if (this._accounts == null)
-                {
-                    this._accounts = new ObservableCollection<AccountViewModel>();
-
-                    foreach (var account in this.RootViewModel.RegisteredAccounts)
-                    {
-                        this._accounts.Add(account);
-                    }
-                }
-
-                return this._accounts;
-            }
+            var currentAccountId = _viewModel.Account?.Identifier?.Id;
+            _accountSelector.PopulateComboBox(_viewModel.Accounts);
+            _viewModel.Account = _viewModel.Accounts.FirstOrDefault(a => a.Identifier.Id == currentAccountId);
         }
 
-        public AccountViewModel SelectedAccount
+        private void OnAccountChanged()
         {
-            get => this._accountSelector.SelectedAccount as AccountViewModel;
-            set
-            {
-                if (IsInitialized)
-                {
-                    this._accountSelector.SelectedAccount = value;
-                    UpdateRegions(this.SelectedRegion);
-                }
-            }
+            _accountSelector.SelectedAccount = _viewModel.Account;
+
+            // Propagate changes to Region (via partition) if the account changed
+            _viewModel.PartitionId = _viewModel.Account?.PartitionId;
+
+            _connectionManager.ChangeConnectionSettings(_viewModel.Account?.Identifier, _viewModel.Region);
         }
 
-        bool _accountValidationPending = false;
-        public bool AccountValidationPending
+        private void OnPartitionIdChanged()
         {
-            get
+            var currentRegionId = _viewModel.Region?.Id;
+
+            var regionsView = CollectionViewSource.GetDefaultView(_viewModel.Regions);
+
+            using (regionsView.DeferRefresh())
             {
-                lock (_syncObj)
-                    return _accountValidationPending;
+                _viewModel.ShowRegions(_viewModel.PartitionId);
             }
 
-            set
-            {
-                lock (_syncObj)
-                    _accountValidationPending = value;
-            }
+            // When the Partition changes the list of Regions, the currently selected Region
+            // is likely cleared (from databinding).
+            // Make a reasonable region selection, if the currently selected region is not available.
+            var selectedRegion = _viewModel.GetRegion(currentRegionId) ??
+                                 _viewModel.GetRegion(_viewModel.GetMostRecentRegionId(_viewModel.PartitionId)) ??
+                                 _viewModel.Regions.FirstOrDefault();
+
+            _viewModel.Region = selectedRegion;
+
+            regionsView.Refresh();
         }
 
-        public bool IsSelectedAccountValid
+        private void OnRegionChanged()
         {
-            get
-            {
-                if (AccountValidationPending)
-                    return false;
-
-                // collection only ever accessed on UI thread, no need to lock
-                AccountViewModel account = _accountSelector.SelectedAccount as AccountViewModel;
-                return account != null && _verifiedAccounts.Contains(account.SettingsUniqueKey);
-            }
+            _connectionManager.ChangeConnectionSettings(_viewModel.Account?.Identifier, _viewModel.Region);
         }
 
-        void _accountEntryPopup_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (_registerAccountController == null)
-            {
-                _registerAccountController = new RegisterAccountController();
-                RegisterAccountControl control = new RegisterAccountControl(_registerAccountController);
-                control.SetMandatoryFieldsReadyCallback(MandatoryFieldsReadinessChange);
-                _accountFieldContainer.Content = control;
-                _popupAccountOK.IsEnabled = false;
-            }
-        }
-
-        void _popupAccountOK_Click(object sender, RoutedEventArgs e)
-        {
-            _registerAccountController.Persist();
-            _useOtherAccount.IsChecked = false;
-
-            RootViewModel.Refresh();
-
-            this._accounts.Clear();
-            AccountViewModel selectedAccount = null;
-            foreach (AccountViewModel account in RootViewModel.RegisteredAccounts)
-            {
-                if (!account.HasRestrictions)
-                {
-                    this._accounts.Add(account);
-
-                    if (string.Compare(account.AccountDisplayName, _registerAccountController.Model.DisplayName) == 0)
-                    {
-                        selectedAccount = account;
-                    }
-                }
-            }
-
-            this._accountSelector.PopulateComboBox(this._accounts);
-            if (this.Accounts.Count > 0)
-            {
-                _accountSelector.IsEnabled = true;
-
-                if (selectedAccount != null)
-                {
-                    SelectedAccount = selectedAccount;
-                }
-            }
-        }
-
-        void _popupAccountCancel_Click(object sender, RoutedEventArgs e)
-        {
-            _useOtherAccount.IsChecked = false;
-        }
-
-        private void MandatoryFieldsReadinessChange(bool allCompleted)
-        {
-            _popupAccountOK.IsEnabled = allCompleted;
-        }
-
-        // Attempt to verify that the selected/added account is (a) valid and (b) signed up for CloudFormation.
-        // This is awkward to handle outside the page.
         private void _accountSelector_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            UpdateRegions(this.SelectedRegion);
-            NotifyPropertyChanged(uiProperty_Account);
-        }
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion
-        {
-            get => this._regionSelector.SelectedItem as RegionEndPointsManager.RegionEndPoints;
-            set { if (IsInitialized) this._regionSelector.SelectedItem = value; }
+            var accountSelector = sender as RegisteredProfilesPicker;
+            if (accountSelector == null) { return; }
+
+            _viewModel.Account = accountSelector.SelectedAccount;
         }
 
-        private void _regionSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void RaiseConnectionChanged()
         {
-            NotifyPropertyChanged(uiProperty_Region);
+            ConnectionChanged?.Invoke(this, new EventArgs());
+        }
+
+        private void RetryConnectionValidation(object sender, RoutedEventArgs e)
+        {
+            _connectionManager.RefreshConnectionState();
         }
     }
 }

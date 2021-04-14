@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Navigation;
-using Amazon.AWSToolkit.CommonUI;
+
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Account.Controller;
+using Amazon.AWSToolkit.Commands;
+using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.State;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Settings;
-using Amazon.Runtime.CredentialManagement.Internal;
 
 using log4net;
 
@@ -24,37 +30,155 @@ namespace Amazon.AWSToolkit.Navigator
     {
         ILog _logger = LogManager.GetLogger(typeof(NavigatorControl));
         AWSViewModel _viewModel;
+        private readonly IAwsConnectionManager _awsConnectionManager;
+        private readonly ICredentialManager _credentialManager;
+        private readonly ICredentialSettingsManager _credentialSettingsManager;
+        private readonly IRegionProvider _regionProvider;
+        private readonly NavigatorViewModel _navigatorViewModel;
+        private bool isInitialized = false;
 
-        public NavigatorControl()
+        public NavigatorControl(IRegionProvider regionProvider, ICredentialManager credentialManager,
+            IAwsConnectionManager awsConnectionManager, ICredentialSettingsManager settingsManager) : this(
+            regionProvider)
         {
-            InitializeComponent();
-            this._ctlAccounts.PropertyChanged += _ctlAccounts_PropertyChanged;
+            _credentialManager = credentialManager;
+            _awsConnectionManager = awsConnectionManager;
+            _awsConnectionManager.ConnectionSettingsChanged += OnConnectionManagerSettingsChanged;
+            _awsConnectionManager.ConnectionStateChanged += OnConnectionStateChanged;
+            _credentialSettingsManager = settingsManager;
         }
 
-        private void _ctlAccounts_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        public NavigatorControl(IRegionProvider regionProvider)
         {
-            var account = this._ctlAccounts.SelectedAccount;
-            this._ctlResourceTree.DataContext = account;
+            // We currently aren't using an UnLoad event to de-register events
+            // because closing the Navigator's ToolWindow triggers the control's unload.
+            // While unloaded, we want to continue reacting to credentials changes,
+            // in the event that the Navigator is made visible again (and re-Loaded).
+            // If you decide to support UnLoad and Load, you'll have to ensure
+            // that you re-synchronize the explorer to the current credentials/region/resources
+            // within the Load event.
 
-            // The toolkit only supports editing credential profiles of just access and secret key.
-            this._ctlEditAccount.IsEnabled = account != null && CredentialProfileUtils.GetProfileType(account.Profile) == CredentialProfileType.Basic;
+            _regionProvider = regionProvider;
+            _navigatorViewModel = new NavigatorViewModel(regionProvider);
 
-            this.setInitialRegionSelection();
-
-            if (account == null)
+            InitializeComponent();
+            this.DataContext = _navigatorViewModel;
+            _navigatorViewModel.PropertyChanged += NavigatorViewModelOnPropertyChanged;
+            _navigatorViewModel.AddAccountCommand = new RelayCommand(AddAccount);
+            _navigatorViewModel.DeleteAccountCommand = new RelayCommand(DeleteAccount);
+            _navigatorViewModel.EditAccountCommand = new RelayCommand(EditEnabledCallback, EditAccount);
+        }
+     
+        private void OnConnectionManagerSettingsChanged(object sender, ConnectionSettingsChangeArgs e)
+        {
+            if (isInitialized)
             {
-                ToolkitSettings.Instance.LastAccountSelectedKey = null;
+                UpdateNavigatorSelection(e.CredentialIdentifier, e.Region);
             }
-            else
+        }
+
+        private void OnConnectionStateChanged(object sender, ConnectionStateChangeArgs e)
+        {
+            try
             {
-                ToolkitSettings.Instance.LastAccountSelectedKey = account.SettingsUniqueKey;
-                if (account.Children != null)
+                _navigatorViewModel.IsConnectionValid = _awsConnectionManager.IsValidConnectionSettings();
+                UpdateViewModelConnectionProperties(_awsConnectionManager.ConnectionState);
+            }
+            catch (Exception ex)
+            {
+                //on any error set the navigator state to invalid
+                var errorMessage = "Error validating connection.";
+                _logger.Error(errorMessage, ex);
+                _navigatorViewModel.IsConnectionValid = false;
+                UpdateViewModelConnectionProperties(new ConnectionState.InvalidConnection(errorMessage));
+            }
+        }
+
+        private void UpdateViewModelConnectionProperties(ConnectionState state)
+        {
+            _navigatorViewModel.ConnectionMessage = state.Message;
+            _navigatorViewModel.IsConnectionTerminal = state.IsTerminal;
+            _navigatorViewModel.ConnectionStatus = GetConnectionStatus(state);
+        }
+
+        private void NavigatorViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(_navigatorViewModel.Region))
+            {
+                OnRegionChanged();
+            }
+            else if (e.PropertyName == nameof(_navigatorViewModel.PartitionId))
+            {
+                OnPartitionIdChanged();
+            }
+            else if (e.PropertyName == nameof(_navigatorViewModel.Account))
+            {
+                OnAccountChanged();
+            }
+            else if (e.PropertyName == nameof(_navigatorViewModel.IsConnectionValid))
+            {
+                OnConnectionValidChanged();
+            }
+            else if (e.PropertyName == nameof(_navigatorViewModel.IsConnectionTerminal))
+            {
+                OnConnectionTerminalChanged();
+            }
+        }
+
+        private void OnConnectionTerminalChanged()
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                _navigatorViewModel.NavigatorCommands.Clear();
+                if (_navigatorViewModel.IsConnectionTerminal && !_navigatorViewModel.IsConnectionValid)
                 {
-                    this._ctlResourceTree.ItemsSource = account.Children;
+                    _navigatorViewModel.NavigatorCommands.Add(new NavigatorCommand("Retry", OnRetry, true));
+                    if (IsAccountBasic())
+                    {
+                        _navigatorViewModel.NavigatorCommands.Add(new NavigatorCommand("Edit Account", OnEditProfile, true));
+                      
+                    }
                 }
-            }
+            });
+        }
 
-            OnSelectedAccountChanged();
+        private void OnConnectionValidChanged()
+        {
+            RefreshResourceTree();
+        }
+
+        private void RefreshResourceTree()
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                if (_navigatorViewModel.IsConnectionValid)
+                {
+                    _navigatorViewModel.Account?.CreateServiceChildren();
+                }
+                else
+                {
+                    _navigatorViewModel.Account?.Children?.Clear();
+                }
+
+                this._ctlResourceTree.ItemsSource = _navigatorViewModel.Account?.Children;
+            });
+        }
+
+        private void OnAccountChanged()
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                var account = _navigatorViewModel.Account;
+                this._ctlResourceTree.DataContext = account;
+                this._ctlEditAccount.IsEnabled = IsAccountBasic();
+                if (!string.Equals(_awsConnectionManager.ActiveCredentialIdentifier?.Id, account?.Identifier.Id))
+                {
+                    _awsConnectionManager.ChangeCredentialProvider(account?.Identifier);
+                }
+                _navigatorViewModel.PartitionId = account?.PartitionId;
+               
+                setToolbarState(true);
+            });
         }
 
         public void Initialize(AWSViewModel viewModel)
@@ -69,52 +193,36 @@ namespace Amazon.AWSToolkit.Navigator
 
                 this._ctlResourceTree.MouseRightButtonDown += new MouseButtonEventHandler(OnContextMenuOpening);
                 this._ctlResourceTree.MouseDoubleClick += new MouseButtonEventHandler(OnDoubleClick);
+                isInitialized = true;
 
-                var lastAccountId = ToolkitSettings.Instance.LastAccountSelectedKey;
-                AccountViewModel accountViewModel = null;
-                if (!string.IsNullOrEmpty(lastAccountId))
-                {
-                    foreach (var account in this._viewModel.RegisteredAccounts)
-                    {
-                        if (account.SettingsUniqueKey == lastAccountId)
-                        {
-                            accountViewModel = account;
-                            break;
-                        }
-                    }
-                }
-
-                if (accountViewModel == null && this._viewModel.RegisteredAccounts.Count > 0)
-                {
-                    accountViewModel = this._viewModel.RegisteredAccounts[0];
-                }
-
-                this._ctlAccounts.SelectedAccount = accountViewModel;
-                if (accountViewModel == null)
-                {
-                    setToolbarState(false);
-                }
+                UpdateNavigatorSelection(_awsConnectionManager.ActiveCredentialIdentifier,
+                    _awsConnectionManager.ActiveRegion);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error("Error initializing AWS Explorer.", ex);
             }
         }
 
+        private void UpdateNavigatorSelection(ICredentialIdentifier identifier, ToolkitRegion region)
+        {
+            _navigatorViewModel.Account = identifier == null
+                ? null
+                : _navigatorViewModel.Accounts.FirstOrDefault(x => string.Equals(x.Identifier?.Id, identifier?.Id));
+
+            _navigatorViewModel.Region = region == null
+                ? null
+                : _navigatorViewModel.GetRegion(region?.Id);
+        }
+
         private void _viewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            this.PopulateAccounts();
+            this.Dispatcher.Invoke(this.PopulateAccounts);
         }
 
         private void PopulateAccounts()
         {
-            var accounts = new List<AccountViewModel>();
-            foreach(var accountModel in this._viewModel.RegisteredAccounts)
-            {
-                accounts.Add(accountModel);
-            }
-
-            this._ctlAccounts.PopulateComboBox(accounts);
+            _navigatorViewModel.UpdateAccounts(_viewModel.RegisteredAccounts.ToList());
         }
 
         public IViewModel SelectedNode
@@ -126,12 +234,28 @@ namespace Amazon.AWSToolkit.Navigator
                 if (node == null)
                     return;
 
-                this.Dispatcher.Invoke((Action)(() =>
-                    {
-                        expandTillVisible(value);
-                        node.IsSelected = true;
-                    }));
+                this.Dispatcher.Invoke((Action) (() =>
+                {
+                    expandTillVisible(value);
+                    node.IsSelected = true;
+                }));
             }
+        }
+
+        private static NavigatorAccountConnectionStatus GetConnectionStatus(ConnectionState connectionState)
+        {
+            if (connectionState is ConnectionState.ValidConnection || !connectionState.IsTerminal)
+            {
+                return NavigatorAccountConnectionStatus.Info;
+            }
+
+            if (connectionState is ConnectionState.InvalidConnection ||
+                connectionState is ConnectionState.IncompleteConfiguration)
+            {
+                return NavigatorAccountConnectionStatus.Error;
+            }
+
+            return NavigatorAccountConnectionStatus.Warning;
         }
 
         void expandTillVisible(IViewModel node)
@@ -150,110 +274,85 @@ namespace Amazon.AWSToolkit.Navigator
 
         void setToolbarState(bool enabled)
         {
-            this.Dispatcher.Invoke((Action)(() =>
-                {
-                    this._ctlEditAccount.IsEnabled = enabled;
-                    this._ctlDeleteAccount.IsEnabled = enabled;
-                }));
+            this.Dispatcher.Invoke((Action) (() =>
+            {
+                this._ctlEditAccount.IsEnabled = enabled;
+                this._ctlDeleteAccount.IsEnabled = enabled;
+            }));
         }
 
-        void addAccount(object sender, RoutedEventArgs e)
+        void AddAccount(object parameter)
         {
-            RegisterAccountController command = new RegisterAccountController();
+            RegisterAccountController command =
+                new RegisterAccountController(_credentialManager, _credentialSettingsManager, _awsConnectionManager,
+                    _regionProvider);
             ActionResults results = command.Execute();
-            if (results.Success)
-            {
-                UpdateAccountSelection(command.Model.UniqueKey, true);
-            }
         }
 
-        public RegionEndPointsManager.RegionEndPoints SelectedRegionEndPoints => this._ctlRegions.SelectedItem as RegionEndPointsManager.RegionEndPoints;
-
-        void setInitialRegionSelection()
-        {
-            if (this.SelectedAccount == null)
-                return;
-
-            if (RegionEndPointsManager.GetInstance().FailedToLoad)
-            {
-                if (RegionEndPointsManager.GetInstance().ErrorLoading != null)
-                {
-                    this._ctlErrorMessage.Text = "Failed to connect to AWS";
-                    this._ctlErrorMessage.Height = double.NaN;
-                }
-                this._ctlRegions.IsEnabled = false;
-
-                return;
-            }
-
-            this._ctlRegions.IsEnabled = true;
-            this._ctlErrorMessage.Height = 0;
-            this._ctlErrorMessage.Text = "";
-
-            if (this.SelectedAccount.HasRestrictions)
-            {
-                List<RegionEndPointsManager.RegionEndPoints> regions = new List<RegionEndPointsManager.RegionEndPoints>();
-                foreach (var region in RegionEndPointsManager.GetInstance().Regions)
-                {
-                    if (region.ContainAnyRestrictions(this.SelectedAccount.Restrictions))
-                    {
-                        regions.Add(region);
-                    }
-                }
-
-                this._ctlRegions.ItemsSource = regions;
-            }
-            else
-            {
-                List<RegionEndPointsManager.RegionEndPoints> regions = new List<RegionEndPointsManager.RegionEndPoints>();
-                foreach (var region in RegionEndPointsManager.GetInstance().Regions)
-                {
-                    if (!region.HasRestrictions)
-                        regions.Add(region);
-                }
-
-                this._ctlRegions.ItemsSource = regions;
-            }
-
-            if(this._ctlRegions.Items.Count == 0)
-                return;
-
-            bool foundInList = false;
-            var defaultRegion = RegionEndPointsManager.GetInstance().GetDefaultRegionEndPoints();
-            foreach (RegionEndPointsManager.RegionEndPoints r in this._ctlRegions.ItemsSource)
-            {
-                if (r == defaultRegion)
-                {
-                    foundInList = true;
-                    this._ctlRegions.SelectedItem = defaultRegion;
-                    break;
-                }
-            }
-
-            if (foundInList)
-                this._ctlRegions.SelectedItem = defaultRegion;
-            else
-                this._ctlRegions.SelectedItem = this._ctlRegions.Items[0];
-        }
+        
+        public string SelectedRegionId => _navigatorViewModel.Region?.Id;
+        public ToolkitRegion SelectedRegion => _navigatorViewModel.Region;
 
         void onNavigatorRefreshClick(object sender, RoutedEventArgs e)
         {
             try
             {
-                RefreshAccounts();
-
-                RegionEndPointsManager.GetInstance().Refresh();
-                setInitialRegionSelection();
-                updateActiveRegion();
-                _ctlAccounts_PropertyChanged(this, null);
+                RefreshResourceTree();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.Error("Error refreshing navigator", ex);
             }
         }
 
-        void onRegionChanged(object sender, SelectionChangedEventArgs e)
+        private void OnPartitionIdChanged()
+        {
+            if (_navigatorViewModel.PartitionId == null)
+            {
+                return;
+            }
+
+            _navigatorViewModel.ShowRegionsForPartition(_navigatorViewModel.PartitionId);
+
+            if (!_navigatorViewModel.Regions.Any())
+            {
+                return;
+            }
+
+            // When the Partition changes the list of Regions, the currently selected Region
+            // is likely cleared (from databinding).
+            // Make a reasonable region selection, if the currently selected region is not available.
+
+            //Resolve region in following order: Last selected, fallback, profile region, default region, or first 
+            var defaultRegion = RegionEndpoint.USEast1;
+
+            var previousRegion = _regionProvider.GetRegion(ToolkitSettings.Instance.LastSelectedRegion);
+            var accountRegion = _navigatorViewModel.Account?.Region;
+
+            var selectedRegion =
+                (previousRegion != null ? _navigatorViewModel.GetRegion(previousRegion.Id) : null) ??
+                _navigatorViewModel.GetRegion(GetFallbackRegionId(_navigatorViewModel.PartitionId)) ??
+                (accountRegion != null ? _navigatorViewModel.GetRegion(accountRegion.Id) : null) ??
+                (defaultRegion != null ? _navigatorViewModel.GetRegion(defaultRegion.SystemName) : null) ??
+                _navigatorViewModel.Regions.FirstOrDefault();
+
+            _navigatorViewModel.Region = selectedRegion;
+        }
+
+        /// <summary>
+        /// Suggests a region to select for the queried partition.
+        /// Returns null if no suggestion is available.
+        /// </summary>
+        private string GetFallbackRegionId(string partitionId)
+        {
+            // If this partition was used earlier in the Toolkit session, try using the 
+            // previously selected region for this partition.
+            var previousRegionId = _navigatorViewModel.GetMostRecentRegionId(partitionId);
+
+            return !string.IsNullOrWhiteSpace(previousRegionId) ? previousRegionId : null;
+        }
+
+        private void OnRegionChanged()
         {
             try
             {
@@ -270,60 +369,15 @@ namespace Amazon.AWSToolkit.Navigator
             if (ToolkitFactory.Instance == null || ToolkitFactory.Instance.RootViewModel == null)
                 return;
 
-            var region = this._ctlRegions.SelectedItem as RegionEndPointsManager.RegionEndPoints;
-            if (region == null)
+            if (_navigatorViewModel.Region == null) { return; }
+
+            if (!string.Equals(_awsConnectionManager.ActiveRegion.Id, _navigatorViewModel.Region.Id))
             {
-                return;
-            }
-
-
-            RegionEndPointsManager.GetInstance().SetDefaultRegionEndPoints(region);
-
-            foreach (AccountViewModel account in ToolkitFactory.Instance.RootViewModel.RegisteredAccounts)
-            {
-                account.CreateServiceChildren();
+                _awsConnectionManager.ChangeRegion(_navigatorViewModel.Region);
             }
         }
 
-        public AccountViewModel SelectedAccount => this._ctlAccounts.SelectedAccount;
-        public event EventHandler SelectedAccountChanged;
-
-        public AccountViewModel UpdateAccountSelection(Guid uniqueKey, bool refreshAccounts)
-        {
-            AccountViewModel viewModel = null;
-            this.Dispatcher.Invoke((Action)(() =>
-                {
-                    try
-                    {
-                        if (refreshAccounts)
-                        {
-                            RefreshAccounts();
-                        }
-
-                        foreach (var vm in this._viewModel.RegisteredAccounts)
-                        {
-                            if (new Guid(vm.SettingsUniqueKey).Equals(uniqueKey))
-                            {
-                                this.Dispatcher.Invoke((Action)(() =>
-                                    {
-                                        this._ctlAccounts.SelectedAccount = vm;
-                                    }));
-                                viewModel = vm;
-                                break;
-                            }
-                        }
-
-                        setToolbarState(true);
-                        setInitialRegionSelection();
-                    }
-                    catch(Exception ex)
-                    {
-                        _logger.Error("Error updating account selection.", ex);
-                    }
-                }));
-
-            return viewModel;
-        }
+        public AccountViewModel SelectedAccount => _navigatorViewModel.Account;
 
         public void RefreshAccounts()
         {
@@ -331,47 +385,32 @@ namespace Amazon.AWSToolkit.Navigator
             PopulateAccounts();
         }
 
-        public void UpdateRegionSelection(string regionSystemName)
+        private bool EditEnabledCallback(object arg)
         {
-            var region = RegionEndPointsManager.GetInstance().GetRegion(regionSystemName);
-            UpdateRegionSelection(region);
+            return IsAccountBasic();
         }
 
-        public void UpdateRegionSelection(RegionEndPointsManager.RegionEndPoints region)
+        private void EditAccount(object parameter)
         {
-            if (region != null)
-            {
-                this.Dispatcher.Invoke((Action)(() =>
-                    {
-                        this._ctlRegions.SelectedItem = region;
-                    }));
-            }
-        }
-
-        void editAccount(object sender, RoutedEventArgs evnt)
-        {
-            AccountViewModel viewModel = this._ctlAccounts.SelectedAccount;
-            if(viewModel == null)
+            AccountViewModel viewModel = _navigatorViewModel.Account;
+            if (viewModel == null)
                 return;
 
             try
             {
-                var command = new EditAccountController();
+                var command = new EditAccountController(_credentialManager, _credentialSettingsManager,
+                    _awsConnectionManager, _regionProvider);
                 var results = command.Execute(viewModel);
-                if (results.Success)
-                {
-                    UpdateAccountSelection(command.Model.UniqueKey, true);
-                }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error", e.Message);
             }
         }
 
-        void deleteAccount(object sender, RoutedEventArgs e)
+        void DeleteAccount(object parameter)
         {
-            AccountViewModel viewModel = this._ctlAccounts.SelectedAccount;
+            AccountViewModel viewModel = _navigatorViewModel.Account;
             if (viewModel == null)
                 return;
 
@@ -381,24 +420,20 @@ namespace Amazon.AWSToolkit.Navigator
                 return;
             }
 
-            var command = new UnregisterAccountController();
-            if (command.Execute(viewModel).Success)
+            var command =
+                new UnregisterAccountController(_credentialSettingsManager);
+            var results = command.Execute(viewModel);
+            if (results.Success)
             {
-                this._viewModel.RegisteredAccounts.Remove(viewModel);
-
-                Guid selectedId = Guid.Empty;
-                if (this._viewModel.RegisteredAccounts.Count > 0)
-                {
-                    selectedId = Guid.Parse(this._viewModel.RegisteredAccounts[0].SettingsUniqueKey);
-                }
-
-                UpdateAccountSelection(selectedId, true);
+                var ide = _credentialManager.GetCredentialIdentifiers()
+                    .FirstOrDefault(x => x.ProfileName.Equals("default"));
+                _awsConnectionManager.ChangeCredentialProvider(ide);
             }
         }
 
         void OnDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            TreeView tv = (TreeView)sender;
+            TreeView tv = (TreeView) sender;
             if (tv == null)
                 return;
 
@@ -437,12 +472,13 @@ namespace Amazon.AWSToolkit.Navigator
 
 
         #region Context Menu
+
         // This code came from http://social.msdn.microsoft.com/forums/en-US/wpf/thread/e18a5660-3fa2-480c-acce-3b34efeeeaa7/
         // which handles the fact that right clicking in the tree vie
         // does not select the node.
         TreeView makeSureRightClickNodeIsSelected(object sender, MouseButtonEventArgs e)
         {
-            TreeView tv = (TreeView)sender;
+            TreeView tv = (TreeView) sender;
             IInputElement element = tv.InputHitTest(e.GetPosition(tv));
             while (!((element is TreeView) || element == null))
             {
@@ -451,12 +487,13 @@ namespace Amazon.AWSToolkit.Navigator
 
                 if (element is FrameworkElement)
                 {
-                    FrameworkElement fe = (FrameworkElement)element;
-                    element = (IInputElement)(fe.Parent ?? fe.TemplatedParent);
+                    FrameworkElement fe = (FrameworkElement) element;
+                    element = (IInputElement) (fe.Parent ?? fe.TemplatedParent);
                 }
                 else
                     break;
             }
+
             if (element is TreeViewItem)
             {
                 element.Focus();
@@ -507,7 +544,8 @@ namespace Amazon.AWSToolkit.Navigator
                         if (action.VisibilityHandler != null)
                         {
                             actionVis = action.VisibilityHandler(node);
-                            if ((actionVis & ActionHandlerWrapper.ActionVisibility.hidden) == ActionHandlerWrapper.ActionVisibility.hidden)
+                            if ((actionVis & ActionHandlerWrapper.ActionVisibility.hidden) ==
+                                ActionHandlerWrapper.ActionVisibility.hidden)
                                 continue;
                         }
 
@@ -535,6 +573,7 @@ namespace Amazon.AWSToolkit.Navigator
                     {
                         menu.Items.Add(new Separator());
                     }
+
                     menu.Items.Add(mi);
                 }
 
@@ -554,13 +593,15 @@ namespace Amazon.AWSToolkit.Navigator
         void onRefreshClick(object sender, RoutedEventArgs e)
         {
             IViewModel node = this._ctlResourceTree.SelectedItem as IViewModel;
+            
             node.Refresh(true);
         }
- 
+
         #endregion
 
 
         Point _lastMouseDown;
+
         void resourceTree_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
@@ -570,6 +611,7 @@ namespace Amazon.AWSToolkit.Navigator
         }
 
         IViewModel draggedItem;
+
         void resourceTree_MouseMove(object sender, MouseEventArgs e)
         {
             try
@@ -577,7 +619,7 @@ namespace Amazon.AWSToolkit.Navigator
                 if (e.LeftButton == MouseButtonState.Pressed)
                 {
                     // Only start DnD when it was started over a node in the tree. 
-                    if (((FrameworkElement)e.OriginalSource).Parent == null)
+                    if (((FrameworkElement) e.OriginalSource).Parent == null)
                         return;
 
                     Point currentPosition = e.GetPosition(_ctlResourceTree);
@@ -585,11 +627,12 @@ namespace Amazon.AWSToolkit.Navigator
                     if ((Math.Abs(currentPosition.X - _lastMouseDown.X) > 10.0) ||
                         (Math.Abs(currentPosition.Y - _lastMouseDown.Y) > 10.0))
                     {
-                        draggedItem = (IViewModel)_ctlResourceTree.SelectedItem;
+                        draggedItem = (IViewModel) _ctlResourceTree.SelectedItem;
                         if (draggedItem != null)
                         {
                             DataObject dataObject = new DataObject();
-                            dataObject.SetData(_ctlResourceTree.SelectedValue.GetType(), _ctlResourceTree.SelectedValue);
+                            dataObject.SetData(_ctlResourceTree.SelectedValue.GetType(),
+                                _ctlResourceTree.SelectedValue);
                             IViewModel viewModel = _ctlResourceTree.SelectedValue as IViewModel;
                             if (viewModel != null)
                             {
@@ -606,7 +649,6 @@ namespace Amazon.AWSToolkit.Navigator
             catch (Exception)
             {
             }
-
         }
 
 
@@ -628,9 +670,26 @@ namespace Amazon.AWSToolkit.Navigator
             }
         }
 
-        private void OnSelectedAccountChanged()
+        private bool IsAccountBasic()
         {
-            SelectedAccountChanged?.Invoke(this, new EventArgs());
+            var account = _navigatorViewModel.Account;
+            return account != null && IsAccountBasic(account.Identifier);
+        }
+
+        private bool IsAccountBasic(ICredentialIdentifier identifier)
+        {
+            return _credentialSettingsManager.GetCredentialType(identifier) ==
+                   CredentialType.StaticProfile;
+        }
+
+        private void OnRetry()
+        {
+            _awsConnectionManager.RefreshConnectionState();
+        }
+
+        private void OnEditProfile()
+        {
+            EditAccount(this);
         }
     }
 }

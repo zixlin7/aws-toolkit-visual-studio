@@ -19,7 +19,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
             if (this._featureViewModel == null)
                 return new ActionResults().WithSuccess(false);
 
-            this._endpointUniqueIdentifier = ((IEndPointSupport)this._featureViewModel.Parent).CurrentEndPoint.UniqueIdentifier;
+            this._endpointUniqueIdentifier = ((IEndPointSupport)this._featureViewModel.Parent).Region.Id;
             this._rdsClient = this._featureViewModel.RDSClient;
             this._model = new M();
 

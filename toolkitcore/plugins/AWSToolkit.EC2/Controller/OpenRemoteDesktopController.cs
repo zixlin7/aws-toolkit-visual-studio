@@ -42,10 +42,10 @@ namespace Amazon.AWSToolkit.EC2.Controller
             this._model = new OpenRemoteDesktopModel(instance);
 
             if (KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(this._featureViewModel.AccountViewModel,
-                this._featureViewModel.RegionSystemName, this._instance.NativeInstance.KeyName))
+                this._featureViewModel.Region.Id, this._instance.NativeInstance.KeyName))
             {
                 this._model.PrivateKey = KeyPairLocalStoreManager.Instance.GetPrivateKey(this._featureViewModel.AccountViewModel,
-                    this._featureViewModel.RegionSystemName, this._instance.NativeInstance.KeyName);
+                    this._featureViewModel.Region.Id, this._instance.NativeInstance.KeyName);
 
                 this._usingStoredPrivateKey = true;
             }
@@ -164,7 +164,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             if (string.IsNullOrEmpty(password) && !this._usingStoredPrivateKey && this.Model.SavePrivateKey)
             {
                 KeyPairLocalStoreManager.Instance.SavePrivateKey(this._featureViewModel.AccountViewModel,
-                    this._featureViewModel.RegionSystemName,
+                    this._featureViewModel.Region.Id,
                     this._instance.NativeInstance.KeyName,
                     this.Model.PrivateKey);
             }

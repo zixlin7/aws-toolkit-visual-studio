@@ -13,6 +13,8 @@ using Amazon.AWSToolkit.S3.View;
 using Amazon.AWSToolkit.S3.Model;
 using Amazon.AWSToolkit.S3.Clipboard;
 using Amazon.AWSToolkit.CloudFront.Nodes;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Regions;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
@@ -26,6 +28,7 @@ namespace Amazon.AWSToolkit.S3.Controller
     public class BucketBrowserController : BaseContextCommand
     {
         static ILog _logger = LogManager.GetLogger(typeof(BucketBrowserController));
+        private readonly ToolkitContext _toolkitContext;
 
         IAmazonS3 _s3Client;
         string _bucketName;
@@ -35,9 +38,11 @@ namespace Amazon.AWSToolkit.S3.Controller
         IS3ClipboardContainer _clipboardContainer = new DefaultS3ClipboardContainer();
         S3RootViewModel _s3RootViewModel;
         Thread _loadingThread;
+      
 
-        public BucketBrowserController()
+        public BucketBrowserController(ToolkitContext toolkitContext)
         {
+            _toolkitContext = toolkitContext;
         }
 
         public BucketBrowserController(IAmazonS3 s3Client, BucketBrowserModel model)
@@ -47,7 +52,6 @@ namespace Amazon.AWSToolkit.S3.Controller
             this._bucketName = model.BucketName;
         }
 
-
         public override ActionResults Execute(IViewModel model)
         {
             S3BucketViewModel bucketModel = model as S3BucketViewModel;
@@ -56,7 +60,7 @@ namespace Amazon.AWSToolkit.S3.Controller
 
             this._s3RootViewModel = bucketModel.S3RootViewModel;
             // Make sure the manifest watcher has started so DnD to explorer will work.
-            ManifestWatcher.Instance.Start(); 
+            ManifestWatcher.Instance.Start(_toolkitContext); 
             this._clipboardContainer = bucketModel.S3RootViewModel;
             return Execute(bucketModel.S3Client, new BucketBrowserModel(bucketModel.Name));
         }
@@ -94,6 +98,8 @@ namespace Amazon.AWSToolkit.S3.Controller
         public S3RootViewModel S3RootViewModel => this._s3RootViewModel;
 
         public IS3ClipboardContainer ClipboardContainer => this._clipboardContainer;
+
+        public IRegionProvider RegionProvider => this._toolkitContext.RegionProvider;
 
         public void Refresh()
         {

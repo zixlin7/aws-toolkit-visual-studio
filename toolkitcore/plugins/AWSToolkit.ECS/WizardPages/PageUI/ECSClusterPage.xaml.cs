@@ -3,7 +3,6 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.ECS.WizardPages.PageControllers;
 using log4net;
 using System;
-using Amazon.AWSToolkit.Account;
 using System.ComponentModel;
 using System.Windows.Controls;
 
@@ -16,9 +15,12 @@ using System.Linq;
 using static Amazon.AWSToolkit.ECS.WizardPages.ECSWizardUtils;
 using Amazon.AWSToolkit.EC2.Model;
 using System.Collections.ObjectModel;
+
+using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.EC2.Model;
 using Amazon.AWSToolkit.EC2.Workers;
 using Amazon.AWSToolkit.SimpleWorkers;
+using Amazon.EC2;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 {
@@ -170,16 +172,16 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             try
             {
-                var account = PageController.HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
-                var region = PageController.HostingWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+                var account = PageController.HostingWizard.GetSelectedAccount(PublishContainerToAWSWizardProperties.UserAccount);
+                var region = PageController.HostingWizard.GetSelectedRegion(PublishContainerToAWSWizardProperties.Region);
 
-                new QueryVpcsAndSubnetsWorker(ECSWizardUtils.CreateEC2Client(PageController.HostingWizard), LOGGER, 
+                new QueryVpcsAndSubnetsWorker(ECSWizardUtils.CreateServiceClient<AmazonEC2Client>(PageController.HostingWizard), LOGGER, 
                     OnVpcSubnetsAvailable, OnVpcSubnetsError);
 
                 Task task1 = Task.Run(() =>
                 {
                     var items = new List<string>();
-                    using (var ecsClient = account.CreateServiceClient<AmazonECSClient>(region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP)))
+                    using (var ecsClient = account.CreateServiceClient<AmazonECSClient>(region))
                     {
                         var response = new ListClustersResponse();
                         do
@@ -409,7 +411,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         void LoadExistingSecurityGroups(string vpcId)
         {
-            new QuerySecurityGroupsWorker(CreateEC2Client(PageController.HostingWizard),
+            new QuerySecurityGroupsWorker(CreateServiceClient<AmazonEC2Client>(PageController.HostingWizard),
                                           vpcId,
                                           LOGGER,
                                           OnSecurityGroupsAvailable,

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Regions;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
@@ -25,7 +26,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
         }
 
         public SolutionStackInstanceSizesWorker(AccountViewModel accountViewModel,
-                                                RegionEndPointsManager.RegionEndPoints region,
+                                                ToolkitRegion region,
                                                 string solutionStack,
                                                 ILog logger,
                                                 DataAvailableCallback callback)
@@ -38,7 +39,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
             bw.RunWorkerAsync(new WorkerData
                                   { 
                                     SolutionStack = solutionStack,
-                                    BeanstalkClient = DeploymentWizardHelper.GetBeanstalkClient(accountViewModel, region),
+                                    BeanstalkClient = accountViewModel.CreateServiceClient<AmazonElasticBeanstalkClient>(region),
                                     Logger = logger
                                   });
         }

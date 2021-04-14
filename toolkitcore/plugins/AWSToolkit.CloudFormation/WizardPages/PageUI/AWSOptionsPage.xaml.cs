@@ -220,7 +220,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
                             return SetInvalidStackName("The stack name must contain only letters, numbers, dashes and start with an alpha character.");
 
                         _stackNameValidating = StackNameValidating.validationPending;
-                        new QueryExistingStackNameWorker(PageController.HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel,
+                        new QueryExistingStackNameWorker(PageController.HostingWizard.GetSelectedAccount(),
                                                          StackName,
                                                          PageController.HostingWizard.Logger,
                                                          new QueryExistingStackNameWorker.DataAvailableCallback(OnQueryExistingStackNameCompleted));

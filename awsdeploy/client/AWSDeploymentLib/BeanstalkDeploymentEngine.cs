@@ -5,7 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Amazon;
 using Amazon.AWSToolkit;
+using Amazon.AWSToolkit.Regions;
 using Amazon.EC2.Model;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
@@ -25,6 +27,10 @@ namespace AWSDeployment
     {
         // stack name selected if we can't use toolkit's ami manifest to determine default
         private const string FALLBACK_DEFAULT_STACK = "64bit Windows Server 2016 v1.2.0 running IIS 10.0";
+        private static readonly string Ec2ServiceName = new AmazonEC2Config().RegionEndpointServiceName;
+        private static readonly string ElasticBeanstalkServiceName = new AmazonElasticBeanstalkConfig().RegionEndpointServiceName;
+
+        private readonly IRegionProvider _regionProvider;
 
         #region Beanstalk-specific Deployment Properties
 
@@ -202,10 +208,7 @@ namespace AWSDeployment
             {
                 if (this._beanstalkClient == null)
                 {
-                    var beanstalkConfig = new AmazonElasticBeanstalkConfig();
-                    var endpoint = RegionEndPoints.GetEndpoint("ElasticBeanstalk");
-                    endpoint.ApplyToClientConfig(beanstalkConfig);
-                    this._beanstalkClient = new AmazonElasticBeanstalkClient(Credentials, beanstalkConfig);
+                    this._beanstalkClient = new AmazonElasticBeanstalkClient(Credentials, RegionEndpoint.GetBySystemName(Region));
                 }
 
                 return this._beanstalkClient;
@@ -220,10 +223,7 @@ namespace AWSDeployment
             {
                 if (this._rdsClient == null)
                 {
-                    var rdsConfig = new AmazonRDSConfig();
-                    var endpoint = RegionEndPoints.GetEndpoint("RDS");
-                    endpoint.ApplyToClientConfig(rdsConfig);
-                    this._rdsClient = new AmazonRDSClient(Credentials, rdsConfig);
+                    this._rdsClient = new AmazonRDSClient(Credentials, RegionEndpoint.GetBySystemName(Region));
                 }
 
                 return this._rdsClient;
@@ -238,10 +238,7 @@ namespace AWSDeployment
             {
                 if (this._iamClient == null)
                 {
-                    var iamConfig = new AmazonIdentityManagementServiceConfig();
-                    var endpoint = RegionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
-                    endpoint.ApplyToClientConfig(iamConfig);
-                    this._iamClient = new AmazonIdentityManagementServiceClient(Credentials, iamConfig);
+                    this._iamClient = new AmazonIdentityManagementServiceClient(Credentials, RegionEndpoint.GetBySystemName(Region));
                 }
 
                 return this._iamClient;
@@ -252,13 +249,14 @@ namespace AWSDeployment
 
         readonly List<ConfigurationOptionSetting> configOptionSettings = new List<ConfigurationOptionSetting>();
 
-        internal BeanstalkDeploymentEngine()
-            : this(new DeploymentObserver())
+        internal BeanstalkDeploymentEngine(IRegionProvider regionProvider)
+            : this(new DeploymentObserver(), regionProvider)
         {
         }
 
-        internal BeanstalkDeploymentEngine(DeploymentObserver observer)
+        internal BeanstalkDeploymentEngine(DeploymentObserver observer, IRegionProvider regionProvider)
         {
+            _regionProvider = regionProvider;
             VersionLabel = "v" + DateTime.Now.ToUniversalTime().ToString("yyyyMMddHHmmss");
             Region = "us-east-1";
             Observer = observer;
@@ -689,7 +687,7 @@ namespace AWSDeployment
             var validOptions = TestForValidOptionsForEnvironnment(false, xrayOptionSpecification, advancedHealthOptionSpecification);
 
             // solution stack may not support the xray config so do additional check beyond endpoint availability
-            if (RegionEndPoints.GetEndpoint(RegionEndPointsManager.XRAY_ENDPOINT_LOOKUP) != null)
+            if (RegionSupportsXray())
             {
                 if (validOptions.Contains(xrayOptionSpecification))
                 {
@@ -922,7 +920,7 @@ namespace AWSDeployment
             	if (!string.IsNullOrEmpty(RoleName) && configOptionSettings.FirstOrDefault(
                 	x => (x.Namespace == "aws:autoscaling:launchconfiguration" && x.OptionName == "IamInstanceProfile")) == null)
             	{
-                	string instanceProfileName = ConfigureRoleAndProfile(IAMClient, RoleName, RegionEndPoints, Observer); // same name, but allow for one day may not be
+                	string instanceProfileName = ConfigureRoleAndProfile(IAMClient, RoleName, Region, Observer); // same name, but allow for one day may not be
                 	// if error, chosen to not use but proceed with launch - user can fix up via environment view later
                 	if (!string.IsNullOrEmpty(instanceProfileName))
                 	{
@@ -938,7 +936,7 @@ namespace AWSDeployment
                 if (!string.IsNullOrEmpty(ServiceRoleName) && configOptionSettings.FirstOrDefault(
                     x => (x.Namespace == "aws:elasticbeanstalk:environment" && x.OptionName == "ServiceRole")) == null)
                 {
-                    ConfigureServiceRole(IAMClient, ServiceRoleName, RegionEndPoints, Observer);
+                    ConfigureServiceRole(IAMClient, ServiceRoleName, Region, Observer);
                     configOptionSettings.Add(new ConfigurationOptionSetting()
                     {
                         Namespace = "aws:elasticbeanstalk:environment",
@@ -1094,7 +1092,7 @@ namespace AWSDeployment
             var validOptions = TestForValidOptionsForEnvironnment(true, xrayOptionSpecification, advancedHealthOptionSpecification);
 
             // solution stack may not support the xray config so do additional check beyond endpoint availability
-            if (RegionEndPoints.GetEndpoint(RegionEndPointsManager.XRAY_ENDPOINT_LOOKUP) != null)
+            if (RegionSupportsXray())
             {
                 if (validOptions.Contains(xrayOptionSpecification))
                 {
@@ -1200,7 +1198,7 @@ namespace AWSDeployment
         public static string ConfigureRoleAndProfile(
             IAmazonIdentityManagementService iamClient, 
             string roleOrProfileName, 
-            RegionEndPointsManager.RegionEndPoints regionEndPoints, 
+            string regionId, 
             DeploymentObserver observer)
         {
             var instanceProfileName = string.Empty;
@@ -1222,15 +1220,15 @@ namespace AWSDeployment
                 {
                     if (isDefaultRole)
                     {
-                        var ASSUME_ROLE_POLICY
+                        var assumeRolePolicyDocument
                             = Amazon.AWSToolkit.Constants.GetIAMRoleAssumeRolePolicyDocument(
-                                RegionEndPointsManager.EC2_SERVICE_NAME,
-                                regionEndPoints);
+                                Ec2ServiceName,
+                                regionId);
                         var request = new CreateRoleRequest
                         {
                             RoleName = roleOrProfileName,
                             Path = "/",
-                            AssumeRolePolicyDocument = ASSUME_ROLE_POLICY
+                            AssumeRolePolicyDocument = assumeRolePolicyDocument
                         };
                         iamClient.CreateRole(request);
                     }
@@ -1306,7 +1304,7 @@ namespace AWSDeployment
         public static void ConfigureServiceRole(
             IAmazonIdentityManagementService iamClient, 
             string serviceRoleName,
-            RegionEndPointsManager.RegionEndPoints regionEndPoints,
+            string regionId,
             DeploymentObserver observer)
         {
             try
@@ -1318,14 +1316,14 @@ namespace AWSDeployment
                 {
                     if (isDefaultRole)
                     {
-                        var ASSUME_ROLE_POLICY 
-                            = Amazon.AWSToolkit.Constants.GetIAMRoleAssumeRolePolicyDocument(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME,
-                                                                                             regionEndPoints);
+                        var assumeRolePolicyDocument 
+                            = Amazon.AWSToolkit.Constants.GetIAMRoleAssumeRolePolicyDocument(ElasticBeanstalkServiceName,
+                                                                                             regionId);
                         var request = new CreateRoleRequest()
                         {
                             RoleName = serviceRoleName,
                             Path = "/",
-                            AssumeRolePolicyDocument = ASSUME_ROLE_POLICY
+                            AssumeRolePolicyDocument = assumeRolePolicyDocument
                         };
                         role = iamClient.CreateRole(request).Role;
 
@@ -1373,6 +1371,11 @@ namespace AWSDeployment
             catch (Amazon.IdentityManagement.Model.NoSuchEntityException) { }
 
             return null;
+        }
+
+        private bool RegionSupportsXray()
+        {
+            return _regionProvider.IsServiceAvailable(ServiceNames.Xray, Region);
         }
 
         #region Configuration File Processing

@@ -17,9 +17,9 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// VS 2015: f2884b07-5122-4e23-acd7-4d93df18709e
         /// VS 2017 (current Toolkit): 12ed248b-6d4a-47eb-be9e-8eabea0ff119
         /// </summary>
-        public const string guidPackageString = "12ed248b-6d4a-47eb-be9e-8eabea0ff119";
+        public const string guidPackageString = Constants.ToolkitPackageGuidStr;
 
-        public static readonly Guid guidPackage = new Guid(guidPackageString);
+        public static readonly Guid guidPackage = Constants.ToolkitPackageGuid;
 
         public const string CommandSetGuidString = "8ba6f49c-ca32-4bc4-a71c-77b8503b93c2";
         public static readonly Guid CommandSetGuid = new Guid(CommandSetGuidString);

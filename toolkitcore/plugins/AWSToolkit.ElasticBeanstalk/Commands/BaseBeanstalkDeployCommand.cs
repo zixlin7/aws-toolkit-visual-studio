@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 {
@@ -21,6 +22,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
     {
         protected const int MAX_REFRESH_RETRIES = 3;
         protected const int SLEEP_TIME_BETWEEN_REFRESHES = 500;
+
+        private static readonly string Ec2ServiceName = new AmazonEC2Config().RegionEndpointServiceName;
 
         public AccountViewModel Account { get; protected set; }
         public string DeploymentPackage { get; protected set; }
@@ -31,7 +34,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
         protected static ILog LOGGER = LogManager.GetLogger(typeof(BaseBeanstalkDeployCommand));
 
         public delegate string GetDefaultVpcSubnetFunc(AccountViewModel account,
-            RegionEndPointsManager.RegionEndPoints region);
+            ToolkitRegion region);
 
         protected BaseBeanstalkDeployCommand(IDictionary<string, object> deploymentProperties)
             : this(deploymentProperties, null)
@@ -45,7 +48,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             Observer = observer ?? new DeploymentControllerObserver(LOGGER);
 
             DeploymentProperties = deploymentProperties;
-            this.Account = getValue<AccountViewModel>(CommonWizardProperties.AccountSelection.propkey_SelectedAccount);
+            this.Account = CommonWizardProperties.AccountSelection.GetSelectedAccount(DeploymentProperties);
         }
 
 
@@ -58,18 +61,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 
 
         protected string ConfigureIAMRole(AccountViewModel account,
-            RegionEndPointsManager.RegionEndPoints regionEndpoints)
+            ToolkitRegion region)
         {
             var roleTemplates =
                 getValue<Amazon.AWSToolkit.CommonUI.Components.IAMCapabilityPicker.PolicyTemplate[]>(
                     BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_PolicyTemplates);
             if (roleTemplates != null)
             {
-                var endpoint = regionEndpoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
-                var config = new AmazonIdentityManagementServiceConfig();
-                endpoint.ApplyToClientConfig(config);
-
-                var client = new AmazonIdentityManagementServiceClient(account.Credentials, config);
+                var client = account.CreateServiceClient<AmazonIdentityManagementServiceClient>(region);
 
 
                 var newRoleName = "aws-elasticbeanstalk-" +
@@ -91,12 +90,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                     }
                 }
 
+                var assumeRolePolicyDocument = Constants.GetIAMRoleAssumeRolePolicyDocument(
+                    Ec2ServiceName,
+                    region.Id);
                 var role = client.CreateRole(new CreateRoleRequest
                 {
-                    RoleName = newRoleName,
-                    AssumeRolePolicyDocument
-                        = Constants.GetIAMRoleAssumeRolePolicyDocument(RegionEndPointsManager.EC2_SERVICE_NAME,
-                            regionEndpoints)
+                    RoleName = newRoleName, AssumeRolePolicyDocument = assumeRolePolicyDocument,
                 }).Role;
                 this.Observer.Status("Created IAM Role {0}", newRoleName);
 
@@ -224,38 +223,30 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             }
         }
 
-        public void CreateKeyPair(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region,
+        public void CreateKeyPair(AccountViewModel account, ToolkitRegion region,
             string keyName)
         {
             Observer.Status("Creating keypair '{0}'", keyName);
 
-            var endpoint = region.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
-            var config = new AmazonEC2Config();
-            endpoint.ApplyToClientConfig(config);
-
-            using (var client = new AmazonEC2Client(account.Credentials, config))
+            using (var client = account.CreateServiceClient<AmazonEC2Client>(region))
             {
                 var request = new CreateKeyPairRequest() {KeyName = keyName};
                 var response = client.CreateKeyPair(request);
 
                 IEC2RootViewModel ec2Root = Account.FindSingleChild<IEC2RootViewModel>(false);
                 KeyPairLocalStoreManager.Instance.SavePrivateKey(Account,
-                    region.SystemName,
+                    region.Id,
                     keyName,
                     response.KeyPair.KeyMaterial);
                 LOGGER.Debug("key pair created with name " + keyName + " and stored in local store");
             }
         }
 
-        protected string GetDefaultVPCSubnet(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
+        protected string GetDefaultVPCSubnet(AccountViewModel account, ToolkitRegion region)
         {
             Observer.Status("Determining default VPC subnets for ELB load balancer.");
 
-            var endpoint = region.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
-            var config = new AmazonEC2Config();
-            endpoint.ApplyToClientConfig(config);
-
-            using (var client = new AmazonEC2Client(account.Credentials, config))
+            using (var client = account.CreateServiceClient<AmazonEC2Client>(region))
             {
                 var defaultVpc = client.DescribeVpcs().Vpcs.Where(x => x.IsDefault).FirstOrDefault();
                 if (defaultVpc == null)

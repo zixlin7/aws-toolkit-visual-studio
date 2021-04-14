@@ -7,31 +7,32 @@ using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Amazon.AWSToolkit.DynamoDB.Util;
+using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.DynamoDB.Nodes
 {
     public class DynamoDBRootViewModel : ServiceRootViewModel, IDynamoDBRootViewModel
     {
-        DynamoDBRootViewMetaNode _metaNode;
-        AccountViewModel _accountViewModel;
-        IAmazonDynamoDB _ddbClient;
+        private readonly DynamoDBRootViewMetaNode _metaNode;
+        private readonly IRegionProvider _regionProvider;
+        private readonly Lazy<IAmazonDynamoDB> _ddbClient;
 
-        public DynamoDBRootViewModel(AccountViewModel accountViewModel)
-            : base(accountViewModel.MetaNode.FindChild < DynamoDBRootViewMetaNode>(), accountViewModel, "Amazon DynamoDB")
+        public DynamoDBRootViewModel(AccountViewModel accountViewModel, ToolkitRegion region, IRegionProvider regionProvider)
+            : base(accountViewModel.MetaNode.FindChild < DynamoDBRootViewMetaNode>(), accountViewModel, "Amazon DynamoDB", region)
         {
-            this._metaNode = base.MetaNode as DynamoDBRootViewMetaNode;
-            this._accountViewModel = accountViewModel;
+            _metaNode = base.MetaNode as DynamoDBRootViewMetaNode;
+            _regionProvider = regionProvider;
+            _ddbClient = new Lazy<IAmazonDynamoDB>(CreateDynamoDbClient);
 
             DynamoDBLocalManager.Instance.StartedJavaProcessExited += new EventHandler(DyanmoDBLocalProcessExited);
         }
 
         void DyanmoDBLocalProcessExited(object sender, EventArgs e)
         {
-            if (this.CurrentEndPoint.RegionSystemName == RegionEndPointsManager.GetInstance().LocalRegion.SystemName)
+            if (IsLocalRegion())
             {
-                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(
-                    (Action)(() => UpdateDynamoDBLocalState()));
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() => UpdateDynamoDBLocalState());
             }
         }
 
@@ -44,8 +45,7 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
             get
             {
                 var name = base.Name;
-                bool isLocal = this.CurrentEndPoint.RegionSystemName == RegionEndPointsManager.GetInstance().LocalRegion.SystemName;
-                if (isLocal)
+                if (IsLocalRegion())
                 {
                     if (DynamoDBLocalManager.Instance.State == DynamoDBLocalManager.CurrentState.Started)
                         name += string.Format(" (Started at http://localhost:{0})", DynamoDBLocalManager.Instance.LastConfiguredPort);
@@ -61,21 +61,14 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
 
         public void UpdateDynamoDBLocalState()
         {
-            this.UpdateEndPoint(RegionEndPointsManager.GetInstance().LocalRegion.SystemName);
-            base.NotifyPropertyChanged("Name");
-        }
-
-        protected override void BuildClient(AWSCredentials awsCredentials)
-        {
-            AmazonDynamoDBConfig config = new AmazonDynamoDBConfig();
-            this.CurrentEndPoint.ApplyToClientConfig(config);
-            this._ddbClient = new AmazonDynamoDBClient(awsCredentials, config);            
+            this.Refresh(true);
+            base.NotifyPropertyChanged(nameof(Name));
         }
 
         public override IList<ActionHandlerWrapper> GetVisibleActions()
         {
             var dynamoDBMetaNode = this.MetaNode as DynamoDBRootViewMetaNode;
-            bool isLocal = this.CurrentEndPoint.RegionSystemName == RegionEndPointsManager.GetInstance().LocalRegion.SystemName;
+            bool isLocal = IsLocalRegion();
             bool isConnected = DynamoDBLocalManager.Instance.State == DynamoDBLocalManager.CurrentState.Connected || DynamoDBLocalManager.Instance.State == DynamoDBLocalManager.CurrentState.Started;
             IList<ActionHandlerWrapper> actions = new List<ActionHandlerWrapper>();
             foreach (var action in this.MetaNode.Actions)
@@ -106,11 +99,11 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
             return actions;
         }
 
-        public IAmazonDynamoDB DynamoDBClient => this._ddbClient;
+        public IAmazonDynamoDB DynamoDBClient => this._ddbClient.Value;
 
         protected override void LoadChildren()
         {
-            bool isLocal = this.CurrentEndPoint.RegionSystemName == RegionEndPointsManager.GetInstance().LocalRegion.SystemName;
+            bool isLocal = IsLocalRegion();
             if (isLocal && DynamoDBLocalManager.Instance.State == DynamoDBLocalManager.CurrentState.Stopped)
             {
                 SetChildren(new List<IViewModel>());
@@ -168,10 +161,28 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
             this.RemoveChild(tableName);
         }
 
+        private bool IsLocalRegion()
+        {
+            return _regionProvider.IsRegionLocal(Region.Id);
+        }
+
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {
-            dndDataObjects.SetData("ARN", string.Format("arn:aws:ddb:{0}:{1}:*",
-                this.CurrentEndPoint.RegionSystemName, this.AccountViewModel.AccountNumber, this.Name));
+            try
+            {
+                dndDataObjects.SetData("ARN", string.Format("arn:aws:ddb:{0}:{1}:*",
+                    this.Region.Id, ToolkitFactory.Instance.AwsConnectionManager.ActiveAccountId));
+            }
+            catch (Exception)
+            {
+                // Eat the error, don't destabilize the call stack
+                // Don't spam the log - this event can happen frequently
+            }
         }
-}
+
+        private IAmazonDynamoDB CreateDynamoDbClient()
+        {
+            return AccountViewModel.CreateServiceClient<AmazonDynamoDBClient>(Region);
+        }
+    }
 }

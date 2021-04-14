@@ -1,0 +1,4 @@
+{
+    "Type": "Feature",
+    "Description": "The Toolkit makes a validation check when changing the currently active credentials and region. Validation messages are shown while a validation is in progress, and if the validation check fails."
+}

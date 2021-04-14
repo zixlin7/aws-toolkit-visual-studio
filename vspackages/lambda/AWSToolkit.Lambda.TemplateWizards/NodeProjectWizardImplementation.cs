@@ -12,6 +12,7 @@ using Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages;
 using Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageControllers;
 using Amazon.AWSToolkit.SimpleWorkers;
 using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.Lambda.TemplateWizards
 {
@@ -188,7 +189,7 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards
         private void CreateFromExistingFunction(Dictionary<string, string> replacementsDictionary, IAWSWizard wizard)
         {
             var account = wizard.CollectedProperties[NodeWizardPropertyNameConstants.propKey_SelectedAccount] as AccountViewModel;
-            var region = wizard.CollectedProperties[NodeWizardPropertyNameConstants.propKey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
+            var region = wizard.CollectedProperties[NodeWizardPropertyNameConstants.propKey_SelectedRegion] as ToolkitRegion;
             var existingFunctionName = wizard.CollectedProperties[NodeWizardPropertyNameConstants.propKey_ExistingFunctionName] as string;
 
             var client = account.CreateServiceClient<AmazonLambdaClient>(region);

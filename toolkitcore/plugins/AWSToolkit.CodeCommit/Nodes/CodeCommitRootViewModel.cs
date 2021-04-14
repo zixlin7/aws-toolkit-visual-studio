@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
@@ -6,20 +7,20 @@ using Amazon.CodeCommit;
 using Amazon.CodeCommit.Model;
 using Amazon.Runtime;
 using Amazon.AWSToolkit.CodeCommit.Interface.Nodes;
-using log4net;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.CodeCommit.Nodes
 {
     public class CodeCommitRootViewModel : ServiceRootViewModel, ICodeCommitRootViewModel
     {
-        private readonly ILog LOGGER = LogManager.GetLogger(typeof(CodeCommitRootViewModel));
+        private readonly CodeCommitRootViewMetaNode _metaNode;
+        private readonly Lazy<IAmazonCodeCommit> _codeCommitClient;
 
-        readonly CodeCommitRootViewMetaNode _metaNode;
-
-        public CodeCommitRootViewModel(AccountViewModel accountViewModel)
-            : base(accountViewModel.MetaNode.FindChild<CodeCommitRootViewMetaNode>(), accountViewModel, "AWS CodeCommit")
+        public CodeCommitRootViewModel(AccountViewModel accountViewModel, ToolkitRegion region)
+            : base(accountViewModel.MetaNode.FindChild<CodeCommitRootViewMetaNode>(), accountViewModel, "AWS CodeCommit", region)
         {
-            this._metaNode = base.MetaNode as CodeCommitRootViewMetaNode;
+            _metaNode = base.MetaNode as CodeCommitRootViewMetaNode;
+            _codeCommitClient = new Lazy<IAmazonCodeCommit>(CreateCodeCommitClient);
         }
 
         public override string ToolTip => "AWS CodeCommit";
@@ -45,13 +46,12 @@ namespace Amazon.AWSToolkit.CodeCommit.Nodes
             SetChildren(items);
         }
 
-        protected override void BuildClient(AWSCredentials credentials)
+        public IAmazonCodeCommit CodeCommitClient => _codeCommitClient.Value;
+
+        private IAmazonCodeCommit CreateCodeCommitClient()
         {
             var config = new AmazonCodeCommitConfig { MaxErrorRetry = 6 };
-            this.CurrentEndPoint.ApplyToClientConfig(config);
-            CodeCommitClient = new AmazonCodeCommitClient(credentials, config);
+            return AccountViewModel.CreateServiceClient<AmazonCodeCommitClient>(Region, config);
         }
-
-        public IAmazonCodeCommit CodeCommitClient { get; private set; }
     }
 }

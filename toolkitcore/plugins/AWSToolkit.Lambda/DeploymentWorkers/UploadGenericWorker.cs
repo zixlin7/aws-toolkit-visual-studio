@@ -56,7 +56,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
             try
             {
-                deploymentProperties.RegionId = uploadState.Region?.SystemName;
+                deploymentProperties.RegionId = uploadState.Region?.Id;
                 deploymentProperties.Runtime = uploadState.Request?.Runtime;
                 deploymentProperties.TargetFramework = uploadState.Framework;
                 deploymentProperties.LambdaPackageType = uploadState.Request?.PackageType;

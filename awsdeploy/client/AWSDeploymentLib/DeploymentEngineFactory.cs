@@ -1,4 +1,5 @@
 ﻿using System;
+using Amazon.AWSToolkit.Context;
 
 namespace AWSDeployment
 {
@@ -11,10 +12,10 @@ namespace AWSDeployment
         /// Returns a deployment engine instance suitable for use with the specified service.
         /// </summary>
         /// <param name="forService">"ElasticBeanstalk" or "CloudFormation"</param>
-        public static DeploymentEngineBase CreateEngine(string forService)
+        public static DeploymentEngineBase CreateEngine(string forService, ToolkitContext toolkitContext)
         {
             if (string.Compare(forService, ElasticBeanstalkServiceName, true) == 0)
-                return new BeanstalkDeploymentEngine();
+                return new BeanstalkDeploymentEngine(toolkitContext.RegionProvider);
             
             if (string.Compare(forService, CloudFormationServiceName, true) == 0)
                 return new CloudFormationDeploymentEngine();

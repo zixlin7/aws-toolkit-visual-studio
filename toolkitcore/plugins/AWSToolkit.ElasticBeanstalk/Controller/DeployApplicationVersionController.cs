@@ -8,7 +8,7 @@ using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers;
-
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.ElasticBeanstalk.Commands;
 using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers;
@@ -20,7 +20,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 {
     public class DeployApplicationVersionController
     {
+        private readonly ToolkitContext _toolkitContext;
         IAmazonElasticBeanstalk _beanstalkClient;
+
+        public DeployApplicationVersionController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         public bool Execute(ApplicationViewModel applicationViewModel, string versionLabel)
         {            
@@ -33,7 +39,6 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
                 //{DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy, true},
                 {DeploymentWizardProperties.DeploymentTemplate.propkey_RedeployVersion, true},
                 {DeploymentWizardProperties.SeedData.propkey_SeedAccountGuid, applicationViewModel.AccountViewModel.SettingsUniqueKey},
-                {CommonWizardProperties.AccountSelection.propkey_SelectedRegion, RegionEndPointsManager.GetInstance().GetRegion(applicationViewModel.ElasticBeanstalkRootViewModel.CurrentEndPoint.RegionSystemName)},
                 {DeploymentWizardProperties.SeedData.propkey_SeedName, applicationViewModel.Application.ApplicationName},
                 {DeploymentWizardProperties.AppOptions.propkey_TargetRuntime, "4.0"},
                 {BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_VersionLabel, versionLabel}
@@ -42,18 +47,19 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             // needed so pages know they are running in a Beanstalk-specific environment
             seedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_TemplateServiceOwner] = DeploymentServiceIdentifiers.BeanstalkServiceName;
 
-            var template = LoadDeploymentTemplate(applicationViewModel.ElasticBeanstalkRootViewModel.CurrentEndPoint.RegionSystemName);
+            var template = LoadDeploymentTemplate(applicationViewModel.ElasticBeanstalkRootViewModel.Region.Id);
             seedProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate] = template;
 
             IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.ElasticBeanstalk.View.PublishApplicationVersion", seedProperties);
             wizard.Title = "Publish Application Version";
+            wizard.SetSelectedRegion(applicationViewModel.ElasticBeanstalkRootViewModel.Region);
 
             // register the page groups we expect child pages to fit into
             wizard.RegisterPageGroups(DeploymentWizardPageGroups.DeploymentPageGroups);
 
             var defaultPages = new IAWSWizardPageController[]
             {
-                new StartPageController(),
+                new StartPageController(_toolkitContext),
                 new ApplicationPageController(),
                 new AWSOptionsPageController(),
                 new VpcOptionsPageController(),
@@ -68,7 +74,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             {
                 ThreadPool.QueueUserWorkItem(x =>
                     {
-                        var command = new DeployNewApplicationCommand("FakePackage", wizard.CollectedProperties);
+                        var command = new DeployNewApplicationCommand("FakePackage", wizard.CollectedProperties, _toolkitContext);
                         command.Execute();
                     });
                 return true;

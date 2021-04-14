@@ -2,14 +2,29 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Amazon.AWSToolkit.Regions.Manifest;
 using Amazon.AWSToolkit.ResourceFetchers;
 using Amazon.AWSToolkit.Tasks;
+using Amazon.Runtime;
 using log4net;
 
 namespace Amazon.AWSToolkit.Regions
 {
+    /// <summary>
+    /// Responsible for Region/Partition/Endpoint functionality
+    ///
+    /// Retrieves endpoints data from local and remote sources, and maintains a
+    /// mapping that can be queried by the Toolkit.
+    ///
+    /// This system also maintains Local regions. A local region allows the Toolkit
+    /// to connect to locally hosted "service" endpoints like DynamoDB Local. Each partition
+    /// retrieved from endpoints data will be automatically assigned a Local endpoint.
+    /// This way, a "local" region can be accessed from any partition (usually via
+    /// the AWS Explorer).
+    /// Local endpoints for all partitions will share the same service url details.
+    /// </summary>
     public class RegionProvider : IRegionProvider
     {
         static readonly ILog Logger = LogManager.GetLogger(typeof(RegionProvider));
@@ -17,6 +32,7 @@ namespace Amazon.AWSToolkit.Regions
         public const string EndpointsVersion = "3";
         public const string EndpointsFile = "endpoints.json";
         public const string EndpointsBaseUrl = "https://idetoolkits.amazonwebservices.com/";
+        public const string LocalRegionIdPrefix = "toolkit-local-";
 
         /// <summary>
         /// Fires when the provider has an update to its region definitions.
@@ -30,6 +46,16 @@ namespace Amazon.AWSToolkit.Regions
         private Endpoints _endpoints = new Endpoints();
         private readonly IResourceFetcher _localEndpointsFetcher;
         private readonly IResourceFetcher _remoteEndpointsFetcher;
+
+        /// <summary>
+        /// Keyed by partition Id, contains the partition's "Local" region
+        /// </summary>
+        private Dictionary<string, ToolkitRegion> _localRegionsByPartitionId = new Dictionary<string, ToolkitRegion>();
+
+        /// <summary>
+        /// Keyed by service name, contains local service url values
+        /// </summary>
+        private readonly Dictionary<string, string> _localServiceUrls = new Dictionary<string, string>();
 
         public RegionProvider() : this(CreateLocalEndpointsFetcher(), CreateRemoteEndpointsFetcher())
         {
@@ -49,7 +75,6 @@ namespace Amazon.AWSToolkit.Regions
         /// </summary>
         public void Initialize()
         {
-            // TODO : account for Local Region somehow (eg: DynamoDB Local)
             LoadLocalResource();
             LoadRemoteResourceAsync().LogExceptionAndForget();
         }
@@ -61,7 +86,8 @@ namespace Amazon.AWSToolkit.Regions
         /// <returns>Partition Id, null if no partition was found</returns>
         public string GetPartitionId(string regionId)
         {
-            return _endpoints.GetPartitionIdForRegion(regionId);
+            var partitionId = _endpoints.GetPartitionIdForRegion(regionId);
+            return partitionId ?? _localRegionsByPartitionId.Values.FirstOrDefault(x => x.Id == regionId)?.PartitionId;
         }
 
         /// <summary>
@@ -71,7 +97,108 @@ namespace Amazon.AWSToolkit.Regions
         /// <returns>A list of regions, empty list if the partition was not known</returns>
         public IList<ToolkitRegion> GetRegions(string partitionId)
         {
-            return _endpoints.GetRegions(partitionId);
+            if (partitionId == null)
+            {
+                return new List<ToolkitRegion>();
+            }
+
+            var regions = _endpoints.GetRegions(partitionId);
+
+            if (_localRegionsByPartitionId.TryGetValue(partitionId, out var localRegion))
+            {
+                regions.Add(localRegion);
+            }
+
+            return regions;
+        }
+
+        /// <summary>
+        /// Retrieves list of available partitions
+        /// </summary>
+        public IList<Partition> GetPartitions()
+        {
+            return _endpoints.Partitions;
+        }
+
+        /// <summary>
+        /// Retrieves a <see cref="Partition"/> for a given partition Id
+        /// </summary>
+        /// <param name="partitionId">Id of partition to look up</param>
+        /// <returns>Corresponding <see cref="Partition"/> value, null if partition is not known</returns>
+        public Partition GetPartition(string partitionId)
+        {
+            return _endpoints.GetPartition(partitionId);
+        }
+
+        /// <summary>
+        /// Retrieve a <see cref="ToolkitRegion"/> for a given region Id.
+        /// </summary>
+        /// <param name="regionId">Id of region to look up</param>
+        /// <returns>Corresponding <see cref="ToolkitRegion"/> value, null if region is not known</returns>
+        public ToolkitRegion GetRegion(string regionId)
+        {
+            if (string.IsNullOrWhiteSpace(regionId))
+            {
+                return null;
+            }
+            var partitionId = GetPartitionId(regionId);
+            if (partitionId == null)
+            {
+                return null;
+            }
+
+            return GetRegions(partitionId).FirstOrDefault(r => r.Id == regionId);
+        }
+
+        /// <summary>
+        /// Indicates if the region represents local endpoints or not
+        /// </summary>
+        public bool IsRegionLocal(string regionId)
+        {
+            return regionId.StartsWith(LocalRegionIdPrefix);
+        }
+
+        /// <summary>
+        /// Specifies that the given service uses the given url for local regions
+        /// </summary>
+        /// <param name="serviceName">The service name to store a local url for. See <see cref="ClientConfig.RegionEndpointServiceName"/></param>
+        /// <param name="serviceUrl">Url to associate with the given service for local regions</param>
+        public void SetLocalEndpoint(string serviceName, string serviceUrl)
+        {
+            _localServiceUrls[serviceName] = serviceUrl;
+        }
+
+        /// <summary>
+        /// Queries the toolkit for a local service url for the given service
+        /// </summary>
+        /// <param name="serviceName">The service name to query a local url for. See <see cref="ClientConfig.RegionEndpointServiceName"/></param>
+        public string GetLocalEndpoint(string serviceName)
+        {
+            if (_localServiceUrls.TryGetValue(serviceName, out var url))
+            {
+                return url;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Indicates whether or not a service is available in a region
+        /// </summary>
+        /// <param name="serviceName">Name of service to check for in a region. See <see cref="ClientConfig.RegionEndpointServiceName"/> or endpoints.json for expected values.</param>
+        /// <param name="regionId">Region to check if service is available in</param>
+        /// <returns>True if the service is available in the specified region, False otherwise</returns>
+        public bool IsServiceAvailable(string serviceName, string regionId)
+        {
+            if (IsRegionLocal(regionId))
+            {
+                return _localServiceUrls.ContainsKey(serviceName) &&
+                       !string.IsNullOrWhiteSpace(_localServiceUrls[serviceName]);
+            }
+            else
+            {
+                return _endpoints.IsServiceAvailable(serviceName, regionId);
+            }
         }
 
         /// <summary>
@@ -203,7 +330,23 @@ namespace Amazon.AWSToolkit.Regions
         /// </summary>
         private void Update(Endpoints endpoints)
         {
-            _endpoints = endpoints ?? throw new ArgumentNullException(nameof(endpoints));
+            if (endpoints == null)
+            {
+                throw new ArgumentNullException(nameof(endpoints));
+            }
+
+            _localRegionsByPartitionId = endpoints.Partitions
+                // Craft a "Local" region for each partition
+                .Select(p => new {PartitionId = p.Id, LocalRegion = new ToolkitRegion()
+                {
+                    // Eg: aws-cn -> toolkit-local-aws-cn
+                    Id = $"{LocalRegionIdPrefix}{p.Id}",
+                    DisplayName = "Local (localhost)",
+                    PartitionId = p.Id,
+                },})
+                .ToDictionary(x => x.PartitionId, x => x.LocalRegion);
+
+            _endpoints = endpoints;
 
             RaiseRegionProviderUpdated();
         }

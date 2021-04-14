@@ -122,17 +122,16 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
 
             StringBuilder sb = new StringBuilder();
 
-            AccountViewModel selectedAccount = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
-            RegionEndPointsManager.RegionEndPoints rep
-                = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
+            AccountViewModel selectedAccount = HostingWizard.GetSelectedAccount();
+            var region = HostingWizard.GetSelectedRegion();
             string service = HostingWizard[DeploymentWizardProperties.DeploymentTemplate.propkey_TemplateServiceOwner] as string;
 
             sb.AppendFormat("Publish to {0} in region '{2}' ({3}) using account credentials from profile '{1}'.",
                                 service == DeploymentServiceIdentifiers.CloudFormationServiceName 
                                     ? "AWS CloudFormation" : "AWS Elastic Beanstalk",
-                                selectedAccount.AccountDisplayName, 
-                                rep.DisplayName, 
-                                rep.SystemName);
+                                selectedAccount.AccountDisplayName,
+                                region.DisplayName,
+                                region.Id);
 
             tb.Text = sb.ToString();
 

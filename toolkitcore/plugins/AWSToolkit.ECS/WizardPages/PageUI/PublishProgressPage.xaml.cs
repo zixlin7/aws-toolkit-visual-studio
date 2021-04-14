@@ -13,6 +13,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(PublishProgressPage));
 
+        //indicates if page is manually closed/unloaded by user
+        public bool IsUnloaded { get; set; }
         public PublishProgressPageController PageController { get; }
 
         public PublishProgressPage()
@@ -24,6 +26,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             : this()
         {
             PageController = pageController;
+            this.Unloaded += OnUnloaded;
         }
 
         public void SetUploadFailedState(bool failed)
@@ -57,6 +60,12 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             _ctlProgressBar.IsIndeterminate = false;
             _ctlProgressBar.Value = _ctlProgressBar.Maximum;
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            IsUnloaded = true;
+            this.Unloaded -= this.OnUnloaded;
         }
     }
 }

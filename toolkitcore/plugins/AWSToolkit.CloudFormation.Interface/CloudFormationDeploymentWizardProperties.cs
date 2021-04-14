@@ -20,7 +20,7 @@
             public static readonly string propkey_SelectedAccount = "propkey_SelectedAccount";
 
             /// <summary>
-            /// The RegionEndPointsManager.RegionEndPoints that is selected for deployment
+            /// The ToolkitRegion that is selected for deployment
             /// </summary>
             public static readonly string propkey_SelectedRegion = "propkey_SelectedRegion";
 

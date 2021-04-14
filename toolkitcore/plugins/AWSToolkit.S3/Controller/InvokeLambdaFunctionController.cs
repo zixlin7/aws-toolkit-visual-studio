@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
+using Amazon.AWSToolkit.Regions;
 using Amazon.S3;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
@@ -15,17 +16,23 @@ namespace Amazon.AWSToolkit.S3.Controller
 {
     public class InvokeLambdaFunctionController
     {
+        private static readonly string LambdaServiceName =
+            new AmazonLambdaConfig().RegionEndpointServiceName;
+        private IRegionProvider _regionProvider;
+
         IAmazonS3 _s3Client;
         string _bucketName;
         IList<string> _objectKeys;
 
         InvokeLambdaFunctionModel _model;
- 
-        public InvokeLambdaFunctionController(IAmazonS3 s3Client, string bucketName, IList<string> objectKeys)
+       
+
+        public InvokeLambdaFunctionController(IAmazonS3 s3Client, string bucketName, IList<string> objectKeys, IRegionProvider regionProvider)
         {
             this._s3Client = s3Client;
             this._bucketName = bucketName;
-            this._objectKeys = objectKeys;            
+            this._objectKeys = objectKeys;
+            this._regionProvider = regionProvider;
         }
 
         public bool Execute()
@@ -39,14 +46,16 @@ namespace Amazon.AWSToolkit.S3.Controller
         {
             this._model = new InvokeLambdaFunctionModel();
 
-            foreach(var region in RegionEndPointsManager.GetInstance().Regions)
+            foreach(var region in _regionProvider.GetRegions(ToolkitFactory.Instance.Navigator.SelectedAccount.PartitionId))
             {
-                if (region.GetEndpoint(RegionEndPointsManager.LAMBDA_SERVICE_NAME) == null)
-                    continue;
-
-                this._model.Regions.Add(region);
-                if (ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints == region)
-                    this._model.SelectedRegion = region;
+                if (_regionProvider.IsServiceAvailable(LambdaServiceName, region.Id))
+                {
+                    this._model.Regions.Add(region);
+                    if (string.Equals(ToolkitFactory.Instance.Navigator.SelectedRegion.Id, region.Id))
+                    {
+                        this._model.SelectedRegion = region;
+                    }
+                }
             }
 
             if (this._model.SelectedRegion == null && this._model.Regions.Count > 0)
@@ -100,7 +109,7 @@ namespace Amazon.AWSToolkit.S3.Controller
         private IAmazonLambda CreateLambdaClient()
         {
             var accountModel = ToolkitFactory.Instance.Navigator.SelectedAccount;
-            var client = accountModel.CreateServiceClient<AmazonLambdaClient>(this.Model.SelectedRegion.GetEndpoint(RegionEndPointsManager.LAMBDA_SERVICE_NAME));
+            var client = accountModel.CreateServiceClient<AmazonLambdaClient>(this.Model.SelectedRegion);
             return client;
         }
 

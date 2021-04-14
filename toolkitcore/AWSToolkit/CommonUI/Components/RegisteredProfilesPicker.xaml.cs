@@ -6,12 +6,15 @@ using System.Windows;
 using System.Windows.Controls;
 using log4net;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.Runtime.CredentialManagement;
 
 namespace Amazon.AWSToolkit.CommonUI.Components
 {
     /// <summary>
-    /// Interaction logic for RegisteredProfilesPicker.xaml
+    /// Control that allows users to select from a list of accounts (Credentials).
+    /// TODO : Migrate code away from using this class to use <see cref="CredentialsSelector"/>
+    /// TODO : instead, because that is a Control that completely uses data binding.
     /// </summary>
     public partial class RegisteredProfilesPicker : UserControl
     {
@@ -83,13 +86,14 @@ namespace Amazon.AWSToolkit.CommonUI.Components
             var netSdkAccounts = new List<ProfileComboItem>();
             var sharedCredentialsAccounts = new List<ProfileComboItem>();
 
-            foreach(var account in accounts)
+            foreach (var account in accounts)
             {
-                if(account.ProfileStore is NetSDKCredentialsFile)
+                var id = account.DisplayName;
+                if (string.Equals(account.Identifier.FactoryId, SDKCredentialProviderFactory.SdkProfileFactoryId))
                 {
                     netSdkAccounts.Add(new ProfileComboItem(ProfileComboItem.ItemType.Profile, account.DisplayName, account));
                 }
-                else if(account.ProfileStore is SharedCredentialsFile)
+                else if (string.Equals(account.Identifier.FactoryId, SharedCredentialProviderFactory.SharedProfileFactoryId))
                 {
                     sharedCredentialsAccounts.Add(new ProfileComboItem(ProfileComboItem.ItemType.Profile, account.DisplayName, account));
                 }

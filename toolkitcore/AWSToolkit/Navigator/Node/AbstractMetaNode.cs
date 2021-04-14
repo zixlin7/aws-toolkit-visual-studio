@@ -8,7 +8,11 @@ namespace Amazon.AWSToolkit.Navigator.Node
 
         public virtual bool SupportsRefresh => this.SupportsEndPoint;
 
-        public virtual string EndPointSystemName => null;
+        /// <summary>
+        /// Name of service referenced by the SDK when looking up endpoints details.
+        /// See <see cref="Amazon.Runtime.ClientConfig.RegionEndpointServiceName"/> or endpoints.json for expected values.
+        /// </summary>
+        public virtual string SdkEndpointServiceName => null;
 
         public virtual IList<ActionHandlerWrapper> Actions => new List<ActionHandlerWrapper>();
 

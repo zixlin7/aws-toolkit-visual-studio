@@ -99,7 +99,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
         {
             SelectedRepository = null;
             SelectedFolder = BaseFolder;
-            RefreshRepositoriesList(GetClientForRegion(SelectedRegion.SystemName));
+            RefreshRepositoriesList(GetClientForRegion(SelectedRegion));
         }
 
         /// <summary>

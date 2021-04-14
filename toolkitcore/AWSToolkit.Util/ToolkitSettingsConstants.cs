@@ -8,19 +8,15 @@
 
         public const string RegisteredProfiles = Amazon.Runtime.Internal.Settings.SettingsConstants.RegisteredProfiles;
 
-        public const string NonNetSDKCredentialStoreMetadata = "NonNetSDKCredentialStoreMetadata";
-
         public const string RecentUsages = "RecentUsages";
 
         public const string DisplayNameField = Amazon.Runtime.Internal.Settings.SettingsConstants.DisplayNameField;
         public const string AccessKeyField = Amazon.Runtime.Internal.Settings.SettingsConstants.AccessKeyField;
         public const string SecretKeyField = Amazon.Runtime.Internal.Settings.SettingsConstants.SecretKeyField;
-        public const string AccountNumberField = Amazon.Runtime.Internal.Settings.SettingsConstants.AccountNumberField;
-        public const string Restrictions = Amazon.Runtime.Internal.Settings.SettingsConstants.Restrictions;
 
         public const string SecretKeyRepository = Amazon.Runtime.Internal.Settings.SettingsConstants.SecretKeyRepository;
 
-        public const string LastAcountSelectedKey = "LastAcountSelectedKey";
+        public const string LastSelectedCredentialId = "LastSelectedCredentialId";
 
         public const string HostedFilesLocation = "HostedFilesLocation";
 

@@ -2,19 +2,20 @@
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
+using Amazon.EC2;
 
 namespace Amazon.AWSToolkit.EC2.Nodes
 {
     public class EC2RootViewMetaNode : ServiceRootViewMetaNode
     {
-        public const string EC2_ENDPOINT_LOOKUP = RegionEndPointsManager.EC2_SERVICE_NAME;
+        private static readonly string EC2ServiceName = new AmazonEC2Config().RegionEndpointServiceName;
 
+        public override string SdkEndpointServiceName => EC2ServiceName;
 
-        public override string EndPointSystemName => EC2_ENDPOINT_LOOKUP;
-
-        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
+        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account, ToolkitRegion region)
         {
-            return new EC2RootViewModel(account);
+            return new EC2RootViewModel(account, region);
         }
 
         public ActionHandlerWrapper.ActionHandler OnLaunch

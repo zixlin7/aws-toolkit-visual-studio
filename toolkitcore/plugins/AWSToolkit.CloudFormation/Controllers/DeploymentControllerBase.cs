@@ -8,9 +8,11 @@ using Amazon.AWSToolkit.CloudFormation.Nodes;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Util;
 
 using Amazon.AWSToolkit.EC2.Nodes;
+using Amazon.AWSToolkit.Regions;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 using Amazon.EC2;
@@ -21,7 +23,7 @@ using log4net;
 
 namespace Amazon.AWSToolkit.CloudFormation.Controllers
 {
-    abstract class DeploymentControllerBase 
+    abstract class DeploymentControllerBase
     {
         protected AccountViewModel _account;
 
@@ -30,22 +32,23 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
         
         protected static ILog LOGGER;
         protected IDictionary<string, object> DeploymentProperties { get; }
+        protected ToolkitContext ToolkitContext { get; set; }
 
         const int MAX_REFRESH_RETRIES = 3;
         const int SLEEP_TIME_BETWEEN_REFRESHES = 500;
 
-        public DeploymentControllerBase(string deploymentPackage, IDictionary<string, object> deploymentProperties)
+        public DeploymentControllerBase(string deploymentPackage, IDictionary<string, object> deploymentProperties, ToolkitContext toolkitContext)
         {
-            _account = deploymentProperties[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
+            _account = CommonWizardProperties.AccountSelection.GetSelectedAccount(deploymentProperties);
             if (_account == null)
                 throw new System.InvalidOperationException("Missing account data in deployment properties; cannot proceed");
-
+            ToolkitContext = toolkitContext;
             DeploymentProperties = deploymentProperties;
 
-            Deployment = DeploymentEngineFactory.CreateEngine(DeploymentEngineFactory.CloudFormationServiceName) 
+            Deployment = DeploymentEngineFactory.CreateEngine(DeploymentEngineFactory.CloudFormationServiceName, toolkitContext) 
                     as CloudFormationDeploymentEngine;
             Deployment.DeploymentPackage = deploymentPackage;
-            Deployment.Region = RegionEndPoints.SystemName;
+            Deployment.Region = Region.Id;
 
             // inject default ami (2008/2012) if selected; if the user chose a custom ami, it will be applied later
             // as part of shared custom ami logic with Beanstalk
@@ -71,9 +74,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             {
                 if (this._ec2Client == null)
                 {
-                    var ec2Config = new AmazonEC2Config();
-                    RegionEndPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).ApplyToClientConfig(ec2Config);
-                    this._ec2Client = new AmazonEC2Client(_account.Credentials, ec2Config);
+                    this._ec2Client = _account.CreateServiceClient<AmazonEC2Client>(Region);
                 }
 
                 return this._ec2Client;
@@ -87,28 +88,25 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             {
                 if (this._cfClient == null)
                 {
-                    var cfConfig = new AmazonCloudFormationConfig ();
-                    RegionEndPoints.GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME).ApplyToClientConfig(cfConfig);
-                    this._cfClient = new AmazonCloudFormationClient(_account.Credentials, cfConfig);
+                    this._cfClient = _account.CreateServiceClient<AmazonCloudFormationClient>(Region);
                 }
 
                 return _cfClient;
             }
         }
 
-        RegionEndPointsManager.RegionEndPoints _regionEndPoints = null;
+        ToolkitRegion _region = null;
         [Browsable(false)]
-        protected RegionEndPointsManager.RegionEndPoints RegionEndPoints
+        protected ToolkitRegion Region
         {
             get
             {
-                if (_regionEndPoints == null)
+                if (_region == null)
                 {
-                    _regionEndPoints = DeploymentProperties[CommonWizardProperties.AccountSelection.propkey_SelectedRegion]
-                                            as RegionEndPointsManager.RegionEndPoints;
+                    _region = CommonWizardProperties.AccountSelection.GetSelectedRegion(DeploymentProperties);
                 }
 
-                return _regionEndPoints;
+                return _region;
             }
         }
 
@@ -116,16 +114,12 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
         /// Can be used to generate a default and predictable name for the upload bucket 
         /// if one is not supplied
         /// </summary>
-        /// <param name="account"></param>
-        /// <param name="region"></param>
-        /// <returns></returns>
-        public static string DefaultBucketName(AccountViewModel account, string region)
+        public static string DefaultBucketName(AccountViewModel account, ToolkitRegion region)
         {
-            // had occasion when users have had lead/trail spaces when entering a/c number; explorer
-            // should remove but play safe. Know access key is trim-safe already.
-            string suffix = account.UniqueIdentifier;
-            var bucketName = string.Format("awsdeployment-{0}-{1}", region, suffix);
-            return bucketName.ToLower(); 
+            return Util.CloudFormationUtil.CreateCloudFormationUploadBucketName(
+                account,
+                region,
+                "awsdeployment");
         }
 
         /// <summary>
@@ -154,7 +148,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
             LOGGER.Debug("key pair created");
             IEC2RootViewModel ec2Root = account.FindSingleChild<IEC2RootViewModel>(false);
-            KeyPairLocalStoreManager.Instance.SavePrivateKey(account, RegionEndPoints.SystemName, keyName,
+            KeyPairLocalStoreManager.Instance.SavePrivateKey(account, Region.Id, keyName,
                 response.KeyPair.KeyMaterial);
             LOGGER.Debug("key pair created, stored in local store");
         }

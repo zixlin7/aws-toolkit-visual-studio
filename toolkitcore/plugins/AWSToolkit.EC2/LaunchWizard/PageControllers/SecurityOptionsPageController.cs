@@ -6,6 +6,7 @@ using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.EC2.LaunchWizard.PageUI;
 using Amazon.AWSToolkit.EC2.Model;
 using Amazon.AWSToolkit.EC2.Nodes;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.SimpleWorkers;
 
 using Amazon.EC2;
@@ -57,8 +58,8 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
             FeatureViewModel ec2fvm = HostingWizard[LaunchWizardProperties.Global.propkey_EC2RootModel] as FeatureViewModel;
             if (!_pageDataInitialized)
             {
-                PopulateExistingKeyPairs(ec2fvm.EC2Client);                
-                _pageUI.AllowKeyPairCreation = !ec2fvm.AccountViewModel.Restrictions.Contains("IsGovCloudAccount");
+                PopulateExistingKeyPairs(ec2fvm.EC2Client);
+                _pageUI.AllowKeyPairCreation = !string.Equals(ec2fvm.AccountViewModel.PartitionId, PartitionIds.AWS_GOV_CLOUD);
                 _pageDataInitialized = true;
             }
 
@@ -149,17 +150,17 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
 
         void PopulateExistingKeyPairs(IAmazonEC2 ec2Client)
         {
-            var account = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as Account.AccountViewModel;
+            var account = HostingWizard.GetSelectedAccount();
             if (account == null)
                 return;
 
-            var region = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
+            var region = HostingWizard.GetSelectedRegion();
             if (region == null)
                 return;
 
             QueryKeyPairNamesWorker worker
                 = new QueryKeyPairNamesWorker(account,
-                                              region.SystemName,
+                                              region.Id,
                                               ec2Client,
                                               HostingWizard.Logger,
                                               new QueryKeyPairNamesWorker.DataAvailableCallback(OnKeyPairNamesAvailable));

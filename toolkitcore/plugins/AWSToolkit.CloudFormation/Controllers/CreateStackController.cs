@@ -49,9 +49,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                     properties[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplateName] =
                         properties[DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName] as string;
                 }
-
-                var region = RegionEndPointsManager.GetInstance().GetRegion(this._rootModel.CurrentEndPoint.RegionSystemName);
-                return base.CreateStack(this._rootModel.AccountViewModel, region, properties);
+                return base.CreateStack(this._rootModel.AccountViewModel, this._rootModel.Region, properties);
             }
 
             return new ActionResults().WithSuccess(false);

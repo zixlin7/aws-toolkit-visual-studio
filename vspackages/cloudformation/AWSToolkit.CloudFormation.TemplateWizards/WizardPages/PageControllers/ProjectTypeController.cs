@@ -6,6 +6,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 using Amazon.AWSToolkit.CloudFormation.TemplateWizards.WizardPages.PageUI;
+using Amazon.AWSToolkit.Regions;
 
 using log4net;
 
@@ -57,17 +58,18 @@ namespace Amazon.AWSToolkit.CloudFormation.TemplateWizards.WizardPages.PageContr
         {
             if (_pageUI == null)
             {
-                _pageUI = new ProjectTypePage(this);
-                this._pageUI.PropertyChanged += new PropertyChangedEventHandler(_pageUI_PropertyChanged);
-                this._pageUI.DataContext = this;
+                _pageUI = new ProjectTypePage(ToolkitFactory.Instance.ToolkitContext);
+                _pageUI.PropertyChanged += new PropertyChangedEventHandler(_pageUI_PropertyChanged);
+                _pageUI.Connection.PropertyChanged += new PropertyChangedEventHandler(_pageUI_PropertyChanged);
 
                 AccountViewModel account;
-                RegionEndPointsManager.RegionEndPoints region;
+                ToolkitRegion region;
 
                 account = ToolkitFactory.Instance.Navigator.SelectedAccount;
-                region = ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints;
+                region = ToolkitFactory.Instance.Navigator.SelectedRegion;
 
-                this._pageUI.Initialize(account, region);
+                _pageUI.Connection.Account = account;
+                _pageUI.Connection.Region = region;
             }
 
             return _pageUI;
@@ -118,6 +120,11 @@ namespace Amazon.AWSToolkit.CloudFormation.TemplateWizards.WizardPages.PageContr
                     return true;
                 if (this._pageUI.CreationMode == CreationMode.ExistingStack)
                 {
+                    if (!_pageUI.Connection.ConnectionIsValid || _pageUI.Connection.IsValidating)
+                    {
+                        return false;
+                    }
+
                     if (this._pageUI.SelectedAccount != null && this._pageUI.SelectedRegion != null && !string.IsNullOrEmpty(this._pageUI.SelectedExistingStackName))
                         return true;
                 }

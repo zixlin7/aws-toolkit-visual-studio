@@ -3,38 +3,28 @@ using System.Collections.Generic;
 using Amazon.RDS;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.RDS.Nodes
 {
     public class RDSRootViewModel : ServiceRootViewModel, IRDSRootViewModel
     {
-        RDSRootViewMetaNode _metaNode;
-        AccountViewModel _accountViewModel;
+        private readonly RDSRootViewMetaNode _metaNode;
+        private readonly Lazy<IAmazonRDS> _rdsClient;
 
-
-        IAmazonRDS _rdsClient;
-
-        public RDSRootViewModel(AccountViewModel accountViewModel)
-            : base(accountViewModel.MetaNode.FindChild<RDSRootViewMetaNode>(), accountViewModel, "Amazon RDS")
+        public RDSRootViewModel(AccountViewModel accountViewModel, ToolkitRegion region)
+            : base(accountViewModel.MetaNode.FindChild<RDSRootViewMetaNode>(), accountViewModel, "Amazon RDS", region)
         {
-            this._metaNode = base.MetaNode as RDSRootViewMetaNode;
-            this._accountViewModel = accountViewModel;
+            _metaNode = base.MetaNode as RDSRootViewMetaNode;
+            _rdsClient = new Lazy<IAmazonRDS>(CreateRdsClient);
         }
 
         public override string ToolTip => "Amazon Relational Database Service (Amazon RDS) makes it easy to set up, operate, and scale a relational database in the cloud.";
 
         protected override string IconName => "Amazon.AWSToolkit.RDS.Resources.EmbeddedImages.ServiceIcon.png";
 
-        public IAmazonRDS RDSClient => this._rdsClient;
-
-        protected override void BuildClient(AWSCredentials awsCredentials)
-        {
-            var config = new AmazonRDSConfig ();
-            this.CurrentEndPoint.ApplyToClientConfig(config);
-            this._rdsClient = new AmazonRDSClient(awsCredentials, config);
-        }
-
+        public IAmazonRDS RDSClient => this._rdsClient.Value;
 
         protected override void LoadChildren()
         {
@@ -56,5 +46,10 @@ namespace Amazon.AWSToolkit.RDS.Nodes
         }
 
         public override bool FailedToLoadChildren => this.Children[0].FailedToLoadChildren;
+
+        private IAmazonRDS CreateRdsClient()
+        {
+            return AccountViewModel.CreateServiceClient<AmazonRDSClient>(Region);
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
@@ -19,10 +20,17 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
         readonly object UPDATE_EVENT_LOCK_OBJECT = new object();
 
+        private readonly ToolkitContext _toolkitContext;
+
         IAmazonElasticBeanstalk _beanstalkClient;
         ApplicationViewModel _ApplicationModel;
 
         ApplicationStatusModel _statusModel;
+
+        public ApplicationStatusController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         public override ActionResults Execute(IViewModel model)
         {
@@ -142,7 +150,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
 
         public void DeployedVersion(ApplicationVersionDescriptionWrapper version)
         {
-            var deployController = new DeployApplicationVersionController();
+            var deployController = new DeployApplicationVersionController(_toolkitContext);
             if (deployController.Execute(this._ApplicationModel, version.VersionLabel))
             {
                 this.refreshEvents();

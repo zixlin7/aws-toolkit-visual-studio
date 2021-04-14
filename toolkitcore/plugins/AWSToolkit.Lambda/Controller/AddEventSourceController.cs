@@ -20,8 +20,10 @@ using Amazon.SQS.Model;
 using Amazon.CloudWatchEvents;
 using Amazon.CloudWatchEvents.Model;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Lambda.View;
 using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.AWSToolkit.Regions;
 using AddPermissionRequest = Amazon.Lambda.Model.AddPermissionRequest;
 
 namespace Amazon.AWSToolkit.Lambda.Controller
@@ -48,10 +50,16 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         string _functionARN;
         string _functionName;
         string _role;
-        string _region;
+        ToolkitRegion _region;
         AccountViewModel _account;
+        private ToolkitContext _toolkitContext;
 
-        public bool Execute(IAmazonLambda lambdaClient, AccountViewModel account, string region, string functionARN, string role)
+        public AddEventSourceController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
+
+        public bool Execute(IAmazonLambda lambdaClient, AccountViewModel account, ToolkitRegion region, string functionARN, string role)
         {
             this._account = account;
             this._region = region;
@@ -64,39 +72,14 @@ namespace Amazon.AWSToolkit.Lambda.Controller
 
             this._lambdaClient = lambdaClient;
 
-            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.GetInstance().GetRegion(region);
-
-            var dynamoDBConfig = new AmazonDynamoDBConfig();
-            endPoints.GetEndpoint(RegionEndPointsManager.DYNAMODB_SERVICE_NAME).ApplyToClientConfig(dynamoDBConfig);
-            this._dynamoDBClient = new AmazonDynamoDBClient(account.Credentials, dynamoDBConfig);
-
-            var dynamoDBStreamConfig = new AmazonDynamoDBStreamsConfig();
-            endPoints.GetEndpoint(RegionEndPointsManager.DYNAMODB_STREAM_SERVICE_NAME).ApplyToClientConfig(dynamoDBStreamConfig);
-            this._dynamoDBStreamsClient = new AmazonDynamoDBStreamsClient(account.Credentials, dynamoDBStreamConfig);
-
-            var iamConfig = new AmazonIdentityManagementServiceConfig();
-            endPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).ApplyToClientConfig(iamConfig);
-            this._iamClient = new AmazonIdentityManagementServiceClient(account.Credentials, iamConfig);
-
-            var kinesisConfig = new AmazonKinesisConfig();
-            endPoints.GetEndpoint(RegionEndPointsManager.KINESIS_SERVICE_NAME).ApplyToClientConfig(kinesisConfig);
-            this._kinesisClient = new AmazonKinesisClient(account.Credentials, kinesisConfig);
-
-            var s3Config = new AmazonS3Config();
-            endPoints.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME).ApplyToClientConfig(s3Config);
-            this._s3Client = new AmazonS3Client(account.Credentials, s3Config);
-
-            var sqsConfig = new AmazonSQSConfig();
-            endPoints.GetEndpoint(RegionEndPointsManager.SQS_SERVICE_NAME).ApplyToClientConfig(sqsConfig);
-            this._sqsClient = new AmazonSQSClient(account.Credentials, sqsConfig);
-
-            var snsConfig = new AmazonSimpleNotificationServiceConfig();
-            endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME).ApplyToClientConfig(snsConfig);
-            this._snsClient = new AmazonSimpleNotificationServiceClient(account.Credentials, snsConfig);
-
-            var cloudWatchEventsConfig = new AmazonCloudWatchEventsConfig();
-            endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_EVENT_SERVICE_NAME).ApplyToClientConfig(cloudWatchEventsConfig);
-            this._cloudWatchEventsClient = new AmazonCloudWatchEventsClient(account.Credentials, cloudWatchEventsConfig);
+            this._dynamoDBClient = _account.CreateServiceClient<AmazonDynamoDBClient>(_region);
+            this._dynamoDBStreamsClient = _account.CreateServiceClient<AmazonDynamoDBStreamsClient>(_region);
+            this._iamClient = _account.CreateServiceClient<AmazonIdentityManagementServiceClient>(_region);
+            this._kinesisClient = _account.CreateServiceClient<AmazonKinesisClient>(_region);
+            this._s3Client = _account.CreateServiceClient<AmazonS3Client>(_region);
+            this._sqsClient = _account.CreateServiceClient<AmazonSQSClient>(_region);
+            this._snsClient = _account.CreateServiceClient<AmazonSimpleNotificationServiceClient>(_region);
+            this._cloudWatchEventsClient = _account.CreateServiceClient<AmazonCloudWatchEventsClient>(_region);
 
             this._control = new AddEventSourceControl(this);
             ToolkitFactory.Instance.ShellProvider.ShowModal(this._control);
@@ -136,9 +119,9 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         {
             IAmazonS3 bucketS3Client;
             string bucketRegion = null;
-            Amazon.AWSToolkit.S3.S3Utils.BuildS3ClientForBucket(this._account, this._s3Client, this._control.Resource, out bucketS3Client, ref bucketRegion);
+            Amazon.AWSToolkit.S3.S3Utils.BuildS3ClientForBucket(this._account, this._s3Client, this._control.Resource, _toolkitContext.RegionProvider, out bucketS3Client, ref bucketRegion);
 
-            if (!string.Equals(this._region, bucketRegion, StringComparison.InvariantCultureIgnoreCase))
+            if (!string.Equals(this._region.Id, bucketRegion, StringComparison.InvariantCultureIgnoreCase))
             {
                 throw new ApplicationException("The S3 bucket is in a different region then the Lambda function. Notifications require that the bucket and function be in the same region.");
             }
@@ -247,16 +230,16 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                     request.BatchSize = this._control.BatchSize;
                     request.StartingPosition = this._control.StartPosition;
                     var tokens = this._control.Resource.Split('/');
-                    request.EventSourceArn = string.Format("arn:aws:dynamodb:{0}:{1}:table/{2}/stream/{3}", this._region, this._accountNumber, tokens[0], tokens[1]);
+                    request.EventSourceArn = string.Format("arn:aws:dynamodb:{0}:{1}:table/{2}/stream/{3}", this._region.Id, this._accountNumber, tokens[0], tokens[1]);
                     break;
                 case AddEventSourceControl.SourceType.Kinesis:
                     request.BatchSize = this._control.BatchSize;
                     request.StartingPosition = this._control.StartPosition;
-                    request.EventSourceArn = string.Format("arn:aws:kinesis:{0}:{1}:stream/{2}", this._region, this._accountNumber, this._control.Resource);
+                    request.EventSourceArn = string.Format("arn:aws:kinesis:{0}:{1}:stream/{2}", this._region.Id, this._accountNumber, this._control.Resource);
                     break;
                 case AddEventSourceControl.SourceType.SQS:
                     request.BatchSize = this._control.SQSBatchSize;
-                    request.EventSourceArn = string.Format("arn:aws:sqs:{0}:{1}:{2}", this._region, this._accountNumber, this._control.Resource);
+                    request.EventSourceArn = string.Format("arn:aws:sqs:{0}:{1}:{2}", this._region.Id, this._accountNumber, this._control.Resource);
                     break;
             }
 

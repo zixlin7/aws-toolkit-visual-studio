@@ -12,6 +12,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
+using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
@@ -184,9 +185,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 
             try
             {
-                var selectedAccount = PageController.HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
-                var region = PageController.HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
-                var beanstalkClient = DeploymentWizardHelper.GetBeanstalkClient(selectedAccount, region);
+                var selectedAccount = PageController.HostingWizard.GetSelectedAccount();
+                var region = PageController.HostingWizard.GetSelectedRegion();
+                var beanstalkClient = selectedAccount.CreateServiceClient<AmazonElasticBeanstalkClient>(region);
                 var response = beanstalkClient.CheckDNSAvailability(new CheckDNSAvailabilityRequest { CNAMEPrefix = this.CName.Trim() });
                 if (response.Available)
                     _urlValidatedMsg.Text = "The requested URL is available";

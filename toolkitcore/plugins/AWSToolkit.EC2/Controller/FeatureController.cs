@@ -1,7 +1,10 @@
-﻿using Amazon.AWSToolkit.Account;
+﻿using System;
+
+using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.EC2.Nodes;
+using Amazon.AWSToolkit.Regions;
 using Amazon.EC2;
 
 namespace Amazon.AWSToolkit.EC2.Controller
@@ -19,7 +22,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
             if (this._featureViewModel == null)
                 return new ActionResults().WithSuccess(false);
 
-            this._endpointUniqueIdentifier = ((IEndPointSupport)this._featureViewModel.Parent).CurrentEndPoint.UniqueIdentifier;
+            this._endpointUniqueIdentifier = ((IEndPointSupport)this._featureViewModel.Parent).Region.Id;
             this._ec2Client = this._featureViewModel.EC2Client;
             this._model = new M();
 
@@ -40,8 +43,8 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         public AccountViewModel Account => this._featureViewModel.AccountViewModel;
 
-        public string RegionDisplayName => this._featureViewModel.RegionDisplayName;
+        public string RegionDisplayName => this._featureViewModel.Region.DisplayName ?? string.Empty;
 
-        public string RegionSystemName => this.FeatureViewModel.RegionSystemName;
+        public ToolkitRegion Region => this.FeatureViewModel.Region;
     }
 }

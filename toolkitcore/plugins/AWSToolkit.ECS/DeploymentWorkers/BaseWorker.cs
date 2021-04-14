@@ -13,7 +13,9 @@ using Amazon.AWSToolkit.ECS.WizardPages;
 
 using ThirdParty.Json.LitJson;
 using System.IO;
+using Amazon.AWSToolkit.Context;
 using Amazon.Common.DotNetCli.Tools.Commands;
+using Amazon.EC2;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
@@ -21,12 +23,15 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
     {
         protected ILog LOGGER = LogManager.GetLogger(typeof(BaseWorker));
 
+        protected ToolkitContext ToolkitContext { get; }
+
         protected IDockerDeploymentHelper Helper { get; set; }
 
         protected IAmazonIdentityManagementService _iamClient;
 
-        public BaseWorker(IDockerDeploymentHelper helper, IAmazonIdentityManagementService iamClient)
+        public BaseWorker(IDockerDeploymentHelper helper, IAmazonIdentityManagementService iamClient, ToolkitContext toolkitContext)
         {
+            this.ToolkitContext = toolkitContext ?? throw new ArgumentNullException(nameof(toolkitContext));
             this.Helper = helper;
             this._iamClient = iamClient;
         }
@@ -215,7 +220,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 if(hostingWizard[PublishContainerToAWSWizardProperties.CreateNewSecurityGroup] != null && 
                     (bool)hostingWizard[PublishContainerToAWSWizardProperties.CreateNewSecurityGroup])
                 {
-                    using (var ec2Client = ECSWizardUtils.CreateEC2Client(hostingWizard))
+                    using (var ec2Client = ECSWizardUtils.CreateServiceClient<AmazonEC2Client>(hostingWizard))
                     {
                         var groupName = properties.ECSCluster + "-" + DateTime.Now.Ticks;
                         var vpcId = hostingWizard[PublishContainerToAWSWizardProperties.VpcId] as string;

@@ -4,7 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"                      
     xmlns:commoncomponents="clr-namespace:Amazon.AWSToolkit.CommonUI.Components"
-    xmlns:localnode="clr-namespace:Amazon.AWSToolkit.Navigator.Node"  
+    xmlns:localnode="clr-namespace:Amazon.AWSToolkit.Navigator.Node"
+    xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters"
+    xmlns:navigator="clr-namespace:Amazon.AWSToolkit.Navigator"
     AutomationProperties.AutomationId="AWSExplorer"
     >
 
@@ -14,6 +16,8 @@
                 <ResourceDictionary.MergedDictionaries>
                     <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
                 </ResourceDictionary.MergedDictionaries>
+                <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+                <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
                 <Style TargetType="{x:Type Image}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType={x:Type UIElement}, AncestorLevel=1}, Path=IsEnabled}" Value="False">
@@ -22,6 +26,14 @@
                     </Style.Triggers>
                 </Style>
 
+                <Style x:Key="EditButtonEnabled" TargetType="{x:Type Image}">
+                    <Style.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+                
                 <Style TargetType="ToolTip">
                     <Setter Property="ContentTemplate">
                         <Setter.Value>
@@ -75,54 +87,52 @@
                 Style="{DynamicResource awsLabelBoldStyle}"
                 Content="Profile:" />
 
-            <commoncomponents:RegisteredProfilesPicker 
-                Margin="5,3" 
+            <commoncomponents:CredentialsSelector 
+                Margin="5 3 5 3" 
                 Grid.Row="0" Grid.Column="1"
-                x:Name="_ctlAccounts"
-                AutomationProperties.AutomationId="RegisteredProfilesPicker"                                       
+                Account="{Binding Account, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                Accounts="{Binding Accounts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                 />
 
             <Button
                 Grid.Row="0"
                 Grid.Column="2"
                 Margin="0,3,0,3"
-                Click="addAccount"
-                ToolTip="New Account Profile"
+                Command="{Binding AddAccountCommand}"
+                ToolTip="Add AWS Credentials Profile"
                 AutomationProperties.AutomationId="AddProfileButton">
                 <Image
                     Width="16"
                     Height="16"
-                    DataContext="{DynamicResource CommonIcons}"
-                    Source="{Binding AddAccountIcon}" />
+                    Source="{Binding Source={StaticResource VsImages}, Path=AddUser}" />
             </Button>
             <Button
                 Name="_ctlEditAccount"
                 Grid.Row="0"
                 Grid.Column="3"
                 Margin="0,3,0,3"
-                Click="editAccount"
-                ToolTip="Edit Profile"
+                Command="{Binding EditAccountCommand}"
+                ToolTip="Edit AWS Credentials Profile"
                 AutomationProperties.AutomationId="EditProfileButton">
                 <Image
                     Width="16"
                     Height="16"
-                    DataContext="{DynamicResource CommonIcons}"
-                    Source="{Binding EditAccountIcon}" />
+                    Source="{Binding Source={StaticResource VsImages}, Path=Edit}"
+                    Style="{StaticResource EditButtonEnabled}"/>
             </Button>
             <Button
                 Name="_ctlDeleteAccount"
                 Grid.Row="0"
                 Grid.Column="4"
                 Margin="0,3,0,3"
-                Click="deleteAccount"
+                Command="{Binding DeleteAccountCommand}"
                 DockPanel.Dock="Right"
-                ToolTip="Delete Profile"
+                ToolTip="Delete AWS Credentials Profile"
                 AutomationProperties.AutomationId="DeleteProfileButton">
                 <Image
                     Width="16"
                     Height="16"
-                    DataContext="{DynamicResource CommonIcons}"
-                    Source="{Binding DeleteAccountIcon}" />
+                    Source="{Binding Source={StaticResource VsImages}, Path=Cancel}" />
             </Button>
 
             <Label
@@ -134,19 +144,20 @@
                 Content="Region:"/>
             
             <ComboBox
-                Name="_ctlRegions"
                 Grid.Row="1"
                 Grid.Column="1"
                 Grid.ColumnSpan="3"
                 Margin="5,3,5,3"
-                SelectionChanged="onRegionChanged"
                 Style="{DynamicResource awsComboBoxStyle}"
-                AutomationProperties.AutomationId="RegionsPicker">
+                AutomationProperties.AutomationId="RegionsPicker"
+                ItemsSource="{Binding Regions}"
+                SelectedItem="{Binding Region}"
+                >
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
                             <AutomationProperties.AutomationId>
-                                <Binding StringFormat="Region_{0}" Path="SystemName" />
+                                <Binding StringFormat="Region_{0}" Path="Id" />
                             </AutomationProperties.AutomationId>
                             <TextBlock Margin="5,0,0,0" Text="{Binding DisplayName}">
                                 <AutomationProperties.AutomationId>
@@ -167,12 +178,10 @@
                 <Image
                     Width="16"
                     Height="16"
-                    DataContext="{DynamicResource CommonIcons}"
-                    Source="{Binding RefreshIcon}" />
+                    Source="{Binding Source={StaticResource VsImages}, Path=Refresh}" />
             </Button>
 
             <TextBlock
-                Name="_ctlErrorMessage"
                 Grid.Row="2"
                 Grid.Column="0"
                 Grid.ColumnSpan="4"
@@ -180,70 +189,158 @@
                 HorizontalAlignment="Center"
                 FontWeight="Bold"
                 Foreground="Red" 
-                AutomationProperties.AutomationId="AWSExplorer.ErrorMessage"/>
+                AutomationProperties.AutomationId="AWSExplorer.ErrorMessage"
+                Visibility="{Binding ShowErrorMessage, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Text="{Binding ErrorMessage}"
+                />
         </Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <TreeView
-            Name="_ctlResourceTree"
-            Style="{DynamicResource awsTreeViewStyle}"
-            VerticalAlignment="Stretch"
-            HorizontalContentAlignment="Stretch"
-            BorderThickness="0"
-            ItemContainerStyle="{StaticResource navigatorTreeViewItemStyle}"
-            ItemsSource="{Binding Children}"
-            MouseDown="resourceTree_MouseDown"
-            MouseMove="resourceTree_MouseMove"
-            ScrollViewer.HorizontalScrollBarVisibility="Auto"
-            AutomationProperties.AutomationId="ResourceTree">
+            <Grid Grid.Row="0"
+                  Visibility="{Binding IsConnectionValid, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+                  Margin="11">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Image
+                    Grid.Row="0" Grid.Column="0"
+                    Height="16" Width="16"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center">
+                    <!-- Only show an icon for warning or error states -->
+                    <Image.Style>
+                        <Style TargetType="Image">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ConnectionStatus}"
+                                             Value="{x:Static navigator:NavigatorAccountConnectionStatus.Info}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ConnectionStatus}"
+                                             Value="{x:Static navigator:NavigatorAccountConnectionStatus.Warning}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Setter Property="Source"
+                                            Value="{Binding Source={StaticResource VsImages}, Path=StatusWarning}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ConnectionStatus}"
+                                             Value="{x:Static navigator:NavigatorAccountConnectionStatus.Error}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Setter Property="Source"
+                                            Value="{Binding Source={StaticResource VsImages}, Path=StatusError}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Image.Style>
+                </Image>
 
-            <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                    <StackPanel x:Name="_tviPanel" Orientation="Horizontal">
-                        <AutomationProperties.AutomationId>
-                            <Binding StringFormat="ResourceTree_{0}" Path="Name" />
-                        </AutomationProperties.AutomationId>
-                        <Image
-                            Width="16"
-                            Height="16"
-                            Source="{Binding Icon}"
-                            Stretch="Fill">
+                <TextBlock
+                    Grid.Row="0" Grid.Column="1"
+                    Margin="6 0 0 0"
+                    Style="{DynamicResource awsTextBlockBaseStyle}"
+                    Text="{Binding ConnectionMessage}"
+                    TextWrapping="Wrap"
+                    VerticalAlignment="Top"
+                    Visibility="{Binding IsConnectionValid, Converter={StaticResource InverseBooleanToVisibilityConverter}}" />
+
+                <StackPanel
+                    Grid.Row="1" Grid.Column="1"
+                    Margin="6 0 0 0"
+                    Orientation="Horizontal"
+                    VerticalAlignment="Top">
+                    <ItemsControl ItemsSource="{Binding NavigatorCommands}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Vertical" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}"
+                                           Margin="0 6 0 0"
+                                           HorizontalAlignment="Left"
+                                           VerticalAlignment="Top">
+                                    <Hyperlink Command="{Binding}">
+                                        <TextBlock Text="{Binding Path=DisplayName}" />
+                                    </Hyperlink>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Grid>
+            <TreeView Grid.Row="1"
+                      Name="_ctlResourceTree"
+                      Style="{DynamicResource awsTreeViewStyle}"
+                      VerticalAlignment="Stretch"
+                      HorizontalContentAlignment="Stretch"
+                      Visibility="{Binding IsConnectionValid, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}"
+                      BorderThickness="0"
+                      ItemContainerStyle="{StaticResource navigatorTreeViewItemStyle}"
+                      ItemsSource="{Binding Children}"
+                      MouseDown="resourceTree_MouseDown"
+                      MouseMove="resourceTree_MouseMove"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                      ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                      AutomationProperties.AutomationId="ResourceTree"
+                      >
+
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                        <StackPanel x:Name="_tviPanel" Orientation="Horizontal">
                             <AutomationProperties.AutomationId>
-                                <Binding StringFormat="ResourceTree_{0}_Image" Path="Name" />
+                                <Binding StringFormat="ResourceTree_{0}" Path="Name" />
                             </AutomationProperties.AutomationId>
-                        </Image>
-                        <TextBlock
-                            Margin="5,0,5,0"
-                            Foreground="{DynamicResource awsToolWindowTextBrushKey}"
-                            Style="{DynamicResource awsTextBlockBaseStyle}"
-                            Text="{Binding Name}"
-                            TextDecorations="{Binding Path=(localnode:ITreeNodeProperties.TextDecoration)}"
-                            ToolTip="{Binding ToolTip}">
-                            <AutomationProperties.AutomationId>
-                                <Binding StringFormat="ResourceTree_{0}_Label" Path="Name" />
-                            </AutomationProperties.AutomationId>
-                        </TextBlock>
-                    </StackPanel>
-                    <HierarchicalDataTemplate.Triggers>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="True" />
-                                <Condition Binding="{Binding IsFocused, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="False" />
-                            </MultiDataTrigger.Conditions>
-                            <Setter TargetName="_tviPanel" Property="Background" Value="{DynamicResource awsTreeViewItemSelectedInactiveBackgroundBrushKey}" />
-                            <Setter TargetName="_tviPanel" Property="TextElement.Foreground" Value="{DynamicResource awsTreeViewItemSelectedInactiveTextBrushKey}" />
-                        </MultiDataTrigger>
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="True" />
-                                <Condition Binding="{Binding IsFocused, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="True" />
-                            </MultiDataTrigger.Conditions>
-                            <Setter TargetName="_tviPanel" Property="Background" Value="{DynamicResource awsTreeViewItemSelectedBackgroundBrushKey}" />
-                            <Setter TargetName="_tviPanel" Property="TextElement.Foreground" Value="{DynamicResource awsTreeViewItemSelectedTextBrushKey}" />
-                        </MultiDataTrigger>
-                    </HierarchicalDataTemplate.Triggers>
-                </HierarchicalDataTemplate>
+                            <Image
+                                Width="16"
+                                Height="16"
+                                Source="{Binding Icon}"
+                                Stretch="Fill">
+                                <AutomationProperties.AutomationId>
+                                    <Binding StringFormat="ResourceTree_{0}_Image" Path="Name" />
+                                </AutomationProperties.AutomationId>
+                            </Image>
+                            <TextBlock
+                                Margin="5,0,5,0"
+                                Foreground="{DynamicResource awsToolWindowTextBrushKey}"
+                                Style="{DynamicResource awsTextBlockBaseStyle}"
+                                Text="{Binding Name}"
+                                TextDecorations="{Binding Path=(localnode:ITreeNodeProperties.TextDecoration)}"
+                                ToolTip="{Binding ToolTip}">
+                                <AutomationProperties.AutomationId>
+                                    <Binding StringFormat="ResourceTree_{0}_Label" Path="Name" />
+                                </AutomationProperties.AutomationId>
+                            </TextBlock>
+                        </StackPanel>
+                        <HierarchicalDataTemplate.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="True" />
+                                    <Condition Binding="{Binding IsFocused, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="False" />
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="_tviPanel" Property="Background" Value="{DynamicResource awsTreeViewItemSelectedInactiveBackgroundBrushKey}" />
+                                <Setter TargetName="_tviPanel" Property="TextElement.Foreground" Value="{DynamicResource awsTreeViewItemSelectedInactiveTextBrushKey}" />
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="True" />
+                                    <Condition Binding="{Binding IsFocused, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TreeViewItem}}}" Value="True" />
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="_tviPanel" Property="Background" Value="{DynamicResource awsTreeViewItemSelectedBackgroundBrushKey}" />
+                                <Setter TargetName="_tviPanel" Property="TextElement.Foreground" Value="{DynamicResource awsTreeViewItemSelectedTextBrushKey}" />
+                            </MultiDataTrigger>
+                        </HierarchicalDataTemplate.Triggers>
+                    </HierarchicalDataTemplate>
 
-            </TreeView.ItemTemplate>
-        </TreeView>
+                </TreeView.ItemTemplate>
+            </TreeView>
+        </Grid>
     </DockPanel>
 </commonui:BaseAWSUserControl>

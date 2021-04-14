@@ -9,6 +9,7 @@ using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
+using Amazon.AWSToolkit.Regions;
 using Amazon.IdentityManagement.Model;
 using AWSDeployment;
 using log4net;
@@ -86,13 +87,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
         {
             if (navigationReason != AWSWizardConstants.NavigationReason.movingBack)
             {
-                var selectedAccount = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
-                var selectedRegion = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
+                var selectedAccount = HostingWizard.GetSelectedAccount();
+                var selectedRegion = HostingWizard.GetSelectedRegion();
 
-                if (!string.Equals(selectedAccount.AccountDisplayName, _lastSeenAccount, StringComparison.CurrentCulture)
-                        || !string.Equals(selectedRegion.SystemName, _lastSeenRegion, StringComparison.CurrentCulture))
+                if (!string.Equals(selectedAccount.DisplayName, _lastSeenAccount, StringComparison.CurrentCulture)
+                        || !string.Equals(selectedRegion.Id, _lastSeenRegion, StringComparison.CurrentCulture))
                 {
-                    _lastSeenAccount = selectedAccount.AccountDisplayName;
+                    _lastSeenAccount = selectedAccount.DisplayName;
 
                     LoadExistingRoles(selectedAccount, selectedRegion);
                     this._pageUI.InitializeIAM(selectedAccount, selectedRegion);
@@ -136,7 +137,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
         {
         }
 
-        void LoadExistingRoles(AccountViewModel selectedAccount, RegionEndPointsManager.RegionEndPoints region)
+        void LoadExistingRoles(AccountViewModel selectedAccount, ToolkitRegion region)
         {
             Interlocked.Increment(ref _workersActive);
             new QueryServiceRolesWorker(selectedAccount,

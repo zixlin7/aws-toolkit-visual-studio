@@ -100,7 +100,9 @@
 
             <Label Margin="5,5,5,5" Grid.Row="1" Grid.Column="0" Content="Security Group:" Style="{DynamicResource awsLabelBaseStyle}"/>
             <ComboBox Margin="5,5,5,5" Grid.Row="1" Grid.Column="1" Name="_ctlSecurityGroups" 
+                      IsEditable="True"
                       Text="{Binding GroupName,UpdateSourceTrigger=PropertyChanged}" 
+                      IsEnabled="{Binding ElementName=_ctlUserAndGroup, Path=IsChecked}"
                       Style="{DynamicResource awsComboBoxStyle}"/>
         </Grid>
 

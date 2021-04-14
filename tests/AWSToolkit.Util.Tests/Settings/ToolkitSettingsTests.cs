@@ -9,7 +9,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
     {
         private static class PersistenceFields
         {
-            public const string LastAccountSelectedKey = ToolkitSettingsConstants.LastAcountSelectedKey;
+            public const string LastSelectedCredentialId = ToolkitSettingsConstants.LastSelectedCredentialId;
             public const string LastSelectedRegion = "lastselectedregion";
             public const string HostedFilesLocation = ToolkitSettingsConstants.HostedFilesLocation;
         }
@@ -121,25 +121,25 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
         }
 
         [Fact]
-        public void GetLastAccountSelectedKey()
+        public void GetLastSelectedCredentialId()
         {
-            _settingsPersistence.PersistenceData[PersistenceFields.LastAccountSelectedKey] = "hello";
-            Assert.Equal("hello", ToolkitSettings.Instance.LastAccountSelectedKey);
+            _settingsPersistence.PersistenceData[PersistenceFields.LastSelectedCredentialId] = "hello";
+            Assert.Equal("hello", ToolkitSettings.Instance.LastSelectedCredentialId);
         }
 
         [Fact]
-        public void GetLastAccountSelectedKeyReturnsDefault()
+        public void GetLastSelectedCredentialIdReturnsDefault()
         {
-            Assert.Null(ToolkitSettings.Instance.LastAccountSelectedKey);
+            Assert.Null(ToolkitSettings.Instance.LastSelectedCredentialId);
         }
 
         [Fact]
-        public void SetLastAccountSelectedKey()
+        public void SetLastSelectedCredentialId()
         {
-            ToolkitSettings.Instance.LastAccountSelectedKey = "hi";
+            ToolkitSettings.Instance.LastSelectedCredentialId = "hi";
             Assert.Equal("hi",
                 _settingsPersistence.PersistenceData[
-                    PersistenceFields.LastAccountSelectedKey]);
+                    PersistenceFields.LastSelectedCredentialId]);
         }
 
         [Fact]

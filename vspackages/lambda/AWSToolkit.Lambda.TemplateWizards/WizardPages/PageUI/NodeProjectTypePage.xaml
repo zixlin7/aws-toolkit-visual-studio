@@ -44,7 +44,12 @@
             </Grid.RowDefinitions>
 
 
-            <commoncomponents:AccountAndRegionPicker Grid.Row="0" Margin="20,5,20,5" Grid.Column="0" Grid.ColumnSpan="2" x:Name="_ctlAccountAndRegionPicker"/>
+            <commoncomponents:AccountAndRegionPicker 
+                Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                Margin="25,5,20,5" 
+                DataContext="{Binding Connection}"
+                ConnectionChanged="ConnectionChanged"
+                />
 
             <Label Style="{DynamicResource awsWizardFieldLabelStyle}" 
                    Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Amazon.AWSToolkit.Account;
-
+using Amazon.AWSToolkit.Regions;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 
@@ -30,7 +30,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageWorkers
         }
 
         public FetchCompatibleIAMUsersWorker(AccountViewModel account, 
-                                             RegionEndPointsManager.RegionEndPoints regionEndPoints, 
+                                             ToolkitRegion region, 
                                              IEnumerable<string> locallyHeldUserKeys,
                                              ILog logger,
                                              DataAvailableCallback callback)
@@ -41,10 +41,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageWorkers
             bw.DoWork += new DoWorkEventHandler(Worker);
             bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(WorkerCompleted);
 
-            var iamConfig = new AmazonIdentityManagementServiceConfig();
-            var endpoint = regionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
-            endpoint.ApplyToClientConfig(iamConfig);
-            var iamClient = new AmazonIdentityManagementServiceClient(account.Credentials, iamConfig);
+            var iamClient = account.CreateServiceClient<AmazonIdentityManagementServiceClient>(region);
 
             bw.RunWorkerAsync(new WorkerData
             {

@@ -1,111 +1,148 @@
 ﻿using System;
+
 using Amazon.AWSToolkit.Navigator;
-using Amazon.Runtime.Internal.Settings;
 using Amazon.AWSToolkit.Account.View;
 using Amazon.AWSToolkit.Account.Model;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Utils;
 
-using Amazon.Runtime.CredentialManagement;
-using Amazon.Runtime.CredentialManagement.Internal;
+using System.Threading;
+
+using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Context;
+using System.Linq;
 
 namespace Amazon.AWSToolkit.Account.Controller
 {
     public class RegisterAccountController
     {
         private RegisterAccountModel _model;
-        private RegisterAccountControl _control;
+        protected RegisterAccountControl _control;
         protected bool DefaultProfileNameInUse;
-
+        protected ICredentialManager _credentialManager;
+        protected ICredentialSettingsManager _credentialSettingsManager;
+        protected IAwsConnectionManager _awsConnectionManager;
+        protected IRegionProvider _regionProvider;
         protected ActionResults _results;
+        protected ToolkitContext _toolkitContext;
 
         public RegisterAccountController()
         {
             this._model = new RegisterAccountModel();
         }
 
+        public RegisterAccountController(ICredentialManager credentialManager,
+            ICredentialSettingsManager settingsManager, IAwsConnectionManager connectionManager, IRegionProvider regionProvider)
+        {
+            _regionProvider = regionProvider;
+            this._model = new RegisterAccountModel(regionProvider);
+
+            _credentialManager = credentialManager;
+            _credentialSettingsManager = settingsManager;
+            _awsConnectionManager = connectionManager;
+        }
+
         public RegisterAccountModel Model => this._model;
 
         public virtual ActionResults Execute()
         {
-            this._model = new RegisterAccountModel();
             this.Model.StorageLocationVisibility = System.Windows.Visibility.Visible;
-            this.LoadModel();
             this._control = new RegisterAccountControl(this);
+            this.LoadModel();
             CustomizeControl(this._control);
             if (ToolkitFactory.Instance.ShellProvider.ShowModal(this._control))
             {
                 return this._results;
             }
-
+       
             return new ActionResults().WithSuccess(false);
         }
 
         protected virtual void CustomizeControl(RegisterAccountControl control)
         {
-
         }
 
         protected virtual void LoadModel()
         {
             // if this is the first account, seed the display name to 'default'
             // like the first-run experience
-            var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
-            if (settings.Count == 0)
-                _model.DisplayName = "default";
+            var identifiers = _credentialManager.GetCredentialIdentifiers();
+            if(identifiers.Count == 0)
+            {
+                _model.ProfileName = "default";
+            }
             else
             {
-                foreach (var s in settings)
+                var defaultCredential = identifiers.FirstOrDefault(x=>string.Equals(x.ProfileName, "default"));
+                if (defaultCredential != null)
                 {
-                    if (s["DisplayName"].Equals("default", StringComparison.OrdinalIgnoreCase))
-                    {
-                        DefaultProfileNameInUse = true;
-                        break;
-                    }
+                    DefaultProfileNameInUse = true;
                 }
             }
+        
+            this.Model.InitializeDefaultPartition();
         }
 
         public bool PromptToUseDefaultName => !DefaultProfileNameInUse;
 
         public virtual void Persist()
         {
-            this.Model.UniqueKey = Guid.NewGuid();
-
-            if (this.Model.SelectedStorageType == StorageTypes.DotNetEncryptedStore)
+            ICredentialIdentifier identifier = null;
+            ToolkitRegion region = null;
+            ManualResetEvent mre = new ManualResetEvent(false);
+            EventHandler<EventArgs> HandleCredentialUpdate = (sender, args) =>
             {
-                var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
+                var ide = _credentialManager.GetCredentialIdentifierById(identifier?.Id);
+                if (ide != null && region != null)
+                {
+                    mre.Set();
+                    _awsConnectionManager.ChangeConnectionSettings(identifier, region);
+                }
+            };
 
-                var os = settings.NewObjectSettings(this.Model.UniqueKey.ToString());
-                os[ToolkitSettingsConstants.AccessKeyField] = this.Model.AccessKey.Trim();
-                os[ToolkitSettingsConstants.DisplayNameField] = this.Model.DisplayName.Trim();
-                os[ToolkitSettingsConstants.SecretKeyField] = this.Model.SecretKey.Trim();
-                os[ToolkitSettingsConstants.Restrictions] = this.Model.SelectedAccountType.SystemName;
-
-                PersistenceManager.Instance.SaveSettings(ToolkitSettingsConstants.RegisteredProfiles, settings);
-            }
-            else
+            try
             {
-                var profileStore = new SharedCredentialsFile();
-                CredentialProfile profile = new CredentialProfile(
-                    this.Model.DisplayName.Trim(), 
-                    new CredentialProfileOptions {
-                        AccessKey = this.Model.AccessKey?.Trim(),
-                        SecretKey = this.Model.SecretKey?.Trim()
-                    }
-                );
+                this.Model.UniqueKey = Guid.NewGuid();
 
-                CredentialProfileUtils.SetUniqueKey(profile, this.Model.UniqueKey);
-                profileStore.RegisterProfile(profile);
+                if (this.Model.SelectedStorageType == StorageTypes.DotNetEncryptedStore)
+                {
+                    identifier = new SDKCredentialIdentifier(this.Model.ProfileName.Trim());
+                }
+                else
+                {
+                    identifier = new SharedCredentialIdentifier(this.Model.ProfileName.Trim());
+                }
 
-                // The shared credential file can't be used to store account number and restrictions so we'll put that in a side SDK Credential store file.
-                var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.NonNetSDKCredentialStoreMetadata);
-                var os = settings.NewObjectSettings(this.Model.UniqueKey.ToString());
+                this.Model.CredentialId = identifier?.Id;
+                this.Model.ProfileName = identifier?.ProfileName;
+                this.Model.DisplayName = identifier?.DisplayName;
+                region = this.Model.Region;
+                var properties = new ProfileProperties
+                {
+                    Name = this.Model.ProfileName.Trim(),
+                    AccessKey = this.Model.AccessKey?.Trim(),
+                    SecretKey = this.Model.SecretKey?.Trim(),
+                    UniqueKey = this.Model.UniqueKey.ToString(),
+                    Region = this.Model.Region?.Id
+                };
 
-                os[ToolkitSettingsConstants.Restrictions] = this.Model.SelectedAccountType.SystemName;
+                _credentialManager.CredentialManagerUpdated += HandleCredentialUpdate;
 
-                PersistenceManager.Instance.SaveSettings(ToolkitSettingsConstants.NonNetSDKCredentialStoreMetadata, settings);
+                // create profile ensures profile has unique key and registers it
+                _credentialSettingsManager.CreateProfile(identifier, properties);
+                
+
+                mre.WaitOne(2000);
+                this._results = new ActionResults().WithSuccess(true).WithFocalname(this.Model.ProfileName);
             }
-
-            this._results = new ActionResults().WithSuccess(true).WithFocalname(this.Model.DisplayName);
+            catch
+            {
+                this._results = new ActionResults().WithSuccess(false).WithFocalname(this.Model.ProfileName);
+            }
+            finally
+            {
+                _credentialManager.CredentialManagerUpdated -= HandleCredentialUpdate;
+            }
         }
     }
 }

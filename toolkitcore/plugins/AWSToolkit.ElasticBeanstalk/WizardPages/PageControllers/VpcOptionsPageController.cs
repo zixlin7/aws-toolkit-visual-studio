@@ -179,10 +179,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
         private void QueryVPCs()
         {
             Interlocked.Increment(ref _workersActive);
-            var selectedAccount = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
-            new QueryExistingVPCsWorker(selectedAccount,
-                                        HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion]
-                                          as RegionEndPointsManager.RegionEndPoints,
+            new QueryExistingVPCsWorker(HostingWizard.GetSelectedAccount(),
+                                        HostingWizard.GetSelectedRegion(),
                                         HostingWizard.Logger,
                                         OnVPCsAvailable);
 
@@ -199,10 +197,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
         private void QueryVPCProperties(string vpcId)
         {
             Interlocked.Increment(ref _workersActive);
-            var selectedAccount = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
-            new QueryVPCPropertiesWorker(selectedAccount,
-                                         HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion]
-                                           as RegionEndPointsManager.RegionEndPoints,
+            new QueryVPCPropertiesWorker(HostingWizard.GetSelectedAccount(),
+                                         HostingWizard.GetSelectedRegion(),
                                          vpcId,
                                          HostingWizard.Logger,
                                          OnVPCPropertiesAvailable);

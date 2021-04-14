@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.DynamoDBv2;
 
@@ -28,9 +29,17 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
 
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {
-            dndDataObjects.SetData(DataFormats.Text, this.Name);
-            dndDataObjects.SetData("ARN", string.Format("arn:aws:dynamodb:{0}:{1}:table/{2}",
-                this.DynamoDBRootViewModel.CurrentEndPoint.RegionSystemName, this.AccountViewModel.AccountNumber, this.Name));
+            try
+            {
+                dndDataObjects.SetData(DataFormats.Text, this.Name);
+                dndDataObjects.SetData("ARN", string.Format("arn:aws:dynamodb:{0}:{1}:table/{2}",
+                    this.DynamoDBRootViewModel.Region.Id, ToolkitFactory.Instance.AwsConnectionManager.ActiveAccountId, this.Name));
+            }
+            catch (Exception)
+            {
+                // Eat the error, don't destabilize the call stack
+                // Don't spam the log - this event can happen frequently
+            }
         }
     }
 }

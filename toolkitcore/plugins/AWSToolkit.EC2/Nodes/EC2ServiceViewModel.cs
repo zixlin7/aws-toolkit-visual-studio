@@ -1,6 +1,8 @@
-﻿using Amazon.EC2;
+﻿using System;
+using Amazon.EC2;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
 using log4net;
 using Amazon.Runtime;
 
@@ -8,21 +10,20 @@ namespace Amazon.AWSToolkit.EC2.Nodes
 {
     public abstract class EC2ServiceViewModel : ServiceRootViewModel
     {
-        IAmazonEC2 _ec2Client;
-        static ILog _logger = LogManager.GetLogger(typeof(EC2ServiceViewModel));
+        private readonly Lazy<IAmazonEC2> _ec2Client;
 
-        public EC2ServiceViewModel(IMetaNode metaNode, AccountViewModel accountViewModel, string name)
-            : base(metaNode, accountViewModel, name)
+        public EC2ServiceViewModel(IMetaNode metaNode, AccountViewModel accountViewModel, string name,
+            ToolkitRegion region)
+            : base(metaNode, accountViewModel, name, region)
         {
+            _ec2Client = new Lazy<IAmazonEC2>(CreateEc2Client);
         }
 
-        public IAmazonEC2 EC2Client => this._ec2Client;
+        public IAmazonEC2 EC2Client => this._ec2Client.Value;
 
-        protected override void BuildClient(AWSCredentials awsCredentials)
+        private IAmazonEC2 CreateEc2Client()
         {
-            var config = new AmazonEC2Config();
-            this.CurrentEndPoint.ApplyToClientConfig(config);
-            this._ec2Client = new AmazonEC2Client(awsCredentials, config);
+            return AccountViewModel.CreateServiceClient<AmazonEC2Client>(Region);
         }
     }
 }

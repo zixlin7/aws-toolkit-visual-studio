@@ -33,6 +33,15 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
             Assert.Equal(partitionId, region.PartitionId);
         }
 
+
+        [Fact]
+        public void GetPartition()
+        {
+            Assert.Equal("amazonaws.com",_endpoints.GetPartition("aws").DnsSuffix);
+            Assert.Equal("amazonaws.com.cn", _endpoints.GetPartition("aws-cn").DnsSuffix);
+            Assert.Null(_endpoints.GetPartition("fake-partition"));
+        }
+
         [Fact]
         public void GetRegions_UnknownRegion()
         {
@@ -42,15 +51,21 @@ namespace Amazon.AWSToolkit.Util.Tests.Regions
         }
 
         [Fact]
-        public void ContainsService()
+        public void IsServiceAvailable()
         {
-            Assert.True(_endpoints.ContainsService(ServiceName.Ec2, "us-west-2"));
+            Assert.True(_endpoints.IsServiceAvailable("ec2", "us-west-2"));
         }
 
         [Fact]
-        public void ContainsService_UnknownRegion()
+        public void IsServiceAvailable_GlobalRegion()
         {
-            Assert.False(_endpoints.ContainsService(ServiceName.Ec2, FakeRegionId));
+            Assert.True(_endpoints.IsServiceAvailable("iam", "us-west-2"));
+        }
+
+        [Fact]
+        public void IsServiceAvailable_UnknownRegion()
+        {
+            Assert.False(_endpoints.IsServiceAvailable("ec2", FakeRegionId));
         }
     }
 }

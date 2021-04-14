@@ -26,7 +26,7 @@ namespace Amazon.AWSToolkit.SQS.Nodes
 
         public string QueueUrl => this._url;
 
-        public string QueueARN => this.SQSClient.GetQueueARN(this.SQSRootViewModel.CurrentEndPoint.RegionSystemName, this.QueueUrl);
+        public string QueueARN => this.SQSClient.GetQueueARN(this.SQSRootViewModel.Region.Id, this.QueueUrl);
 
         public SQSRootViewModel SQSRootViewModel => this._serviceModel;
 

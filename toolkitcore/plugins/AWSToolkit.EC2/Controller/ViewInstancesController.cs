@@ -163,7 +163,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
         public void CreateVolumeFocusInstance()
         {
             CreateVolumeController controller = new CreateVolumeController(this.Model.FocusInstance);
-            var results = controller.Execute(this.EC2Client, this.FeatureViewModel.RegionSystemName);
+            var results = controller.Execute(this.EC2Client, this.FeatureViewModel.Region.Id);
             if (results.Success)
             {
                 this.RefreshFocusVolumes();

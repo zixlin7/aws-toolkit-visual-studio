@@ -23,7 +23,7 @@
         /// <summary>
         /// The region to host the function (if control present). This can also be
         /// used to select a region on entry to the wizard.
-        /// Type: RegionEndpointsManager.RegionEndpoints.
+        /// Type: ToolkitRegion
         /// </summary>
         public static readonly string Region = "region";
 

@@ -60,8 +60,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             EnvironmentViewModel environmentModel = state as EnvironmentViewModel;
             try
             {
-                var endpoints = RegionEndPointsManager.GetInstance().GetRegion(environmentModel.ApplicationViewModel.RegionSystemName);
-                var ec2Client = environmentModel.AccountViewModel.CreateServiceClient<AmazonEC2Client>(endpoints);
+                var region = environmentModel.ApplicationViewModel.Region;
+                var ec2Client = environmentModel.AccountViewModel.CreateServiceClient<AmazonEC2Client>(region);
                 var securityGroupName = environmentModel.Name + Amazon.AWSToolkit.Constants.BEANSTALK_RDS_SECURITY_GROUP_POSTFIX;
 
                 DescribeSecurityGroupsResponse response = null;
@@ -84,7 +84,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
                 var createdEC2SecurityGroup = response.SecurityGroups[0];
 
                 // Delete all the RDS associations before polling on the terminate to make sure there is no eventual consistence issues when finally deleting the group.
-                var rdsClient = environmentModel.AccountViewModel.CreateServiceClient<AmazonRDSClient>(endpoints);
+                var rdsClient = environmentModel.AccountViewModel.CreateServiceClient<AmazonRDSClient>(region);
                 foreach (var dbSecurityGroup in rdsClient.DescribeDBSecurityGroups().DBSecurityGroups)
                 {
                     foreach (var ec2SecurityGroup in dbSecurityGroup.EC2SecurityGroups)

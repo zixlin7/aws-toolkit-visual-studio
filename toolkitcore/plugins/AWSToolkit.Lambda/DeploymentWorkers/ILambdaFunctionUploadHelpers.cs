@@ -1,4 +1,5 @@
 ﻿using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Regions;
 using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
 using Amazon.Lambda.Model;
 using Amazon.Lambda;
@@ -7,7 +8,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 {
     public interface ILambdaFunctionUploadHelpers
     {
-        string CreateRole(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region, string functionName, IdentityManagement.Model.ManagedPolicy managedPolicy);
+        string CreateRole(AccountViewModel account, ToolkitRegion region, string functionName, IdentityManagement.Model.ManagedPolicy managedPolicy);
 
         void UploadFunctionAsyncCompleteSuccess(UploadFunctionState uploadState);
 

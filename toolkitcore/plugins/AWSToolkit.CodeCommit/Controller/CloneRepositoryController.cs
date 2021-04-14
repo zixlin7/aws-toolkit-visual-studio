@@ -1,7 +1,9 @@
-﻿using Amazon.AWSToolkit.Account;
+﻿using System;
+using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.View.Controls;
 using Amazon.AWSToolkit.CodeCommit.Model;
 using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Regions;
 using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommit.Controller
@@ -19,12 +21,17 @@ namespace Amazon.AWSToolkit.CodeCommit.Controller
         /// <param name="account"></param>
         /// <param name="initialRegion">The initial region binding for the dialog</param>
         /// <param name="defaultCloneFolderRoot">The system default folder for cloned repos, discovered from the registry or a fallback default</param>
-        public CloneRepositoryController(AccountViewModel account, RegionEndPointsManager.RegionEndPoints initialRegion, string defaultCloneFolderRoot)
+        public CloneRepositoryController(AccountViewModel account, ToolkitRegion initialRegion, string defaultCloneFolderRoot)
         {
+            if (initialRegion == null)
+            {
+                throw new ArgumentNullException(nameof(initialRegion));
+            }
+
             Model = new CloneRepositoryModel
             {
                 Account = account,
-                SelectedRegion = initialRegion ?? RegionEndPointsManager.GetInstance().GetRegion("us-east-1"),
+                SelectedRegion = initialRegion,
                 BaseFolder = defaultCloneFolderRoot
             };
         }

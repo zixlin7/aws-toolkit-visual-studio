@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
+using Amazon.AWSToolkit.Clients;
+using Amazon.AWSToolkit.Context;
 using Amazon.S3;
 using Amazon.Runtime.Internal.Settings;
 using Amazon.AWSToolkit.S3.Model;
@@ -18,7 +20,7 @@ namespace Amazon.AWSToolkit.S3.Controller
 
         public const string MANIFEST_FILE_NAME = "s3MaKeys.aws";
         public string INSTANCE_IDENTIFIER = Guid.NewGuid().ToString();
-
+        private ToolkitContext _toolkitContext;
         static ManifestWatcher _instance = new ManifestWatcher();
 
         string _tempPath;
@@ -31,10 +33,11 @@ namespace Amazon.AWSToolkit.S3.Controller
 
         public static ManifestWatcher Instance => _instance;
 
-        public void Start()
+        public void Start(ToolkitContext toolkitContext)
         {
             lock (this._watchers)
             {
+                _toolkitContext = toolkitContext;
                 try
                 {
                     foreach (var drive in System.IO.DriveInfo.GetDrives())
@@ -110,9 +113,9 @@ namespace Amazon.AWSToolkit.S3.Controller
                         if (!INSTANCE_IDENTIFIER.Equals(instanceIdentifier))
                             return;
 
-                        string accountUniqueName = reader.ReadLine();
-                        string endpointUrl = reader.ReadLine();
-                        s3Client = buildS3Client(accountUniqueName, endpointUrl);
+                        string credentialId = reader.ReadLine();
+                        string regionId = reader.ReadLine();
+                        s3Client = buildS3Client(credentialId, regionId);
 
                         bucket = reader.ReadLine();
                         relativePath = reader.ReadLine();
@@ -148,15 +151,14 @@ namespace Amazon.AWSToolkit.S3.Controller
             }
         }
 
-        private IAmazonS3 buildS3Client(string accountUniqueName, string endpointUrl)
+        private IAmazonS3 buildS3Client(string credentialId, string regionId)
         {
-            var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
-            var os = settings[accountUniqueName];
-            string accessKey = os[ToolkitSettingsConstants.AccessKeyField];
-            string secretKey = os[ToolkitSettingsConstants.SecretKeyField];
-
-            var config = S3Utils.BuildS3Config(endpointUrl);
-            IAmazonS3 s3Client = new AmazonS3Client(accessKey, secretKey, config);
+            var identifier = _toolkitContext?.CredentialManager.GetCredentialIdentifierById(credentialId);
+            if (identifier == null)
+            {
+                return null;
+            }
+            var s3Client = _toolkitContext?.ServiceClientManager.CreateServiceClient<AmazonS3Client>(identifier, regionId);
             return s3Client;
         }
     }

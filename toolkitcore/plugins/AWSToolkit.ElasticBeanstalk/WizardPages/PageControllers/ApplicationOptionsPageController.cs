@@ -8,6 +8,8 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment;
+using Amazon.AWSToolkit.Regions;
+using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
@@ -111,26 +113,28 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 
                 DeploymentWizardHelper.ValidBeanstalkOptions validOptions = null;
 
-                var selectedAccount = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
-                var selectedRegion = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
+                var selectedAccount = HostingWizard.GetSelectedAccount();
+                var selectedRegion = HostingWizard.GetSelectedRegion();
+
+                var beanstalkClient = selectedAccount.CreateServiceClient<AmazonElasticBeanstalkClient>(selectedRegion);
 
                 if (HostingWizard.GetProperty<bool>(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy))
                 {
                     var selectedEnvironment = HostingWizard[BeanstalkDeploymentWizardProperties.EnvironmentProperties.propkey_EnvName] as string;
                     var applicationName = HostingWizard[DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName] as string;
 
-                    if (!string.Equals(selectedAccount.AccountDisplayName, _lastSeenAccount, StringComparison.CurrentCulture)
-                        || !string.Equals(selectedRegion.SystemName, _lastSeenRegion, StringComparison.CurrentCulture)
+                    if (!string.Equals(selectedAccount.DisplayName, _lastSeenAccount, StringComparison.CurrentCulture)
+                        || !string.Equals(selectedRegion.Id, _lastSeenRegion, StringComparison.CurrentCulture)
                         || !string.Equals(selectedEnvironment, _lastSeenEnvironment, StringComparison.CurrentCulture))
                     {
-                        _lastSeenAccount = selectedAccount.AccountDisplayName;
-                        _lastSeenRegion = selectedRegion.SystemName;
+                        _lastSeenAccount = selectedAccount.DisplayName;
+                        _lastSeenRegion = selectedRegion.Id;
                         _lastSeenEnvironment = selectedEnvironment;
 
                         LoadEnvironmentSettings(selectedAccount, selectedRegion, applicationName, selectedEnvironment);
                     }
 
-                    validOptions = DeploymentWizardHelper.TestForValidOptionsForEnvironnment(DeploymentWizardHelper.GetBeanstalkClient(selectedAccount, selectedRegion), applicationName, selectedEnvironment);
+                    validOptions = DeploymentWizardHelper.TestForValidOptionsForEnvironnment(beanstalkClient, applicationName, selectedEnvironment);
                 }
                 else
                 {
@@ -140,7 +144,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                     _pageUI.LoadExistingVersions();
 
                     var selectedSolutionStack = HostingWizard[BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_SolutionStack] as string;
-                    validOptions = DeploymentWizardHelper.TestForValidOptionsForEnvironnment(DeploymentWizardHelper.GetBeanstalkClient(selectedAccount, selectedRegion), selectedSolutionStack);
+                    validOptions = DeploymentWizardHelper.TestForValidOptionsForEnvironnment(beanstalkClient, selectedSolutionStack);
                 }
 
                 var xrayAvailableInRegion = (bool)HostingWizard.GetProperty(BeanstalkDeploymentWizardProperties.AppOptionsProperties.propkey_XRayAvailable);
@@ -178,7 +182,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             return IsForwardsNavigationAllowed;
         }
 
-        void LoadEnvironmentSettings(AccountViewModel selectedAccount, RegionEndPointsManager.RegionEndPoints region, 
+        void LoadEnvironmentSettings(AccountViewModel selectedAccount, ToolkitRegion region, 
             string applicationName, string environmentName)
         {
             try
@@ -186,7 +190,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                 this._needToFetchData = true;
                 TestForwardTransitionEnablement();
 
-                var beanstalkClient = DeploymentWizardHelper.GetBeanstalkClient(selectedAccount, region);
+                var beanstalkClient = selectedAccount.CreateServiceClient<AmazonElasticBeanstalkClient>(region);
 
                 var request = new DescribeConfigurationSettingsRequest
                 {

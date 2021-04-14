@@ -21,7 +21,7 @@ namespace AWSToolkit.Tests.ECS
                 _fixture.EcsClient.Object,
                 _fixture.IamClient.Object,
                 _fixture.CloudWatchLogsClient.Object,
-                _fixture.TelemetryLogger.Object);
+                _fixture.ToolkitContextFixture.ToolkitContext);
         }
 
         [Fact]
@@ -68,7 +68,7 @@ namespace AWSToolkit.Tests.ECS
 
             Assert.Equal("ecs_deployScheduledTask", datum.MetricName);
             Assert.Equal(expectedResult.ToString(), datum.Metadata["result"]);
-            Assert.Equal(_fixture.EcsDeployState.Region.SystemName, datum.Metadata["regionId"]);
+            Assert.Equal(_fixture.EcsDeployState.Region.Id, datum.Metadata["regionId"]);
             Assert.Equal(EcsLaunchType.Fargate.ToString(), datum.Metadata["ecsLaunchType"]);
         }
     }

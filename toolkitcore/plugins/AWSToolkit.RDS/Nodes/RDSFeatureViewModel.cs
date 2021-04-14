@@ -20,7 +20,7 @@ namespace Amazon.AWSToolkit.RDS.Nodes
             get
             {
                 var support = this.Parent as IEndPointSupport;
-                return support.CurrentEndPoint.RegionSystemName;
+                return support?.Region.Id;
             }
         }
 
@@ -28,11 +28,8 @@ namespace Amazon.AWSToolkit.RDS.Nodes
         {
             get
             {
-                var region = RegionEndPointsManager.GetInstance().GetRegion(this.RegionSystemName);
-                if (region == null)
-                    return string.Empty;
-
-                return region.DisplayName;
+                var support = this.Parent as IEndPointSupport;
+                return support?.Region.DisplayName;
             }
         }
 

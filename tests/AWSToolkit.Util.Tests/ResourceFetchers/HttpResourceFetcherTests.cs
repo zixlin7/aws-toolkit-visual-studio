@@ -26,7 +26,7 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
         [Fact]
         public void Get_ValidUrl()
         {
-            var url = $"{_baseUrl}ServiceEndPoints.xml";
+            var url = $"{_baseUrl}VersionInfo.xml";
             var stream = _sut.Get(url);
 
             Assert.NotNull(stream);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Regions;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
@@ -27,7 +28,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
         }
 
         public QueryEnvironmentSettingsWorker(AccountViewModel accountViewModel, 
-                                              RegionEndPointsManager.RegionEndPoints region,
+                                              ToolkitRegion region,
                                               string applicationName,
                                               string environmentName,
                                               ILog logger,
@@ -42,7 +43,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
             {
                 ApplicationName = applicationName,
                 EnvironmentName = environmentName,
-                BeanstalkClient = DeploymentWizardHelper.GetBeanstalkClient(accountViewModel, region),
+                BeanstalkClient = accountViewModel.CreateServiceClient<AmazonElasticBeanstalkClient>(region),
                 Logger = logger
             });
         }

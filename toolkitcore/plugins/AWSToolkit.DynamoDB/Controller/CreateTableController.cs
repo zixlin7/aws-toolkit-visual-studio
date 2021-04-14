@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
-
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.DynamoDB.Nodes;
@@ -21,10 +21,18 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
 {
     public class CreateTableController : BaseContextCommand
     {
+        private static readonly string CloudWatchServiceName =
+            new AmazonCloudWatchConfig().RegionEndpointServiceName;
+        private static readonly string SnsServiceName =
+            new AmazonSimpleNotificationServiceConfig().RegionEndpointServiceName;
+
         public const string WIZARD_SEED_DATACONTEXT = "DataContext";
         public const string LAST_CONTROLLER = "LastController";
 
         const string TOPIC_NAME = "dynamodb";
+
+        private readonly ToolkitContext _toolkitContext;
+
         CreateTableModel _model;
         DynamoDBRootViewModel _rootModel;
         ActionResults _results;
@@ -32,27 +40,28 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
         IAmazonSimpleNotificationService _snsClient;
         IAmazonCloudWatch _cwClient;
 
+        public CreateTableController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
+
         public override ActionResults Execute(IViewModel model)
         {
             this._rootModel = model as DynamoDBRootViewModel;
             if (this._rootModel == null)
                 return new ActionResults().WithSuccess(false);
 
-            var region = this._rootModel.CurrentEndPoint.RegionSystemName;
-            var endPoints = RegionEndPointsManager.GetInstance().GetRegion(region);
-
-            if (endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME) != null)
+            var region = this._rootModel.Region;
+            
+            if (_toolkitContext.RegionProvider.IsServiceAvailable(SnsServiceName, region.Id))
             {
-                var snsConfig = new AmazonSimpleNotificationServiceConfig();
-                endPoints.GetEndpoint(RegionEndPointsManager.SNS_SERVICE_NAME).ApplyToClientConfig(snsConfig);
-                this._snsClient = new AmazonSimpleNotificationServiceClient(this._rootModel.AccountViewModel.Credentials, snsConfig);
+                _snsClient =
+                    _rootModel.AccountViewModel.CreateServiceClient<AmazonSimpleNotificationServiceClient>(region);
             }
 
-            if (endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_SERVICE_NAME) != null)
+            if (_toolkitContext.RegionProvider.IsServiceAvailable(CloudWatchServiceName, region.Id))
             {
-                var cwConfig = new AmazonCloudWatchConfig ();
-                endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_SERVICE_NAME).ApplyToClientConfig(cwConfig);
-                this._cwClient = new AmazonCloudWatchClient(this._rootModel.AccountViewModel.Credentials, cwConfig);
+                this._cwClient = _rootModel.AccountViewModel.CreateServiceClient<AmazonCloudWatchClient>(region);
             }
 
             var seedProperties = new Dictionary<string, object>();

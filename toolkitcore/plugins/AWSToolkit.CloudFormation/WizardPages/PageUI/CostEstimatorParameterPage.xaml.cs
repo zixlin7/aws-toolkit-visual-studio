@@ -5,10 +5,12 @@ using System.Linq;
 using System.Windows;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CloudFormation.View.Components;
-
+using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.PluginServices.Deployment;
+using Amazon.AWSToolkit.Regions;
 using log4net;
 
 namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
@@ -22,33 +24,21 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
 
         ILog LOGGER = LogManager.GetLogger(typeof(CostEstimatorParameterPage));
 
-        string _lastSeenAccount = string.Empty;
+        public AccountAndRegionPickerViewModel Connection { get; }
 
-        public CostEstimatorParameterPage(IDictionary<string, object> previousValues)
+        public CostEstimatorParameterPage(IDictionary<string, object> previousValues, ToolkitContext toolkitContext)
         {
+            Connection = new AccountAndRegionPickerViewModel(toolkitContext);
+            Connection.SetServiceFilter(new List<string>()
+            {
+                DeploymentServiceIdentifiers.ToolkitCloudFormationServiceName
+            });
+
             this._previousValues = previousValues ?? new Dictionary<string, object>();
             InitializeComponent();
 
             DataContext = this;
-            this._ctlAccountAndRegionPicker.PropertyChanged += new PropertyChangedEventHandler(_ctlAccountAndRegionPicker_PropertyChanged);
         }
-
-        public CostEstimatorParameterPage(IAWSWizardPageController controller, IDictionary<string, object> previousValues)
-            : this(previousValues)
-        {
-            this.PageController = controller;
-        }
-
-        public IAWSWizardPageController PageController { get; set; }
-
-        public void Initialize(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
-        {
-            this._ctlAccountAndRegionPicker.Initialize(account, region, new[] { DeploymentServiceIdentifiers.CloudFormationServiceName });
-        }
-
-        public AccountViewModel SelectedAccount => this._ctlAccountAndRegionPicker.SelectedAccount;
-
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion => this._ctlAccountAndRegionPicker.SelectedRegion;
 
         public void BuildParameters(CloudFormationTemplateWrapper wrapper)
         {
@@ -69,9 +59,9 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
             }
         }
 
-        void _ctlAccountAndRegionPicker_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        void ConnectionChanged(object sender, EventArgs e)
         {
-            this.NotifyPropertyChanged(e.PropertyName);
+            this.NotifyPropertyChanged(nameof(Connection));
         }
 
         void parameterUI_PropertyChanged(object sender, PropertyChangedEventArgs e)

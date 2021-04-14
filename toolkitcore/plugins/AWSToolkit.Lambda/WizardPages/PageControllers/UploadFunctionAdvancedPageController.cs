@@ -5,7 +5,6 @@ using System.Threading;
 using System.Windows.Controls;
 
 using Amazon.AWSToolkit.SimpleWorkers;
-using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.EC2.Workers;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
@@ -14,7 +13,7 @@ using Amazon.EC2.Model;
 using Amazon.KeyManagementService;
 using Amazon.KeyManagementService.Model;
 using Amazon.AWSToolkit.Lambda.Model;
-
+using Amazon.Runtime;
 using Amazon.SimpleNotificationService;
 using Amazon.SQS;
 
@@ -219,7 +218,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
         void LoadExistingVpcSubnets()
         {
             Interlocked.Increment(ref _backgroundWorkersActive);
-            new QueryVpcsAndSubnetsWorker(EC2Client, HostingWizard.Logger, new QueryVpcsAndSubnetsWorker.DataAvailableCallback(OnVpcSubnetsAvailable));
+            var ec2Client = CreateServiceClient<AmazonEC2Client>();
+            new QueryVpcsAndSubnetsWorker(ec2Client, HostingWizard.Logger, new QueryVpcsAndSubnetsWorker.DataAvailableCallback(OnVpcSubnetsAvailable));
         }
 
         void OnVpcSubnetsAvailable(IEnumerable<Vpc> vpcs, IEnumerable<Subnet> subnets)
@@ -243,7 +243,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
         void LoadExistingSecurityGroups(string vpcId)
         {
             Interlocked.Increment(ref _backgroundWorkersActive);
-            new QuerySecurityGroupsWorker(EC2Client,
+            var ec2Client = CreateServiceClient<AmazonEC2Client>();
+            new QuerySecurityGroupsWorker(ec2Client,
                                           vpcId,
                                           HostingWizard.Logger,
                                           OnSecurityGroupsAvailable);
@@ -270,7 +271,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
         void LoadExistingKMSKeys()
         {
             Interlocked.Increment(ref _backgroundWorkersActive);
-            new QueryKMSKeysWorker(KMSClient,
+            var kmsClient = CreateServiceClient<AmazonKeyManagementServiceClient>();
+            new QueryKMSKeysWorker(kmsClient,
                                    HostingWizard.Logger,
                                    OnKMSKeysAvailable);
         }
@@ -299,9 +301,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
         void LoadDLQTargets()
         {
             Interlocked.Increment(ref _backgroundWorkersActive);
+            var snsClient = CreateServiceClient<AmazonSimpleNotificationServiceClient>();
+            var sqsClient = CreateServiceClient<AmazonSQSClient>();
             new QueryDLQTargetsWorker(
-                                SNSClient,
-                                SQSClient,
+                                snsClient,
+                                sqsClient,
                                 HostingWizard.Logger,
                                 OnDLQTargetsAvailable);
         }
@@ -328,48 +332,15 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             }
         }
 
-        private IAmazonEC2 EC2Client
+        /// <summary>
+        /// Creates a service client from the account and region defined in the hosting wizard
+        /// </summary>
+        private T CreateServiceClient<T>() where T : class, IAmazonService
         {
-            get
-            {
-                var account = HostingWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
-                var region = HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+            var accountModel = HostingWizard.GetSelectedAccount(UploadFunctionWizardProperties.UserAccount);
+            var region = HostingWizard.GetSelectedRegion(UploadFunctionWizardProperties.Region);
 
-                return account.CreateServiceClient<AmazonEC2Client>(region);
-            }
-        }
-
-        private IAmazonKeyManagementService KMSClient
-        {
-            get
-            {
-                var account = HostingWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
-                var region = HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
-
-                return account.CreateServiceClient<AmazonKeyManagementServiceClient>(region);
-            }
-        }
-
-        private IAmazonSimpleNotificationService SNSClient
-        {
-            get
-            {
-                var account = HostingWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
-                var region = HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
-
-                return account.CreateServiceClient<AmazonSimpleNotificationServiceClient>(region);
-            }
-        }
-
-        private IAmazonSQS SQSClient
-        {
-            get
-            {
-                var account = HostingWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
-                var region = HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
-
-                return account.CreateServiceClient<AmazonSQSClient>(region);
-            }
+            return accountModel.CreateServiceClient<T>(region);
         }
     }
 }

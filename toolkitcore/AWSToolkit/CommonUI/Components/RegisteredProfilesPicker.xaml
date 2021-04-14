@@ -58,7 +58,7 @@
 
                                     <ContentPresenter.ContentTemplate>
                                         <DataTemplate>
-                                            <TextBlock Name="_ctlComboSelectedDisplay" Padding="0,0,30,0"/>
+                                            <TextBlock Name="_ctlComboSelectedDisplay" Padding="5,0,30,0"/>
                                         </DataTemplate>
                                     </ContentPresenter.ContentTemplate>
                                 </ContentPresenter>

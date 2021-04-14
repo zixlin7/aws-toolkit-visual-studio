@@ -1,5 +1,6 @@
 ﻿using Amazon.AWSToolkit.Lambda.ViewModel;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.ECR;
 using Amazon.ECR.Model;
 using Amazon.Lambda;
@@ -20,6 +21,7 @@ namespace AWSToolkit.Tests.Lambda
         private static readonly string[] SampleRepositoryNames = new string[] {"somerepo", "somerepo2"};
 
         private readonly Mock<IAWSToolkitShellProvider> _shellProvider = new Mock<IAWSToolkitShellProvider>();
+        public readonly ToolkitContextFixture ToolkitContextFixture = new ToolkitContextFixture();
         private readonly UploadFunctionViewModel _sut;
         private readonly Mock<IAmazonLambda> _lambdaClient = new Mock<IAmazonLambda>();
         private readonly Mock<IAmazonECR> _ecrClient = new Mock<IAmazonECR>();
@@ -29,7 +31,7 @@ namespace AWSToolkit.Tests.Lambda
 
         public UploadFunctionViewModelTests()
         {
-            _sut = new UploadFunctionViewModel(_shellProvider.Object);
+            _sut = new UploadFunctionViewModel(_shellProvider.Object, ToolkitContextFixture.ToolkitContext);
 
             _shellProvider.Setup(mock => mock.ExecuteOnUIThread(It.IsAny<Action>()))
                 .Callback<Action>(action => action());

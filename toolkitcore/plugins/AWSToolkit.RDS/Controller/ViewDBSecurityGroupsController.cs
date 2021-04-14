@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.RDS.Nodes;
@@ -19,10 +20,17 @@ namespace Amazon.AWSToolkit.RDS.Controller
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(ViewDBSecurityGroupsController));
 
+        private readonly ToolkitContext _toolkitContext;
+
         IAmazonRDS _rdsClient;
 
         ViewDBSecurityGroupsControl _control;
         RDSSecurityGroupRootViewModel _securityRootViewModel;
+
+        public ViewDBSecurityGroupsController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         public override ActionResults Execute(IViewModel model)
         {
@@ -108,23 +116,13 @@ namespace Amazon.AWSToolkit.RDS.Controller
 
         public AccountViewModel Account => this._securityRootViewModel.AccountViewModel;
 
-        public string EndPointUniqueIdentifier => this._securityRootViewModel.CurrentEndPoint.UniqueIdentifier;
+        public string EndPointUniqueIdentifier => this._securityRootViewModel.Region.Id;
 
-        public string RegionDisplayName
-        {
-            get
-            {
-                var region = RegionEndPointsManager.GetInstance().GetRegion(this._securityRootViewModel.CurrentEndPoint.RegionSystemName);
-                if (region == null)
-                    return string.Empty;
-
-                return region.DisplayName;
-            }
-        }
+        public string RegionDisplayName => _securityRootViewModel.Region.DisplayName;
 
         public void AddPermission(DBSecurityGroupWrapper dbSecurityGroup)
         {
-            var controller = new AddPermissionRuleController();
+            var controller = new AddPermissionRuleController(_toolkitContext);
             var results = controller.Execute(this._rdsClient, dbSecurityGroup, this._securityRootViewModel);
             if (results.Success)
             {

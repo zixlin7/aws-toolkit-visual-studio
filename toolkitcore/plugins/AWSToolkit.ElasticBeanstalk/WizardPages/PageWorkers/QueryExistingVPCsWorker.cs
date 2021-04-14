@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Amazon.AWSToolkit.Account;
-
+using Amazon.AWSToolkit.Regions;
 using Amazon.EC2;
 using Amazon.EC2.Model;
 
@@ -23,7 +23,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
         }
 
         public QueryExistingVPCsWorker(AccountViewModel accountViewModel,
-                                                RegionEndPointsManager.RegionEndPoints region,
+                                                ToolkitRegion region,
                                                 ILog logger,
                                                 DataAvailableCallback callback)
         {
@@ -34,7 +34,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
             bw.RunWorkerCompleted += WorkerCompleted;
             bw.RunWorkerAsync(new WorkerData
                                   { 
-                                    EC2Client = DeploymentWizardHelper.GetEC2Client(accountViewModel, region),
+                                    EC2Client = accountViewModel.CreateServiceClient<AmazonEC2Client>(region),
                                     Logger = logger
                                   });
         }

@@ -254,49 +254,49 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            
-                            <Label Grid.Row="0" Style="{DynamicResource awsLabelBaseStyle}">
-                                _Profile Name:
-                            </Label>
-                            <TextBox
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                Style="{DynamicResource awsTextBoxStyle}"
-                                Tag="default"
-                                Text="{Binding ProfileName, Mode=TwoWay}" />
+
+
+                            <WrapPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Margin="4,4,0,0">
+                                <TextBlock TextWrapping="WrapWithOverflow" Style="{DynamicResource awsTextBlockBaseStyle}"> AWS Toolkit will assume that these credentials are valid for the region us-east-1. If you are working with other regions, 
+                                    <Hyperlink NavigateUri="https://aws.amazon.com/developers/access-keys/" RequestNavigate="OnRequestCreateDialog">
+                                        <TextBlock Style="{DynamicResource awsUrlTextFieldStyle}" 
+                                                   Text="click here"
+                                        />
+                                    </Hyperlink> to set up a profile instead.
+                                </TextBlock>
+                            </WrapPanel>
+
 
                             <Label Grid.Row="1" Style="{DynamicResource awsLabelBaseStyle}">
-                                _Access Key:
+                                _Profile Name:
                             </Label>
                             <TextBox
                                 Grid.Row="1"
                                 Grid.Column="1"
+                                Margin="4"
                                 Style="{DynamicResource awsTextBoxStyle}"
-                                Tag="Required"
-                                Text="{Binding AccessKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                Tag="default"
+                                Text="{Binding ProfileName, Mode=TwoWay}" />
 
                             <Label Grid.Row="2" Style="{DynamicResource awsLabelBaseStyle}">
-                                _Secret Key:
+                                _Access Key:
                             </Label>
-                            <TextBox
-                                Grid.Row="2"
-                                Grid.Column="1"
-                                Style="{DynamicResource awsTextBoxStyle}"
-                                Tag="Required"
-                                Text="{Binding SecretKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                />
+                            <PasswordBox  x:Name="AccessKey" 
+                                          Grid.Row="2"
+                                          Grid.Column="1"
+                                          Margin="4"
+                                          PasswordChanged="AccessKey_OnPasswordChanged"
+                                          Style="{DynamicResource awsPasswordBoxStyle}"/>
 
                             <Label Grid.Row="3" Style="{DynamicResource awsLabelBaseStyle}">
-                                Account _Type:
+                                _Secret Key:
                             </Label>
-                            <ComboBox
-                                Grid.Row="3"
-                                Grid.Column="1"
-                                VerticalAlignment="Center"
-                                DisplayMemberPath="DisplayName"
-                                ItemsSource="{Binding AllAccountTypes}"
-                                SelectedItem="{Binding SelectedAccountType}"
-                                Style="{DynamicResource awsComboBoxStyle}" />
+                            <PasswordBox  x:Name="SecretKey" 
+                                      Grid.Row="3"
+                                      Grid.Column="1"
+                                      Margin="4"
+                                      PasswordChanged="SecretKey_OnPasswordChanged"
+                                      Style="{DynamicResource awsPasswordBoxStyle}"/>
 
                             <Button
                                 Grid.Row="4"
@@ -317,7 +317,7 @@
                             BorderBrush="{DynamicResource awsDividerRuleBrushKey}"
                             BorderThickness="1" 
                             />
-                    
+
                     <!-- analytics (2017 only) and useful links panels -->
                     <Grid Grid.Column="2" Margin="4,0">
                         <Grid.RowDefinitions>
@@ -412,7 +412,7 @@
                                     </List>
                                 </FlowDocument>
                             </FlowDocumentScrollViewer>
-                            
+
                         </Grid>
                     </Grid>
 
@@ -463,6 +463,7 @@
                         Open the AWS Explorer window on close
                     </CheckBox>
                     <Button
+                        x:Name="SaveAndCloseButton"
                         Margin="4"
                         Padding="8,4"
                         HorizontalAlignment="Right"

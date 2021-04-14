@@ -12,10 +12,14 @@ using Amazon.AWSToolkit.EC2;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.ElasticBeanstalk.Utils;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.SimpleWorkers;
+using Amazon.EC2;
+using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 using log4net;
 using AWSOptionsPage = Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment.AWSOptionsPage;
+using InstanceType = Amazon.AWSToolkit.EC2.InstanceType;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 {
@@ -106,15 +110,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
         {
             if (navigationReason != AWSWizardConstants.NavigationReason.movingBack)
             {
-                var selectedAccount = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
-                var selectedRegion = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
+                var selectedAccount = HostingWizard.GetSelectedAccount();
+                var selectedRegion = HostingWizard.GetSelectedRegion();
 
                 // if we last populated for this a/c, don't bother again
-                if (!string.Equals(selectedAccount.AccountDisplayName, _lastSeenAccount, StringComparison.CurrentCulture) 
-                        || !string.Equals(selectedRegion.SystemName, _lastSeenRegion, StringComparison.CurrentCulture))
+                if (!string.Equals(selectedAccount.DisplayName, _lastSeenAccount, StringComparison.CurrentCulture) 
+                        || !string.Equals(selectedRegion.Id, _lastSeenRegion, StringComparison.CurrentCulture))
                 {
-                    _lastSeenAccount = selectedAccount.AccountDisplayName;
-                    _lastSeenRegion = selectedRegion.SystemName;
+                    _lastSeenAccount = selectedAccount.DisplayName;
+                    _lastSeenRegion = selectedRegion.Id;
 
                     if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_VpcOnlyMode))
                         _pageUI.VpcOnlyMode = (bool)HostingWizard[DeploymentWizardProperties.SeedData.propkey_VpcOnlyMode];
@@ -310,8 +314,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 
             try
             {
-                var selectedAccount = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
-                var selectedRegion = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
+                var selectedAccount = HostingWizard.GetSelectedAccount();
+                var selectedRegion = HostingWizard.GetSelectedRegion();
 
                 var vpcProps = QueryVPCPropertiesWorker.QueryVPCProperties(selectedAccount, selectedRegion, defaultVpcId, LOGGER);
                 if (vpcProps != null)
@@ -338,11 +342,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             TestForwardTransitionEnablement();
         }
 
-        void LoadSolutionStacks(AccountViewModel selectedAccount, RegionEndPointsManager.RegionEndPoints region)
+        void LoadSolutionStacks(AccountViewModel selectedAccount, ToolkitRegion region)
         {
             try
             {
-                var beanstalkClient = DeploymentWizardHelper.GetBeanstalkClient(selectedAccount, region);
+                var beanstalkClient = selectedAccount.CreateServiceClient<AmazonElasticBeanstalkClient>(region);
                 var response = beanstalkClient.ListAvailableSolutionStacks(new ListAvailableSolutionStacksRequest());
 
                 _availableSolutionStacks.Clear();
@@ -358,9 +362,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             }
         }
 
-        void CheckForDefaultVPC(AccountViewModel selectedAccount, RegionEndPointsManager.RegionEndPoints region)
+        void CheckForDefaultVPC(AccountViewModel selectedAccount, ToolkitRegion region)
         {
-            var ec2Client = DeploymentWizardHelper.GetEC2Client(selectedAccount, region);
+            var ec2Client = selectedAccount.CreateServiceClient<AmazonEC2Client>(region);
 
             string defaultVpcId = null;
             int vpcCount = 0;
@@ -454,12 +458,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             return stacks;
         }
 
-        void LoadExistingKeyPairs(AccountViewModel selectedAccount, RegionEndPointsManager.RegionEndPoints region)
+        void LoadExistingKeyPairs(AccountViewModel selectedAccount, ToolkitRegion region)
         {
             Interlocked.Increment(ref _workersActive);
             new QueryKeyPairNamesWorker(selectedAccount,
-                                        region.SystemName,
-                                        DeploymentWizardHelper.GetEC2Client(selectedAccount, region),
+                                        region.Id,
+                                        selectedAccount.CreateServiceClient<AmazonEC2Client>(region),
                                         HostingWizard.Logger,
                                         new QueryKeyPairNamesWorker.DataAvailableCallback(OnKeyPairsAvailable));
             TestForwardTransitionEnablement();
@@ -472,7 +476,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
             TestForwardTransitionEnablement();
         }
 
-        void LoadRDSGroupAndInstanceData(AccountViewModel selectedAccount, RegionEndPointsManager.RegionEndPoints region)
+        void LoadRDSGroupAndInstanceData(AccountViewModel selectedAccount, ToolkitRegion region)
         {
             Interlocked.Increment(ref _workersActive);
             new QueryRDSGroupsAndInstancesWorker(selectedAccount, region, LOGGER, OnRDSGroupsAndInstancesAvailable);
@@ -488,10 +492,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
         void QuerySolutionStackInstanceTypes(string solutionStack)
         {
             Interlocked.Increment(ref _workersActive);
-            var selectedAccount = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
-            new SolutionStackInstanceSizesWorker(selectedAccount,
-                                                 HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion]
-                                                   as RegionEndPointsManager.RegionEndPoints,
+            new SolutionStackInstanceSizesWorker(HostingWizard.GetSelectedAccount(),
+                                                 HostingWizard.GetSelectedRegion(),
                                                  string.IsNullOrEmpty(solutionStack)
                                                    ? _pageUI.SolutionStack
                                                    : solutionStack,

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows;
+
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Settings;
@@ -24,20 +26,22 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
         protected ActionResults _results;
         private FirstRunControl _control;
         private readonly IToolkitSettingsWatcher _settingsWatcher;
+        private readonly ToolkitContext _toolkitContext;
 
-        public FirstRunController(AWSToolkitPackage hostPackage, IToolkitSettingsWatcher toolkitSettingsWatcher)
-            : this(hostPackage, toolkitSettingsWatcher, ToolkitFactory.Instance.ShellProvider)
+        public FirstRunController(AWSToolkitPackage hostPackage, IToolkitSettingsWatcher toolkitSettingsWatcher, ToolkitContext toolkitContext)
+            : this(hostPackage, toolkitSettingsWatcher, ToolkitFactory.Instance.ShellProvider, toolkitContext)
         {
         }
 
         public FirstRunController(
             AWSToolkitPackage hostPackage,
             IToolkitSettingsWatcher toolkitSettingsWatcher,
-            IAWSToolkitShellProvider shellProvider)
+            IAWSToolkitShellProvider shellProvider, ToolkitContext toolkitContext)
         {
             _shellProvider = shellProvider;
             HostPackage = hostPackage;
-            Model = new FirstRunModel();
+            _toolkitContext = toolkitContext;
+            Model = new FirstRunModel(_toolkitContext);
             Model.PropertyChanged += ModelOnPropertyChanged;
 
             _settingsWatcher = toolkitSettingsWatcher;
@@ -45,6 +49,8 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
         }
 
         public FirstRunModel Model { get; }
+
+        public ToolkitContext ToolkitContext => _toolkitContext;
 
         public AWSToolkitPackage HostPackage { get; }
 

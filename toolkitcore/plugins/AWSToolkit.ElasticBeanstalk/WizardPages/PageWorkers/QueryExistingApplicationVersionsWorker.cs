@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Regions;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
@@ -26,7 +27,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
         /// <param name="logger"></param>
         /// <param name="callback"></param>
         public QueryExistingApplicationVersionsWorker(AccountViewModel accountViewModel,
-                                                      RegionEndPointsManager.RegionEndPoints region,
+                                                      ToolkitRegion region,
                                                       string appName,
                                                       ILog logger,
                                                       DataAvailableCallback callback)
@@ -36,7 +37,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
             var bw = new BackgroundWorker();
             bw.DoWork += Worker;
             bw.RunWorkerCompleted += WorkerCompleted;
-            bw.RunWorkerAsync(new object[] { DeploymentWizardHelper.GetBeanstalkClient(accountViewModel, region), appName, logger });
+            bw.RunWorkerAsync(new object[] { accountViewModel.CreateServiceClient<AmazonElasticBeanstalkClient>(region), appName, logger });
         }
 
         void Worker(object sender, DoWorkEventArgs e)

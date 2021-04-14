@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Linq;
+
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Navigator;
-using Amazon.Runtime.Internal.Settings;
-using Amazon.Runtime.CredentialManagement;
+
+using System.Threading;
+
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.Account.Controller
 {
@@ -12,14 +17,19 @@ namespace Amazon.AWSToolkit.Account.Controller
         public const string NAME_CHANGE_PARAMETER = "nameChange";
         public const string CREDENTIALS_CHANGE_PARAMETER = "credentialsChange";
 
-        public const string ACCESSKEY_PARAMETER = "AccessKey";
-        public const string SECRETKEY_PARAMETER = "SecretKey";
-
         AccountViewModel _accountViewModel;
+
+        public EditAccountController(ICredentialManager credentialManager,
+            ICredentialSettingsManager credentialSettingsManager, IAwsConnectionManager connectionManger,
+            IRegionProvider regionProvider) : base(
+            credentialManager, credentialSettingsManager, connectionManger, regionProvider)
+        {
+        }
+
         public ActionResults Execute(IViewModel model)
         {
             this._accountViewModel = model as AccountViewModel;
-            if(this._accountViewModel == null)
+            if (this._accountViewModel == null)
                 return new ActionResults().WithSuccess(false);
 
             return base.Execute();
@@ -28,127 +38,125 @@ namespace Amazon.AWSToolkit.Account.Controller
         protected override void LoadModel()
         {
             this.Model.StorageLocationVisibility = System.Windows.Visibility.Collapsed;
-            if (this._accountViewModel.ProfileStore is NetSDKCredentialsFile)
+            this.Model.CredentialId = this._accountViewModel.Identifier?.Id;
+            if (this._accountViewModel.Identifier == null)
             {
-                var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
-                var os = settings[this._accountViewModel.SettingsUniqueKey];
-                this.Model.DisplayName = os[ToolkitSettingsConstants.DisplayNameField];
-                this.Model.AccessKey = os[ToolkitSettingsConstants.AccessKeyField];
-                this.Model.SecretKey = os[ToolkitSettingsConstants.SecretKeyField];
-
-                var restrictions = os[ToolkitSettingsConstants.Restrictions];
-                if (restrictions != null)
-                {
-                    foreach (var restriction in restrictions.Split(','))
-                    {
-                        var accountType = this.Model.AllAccountTypes.FirstOrDefault(x => x.SystemName == restriction.Trim());
-                        if (accountType != null)
-                        {
-                            this.Model.SelectedAccountType = accountType;
-                            break;
-                        }
-                    }
-                }
-
-                // don't want to show the 'use default because...' prompt in this scenario
-                DefaultProfileNameInUse = true;
-                this.Model.UniqueKey = new Guid(this._accountViewModel.SettingsUniqueKey);
+                throw new Exception("Failed to load an empty profile to edit");
             }
-            else
+            var profileProperties =
+                _credentialSettingsManager.GetProfileProperties(this._accountViewModel
+                    .Identifier);
+            if (profileProperties == null)
             {
-                var profileStore = new SharedCredentialsFile();
-                CredentialProfile profile;
-                if(!profileStore.TryGetProfile(this._accountViewModel.AccountDisplayName, out profile))
-                {
-                    throw new Exception($"Failed to find profile {this._accountViewModel.AccountDisplayName} to edit");
-                }
-
-                this.Model.DisplayName = this._accountViewModel.DisplayName;
-
-                var credentials = this._accountViewModel.Profile.GetAWSCredentials(profileStore).GetCredentials();
-                this.Model.AccessKey = credentials.AccessKey;
-                this.Model.SecretKey = credentials.SecretKey;
-
-                var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.NonNetSDKCredentialStoreMetadata);
-                var os = settings[this._accountViewModel.SettingsUniqueKey];
-
-                var restrictions = os[ToolkitSettingsConstants.Restrictions];
-                if (restrictions != null)
-                {
-                    foreach (var restriction in restrictions.Split(','))
-                    {
-                        var accountType = this.Model.AllAccountTypes.FirstOrDefault(x => x.SystemName == restriction.Trim());
-                        if (accountType != null)
-                        {
-                            this.Model.SelectedAccountType = accountType;
-                            break;
-                        }
-                    }
-                }
+                throw new Exception($"Failed to find profile {this._accountViewModel.AccountDisplayName} to edit");
             }
+
+            this.Model.DisplayName = this._accountViewModel.DisplayName;
+            this.Model.AccessKey = this._accountViewModel.ProfileProperties?.AccessKey;
+            this.Model.SecretKey = this._accountViewModel.ProfileProperties?.SecretKey;
+            this.Model.ProfileName = this._accountViewModel.Identifier?.ProfileName;
+            this.Model.Partition =
+                this.Model.Partitions.FirstOrDefault(x => string.Equals(x.Id, this._accountViewModel.PartitionId));
+            this.Model.Region = this._accountViewModel.Region;
+            this.Model.UniqueKey = new Guid(this._accountViewModel.SettingsUniqueKey);
+            this._control._ctlAccessKey.Password = this.Model.AccessKey ?? string.Empty;
+            this._control._ctlSecretKey.Password = this.Model.SecretKey ?? string.Empty;
+            DefaultProfileNameInUse = true;
         }
 
         public override void Persist()
         {
             bool nameChange = false;
             bool credentialsChange = false;
-            if (this._accountViewModel.ProfileStore is NetSDKCredentialsFile)
+            ToolkitRegion region = null;
+            ICredentialIdentifier identifier = null;
+            ManualResetEvent mre = new ManualResetEvent(false);
+            EventHandler<EventArgs> HandleCredentialUpdate = (sender, args) =>
             {
-                var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
-                var os = settings[this._accountViewModel.SettingsUniqueKey];
-
-                nameChange = os[ToolkitSettingsConstants.DisplayNameField] != this.Model.DisplayName;
-                credentialsChange = os[ToolkitSettingsConstants.AccessKeyField] != this.Model.AccessKey || os[ToolkitSettingsConstants.SecretKeyField] != this.Model.SecretKey;
-                os[ToolkitSettingsConstants.DisplayNameField] = (this.Model.DisplayName ?? string.Empty).Trim();
-                os[ToolkitSettingsConstants.AccessKeyField] = (this.Model.AccessKey ?? string.Empty).Trim();
-                os[ToolkitSettingsConstants.SecretKeyField] = (this.Model.SecretKey ?? string.Empty).Trim();
-                os[ToolkitSettingsConstants.Restrictions] = this.Model.SelectedAccountType.SystemName;
-
-                PersistenceManager.Instance.SaveSettings(ToolkitSettingsConstants.RegisteredProfiles, settings);
-            }
-            else
-            {
-                var profileStore = new SharedCredentialsFile();
-                CredentialProfile profile = null;
-                if(!profileStore.TryGetProfile(this._accountViewModel.AccountDisplayName, out profile))
+                var ide = _credentialManager.GetCredentialIdentifierById(identifier?.Id);
+                if (ide != null && region != null)
                 {
-                    ToolkitFactory.Instance.ShellProvider.ShowError($"Failed to find profile {this._accountViewModel.AccountDisplayName} to edit");
+                    mre.Set();
+                    this._accountViewModel.ReloadFromPersistence(this.Model.DisplayName.Trim());
+                    _awsConnectionManager.ChangeConnectionSettings(identifier, region);
+                }
+            };
+
+            try
+            {
+                if (string.Equals(this._accountViewModel.Identifier.FactoryId,
+                    SDKCredentialProviderFactory.SdkProfileFactoryId))
+                {
+                    identifier = new SDKCredentialIdentifier(this.Model.ProfileName.Trim());
+                }
+
+                else
+                {
+                    identifier = new SharedCredentialIdentifier(this.Model.ProfileName.Trim());
+                }
+
+                var profileProperties =
+                    _credentialSettingsManager.GetProfileProperties(this._accountViewModel
+                        .Identifier);
+                if (profileProperties == null)
+                {
+                    ToolkitFactory.Instance.ShellProvider.ShowError(
+                        $"Failed to find profile {this._accountViewModel.AccountDisplayName} to edit");
                     this._results = new ActionResults().WithSuccess(false);
                     return;
                 }
 
-                credentialsChange = !string.Equals(this._accountViewModel.Credentials.GetCredentials().AccessKey, this.Model.AccessKey, StringComparison.Ordinal);
-                nameChange = !string.Equals(this._accountViewModel.DisplayName, this.Model.DisplayName, StringComparison.Ordinal);
+                var settingKey = profileProperties?.UniqueKey;
+                credentialsChange = !string.Equals(profileProperties?.AccessKey,
+                    this.Model.AccessKey, StringComparison.Ordinal) || !string.Equals(profileProperties?.SecretKey,
+                    this.Model.SecretKey, StringComparison.Ordinal) || !string.Equals(profileProperties?.Region,
+                    this.Model.Region.Id, StringComparison.Ordinal);
+                nameChange = !string.Equals(this._accountViewModel.AccountDisplayName, this.Model.ProfileName,
+                    StringComparison.Ordinal);
 
-                if(nameChange)
+                this.Model.DisplayName = identifier?.DisplayName;
+                var properties = new ProfileProperties
                 {
-                    profileStore.RenameProfile(this._accountViewModel.DisplayName, this.Model.DisplayName);
-                    profileStore.TryGetProfile(this._accountViewModel.AccountDisplayName, out profile);
+                    AccessKey = this.Model.AccessKey?.Trim(),
+                    SecretKey = this.Model.SecretKey?.Trim(),
+                    Name = this.Model.ProfileName?.Trim(),
+                    UniqueKey = settingKey,
+                    Region = this.Model.Region?.Id?.Trim()
+                };
+                region = this.Model.Region;
+                _credentialManager.CredentialManagerUpdated += HandleCredentialUpdate;
+
+                if (nameChange)
+                {
+                    _credentialSettingsManager.RenameProfile(
+                        this._accountViewModel.Identifier,
+                        identifier);
                 }
 
-                profile.Options.AccessKey = this.Model.AccessKey?.Trim();
-                profile.Options.SecretKey = this.Model.SecretKey?.Trim();
+                if (credentialsChange)
+                {
+                    _credentialSettingsManager.UpdateProfile(identifier, properties);
+                }
 
-                profileStore.RegisterProfile(profile);
 
-                // The shared credential file can't be used to store account number and restricitons so we'll put that in a side SDK Credential store file.
-                var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.NonNetSDKCredentialStoreMetadata);
-                var os = settings[this._accountViewModel.SettingsUniqueKey];
-
-                os[ToolkitSettingsConstants.Restrictions] = this.Model.SelectedAccountType.SystemName;
-
-                PersistenceManager.Instance.SaveSettings(ToolkitSettingsConstants.NonNetSDKCredentialStoreMetadata, settings);
+                mre.WaitOne(2000);
+                this._accountViewModel.ReloadFromPersistence(this.Model.DisplayName.Trim());
+                this._results = new ActionResults().WithSuccess(true)
+                    .WithFocalname(this.Model.DisplayName)
+                    .WithParameter(NAME_CHANGE_PARAMETER, nameChange)
+                    .WithParameter(CREDENTIALS_CHANGE_PARAMETER, credentialsChange);
             }
-
-
-            this._accountViewModel.ReloadFromPersistence();
-
-            this._results = new ActionResults().WithSuccess(true)
-                .WithFocalname(this.Model.DisplayName)
-                .WithParameter(NAME_CHANGE_PARAMETER, nameChange)
-                .WithParameter(CREDENTIALS_CHANGE_PARAMETER, credentialsChange)
-                .WithParameter(ACCESSKEY_PARAMETER, this.Model.AccessKey)
-                .WithParameter(SECRETKEY_PARAMETER, this.Model.SecretKey);
+            catch
+            {
+                this._results = new ActionResults().WithSuccess(false)
+                    .WithFocalname(this.Model.DisplayName)
+                    .WithParameter(NAME_CHANGE_PARAMETER, nameChange)
+                    .WithParameter(CREDENTIALS_CHANGE_PARAMETER, credentialsChange);
+            }
+            finally
+            {
+                _credentialManager.CredentialManagerUpdated -= HandleCredentialUpdate;
+            }
         }
     }
 }

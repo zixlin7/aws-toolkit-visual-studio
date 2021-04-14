@@ -1,4 +1,5 @@
 ﻿using System;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;

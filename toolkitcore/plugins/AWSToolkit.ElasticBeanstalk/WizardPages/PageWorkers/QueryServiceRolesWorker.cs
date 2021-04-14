@@ -4,6 +4,8 @@ using System.ComponentModel;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Regions;
+using Amazon.ElasticBeanstalk;
 using log4net;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
@@ -14,6 +16,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
     /// </summary>
     internal class QueryServiceRolesWorker
     {
+        private static readonly string ElasticBeanstalkServiceName = new AmazonElasticBeanstalkConfig().RegionEndpointServiceName;
+
         public delegate void DataAvailableCallback(IEnumerable<Role> data);
         DataAvailableCallback _callback;
 
@@ -25,22 +29,21 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
         }
 
         public QueryServiceRolesWorker(AccountViewModel accountViewModel,
-                                       RegionEndPointsManager.RegionEndPoints regionEndPoints,
+                                       ToolkitRegion region,
                                        ILog logger,
                                        DataAvailableCallback callback)
         {
             _callback = callback;
 
-            var iamConfig = new AmazonIdentityManagementServiceConfig ();
-            regionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).ApplyToClientConfig(iamConfig);
-            var iamClient = new AmazonIdentityManagementServiceClient(accountViewModel.Credentials, iamConfig);
+            var iamClient = accountViewModel.CreateServiceClient<AmazonIdentityManagementServiceClient>(region);
 
             var bw = new BackgroundWorker();
             bw.DoWork += Worker;
             bw.RunWorkerCompleted += WorkerCompleted;
+            var servicePrincipal = Constants.GetServicePrincipalForAssumeRole(region.Id, ElasticBeanstalkServiceName);
             bw.RunWorkerAsync(new WorkerData
             {
-                ServicePrincipal = regionEndPoints.GetPrincipalForAssumeRole(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME),
+                ServicePrincipal = servicePrincipal,
                 IAMClient = iamClient,
                 Logger = logger
             });

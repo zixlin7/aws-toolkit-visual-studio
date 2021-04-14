@@ -13,7 +13,11 @@ using Amazon.ECR;
 using Amazon.ECR.Model;
 using System.Collections.Generic;
 using System.Linq;
+using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 {
@@ -23,30 +27,35 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
     public partial class PushImageToECRPage : BaseAWSUserControl, INotifyPropertyChanged
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(PushImageToECRPage));
+        public static readonly string ECRServiceName = new AmazonECRConfig().RegionEndpointServiceName;
+
+        private const int AccountRegionChangedDebounceMs = 250;
 
         bool _initialLoad = true;
         public PushImageToECRPageController PageController { get; }
+        public AccountAndRegionPickerViewModel Connection { get; }
 
         IAmazonECR _ecrClient;
 
+        private readonly DebounceDispatcher _accountRegionChangeDebounceDispatcher = new DebounceDispatcher();
 
-        public PushImageToECRPage()
+        public PushImageToECRPage(PushImageToECRPageController pageController, ToolkitContext toolkitContext)
         {
+            Connection = new AccountAndRegionPickerViewModel(toolkitContext);
+            Connection.SetServiceFilter(new List<string>() {ECRServiceName});
+
+            PageController = pageController;
+
             InitializeComponent();
             DataContext = this;
-        }
 
-        public PushImageToECRPage(PushImageToECRPageController pageController)
-            : this()
-        {
-            PageController = pageController;
             var hostWizard = PageController.HostingWizard;
 
-            var userAccount = hostWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
-            var regionEndpoints = hostWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+            var userAccount = PageController.HostingWizard.GetSelectedAccount(PublishContainerToAWSWizardProperties.UserAccount);
+            var region = PageController.HostingWizard.GetSelectedRegion(PublishContainerToAWSWizardProperties.Region);
 
-            this._ctlAccountAndRegion.Initialize(userAccount, regionEndpoints, new string[] { RegionEndPointsManager.ECR_ENDPOINT_LOOKUP });
-            this._ctlAccountAndRegion.PropertyChanged += _ctlAccountAndRegion_PropertyChanged;
+            Connection.Account = userAccount;
+            Connection.Region = region;
 
             this._ctlConfigurationPicker.Items.Add("Release");
             this._ctlConfigurationPicker.Items.Add("Debug");
@@ -115,13 +124,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             this._ctlDockerTagPicker.Items.Clear();
             try
             {
-                if (this._ctlAccountAndRegion.SelectedAccount == null || this._ctlAccountAndRegion.SelectedRegion == null)
+                if (!Connection.ConnectionIsValid)
+                {
                     return;
+                }
 
                 if (this._ecrClient != null)
                     this._ecrClient.Dispose();
 
-                this._ecrClient = this._ctlAccountAndRegion.SelectedAccount.CreateServiceClient<AmazonECRClient>(this._ctlAccountAndRegion.SelectedRegion.GetEndpoint(RegionEndPointsManager.ECR_ENDPOINT_LOOKUP));
+                this._ecrClient = Connection.Account.CreateServiceClient<AmazonECRClient>(Connection.Region);
                 Task task1 = Task.Run(() =>
                 {
                     var items = new List<string>();
@@ -237,6 +248,11 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         {
             get
             {
+                if (!Connection.ConnectionIsValid || Connection.IsValidating)
+                {
+                    return false;
+                }
+
                 if (this.SelectedAccount == null)
                     return false;
                 if (this.SelectedRegion == null)
@@ -254,19 +270,28 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
         public bool PersistSettingsToConfigFile => this._ctlPersistSettings.IsChecked.GetValueOrDefault();
 
-        public AccountViewModel SelectedAccount => _ctlAccountAndRegion.SelectedAccount;
+        public AccountViewModel SelectedAccount => Connection.Account;
 
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion => _ctlAccountAndRegion.SelectedRegion;
+        public ToolkitRegion SelectedRegion => Connection.Region;
 
-        void _ctlAccountAndRegion_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        void _ctlAccountAndRegion_PropertyChanged(object sender, EventArgs e)
         {
-            if (this._ctlAccountAndRegion.SelectedAccount == null || this._ctlAccountAndRegion.SelectedRegion == null)
+            if (!Connection.ConnectionIsValid)
+            {
                 return;
+            }
 
-            PageController.HostingWizard.SetProperty(PublishContainerToAWSWizardProperties.UserAccount, this._ctlAccountAndRegion.SelectedAccount);
-            PageController.HostingWizard.SetProperty(PublishContainerToAWSWizardProperties.Region, this._ctlAccountAndRegion.SelectedRegion);
+            PageController.HostingWizard.SetSelectedAccount(Connection.Account, PublishContainerToAWSWizardProperties.UserAccount);
+            PageController.HostingWizard.SetSelectedRegion(Connection.Region, PublishContainerToAWSWizardProperties.Region);
 
-            UpdateExistingResources();
+            // Prevent multiple loads caused by property changed events in rapid succession
+            _accountRegionChangeDebounceDispatcher.Debounce(AccountRegionChangedDebounceMs, _ =>
+            {
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
+                {
+                    UpdateExistingResources();
+                });
+            });
         }
 
         string _configuration;

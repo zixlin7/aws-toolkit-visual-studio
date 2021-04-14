@@ -2,21 +2,22 @@
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
-
+using Amazon.AWSToolkit.Regions;
+using Amazon.RDS;
 
 namespace Amazon.AWSToolkit.RDS.Nodes
 {
     public class RDSRootViewMetaNode : ServiceRootViewMetaNode, IRDSRootViewMetaNode
     {
-        public const string RDS_ENDPOINT_LOOKUP = "RDS";
+        private static readonly string RDSServiceName = new AmazonRDSConfig().RegionEndpointServiceName;
 
         public RDSInstanceViewMetaNode RDSInstanceViewMetaNode => this.FindChild<RDSInstanceViewMetaNode>();
 
-        public override string EndPointSystemName => RDS_ENDPOINT_LOOKUP;
+        public override string SdkEndpointServiceName => RDSServiceName;
 
-        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
+        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account, ToolkitRegion region)
         {
-            return new RDSRootViewModel(account);
+            return new RDSRootViewModel(account, region);
         }
 
 

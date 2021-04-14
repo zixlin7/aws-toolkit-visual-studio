@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -15,8 +16,13 @@ using Amazon.EC2.Model;
 using Amazon.S3;
 using Amazon.S3.Model;
 
+using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CloudFormation.Nodes;
 using Amazon.AWSToolkit.CloudFormation.Model;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.Regions;
+
 using AWSDeploymentCryptoUtility;
 
 namespace Amazon.AWSToolkit.CloudFormation.Util
@@ -38,15 +44,10 @@ namespace Amazon.AWSToolkit.CloudFormation.Util
         public CloudFormationUtil(CloudFormationRootViewModel model)
         {
             _viewModel = model;
-            
-            var region = this._viewModel.CurrentEndPoint.RegionSystemName;
-            var endPoints = RegionEndPointsManager.GetInstance().GetRegion(region);
 
+            var region = this._viewModel.Region;
             this._cfClient = this._viewModel.CloudFormationClient;
-
-            var ec2Config = new AmazonEC2Config();
-            endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).ApplyToClientConfig(ec2Config);
-            this._ec2Client = new AmazonEC2Client(this._viewModel.AccountViewModel.Credentials, ec2Config);
+            this._ec2Client = this._viewModel.AccountViewModel.CreateServiceClient<AmazonEC2Client>(region);
         }
         public CloudFormationUtil(IAmazonCloudFormation cfClient, IAmazonEC2 ec2Client)
         {
@@ -165,11 +166,11 @@ namespace Amazon.AWSToolkit.CloudFormation.Util
             }
         }
 
-        internal static string UploadTemplateToS3(Account.AccountViewModel account, RegionEndPointsManager.RegionEndPoints region, string templateBody, string templateName, string stack)
+        internal static string UploadTemplateToS3(Account.AccountViewModel account, ToolkitRegion region, string templateBody, string templateName, string stack)
         {
             var s3Client = account.CreateServiceClient<AmazonS3Client>(region);
 
-            string bucketName = string.Format("cloudformation-{0}-{1}", region.SystemName, account.UniqueIdentifier).ToLower();
+            string bucketName = CreateCloudFormationUploadBucketName(account, region);
             string s3Key = string.Format("{0}/{1}", stack, templateName);
 
             try
@@ -190,45 +191,75 @@ namespace Amazon.AWSToolkit.CloudFormation.Util
                 ContentBody = templateBody
             });
 
-            string url = null;
+            var partitionId = region.PartitionId;
+            var dnsSuffix = ToolkitFactory.Instance.RegionProvider.GetPartition(partitionId)?.DnsSuffix;
 
-            var s3Endpoint = region.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME);
-            var s3Config = new AmazonS3Config();
-            s3Endpoint.ApplyToClientConfig(s3Config);
-            var s3HostUrl = s3Config.ServiceURL;
-            if (!s3HostUrl.EndsWith("/"))
-                s3HostUrl += "/";
-
-            url = String.Format("{0}{1}/{2}", s3HostUrl, bucketName, s3Key);
-            
+            var url = $"https://{bucketName}.s3.{region.Id}.{dnsSuffix}/{s3Key}";
             return url;
         }
 
-        internal static void OpenStack(Account.AccountViewModel account, RegionEndPointsManager.RegionEndPoints region, string stackName)
+        internal static string CreateCloudFormationUploadBucketName(AccountViewModel account, ToolkitRegion region, string bucketPrefix = "cloudformation")
         {
+            var accountId = account.GetAccountId(region);
+
+            if (string.IsNullOrWhiteSpace(bucketPrefix))
+            {
+                throw new Exception("Unknown S3 Bucket prefix");
+            }
+
+            if (string.IsNullOrWhiteSpace(region?.Id))
+            {
+                throw new Exception("Unknown region to use with an S3 Bucket");
+            }
+
+            if (string.IsNullOrWhiteSpace(accountId))
+            {
+                throw new Exception("Unable to determine the account Id");
+            }
+
+            var bucketNameComponents = new string[] {bucketPrefix, region.Id, accountId};
+            return string.Join("-", bucketNameComponents.Select(s => s.Trim())).ToLowerInvariant();
+        }
+
+        internal static void OpenStack(Account.AccountViewModel account, ToolkitRegion region, string stackName)
+        {
+            var navigator = ToolkitFactory.Instance.Navigator;
+            var connectionManager = ToolkitFactory.Instance.AwsConnectionManager;
             ToolkitFactory.Instance.ShellProvider.UpdateStatus("Displaying CloudFormation Stack View");
-            if (ToolkitFactory.Instance.Navigator.SelectedAccount != account)
-                ToolkitFactory.Instance.Navigator.UpdateAccountSelection(new Guid(account.SettingsUniqueKey), false);
 
-            if (ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints != region)
-                ToolkitFactory.Instance.Navigator.UpdateRegionSelection(region);
-
-            var cloudFormationRootNode = ToolkitFactory.Instance.Navigator.SelectedAccount.FindSingleChild<Nodes.CloudFormationRootViewModel>(false);
-            if (cloudFormationRootNode == null)
-                return;
-
-            var stackNode = cloudFormationRootNode.FindSingleChild<Nodes.CloudFormationStackViewModel>(false, x => string.Equals(x.StackName, stackName));
-            if (stackNode == null)
+            //sync up navigator connection settings with the deployment settings and check if they have been validated
+            var isConnectionValid = navigator.TryWaitForSelection(connectionManager, account, region);
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
             {
-                cloudFormationRootNode.Refresh(false);
-                stackNode = cloudFormationRootNode.FindSingleChild<Nodes.CloudFormationStackViewModel>(false, x => string.Equals(x.StackName, stackName));
-            }
+                if (!isConnectionValid)
+                {
+                    ToolkitFactory.Instance.ShellProvider.OutputToHostConsole(
+                        "CloudFormation stack has been successfully deployed. You can view it under AWS CloudFormation.");
+                }
+                else
+                {
+                    var cloudFormationRootNode = navigator.SelectedAccount
+                        .FindSingleChild<Nodes.CloudFormationRootViewModel>(false);
+                    if (cloudFormationRootNode == null)
+                        return;
 
-            if (stackNode != null)
-            {
-                ToolkitFactory.Instance.Navigator.SelectedNode = stackNode;
-                stackNode.ExecuteDefaultAction();
-            }
+                    var stackNode =
+                        cloudFormationRootNode.FindSingleChild<Nodes.CloudFormationStackViewModel>(false,
+                            x => string.Equals(x.StackName, stackName));
+                    if (stackNode == null)
+                    {
+                        cloudFormationRootNode.Refresh(false);
+                        stackNode = cloudFormationRootNode.FindSingleChild<Nodes.CloudFormationStackViewModel>(false,
+                            x => string.Equals(x.StackName, stackName));
+                    }
+
+                    if (stackNode != null)
+                    {
+                        navigator.SelectedNode = stackNode;
+                        stackNode.ExecuteDefaultAction();
+                    }
+                }
+            });
         }
     }
 }

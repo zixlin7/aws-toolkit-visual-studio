@@ -50,8 +50,8 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
                         = HostingWizard[DeploymentWizardProperties.DeploymentTemplate.propkey_RedeploymentInstance] as ExistingServiceDeployment;
 
                 _pageUI.DataLoadPending = true;
-                new FetchStackConfigWorker(HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel,
-                                           HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints,
+                new FetchStackConfigWorker(HostingWizard.GetSelectedAccount(),
+                                           HostingWizard.GetSelectedRegion(),
                                            deployment.Tag as Stack,
                                            LOGGER,
                                            new FetchStackConfigWorker.DataAvailableCallback(FetchConfigWorkerCompleted));

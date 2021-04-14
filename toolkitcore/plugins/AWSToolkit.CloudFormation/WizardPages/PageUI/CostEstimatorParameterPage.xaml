@@ -23,7 +23,12 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <commoncomponents:AccountAndRegionPicker Grid.Row="0" Margin="0" x:Name="_ctlAccountAndRegionPicker"/>
+        <commoncomponents:AccountAndRegionPicker 
+            Grid.Row="0" 
+            Margin="0" 
+            DataContext="{Binding Connection}"
+            ConnectionChanged="ConnectionChanged"
+            />
 
         <Separator Grid.Row="1" Margin="5"/>
 

@@ -8,37 +8,27 @@ using Amazon.AWSToolkit.Navigator.Node;
 using log4net;
 using Amazon.Runtime;
 using System;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.CodeArtifact.Nodes
 {
     public class CodeArtifactRootViewModel : ServiceRootViewModel, ICodeArtifactRootViewModel
     {
-        CodeArtifactRootViewMetaNode _metaNode;
-        AccountViewModel _accountViewModel;
-        static ILog _logger = LogManager.GetLogger(typeof(CodeArtifactRootViewModel));
-        
-        IAmazonCodeArtifact _CodeArtifactClient;
+        private readonly CodeArtifactRootViewMetaNode _metaNode;
+        private readonly Lazy<IAmazonCodeArtifact> _codeArtifactClient;
 
-        public CodeArtifactRootViewModel(AccountViewModel accountViewModel)
-            : base(accountViewModel.MetaNode.FindChild<CodeArtifactRootViewMetaNode>(), accountViewModel, "Amazon CodeArtifact")
+        public CodeArtifactRootViewModel(AccountViewModel accountViewModel, ToolkitRegion region)
+            : base(accountViewModel.MetaNode.FindChild<CodeArtifactRootViewMetaNode>(), accountViewModel, "Amazon CodeArtifact", region)
         {
-            this._metaNode = base.MetaNode as CodeArtifactRootViewMetaNode;
-            this._accountViewModel = accountViewModel;            
+            _metaNode = base.MetaNode as CodeArtifactRootViewMetaNode;
+            _codeArtifactClient = new Lazy<IAmazonCodeArtifact>(CreateCodeArtifactClient);
         }
 
         public override string ToolTip => "Amazon CodeArtifact is a fully managed artifact repository service that makes it easy for organizations of any size to securely store, publish, and share software packages used in their software development process.";
 
         protected override string IconName => "Amazon.AWSToolkit.CodeArtifact.Resources.EmbeddedImages.service-root-icon.png";
 
-        protected override void BuildClient(AWSCredentials awsCredentials)
-        {
-            var config = new AmazonCodeArtifactConfig();
-            this.CurrentEndPoint.ApplyToClientConfig(config);
-            this._CodeArtifactClient = new AmazonCodeArtifactClient(awsCredentials, config);
-        }
-
-
-        public IAmazonCodeArtifact CodeArtifactClient => this._CodeArtifactClient;
+        public IAmazonCodeArtifact CodeArtifactClient => this._codeArtifactClient.Value;
 
         protected override void LoadChildren()
         {
@@ -75,6 +65,11 @@ namespace Amazon.AWSToolkit.CodeArtifact.Nodes
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {
             dndDataObjects.SetData("ARN", "arn:aws:CodeArtifact:::*");
+        }
+
+        private IAmazonCodeArtifact CreateCodeArtifactClient()
+        {
+            return AccountViewModel.CreateServiceClient<AmazonCodeArtifactClient>(Region);
         }
     }
 }

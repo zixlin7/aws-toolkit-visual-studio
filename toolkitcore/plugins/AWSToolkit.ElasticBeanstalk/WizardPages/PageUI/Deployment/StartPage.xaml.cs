@@ -5,10 +5,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.CommonUI.Components;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
-using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
+using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
@@ -19,73 +20,51 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
     public partial class StartPage : INotifyPropertyChanged
     {
         // property names used with NotifyPropertyChanged
-        public static readonly string uiProperty_Region = "Region";
-        public static readonly string uiProperty_Account = "Account";
         public static readonly string uiProperty_Accounts = "Accounts";
         public static readonly string uiProperty_DeploymentMode = "DeploymentMode"; // deploy new vs redeploy
         public static readonly string uiProperty_ExistingDeployments = "ExistingDeployments";
         public static readonly string uiProperty_SelectedDeployment = "SelectedDeployment";
 
-        public StartPage()
+        public static readonly string ElasticBeanstalkServiceName = new AmazonElasticBeanstalkConfig().RegionEndpointServiceName;
+
+        public AccountAndRegionPickerViewModel Connection { get; }
+
+        public StartPage(ToolkitContext toolkitContext)
         {
+            Connection = new AccountAndRegionPickerViewModel(toolkitContext);
+            Connection.SetServiceFilter(new List<string>() {ElasticBeanstalkServiceName});
+
             InitializeComponent();
-            this._accountSelector.PropertyChanged += _accountSelector_PropertyChanged;
             DataContext = this;
         }
 
-        public StartPage(IAWSWizardPageController controller)
-            : this()
+        private void ConnectionChanged(object sender, EventArgs e)
         {
-            this.PageController = controller;
-        }
-
-        public IAWSWizardPageController PageController { get; set; }
-
-        public void Initialize(AccountViewModel account)
-        {
-            this._accountSelector.Initialize(account, RegionEndPointsManager.GetInstance().GetDefaultRegionEndPoints(), new string[] { RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME });
-            this._accountSelector.IsEnabled = true;
-        }
-
-        private void _accountSelector_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            NotifyPropertyChanged(uiProperty_Region);
-            NotifyPropertyChanged(uiProperty_Account);
-        }
-
-        AWSViewModel _rootViewModel;
-        public AWSViewModel RootViewModel
-        {
-            get => IsInitialized ? _rootViewModel : null;
-            set
-            {
-                this._rootViewModel = value;
-                this._accountSelector.IsEnabled = this.Accounts.Count != 0;
-            }
-        }
-
-        ObservableCollection<AccountViewModel> _accounts = new ObservableCollection<AccountViewModel>();
-        public ObservableCollection<AccountViewModel> Accounts
-        {
-            get
-            {
-                if (RootViewModel == null)
-                    return null;
-
-                return this._accounts;
-            }
+            NotifyPropertyChanged(nameof(Connection));
         }
 
         public AccountViewModel SelectedAccount
         {
-            get => this._accountSelector.SelectedAccount;
-            protected set { if (IsInitialized) this._accountSelector.SelectedAccount = value; }
+            get => Connection.Account;
+            protected set
+            {
+                if (IsInitialized)
+                {
+                    Connection.Account = value;
+                }
+            }
         }
 
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion
+        public ToolkitRegion SelectedRegion
         {
-            get => this._accountSelector.SelectedRegion;
-            set => this._accountSelector.SelectedRegion = value;
+            get => Connection.Region;
+            set => Connection.Region = value;
+        }
+
+        public string SelectedRegionId
+        {
+            get => Connection.Region?.Id;
+            set => Connection.SetRegion(value);
         }
 
         private ObservableCollection<DeployedApplicationModel> _existingDeployments;

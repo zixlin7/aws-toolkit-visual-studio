@@ -52,12 +52,12 @@
   <ItemGroup>
     <Compile Include="LambdaIAMRoleFixUpTests.cs" />
     <Compile Include="PickSolutionStackNameTests.cs" />
-    <Compile Include="RegionEndPointsManagerTestExtension.cs" />
     <Compile Include="ProjectFileUtilitiesTests.cs" />
-    <Compile Include="RegionEndPointsManagerTests.cs" />
     <Compile Include="Regions\EndpointsExtensionMethodsTests.cs" />
     <Compile Include="Regions\EndpointsTests.cs" />
     <Compile Include="Regions\RegionProviderTests.cs" />
+    <Compile Include="Regions\ServiceTests.cs" />
+    <Compile Include="Regions\ToolkitRegionEqualityTests.cs" />
     <Compile Include="ResourceFetchers\AssemblyResourceFetcherTests.cs" />
     <Compile Include="ResourceFetchers\CallbackResourceFetcherTests.cs" />
     <Compile Include="ResourceFetchers\ChainedResourceFetcherTests.cs" />

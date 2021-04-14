@@ -24,6 +24,9 @@ namespace Amazon.AWSToolkit.CloudFormation
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(CloudFormationActivator));
 
+        private static readonly string CloudFormationServiceName =
+            new AmazonCloudFormationConfig().RegionEndpointServiceName;
+
         public override string PluginName => "CloudFormation";
 
         public override void RegisterMetaNodes()
@@ -68,13 +71,13 @@ namespace Amazon.AWSToolkit.CloudFormation
 
         public DeployedTemplateData DeployCloudFormationTemplate(string filepath, IDictionary<string, object> seedParameters)
         {
-            var controller = new DeployTemplateController(ToolkitFactory.Instance.TelemetryLogger);
+            var controller = new DeployTemplateController(ToolkitContext);
             return controller.Execute(filepath, seedParameters, new FileInfo(filepath).Name);
         }
 
         public DeployedTemplateData GetUrlToCostEstimate(string filepath, IDictionary<string, object> seedParameters)
         {
-            var controller = new GetUrlToCostEstimateController();
+            var controller = new GetUrlToCostEstimateController(ToolkitContext);
             return controller.Execute(File.ReadAllText(filepath), seedParameters, new FileInfo(filepath).Name);
         }
 
@@ -88,7 +91,7 @@ namespace Amazon.AWSToolkit.CloudFormation
         {
             if (fastTrackRedeployment)
             {
-                return new IAWSWizardPageController[] { new WizardPages.PageControllers.FastTrackRepublishPageController() };
+                return new IAWSWizardPageController[] { new WizardPages.PageControllers.FastTrackRepublishPageController(ToolkitContext) };
             }
 
             return new IAWSWizardPageController[]
@@ -103,18 +106,17 @@ namespace Amazon.AWSToolkit.CloudFormation
         bool IAWSToolkitDeploymentService.Deploy(string deploymentPackage, IDictionary<string, object> deploymentProperties)
         {
             // keep navigator up-to-date with the final account selection in the wizard
-            var selectedAccount = deploymentProperties[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
-            ToolkitFactory.Instance.Navigator.UpdateAccountSelection(new Guid(selectedAccount.SettingsUniqueKey), false);
-
+            var selectedAccount = CommonWizardProperties.AccountSelection.GetSelectedAccount(deploymentProperties);
+            ToolkitFactory.Instance.AwsConnectionManager.ChangeCredentialProvider(selectedAccount.Identifier);
             bool isRedeploy = false;
             if (deploymentProperties.ContainsKey(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy))
                 isRedeploy = (bool)deploymentProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy];
 
             DeploymentControllerBase command;
             if (isRedeploy)
-                command = new RedeployApplicationController(deploymentPackage, deploymentProperties);
+                command = new RedeployApplicationController(deploymentPackage, deploymentProperties, ToolkitContext);
             else
-                command = new DeployApplicationController(deploymentPackage, deploymentProperties);
+                command = new DeployApplicationController(deploymentPackage, deploymentProperties, ToolkitContext);
 
             ThreadPool.QueueUserWorkItem(command.Execute);
             
@@ -123,13 +125,13 @@ namespace Amazon.AWSToolkit.CloudFormation
 
         static readonly string[] invalidStates = new string[] 
         { 
-            "ROLLBACK_IN_PROGRESS", 
+            "ROLLBACK_IN_PROGRESS",
             "ROLLBACK_COMPLETE",
             "DELETE_IN_PROGRESS",
             "DELETE_COMPLETE"
         };
 
-        bool IAWSToolkitDeploymentService.IsRedeploymentTargetValid(AccountViewModel account, string region, IDictionary<string, object> environmentDetails)
+        bool IAWSToolkitDeploymentService.IsRedeploymentTargetValid(AccountViewModel account, string regionId, IDictionary<string, object> environmentDetails)
         {
             string stackName = null;
             if (environmentDetails.ContainsKey(CloudFormationConstants.DeploymentTargetQueryParam_StackName))
@@ -141,10 +143,8 @@ namespace Amazon.AWSToolkit.CloudFormation
                     $"Expected '${CloudFormationConstants.DeploymentTargetQueryParam_StackName}' key in environmentDetails");
             }
 
-            var config = new AmazonCloudFormationConfig();
-            RegionEndPointsManager.GetInstance().GetRegion(region)
-                            .GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME).ApplyToClientConfig(config);
-            IAmazonCloudFormation client = new AmazonCloudFormationClient(account.Credentials, config);
+            var region = ToolkitContext.RegionProvider.GetRegion(regionId);
+            var client = account.CreateServiceClient<AmazonCloudFormationClient>(region);
             bool isValid = false;
             try
             {
@@ -170,21 +170,19 @@ namespace Amazon.AWSToolkit.CloudFormation
         /// <param name="region"></param>
         /// <param name="logger"></param>
         /// <returns></returns>
-        IEnumerable<ExistingServiceDeployment> IAWSToolkitDeploymentService.QueryToolkitDeployments(AccountViewModel account, string region, ILog logger)
+        IEnumerable<ExistingServiceDeployment> IAWSToolkitDeploymentService.QueryToolkitDeployments(AccountViewModel account, string regionId, ILog logger)
         {
             var deployments = new List<ExistingServiceDeployment>();
 
             // test for endpoint support, just in case
-            var endpoint = RegionEndPointsManager.GetInstance().GetRegion(region).GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME);
-            if (endpoint == null)
+            if (!ToolkitContext.RegionProvider.IsServiceAvailable(CloudFormationServiceName, regionId))
+            {
                 return deployments;
-
+            }
+            var region = ToolkitContext.RegionProvider.GetRegion(regionId);
             try
             {
-                var config = new AmazonCloudFormationConfig();
-                endpoint.ApplyToClientConfig(config);
-                var client = new AmazonCloudFormationClient(account.Credentials, config);
-
+                var client = account.CreateServiceClient<AmazonCloudFormationClient>(region);
                 var response = client.DescribeStacks(new DescribeStacksRequest());
                 logger.InfoFormat("Worker query for existing stacks returned {0} entries", response.Stacks.Count);
                 if (response.Stacks.Count > 0)

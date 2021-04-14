@@ -23,6 +23,7 @@ using log4net;
 using ThirdParty.Json.LitJson;
 using Amazon.AWSToolkit.EC2.LaunchWizard.PageWorkers;
 using Amazon.AWSToolkit.EC2.Workers;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
 {
@@ -114,7 +115,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
                 if (HostingWizard.IsPropertySet(LaunchWizardProperties.Global.propkey_VpcOnly))
                     IsVpcOnlyEnvironment = (bool)HostingWizard[LaunchWizardProperties.Global.propkey_VpcOnly];
 
-                var account = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
+                var account = HostingWizard.GetSelectedAccount();
                 var ec2FVM = HostingWizard[LaunchWizardProperties.Global.propkey_EC2RootModel] as FeatureViewModel;
 
                 if (HostingWizard.IsPropertySet(LaunchWizardProperties.AMIOptions.propkey_SeedAMI))
@@ -122,12 +123,12 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
                 else
                 {
                     // can't change region in wizard, so safe to do this here
-                    _pageUI.Images = _quickLaunchByRegion[ec2FVM.RegionSystemName];
+                    _pageUI.Images = _quickLaunchByRegion[ec2FVM.Region.Id];
                 }
 
                 // this page doesn't currently show for gov cloud accounts, but in case it ever does
                 // remove the ability to create keypairs
-                _pageUI.AllowCreateKeyPairSelection = !ec2FVM.AccountViewModel.Restrictions.Contains("IsGovCloudAccount");
+                _pageUI.AllowCreateKeyPairSelection = !string.Equals(ec2FVM.AccountViewModel.PartitionId, PartitionIds.AWS_GOV_CLOUD);
 
                 LoadExistingKeyPairNames(account);
                 LoadExistingVpcSubnets(ec2FVM.EC2Client);
@@ -351,7 +352,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
             // must check that all amis for the region we're going to use are available before
             // declaring page usable
             var ec2FVM = HostingWizard[LaunchWizardProperties.Global.propkey_EC2RootModel] as FeatureViewModel;
-            var regionImages = _quickLaunchByRegion[ec2FVM.RegionSystemName];
+            var regionImages = _quickLaunchByRegion[ec2FVM.Region.Id];
             if (regionImages == null || !regionImages.Any())
                 return false;
 
@@ -387,7 +388,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
                 {
                     LOGGER.ErrorFormat("Quick launch file declares {0} amis for region {1}, service returned {2}",
                                         regionImages.Count<EC2QuickLaunchImage>(),
-                                        ec2FVM.RegionSystemName,
+                                        ec2FVM.Region.Id,
                                         response.Images.Count);
                     return false; // don't mind if there's more unreferenced ones
                 }
@@ -424,12 +425,12 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
         void LoadExistingKeyPairNames(AccountViewModel account)
         {
             Interlocked.Increment(ref _backgroundWorkersActive);
-            var region = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
+            var region = HostingWizard.GetSelectedRegion();
             if (region == null)
                 return;
 
             new QueryKeyPairNamesWorker(account,
-                                        region.SystemName,
+                                        region.Id,
                                         (HostingWizard[LaunchWizardProperties.Global.propkey_EC2RootModel] as FeatureViewModel).EC2Client,
                                         HostingWizard.Logger,
                                         new QueryKeyPairNamesWorker.DataAvailableCallback(OnKeyPairNamesAvailable));
@@ -459,8 +460,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
         {
             Interlocked.Increment(ref _backgroundWorkersActive);
             new QueryInstanceProfilesWorker(account, 
-                                            HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] 
-                                                as RegionEndPointsManager.RegionEndPoints,
+                                            HostingWizard.GetSelectedRegion(),
                                             HostingWizard.Logger,
                                             new QueryInstanceProfilesWorker.DataAvailableCallback(OnIAMProfilesAvailable));
         }

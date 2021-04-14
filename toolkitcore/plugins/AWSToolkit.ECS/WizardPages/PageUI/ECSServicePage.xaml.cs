@@ -10,6 +10,7 @@ using Task = System.Threading.Tasks.Task;
 using Amazon.ECS.Model;
 using System.Collections.Generic;
 using System.Linq;
+using Amazon.ECS;
 using static Amazon.AWSToolkit.ECS.WizardPages.ECSWizardUtils;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
@@ -225,7 +226,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             {
                 try
                 {
-                    using (var ecsClient = CreateECSClient(PageController.HostingWizard))
+                    using (var ecsClient = CreateServiceClient<AmazonECSClient>(PageController.HostingWizard))
                     {
                         var response = ecsClient.DescribeServices(new DescribeServicesRequest
                         {
@@ -274,7 +275,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     var items = new List<string>();
                     try
                     {
-                        using (var ecsClient = CreateECSClient(PageController.HostingWizard))
+                        using (var ecsClient = CreateServiceClient<AmazonECSClient>(PageController.HostingWizard))
                         {
                             var response = new ListServicesResponse();
                             do

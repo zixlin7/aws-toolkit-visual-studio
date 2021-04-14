@@ -113,12 +113,12 @@ namespace Amazon.AWSToolkit.Settings
             set => SetMiscSetting(SettingNames.FirstRunFormShown, AsString(value));
         }
 
-        public string LastAccountSelectedKey
+        public string LastSelectedCredentialId
         {
-            get => GetMiscSetting(ToolkitSettingsConstants.LastAcountSelectedKey);
-            set => SetMiscSetting(ToolkitSettingsConstants.LastAcountSelectedKey, value);
+            get => GetMiscSetting(ToolkitSettingsConstants.LastSelectedCredentialId);
+            set => SetMiscSetting(ToolkitSettingsConstants.LastSelectedCredentialId, value);
         }
-        
+
         public string LastSelectedRegion
         {
             get => GetMiscSetting(SettingNames.LastSelectedRegion);

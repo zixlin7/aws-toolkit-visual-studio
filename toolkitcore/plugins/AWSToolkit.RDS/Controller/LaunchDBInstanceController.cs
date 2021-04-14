@@ -55,16 +55,11 @@ namespace Amazon.AWSToolkit.RDS.Controller
 
                 var seedProperties = new Dictionary<string, object>();
                 var account = _rootModel.AccountViewModel;
-                seedProperties[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] = account;
                 seedProperties[CommonWizardProperties.propkey_NavigatorRootViewModel] = _rootModel;
                 seedProperties[RDSWizardProperties.SeedData.propkey_RDSClient] = _rootModel.RDSClient;
 
-                var endPoints = RegionEndPointsManager.GetInstance().GetRegion(_rootModel.CurrentEndPoint.RegionSystemName);
-                var endPoint = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
+                var ec2Client = account.CreateServiceClient<AmazonEC2Client>(_rootModel.Region);
 
-                var config = new AmazonEC2Config();
-                endPoint.ApplyToClientConfig(config);
-                var ec2Client = new AmazonEC2Client(account.Credentials, config);
                 seedProperties[RDSWizardProperties.SeedData.propkey_EC2Client] = ec2Client;
 
                 seedProperties[RDSWizardProperties.SeedData.propkey_DBInstanceWrapper] = null;
@@ -73,6 +68,7 @@ namespace Amazon.AWSToolkit.RDS.Controller
 
                 var wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.RDS.View.LaunchDBInstance", seedProperties);
                 wizard.Title = "Launch DB Instance";
+                wizard.SetSelectedAccount(account);
 
                 var defaultPages = new IAWSWizardPageController[]
                 {

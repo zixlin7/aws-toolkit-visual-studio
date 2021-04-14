@@ -10,6 +10,8 @@ using Amazon.CloudFormation.Model;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CloudFormation.TemplateWizards.WizardPages;
 using Amazon.AWSToolkit.CloudFormation.TemplateWizards.WizardPages.PageControllers;
+using Amazon.AWSToolkit.Regions;
+
 namespace Amazon.AWSToolkit.CloudFormation.TemplateWizards
 {
     public abstract class AbstractTemplateWizard : IWizard
@@ -63,7 +65,7 @@ namespace Amazon.AWSToolkit.CloudFormation.TemplateWizards
         protected string GetExistingStacksTemplate(Dictionary<string, object> wizardProperties)
         {
             var account = wizardProperties[WizardPropertyNameConstants.propKey_SelectedAccount] as AccountViewModel;
-            var region = wizardProperties[WizardPropertyNameConstants.propKey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
+            var region = wizardProperties[WizardPropertyNameConstants.propKey_SelectedRegion] as ToolkitRegion;
             var existingStackName = wizardProperties[WizardPropertyNameConstants.propKey_ExistingStackName] as string;
 
             var client = account.CreateServiceClient<AmazonCloudFormationClient>(region);

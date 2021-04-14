@@ -1,5 +1,4 @@
 ﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ECS;
 using Amazon.AWSToolkit.ECS.DeploymentWorkers;
@@ -13,13 +12,15 @@ using Amazon.IdentityManagement;
 using Moq;
 using System;
 using System.Collections.Generic;
+using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Tests.Common.Context;
 using LaunchType = Amazon.ECS.LaunchType;
 
 namespace AWSToolkit.Tests.ECS
 {
     public class EcsDeployTestFixture
     {
-        public readonly Mock<ITelemetryLogger> TelemetryLogger = new Mock<ITelemetryLogger>();
+        public readonly ToolkitContextFixture ToolkitContextFixture = new ToolkitContextFixture();
         public readonly List<Metrics> LoggedMetrics = new List<Metrics>();
 
         public readonly Mock<IDockerDeploymentHelper> DockerHelper = new Mock<IDockerDeploymentHelper>();
@@ -38,7 +39,7 @@ namespace AWSToolkit.Tests.ECS
 
         public EcsDeployTestFixture()
         {
-            TelemetryLogger.Setup(mock => mock.Record(It.IsAny<Metrics>()))
+            ToolkitContextFixture.TelemetryLogger.Setup(mock => mock.Record(It.IsAny<Metrics>()))
                 .Callback<Metrics>(metrics =>
                 {
                     LoggedMetrics.Add(metrics);
@@ -48,11 +49,12 @@ namespace AWSToolkit.Tests.ECS
                 .Returns(LaunchType.FARGATE.Value);
 
             EcsDeployState.HostingWizard = AwsWizard.Object;
-            EcsDeployState.Region =
-                new RegionEndPointsManager.RegionEndPoints(
-                    "us-east-1", "US East",
-                    new Dictionary<string, RegionEndPointsManager.EndPoint>(),
-                    null);
+            EcsDeployState.Region = new ToolkitRegion()
+            {
+                Id = "us-east-1",
+                DisplayName = "US East",
+                PartitionId = PartitionIds.AWS,
+            };
         }
 
         public void SetupEcsDeployToSucceed()
@@ -73,7 +75,7 @@ namespace AWSToolkit.Tests.ECS
 
         public void AssertTelemetryRecordCalls(int count)
         {
-            TelemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Exactly(count));
+            ToolkitContextFixture.TelemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Exactly(count));
         }
     }
 }

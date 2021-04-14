@@ -70,7 +70,7 @@ namespace Amazon.AWSToolkit.CodeArtifact.Controller
                     });
                     return new ActionResults().WithSuccess(false);
                 }
-                string profileName = selectedAccount.Profile.Name;
+                string profileName = selectedAccount.Identifier.ProfileName;
                 ConfigureCommand(profileName);
                 _telemetryLogger.RecordCodeartifactSetRepoCredentialProfile(new CodeartifactSetRepoCredentialProfile()
                 {

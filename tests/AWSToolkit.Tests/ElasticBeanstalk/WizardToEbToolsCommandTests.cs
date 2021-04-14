@@ -5,6 +5,7 @@ using Xunit;
 using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.ElasticBeanstalk.Commands;
 using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.ElasticBeanstalk.Tools.Commands;
 using Amazon.Common.DotNetCli.Tools;
@@ -21,9 +22,10 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
 
         private readonly Mock<IAWSToolkitShellProvider> _shellProvider = new Mock<IAWSToolkitShellProvider>();
 
-        private readonly RegionEndPointsManager.RegionEndPoints endPoints =
-            new RegionEndPointsManager.RegionEndPoints("us-east-1", "US East",
-                new Dictionary<string, RegionEndPointsManager.EndPoint>(), new string[0]);
+        private readonly ToolkitRegion _sampleRegion = new ToolkitRegion()
+        {
+            PartitionId = PartitionIds.AWS, DisplayName = "US East", Id = "us-east-1",
+        };
 
         private readonly DeploymentControllerObserver _observer;
 
@@ -44,7 +46,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
 
             var cliCommand = new DeployEnvironmentCommand(new TestLogger(), string.Empty, new string[0]);
             var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties, _observer);
-            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, endPoints);
+            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, _sampleRegion);
 
             Assert.Equal(CliConstants.ENVIRONMENT_TYPE_SINGLEINSTANCE,
                 cliCommand.DeployEnvironmentOptions.EnvironmentType);
@@ -87,7 +89,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
 
             var cliCommand = new DeployEnvironmentCommand(new TestLogger(), string.Empty, new string[0]);
             var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties, _observer);
-            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, endPoints,
+            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, _sampleRegion,
                 _fnGetDefaultVpcSubnet);
 
             Assert.True(cliCommand.DeployEnvironmentOptions.EnableXRay);
@@ -118,7 +120,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
 
             var cliCommand = new DeployEnvironmentCommand(new TestLogger(), string.Empty, new string[0]);
             var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties, _observer);
-            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, endPoints,
+            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, _sampleRegion,
                 _fnGetDefaultVpcSubnet);
 
             Assert.True(cliCommand.DeployEnvironmentOptions.EnableXRay);
@@ -146,7 +148,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
 
             var cliCommand = new DeployEnvironmentCommand(new TestLogger(), string.Empty, new string[0]);
             var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties, _observer);
-            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, endPoints,
+            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, _sampleRegion,
                 _fnGetDefaultVpcSubnet);
 
             Assert.False(cliCommand.DeployEnvironmentOptions.EnableXRay);
@@ -174,7 +176,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
 
             var cliCommand = new DeployEnvironmentCommand(new TestLogger(), string.Empty, new string[0]);
             var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties, _observer);
-            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, endPoints);
+            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, _sampleRegion);
 
             Assert.Equal(CliConstants.ENVIRONMENT_TYPE_LOADBALANCED,
                 cliCommand.DeployEnvironmentOptions.EnvironmentType);
@@ -198,7 +200,7 @@ namespace AWSToolkit.Tests.ElasticBeanstalk
 
             var cliCommand = new DeployEnvironmentCommand(new TestLogger(), string.Empty, new string[0]);
             var toolkitCommand = new DeployWithEbToolsCommand(string.Empty, properties, _observer);
-            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, endPoints);
+            toolkitCommand.SetPropertiesForDeployCommand(new BeanstalkDeploy(), cliCommand, _sampleRegion);
 
             Assert.True(cliCommand.DeployEnvironmentOptions.SelfContained);
             Assert.Equal(Amazon.ElasticBeanstalk.Tools.EBConstants.PROXY_SERVER_NONE,

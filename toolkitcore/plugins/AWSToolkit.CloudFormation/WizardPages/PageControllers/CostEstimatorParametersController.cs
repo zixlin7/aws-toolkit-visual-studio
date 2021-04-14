@@ -5,6 +5,9 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Regions;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
@@ -12,6 +15,12 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
     internal class CostEstimatorParametersController : IAWSWizardPageController
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(TemplateParametersController));
+        private readonly ToolkitContext _toolkitContext;
+
+        public CostEstimatorParametersController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         CostEstimatorParameterPage _pageUI;
 
@@ -46,11 +55,12 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
                 if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_TemplateProperties))
                     templateProps = HostingWizard[DeploymentWizardProperties.SeedData.propkey_TemplateProperties] as IDictionary<string, object>;
 
-                _pageUI = new CostEstimatorParameterPage(templateProps);
+                _pageUI = new CostEstimatorParameterPage(templateProps, _toolkitContext);
                 _pageUI.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(_pageUI_PropertyChanged);
+                _pageUI.Connection.PropertyChanged += new System.ComponentModel.PropertyChangedEventHandler(_pageUI_PropertyChanged);
 
                 AccountViewModel account = null;
-                RegionEndPointsManager.RegionEndPoints region = null;
+                ToolkitRegion region = null;
 
                 if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_SeedAccountGuid))
                 {
@@ -63,15 +73,16 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
                 {
                     lastRegionDeployedTo = HostingWizard[DeploymentWizardProperties.SeedData.propkey_LastRegionDeployedTo] as string;
                     if (!string.IsNullOrEmpty(lastRegionDeployedTo))
-                        region = RegionEndPointsManager.GetInstance().GetRegion(lastRegionDeployedTo);
+                        region = _toolkitContext.RegionProvider.GetRegion(lastRegionDeployedTo);
                 }
 
                 if (account == null)
                     account = ToolkitFactory.Instance.Navigator.SelectedAccount;
                 if (region == null)
-                    region = ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints;
+                    region = ToolkitFactory.Instance.Navigator.SelectedRegion;
 
-                this._pageUI.Initialize(account, region);
+                _pageUI.Connection.Account = account;
+                _pageUI.Connection.Region = region;
 
                 var wrapper = HostingWizard[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate] as CloudFormationTemplateWrapper;
 
@@ -116,7 +127,9 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
 
         public bool QueryFinishButtonEnablement()
         {
-            return this._pageUI.AllParametersValid && this._pageUI.SelectedAccount != null && this._pageUI.SelectedRegion != null;
+            return this._pageUI.AllParametersValid &&
+                   this._pageUI.Connection.ConnectionIsValid &&
+                   !this._pageUI.Connection.IsValidating;
         }
 
         public void TestForwardTransitionEnablement()
@@ -132,8 +145,8 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
 
         void StorePageData()
         {
-            HostingWizard[CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedAccount] = this._pageUI.SelectedAccount;
-            HostingWizard[CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedRegion] = this._pageUI.SelectedRegion;
+            HostingWizard[CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedAccount] = this._pageUI.Connection.Account;
+            HostingWizard[CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedRegion] = this._pageUI.Connection.Region;
 
             var setValues = new Dictionary<string, CloudFormationTemplateWrapper.TemplateParameter>();
             var wrapper = HostingWizard[DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate] as CloudFormationTemplateWrapper;

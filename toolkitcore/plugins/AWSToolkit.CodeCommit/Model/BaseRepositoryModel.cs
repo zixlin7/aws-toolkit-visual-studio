@@ -2,8 +2,8 @@
 using System.Linq;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Regions;
 using Amazon.CodeCommit;
-using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.CodeCommit.Model
 {
@@ -11,6 +11,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
     {
         protected readonly object _syncLock = new object();
         protected int _backgroundWorkersActive = 0;
+        private static readonly string CodeCommitServiceName = new AmazonCodeCommitConfig().RegionEndpointServiceName;
 
         public bool QueryWorkersActive
         {
@@ -35,51 +36,69 @@ namespace Amazon.AWSToolkit.CodeCommit.Model
             }
         }
 
-        public IEnumerable<RegionEndPointsManager.RegionEndPoints> AvailableRegions => _availableRegions;
+        public IEnumerable<ToolkitRegion> AvailableRegions => _availableRegions;
 
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion { get; set; }
+        private ToolkitRegion _selectedRegion;
+        public ToolkitRegion SelectedRegion
+        {
+            get => _selectedRegion;
+            set
+            {
+                // Attempt to make the SelectedRegion object an instance from the available regions list,
+                // otherwise, select the first region in the list.
+                if (_selectedRegion != value)
+                {
+                    _selectedRegion = _availableRegions.FirstOrDefault(r => r.Id == value?.Id) ??
+                                      _availableRegions.FirstOrDefault();
+                }
+            }
+        }
 
         protected void LoadValidServiceRegionsForAccount()
         {
             _availableRegions.Clear();
 
-            foreach (RegionEndPointsManager.RegionEndPoints rep in RegionEndPointsManager.GetInstance().Regions)
+            if (this.Account != null)
             {
-                if (this.Account.HasRestrictions || rep.HasRestrictions)
-                {
-                    if (!rep.ContainAnyRestrictions(this.Account.Restrictions))
-                    {
-                        continue;
-                    }
-                }
-
-                if (rep.GetEndpoint(RegionEndPointsManager.CODECOMMIT_SERVICE_NAME) != null)
-                {
-                    _availableRegions.Add(rep);
-                }
+                var regions = ToolkitFactory.Instance.RegionProvider.GetRegions(this.Account.PartitionId);
+                regions
+                    .Where(r => ToolkitFactory.Instance.RegionProvider.IsServiceAvailable(CodeCommitServiceName, r.Id))
+                    .ToList()
+                    .ForEach(r => _availableRegions.Add(r));
             }
 
-            SelectedRegion = _availableRegions.FirstOrDefault();
-        }
-
-        public IAmazonCodeCommit GetClientForRegion(string region)
-        {
-            if (!_codeCommitClients.ContainsKey(region))
+            // If SelectedRegion was referenced a different ToolkitRegion instance, "reselect"
+            // the one from this list
+            if (SelectedRegion != null && !_availableRegions.Contains(SelectedRegion))
             {
-                var client = GetClientForRegion(Account.Credentials, region);
-                _codeCommitClients.Add(region, client);
+                SelectedRegion = _availableRegions.FirstOrDefault(r => r.Id == SelectedRegion.Id);
             }
 
-            return _codeCommitClients[region];
+            if (SelectedRegion == null)
+            {
+                SelectedRegion = _availableRegions.FirstOrDefault();
+            }
         }
 
-        internal static IAmazonCodeCommit GetClientForRegion(AWSCredentials credentials, string region)
+
+        public IAmazonCodeCommit GetClientForRegion(ToolkitRegion region)
         {
-            return new AmazonCodeCommitClient(credentials, RegionEndpoint.GetBySystemName(region));
+            if (!_codeCommitClients.ContainsKey(region.Id))
+            {
+                var client = GetClientForRegion(Account, region);
+                _codeCommitClients.Add(region.Id, client);
+            }
+
+            return _codeCommitClients[region.Id];
+        }
+
+        internal static IAmazonCodeCommit GetClientForRegion(AccountViewModel account, ToolkitRegion region)
+        {
+            return account.CreateServiceClient<AmazonCodeCommitClient>(region);
         }
 
         protected AccountViewModel _account;
-        protected readonly List<RegionEndPointsManager.RegionEndPoints> _availableRegions = new List<RegionEndPointsManager.RegionEndPoints>();
+        protected readonly List<ToolkitRegion> _availableRegions = new List<ToolkitRegion>();
         private readonly Dictionary<string, IAmazonCodeCommit> _codeCommitClients = new Dictionary<string, IAmazonCodeCommit>();
     }
 }

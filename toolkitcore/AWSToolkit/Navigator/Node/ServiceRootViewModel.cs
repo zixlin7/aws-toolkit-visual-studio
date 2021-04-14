@@ -1,37 +1,18 @@
-﻿using Amazon.Runtime;
+﻿using Amazon.AWSToolkit.Regions;
 
 
 namespace Amazon.AWSToolkit.Navigator.Node
 {
     public abstract class ServiceRootViewModel : InstanceDataRootViewModel, IServiceRootViewModel
     {
-        RegionEndPointsManager.RegionEndPoints _region;
-        RegionEndPointsManager.EndPoint _endPoint;
-        string _baseName;
+        private readonly ToolkitRegion _region;
 
-
-        public ServiceRootViewModel(IMetaNode metaNode, IViewModel parent, string name)
+        public ServiceRootViewModel(IMetaNode metaNode, IViewModel parent, string name, ToolkitRegion region)
             : base(metaNode, parent, name)
         {
-            this._baseName = name;
-            this._region = RegionEndPointsManager.GetInstance().GetDefaultRegionEndPoints();
-            this._endPoint = this._region.GetEndpoint(this.MetaNode.EndPointSystemName);
-            BuildClient(this.AccountViewModel.Credentials);
+            this._region = region;
         }
 
-        public RegionEndPointsManager.RegionEndPoints CurrentRegion => this._region;
-
-        public RegionEndPointsManager.EndPoint CurrentEndPoint => this._endPoint;
-
-        protected abstract void BuildClient(AWSCredentials credentials);
-
-        public void UpdateEndPoint(string regionName)
-        {
-            this._region = RegionEndPointsManager.GetInstance().GetRegion(regionName);
-            this._endPoint = this._region.GetEndpoint(this.MetaNode.EndPointSystemName);
-            this.BuildClient(this.AccountViewModel.Credentials);
-            this.Refresh(true);
-        }
-
+        public ToolkitRegion Region => _region;
     }
 }

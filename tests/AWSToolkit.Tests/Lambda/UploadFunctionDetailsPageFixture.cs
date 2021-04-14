@@ -1,6 +1,7 @@
 ﻿using Amazon.AWSToolkit.Lambda.Model;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.AWSToolkit.Tests.Common.IO;
 using Amazon.Lambda;
 using Moq;
@@ -18,6 +19,7 @@ namespace AWSToolkit.Tests.Lambda
 
         public readonly TemporaryTestLocation TestLocation = new TemporaryTestLocation();
         public readonly Mock<IAWSToolkitShellProvider> ShellProvider = new Mock<IAWSToolkitShellProvider>();
+        public readonly ToolkitContextFixture ToolkitContextFixture = new ToolkitContextFixture();
         public readonly UploadFunctionDetailsPage Page;
 
         static UploadFunctionDetailsPageFixture()
@@ -32,7 +34,7 @@ namespace AWSToolkit.Tests.Lambda
 
         public UploadFunctionDetailsPageFixture()
         {
-            Page = new UploadFunctionDetailsPage(ShellProvider.Object);
+            Page = new UploadFunctionDetailsPage(ShellProvider.Object, ToolkitContextFixture.ToolkitContext);
             Page.ViewModel.Frameworks.Add(Frameworks.NetCoreApp21);
             Page.ViewModel.Frameworks.Add(Frameworks.NetCoreApp31);
         }
@@ -49,6 +51,9 @@ namespace AWSToolkit.Tests.Lambda
             viewModel.HandlerAssembly = "myAssembly";
             viewModel.HandlerType = "myNamespace.myClass";
             viewModel.HandlerMethod = "myFunction";
+
+            viewModel.Connection.ConnectionIsValid = true;
+            viewModel.Connection.IsValidating = false;
         }
 
         public void SetValidImageDeployValues()
@@ -64,6 +69,9 @@ namespace AWSToolkit.Tests.Lambda
             viewModel.FunctionName = "some-lambda-function";
             viewModel.ImageRepo = "myrepo";
             viewModel.ImageTag = "latest";
+
+            viewModel.Connection.ConnectionIsValid = true;
+            viewModel.Connection.IsValidating = false;
         }
 
         public void Dispose()

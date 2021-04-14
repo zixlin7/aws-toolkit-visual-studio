@@ -5,6 +5,7 @@ using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
 using Amazon.AWSToolkit.MobileAnalytics;
+using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
 {
@@ -15,10 +16,20 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
     /// </summary>
     public class ConnectController
     {
+        private static readonly ILog Logger = LogManager.GetLogger(typeof(ConnectController));
+
         private ConnectControl _selectionControl;
 
         public ActionResults Execute()
         {
+            if (ToolkitFactory.Instance?.RootViewModel == null)
+            {
+                // The Toolkit (extension) has not been loaded and initialized yet.
+                // Prevent a null access exception
+                Logger.Error("Tried to connect to CodeCommit, but the Toolkit has not been loaded yet.");
+                return new ActionResults().WithSuccess(false);
+            }
+
             var accounts = ToolkitFactory.Instance.RootViewModel.RegisteredAccounts;
             // if the user has only one profile, we can just proceed
             if (accounts.Count == 1)

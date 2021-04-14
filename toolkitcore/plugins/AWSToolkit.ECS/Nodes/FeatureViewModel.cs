@@ -1,5 +1,6 @@
 ﻿using Amazon.AWSToolkit.ECS.Nodes;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
 using Amazon.ECR;
 using Amazon.ECS;
 
@@ -21,24 +22,12 @@ namespace Amazon.AWSToolkit.ECS.Model
 
         public IAmazonECR ECRClient => this._ecrClient;
 
-        public string RegionSystemName
+        public ToolkitRegion Region
         {
             get
             {
                 IEndPointSupport support = this.Parent as IEndPointSupport;
-                return support.CurrentEndPoint.RegionSystemName;
-            }
-        }
-
-        public string RegionDisplayName
-        {
-            get
-            {
-                var region = RegionEndPointsManager.GetInstance().GetRegion(this.RegionSystemName);
-                if (region == null)
-                    return string.Empty;
-
-                return region.DisplayName;
+                return support.Region;
             }
         }
     }

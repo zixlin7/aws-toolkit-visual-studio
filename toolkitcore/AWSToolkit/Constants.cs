@@ -8,8 +8,19 @@ namespace Amazon.AWSToolkit
 {
     public static class Constants
     {
-        public const string SERVICE_ENDPOINT_FILE = @"ServiceEndPoints.xml";
-        public const string ACCOUNTTYPES_INFO_FILE = @"AccountTypes.xml";
+        /// <summary>
+        /// This Guid MUST stay in sync with VsixGuid in buildtools\Package.Build.targets
+        ///
+        /// If this repo needs to produce different Toolkit products in the future, ifdef could be used
+        /// by setting up BuildConstants in buildtools\Common.Build.CSharp.settings
+        ///
+        /// Previous VS Toolkit GUIDs:
+        /// VS 2013: 9510184f-8135-4f8a-ab8a-23be77c345e2
+        /// VS 2015: f2884b07-5122-4e23-acd7-4d93df18709e
+        /// VS 2017 (current Toolkit): 12ed248b-6d4a-47eb-be9e-8eabea0ff119
+        /// </summary>
+        public const string ToolkitPackageGuidStr = "12ed248b-6d4a-47eb-be9e-8eabea0ff119";
+        public static readonly Guid ToolkitPackageGuid = new Guid(ToolkitPackageGuidStr);
 
         public const string AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME = "serverless.template";
 
@@ -28,15 +39,37 @@ namespace Amazon.AWSToolkit
 
         public const string VS_SOLUTION_ITEM_KIND_GUID = "{66A26722-8FB5-11D2-AA7E-00C04F688DDE}";
 
-
-        public static string GetIAMRoleAssumeRolePolicyDocument(string serviceName, RegionEndPointsManager.RegionEndPoints region)
+        public static string GetIAMRoleAssumeRolePolicyDocument(string serviceName, string regionId)
         {
-            const string IAM_ROLE_ASSUME_ROLE_POLICY_DOCUMENT = 
+            const string IAM_ROLE_ASSUME_ROLE_POLICY_DOCUMENT =
                 "{{\"Statement\":[{{\"Principal\":{{\"Service\":[\"{0}\"]}},\"Effect\":\"Allow\",\"Action\":[\"sts:AssumeRole\"]}}]}}";
 
-            var principal = region.GetPrincipalForAssumeRole(serviceName);
+            var principal = GetServicePrincipalForAssumeRole(regionId, serviceName);
             var policy = string.Format(IAM_ROLE_ASSUME_ROLE_POLICY_DOCUMENT, principal);
             return policy;
+        }
+
+        /// <summary>
+        /// Produce the service principal text for a Policy Document for a given service
+        /// </summary>
+        /// <param name="regionId">Used to resolve which partition is being used</param>
+        /// <param name="serviceName">Service to get principal for. See <see cref="ClientConfig.RegionEndpointServiceName"/> or endpoints.json for values.</param>
+        /// <returns></returns>
+        public static string GetServicePrincipalForAssumeRole(string regionId, string serviceName)
+        {
+            var serviceEndpoint = RegionEndpoint.GetBySystemName(regionId).GetEndpointForService(serviceName);
+
+            var domainPos = serviceEndpoint.Hostname.IndexOf("amazonaws");
+            if (domainPos == -1 || serviceName.Equals("elasticbeanstalk", StringComparison.OrdinalIgnoreCase))
+            {
+                return $"{serviceName}.amazonaws.com";
+            }
+
+            var hostUrl = serviceEndpoint.Hostname
+                .Substring(domainPos)
+                .TrimEnd(new char[] {'/'});
+
+            return $"{serviceName}.{hostUrl}";
         }
 
         static string _versionNumber;

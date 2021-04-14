@@ -1,28 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Amazon.IdentityManagement;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.IdentityManagement.Nodes
 {
     public class IAMRootViewModel : ServiceRootViewModel, IIAMRootViewModel
     {
-        IAMRootViewMetaNode _metaNode;
-        AccountViewModel _accountViewModel;
+        private readonly IAMRootViewMetaNode _metaNode;
         
         IAMGroupRootViewModel _iamGroupRootViewModel;
         IAMRoleRootViewModel _iamRoleRootViewModel;
         IAMUserRootViewModel _iamUserRootViewModel;
         
+        private readonly Lazy<IAmazonIdentityManagementService> _iamClient;
 
-        IAmazonIdentityManagementService _iamClient;
-
-        public IAMRootViewModel(AccountViewModel accountViewModel)
-            : base(accountViewModel.MetaNode.FindChild<IAMRootViewMetaNode>(), accountViewModel, "AWS Identity and Access Management")
+        public IAMRootViewModel(AccountViewModel accountViewModel, ToolkitRegion region)
+            : base(accountViewModel.MetaNode.FindChild<IAMRootViewMetaNode>(), accountViewModel, "AWS Identity and Access Management", region)
         {
-            this._metaNode = base.MetaNode as IAMRootViewMetaNode;
-            this._accountViewModel = accountViewModel;            
+            _metaNode = base.MetaNode as IAMRootViewMetaNode;
+            _iamClient = new Lazy<IAmazonIdentityManagementService>(CreateIamClient);
         }
 
         public IAMGroupRootViewModel IAMGroupRootViewModel => this._iamGroupRootViewModel;
@@ -48,14 +48,7 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
 
         protected override string IconName => "Amazon.AWSToolkit.IdentityManagement.Resources.EmbeddedImages.service-root.png";
 
-        protected override void BuildClient(AWSCredentials awsCredentials)
-        {
-            var config = new AmazonIdentityManagementServiceConfig ();
-            this.CurrentEndPoint.ApplyToClientConfig(config);
-            this._iamClient = new AmazonIdentityManagementServiceClient(awsCredentials, config);
-        }
-
-        public IAmazonIdentityManagementService IAMClient => this._iamClient;
+        public IAmazonIdentityManagementService IAMClient => this._iamClient.Value;
 
         protected override void LoadChildren()
         {
@@ -68,6 +61,11 @@ namespace Amazon.AWSToolkit.IdentityManagement.Nodes
             children.Add(this._iamRoleRootViewModel);
             children.Add(this._iamUserRootViewModel);
             SetChildren(children);
+        }
+
+        private IAmazonIdentityManagementService CreateIamClient()
+        {
+            return AccountViewModel.CreateServiceClient<AmazonIdentityManagementServiceClient>(Region);
         }
     }
 }

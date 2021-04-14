@@ -1,5 +1,4 @@
-﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ECS.Util;
 using Amazon.CloudWatchLogs;
@@ -11,6 +10,7 @@ using log4net;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Amazon.AWSToolkit.Context;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
@@ -21,30 +21,19 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         readonly IAmazonECR _ecrClient;
         readonly IAmazonECS _ecsClient;
         readonly IAmazonCloudWatchLogs _cwlClient;
-        readonly ITelemetryLogger _telemetryLogger;
-
-        public DeployTaskWorker(IDockerDeploymentHelper helper,
-            IAmazonECR ecrClient,
-            IAmazonECS ecsClient,
-            IAmazonIdentityManagementService iamClient,
-            IAmazonCloudWatchLogs cwlClient)
-            : this(helper, ecrClient, ecsClient, iamClient, cwlClient, ToolkitFactory.Instance.TelemetryLogger)
-        {
-        }
 
         public DeployTaskWorker(IDockerDeploymentHelper helper,
             IAmazonECR ecrClient,
             IAmazonECS ecsClient,
             IAmazonIdentityManagementService iamClient,
             IAmazonCloudWatchLogs cwlClient,
-            ITelemetryLogger telemetryLogger)
-            : base(helper, iamClient)
+            ToolkitContext toolkitContext)
+            : base(helper, iamClient, toolkitContext)
         {
             this._ecrClient = ecrClient;
             this._ecsClient = ecsClient;
             this._iamClient = iamClient;
             this._cwlClient = cwlClient;
-            this._telemetryLogger = telemetryLogger;
         }
 
         public void Execute(EcsDeployState state)
@@ -83,7 +72,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             }
             finally
             {
-                EmitTaskDeploymentMetric(state.Region.SystemName, deployResult, state.HostingWizard);
+                EmitTaskDeploymentMetric(state.Region.Id, deployResult, state.HostingWizard);
             }
         }
 
@@ -91,7 +80,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         {
             try
             {
-                _telemetryLogger.RecordEcsDeployTask(new EcsDeployTask()
+                ToolkitContext.TelemetryLogger.RecordEcsDeployTask(new EcsDeployTask()
                 {
                     Result = deployResult,
                     EcsLaunchType = EcsTelemetryUtils.GetMetricsEcsLaunchType(awsWizard),
@@ -107,10 +96,13 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
         async Task<bool> IEcsDeploy.Deploy(EcsDeployState state)
         {
+            var credentials =
+                ToolkitContext.CredentialManager.GetAwsCredentials(state.Account.Identifier, state.Region);
             var command = new DeployTaskCommand(new ECSToolLogger(this.Helper), state.WorkingDirectory, new string[0])
             {
-                Profile = state.Account.Name,
-                Region = state.Region.SystemName,
+                Profile = state.Account.Identifier.ProfileName,
+                Credentials = credentials,
+                Region = state.Region.Id,
 
                 DisableInteractive = true,
                 ECRClient = this._ecrClient,

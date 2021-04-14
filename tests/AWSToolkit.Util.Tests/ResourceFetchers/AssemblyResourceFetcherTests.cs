@@ -7,7 +7,7 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
     public class AssemblyResourceFetcherTests : IDisposable
     {
         private readonly ResourceFetchersFixture _fixture = new ResourceFetchersFixture();
-        private readonly string _samplePath = "ServiceEndPoints.xml";
+        private readonly string _samplePath = "endpoints.json";
         private readonly AssemblyResourceFetcher _sut = new AssemblyResourceFetcher();
 
         [Fact]
@@ -18,7 +18,7 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
 
             var text = _fixture.GetStreamContents(stream);
             Assert.NotEmpty(text);
-            Assert.Contains("<displayname>Africa (Cape Town)</displayname>", text);
+            Assert.Contains("\"description\" : \"Africa (Cape Town)\"", text);
         }
 
         [Fact]

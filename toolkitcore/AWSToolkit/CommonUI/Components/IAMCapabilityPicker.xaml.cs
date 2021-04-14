@@ -12,6 +12,8 @@ using Amazon.IdentityManagement.Model;
 
 using log4net;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Regions;
+using Amazon.Lambda;
 
 namespace Amazon.AWSToolkit.CommonUI.Components
 {
@@ -23,12 +25,13 @@ namespace Amazon.AWSToolkit.CommonUI.Components
         public const string CLOUDWATCH_TEMPLATE = "CloudWatch Full Access";
 
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(IAMCapabilityPicker));
+        private static readonly string LambdaServiceName = new AmazonLambdaConfig().RegionEndpointServiceName;
 
 
         public enum IAMMode { InstanceProfiles, Roles };
 
         IAmazonIdentityManagementService _iamClient;
-        RegionEndPointsManager.RegionEndPoints _region;
+        ToolkitRegion _region;
         TextBlock _ctlComboSelectedDisplay;
         HashSet<PolicyTemplate> _selectedPolicyTemplates = new HashSet<PolicyTemplate>();
         string[] _serviceSpecificProfiles;
@@ -58,12 +61,11 @@ namespace Amazon.AWSToolkit.CommonUI.Components
             set;
         }
 
-        public void Initialize(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region, IAMMode iamMode, params string[] serviceSpecificProfiles)
+        public void Initialize(AccountViewModel account, ToolkitRegion region, IAMMode iamMode, params string[] serviceSpecificProfiles)
         {
             this._iamMode = iamMode;
             this._region = region;
-            var iamRegionEndpoint = region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
-            this._iamClient = account.CreateServiceClient<AmazonIdentityManagementServiceClient>(iamRegionEndpoint);
+            this._iamClient = account.CreateServiceClient<AmazonIdentityManagementServiceClient>(region);
 
             this._serviceSpecificProfiles = serviceSpecificProfiles;
 
@@ -93,7 +95,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
                     if (task.Exception == null)
                     {
                         IList<IAMEntity> entities = new List<IAMEntity>();
-                        var lambdaPrincipal = _region.GetPrincipalForAssumeRole(RegionEndPointsManager.LAMBDA_SERVICE_NAME);
+                        var lambdaPrincipal = Constants.GetServicePrincipalForAssumeRole(_region.Id, LambdaServiceName);
                         foreach (var role in task.Result.Roles)
                         {
                             if (this.RoleFilter == null || this.RoleFilter(role, lambdaPrincipal))

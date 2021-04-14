@@ -4,6 +4,7 @@ using System.IO;
 using Amazon.AWSToolkit.Navigator;
 using log4net;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.ECS.WizardPages.PageControllers;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
 using Amazon.ECS.Tools;
@@ -15,8 +16,14 @@ namespace Amazon.AWSToolkit.ECS.Controller
     public class PublishContainerToAWSController
     {
         ILog LOGGER = LogManager.GetLogger(typeof(PublishContainerToAWSController));
+        private readonly ToolkitContext _toolkitContext;
 
         ActionResults _results;
+
+        public PublishContainerToAWSController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         public ActionResults Execute(Dictionary<string, object> seedValues)
         {
@@ -189,12 +196,12 @@ namespace Amazon.AWSToolkit.ECS.Controller
             }
 
             var navigator = ToolkitFactory.Instance.Navigator;
-            seedProperties[PublishContainerToAWSWizardProperties.UserAccount] = navigator.SelectedAccount;
-            seedProperties[PublishContainerToAWSWizardProperties.Region] = navigator.SelectedRegionEndPoints;
             LoadPreviousSettings(seedProperties);
 
             IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.ECS.PublishContainerToAWS", seedProperties);
             wizard.Title = "Publish Container to AWS";
+            wizard.SetSelectedAccount(navigator.SelectedAccount, PublishContainerToAWSWizardProperties.UserAccount);
+            wizard.SetSelectedRegion(navigator.SelectedRegion, PublishContainerToAWSWizardProperties.Region);
 
             IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
             {
@@ -205,7 +212,7 @@ namespace Amazon.AWSToolkit.ECS.Controller
                 new ECSServicePageController(),
                 new ConfigureLoadBalancerPageController(),
                 new ECSTaskDefinitionPageController(),
-                new PublishProgressPageController()
+                new PublishProgressPageController(_toolkitContext)
             };
 
             wizard.RegisterPageControllers(defaultPages, 0);

@@ -3,7 +3,7 @@ using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
 using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
-
+using Amazon.ECS;
 using Amazon.ECS.Model;
 
 using static Amazon.AWSToolkit.ECS.WizardPages.ECSWizardUtils;
@@ -224,7 +224,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 
         private Cluster FetchExistingCluster(string cluster)
         {
-            using (var client = CreateECSClient(this.HostingWizard))
+            using (var client = CreateServiceClient<AmazonECSClient>(this.HostingWizard))
             {
                 var response = client.DescribeClusters(new DescribeClustersRequest
                 {

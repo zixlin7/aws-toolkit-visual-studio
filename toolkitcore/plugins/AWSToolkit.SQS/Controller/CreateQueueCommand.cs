@@ -36,7 +36,7 @@ namespace Amazon.AWSToolkit.SQS.Controller
 
                     if (control.Model.UseRedrivePolicy)
                     {
-                        var queueArn = queueModel.SQSClient.GetQueueARN(queueModel.CurrentEndPoint.RegionSystemName, control.Model.DeadLetterQueueUrl);
+                        var queueArn = queueModel.SQSClient.GetQueueARN(queueModel.Region.Id, control.Model.DeadLetterQueueUrl);
                         var redrivePolicy = string.Format("{{\"maxReceiveCount\":\"{0}\", \"deadLetterTargetArn\":\"{1}\"}}",
                                                          control.Model.MaxReceives,
                                                          queueArn);

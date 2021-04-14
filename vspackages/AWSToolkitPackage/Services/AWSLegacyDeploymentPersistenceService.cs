@@ -66,7 +66,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             var cftpi = _hostPackage.GetPersistedInfoForService(projectGuid, DeploymentServiceIdentifiers.CloudFormationServiceName, DeploymentTypeIdentifiers.CFNTemplateDeployment)
                             as CloudFormationTemplatePersistenceInfo;
             cftpi.AccountUniqueID = persistableData.Account.SettingsUniqueKey;
-            cftpi.LastRegionDeployedTo = persistableData.Region.SystemName;
+            cftpi.LastRegionDeployedTo = persistableData.Region.Id;
 
             var persistenceKey = CalcPersistenceKeyForProjectItem(prjItem);
             var tdh = new TemplateDeploymentHistory(persistenceKey, persistableData.StackName, persistableData.TemplateProperties);

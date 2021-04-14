@@ -7,36 +7,29 @@ using Amazon.SQS.Model;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.SQS.Nodes
 {
     public class SQSRootViewModel : ServiceRootViewModel, ISQSRootViewModel
     {
-        SQSRootViewMetaNode _metaNode;
-        AccountViewModel _accountViewModel;
-        IAmazonSQS _sqsClient;
-        Dictionary<string, DateTime> _removedChildren = new Dictionary<string, DateTime>();
+        private readonly SQSRootViewMetaNode _metaNode;
+        private readonly Lazy<IAmazonSQS> _sqsClient;
+        private readonly Dictionary<string, DateTime> _removedChildren = new Dictionary<string, DateTime>();
 
-        public SQSRootViewModel(AccountViewModel accountViewModel)
-            : base(accountViewModel.MetaNode.FindChild<SQSRootViewMetaNode>(), accountViewModel, "Amazon SQS")
+        public SQSRootViewModel(AccountViewModel accountViewModel, ToolkitRegion region)
+            : base(accountViewModel.MetaNode.FindChild<SQSRootViewMetaNode>(), accountViewModel, "Amazon SQS", region)
         {
-            this._metaNode = base.MetaNode as SQSRootViewMetaNode;
-            this._accountViewModel = accountViewModel;
+            _metaNode = base.MetaNode as SQSRootViewMetaNode;
+            _sqsClient = new Lazy<IAmazonSQS>(CreateSqsClient);
         }
 
         public override string ToolTip => "Amazon Simple Queue Service (Amazon SQS) offers a reliable, highly scalable, hosted queue for storing messages as they travel between computers. By using Amazon SQS, developers can simply move data between distributed components of their applications that perform different tasks, without losing messages or requiring each component to be always available.";
 
         protected override string IconName => "Amazon.AWSToolkit.SQS.Resources.EmbeddedImages.service-root-icon.png";
 
-        protected override void BuildClient(AWSCredentials awsCredentials)
-        {
-            var config = new AmazonSQSConfig();
-            this.CurrentEndPoint.ApplyToClientConfig(config);
-            this._sqsClient = new AmazonSQSClient(awsCredentials, config);
-        }
-
-        public IAmazonSQS SQSClient => this._sqsClient;
+        public IAmazonSQS SQSClient => this._sqsClient.Value;
 
         protected override void LoadChildren()
         {
@@ -81,7 +74,12 @@ namespace Amazon.AWSToolkit.SQS.Nodes
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {
             dndDataObjects.SetData("ARN", string.Format("arn:aws:sqs:{0}:{1}:*",
-                this.CurrentEndPoint.RegionSystemName, this.AccountViewModel.AccountNumber));
+                this.Region.Id, ToolkitFactory.Instance.AwsConnectionManager.ActiveAccountId));
+        }
+
+        private IAmazonSQS CreateSqsClient()
+        {
+            return AccountViewModel.CreateServiceClient<AmazonSQSClient>(Region);
         }
     }
 }

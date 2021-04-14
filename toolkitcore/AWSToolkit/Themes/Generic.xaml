@@ -1,9 +1,10 @@
-<ResourceDictionary
+﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI">
 
     <commonui:CommonIcons x:Key="CommonIcons" />
+    <commonui:VsImages x:Key="VsImages" />
 
     <ResourceDictionary.MergedDictionaries>
         <!--

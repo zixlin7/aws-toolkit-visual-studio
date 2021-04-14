@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using Amazon.CloudWatchEvents;
-using Amazon.EC2;
-using Amazon.ECS;
-using Amazon.ElasticLoadBalancingV2;
 using Amazon.IdentityManagement;
 
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Regions;
 using Amazon.IdentityManagement.Model;
-
+using Amazon.Runtime;
 using log4net;
 using ThirdParty.Json.LitJson;
 
@@ -23,55 +20,32 @@ namespace Amazon.AWSToolkit.ECS.WizardPages
         public const string DEFAULT_ECS_TASK_EXECUTION_ROLE = "ecsTaskExecutionRole";
         public const string PERSISTED_DEPLOYMENT_MODE = "vstoolkit-deployment-mode";
 
-
-        public static IAmazonECS CreateECSClient(IAWSWizard hostWizard)
+        /// <summary>
+        /// Creates a service client based on the host wizard's account and region properties.
+        /// </summary>
+        /// <typeparam name="T">Type of client to create</typeparam>
+        /// <param name="hostWizard">host wizard - expected to contain account and region data</param>
+        public static T CreateServiceClient<T>(IAWSWizard hostWizard) where T : class, IAmazonService
         {
-            var account = hostWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
-            var region = hostWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+            var account = hostWizard.GetSelectedAccount(PublishContainerToAWSWizardProperties.UserAccount);
+            var region = hostWizard.GetSelectedRegion(PublishContainerToAWSWizardProperties.Region);
 
-            var client = account.CreateServiceClient<AmazonECSClient>(region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP));
-            return client;
-        }
+            if (account == null)
+            {
+                throw new Exception("Wizard did not have account defined");
+            }
 
-        public static IAmazonElasticLoadBalancingV2 CreateELBv2Client(IAWSWizard hostWizard)
-        {
-            var account = hostWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
-            var region = hostWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+            if (region == null)
+            {
+                throw new Exception("Wizard did not have region defined");
+            }
 
-            var client = account.CreateServiceClient<AmazonElasticLoadBalancingV2Client>(region.GetEndpoint(RegionEndPointsManager.ELB_SERVICE_NAME));
-            return client;
-        }
-
-        public static IAmazonIdentityManagementService CreateIAMClient(IAWSWizard hostWizard)
-        {
-            var account = hostWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
-            var region = hostWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
-
-            var client = account.CreateServiceClient<AmazonIdentityManagementServiceClient>(region.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME));
-            return client;
-        }
-
-        public static IAmazonEC2 CreateEC2Client(IAWSWizard hostWizard)
-        {
-            var account = hostWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
-            var region = hostWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
-
-            var client = account.CreateServiceClient<AmazonEC2Client>(region.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME));
-            return client;
-        }
-
-        public static IAmazonCloudWatchEvents CreateCloudWatchEventsClient(IAWSWizard hostWizard)
-        {
-            var account = hostWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
-            var region = hostWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
-
-            var client = account.CreateServiceClient<AmazonCloudWatchEventsClient>(region.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_EVENT_SERVICE_NAME));
-            return client;
+            return account.CreateServiceClient<T>(region);
         }
 
         public static List<Role> LoadECSRoles(IAWSWizard hostWizard)
         {
-            using (var client = CreateIAMClient(hostWizard))
+            using (var client = CreateServiceClient<AmazonIdentityManagementServiceClient>(hostWizard))
             {
                 var roles = new List<Role>();
                 var response = new ListRolesResponse();

@@ -52,8 +52,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             if (this._stackModel == null)
                 return new ActionResults().WithSuccess(false);
 
-            String region = this._stackModel.CloudFormationRootViewModel.CurrentEndPoint.RegionSystemName;
-            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.GetInstance().GetRegion(region);
+            var region = this._stackModel.CloudFormationRootViewModel.Region;
 
             this._cloudFormationClient = this._stackModel.CloudFormationClient;
 
@@ -63,28 +62,14 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                 this._ec2InstanceViewModel = ec2Model.FindSingleChild<IEC2InstancesViewModel>(false);
             }
 
-            var elbConfig = new AmazonElasticLoadBalancingConfig ();
-            endPoints.GetEndpoint(RegionEndPointsManager.ELB_SERVICE_NAME).ApplyToClientConfig(elbConfig);
-            this._elbClient = new AmazonElasticLoadBalancingClient(this._stackModel.AccountViewModel.Credentials, elbConfig);
+            var account = this._stackModel.AccountViewModel;
+            this._elbClient = account.CreateServiceClient<AmazonElasticLoadBalancingClient>(region);
+            this._asClient = account.CreateServiceClient<AmazonAutoScalingClient>(region);
+            this._ec2Client = account.CreateServiceClient<AmazonEC2Client>(region);
+            this._cwClient = account.CreateServiceClient<AmazonCloudWatchClient>(region);
+            this._rdsClient = account.CreateServiceClient<AmazonRDSClient>(region);
 
-            var asConfig = new AmazonAutoScalingConfig ();
-            endPoints.GetEndpoint(RegionEndPointsManager.AUTOSCALING_SERVICE_NAME).ApplyToClientConfig(asConfig);
-            this._asClient = new AmazonAutoScalingClient(this._stackModel.AccountViewModel.Credentials, asConfig);
-
-            var ec2Config = new AmazonEC2Config ();
-            endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).ApplyToClientConfig(ec2Config);
-            this._ec2Client = new AmazonEC2Client(this._stackModel.AccountViewModel.Credentials, ec2Config);
-
-
-            var cwConfig = new AmazonCloudWatchConfig ();
-            endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_SERVICE_NAME).ApplyToClientConfig(cwConfig);
-            this._cwClient = new AmazonCloudWatchClient(this._stackModel.AccountViewModel.Credentials, cwConfig);
-
-            var rdsConfig = new AmazonRDSConfig ();
-            endPoints.GetEndpoint(RegionEndPointsManager.RDS_SERVICE_NAME).ApplyToClientConfig(rdsConfig);
-            this._rdsClient = new AmazonRDSClient(this._stackModel.AccountViewModel.Credentials, rdsConfig);
-
-            this._model = new ViewStackModel(region, this._stackModel.StackName);
+            this._model = new ViewStackModel(region.Id, this._stackModel.StackName);
             var control = new ViewStackControl(this);
 
             ToolkitFactory.Instance.ShellProvider.OpenInEditor(control);

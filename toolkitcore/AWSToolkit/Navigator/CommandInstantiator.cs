@@ -1,27 +1,13 @@
-﻿using System;
-using Amazon.AWSToolkit.Navigator.Node;
-
-namespace Amazon.AWSToolkit.Navigator
+﻿namespace Amazon.AWSToolkit.Navigator
 {
-    public class CommandInstantiator<T> where T : IContextCommand, new()
+    /// <summary>
+    /// Executes <see cref="IContextCommand"/> commands that can be created
+    /// using an empty constructor on the UI Thread.
+    /// </summary>
+    public class CommandInstantiator<T> : ContextCommandExecutor where T : IContextCommand, new()
     {
-        public ActionResults Execute(IViewModel viewModel)
+        public CommandInstantiator() : base(() => new T())
         {
-            try
-            {
-                ActionResults results = null;
-                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
-                    {
-                        T command = new T();
-                        results = command.Execute(viewModel);
-                    }));
-                return results;
-            }
-            catch (Exception e)
-            {
-                ToolkitFactory.Instance.ShellProvider.ShowError("Unknown Error: " + e.Message);
-                return new ActionResults().WithSuccess(false);
-            }
         }
     }
 }

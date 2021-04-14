@@ -1,8 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
+
+using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Regions.Manifest;
 using Amazon.AWSToolkit.Util;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.Account.Model
@@ -10,9 +16,28 @@ namespace Amazon.AWSToolkit.Account.Model
     public class RegisterAccountModel : INotifyPropertyChanged
     {
         private static ILog LOGGER = LogManager.GetLogger(typeof(RegisterAccountModel));
+        private readonly IRegionProvider _regionProvider;
+        private ToolkitRegion _region;
+        private Partition _partition;
+        private IList<Partition> _partitions = new List<Partition>();
+        private ObservableCollection<ToolkitRegion> _regions = new ObservableCollection<ToolkitRegion>();
+        private bool _isPartitionEnabled = false;
+
+        public RegisterAccountModel(IRegionProvider regionProvider)
+        {
+            this._regionProvider = regionProvider;
+            this._partitions = this._regionProvider?.GetPartitions();
+        }
 
         public RegisterAccountModel()
-        {            
+        {
+        }
+
+        public RegisterAccountModel(string credentialId, string displayName, string accessKey, string secretKey)
+        {
+            this.CredentialId = credentialId;
+            this.DisplayName = displayName;
+            this.AccessKey = accessKey;
         }
 
         public RegisterAccountModel(Guid uniqueKey, string displayName, string accessKey, string secretKey)
@@ -23,64 +48,184 @@ namespace Amazon.AWSToolkit.Account.Model
         }
 
         public Guid UniqueKey { get; set; }
+        public string CredentialId { get; set; }
+
+        /// <summary>
+        /// Display name of the account as shown in the Aws Explorer eg. "Profile:sample"
+        /// </summary>
         public string DisplayName { get; set; }
 
+        /// <summary>
+        /// User entered profile name for the account eg. "sample"
+        /// </summary>
+        private string _profileName;
+
+        public string ProfileName
+        {
+            get => _profileName;
+            set
+            {
+                _profileName = value;
+                OnPropertyChanged();
+            }
+        }
+
         private string _accessKey;
+
         public string AccessKey
         {
             get => _accessKey;
-            set { _accessKey = value; OnPropertyChanged(); }
+            set
+            {
+                _accessKey = value;
+                OnPropertyChanged();
+            }
         }
 
         private string _secretKey;
+
         public string SecretKey
         {
             get => _secretKey;
-            set { _secretKey = value; OnPropertyChanged(); }
+            set
+            {
+                _secretKey = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Currently selected Region
+        /// </summary>
+        public ToolkitRegion Region
+        {
+            get => _region;
+            set
+            {
+                _region = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        /// <summary>
+        /// Currently selected Partition
+        /// </summary>
+        public Partition Partition
+        {
+            get => _partition;
+            set
+            {
+                _partition = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Enables visibility of partition field
+        /// </summary>
+        public bool IsPartitionEnabled
+        {
+            get => _isPartitionEnabled;
+            set
+            {
+                _isPartitionEnabled = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Regions that can be selected in the Register/Edit dialog
+        /// </summary>
+        public ObservableCollection<ToolkitRegion> Regions
+        {
+            get => _regions;
+            set
+            {
+                _regions = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Partitions that can be selected in the Register/Edit dialog
+        /// </summary>
+        public ObservableCollection<Partition> Partitions
+        {
+            get
+            {
+                if (_partitions != null)
+                {
+                    return new ObservableCollection<Partition>(_partitions);
+                }
+
+                return new ObservableCollection<Partition>();
+            }
+        }
+
+        public void InitializeDefaultPartition()
+        {
+            Partition = Partitions.FirstOrDefault(x => string.Equals(x.Id, PartitionIds.AWS)) ?? Partitions.FirstOrDefault();
+        }
+
+        public ToolkitRegion GetRegion(string regionId)
+        {
+            if (string.IsNullOrWhiteSpace(regionId))
+            {
+                return null;
+            }
+
+            return Regions.FirstOrDefault(r => r.Id == regionId);
+        }
+
+        /// <summary>
+        /// Updates the <see cref="Regions"/> list with regions contained by the given partitionId.
+        /// Side effect: Databinding generally sets <see cref="Region"/> to null as a result.
+        /// </summary>
+        public void ShowRegionsForPartition(string partitionId)
+        {
+            var regions = _regionProvider.GetRegions(partitionId);
+
+            Regions = new ObservableCollection<ToolkitRegion>(regions.Where(r=> !_regionProvider.IsRegionLocal(r.Id)).OrderBy(r => r.DisplayName));
         }
 
         public override string ToString()
         {
-            return string.Format("DisplayName: {0}, AccessKey: {1}, SecretKey {2}", this.DisplayName, this.AccessKey, this.SecretKey);
+            return string.Format("DisplayName: {0}, AccessKey: {1}, SecretKey {2}", this.ProfileName, this.AccessKey,
+                this.SecretKey);
         }
 
         public void Validate()
         {
-            if (string.IsNullOrEmpty(this.DisplayName))
+            if (string.IsNullOrEmpty(this.ProfileName))
             {
                 throw new ApplicationException("Display Name can not be empty");
             }
+
             if (string.IsNullOrEmpty(this.AccessKey))
             {
                 throw new ApplicationException("Access Key can not be empty");
             }
+
             if (string.IsNullOrEmpty(this.SecretKey))
             {
                 throw new ApplicationException("Secret Key can not be empty");
             }
         }
 
-        AccountTypes.AccountType selectedAccountType;
-        public AccountTypes.AccountType SelectedAccountType
-        {
-            get
-            {
-                if (selectedAccountType == null)
-                    selectedAccountType = AllAccountTypes[0];
-                return selectedAccountType;
-            }
-            set => selectedAccountType = value;
-        }
-
-        public IList<AccountTypes.AccountType> AllAccountTypes => AccountTypes.AllAccountTypes;
-
+        private System.Windows.Visibility _storageLocationVisibility;
         public System.Windows.Visibility StorageLocationVisibility
         {
-            get;
-            set;
+            get => _storageLocationVisibility;
+            set
+            {
+                _storageLocationVisibility = value;
+                OnPropertyChanged();
+            }
         }
 
         StorageTypes.StorageType selectedStorageType;
+
         public StorageTypes.StorageType SelectedStorageType
         {
             get
@@ -120,7 +265,7 @@ namespace Amazon.AWSToolkit.Account.Model
             try
             {
                 var csvData = new HeaderedCsvFile(csvFilename);
-                var rowData = csvData.ReadHeaderedData(new[] { accessKeyIdColumnHeader , secretAccessKeyColumnHeader }, 0);
+                var rowData = csvData.ReadHeaderedData(new[] {accessKeyIdColumnHeader, secretAccessKeyColumnHeader}, 0);
 
                 accessKey = rowData[accessKeyIdColumnHeader];
                 secretKey = rowData[secretAccessKeyColumnHeader];

@@ -287,8 +287,8 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageControllers
             }
 
             new QueryInstanceProfilesWorker(
-                HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel,
-                HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints,
+                HostingWizard.GetSelectedAccount(),
+                HostingWizard.GetSelectedRegion(),
                 HostingWizard.Logger,
                 new QueryInstanceProfilesWorker.DataAvailableCallback(OnIamProfilesAvailable));
         }

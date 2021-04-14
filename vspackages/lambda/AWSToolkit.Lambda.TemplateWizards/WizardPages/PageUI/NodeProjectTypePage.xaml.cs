@@ -1,16 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.PluginServices.Deployment;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.CommonUI.Components;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.SimpleWorkers;
 
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 using Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageControllers;
+using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Util;
 using log4net;
 
 namespace Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageUI
@@ -21,36 +24,50 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageUI
     public partial class NodeProjectTypePage : INotifyPropertyChanged
     {
         ILog LOGGER = LogManager.GetLogger(typeof(NodeProjectTypePage));
+        public static readonly string LambdaServiceName = new AmazonLambdaConfig().RegionEndpointServiceName;
+        private const int AccountRegionChangedDebounceMs = 250;
 
-        public NodeProjectTypePage()
+        private readonly DebounceDispatcher _accountRegionChangeDebounceDispatcher = new DebounceDispatcher();
+
+        public NodeProjectTypePage(ToolkitContext toolkitContext)
         {
+            Connection = new AccountAndRegionPickerViewModel(toolkitContext);
+            Connection.SetServiceFilter(new List<string>() {LambdaServiceName});
+
             InitializeComponent();
 
             DataContext = this;
+            Loaded += OnLoaded;
         }
 
-        public NodeProjectTypePage(IAWSWizardPageController controller)
-            : this()
+        public AccountAndRegionPickerViewModel Connection { get; }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            this.PageController = controller;
-        }
+            Loaded -= OnLoaded;
+            Unloaded += OnUnloaded;
 
-        public IAWSWizardPageController PageController { get; set; }
+            _ctlExistingFunctions.SelectionChanged += _ctlExistingStacks_SelectionChanged;
+            _ctlSampleFunction.SelectionChanged += _ctlSampleTemplate_SelectionChanged;
 
-        public void Initialize(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
-        {
-            this._ctlAccountAndRegionPicker.Initialize(account, region, new[] { DeploymentServiceIdentifiers.LambdaServiceName });
-            this._ctlAccountAndRegionPicker.PropertyChanged += new PropertyChangedEventHandler(_ctlAccountAndRegionPicker_PropertyChanged);
-
-            this._ctlExistingFunctions.SelectionChanged += new SelectionChangedEventHandler(_ctlExistingStacks_SelectionChanged);
-            this._ctlSampleFunction.SelectionChanged += new SelectionChangedEventHandler(_ctlSampleTemplate_SelectionChanged);
-
-            this._ctlCreateEmptyProject.Click += new RoutedEventHandler(createMode_Click);
-            this._ctlCreateFromFunction.Click += new RoutedEventHandler(createMode_Click);
-            this._ctlCreateFromSample.Click += new RoutedEventHandler(createMode_Click);
+            _ctlCreateEmptyProject.Click += createMode_Click;
+            _ctlCreateFromFunction.Click += createMode_Click;
+            _ctlCreateFromSample.Click += createMode_Click;
 
             UpdateExistingFunctions();
             UpdateSampleFunctions();
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            Unloaded -= OnUnloaded;
+
+            _ctlExistingFunctions.SelectionChanged -= _ctlExistingStacks_SelectionChanged;
+            _ctlSampleFunction.SelectionChanged -= _ctlSampleTemplate_SelectionChanged;
+
+            _ctlCreateEmptyProject.Click -= createMode_Click;
+            _ctlCreateFromFunction.Click -= createMode_Click;
+            _ctlCreateFromSample.Click -= createMode_Click;
         }
 
         void createMode_Click(object sender, RoutedEventArgs e)
@@ -81,26 +98,38 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageUI
             }
         }
 
-        public AccountViewModel SelectedAccount => this._ctlAccountAndRegionPicker.SelectedAccount;
+        public AccountViewModel SelectedAccount => Connection.Account;
 
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion => this._ctlAccountAndRegionPicker.SelectedRegion;
+        public ToolkitRegion SelectedRegion => Connection.Region;
 
         public string SelectedExistingFunctionName => this._ctlExistingFunctions.SelectedValue as string;
 
         public QueryLambdaFunctionSamplesWorker.SampleSummary SelectedSampleFunction => this._ctlSampleFunction.SelectedValue as QueryLambdaFunctionSamplesWorker.SampleSummary;
 
-        void _ctlAccountAndRegionPicker_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        void ConnectionChanged(object sender, EventArgs e)
         {
-            UpdateExistingFunctions();
+            if (!Connection.ConnectionIsValid)
+            {
+                return;
+            }
 
-            NotifyPropertyChanged(e.PropertyName);
+            // Prevent multiple loads caused by property changed events in rapid succession
+            _accountRegionChangeDebounceDispatcher.Debounce(AccountRegionChangedDebounceMs, _ =>
+            {
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
+                {
+                    UpdateExistingFunctions();
+
+                    NotifyPropertyChanged(nameof(Connection));
+                });
+            });
         }
 
         private void UpdateExistingFunctions()
         {
-            if (this._ctlAccountAndRegionPicker.SelectedAccount != null)
+            if (Connection.ConnectionIsValid)
             {
-                var client = this._ctlAccountAndRegionPicker.SelectedAccount.CreateServiceClient<AmazonLambdaClient>(this._ctlAccountAndRegionPicker.SelectedRegion);
+                var client = Connection.Account.CreateServiceClient<AmazonLambdaClient>(Connection.Region);
                 if (client != null)
                 {
                     new QueryLambdaFunctionsWorker(client, LOGGER, this.UpdateExistingFunctionsCallback);

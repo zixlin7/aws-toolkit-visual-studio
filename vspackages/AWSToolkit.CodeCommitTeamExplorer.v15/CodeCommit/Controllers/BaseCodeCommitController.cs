@@ -6,6 +6,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
+using Amazon.AWSToolkit.Regions;
 using log4net;
 
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
@@ -19,7 +20,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
 
         protected IAWSCodeCommit CodeCommitPlugin { get; set; }
         protected AccountViewModel Account { get; set; }
-        protected RegionEndPointsManager.RegionEndPoints Region { get; set; }
+        protected ToolkitRegion Region { get; set; }
 
         protected ILog Logger { get; set; }
 
@@ -31,7 +32,15 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
             // AWS credentials so by now we have access to the account bound to Team Explorer 
             // as well as a default region from the navigator.
             Account = TeamExplorerConnection.ActiveConnection.Account;
-            Region = ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints;
+            Region = ToolkitFactory.Instance.Navigator.SelectedRegion;
+
+            if (Account.PartitionId != Region.PartitionId && Account.Region != null)
+            {
+                // User is using an account for a different Partition in TeamExplorer than what is
+                // selected in the AWS Explorer. Try to initialize to the account's default region
+                // so that Clone/Create dialogs try to select a partition-relevant region.
+                Region = Account.Region;
+            }
         }
 
         /// <summary>

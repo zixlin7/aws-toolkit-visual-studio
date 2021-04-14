@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Telemetry;
 using Amazon.AWSToolkit.Telemetry.Model;
@@ -30,17 +28,15 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
         private bool _disposed = false;
 
         private TelemetryService _telemetryService;
-        private AccountManager _accountManager;
         private ToolkitSettingsWatcher _settingsWatcher;
 
         public ITelemetryLogger TelemetryLogger => _telemetryService;
 
-        public TelemetryManager(AccountManager accountManager, ProductEnvironment productEnvironment)
+        public TelemetryManager(ProductEnvironment productEnvironment)
         {
             _telemetryService = new TelemetryService(productEnvironment);
 
             SetupServiceEnabledState();
-            SetupServiceAccountId(accountManager);
         }
 
         /// <summary>
@@ -65,6 +61,11 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
             }
         }
 
+        public void SetAccountId(string accountId)
+        {
+            _telemetryService.SetAccountId(accountId);
+        }
+
         public void Dispose()
         {
             try
@@ -80,12 +81,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
 
                     _settingsWatcher.Dispose();
                     _settingsWatcher = null;
-                }
-
-                if (_accountManager != null)
-                {
-                    _accountManager.CurrentAccountIdChanged -= AccountIdChangedHandler;
-                    _accountManager = null;
                 }
 
                 if (_telemetryService != null)
@@ -120,35 +115,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
         private void SettingsChangedHandler(object sender, EventArgs e)
         {
             UpdateServiceEnabledState();
-        }
-
-        /// <summary>
-        /// Updates the service accountId whenever the toolkit's current account id changes.
-        /// Initializes the service with the current account id.
-        /// </summary>
-        private void SetupServiceAccountId(AccountManager accountManager)
-        {
-            _accountManager = accountManager;
-            _accountManager.CurrentAccountIdChanged += AccountIdChangedHandler;
-
-            // Initialize the current AccountId
-            _telemetryService.SetAccountId(_accountManager.CurrentAccountId);
-        }
-
-        private void AccountIdChangedHandler(object sender, EventArgs e)
-        {
-            try
-            {
-                var manager = sender as AccountManager;
-
-                Debug.Assert(manager != null, "AccountManager CurrentAccountIdChanged didn't send itself");
-
-                _telemetryService.SetAccountId(manager.CurrentAccountId);
-            }
-            catch (Exception ex)
-            {
-                LOGGER.Error(ex);
-            }
         }
 
         /// <summary>

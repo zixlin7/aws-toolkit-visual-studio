@@ -9,7 +9,9 @@ using log4net;
 namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls
 {
     /// <summary>
-    /// Interaction logic for ConnectionSectionControl.xaml
+    /// This is the panel that shows in Team Explorer when users connect
+    /// to CodeCommit with credentials. It offers users a way to clone/create
+    /// CodeCommit repos, and shows repos that have been previously retrieved locally.
     /// </summary>
     public partial class ConnectionSectionControl
     {
@@ -18,10 +20,26 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls
         public ConnectionSectionControl()
         {
             InitializeComponent();
-            ThemeUtil.UpdateDictionariesForTheme(this.Resources);
+            Loaded += OnLoaded;
         }
 
         public ConnectSectionViewModel ViewModel => DataContext as ConnectSectionViewModel;
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            Loaded -= OnLoaded;
+
+            // If the Toolkit Package has not loaded up yet, we won't have access to
+            // the UI Styles. Load those in when the toolkit is available.
+            ToolkitFactory.AddToolkitInitializedDelegate(() =>
+            {
+                Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
+                {
+                    await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    ThemeUtil.UpdateDictionariesForTheme(this.Resources);
+                });
+            });
+        }
 
         private void OnRepositoryMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -91,8 +109,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controls
 
             try
             {
-                var regionName = TeamExplorerConnection.CodeCommitPlugin.GetRepositoryRegion(ViewModel.SelectedRepository.LocalFolder);
-                var region = RegionEndPointsManager.GetInstance().GetRegion(regionName);
+                var region = TeamExplorerConnection.CodeCommitPlugin.GetRepositoryRegion(ViewModel.SelectedRepository.LocalFolder);
                 TeamExplorerConnection.CodeCommitPlugin.ObtainGitCredentials(ViewModel.Account, region, true);
             }
             catch(Exception ex)

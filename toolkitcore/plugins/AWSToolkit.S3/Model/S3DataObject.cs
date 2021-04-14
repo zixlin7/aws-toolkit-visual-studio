@@ -109,11 +109,8 @@ namespace Amazon.AWSToolkit.S3.Model
                 writer.WriteLine(MESSAGE);
                 writer.WriteLine(ManifestWatcher.Instance.INSTANCE_IDENTIFIER);
 
-                var s3Config = new Amazon.S3.AmazonS3Config();
-                this._s3RootViewModel.CurrentEndPoint.ApplyToClientConfig(s3Config);
-
-                writer.WriteLine(this._s3RootViewModel.AccountViewModel.SettingsUniqueKey);
-                writer.WriteLine(s3Config.ServiceURL);
+                writer.WriteLine(this._s3RootViewModel.AccountViewModel.Identifier.Id);
+                writer.WriteLine(this._s3RootViewModel.Region.Id);
 
                 writer.WriteLine(this._bucket);
                 writer.WriteLine(this._relativePath);

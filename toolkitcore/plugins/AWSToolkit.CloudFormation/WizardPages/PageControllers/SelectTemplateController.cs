@@ -177,7 +177,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
 
             try
             {
-                string region = this._cloudFormationRootModel.CurrentEndPoint.RegionSystemName;
+                string region = this._cloudFormationRootModel.Region?.Id;
                 var xdoc = XDocument.Load(new StringReader(content));
 
                 var query = from s in xdoc.Root.Elements("region").Elements("template")

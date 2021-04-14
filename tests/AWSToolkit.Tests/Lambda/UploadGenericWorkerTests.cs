@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Amazon.AWSToolkit.Regions;
 using Xunit;
 using Runtime = Amazon.Lambda.Runtime;
 
@@ -58,11 +59,12 @@ namespace AWSToolkit.Tests.Lambda
                     Runtime = Runtime.Nodejs12X,
                 },
 
-                Region =
-                    new RegionEndPointsManager.RegionEndPoints(
-                        "us-east-1", "US East",
-                        new Dictionary<string, RegionEndPointsManager.EndPoint>(),
-                        null),
+                Region = new ToolkitRegion()
+                {
+                    PartitionId = "aws",
+                    DisplayName = "US East",
+                    Id = "us-east-1",
+                },
             };
 
             // Create a sample project and files to use in tests
@@ -204,7 +206,7 @@ namespace AWSToolkit.Tests.Lambda
                 Result.Succeeded,
                 new LambdaTelemetryUtils.RecordLambdaDeployProperties()
                 {
-                    RegionId = _uploadFunctionState.Region.SystemName,
+                    RegionId = _uploadFunctionState.Region.Id,
                     Runtime = _uploadFunctionState.Request.Runtime,
                     TargetFramework = "",
                     NewResource = true,

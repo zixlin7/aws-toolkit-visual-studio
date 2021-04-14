@@ -2,38 +2,43 @@
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
+using Amazon.ECR;
+using Amazon.ECS;
 using log4net;
 
 namespace Amazon.AWSToolkit.ECS.Nodes
 {
     public class RootViewMetaNode : ServiceRootViewMetaNode
     {
-        public const string ECS_ENDPOINT_LOOKUP = RegionEndPointsManager.ECS_SERVICE_NAME;
-        public const string ECR_ENDPOINT_LOOKUP = RegionEndPointsManager.ECR_SERVICE_NAME;
+        private static readonly string EcsServiceName = new AmazonECSConfig().RegionEndpointServiceName;
+        private static readonly string EcrServiceName = new AmazonECRConfig().RegionEndpointServiceName;
+
         static ILog _logger = LogManager.GetLogger(typeof(RootViewMetaNode));
 
-        public override string EndPointSystemName => ECS_ENDPOINT_LOOKUP;
+        public override string SdkEndpointServiceName => EcsServiceName;
 
-        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
+        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account, ToolkitRegion region)
         {
-            return new RootViewModel(account);
+            return new RootViewModel(account, region);
         }
 
-        public override bool CanSupportRegion(RegionEndPointsManager.RegionEndPoints region)
+        public override bool CanSupportRegion(ToolkitRegion region, IRegionProvider regionProvider)
         {
-            var ecsEndpoint = region.GetEndpoint(ECS_ENDPOINT_LOOKUP);
-            if (ecsEndpoint == null)
+            var ecsServiceAvailable = regionProvider.IsServiceAvailable(EcsServiceName, region.Id);
+           
+            if (!ecsServiceAvailable)
             {
-                _logger.InfoFormat("Region {0} has no ECS endpoint", region.SystemName);
+                _logger.InfoFormat("Region {0} has no ECS endpoint", region.Id);
             }
-            var ecrEndpoint = region.GetEndpoint(ECR_ENDPOINT_LOOKUP);
-            if (ecrEndpoint == null)
-            {
-                _logger.InfoFormat("Region {0} has no ECR endpoint", region.SystemName);
-            }
-            return ecsEndpoint != null && ecrEndpoint != null;
-        }
 
+            var ecrServiceAvailable = regionProvider.IsServiceAvailable(EcrServiceName, region.Id);
+            if (!ecrServiceAvailable)
+            {
+                _logger.InfoFormat("Region {0} has no ECR endpoint", region.Id);
+            }
+            return ecsServiceAvailable && ecrServiceAvailable;
+        }
         public ActionHandlerWrapper.ActionHandler OnLaunch
         {
             get;

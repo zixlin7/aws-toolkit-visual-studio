@@ -81,17 +81,28 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Account\AccountManager.cs" />
     <Compile Include="Account\Controller\RegisterServiceCredentialsController.cs" />
     <Compile Include="Account\Model\RegisterServiceCredentialsModel.cs" />
     <Compile Include="Account\StorageTypes.cs" />
     <Compile Include="Account\View\RegisterServiceCredentialsControl.xaml.cs">
       <DependentUpon>RegisterServiceCredentialsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Clients\AwsServiceClientManager.cs" />
+    <Compile Include="Clients\IAwsServiceClientManager.cs" />
+    <Compile Include="Clients\ServiceClientCreator.cs" />
     <Compile Include="Commands\AsyncRelayCommand.cs" />
     <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="CommonUI\AssociatedIconAttribute.cs" />
     <Compile Include="CommonUI\CommandHandler.cs" />
+    <Compile Include="CommonUI\Components\AccountViewModelGroup.cs" />
+    <Compile Include="CommonUI\Converters\AccountViewModelGroupConverter.cs" />
+    <Compile Include="CommonUI\Components\CredentialsSelector.xaml.cs">
+      <DependentUpon>CredentialsSelector.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CommonUI\Components\GroupedAccountComparer.cs" />
+    <Compile Include="CommonUI\VsImages.cs" />
+    <Compile Include="CommonUI\Components\AccountAndRegionPickerViewModel.cs" />
+    <Compile Include="CommonUI\Components\AccountAndRegionPickerViewModelDesignerData.cs" />
     <Compile Include="CommonUI\Components\RegisteredProfilesPicker.xaml.cs">
       <DependentUpon>RegisteredProfilesPicker.xaml</DependentUpon>
     </Compile>
@@ -100,19 +111,77 @@
     <Compile Include="CommonUI\Converters\InverseBooleanToVisibilityConverter.cs" />
     <Compile Include="CommonUI\Converters\LambdaStateConverter.cs" />
     <Compile Include="CommonUI\Converters\ValueConverterMarkupExtension.cs" />
+    <Compile Include="CommonUI\Images\IVsImageProvider.cs" />
     <Compile Include="CommonUI\MessageBox\MessageBoxDefaultButton.cs" />
     <Compile Include="CommonUI\MessageBox\WindowsMessageBox.cs" />
     <Compile Include="CommonUI\SelectableItem.cs" />
     <Compile Include="CommonUI\Components\IAMRolePicker.xaml.cs">
       <DependentUpon>IAMRolePicker.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CommonUI\Images\VsKnownImages.cs" />
+    <Compile Include="CommonUI\WizardFramework\WizardExtensionMethods.cs" />
     <Compile Include="CommonValidators\DockerTagValidator.cs" />
     <Compile Include="CommonValidators\EcsPlatformVersionValidator.cs" />
     <Compile Include="CommonValidators\EcsRepoNameValidator.cs" />
+    <Compile Include="Context\ToolkitContext.cs" />
+    <Compile Include="Credentials\Control\MfaPromptControl.xaml.cs">
+      <DependentUpon>MfaPromptControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Credentials\Control\MfaPromptViewModel.cs" />
+    <Compile Include="Credentials\Core\AwsConnectionManager.cs" />
+    <Compile Include="Credentials\Core\AwsSsoCredentials.cs" />
+    <Compile Include="Credentials\IO\PersistConnectionSettings.cs" />
+    <Compile Include="Credentials\Utils\AccountViewModelExtensionMethods.cs" />
+    <Compile Include="Credentials\Utils\ConnectionSettingsChangeArgs.cs" />
+    <Compile Include="Credentials\Utils\CredentialProfileExtensionMethods.cs" />
+    <Compile Include="Credentials\Core\IAwsConnectionManager.cs" />
+    <Compile Include="Credentials\Core\ICredentialManager.cs" />
+    <Compile Include="Credentials\Core\ICredentialSettingsManager.cs" />
+    <Compile Include="Credentials\Core\ICredentialSettingsManagerExtensionMethods.cs" />
+    <Compile Include="Credentials\Core\ToolkitCredentialInitializer.cs" />
+    <Compile Include="Credentials\Utils\CredentialProfileOptionsExtensionMethods.cs" />
+    <Compile Include="Credentials\Utils\CredentialType.cs" />
+    <Compile Include="Credentials\Utils\CredentialTypeExtensionMethods.cs" />
+    <Compile Include="Credentials\Utils\ProfileProperties.cs" />
+    <Compile Include="Credentials\State\ConnectionState.cs" />
+    <Compile Include="Credentials\Core\ToolkitAssumeRoleAwsCredentials.cs" />
+    <Compile Include="Credentials\Core\CredentialSettingsManager.cs" />
+    <Compile Include="Credentials\Core\CredentialManager.cs" />
+    <Compile Include="Credentials\Core\ICredentialIdentifier.cs" />
+    <Compile Include="Credentials\Core\ICredentialProfileProcessor.cs" />
+    <Compile Include="Credentials\Core\ICredentialProviderFactory.cs" />
+    <Compile Include="Credentials\Core\ProfileCredentialProviderFactory.cs" />
+    <Compile Include="Credentials\IO\ICredentialFileWriter.cs" />
+    <Compile Include="Credentials\IO\SDKCredentialFileWriter.cs" />
+    <Compile Include="Credentials\IO\SharedCredentialFileWriter.cs" />
+    <Compile Include="Credentials\Utils\ConnectionStateChangeArgs.cs" />
+    <Compile Include="Credentials\Utils\CredentialProviderNotFoundException.cs" />
+    <Compile Include="Credentials\Utils\IProfileHolder.cs" />
+    <Compile Include="Credentials\Utils\ProfilePropertiesExtensionMethods.cs" />
+    <Compile Include="Navigator\NavigatorAccountConnectionStatus.cs" />
+    <Compile Include="Navigator\ContextCommandExecutor.cs" />
+    <Compile Include="Navigator\NavigatorCommand.cs" />
+    <Compile Include="Navigator\NavigatorViewModel.cs" />
+    <Compile Include="Navigator\NavigatorControlExtensionMethods.cs" />
+    <Compile Include="Util\MruList.cs" />
+    <Compile Include="Credentials\Utils\ProfileHolder.cs" />
+    <Compile Include="Credentials\Core\SDKCredentialIdentifier.cs" />
+    <Compile Include="Credentials\Core\SDKCredentialProviderFactory.cs" />
+    <Compile Include="Credentials\Core\SharedCredentialIdentifier.cs" />
+    <Compile Include="Credentials\Core\SharedCredentialProviderFactory.cs" />
+    <Compile Include="Credentials\IO\CredentialFileReader.cs" />
+    <Compile Include="Credentials\IO\ICredentialFileReader.cs" />
+    <Compile Include="Credentials\IO\ProfileValidator.cs" />
+    <Compile Include="Credentials\IO\ProfileWatcher.cs" />
+    <Compile Include="Credentials\IO\SDKCredentialFileReader.cs" />
+    <Compile Include="Credentials\IO\SharedCredentialFileReader.cs" />
+    <Compile Include="Credentials\Utils\CredentialChangeEventArgs.cs" />
+    <Compile Include="Credentials\Utils\ProfilePropertyMapping.cs" />
+    <Compile Include="Credentials\Utils\ProfilePropertyConstants.cs" />
+    <Compile Include="Credentials\Utils\Profiles.cs" />
     <Compile Include="PluginServices\Activators\PluginActivatorUtilities.cs" />
     <Compile Include="Shared\*.cs" />
     <Compile Include="AbstractPluginActivator.cs" />
-    <Compile Include="Account\AccountTypes.cs" />
     <Compile Include="Account\Controller\EditAccountController.cs" />
     <Compile Include="Account\Controller\RegisterAccountController.cs" />
     <Compile Include="Account\Controller\UnregisterAccountController.cs" />
@@ -183,9 +252,6 @@
     <Compile Include="CommonUI\LegacyDeploymentWizard\PageUI\DeploymentReviewPage.xaml.cs">
       <DependentUpon>DeploymentReviewPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CommonUI\LegacyDeploymentWizard\PageUI\DeploymentTemplateSelectorPage.xaml.cs">
-      <DependentUpon>DeploymentTemplateSelectorPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="CommonUI\DialogHostUtil.cs" />
     <Compile Include="CommonUI\DirectoryBrowserDlgHelper.cs" />
     <Compile Include="CommonUI\IconHelper.cs" />
@@ -233,10 +299,6 @@
     <Compile Include="CommonUI\WizardFramework\IAWSWizardPageController.cs" />
     <Compile Include="CommonUI\WizardFramework\Standard\AWSStandardWizard.xaml.cs">
       <DependentUpon>AWSStandardWizard.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="CommonUI\WizardPages\PageControllers\AccountRegistrationPageController.cs" />
-    <Compile Include="CommonUI\WizardPages\PageUI\AccountRegistrationPage.xaml.cs">
-      <DependentUpon>AccountRegistrationPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="CommonValidators\IntegerValidator.cs" />
     <Compile Include="CommonValidators\StringHasValueValidator.cs" />
@@ -299,7 +361,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="ProxyUtilities.cs" />
-    <Compile Include="RegionEndPointsManager.cs" />
     <Compile Include="SimpleWorkers\CloudWatchDataFetcher.cs" />
     <Compile Include="SimpleWorkers\QueryAMIInstancesWorker.cs" />
     <Compile Include="SimpleWorkers\QueryAvailabilityZonesWorker.cs" />
@@ -311,7 +372,6 @@
     <Compile Include="SimpleWorkers\QueryLambdaFunctionSamplesWorker.cs" />
     <Compile Include="SimpleWorkers\QuerySecurityGroupsWorker.cs" />
     <Compile Include="SimpleWorkers\QueryCloudFormationStacksWorker.cs" />
-    <Compile Include="SimpleWorkers\QuerySubnetWorker.cs" />
     <Compile Include="SimpleWorkers\QueryTopicArnsWorker.cs" />
     <Compile Include="Themes\ShellProviderThemeResources.cs" />
     <Compile Include="ThemeUtil.cs" />
@@ -369,6 +429,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="CommonUI\Components\CredentialsSelector.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="CommonUI\Components\RegisteredProfilesPicker.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -424,6 +488,10 @@
     <Page Include="CommonUI\WizardFramework\Standard\AWSStandardWizard.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Credentials\Control\MfaPromptControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Navigator\NavigatorControl.xaml">
       <SubType>Designer</SubType>
@@ -589,14 +657,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="CommonUI\LegacyDeploymentWizard\PageUI\DeploymentTemplateSelectorPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="CommonUI\WizardPages\PageUI\AccountRegistrationPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Feedback.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -723,6 +783,14 @@
     </PackageReference>
     <PackageReference Include="AWSSDK.SQS">
       <Version>3.5.1.21</Version>
+    </PackageReference>
+    <!-- SSO and SSOOIDC are required for the AWS .NET SDK credentials system to resolve SSO based profiles -->
+    <PackageReference Include="AWSSDK.SSO">
+      <Version>3.5.0.72</Version>
+    </PackageReference>
+    <!-- SSO and SSOOIDC are required for the AWS .NET SDK credentials system to resolve SSO based profiles -->
+    <PackageReference Include="AWSSDK.SSOOIDC">
+      <Version>3.5.0.72</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.12</Version>

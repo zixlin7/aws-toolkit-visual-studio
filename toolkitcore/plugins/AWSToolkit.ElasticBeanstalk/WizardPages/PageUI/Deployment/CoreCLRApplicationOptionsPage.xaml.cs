@@ -308,8 +308,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
         {
             this.VersionFetchPending = true;
 
-            var selectedAccount = PageController.HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
-            var selectedRegion = PageController.HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
+            var selectedAccount = PageController.HostingWizard.GetSelectedAccount();
+            var selectedRegion = PageController.HostingWizard.GetSelectedRegion();
             var selectedApplication = PageController.HostingWizard[DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName] as string;
             new QueryExistingApplicationVersionsWorker(selectedAccount,
                                                        selectedRegion,

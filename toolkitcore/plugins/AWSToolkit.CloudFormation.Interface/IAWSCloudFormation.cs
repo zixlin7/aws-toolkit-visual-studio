@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.PluginServices.Deployment;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.CloudFormation
 {
@@ -62,7 +63,7 @@ namespace Amazon.AWSToolkit.CloudFormation
         /// <summary>
         /// The region in which the deployment or estimation was performed
         /// </summary>
-        public RegionEndPointsManager.RegionEndPoints Region { get; set; }
+        public ToolkitRegion Region { get; set; }
 
         /// <summary>
         /// An AWS Simple Monthly Calculator URL with a query string that describes the

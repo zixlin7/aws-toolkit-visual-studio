@@ -120,7 +120,7 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
                 PopulateAppParams(isRedeploying);
 
                 // this customizes the 'use my account' button to show some indication of 'my'
-                AccountViewModel account = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
+                AccountViewModel account = HostingWizard.GetSelectedAccount();
                 _pageUI.SelectedAccountName = account.AccountDisplayName;
 
                 OnPageActivated(navigationReason, isRedeploying);
@@ -250,11 +250,10 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
 
                 case CommonAppOptionsPage.AppCredentials.UseDeploymentAccount:
                     {
-                        AccountViewModel selectedAccount 
-                            = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
-                        var credentials = selectedAccount.Credentials.GetCredentials();
-                        appSettings[DeploymentWizardProperties.AppOptions.propkey_EnvAccessKey] = credentials.AccessKey;
-                        appSettings[DeploymentWizardProperties.AppOptions.propkey_EnvSecretKey] = credentials.SecretKey;
+                        AccountViewModel selectedAccount = HostingWizard.GetSelectedAccount();
+                        var profileProperties = selectedAccount.ProfileProperties;
+                        appSettings[DeploymentWizardProperties.AppOptions.propkey_EnvAccessKey] = profileProperties?.AccessKey;
+                        appSettings[DeploymentWizardProperties.AppOptions.propkey_EnvSecretKey] = profileProperties?.SecretKey;
                     }
                     break;
 
@@ -284,8 +283,8 @@ namespace Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers
                 }
 
                 WorkersActive = true;
-                new FetchCompatibleIAMUsersWorker(HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel,
-                                                  HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints, 
+                new FetchCompatibleIAMUsersWorker(HostingWizard.GetSelectedAccount(),
+                                                  HostingWizard.GetSelectedRegion(), 
                                                   localKeys, 
                                                   LOGGER, 
                                                   new FetchCompatibleIAMUsersWorker.DataAvailableCallback(OnIAMAccountKeysAvailable));    

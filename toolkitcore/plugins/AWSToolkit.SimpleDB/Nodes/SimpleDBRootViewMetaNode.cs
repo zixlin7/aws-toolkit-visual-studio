@@ -3,18 +3,20 @@ using Amazon.AWSToolkit.Account;
 
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
+using Amazon.SimpleDB;
 
 namespace Amazon.AWSToolkit.SimpleDB.Nodes
 {
     public class SimpleDBRootViewMetaNode : ServiceRootViewMetaNode
     {
-        public const string SIMPLEDB_ENDPOINT_LOOKUP = "SimpleDB";
+        private static readonly string SimpleDBServiceName = new AmazonSimpleDBConfig().RegionEndpointServiceName;
 
-        public override string EndPointSystemName => SIMPLEDB_ENDPOINT_LOOKUP;
+        public override string SdkEndpointServiceName => SimpleDBServiceName;
 
-        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
+        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account, ToolkitRegion region)
         {
-            return new SimpleDBRootViewModel(account);
+            return new SimpleDBRootViewModel(account, region);
         }
 
         public SimpleDBDomainViewMetaNode SimpleDBDomainViewMetaNode => this.FindChild<SimpleDBDomainViewMetaNode>();

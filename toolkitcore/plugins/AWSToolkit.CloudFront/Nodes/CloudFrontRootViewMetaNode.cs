@@ -2,24 +2,27 @@
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
+using Amazon.CloudFront;
 
 namespace Amazon.AWSToolkit.CloudFront.Nodes
 {
     public class CloudFrontRootViewMetaNode : ServiceRootViewMetaNode
-    {        
-        public const string CLOUDFRONT_ENDPOINT_LOOKUP = "CloudFront";
+    {
+        private static readonly string CloudFrontServiceName = new AmazonCloudFrontConfig().RegionEndpointServiceName;
+
+        public override string SdkEndpointServiceName => CloudFrontServiceName;
 
         public CloudFrontDistributeViewMetaNode CloudFrontDistributeViewMetaNode => this.FindChild<CloudFrontDistributeViewMetaNode>();
 
         public CloudFrontStreamingDistributeViewMetaNode CloudFrontStreamingDistributeViewMetaNode => this.FindChild<CloudFrontStreamingDistributeViewMetaNode>();
 
-        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
+        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account, ToolkitRegion region)
         {
-            return new CloudFrontRootViewModel(account);
+            return new CloudFrontRootViewModel(account, region);
         }
 
-        public override string EndPointSystemName => CLOUDFRONT_ENDPOINT_LOOKUP;
-
+       
         public ActionHandlerWrapper.ActionHandler OnCreateDistribution
         {
             get;

@@ -39,9 +39,19 @@ namespace Amazon.AWSToolkit.Regions.Manifest
         }
 
         /// <summary>
+        /// Look up Partition for the specified partition Id
+        /// </summary>
+        /// <param name="partitionId">Id of partition to look up</param>
+        /// <returns>Partition that contains the given id</returns>
+        public static Partition GetPartition(this Endpoints endpoints, string partitionId)
+        {
+            return endpoints.Partitions.FirstOrDefault(p => p.Id == partitionId);
+        }
+
+        /// <summary>
         /// Indicates whether or not a service is available in a region
         /// </summary>
-        public static bool ContainsService(this Endpoints endpoints, ServiceName serviceName, string regionId)
+        public static bool IsServiceAvailable(this Endpoints endpoints, string serviceName, string regionId)
         {
             var partitionId = endpoints.GetPartitionIdForRegion(regionId);
             if (partitionId == null) { return false; }
@@ -49,9 +59,14 @@ namespace Amazon.AWSToolkit.Regions.Manifest
             var partition = endpoints.Partitions.FirstOrDefault(p => p.Id == partitionId);
             if (partition == null) { return false; }
 
-            if (!partition.Services.TryGetValue(serviceName.Value, out var service))
+            if (!partition.Services.TryGetValue(serviceName, out var service))
             {
                 return false;
+            }
+
+            if (service.IsGlobal())
+            {
+                return true;
             }
 
             return service.Endpoints.ContainsKey(regionId);

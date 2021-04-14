@@ -19,6 +19,8 @@ using Amazon.AWSToolkit.CloudFormation.WizardPages.PageWorkers;
 using ThirdParty.Json.LitJson;
 using System.Threading;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.PageControllers;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
 {
@@ -26,9 +28,11 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(FastTrackRepublishPageController));
 
+        private readonly ToolkitContext _toolkitContext;
+
         FastTrackRepublishPage _pageUI;
         AccountViewModel _account;
-        RegionEndPointsManager.RegionEndPoints _region;
+        ToolkitRegion _region;
 
         // recovered details from the last deployment; must re-specify or we lose them
         string _lastDeployedAccessKey;
@@ -84,6 +88,11 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
 
         public string PageDescription => "Verify the details of the last deployment.";
 
+        public FastTrackRepublishPageController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
+
         public void ResetPage()
         {
 
@@ -108,7 +117,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
                 _account = viewModel.AccountFromIdentityKey(accountGuid);
 
                 string regionName = HostingWizard[DeploymentWizardProperties.SeedData.propkey_LastRegionDeployedTo] as string;
-                _region = RegionEndPointsManager.GetInstance().GetRegion(regionName);
+                _region = _toolkitContext.RegionProvider.GetRegion(regionName);
 
                 CloudFormationDeploymentHistory cfdh = DeploymentHistoryForAccountAndRegion(_account, _region);
 
@@ -116,8 +125,8 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
 
                 // now pass the whole seed data into the final properties the deployment engine will look at (except version,
                 // which the user can change in the dialog)
-                HostingWizard.SetProperty(CommonWizardProperties.AccountSelection.propkey_SelectedAccount, _account);
-                HostingWizard.SetProperty(CommonWizardProperties.AccountSelection.propkey_SelectedRegion, _region);
+                HostingWizard.SetSelectedAccount(_account);
+                HostingWizard.SetSelectedRegion(_region);
                 HostingWizard.SetProperty(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy, true);
 
                 HostingWizard.SetProperty(DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName, cfdh.LastStack);
@@ -216,7 +225,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
         /// <param name="account"></param>
         /// <param name="region"></param>
         /// <returns></returns>
-        CloudFormationDeploymentHistory DeploymentHistoryForAccountAndRegion(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
+        CloudFormationDeploymentHistory DeploymentHistoryForAccountAndRegion(AccountViewModel account, ToolkitRegion region)
         {
             Dictionary<string, object> allPreviousDeployments
                     = HostingWizard[DeploymentWizardProperties.SeedData.propkey_PreviousDeployments] as Dictionary<string, object>;
@@ -226,7 +235,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
 
             // deployments within service organised by accountid: <region, T>
             Dictionary<string, CloudFormationDeploymentHistory> accountDeployments = cloudFormationDeployments.DeploymentsForAccount(account.SettingsUniqueKey);
-            return accountDeployments[region.SystemName];
+            return accountDeployments[region.Id];
         }
 
         private void onPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -238,16 +247,14 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
         {
             var args = e.Argument as object[];
             var account = args[0] as AccountViewModel;
-            var region = args[1] as RegionEndPointsManager.RegionEndPoints;
+            var region = args[1] as ToolkitRegion;
             var stackName = args[2] as string;
             var logger = args[3] as ILog;
 
             Stack stack = null;
             try
             {
-                var cfConfig = new AmazonCloudFormationConfig ();
-                region.GetEndpoint("CloudFormation").ApplyToClientConfig(cfConfig);
-                var cfClient = new AmazonCloudFormationClient(account.Credentials, cfConfig);
+                var cfClient = account.CreateServiceClient<AmazonCloudFormationClient>(region);
 
                 var response = cfClient.DescribeStacks(new DescribeStacksRequest() { StackName = stackName });
                 stack = response.Stacks[0];
@@ -281,8 +288,8 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
                     // we also need to recover app options from the stack so they can be re-applied (without this
                     // they get 'overwritten' with blanks - not what you might expect to happen if 'nothing' is specified)
                     RegisterPendingWorker();
-                    new FetchStackConfigWorker(HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel,
-                                               HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints,
+                    new FetchStackConfigWorker(HostingWizard.GetSelectedAccount(),
+                                               HostingWizard.GetSelectedRegion(),
                                                cfStack,
                                                LOGGER,
                                                new FetchStackConfigWorker.DataAvailableCallback(FetchConfigWorkerCompleted));

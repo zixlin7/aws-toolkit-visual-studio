@@ -1,5 +1,4 @@
-﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ECS.Util;
 using Amazon.AWSToolkit.ECS.WizardPages;
@@ -22,6 +21,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon.AWSToolkit.Context;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
@@ -34,19 +34,6 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         private readonly IAmazonEC2 _ec2Client;
         private readonly IAmazonElasticLoadBalancingV2 _elbClient;
         private readonly IAmazonCloudWatchLogs _cwlClient;
-        private readonly ITelemetryLogger _telemetryLogger;
-
-        public DeployServiceWorker(IDockerDeploymentHelper helper,
-            IAmazonECR ecrClient,
-            IAmazonECS ecsClient,
-            IAmazonEC2 ec2Client,
-            IAmazonElasticLoadBalancingV2 elbClient,
-            IAmazonIdentityManagementService iamClient,
-            IAmazonCloudWatchLogs cwlClient)
-            : this(helper, ecrClient, ecsClient, ec2Client, elbClient, iamClient, cwlClient,
-                ToolkitFactory.Instance.TelemetryLogger)
-        {
-        }
 
         public DeployServiceWorker(IDockerDeploymentHelper helper,
             IAmazonECR ecrClient,
@@ -55,15 +42,14 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             IAmazonElasticLoadBalancingV2 elbClient,
             IAmazonIdentityManagementService iamClient,
             IAmazonCloudWatchLogs cwlClient,
-            ITelemetryLogger telemetryLogger)
-            : base(helper, iamClient)
+            ToolkitContext toolkitContext)
+            : base(helper, iamClient, toolkitContext)
         {
             this._ecrClient = ecrClient;
             this._ecsClient = ecsClient;
             this._ec2Client = ec2Client;
             this._elbClient = elbClient;
             this._cwlClient = cwlClient;
-            this._telemetryLogger = telemetryLogger;
         }
 
         public void Execute(EcsDeployState state)
@@ -102,7 +88,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             }
             finally
             {
-                EmitTaskDeploymentMetric(state.Region.SystemName, deployResult, state.HostingWizard);
+                EmitTaskDeploymentMetric(state.Region.Id, deployResult, state.HostingWizard);
             }
         }
 
@@ -770,7 +756,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         {
             try
             {
-                _telemetryLogger.RecordEcsDeployService(new EcsDeployService()
+                ToolkitContext.TelemetryLogger.RecordEcsDeployService(new EcsDeployService()
                 {
                     Result = deployResult,
                     EcsLaunchType = EcsTelemetryUtils.GetMetricsEcsLaunchType(awsWizard),
@@ -789,10 +775,13 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             ConfigureLoadBalancerChangeTracker elbChanges = null;
             try
             {
+                var credentials =
+                    ToolkitContext.CredentialManager.GetAwsCredentials(state.Account.Identifier, state.Region);
                 var command = new DeployServiceCommand(new ECSToolLogger(this.Helper), state.WorkingDirectory, new string[0])
                 {
-                    Profile = state.Account.Name,
-                    Region = state.Region.SystemName,
+                    Profile = state.Account.Identifier.ProfileName,
+                    Credentials = credentials,
+                    Region = state.Region.Id,
 
                     DisableInteractive = true,
                     ECRClient = this._ecrClient,

@@ -49,6 +49,7 @@
 
         <Label Grid.Row="4" Grid.Column="0" Margin="20,5,5,5" Style="{DynamicResource awsLabelBaseStyle}">EC2 Security Group:</Label>
         <ComboBox Grid.Row="4" Grid.Column="1" Margin="5" Name="_ctlSecurityGroups" Text="{Binding EC2SecurityGroupName}" 
+                  IsEditable="True"
                   IsEnabled="{Binding ElementName=_ctlGroup, Path=IsChecked}"
                   Style="{DynamicResource awsComboBoxStyle}"/>
 

@@ -1,27 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Amazon.CloudFront;
 using Amazon.CloudFront.Model;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
-//using Amazon.AWSToolkit.CloudFront.Controller;
 
 namespace Amazon.AWSToolkit.CloudFront.Nodes
 {
     public class CloudFrontRootViewModel : ServiceRootViewModel, ICloudFrontRootViewModel
     {
-        CloudFrontRootViewMetaNode _metaNode;
-        AccountViewModel _accountViewModel;
-        
+        private readonly CloudFrontRootViewMetaNode _metaNode;
+        private readonly Lazy<IAmazonCloudFront> _cfClient;
 
-        IAmazonCloudFront _cfClient;
-
-        public CloudFrontRootViewModel(AccountViewModel accountViewModel)
-            : base(accountViewModel.MetaNode.FindChild<CloudFrontRootViewMetaNode>(), accountViewModel, "Amazon CloudFront")
+        public CloudFrontRootViewModel(AccountViewModel accountViewModel, ToolkitRegion region)
+            : base(accountViewModel.MetaNode.FindChild<CloudFrontRootViewMetaNode>(), accountViewModel, "Amazon CloudFront", region)
         {
-            this._metaNode = base.MetaNode as CloudFrontRootViewMetaNode;
-            this._accountViewModel = accountViewModel;            
+            _metaNode = base.MetaNode as CloudFrontRootViewMetaNode;
+            _cfClient = new Lazy<IAmazonCloudFront>(CreateCloudFrontClient);
         }
 
         public override string ToolTip =>
@@ -31,14 +29,7 @@ namespace Amazon.AWSToolkit.CloudFront.Nodes
 
         protected override string IconName => "Amazon.AWSToolkit.CloudFront.Resources.EmbeddedImages.service-root.png";
 
-        protected override void BuildClient(AWSCredentials awsCredentials)
-        {
-            var config = new AmazonCloudFrontConfig();
-            this.CurrentEndPoint.ApplyToClientConfig(config);
-            this._cfClient = new Amazon.CloudFront.AmazonCloudFrontClient(awsCredentials, config);
-        }
-
-        public IAmazonCloudFront CFClient => this._cfClient;
+        public IAmazonCloudFront CFClient => this._cfClient.Value;
 
         public ICloudFrontBaseDistributionViewModel AddDistribution(StreamingDistribution distribution)
         {
@@ -86,6 +77,11 @@ namespace Amazon.AWSToolkit.CloudFront.Nodes
 
 
             SetChildren(items);
+        }
+
+        private IAmazonCloudFront CreateCloudFrontClient()
+        {
+            return AccountViewModel.CreateServiceClient<AmazonCloudFrontClient>(Region);
         }
     }
 }

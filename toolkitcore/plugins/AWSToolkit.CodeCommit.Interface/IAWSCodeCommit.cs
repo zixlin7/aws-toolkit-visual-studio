@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
 using Amazon.IdentityManagement.Model;
@@ -52,7 +53,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// </param>
         /// <returns></returns>
         ServiceSpecificCredentials ObtainGitCredentials(AccountViewModel account, 
-                                                        RegionEndPointsManager.RegionEndPoints region,
+                                                        ToolkitRegion region,
                                                         bool ignoreCurrent);
 
         /// <summary>
@@ -63,8 +64,8 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// <param name="initialRegion">Initial region selection or null.</param>
         /// <param name="defaultCloneFolderRoot">Suggested folder for the cloned repository, or null.</param>
         /// <returns>Null if the user cancels selection, otherwise details of the repository to clone.</returns>
-        ICodeCommitRepository PromptForRepositoryToClone(AccountViewModel account, 
-                                                         RegionEndPointsManager.RegionEndPoints initialRegion, 
+        ICodeCommitRepository PromptForRepositoryToClone(AccountViewModel account,
+                                                         ToolkitRegion initialRegion, 
                                                          string defaultCloneFolderRoot);
 
         /// <summary>
@@ -76,8 +77,8 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// <param name="initialRegion"></param>
         /// <param name="defaultFolderRoot"></param>
         /// <returns>Details of the repository to be created.</returns>
-        INewCodeCommitRepositoryInfo PromptForRepositoryToCreate(AccountViewModel account, 
-                                                                 RegionEndPointsManager.RegionEndPoints initialRegion,
+        INewCodeCommitRepositoryInfo PromptForRepositoryToCreate(AccountViewModel account,
+                                                                 ToolkitRegion initialRegion,
                                                                  string defaultFolderRoot);
 
         /// <summary>
@@ -99,7 +100,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// </summary>
         /// <param name="repoPath"></param>
         /// <returns></returns>
-        string GetRepositoryRegion(string repoPath);
+        ToolkitRegion GetRepositoryRegion(string repoPath);
 
         /// <summary>
         /// Queries for and wraps an ICodeCommitRepository instance around repositories found on
@@ -124,7 +125,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Interface
         /// <returns></returns>
         ICodeCommitRepository GetRepository(string repositoryName,
                                             AccountViewModel account,
-                                            RegionEndPointsManager.RegionEndPoints region);
+                                            ToolkitRegion region);
 
         /// <summary>
         /// Forms the url to enable the user to browse the repo content in the AWS console.

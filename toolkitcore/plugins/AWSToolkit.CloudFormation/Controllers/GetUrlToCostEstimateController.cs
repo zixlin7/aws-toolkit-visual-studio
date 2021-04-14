@@ -5,10 +5,11 @@ using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers;
-
+using Amazon.AWSToolkit.Context;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 using Amazon.AWSToolkit.PluginServices.Deployment;
+using Amazon.AWSToolkit.Regions;
 
 using log4net;
 
@@ -17,6 +18,12 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
     public class GetUrlToCostEstimateController
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(GetUrlToCostEstimateController));
+        private readonly ToolkitContext _toolkitContext;
+
+        public GetUrlToCostEstimateController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         public DeployedTemplateData Execute(string templateBody, IDictionary<string, object> seedProperties, string templateName)
         {
@@ -35,14 +42,14 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
                 IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
                 {
-                    new CostEstimatorParametersController()
+                    new CostEstimatorParametersController(_toolkitContext)
                 };
 
                 wizard.RegisterPageControllers(defaultPages, 0);
                 if (wizard.Run() == true)
                 {
                     var account = wizard.CollectedProperties[CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedAccount] as AccountViewModel;
-                    var region = wizard.CollectedProperties[CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
+                    var region = wizard.CollectedProperties[CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedRegion] as ToolkitRegion;
                     
 
                     var client = account.CreateServiceClient<AmazonCloudFormationClient>(region);

@@ -6,35 +6,28 @@ using Amazon.SimpleDB.Model;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.SimpleDB.Nodes
 {
     public class SimpleDBRootViewModel : ServiceRootViewModel, ISimpleDBRootViewModel
     {
-        SimpleDBRootViewMetaNode _metaNode;
-        AccountViewModel _accountViewModel;
-        IAmazonSimpleDB _sdbClient;
+        private readonly SimpleDBRootViewMetaNode _metaNode;
+        private readonly Lazy<IAmazonSimpleDB> _sdbClient;
 
-        public SimpleDBRootViewModel(AccountViewModel accountViewModel)
-            : base(accountViewModel.MetaNode.FindChild < SimpleDBRootViewMetaNode>(), accountViewModel, "Amazon SimpleDB")
+        public SimpleDBRootViewModel(AccountViewModel accountViewModel, ToolkitRegion region)
+            : base(accountViewModel.MetaNode.FindChild < SimpleDBRootViewMetaNode>(), accountViewModel, "Amazon SimpleDB", region)
         {
-            this._metaNode = base.MetaNode as SimpleDBRootViewMetaNode;
-            this._accountViewModel = accountViewModel;
+            _metaNode = base.MetaNode as SimpleDBRootViewMetaNode;
+            _sdbClient = new Lazy<IAmazonSimpleDB>(CreateSimpleDbClient);
         }
 
         public override string ToolTip => "Amazon SimpleDB is a highly available, scalable, and flexible non-relational data store that offloads the work of database administration. Developers simply store and query data items via web services requests, and Amazon SimpleDB does the rest.";
 
         protected override string IconName => "Amazon.AWSToolkit.SimpleDB.Resources.EmbeddedImages.service-root-icon.png";
 
-        protected override void BuildClient(AWSCredentials awsCredentials)
-        {
-            AmazonSimpleDBConfig config = new AmazonSimpleDBConfig();
-            this.CurrentEndPoint.ApplyToClientConfig(config);
-            this._sdbClient = new AmazonSimpleDBClient(awsCredentials, config);
-        }
-
-        public IAmazonSimpleDB SimpleDBClient => this._sdbClient;
+        public IAmazonSimpleDB SimpleDBClient => this._sdbClient.Value;
 
         protected override void LoadChildren()
         {
@@ -78,7 +71,12 @@ namespace Amazon.AWSToolkit.SimpleDB.Nodes
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {
             dndDataObjects.SetData("ARN", string.Format("arn:aws:sdb:{0}:{1}:*",
-                this.CurrentEndPoint.RegionSystemName, this.AccountViewModel.AccountNumber, this.Name));
+                this.Region.Id, ToolkitFactory.Instance.AwsConnectionManager.ActiveAccountId, this.Name));
+        }
+
+        private IAmazonSimpleDB CreateSimpleDbClient()
+        {
+            return AccountViewModel.CreateServiceClient<AmazonSimpleDBClient>(Region);
         }
     }
 }

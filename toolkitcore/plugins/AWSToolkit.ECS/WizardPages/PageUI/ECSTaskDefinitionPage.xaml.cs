@@ -19,6 +19,7 @@ using System.Windows.Navigation;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.AWSToolkit.CommonValidators;
+using Amazon.AWSToolkit.Regions;
 using Amazon.Common.DotNetCli.Tools;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
@@ -154,8 +155,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
         private void IntializeIAMPickerForAccountAsync(string selectedRole)
         {
             // could check here if we're already bound to this a/c and region
-            var account = PageController.HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
-            var region = PageController.HostingWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+            var account = PageController.HostingWizard.GetSelectedAccount(PublishContainerToAWSWizardProperties.UserAccount);
+            var region = PageController.HostingWizard.GetSelectedRegion(PublishContainerToAWSWizardProperties.Region);
 
             if (account == null || region == null)
                 return;
@@ -290,15 +291,15 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             try
             {
-                var account = PageController.HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
-                var region = PageController.HostingWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+                var account = PageController.HostingWizard.GetSelectedAccount(PublishContainerToAWSWizardProperties.UserAccount);
+                var region = PageController.HostingWizard.GetSelectedRegion(PublishContainerToAWSWizardProperties.Region);
 
                 Task task1 = Task.Run(() =>
                 {
                     var items = new List<string>();
                     try
                     {
-                        using (var ecsClient = account.CreateServiceClient<AmazonECSClient>(region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP)))
+                        using (var ecsClient = account.CreateServiceClient<AmazonECSClient>(region))
                         {
                             var response = new ListTaskDefinitionFamiliesResponse();
                             do
@@ -371,8 +372,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
                 var taskDefinitionFamily = this._ctlTaskDefinitionPicker.SelectedItem as string;
 
-                var account = PageController.HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] as AccountViewModel;
-                var region = PageController.HostingWizard[PublishContainerToAWSWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+                var account = PageController.HostingWizard.GetSelectedAccount(PublishContainerToAWSWizardProperties.UserAccount);
+                var region = PageController.HostingWizard.GetSelectedRegion(PublishContainerToAWSWizardProperties.Region);
 
                 Task task1 = Task.Run(() =>
                 {
@@ -380,7 +381,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     TaskDefinition taskDefinition = null;
                     try
                     {
-                        using (var ecsClient = account.CreateServiceClient<AmazonECSClient>(region.GetEndpoint(RegionEndPointsManager.ECS_ENDPOINT_LOOKUP)))
+                        using (var ecsClient = account.CreateServiceClient<AmazonECSClient>(region))
                         {
                             taskDefinition = ecsClient.DescribeTaskDefinition(new DescribeTaskDefinitionRequest
                             {

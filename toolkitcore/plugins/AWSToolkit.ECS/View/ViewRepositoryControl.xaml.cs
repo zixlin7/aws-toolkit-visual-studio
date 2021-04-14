@@ -29,7 +29,7 @@ namespace Amazon.AWSToolkit.ECS.View
             string.Format("Repository: {0} {1}_{2}",
                 this._controller.RepositoryArn,
                 this._controller.EndPointUniqueIdentifier,
-                this._controller.Account.SettingsUniqueKey);
+                this._controller.Account.Identifier.Id);
 
         public override bool SupportsBackGroundDataLoad => true;
 

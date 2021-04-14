@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.SimpleWorkers;
@@ -10,6 +10,10 @@ using Amazon.AWSToolkit.SimpleWorkers;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 using Amazon.AWSToolkit.CloudFormation.TemplateWizards.WizardPages.PageControllers;
+using Amazon.AWSToolkit.CommonUI.Components;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Util;
 using log4net;
 
 namespace Amazon.AWSToolkit.CloudFormation.TemplateWizards.WizardPages.PageUI
@@ -20,36 +24,51 @@ namespace Amazon.AWSToolkit.CloudFormation.TemplateWizards.WizardPages.PageUI
     public partial class ProjectTypePage : INotifyPropertyChanged
     {
         ILog LOGGER = LogManager.GetLogger(typeof(ProjectTypePage));
+        private const int AccountRegionChangedDebounceMs = 250;
 
-        public ProjectTypePage()
+        private readonly DebounceDispatcher _accountRegionChangeDebounceDispatcher = new DebounceDispatcher();
+
+        public AccountAndRegionPickerViewModel Connection { get; }
+
+        public ProjectTypePage(ToolkitContext toolkitContext)
         {
+            Connection = new AccountAndRegionPickerViewModel(toolkitContext);
+            Connection.SetServiceFilter(new List<string>()
+            {
+                DeploymentServiceIdentifiers.ToolkitCloudFormationServiceName
+            });
+
             InitializeComponent();
 
             DataContext = this;
+            Loaded += OnLoaded;
         }
 
-        public ProjectTypePage(IAWSWizardPageController controller)
-            : this()
+        private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            this.PageController = controller;
-        }
+            Loaded-= OnLoaded;
+            Unloaded += OnUnloaded;
 
-        public IAWSWizardPageController PageController { get; set; }
+            _ctlExistingStacks.SelectionChanged += _ctlExistingStacks_SelectionChanged;
+            _ctlSampleTemplate.SelectionChanged += _ctlSampleTemplate_SelectionChanged;
 
-        public void Initialize(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
-        {
-            this._ctlAccountAndRegionPicker.Initialize(account, region, new[] { DeploymentServiceIdentifiers.CloudFormationServiceName });
-            this._ctlAccountAndRegionPicker.PropertyChanged += new PropertyChangedEventHandler(_ctlAccountAndRegionPicker_PropertyChanged);
+            _ctlCreateEmptyProject.Click += createMode_Click;
+            _ctlCreateFromStack.Click += createMode_Click;
+            _ctlCreateFromSample.Click += createMode_Click;
 
-            this._ctlExistingStacks.SelectionChanged += new SelectionChangedEventHandler(_ctlExistingStacks_SelectionChanged);
-            this._ctlSampleTemplate.SelectionChanged += new SelectionChangedEventHandler(_ctlSampleTemplate_SelectionChanged);
-
-            this._ctlCreateEmptyProject.Click += new RoutedEventHandler(createMode_Click);
-            this._ctlCreateFromStack.Click += new RoutedEventHandler(createMode_Click);
-            this._ctlCreateFromSample.Click += new RoutedEventHandler(createMode_Click);
-
-            UpdateExistingStacks();
             UpdateSampleTemplates();
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            Unloaded -= OnUnloaded;
+
+            _ctlExistingStacks.SelectionChanged -= _ctlExistingStacks_SelectionChanged;
+            _ctlSampleTemplate.SelectionChanged -= _ctlSampleTemplate_SelectionChanged;
+
+            _ctlCreateEmptyProject.Click -= createMode_Click;
+            _ctlCreateFromStack.Click -= createMode_Click;
+            _ctlCreateFromSample.Click -= createMode_Click;
         }
 
         void createMode_Click(object sender, RoutedEventArgs e)
@@ -80,27 +99,39 @@ namespace Amazon.AWSToolkit.CloudFormation.TemplateWizards.WizardPages.PageUI
             }
         }
 
-        public AccountViewModel SelectedAccount => this._ctlAccountAndRegionPicker.SelectedAccount;
+        public AccountViewModel SelectedAccount => Connection.Account;
 
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion => this._ctlAccountAndRegionPicker.SelectedRegion;
+        public ToolkitRegion SelectedRegion => Connection.Region;
 
         public string SelectedExistingStackName => this._ctlExistingStacks.SelectedValue as string;
 
         public QueryCloudFormationSamplesWorker.SampleSummary SelectedSampleTemplate => this._ctlSampleTemplate.SelectedValue as QueryCloudFormationSamplesWorker.SampleSummary;
 
-        void _ctlAccountAndRegionPicker_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        void ConnectionChanged(object sender, EventArgs e)
         {
-            UpdateExistingStacks();
+            if (!Connection.ConnectionIsValid)
+            {
+                return;
+            }
 
-            NotifyPropertyChanged(e.PropertyName);
+            // Prevent multiple loads caused by property changed events in rapid succession
+            _accountRegionChangeDebounceDispatcher.Debounce(AccountRegionChangedDebounceMs, _ =>
+            {
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
+                {
+                    UpdateExistingStacks();
+
+                    NotifyPropertyChanged(nameof(Connection));
+                });
+            });
         }
 
         private void UpdateExistingStacks()
         {
-            if (this._ctlAccountAndRegionPicker.SelectedAccount != null)
+            if (Connection.ConnectionIsValid)
             {
                 var worker = new QueryCloudFormationStacksWorker(
-                    this._ctlAccountAndRegionPicker.SelectedAccount.CreateServiceClient<AmazonCloudFormationClient>(this._ctlAccountAndRegionPicker.SelectedRegion),
+                    Connection.Account.CreateServiceClient<AmazonCloudFormationClient>(Connection.Region),
                     LOGGER,
                     this.UpdateExistingStacksCallback);
             }

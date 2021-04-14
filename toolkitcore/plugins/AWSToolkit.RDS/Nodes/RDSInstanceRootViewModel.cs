@@ -4,7 +4,7 @@ using Amazon.RDS.Model;
 
 using Amazon.AWSToolkit.RDS.Model;
 using Amazon.AWSToolkit.Navigator.Node;
-
+using Amazon.AWSToolkit.Regions;
 using log4net;
 
 namespace Amazon.AWSToolkit.RDS.Nodes
@@ -38,7 +38,7 @@ namespace Amazon.AWSToolkit.RDS.Nodes
             SetChildren(items);
         }
 
-        public RegionEndPointsManager.EndPoint CurrentEndPoint => this._rootViewModel.CurrentEndPoint;
+        public ToolkitRegion Region => _rootViewModel.Region;
 
         public void RemoveDBInstance(string dbIdentifier)
         {

@@ -51,18 +51,15 @@ namespace Amazon.AWSToolkit.EC2.Controller
             // page groups in console: AMI, Instance Type, Instance Details, Storage, Tags, Security Group, Review
             var seedProperties = new Dictionary<string, object>
             {
-                {CommonWizardProperties.AccountSelection.propkey_SelectedAccount, this._rootModel.AccountViewModel},
                 {LaunchWizardProperties.Global.propkey_EC2RootModel, this._rootModel},
                 {LaunchWizardProperties.Global.propkey_VpcOnly, EC2Utilities.CheckForVpcOnlyMode(this._rootModel.EC2Client) },
                 {LaunchWizardProperties.AMIOptions.propkey_SeedAMI, image},
-                {
-                    CommonWizardProperties.AccountSelection.propkey_SelectedRegion,
-                    RegionEndPointsManager.GetInstance().GetRegion(this._rootModel.RegionSystemName)
-                }
             };
 
             IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.EC2.View.LaunchEC2Instance", seedProperties);
             wizard.Title = "Launch new Amazon EC2 Instance";
+            wizard.SetSelectedAccount(_rootModel.AccountViewModel);
+            wizard.SetSelectedRegion(_rootModel.Region);
 
             var defaultPages = new IAWSWizardPageController[]
             {
@@ -98,7 +95,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
                 KeyPairLocalStoreManager.Instance.SavePrivateKey(
                     this._rootModel.AccountViewModel, 
-                    this._rootModel.RegionSystemName, 
+                    this._rootModel.Region.Id, 
                     keyName,
                     keyResponse.KeyPair.KeyMaterial);
             }

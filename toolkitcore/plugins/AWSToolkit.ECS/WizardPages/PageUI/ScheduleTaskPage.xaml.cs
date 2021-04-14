@@ -12,6 +12,8 @@ using System.Linq;
 using static Amazon.AWSToolkit.ECS.WizardPages.ECSWizardUtils;
 using System.Windows.Navigation;
 using System.Diagnostics;
+using Amazon.CloudWatchEvents;
+using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
@@ -321,7 +323,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             {
                 Task.Run<List<string>>(() =>
                 {
-                    using (var client = CreateIAMClient(this.PageController.HostingWizard))
+                    using (var client = CreateServiceClient<AmazonIdentityManagementServiceClient>(this.PageController.HostingWizard))
                     {
                         var roles = new List<string>();
                         try
@@ -378,7 +380,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
                     var items = new List<string>();
                     try
                     {
-                        using (var cweClient = CreateCloudWatchEventsClient(PageController.HostingWizard))
+                        using (var cweClient = CreateServiceClient<AmazonCloudWatchEventsClient>(PageController.HostingWizard))
                         {
                             this._scheduleRulesState = CloudWatchEventHelper.FetchScheduleRuleState(cweClient, this.PageController.Cluster);
                             if(this._scheduleRulesState.LastException != null)

@@ -1,26 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.CloudFormation.Nodes
 {
     public class CloudFormationRootViewModel : ServiceRootViewModel, ICloudFormationRootViewModel
     {
-        CloudFormationRootViewMetaNode _metaNode;
-        AccountViewModel _accountViewModel;
+        private readonly CloudFormationRootViewMetaNode _metaNode;
+        private readonly Lazy<IAmazonCloudFormation> _cloudFormationClient;
 
-
-        IAmazonCloudFormation _cloudFormationClient;
-
-        public CloudFormationRootViewModel(AccountViewModel accountViewModel)
-            : base(accountViewModel.MetaNode.FindChild<CloudFormationRootViewMetaNode>(), accountViewModel, "AWS CloudFormation")
+        public CloudFormationRootViewModel(AccountViewModel accountViewModel, ToolkitRegion region)
+            : base(accountViewModel.MetaNode.FindChild<CloudFormationRootViewMetaNode>(), accountViewModel, "AWS CloudFormation", region)
         {
-            this._metaNode = base.MetaNode as CloudFormationRootViewMetaNode;
-            this._accountViewModel = accountViewModel;            
+            _metaNode = base.MetaNode as CloudFormationRootViewMetaNode;
+            _cloudFormationClient = new Lazy<IAmazonCloudFormation>(CreateCloudFormationClient);
         }
 
         public override string ToolTip => "AWS CloudFormation gives you an easier way to create a collection of related AWS resources (a stack) by describing your requirements in a template.";
@@ -39,15 +38,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
 
         protected override string IconName => "Amazon.AWSToolkit.CloudFormation.Resources.EmbeddedImages.service-root-node.png";
 
-        public IAmazonCloudFormation CloudFormationClient => this._cloudFormationClient;
-
-        protected override void BuildClient(AWSCredentials awsCredentials)
-        {
-            var config = new AmazonCloudFormationConfig {MaxErrorRetry = 6};
-            this.CurrentEndPoint.ApplyToClientConfig(config);
-            this._cloudFormationClient = new AmazonCloudFormationClient(awsCredentials, config);
-        }
-
+        public IAmazonCloudFormation CloudFormationClient => this._cloudFormationClient.Value;
 
         protected override void LoadChildren()
         {
@@ -73,6 +64,12 @@ namespace Amazon.AWSToolkit.CloudFormation.Nodes
 
 
             SetChildren(items);
-        }    
+        }
+
+        private IAmazonCloudFormation CreateCloudFormationClient()
+        {
+            var config = new AmazonCloudFormationConfig { MaxErrorRetry = 6 };
+            return AccountViewModel.CreateServiceClient<AmazonCloudFormationClient>(Region, config);
+        }
     }
 }

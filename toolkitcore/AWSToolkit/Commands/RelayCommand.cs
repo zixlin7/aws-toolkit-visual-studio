@@ -8,7 +8,20 @@ namespace Amazon.AWSToolkit.Commands
     /// </summary>
     public class RelayCommand : ICommand
     {
-        public event EventHandler CanExecuteChanged;
+        private event EventHandler CanExecuteChangedInternal;
+        public event EventHandler CanExecuteChanged
+        {
+            add
+            {
+                CommandManager.RequerySuggested += value;
+                CanExecuteChangedInternal += value;
+            }
+            remove
+            {
+                CommandManager.RequerySuggested -= value;
+                CanExecuteChangedInternal -= value;
+            }
+        }
 
         private readonly Func<object, bool> _canExecute;
         private readonly Action<object> _execute;
@@ -41,7 +54,7 @@ namespace Amazon.AWSToolkit.Commands
 
         private void RaiseCanExecuteChanged()
         {
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+            CanExecuteChangedInternal?.Invoke(this, EventArgs.Empty);
         }
     }
 }

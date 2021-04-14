@@ -3,7 +3,8 @@
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
-
+using Amazon.AWSToolkit.Regions;
+using Amazon.Lambda;
 using Amazon.Lambda.Model;
 
 
@@ -11,7 +12,7 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
 {
     public class LambdaRootViewMetaNode : ServiceRootViewMetaNode
     {
-        public const string LAMBDA_ENDPOINT_LOOKUP = RegionEndPointsManager.LAMBDA_SERVICE_NAME;
+        private static readonly string LambdaServiceName = new AmazonLambdaConfig().RegionEndpointServiceName;
 
         public ActionHandlerWrapper.ActionHandler OnUploadFunction
         {
@@ -36,11 +37,11 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
             );
 
 
-        public override string EndPointSystemName => LAMBDA_ENDPOINT_LOOKUP;
+        public override string SdkEndpointServiceName =>LambdaServiceName;
 
-        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
+        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account, ToolkitRegion region)
         {
-            return new LambdaRootViewModel(account);
+            return new LambdaRootViewModel(account, region);
         }
 
         public LambdaFunctionViewMetaNode LambdaFunctionViewMetaNode => this.FindChild<LambdaFunctionViewMetaNode>();

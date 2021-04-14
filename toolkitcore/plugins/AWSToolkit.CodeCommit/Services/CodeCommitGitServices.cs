@@ -78,7 +78,7 @@ namespace Amazon.AWSToolkit.CodeCommit.Services
 
             try
             {
-                var client = BaseRepositoryModel.GetClientForRegion(newRepositoryInfo.OwnerAccount.Credentials, newRepositoryInfo.Region.SystemName);
+                var client = BaseRepositoryModel.GetClientForRegion(newRepositoryInfo.OwnerAccount, newRepositoryInfo.Region);
 
                 var request = new CreateRepositoryRequest
                 {

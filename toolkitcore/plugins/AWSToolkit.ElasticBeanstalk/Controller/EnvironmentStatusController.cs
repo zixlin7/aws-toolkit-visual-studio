@@ -47,26 +47,20 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             if (this._environmentModel == null)
                 return new ActionResults().WithSuccess(false);
 
-            String region = this._environmentModel.ApplicationViewModel.ElasticBeanstalkRootViewModel.CurrentEndPoint.RegionSystemName;
-            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.GetInstance().GetRegion(region);
+            var region = this._environmentModel.ApplicationViewModel.ElasticBeanstalkRootViewModel.Region;
             
             this._beanstalkClient = this._environmentModel.BeanstalkClient;
 
-            var cwConfig = new AmazonCloudWatchConfig ();
-            endPoints.GetEndpoint(RegionEndPointsManager.CLOUDWATCH_SERVICE_NAME).ApplyToClientConfig(cwConfig);
-            this._cwClient = new AmazonCloudWatchClient(this._environmentModel.AccountViewModel.Credentials, cwConfig);
+            this._cwClient =
+                this._environmentModel.AccountViewModel.CreateServiceClient<AmazonCloudWatchClient>(region);
 
-            var asConfig = new AmazonAutoScalingConfig ();
-            endPoints.GetEndpoint(RegionEndPointsManager.AUTOSCALING_SERVICE_NAME).ApplyToClientConfig(asConfig);
-            this._asClient = new AmazonAutoScalingClient(this._environmentModel.AccountViewModel.Credentials, asConfig);
+            this._asClient =
+                this._environmentModel.AccountViewModel.CreateServiceClient<AmazonAutoScalingClient>(region);
 
-            var elbConfig = new AmazonElasticLoadBalancingConfig ();
-            endPoints.GetEndpoint(RegionEndPointsManager.ELB_SERVICE_NAME).ApplyToClientConfig(elbConfig);
-            this._elbClient = new AmazonElasticLoadBalancingClient(this._environmentModel.AccountViewModel.Credentials, elbConfig);
+            this._elbClient =
+                this._environmentModel.AccountViewModel.CreateServiceClient<AmazonElasticLoadBalancingClient>(region);
 
-            var ec2Config = new AmazonEC2Config ();
-            endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).ApplyToClientConfig(ec2Config);
-            this._ec2Client = new AmazonEC2Client(this._environmentModel.AccountViewModel.Credentials, ec2Config);
+            this._ec2Client = this._environmentModel.AccountViewModel.CreateServiceClient<AmazonEC2Client>(region);
 
             var ec2Model = this._environmentModel.AccountViewModel.FindSingleChild<IEC2RootViewModel>(false);
             if (ec2Model != null)

@@ -4,14 +4,16 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Windows.Media;
-using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
-using Amazon.AWSToolkit.Persistence;
 using Amazon.AWSToolkit.Settings;
 using log4net;
-using ThirdParty.Json.LitJson;
 using Amazon.AWSToolkit.Account.Model;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
 {
@@ -29,8 +31,11 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
 
         public string DeployingBeanstalkEndpoint => "https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_NET.html";
 
-        public FirstRunModel()
+        private readonly ToolkitContext _toolkitContext;
+
+        public FirstRunModel(ToolkitContext toolkitContext)
         {
+            _toolkitContext = toolkitContext;
             _collectAnalytics = CheckAnalyticsCollectionPermission();
         }
 
@@ -58,12 +63,6 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
             set { _isValid = value; OnPropertyChanged(); }
         }
 
-        public AccountTypes.AccountType SelectedAccountType
-        {
-            get => _selectedAccountType ?? (_selectedAccountType = AllAccountTypes[0]);
-            set => _selectedAccountType = value;
-        }
-
         public bool CollectAnalytics
         {
             get => _collectAnalytics;
@@ -87,24 +86,50 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
         {
             if (!IsValid)
                 throw new InvalidOperationException("Model save requested but state not valid");
+            ICredentialIdentifier identifier = null;
+            ToolkitRegion region = null;
+            ManualResetEvent mre = new ManualResetEvent(false);
+            EventHandler<EventArgs> HandleCredentialUpdate = (sender, args) =>
+            {
+                var ide = _toolkitContext.CredentialManager.GetCredentialIdentifierById(identifier?.Id);
+                if (ide != null && region != null)
+                {
+                    mre.Set();
+                    ToolkitFactory.Instance.AwsConnectionManager.ChangeConnectionSettings(identifier, region);
+                }
+            };
+            try
+            {
+                var uniqueKey = Guid.NewGuid();
+                identifier = new SharedCredentialIdentifier(ProfileName.Trim());
+                var regionId = RegionEndpoint.USEast1.SystemName;
+                var properties = new ProfileProperties
+                {
+                    Name = ProfileName.Trim(),
+                    AccessKey = AccessKey?.Trim(),
+                    SecretKey = SecretKey?.Trim(),
+                    UniqueKey = uniqueKey.ToString(),
+                    Region = regionId
+                };
+                region = _toolkitContext.RegionProvider.GetRegion(regionId);
+                _toolkitContext.CredentialManager.CredentialManagerUpdated += HandleCredentialUpdate;
 
-            var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
-            var uniqueKey = Guid.NewGuid();
+                // create profile ensures profile has unique key and registers it
+                _toolkitContext.CredentialSettingsManager.CreateProfile(identifier, properties);
 
-            var os = settings.NewObjectSettings(uniqueKey.ToString());
-            os[ToolkitSettingsConstants.DisplayNameField] = ProfileName.Trim();
-            os[ToolkitSettingsConstants.AccessKeyField] = AccessKey.Trim();
-            os[ToolkitSettingsConstants.SecretKeyField] = SecretKey.Trim();
-            os[ToolkitSettingsConstants.Restrictions] = SelectedAccountType.SystemName;
-
-            PersistenceManager.Instance.SaveSettings(ToolkitSettingsConstants.RegisteredProfiles, settings);
-
-            ToolkitFactory.Instance.Navigator.UpdateAccountSelection(uniqueKey, true);
-
-            WriteAnalyticsCollectionPermission();
+                WriteAnalyticsCollectionPermission();
+                mre.WaitOne(2000);
+          
+            }
+            catch(Exception e)
+            {
+                LOGGER.Error(e);
+            }
+            finally
+            {
+                _toolkitContext.CredentialManager.CredentialManagerUpdated -= HandleCredentialUpdate;
+            }
         }
-
-        public IList<AccountTypes.AccountType> AllAccountTypes => AccountTypes.AllAccountTypes;
 
         public List<ShowMeHowToListItem> ShowMeHowToListItems
         {
@@ -191,8 +216,6 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
             }
         }
 
-
-        AccountTypes.AccountType _selectedAccountType;
         private string _profileName = "default";
         private string _accessKey;
         private string _secretKey;

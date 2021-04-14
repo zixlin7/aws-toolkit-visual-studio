@@ -10,6 +10,11 @@ using System.Threading.Tasks;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.CodeCommit.Interface.Model;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.State;
+using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Util;
 using Amazon.Runtime.Internal.Settings;
 using log4net;
@@ -42,10 +47,13 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
 
         #endregion
 
-        public delegate void TeamExplorerBindingChanged(TeamExplorerConnection connection);
+        public delegate void TeamExplorerBindingChanged(TeamExplorerConnection oldConnection, TeamExplorerConnection newConnection);
         public static event TeamExplorerBindingChanged OnTeamExplorerBindingChanged;
 
-        public static IAWSCodeCommit CodeCommitPlugin { get; set; }
+        public static IAWSCodeCommit CodeCommitPlugin { get; private set; }
+        private static ToolkitContext _toolkitContext;
+        private static IAwsConnectionManager _teamExplorerAwsConnectionManager;
+        private static ToolkitRegion _fallbackRegion;
 
         /// <summary>
         /// Gets and sets the single active connection, if any, within Team Explorer.
@@ -63,12 +71,20 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             private set
             {
                 LOGGER.Info("TeamExplorerConnection: set_ActiveConnection");
+                TeamExplorerConnection oldConnection = null;
                 lock (_synclock)
                 {
+                    oldConnection = _activeConnection;
                     _activeConnection = value;
                 }
-                OnTeamExplorerBindingChanged?.Invoke(value);
+                OnTeamExplorerBindingChanged?.Invoke(oldConnection, value);
+                _teamExplorerAwsConnectionManager.ChangeConnectionSettings(value?.Account?.Identifier, value?.Account?.Region ?? _fallbackRegion);
             }
+        }
+
+        public void RevalidateConnection()
+        {
+            _teamExplorerAwsConnectionManager.RefreshConnectionState();
         }
 
         /// <summary>
@@ -77,6 +93,28 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
         public AccountViewModel Account { get; }
 
         public ObservableCollection<ICodeCommitRepository> Repositories { get; } = new ObservableCollection<ICodeCommitRepository>();
+
+        private ConnectionState _awsConnectionState;
+
+        public ConnectionState AwsConnectionState
+        {
+            get => _awsConnectionState;
+            set
+            {
+                if (_awsConnectionState != value)
+                {
+                    _awsConnectionState = value;
+                    OnPropertyChanged(nameof(AwsConnectionState));
+                    OnPropertyChanged(nameof(IsAccountValid));
+                    OnPropertyChanged(nameof(IsValidatingAccount));
+                    OnPropertyChanged(nameof(AccountValidationMessage));
+                }
+            }
+        }
+
+        public bool IsAccountValid => AwsConnectionState is ConnectionState.ValidConnection;
+        public bool IsValidatingAccount => AwsConnectionState is ConnectionState.ValidatingConnection;
+        public string AccountValidationMessage => AwsConnectionState?.Message ?? string.Empty;
 
         public void RefreshRepositories()
         {
@@ -154,12 +192,17 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             if (CodeCommitPlugin == null)
                 return;
 
-
             var repoPaths = state as IEnumerable<string>;
             if (repoPaths == null)
                 return;
 
-            var validRepos = await CodeCommitPlugin.GetRepositories(Account, repoPaths);
+            var validRepos = new List<ICodeCommitRepository>();
+
+            if (IsAccountValid)
+            {
+                validRepos.AddRange(await CodeCommitPlugin.GetRepositories(Account, repoPaths));
+            }
+
             Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -169,7 +212,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
                     Repositories.Add(repo);
                 }
 
-                OnPropertyChanged("Repositories");
+                OnPropertyChanged(nameof(Repositories));
             });
         }
 
@@ -332,7 +375,16 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
                     }
 
                     if (account != null)
+                    {
+                        if (_toolkitContext.CredentialManager.IsLoginRequired(account.Identifier))
+                        {
+                            // At this time, don't support automatic (or deferred) connection of
+                            // credentials requiring a login. This avoids a login prompt on IDE startup.
+                            return null;
+                        }
+
                         return new TeamExplorerConnection(account, credentialTargets);
+                    }
 
                     // assume something went wrong in a previous run and we have stale data,
                     // and potentially some credentials left in the OS - clear them out
@@ -377,6 +429,24 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             {
                 await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
+                _toolkitContext = ToolkitFactory.Instance.ToolkitContext;
+                if (_toolkitContext == null)
+                {
+                    LOGGER.Error("TeamExplorerConnection - ToolkitContext not available at load time");
+                }
+                else
+                {
+                    _teamExplorerAwsConnectionManager = new AwsConnectionManager(
+                        AwsConnectionManager.DefaultStsClientCreator,
+                        _toolkitContext.CredentialManager,
+                        _toolkitContext.TelemetryLogger,
+                        _toolkitContext.RegionProvider
+                    );
+
+                    _fallbackRegion = _toolkitContext.RegionProvider.GetRegion(RegionEndpoint.USEast1.DisplayName);
+                    _teamExplorerAwsConnectionManager.ConnectionStateChanged += TeamExplorerAwsConnectionManager_ConnectionStateChanged;
+                }
+
                 CodeCommitPlugin = ToolkitFactory.Instance.QueryPluginService(typeof(IAWSCodeCommit)) as IAWSCodeCommit;
                 if (CodeCommitPlugin == null)
                 {
@@ -392,10 +462,27 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             });
         }
 
-        private TeamExplorerConnection(AccountViewModel account)
+        /// <summary>
+        /// Fired when the Team Explorer is associated with a different set of Credentials
+        /// </summary>
+        private static void TeamExplorerAwsConnectionManager_ConnectionStateChanged(object sender, ConnectionStateChangeArgs e)
         {
-            Account = account;
-            RefreshRepositories();
+            Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
+            {
+                await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                var connection = ActiveConnection;
+                if (connection != null)
+                {
+                    connection.AwsConnectionState = e.State;
+
+                    connection.RefreshRepositories();
+                }
+            });
+        }
+
+        private TeamExplorerConnection(AccountViewModel account) : this(account, null)
+        {
         }
 
         private TeamExplorerConnection(AccountViewModel account, IEnumerable<string> credentialTargets)
@@ -404,18 +491,21 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
 
             try
             {
-                var svcCredentials = account.GetCredentialsForService(ServiceSpecificCredentialStore.CodeCommitServiceName);
-
-                foreach (var target in credentialTargets)
+                if (credentialTargets != null)
                 {
-                    _persistedTargets.Add(target);
-                    using (var gitCredentials = new GitCredentials(svcCredentials.Username, svcCredentials.Password, target))
+                    var svcCredentials =
+                        account.GetCredentialsForService(ServiceSpecificCredentialStore.CodeCommitServiceName);
+
+                    foreach (var target in credentialTargets)
                     {
-                        gitCredentials.Save();
+                        _persistedTargets.Add(target);
+                        using (var gitCredentials =
+                            new GitCredentials(svcCredentials.Username, svcCredentials.Password, target))
+                        {
+                            gitCredentials.Save();
+                        }
                     }
                 }
-
-                RefreshRepositories();
             }
             catch (Exception e)
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
+using Amazon.AWSToolkit.Context;
 using Amazon.CloudFormation.Model;
 using AWSDeployment;
 
@@ -12,13 +13,16 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 {
     class RedeployApplicationController : DeploymentControllerBase
     {
-        public RedeployApplicationController(string deploymentPackage, IDictionary<string, object> deploymentProperties)
-            : base(deploymentPackage, deploymentProperties)
+        public RedeployApplicationController(string deploymentPackage, IDictionary<string, object> deploymentProperties, ToolkitContext toolkitContext)
+            : base(deploymentPackage, deploymentProperties, toolkitContext)
         {
+            var credentials = toolkitContext.CredentialManager.GetAwsCredentials(_account.Identifier, Region);
+
             LOGGER = LogManager.GetLogger(typeof(RedeployApplicationController));
             Observer = new DeploymentControllerBaseObserver(LOGGER);
             Deployment.Observer = Observer;
-            Deployment.Credentials = _account.Credentials;
+            Deployment.AWSProfileName = _account.Identifier.ProfileName;
+            Deployment.Credentials = credentials;
             Deployment.DeploymentMode = DeploymentEngineBase.DeploymentModes.RedeployNewVersion;
         }
 
@@ -38,7 +42,10 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                     Stack redeploymentStack = deployment.Tag as Stack;
                     CloudFormationUtil.DeterminePriorBucketAndConfigNames(redeploymentStack, out bucketName, out configFileKey);
                     if (string.IsNullOrEmpty(bucketName))
-                        bucketName = DefaultBucketName(_account, Deployment.Region);
+                    {
+                        var region = ToolkitContext.RegionProvider.GetRegion(Deployment.Region);
+                        bucketName = DefaultBucketName(_account, region);
+                    }
                 }
 
                 Deployment.UploadBucket = bucketName;

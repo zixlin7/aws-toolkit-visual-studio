@@ -30,12 +30,6 @@ namespace Amazon.AWSToolkit.SNS.Controller
         ISQSRootViewModel _sqsRootViewModel;
         CreateSubscriptionModel _model;
 
-        public CreateSubscriptionController(SNSRootViewModel snsRootViewModel, string topicArn)
-            : this(snsRootViewModel, new CreateSubscriptionModel(snsRootViewModel.CurrentEndPoint.RegionSystemName))
-        {
-            this._model.TopicArn = topicArn;
-        }
-
         public CreateSubscriptionController(SNSRootViewModel snsRootViewModel, CreateSubscriptionModel model)
         {
             this._snsRootViewModel = snsRootViewModel;
@@ -94,19 +88,14 @@ namespace Amazon.AWSToolkit.SNS.Controller
 
         void AttemptedToGivePermissionOnQueue()
         {
-           if (this._sqsClient == null)
+           if (this._sqsClient == null || string.IsNullOrWhiteSpace(_model.EndpointSqsUrl))
+           {
                return;
+           }
 
            try
            {
-               string[] tokens = this._model.Endpoint.Split(':');
-                var sqsConfig = new AmazonSQSConfig();
-                this._sqsRootViewModel.CurrentEndPoint.ApplyToClientConfig(sqsConfig);
-
-               string queryUrl = sqsConfig.ServiceURL;
-               if (!queryUrl.EndsWith("/"))
-                   queryUrl += "/";
-               queryUrl += string.Format("{0}/{1}", tokens[4], tokens[5]);
+               var queryUrl = _model.EndpointSqsUrl;
 
                var getRequest = this._sqsClient.GetQueueAttributes(new GetQueueAttributesRequest()
                {

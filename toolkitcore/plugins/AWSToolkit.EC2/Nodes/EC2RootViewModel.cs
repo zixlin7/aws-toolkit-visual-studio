@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.EC2.Nodes
 {
@@ -10,8 +11,8 @@ namespace Amazon.AWSToolkit.EC2.Nodes
         EC2RootViewMetaNode _metaNode;
         AccountViewModel _accountViewModel;
 
-        public EC2RootViewModel(AccountViewModel accountViewModel)
-            : base(accountViewModel.MetaNode.FindChild <EC2RootViewMetaNode>(), accountViewModel, "Amazon EC2")
+        public EC2RootViewModel(AccountViewModel accountViewModel, ToolkitRegion region)
+            : base(accountViewModel.MetaNode.FindChild <EC2RootViewMetaNode>(), accountViewModel, "Amazon EC2", region)
         {
             this._metaNode = base.MetaNode as EC2RootViewMetaNode;
             this._accountViewModel = accountViewModel;

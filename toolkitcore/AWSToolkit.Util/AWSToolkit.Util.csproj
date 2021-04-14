@@ -72,8 +72,9 @@
     <Compile Include="Regions\Manifest\Partition.cs" />
     <Compile Include="Regions\Manifest\Region.cs" />
     <Compile Include="Regions\Manifest\Service.cs" />
+    <Compile Include="Regions\PartitionIds.cs" />
     <Compile Include="Regions\RegionProvider.cs" />
-    <Compile Include="Regions\ServiceName.cs" />
+    <Compile Include="Regions\ServiceNames.cs" />
     <Compile Include="Regions\ToolkitRegion.cs" />
     <Compile Include="ResourceFetchers\AssemblyResourceFetcher.cs" />
     <Compile Include="ResourceFetchers\CachingResourceFetcher.cs" />
@@ -140,12 +141,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\AccountTypes.xml">
-      <Link>HostedFiles\AccountTypes.xml</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(BuildRoot)\hostedfiles\ServiceEndPoints.xml">
-      <Link>HostedFiles\ServiceEndPoints.xml</Link>
-    </EmbeddedResource>
     <EmbeddedResource Include="$(BuildRoot)\hostedfiles\endpoints.json">
       <Link>HostedFiles\endpoints.json</Link>
     </EmbeddedResource>
@@ -386,7 +381,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup Condition="!Exists('$(BuildRoot)\hostedfiles\ServiceEndPoints.xml') Or !Exists('$(BuildRoot)\hostedfiles\endpoints.json')">
+  <PropertyGroup Condition="!Exists('$(BuildRoot)\hostedfiles\endpoints.json')">
     <PreBuildEvent>"$(MSBuildToolsPath)\msbuild.exe" "$(SolutionDir)\..\buildtools\build.proj" -t:get-latest-endpoint-data</PreBuildEvent>
   </PropertyGroup>
 </Project>

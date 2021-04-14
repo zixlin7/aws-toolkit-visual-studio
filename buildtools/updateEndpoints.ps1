@@ -1,7 +1,6 @@
 # This script downloads service endpoints files used by the Toolkit
 # The endpoints files are bundled as resources within the Toolkit at build time
 param (
-    [string]$endpointsXmlFileName = "ServiceEndPoints.xml",
     [string]$endpointsJsonFileName = "endpoints.json",
     [Parameter(Mandatory=$true)][string]$configuration,
     [Parameter(Mandatory=$true)][string]$s3BucketName,
@@ -31,11 +30,6 @@ function Get-Endpoints-File {
         }
     }
 }
-
-# Retrieve the old XML based endpoints file (ServiceEndPoints.xml)
-$endpointsXmlFullPath = "$hostedfilesFolder\$endpointsXmlFileName"
-$endpointsXmlUrl = "http://$s3BucketName.s3.$s3BucketRegion.amazonaws.com/$endpointsXmlFileName"
-Get-Endpoints-File -configuration $configuration -outputPath $endpointsXmlFullPath -url $endpointsXmlUrl
 
 # Retrieve the new JSON based endpoints file (endpoints.json)
 $endpointsJsonFullPath = "$hostedfilesFolder\$endpointsJsonFileName"

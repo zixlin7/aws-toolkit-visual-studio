@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Windows.Controls;
 
-using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 
 using Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageUI;
@@ -57,17 +56,12 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageControllers
         {
             if (_pageUI == null)
             {
-                _pageUI = new NodeProjectTypePage(this);
-                this._pageUI.PropertyChanged += new PropertyChangedEventHandler(_pageUI_PropertyChanged);
-                this._pageUI.DataContext = this;
+                _pageUI = new NodeProjectTypePage(ToolkitFactory.Instance.ToolkitContext);
+                _pageUI.PropertyChanged += new PropertyChangedEventHandler(_pageUI_PropertyChanged);
+                _pageUI.Connection.PropertyChanged += new PropertyChangedEventHandler(_pageUI_PropertyChanged);
 
-                AccountViewModel account;
-                RegionEndPointsManager.RegionEndPoints region;
-
-                account = ToolkitFactory.Instance.Navigator.SelectedAccount;
-                region = ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints;
-
-                this._pageUI.Initialize(account, region);
+                _pageUI.Connection.Account = ToolkitFactory.Instance.Navigator.SelectedAccount;
+                _pageUI.Connection.Region = ToolkitFactory.Instance.Navigator.SelectedRegion;
             }
 
             return _pageUI;
@@ -118,6 +112,11 @@ namespace Amazon.AWSToolkit.Lambda.TemplateWizards.WizardPages.PageControllers
                     return true;
                 if (this._pageUI.CreationMode == CreationMode.ExistingFunction)
                 {
+                    if (!_pageUI.Connection.ConnectionIsValid || _pageUI.Connection.IsValidating)
+                    {
+                        return false;
+                    }
+
                     if (this._pageUI.SelectedAccount != null && this._pageUI.SelectedRegion != null && !string.IsNullOrEmpty(this._pageUI.SelectedExistingFunctionName))
                         return true;
                 }

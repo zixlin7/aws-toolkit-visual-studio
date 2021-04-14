@@ -13,7 +13,9 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages
             {
                 return rootViewModel.CloudFormationClient;
             }
-            return new AmazonCloudFormationClient(accountViewModel.Credentials, Amazon.RegionEndpoint.USEast1);
+
+            var region = ToolkitFactory.Instance.RegionProvider.GetRegion(RegionEndpoint.USEast1.SystemName);
+            return accountViewModel.CreateServiceClient<AmazonCloudFormationClient>(region);
         }
     }
 }

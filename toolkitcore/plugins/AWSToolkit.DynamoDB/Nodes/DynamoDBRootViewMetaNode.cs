@@ -1,22 +1,30 @@
 ﻿using System.Collections.Generic;
 
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 
 using Amazon.AWSToolkit.DynamoDB.Util;
+using Amazon.AWSToolkit.Regions;
+using Amazon.DynamoDBv2;
 
 namespace Amazon.AWSToolkit.DynamoDB.Nodes
 {
     public class DynamoDBRootViewMetaNode : ServiceRootViewMetaNode
     {
-        public const string DYNAMODB_ENDPOINT_LOOKUP = "DynamoDB";
+        private readonly ToolkitContext _toolkitContext;
 
-        public override string EndPointSystemName => DYNAMODB_ENDPOINT_LOOKUP;
-
-        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
+        public DynamoDBRootViewMetaNode(ToolkitContext toolkitContext)
         {
-            return new DynamoDBRootViewModel(account);
+            _toolkitContext = toolkitContext;
+        }
+
+        public override string SdkEndpointServiceName => DynamoDBConstants.ServiceNames.DynamoDb;
+
+        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account, ToolkitRegion region)
+        {
+            return new DynamoDBRootViewModel(account, region, _toolkitContext.RegionProvider);
         }
 
         public DynamoDBTableViewMetaNode DynamoDBTableViewMetaNode => this.FindChild<DynamoDBTableViewMetaNode>();
@@ -49,7 +57,8 @@ namespace Amazon.AWSToolkit.DynamoDB.Nodes
         {
             DynamoDBRootViewModel rootModel = focus as DynamoDBRootViewModel;
             string url = string.Format("http://localhost:{0}", DynamoDBLocalManager.Instance.LastConfiguredPort);
-            RegionEndPointsManager.GetInstance().LocalRegion.RegisterEndPoint(DynamoDBRootViewMetaNode.DYNAMODB_ENDPOINT_LOOKUP, url);
+
+            _toolkitContext.RegionProvider.SetLocalEndpoint(DynamoDBConstants.ServiceNames.DynamoDb, url);
             rootModel.UpdateDynamoDBLocalState();
         }
 

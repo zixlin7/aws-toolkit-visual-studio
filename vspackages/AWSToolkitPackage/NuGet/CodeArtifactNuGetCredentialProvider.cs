@@ -8,6 +8,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CodeArtifact.CredentialProvider;
 using Amazon.AWSToolkit.CodeArtifact.Utils;
 using Amazon.AWSToolkit.CodeArtifact.View;
+using Amazon.AWSToolkit.Regions;
 using Amazon.CodeArtifact;
 using Amazon.CodeArtifact.Model;
 using Amazon.Runtime;
@@ -94,7 +95,12 @@ namespace Amazon.AWSToolkit.NuGet
                 {
                     throw new Exception($"Failed to find profile {profileName}");
                 }
-                return account.Credentials;
+                var region = RegionEndpoint.GetBySystemName(codeArtifactUri.Region);
+                return ToolkitFactory.Instance.CredentialManager.GetAwsCredentials(account.Identifier,
+                    new ToolkitRegion
+                    {
+                        PartitionId = region.PartitionName, Id = region.SystemName, DisplayName = region.DisplayName
+                    });
             }
             LOGGER.Warn("Credentials were null. Using the Fallback credentials");
             return FallbackCredentialsFactory.GetCredentials();
@@ -133,7 +139,7 @@ namespace Amazon.AWSToolkit.NuGet
             }
             foreach (var account in rootViewModel.RegisteredAccounts)
             {
-                if (account.Profile.Name == profileName)
+                if (account.Identifier.ProfileName == profileName)
                 {
                     return account;
                 }

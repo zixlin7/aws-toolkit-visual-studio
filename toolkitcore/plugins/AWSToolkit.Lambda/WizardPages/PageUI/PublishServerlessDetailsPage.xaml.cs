@@ -1,6 +1,4 @@
-﻿using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
-using Amazon.AWSToolkit.Lambda.Nodes;
+﻿using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 using Amazon.S3;
@@ -14,7 +12,11 @@ using System.Windows;
 using System.Windows.Controls;
 
 using Amazon.AWSToolkit.CloudFormation;
+using Amazon.AWSToolkit.CommonUI.Components;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Lambda.View.Components;
+using Amazon.AWSToolkit.Util;
+using Amazon.Lambda;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 {
@@ -24,31 +26,35 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
     public partial class PublishServerlessDetailsPage : INotifyPropertyChanged
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(PublishServerlessDetailsPage));
+        public static readonly string LambdaServiceName = new AmazonLambdaConfig().RegionEndpointServiceName;
+
+        private const int AccountRegionChangedDebounceMs = 250;
 
         public IAWSWizardPageController PageController { get; set; }
+        public AccountAndRegionPickerViewModel Connection { get; }
+
+        private readonly DebounceDispatcher _accountRegionChangeDebounceDispatcher = new DebounceDispatcher();
 
         private string SeedS3Bucket { get; set; }
         private string SeedStackName { get; set; }
 
-        public PublishServerlessDetailsPage()
+        public PublishServerlessDetailsPage(IAWSWizardPageController pageController, ToolkitContext toolkitContext)
         {
-            InitializeComponent();
-            DataContext = this;
-        }
+            Connection = new AccountAndRegionPickerViewModel(toolkitContext);
+            Connection.SetServiceFilter(new List<string>() {LambdaServiceName});
 
-        public PublishServerlessDetailsPage(IAWSWizardPageController pageController)
-            : this()
-        {
             InitializeComponent();
+
+            DataContext = this;
 
             PageController = pageController;
             var hostWizard = PageController.HostingWizard;
 
-            var userAccount = hostWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
-            var regionEndpoints = hostWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+            var userAccount = hostWizard.GetSelectedAccount(UploadFunctionWizardProperties.UserAccount);
+            var region = hostWizard.GetSelectedRegion(UploadFunctionWizardProperties.Region);
 
-            this._ctlAccountAndRegion.Initialize(userAccount, regionEndpoints, new string[] { LambdaRootViewMetaNode.LAMBDA_ENDPOINT_LOOKUP });
-            this._ctlAccountAndRegion.PropertyChanged += _ctlAccountAndRegion_PropertyChanged;
+            Connection.Account = userAccount;
+            Connection.Region = region;
 
             this.SeedS3Bucket = hostWizard[UploadFunctionWizardProperties.S3Bucket] as string;
             this.SeedStackName = hostWizard[UploadFunctionWizardProperties.StackName] as string;
@@ -57,10 +63,6 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
             this._ctlPersistSettings.IsChecked = true;
         }
-
-        public AccountViewModel SelectedAccount => _ctlAccountAndRegion.SelectedAccount;
-
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion => _ctlAccountAndRegion.SelectedRegion;
 
         public string StackName
         {
@@ -83,15 +85,24 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
         }
 
-        void _ctlAccountAndRegion_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        void ConnectionChanged(object sender, EventArgs e)
         {
-            if (this._ctlAccountAndRegion.SelectedAccount == null || this._ctlAccountAndRegion.SelectedRegion == null)
+            if (!Connection.ConnectionIsValid)
+            {
                 return;
+            }
 
-            PageController.HostingWizard.SetProperty(UploadFunctionWizardProperties.UserAccount, this._ctlAccountAndRegion.SelectedAccount);
-            PageController.HostingWizard.SetProperty(UploadFunctionWizardProperties.Region, this._ctlAccountAndRegion.SelectedRegion);
+            PageController.HostingWizard.SetSelectedAccount(Connection.Account, UploadFunctionWizardProperties.UserAccount);
+            PageController.HostingWizard.SetSelectedRegion(Connection.Region, UploadFunctionWizardProperties.Region);
 
-            this.UpdateExistingResources();
+            // Prevent multiple loads caused by property changed events in rapid succession
+            _accountRegionChangeDebounceDispatcher.Debounce(AccountRegionChangedDebounceMs, _ =>
+            {
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
+                {
+                    this.UpdateExistingResources();
+                });
+            });
         }
 
         void UpdateExistingResources()
@@ -101,11 +112,16 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
             try
             {
-                if (this._ctlAccountAndRegion.SelectedAccount == null || this._ctlAccountAndRegion.SelectedRegion == null)
+                if (!Connection.ConnectionIsValid)
+                {
                     return;
+                }
 
-                var cloudFormationClient = this._ctlAccountAndRegion.SelectedAccount.CreateServiceClient<AmazonCloudFormationClient>(this._ctlAccountAndRegion.SelectedRegion.GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME));
-                var s3Client = this._ctlAccountAndRegion.SelectedAccount.CreateServiceClient<AmazonS3Client>(this._ctlAccountAndRegion.SelectedRegion.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME));
+                var account = Connection.Account;
+                var region = Connection.Region;
+
+                var cloudFormationClient = account.CreateServiceClient<AmazonCloudFormationClient>(region);
+                var s3Client = account.CreateServiceClient<AmazonS3Client>(region);
 
                 Task task1 = Task.Run(() =>
                 {
@@ -191,6 +207,10 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         {
             get
             {
+                if (!Connection.ConnectionIsValid || Connection.IsValidating)
+                {
+                    return false;
+                }
                 if (string.IsNullOrEmpty(this.StackName))
                 {
                     return false;
@@ -226,12 +246,13 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
         private string CreateBucket()
         {
-            var account = this._ctlAccountAndRegion.SelectedAccount;
-            if (account == null)
+            if (!Connection.ConnectionIsValid)
+            {
                 return null;
-            var region = this._ctlAccountAndRegion.SelectedRegion;
-            if (region == null)
-                return null;
+            }
+
+            var account = Connection.Account;
+            var region = Connection.Region;
 
             IAmazonS3 s3Client = account.CreateServiceClient<AmazonS3Client>(region);
 

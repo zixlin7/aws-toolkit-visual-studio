@@ -36,7 +36,6 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
         // used to avoid server trips to find x86/x64 architecture and thus instance types if
         // user flailing around with templates/custom amis
         readonly Dictionary<string, Amazon.EC2.Model.Image> _amiArchitectures = new Dictionary<string, Amazon.EC2.Model.Image>();
-        readonly Dictionary<string, IAmazonEC2> _ec2ClientsByAccountAndRegion = new Dictionary<string, IAmazonEC2>();
 
         #region IAWSWizardPageController Members
 
@@ -280,14 +279,14 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
 
         IEnumerable<ToolkitAMIManifest.ContainerAMI> LoadAvailableContainers()
         {
-            var region = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
+            var region = HostingWizard.GetSelectedRegion();
             try
             {
-                return ToolkitAMIManifest.Instance.QueryWebDeploymentContainers(ToolkitAMIManifest.HostService.CloudFormation, region.SystemName);
+                return ToolkitAMIManifest.Instance.QueryWebDeploymentContainers(ToolkitAMIManifest.HostService.CloudFormation, region.Id);
             }
             catch (Exception e)
             {
-                LOGGER.Error(string.Format("Failed to obtain deployment container types for region {0}, error {1}", region.SystemName, e.Message));
+                LOGGER.Error(string.Format("Failed to obtain deployment container types for region {0}, error {1}", region.Id, e.Message));
             }
 
             return new List<ToolkitAMIManifest.ContainerAMI>();
@@ -296,8 +295,8 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
         void LoadExistingKeyPairs()
         {
             _keypairsFetchPending = true;
-            new QueryKeyPairNamesWorker(((Account.AccountViewModel)HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount]),
-                                        ((RegionEndPointsManager.RegionEndPoints)HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion]).SystemName,
+            new QueryKeyPairNamesWorker(HostingWizard.GetSelectedAccount(),
+                                        HostingWizard.GetSelectedRegion().Id,
                                         EC2Client,
                                         HostingWizard.Logger,
                                         new QueryKeyPairNamesWorker.DataAvailableCallback(OnKeyPairsAvailable));
@@ -350,22 +349,10 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
         {
             get
             {
-                var rep = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
-                var selectedAccount = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
+                var region = HostingWizard.GetSelectedRegion();
+                var selectedAccount = HostingWizard.GetSelectedAccount();
 
-                var accountAndRegion = string.Concat(selectedAccount.Credentials.GetCredentials().AccessKey, rep.SystemName);
-                IAmazonEC2 ec2Client;
-                if (!this._ec2ClientsByAccountAndRegion.ContainsKey(accountAndRegion))
-                {
-                    var ec2Config = new AmazonEC2Config ();
-                    rep.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).ApplyToClientConfig(ec2Config);
-                    ec2Client = new AmazonEC2Client(selectedAccount.Credentials, ec2Config);
-                    this._ec2ClientsByAccountAndRegion.Add(accountAndRegion, ec2Client);
-                }
-                else
-                    ec2Client = this._ec2ClientsByAccountAndRegion[accountAndRegion];
-
-                return ec2Client;
+                return selectedAccount.CreateServiceClient<AmazonEC2Client>(region);
             }
         }
 

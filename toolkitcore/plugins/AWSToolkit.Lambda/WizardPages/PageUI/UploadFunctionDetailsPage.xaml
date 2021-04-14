@@ -41,9 +41,11 @@
                 </Grid.RowDefinitions>
 
                 <commoncomponents:AccountAndRegionPicker
-                    Name="_ctlAccountAndRegion"
                     Grid.Row="0"
-                    Margin="0 0 0 9" />
+                    Margin="0 0 0 9"
+                    DataContext="{Binding ViewModel.Connection}"
+                    ConnectionChanged="AccountAndRegion_ConnectionChanged"
+                    />
 
             </Grid>
 

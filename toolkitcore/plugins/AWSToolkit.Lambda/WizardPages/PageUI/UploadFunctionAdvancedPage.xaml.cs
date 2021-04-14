@@ -1,5 +1,4 @@
-﻿using Amazon.AWSToolkit.Account;
-using Amazon.AWSToolkit.CommonUI;
+﻿using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.Components;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.EC2.Model;
@@ -183,16 +182,15 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 }
                 stepName = "userConfirmed";
 
-                var account = PageController.HostingWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
-                var regionEndPoints = PageController.HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+                var account = PageController.HostingWizard.GetSelectedAccount(UploadFunctionWizardProperties.UserAccount);
+                var region = PageController.HostingWizard.GetSelectedRegion(UploadFunctionWizardProperties.Region);
 
-                if (account == null || regionEndPoints == null)
+                if (account == null || region == null)
                 {
                     return;
                 }
 
-                var iamRegionEndpoint = regionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
-                using (var iamClient = account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(iamRegionEndpoint))
+                using (var iamClient = account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(region))
                 {
                     stepName = "createdClient";
 
@@ -317,17 +315,15 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         private void IntializeIAMPickerForAccountAsync(string selectedRole)
         {
             // could check here if we're already bound to this a/c and region
-            var account = PageController.HostingWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
-            var regionEndPoints = PageController.HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+            var account = PageController.HostingWizard.GetSelectedAccount(UploadFunctionWizardProperties.UserAccount);
+            var region = PageController.HostingWizard.GetSelectedRegion(UploadFunctionWizardProperties.Region);
 
-            if (account == null || regionEndPoints == null)
+            if (account == null || region == null)
             {
                 return;
             }
 
-            var iamRegionEndpoint = regionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
-
-            using (var iamClient = account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(iamRegionEndpoint))
+            using (var iamClient = account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(region))
             {
                 var promptInfo = new RoleHelper.PromptRoleInfo
                 {

@@ -297,10 +297,10 @@ namespace Amazon.AWSToolkit.RDS.WizardPages.PageControllers
 
         void QueryAvailabilityZones()
         {
-            var account = HostingWizard[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
+            var account = HostingWizard.GetSelectedAccount();
             Interlocked.Increment(ref _backgroundWorkersActive);
             new QueryAvailabilityZonesWorker(account,
-                                             ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints,
+                                             ToolkitFactory.Instance.Navigator.SelectedRegion,
                                              LOGGER,
                                              QueryAvailabilityZonesComplete);
         }

@@ -65,11 +65,11 @@ namespace Amazon.AWSToolkit.RDS
             subnetGroupMetaNode.OnDelete = new CommandInstantiator<DeleteSubnetGroupController>().Execute;
 
             var securityGroupRootMetaNode = rootNode.FindChild<RDSSecurityGroupRootViewMetaNode>();
-            securityGroupRootMetaNode.OnView = new CommandInstantiator<ViewDBSecurityGroupsController>().Execute;
+            securityGroupRootMetaNode.OnView = new ContextCommandExecutor(() => new ViewDBSecurityGroupsController(ToolkitContext)).Execute;
             securityGroupRootMetaNode.OnCreate = new CommandInstantiator<CreateSecurityGroupController>().Execute;
 
             var securityGroupMetaNode = securityGroupRootMetaNode.FindChild<RDSSecurityGroupViewMetaNode>();
-            securityGroupMetaNode.OnView = new CommandInstantiator<ViewDBSecurityGroupsController>().Execute;
+            securityGroupMetaNode.OnView = new ContextCommandExecutor(() => new ViewDBSecurityGroupsController(ToolkitContext)).Execute;
             securityGroupMetaNode.OnDelete = new CommandInstantiator<DeleteSecurityGroupController>().Execute;
         }
     }

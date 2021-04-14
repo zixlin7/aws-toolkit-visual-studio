@@ -2,21 +2,23 @@
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
+using Amazon.SQS;
 
 namespace Amazon.AWSToolkit.SQS.Nodes
 {
     public class SQSRootViewMetaNode : ServiceRootViewMetaNode
     {
-        public const string SQS_ENDPOINT_LOOKUP = "SQS";
+        private static readonly string SQSServiceName = new AmazonSQSConfig().RegionEndpointServiceName;
 
-        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
+        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account, ToolkitRegion region)
         {
-            return new SQSRootViewModel(account);
+            return new SQSRootViewModel(account, region);
         }
 
         public SQSQueueViewMetaNode SQSViewMetaNode => this.FindChild<SQSQueueViewMetaNode>();
 
-        public override string EndPointSystemName => SQS_ENDPOINT_LOOKUP;
+        public override string SdkEndpointServiceName => SQSServiceName;
 
         public ActionHandlerWrapper.ActionHandler OnCreate
         {

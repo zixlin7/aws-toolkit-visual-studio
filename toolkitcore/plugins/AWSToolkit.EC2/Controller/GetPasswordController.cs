@@ -43,10 +43,10 @@ namespace Amazon.AWSToolkit.EC2.Controller
             }
 
             if (KeyPairLocalStoreManager.Instance.DoesPrivateKeyExist(this._featureViewModel.AccountViewModel,
-                this._featureViewModel.RegionSystemName, this._instance.NativeInstance.KeyName))
+                this._featureViewModel.Region.Id, this._instance.NativeInstance.KeyName))
             {
                 this._model.PrivateKey = KeyPairLocalStoreManager.Instance.GetPrivateKey(this._featureViewModel.AccountViewModel,
-                    this._featureViewModel.RegionSystemName, this._instance.NativeInstance.KeyName);
+                    this._featureViewModel.Region.Id, this._instance.NativeInstance.KeyName);
                 this.DecryptPassword();
             }
 

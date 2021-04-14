@@ -101,12 +101,64 @@
             </DataTemplate>
             
             <converters:HasItemsVisibilityConverter x:Key="HasItemsVisibilityConverter" />
+            <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
 
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <DockPanel>
-        <WrapPanel Orientation="Horizontal" Margin="6,0,0,6" DockPanel.Dock="Top">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- This grid shows the Connection Warning status if the Credentials are not valid -->
+        <Grid
+            Grid.Row="0" Grid.Column="0"
+            Margin="0 0 0 6"
+            Background="{DynamicResource awsFieldRequiredBackgroundBrushKey}"
+            Visibility="{Binding IsAccountValid, Converter={StaticResource InverseBooleanToVisibilityConverter}}"
+            >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Image
+                Grid.Row="0" Grid.Column="0"
+                Height="16" Width="16"
+                Margin="9 3 0 3"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                DataContext="{DynamicResource CommonIcons}"
+                Source="{Binding Source={StaticResource VsImages}, Path=StatusWarning}" />
+            <TextBlock
+                Grid.Row="0" Grid.Column="1"
+                Margin="9 3 0 3"
+                TextWrapping="Wrap"
+                Foreground="{DynamicResource awsFieldRequiredTextForegroundBrushKey}"
+                Text="{Binding AccountValidationMessage}" />
+            <Button
+                Grid.Row="0" Grid.Column="2"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Margin="9 3 9 3"
+                Height="23" Width="50"
+                Command="{Binding RefreshConnection}"
+                Content="Retry"
+                />
+        </Grid>
+
+        <!-- Shows a row of command links, like Clone, Create, and Sign out -->
+        <WrapPanel 
+            Grid.Row="1" Grid.Column="0"
+            Orientation="Horizontal" Margin="6,0,0,6" 
+            >
             <Button Style="{StaticResource ActionLinkButton}" 
                     KeyboardNavigation.TabIndex="0" 
                     Command="{Binding CloneCommand}"
@@ -126,24 +178,26 @@
                     />
         </WrapPanel>
 
+        <!-- Lists the repos synced locally -->
         <ListBox x:Name="_ctlRepositoriesList" 
-                  Style="{DynamicResource awsListBoxStyle}"
-                  ItemsSource="{Binding Repositories, UpdateSourceTrigger=PropertyChanged}"
-                  SelectedItem="{Binding Path=SelectedRepository}"
-                  ItemContainerStyle="{StaticResource RepositoriesListItemContainerStyle}"
-                  ItemTemplate="{StaticResource RepositoriesListItemDataTemplate}"
-                  MouseDoubleClick="OnRepositoryMouseDoubleClick"
-                  Background="Transparent"
-                  BorderBrush="Transparent"
-                  VerticalAlignment="Top"
-                  HorizontalContentAlignment="Stretch"
-                  TextSearch.TextPath="Name"
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                  VirtualizingPanel.IsVirtualizing="True"
-                  VirtualizingPanel.ScrollUnit="Pixel"
-                  VirtualizingPanel.IsVirtualizingWhenGrouping="True"
-                  Visibility="{Binding Repositories, Converter={StaticResource HasItemsVisibilityConverter}}"
-                  />
-    </DockPanel>
+             Grid.Row="2" Grid.Column="0"
+             Style="{DynamicResource awsListBoxStyle}"
+             ItemsSource="{Binding Repositories, UpdateSourceTrigger=PropertyChanged}"
+             SelectedItem="{Binding Path=SelectedRepository}"
+             ItemContainerStyle="{StaticResource RepositoriesListItemContainerStyle}"
+             ItemTemplate="{StaticResource RepositoriesListItemDataTemplate}"
+             MouseDoubleClick="OnRepositoryMouseDoubleClick"
+             Background="Transparent"
+             BorderBrush="Transparent"
+             VerticalAlignment="Top"
+             HorizontalContentAlignment="Stretch"
+             TextSearch.TextPath="Name"
+             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+             VirtualizingPanel.IsVirtualizing="True"
+             VirtualizingPanel.ScrollUnit="Pixel"
+             VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+             Visibility="{Binding Repositories, Converter={StaticResource HasItemsVisibilityConverter}}"
+             />
+    </Grid>
 
 </commonui:BaseAWSUserControl>

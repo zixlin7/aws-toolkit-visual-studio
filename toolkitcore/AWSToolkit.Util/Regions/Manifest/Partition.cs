@@ -33,5 +33,10 @@ namespace Amazon.AWSToolkit.Regions.Manifest
         /// Keyed by <see cref="ServiceName"/>
         /// </summary>
         public Dictionary<string, Service> Services { get; set; }
+
+        /// <summary>
+        /// The display name for the partition in the UI
+        /// </summary>
+        public string DisplayName => $"{PartitionName} ({Id})";
     }
 }

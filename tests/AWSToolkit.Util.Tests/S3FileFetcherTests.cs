@@ -10,7 +10,7 @@ namespace Amazon.AWSToolkit.Util.Tests
     {
         private const string DummyContentFromUserFolderLocation = "Dummy content found in user-configured location";
         private const string DummyContentFromCacheLocation = "Dummy content found in cache location";
-        private const string EndpointsFilename = "ServiceEndPoints.xml"; // use real name so we detect accidental cache hits from probing
+        private const string EndpointsFilename = "endpoints.json"; // use real name so we detect accidental cache hits from probing
 
         /// <summary>
         /// Tests that if a user-configured location is set for hosted files, the endpoints 
@@ -110,7 +110,7 @@ namespace Amazon.AWSToolkit.Util.Tests
             mock.Setup(fetcher => fetcher.ConstructWebRequest("www.dummy.com")).Returns((HttpWebRequest) null);
 
             var s3FileFetcher = new S3FileFetcher(mock.Object);
-            var stream = s3FileFetcher.OpenFileStream("ServiceEndPoints.xml", S3FileFetcher.CacheMode.Never);
+            var stream = s3FileFetcher.OpenFileStream(EndpointsFilename, S3FileFetcher.CacheMode.Never);
 
             Assert.NotNull(stream);
             Assert.Equal(S3FileFetcher.ResolvedLocation.Resources, s3FileFetcher.ResolvedContentLocation);
@@ -124,7 +124,8 @@ namespace Amazon.AWSToolkit.Util.Tests
             Assert.False(string.IsNullOrEmpty(content));
 
             // we should have got back a real document, so verify (we could do deeper checks here too on the real content)
-            Assert.StartsWith("<?xml version=\"1.0\"", content);
+            Assert.StartsWith("{", content);
+            Assert.Contains("\"description\" : \"Africa (Cape Town)\"", content);
         }
 
     }

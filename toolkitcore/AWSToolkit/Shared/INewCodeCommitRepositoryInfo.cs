@@ -1,4 +1,5 @@
 ﻿using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.Shared
 {
@@ -15,7 +16,7 @@ namespace Amazon.AWSToolkit.Shared
         /// <summary>
         /// The region in which the repository will be created.
         /// </summary>
-        RegionEndPointsManager.RegionEndPoints Region { get; }
+        ToolkitRegion Region { get; }
 
         /// <summary>
         /// The name for the repository.

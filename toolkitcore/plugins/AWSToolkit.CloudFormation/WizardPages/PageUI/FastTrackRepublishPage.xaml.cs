@@ -5,6 +5,7 @@ using System.ComponentModel;
 
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Regions;
 using Amazon.CloudFormation.Model;
 
 namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
@@ -28,7 +29,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
         public IAWSWizardPageController PageController { get; set; }
 
         public void SetRedeploymentMessaging(AccountViewModel account,
-                                             RegionEndPointsManager.RegionEndPoints region,
+                                             ToolkitRegion region,
                                              Stack stack)
         {
             // replace the 'please wait' designer text with specific data about the stack 

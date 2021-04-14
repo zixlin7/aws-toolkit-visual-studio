@@ -1,0 +1,4 @@
+{
+    "Type": "Breaking Change",
+    "Description": "A change was made to the way the Toolkit records which account is used by the AWS Explorer. The first time you launch the Toolkit after updating, the AWS Explorer will not automatically select the account you used previously."
+}

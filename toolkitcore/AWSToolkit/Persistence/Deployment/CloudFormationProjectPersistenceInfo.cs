@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using ThirdParty.Json.LitJson;
 using Amazon.AWSToolkit.PluginServices.Deployment;
+using Amazon.AWSToolkit.Settings;
 
 namespace Amazon.AWSToolkit.Persistence.Deployment
 {
@@ -136,7 +137,7 @@ namespace Amazon.AWSToolkit.Persistence.Deployment
                     if (data[REGION] != null)
                         region = (string)data[REGION];
                     else
-                        region = RegionEndPointsManager.GetInstance().GetDefaultRegionEndPoints().SystemName;
+                        region = ToolkitFactory.Instance.RegionProvider.GetRegion(ToolkitSettings.Instance.LastSelectedRegion)?.Id ?? ToolkitFactory.Instance.RegionProvider.GetRegion(RegionEndpoint.USEast1.SystemName)?.Id;
 
                     if (!string.IsNullOrEmpty(stackName))
                     {

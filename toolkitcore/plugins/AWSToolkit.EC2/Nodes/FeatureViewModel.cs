@@ -1,5 +1,6 @@
 ﻿using Amazon.EC2;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.EC2.Nodes
 {
@@ -15,24 +16,12 @@ namespace Amazon.AWSToolkit.EC2.Nodes
 
         public IAmazonEC2 EC2Client => this._ec2Client;
 
-        public string RegionSystemName
+        public ToolkitRegion Region
         {
             get
             {
                 IEndPointSupport support = this.Parent as IEndPointSupport;
-                return support.CurrentEndPoint.RegionSystemName;
-            }
-        }
-
-        public string RegionDisplayName
-        {
-            get
-            {
-                var region = RegionEndPointsManager.GetInstance().GetRegion(this.RegionSystemName);
-                if (region == null)
-                    return string.Empty;
-
-                return region.DisplayName;
+                return support.Region;
             }
         }
     }

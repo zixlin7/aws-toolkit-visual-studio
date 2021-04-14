@@ -42,9 +42,9 @@ namespace Amazon.AWSToolkit.Util
                         }
 
                         DisposeTimer();
-
-                        action.Invoke(param);
                     }
+
+                    action.Invoke(param);
                 };
 
                 _timer.Start();

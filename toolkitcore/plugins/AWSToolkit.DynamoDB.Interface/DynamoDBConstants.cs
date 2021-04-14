@@ -1,10 +1,16 @@
 ﻿using System;
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 
 namespace Amazon.AWSToolkit.DynamoDB
 {
     public static class DynamoDBConstants
     {
+        public static class ServiceNames
+        {
+            public static readonly string DynamoDb = new AmazonDynamoDBConfig().RegionEndpointServiceName;
+        }
+
         public const string TYPE_STRING = "S";
         public const string TYPE_STRING_SET = "SS";
         public const string TYPE_NUMERIC = "N";

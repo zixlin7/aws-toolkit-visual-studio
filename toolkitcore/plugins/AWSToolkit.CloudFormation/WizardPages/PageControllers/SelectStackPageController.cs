@@ -7,6 +7,8 @@ using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.CloudFormation.Model;
 using Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Regions;
 
 using log4net;
 
@@ -15,14 +17,15 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
     public class SelectStackPageController : IAWSWizardPageController
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(SelectTemplateController));
-
+        private readonly ToolkitContext _toolkitContext;
 
         SelectStackPage _pageUI;
 
         #region IAWSWizardPageController Members
 
-        public SelectStackPageController()
+        public SelectStackPageController(ToolkitContext toolkitContext)
         {
+            _toolkitContext = toolkitContext;
         }
 
         public string PageID => GetType().FullName;
@@ -51,12 +54,12 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
         {
             if (_pageUI == null)
             {
-                _pageUI = new SelectStackPage(this);
-                this._pageUI.PropertyChanged += new PropertyChangedEventHandler(_pageUI_PropertyChanged);
-                this._pageUI.DataContext = this;
+                _pageUI = new SelectStackPage(_toolkitContext);
+                _pageUI.PropertyChanged += new PropertyChangedEventHandler(_pageUI_PropertyChanged);
+                _pageUI.Connection.PropertyChanged += new PropertyChangedEventHandler(_pageUI_PropertyChanged);
 
                 AccountViewModel account = null;
-                RegionEndPointsManager.RegionEndPoints region = null;
+                ToolkitRegion region = null;
 
                 if (HostingWizard.IsPropertySet(DeploymentWizardProperties.SeedData.propkey_SeedAccountGuid))
                 {
@@ -69,15 +72,16 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
                 {
                     lastRegionDeployedTo = HostingWizard[DeploymentWizardProperties.SeedData.propkey_LastRegionDeployedTo] as string;
                     if (!string.IsNullOrEmpty(lastRegionDeployedTo))
-                        region = RegionEndPointsManager.GetInstance().GetRegion(lastRegionDeployedTo);
+                        region = _toolkitContext.RegionProvider.GetRegion(lastRegionDeployedTo);
                 }
 
                 if (account == null)
                     account = ToolkitFactory.Instance.Navigator.SelectedAccount;
                 if (region == null)
-                    region = ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints;
+                    region = ToolkitFactory.Instance.Navigator.SelectedRegion;
 
-                this._pageUI.Initialize(account, region);
+                _pageUI.Connection.Account = account;
+                _pageUI.Connection.Region = region;
             }
 
             return _pageUI;
@@ -123,6 +127,10 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
         {
             get
             {
+                if (!_pageUI.Connection.ConnectionIsValid || _pageUI.Connection.IsValidating)
+                {
+                    return false;
+                } 
                 if (HostingWizard.GetProperty(CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedAccount) == null)
                     return false;
                 if (HostingWizard.GetProperty(CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedRegion) == null)
@@ -148,8 +156,8 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageControllers
 
 //                HostingWizard[CloudFormationDeploymentWizardProperties.AWSOptionsProperties.propkey_SNSTopic] = this._model.SNSTopic;
 
-                HostingWizard[CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedAccount] = this._pageUI.SelectedAccount;
-                HostingWizard[CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedRegion] = this._pageUI.SelectedRegion;
+                HostingWizard[CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedAccount] = this._pageUI.Connection.Account;
+                HostingWizard[CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedRegion] = this._pageUI.Connection.Region;
                 HostingWizard[DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName] = this._pageUI.StackName;
                 HostingWizard[CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_CreateStackMode] = this._pageUI.CreateStackMode;
 

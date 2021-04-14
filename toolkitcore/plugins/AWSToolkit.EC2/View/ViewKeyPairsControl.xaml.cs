@@ -28,7 +28,7 @@ namespace Amazon.AWSToolkit.EC2.View
 
         public override string Title => string.Format("{0} EC2 Key Pairs", this._controller.RegionDisplayName);
 
-        public override string UniqueId => "KeyPairs: " + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.SettingsUniqueKey;
+        public override string UniqueId => "KeyPairs: " + this._controller.EndPointUniqueIdentifier + "_" + this._controller.Account.Identifier.Id;
 
         public override bool SupportsBackGroundDataLoad => true;
 

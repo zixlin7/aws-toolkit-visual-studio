@@ -1,4 +1,6 @@
 ﻿using System;
+
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Common.Settings;
@@ -15,6 +17,7 @@ namespace AWSToolkitPackage.Tests.FirstRun
         private readonly Mock<IToolkitSettingsWatcher> _settingsWatcher = new Mock<IToolkitSettingsWatcher>();
         private readonly Mock<IAWSToolkitShellProvider> _shellProvider = new Mock<IAWSToolkitShellProvider>();
         private readonly FakeSettingsPersistence _settingsPersistence = new FakeSettingsPersistence();
+        private readonly ToolkitContext _toolkitContext = new ToolkitContext();
 
         public FirstRunControllerTests()
         {
@@ -24,7 +27,7 @@ namespace AWSToolkitPackage.Tests.FirstRun
             _shellProvider.Setup(mock => mock.ExecuteOnUIThread(It.IsAny<Action>()))
                 .Callback<Action>(action => action());
 
-            _sut = new FirstRunController(null, _settingsWatcher.Object, _shellProvider.Object);
+            _sut = new FirstRunController(null, _settingsWatcher.Object, _shellProvider.Object, _toolkitContext);
         }
 
         [Fact]

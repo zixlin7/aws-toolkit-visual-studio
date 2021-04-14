@@ -58,8 +58,6 @@ Instructions for how to prototype and develop metrics specific to this Toolkit c
 
 ### Overriding Hosted Files
 
-"Hosted Files" refers to a bunch of different files that are hosted on S3, and that the Toolkit retrieves at runtime from S3 and/or CloudFront endpoints. This allows the Toolkit to retrieve updated manifests and content without releasing a new Toolkit version. These files are sourced from [the hostedfiles folder](hostedfiles).
-
 To locally test hosted files changes, copy the hostedfiles folder to a temporary location locally. In the Visual Studio options (_Tools_ -> _Options_), go to the _AWS Toolkit_ section, set the _Toolkit Metadata_ option to use the local filesystem, and fill in your temporary local hostedfiles location. Remember to change this option back to _Default_ once you've finished iterating.
 
 ### Known Issues
@@ -68,6 +66,24 @@ To locally test hosted files changes, copy the hostedfiles folder to a temporary
     -   You can still run and debug the Toolkit
     -   This is caused by the CodeCommit integration, which leverages TeamExplorer. Each version of Visual Studio uses a specific version of TeamExplorer, and the version for VS 2019 (TeamExplorer 16) targets .NET 4.7.2. The project responsible for producing the Toolkit VSIX targets .NET 4.6 (required for VS 2017), which results in this error.
 -   In VS 2019, you might get an error around `IAsyncQuickInfoBroker` or `Microsoft.VisualStudio.Language`. The above issue may prevent VS from fully downloading NuGet packages. If this happens, open a VS 2019 Developer Command Prompt and run `msbuild buildtools\build.proj /t:restore` to download the NuGet packages.
+
+## Hosted Files
+
+"Hosted Files" refers to a bunch of different files that are hosted on S3, and that the Toolkit retrieves at runtime from S3 and/or CloudFront endpoints. This allows the Toolkit to retrieve updated manifests and content without releasing a new Toolkit version. These files are sourced from [the hostedfiles folder](hostedfiles).
+
+It is critical that we are mindful that past and present versions of the Toolkit are in use and accessing these files. We do not want to cause crashes or otherwise impact the stability of those Toolkits.
+* Backwards compatibility must be considered when changing existing files
+* Once published, files likely cannot be deleted, unless we know that all versions of the code that is/was accessing it will successfully handle its absence.
+* When adding new files, consider the long term impacts of maintaining these files (as listed above).
+
+### Deprecated Hosted Files
+
+The following files are no longer referenced by the Toolkit, but were used in previous Toolkit releases. Care must be taken to not remove the following files from the repo:
+* AccountTypes.xml
+  * The changes to support MFA and SSO credentials in 2021 eliminated the use of this file. The Toolkit now uses Partition/Region details from the Credentials profile, previously users had to indicate if their account was based in the China or GovCloud partitions.
+* ServiceEndPoints.xml
+  * This file is published into the hosting location through internal pipelines. It is being listed here for completeness, but this file should not exist in the repo.
+  * The changes to support MFA and SSO credentials in 2021 migrated the Toolkit towards endpoints.json as the successor to this file.
 
 ## Reporting Bugs/Feature Requests
 

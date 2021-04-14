@@ -31,7 +31,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
         {            
             dndDataObjects.SetData(DataFormats.Text, this.Name);
             dndDataObjects.SetData("ARN", string.Format("arn:aws:elasticbeanstalk:{0}:{1}:environment/{2}/{3}",
-                this.ApplicationViewModel.ElasticBeanstalkRootViewModel.CurrentEndPoint.RegionSystemName, this.AccountViewModel.AccountNumber, this.ApplicationViewModel.Name, this.Name));
+                this.ApplicationViewModel.ElasticBeanstalkRootViewModel.Region.Id, ToolkitFactory.Instance.AwsConnectionManager.ActiveAccountId, this.ApplicationViewModel.Name, this.Name));
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using log4net;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Regions;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 
@@ -24,7 +25,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageWorkers
 
         public QueryInstanceProfilesWorker(
                                     AccountViewModel accountViewModel, 
-                                    RegionEndPointsManager.RegionEndPoints regionEndPoints,
+                                    ToolkitRegion region,
                                     ILog logger,
                                     DataAvailableCallback callback)
         {
@@ -32,11 +33,7 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageWorkers
 
             var bw = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
 
-            var endpoint = regionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
-            var iamConfig = new AmazonIdentityManagementServiceConfig();
-            endpoint.ApplyToClientConfig(iamConfig);
-
-            var iamClient = new AmazonIdentityManagementServiceClient(accountViewModel.Credentials, iamConfig);
+            var iamClient = accountViewModel.CreateServiceClient<AmazonIdentityManagementServiceClient>(region);
 
             bw.DoWork += Worker;
             bw.RunWorkerCompleted += WorkerCompleted;

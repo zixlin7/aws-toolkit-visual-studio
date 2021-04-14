@@ -1,25 +1,35 @@
 ﻿using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
+using Amazon.S3;
 
 namespace Amazon.AWSToolkit.S3.Nodes
 {
     public class S3RootViewMetaNode : ServiceRootViewMetaNode, IS3RootViewMetaNode
     {
+        private static readonly string S3ServiceName = new AmazonS3Config().RegionEndpointServiceName;
+
+        private readonly ToolkitContext _toolkitContext;
+
         private object _bucketsBeingDeletedLock = new object();
 
         private List<string> _bucketsBeingDeleted = new List<string>();
 
-        public const string S3_ENDPOINT_LOOKUP = "S3";
-
         public S3BucketViewMetaNode S3BucketViewMetaNode => this.FindChild<S3BucketViewMetaNode>();
 
-        public override string EndPointSystemName => S3_ENDPOINT_LOOKUP;
+        public override string SdkEndpointServiceName => S3ServiceName;
 
-        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
+        public S3RootViewMetaNode(ToolkitContext toolkitContext)
         {
-            return new S3RootViewModel(account);
+            _toolkitContext = toolkitContext;
+        }
+
+        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account, ToolkitRegion region)
+        {
+            return new S3RootViewModel(account, region, _toolkitContext.RegionProvider);
         }
 
         public ActionHandlerWrapper.ActionHandler OnCreate

@@ -1,20 +1,22 @@
 ﻿using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.CodeCommit.Interface.Nodes;
+using Amazon.AWSToolkit.Regions;
+using Amazon.CodeCommit;
 
 namespace Amazon.AWSToolkit.CodeCommit.Nodes
 {
     public class CodeCommitRootViewMetaNode : ServiceRootViewMetaNode, ICodeCommitRootViewMetaNode
     {
-        public const string CodeCommit_ENDPOINT_LOOKUP = "CodeCommit";
+        private static readonly string CodeCommitServiceName = new AmazonCodeCommitConfig().RegionEndpointServiceName;
 
         public CodeCommitRepositoryViewMetaNode CodeCommitRepositoryViewMetaNode => this.FindChild<CodeCommitRepositoryViewMetaNode>();
 
-        public override string EndPointSystemName => CodeCommit_ENDPOINT_LOOKUP;
+        public override string SdkEndpointServiceName => CodeCommitServiceName;
 
-        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
+        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account, ToolkitRegion region)
         {
-            return new CodeCommitRootViewModel(account);
+            return new CodeCommitRootViewModel(account, region);
         }
 
         public override string MarketingWebSite => "https://aws.amazon.com/codecommit/";

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
+using Amazon.AWSToolkit.Regions;
 using AWSDeployment;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
@@ -92,28 +93,26 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             var command = new DeployEnvironmentCommand(statusLogger, this._projectLocation, new string[0]);
             command.DisableInteractive = true;
             command.DeployEnvironmentOptions.WaitForUpdate = false;
-            command.Region =
-                (getValue<RegionEndPointsManager.RegionEndPoints>(CommonWizardProperties.AccountSelection
-                    .propkey_SelectedRegion)).SystemName;
+            var region = CommonWizardProperties.AccountSelection.GetSelectedRegion(DeploymentProperties);
+            command.Region = region.Id;
             deployMetric.RegionId = command.Region;
 
-            var endpoints = RegionEndPointsManager.GetInstance().GetRegion(command.Region);
             command.IAMClient =
                 this.Account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(
-                    endpoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME));
+                    region);
             command.S3Client =
                 this.Account.CreateServiceClient<Amazon.S3.AmazonS3Client>(
-                    endpoints.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME));
+                    region);
             command.EBClient =
                 this.Account.CreateServiceClient<Amazon.ElasticBeanstalk.AmazonElasticBeanstalkClient>(
-                    endpoints.GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME));
+                    region);
 
 
             try
             {
-                SetPropertiesForDeployCommand(deployMetric, command, endpoints);
+                SetPropertiesForDeployCommand(deployMetric, command, region);
 
-                EnsureRolesExist(command, endpoints);
+                EnsureRolesExist(command, region);
 
                 success = command.ExecuteAsync().GetAwaiter().GetResult();
                 deployMetric.Result = success ? Result.Succeeded : Result.Failed;
@@ -139,14 +138,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
         /// Creates the specified Role and ServiceRole if necessary
         /// </summary>
         private void EnsureRolesExist(DeployEnvironmentCommand command,
-            RegionEndPointsManager.RegionEndPoints endpoints)
+            ToolkitRegion region)
         {
             if (!string.IsNullOrWhiteSpace(command.DeployEnvironmentOptions.InstanceProfile))
             {
                 BeanstalkDeploymentEngine.ConfigureRoleAndProfile(
                     command.IAMClient,
                     command.DeployEnvironmentOptions.InstanceProfile,
-                    endpoints,
+                    region.Id,
                     this.Observer
                 );
             }
@@ -156,7 +155,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 BeanstalkDeploymentEngine.ConfigureServiceRole(
                     command.IAMClient,
                     command.DeployEnvironmentOptions.ServiceRole,
-                    endpoints,
+                    region.Id,
                     this.Observer
                 );
             }
@@ -195,15 +194,15 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
         public void SetPropertiesForDeployCommand(
             BeanstalkDeploy deployMetric,
             DeployEnvironmentCommand command,
-            RegionEndPointsManager.RegionEndPoints endPoints)
+            ToolkitRegion region)
         {
-            SetPropertiesForDeployCommand(deployMetric, command, endPoints, GetDefaultVPCSubnet);
+            SetPropertiesForDeployCommand(deployMetric, command, region, GetDefaultVPCSubnet);
         }
 
         public void SetPropertiesForDeployCommand(
             BeanstalkDeploy deployMetric,
             DeployEnvironmentCommand command,
-            RegionEndPointsManager.RegionEndPoints endPoints,
+            ToolkitRegion region,
             GetDefaultVpcSubnetFunc fnGetDefaultVpcSubnet)
         {
             var redeployMode = getValue<bool>(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy);
@@ -310,16 +309,16 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                     getValue<string>(DeploymentWizardProperties.AWSOptions.propkey_KeyPairName);
                 if (getValue<bool>(DeploymentWizardProperties.AWSOptions.propkey_CreateKeyPair))
                 {
-                    CreateKeyPair(Account, endPoints, command.DeployEnvironmentOptions.EC2KeyPair);
+                    CreateKeyPair(Account, region, command.DeployEnvironmentOptions.EC2KeyPair);
                 }
 
 
-                command.DeployEnvironmentOptions.InstanceProfile = ConfigureIAMRole(Account, endPoints);
+                command.DeployEnvironmentOptions.InstanceProfile = ConfigureIAMRole(Account, region);
                 command.DeployEnvironmentOptions.ServiceRole = getValue<string>(BeanstalkDeploymentWizardProperties
                     .AWSOptionsProperties.propkey_ServiceRoleName);
             }
 
-            command.DeployEnvironmentOptions.AdditionalOptions = BuildAdditionalOptionsCollection(endPoints,
+            command.DeployEnvironmentOptions.AdditionalOptions = BuildAdditionalOptionsCollection(region,
                 redeployMode, isLoadBalancedDeployment, fnGetDefaultVpcSubnet);
 
             var rdsSecurityGroups =
@@ -335,11 +334,9 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 (vpcSecurityGroups != null && vpcSecurityGroups.Any()))
             {
                 var ec2Client =
-                    this.Account.CreateServiceClient<Amazon.EC2.AmazonEC2Client>(
-                        endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME));
+                    this.Account.CreateServiceClient<Amazon.EC2.AmazonEC2Client>(region);
                 var rdsClient =
-                    this.Account.CreateServiceClient<Amazon.RDS.AmazonRDSClient>(
-                        endPoints.GetEndpoint(RegionEndPointsManager.RDS_SERVICE_NAME));
+                    this.Account.CreateServiceClient<Amazon.RDS.AmazonRDSClient>(region);
 
                 GetVpcDetails(out var launchIntoVpc, out var vpcId);
 
@@ -369,7 +366,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
         }
 
         public Dictionary<string, string> BuildAdditionalOptionsCollection(
-            RegionEndPointsManager.RegionEndPoints endpoints, bool redeployMode, bool isLoadBalanced,
+            ToolkitRegion region, bool redeployMode, bool isLoadBalanced,
             GetDefaultVpcSubnetFunc fnGetDefaultVpcSubnet)
         {
             var options = new Dictionary<string, string>();
@@ -406,7 +403,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                         if (string.IsNullOrEmpty(getValue<string>(BeanstalkDeploymentWizardProperties
                             .AWSOptionsProperties.propkey_ELBSubnet)))
                         {
-                            options[OptionELBSubnets] = fnGetDefaultVpcSubnet(Account, endpoints);
+                            options[OptionELBSubnets] = fnGetDefaultVpcSubnet(Account, region);
                         }
                     }
                 }

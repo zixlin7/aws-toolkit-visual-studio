@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
 {
@@ -27,7 +28,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment
             PageController = controller;
         }
 
-        public void InitializeIAM(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
+        public void InitializeIAM(AccountViewModel account, ToolkitRegion region)
         {
             this._iamPicker.Initialize(account, region, IAMCapabilityPicker.IAMMode.InstanceProfiles, BeanstalkParameters.DefaultRoleName);
         }

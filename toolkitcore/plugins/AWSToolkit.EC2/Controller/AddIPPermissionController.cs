@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.EC2.View;
 using Amazon.AWSToolkit.EC2.Model;
@@ -87,44 +86,37 @@ namespace Amazon.AWSToolkit.EC2.Controller
             this._result = new ActionResults().WithSuccess(true);
         }
 
-        public AccountViewModel CurrentAccount => this._viewModel.AccountViewModel;
 
         public List<string> GetEC2SecurityGroups(string accountNumber)
         {
             accountNumber = stripDisplayNameFromAccountNumber(accountNumber);
             List<string> securityGroups = new List<string>();
 
-            var account = ToolkitFactory.Instance.RootViewModel.AccountFromAccountNumber(accountNumber);
-            if (account == null)
+            var currentAccountNumber = ToolkitFactory.Instance.AwsConnectionManager.ActiveAccountId;
+            if (string.IsNullOrEmpty(currentAccountNumber) || !accountNumber.Equals(currentAccountNumber))
+            {
                 return securityGroups;
+            }
 
-            var endPoints = RegionEndPointsManager.GetInstance().GetRegion(this._viewModel.RegionSystemName);
-            var endPoint = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
-
-            var config = new AmazonEC2Config();
-            endPoint.ApplyToClientConfig(config);
-
-            var client = new AmazonEC2Client(account.Credentials, config);
-
+            var region = this._viewModel.Region;
+            var client = this._viewModel.AccountViewModel.CreateServiceClient<AmazonEC2Client>(region);
             var response = client.DescribeSecurityGroups(new DescribeSecurityGroupsRequest());
-
-            var currentSelectedAccount = CurrentAccount.AccountNumber ?? string.Empty;
             foreach (var group in response.SecurityGroups)
             {
                 // filter out 'self' references to group we're editing if we're listing
                 // groups owned by our initial account
                 if (string.IsNullOrEmpty(this._group.VpcId))
                 {
-                    if (currentSelectedAccount.Equals(accountNumber) 
-                            && group.GroupName.Equals(this._group.GroupName, StringComparison.OrdinalIgnoreCase))
+                    if (currentAccountNumber.Equals(accountNumber) 
+                        && group.GroupName.Equals(this._group.GroupName, StringComparison.OrdinalIgnoreCase))
                         continue;
 
                     securityGroups.Add(group.GroupName);
                 }
                 else if (string.Equals(group.VpcId, this._group.VpcId))
                 {
-                    if (currentSelectedAccount.Equals(accountNumber)
-                            && group.GroupId.Equals(this._group.GroupId, StringComparison.OrdinalIgnoreCase))
+                    if (currentAccountNumber.Equals(accountNumber)
+                        && group.GroupId.Equals(this._group.GroupId, StringComparison.OrdinalIgnoreCase))
                         continue;
                     
                     securityGroups.Add(group.GroupId);

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.ElasticBeanstalk.Model;
+using Amazon.AWSToolkit.Regions;
 using Amazon.RDS;
 using Amazon.RDS.Model;
 using log4net;
@@ -28,7 +29,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
         }
 
         public QueryRDSGroupsAndInstancesWorker(AccountViewModel accountViewModel, 
-                                                RegionEndPointsManager.RegionEndPoints region,
+                                                ToolkitRegion region,
                                                 ILog logger,
                                                 DataAvailableCallback callback)
         {
@@ -39,7 +40,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
             bw.RunWorkerCompleted += WorkerCompleted;
             bw.RunWorkerAsync(new WorkerData
             {
-                RDSClient = DeploymentWizardHelper.GetRDSClient(accountViewModel, region),
+                RDSClient = accountViewModel.CreateServiceClient<AmazonRDSClient>(region),
                 Logger = logger
             });
         }

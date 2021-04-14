@@ -2,6 +2,7 @@
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.ECS.WizardPages.PageUI;
 using System.Windows.Controls;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 {
@@ -40,8 +41,9 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         {
             if (_pageUI == null)
             {
-                _pageUI = new PushImageToECRPage(this);
+                _pageUI = new PushImageToECRPage(this, ToolkitFactory.Instance.ToolkitContext);
                 _pageUI.PropertyChanged += _pageUI_PropertyChanged;
+                _pageUI.Connection.PropertyChanged += _pageUI_PropertyChanged;
             }
 
             return _pageUI;
@@ -90,7 +92,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
         }
 
         AccountViewModel _lastSavedAccount;
-        RegionEndPointsManager.RegionEndPoints _lastSavedRegion;
+        ToolkitRegion _lastSavedRegion;
 
         bool StorePageData()
         {
@@ -105,8 +107,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             _lastSavedRegion = _pageUI.SelectedRegion;
 
 
-            HostingWizard[PublishContainerToAWSWizardProperties.UserAccount] = _pageUI.SelectedAccount;
-            HostingWizard[PublishContainerToAWSWizardProperties.Region] = _pageUI.SelectedRegion;
+            HostingWizard.SetSelectedAccount(_pageUI.SelectedAccount, PublishContainerToAWSWizardProperties.UserAccount);
+            HostingWizard.SetSelectedRegion(_pageUI.SelectedRegion, PublishContainerToAWSWizardProperties.Region);
 
             HostingWizard[PublishContainerToAWSWizardProperties.Configuration] = _pageUI.Configuration;
             HostingWizard[PublishContainerToAWSWizardProperties.DockerRepository] = _pageUI.DockerRepository.ToLower();

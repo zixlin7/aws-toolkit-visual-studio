@@ -55,6 +55,8 @@ using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Amazon.AWSToolkit.Clients;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Telemetry.Model;
@@ -64,6 +66,15 @@ using Amazon.AWSToolkit.VisualStudio.Utilities;
 using Amazon.AWSToolkit.VisualStudio.Utilities.DTE;
 using Amazon.AWSToolkit.VisualStudio.Utilities.VsAppId;
 using Amazon.AWSToolkit.CodeArtifact.Controller;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Utils;
+using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.VisualStudio.Images;
+using Amazon.Runtime;
+using Amazon.SecurityToken;
+using Task = System.Threading.Tasks.Task;
+using VsImages = Amazon.AWSToolkit.CommonUI.VsImages;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {
@@ -129,8 +140,10 @@ namespace Amazon.AWSToolkit.VisualStudio
         // registered VS command line param, /awsToolkitPlugins c:\path1[;c:\path2;c:\path3...]
         internal const string awsToolkitPluginsParam = "awsToolkitPlugins";
 
+        private RegionProvider _regionProvider;
         private ToolkitSettingsWatcher _toolkitSettingsWatcher;
-
+        private ToolkitCredentialInitializer _toolkitCredentialInitializer;
+        private ToolkitContext _toolkitContext;
         private TelemetryManager _telemetryManager;
         private TelemetryInfoBarManager _telemetryInfoBarManager;
         private DateTime _startInitializeOn;
@@ -521,8 +534,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                     dteVersion = dte.Version;
                     dteEdition = dte.Edition;
 
-                    navigator = new NavigatorControl();
-
                     RegisterProjectFactory(new CloudFormationTemplateProjectFactory(this));
                     RegisterEditorFactory(new TemplateEditorFactory(this));
 
@@ -566,30 +577,51 @@ namespace Amazon.AWSToolkit.VisualStudio
                     }
                 });
 
+                ThemeUtil.Initialize(dteVersion);
+
                 _toolkitSettingsWatcher = new ToolkitSettingsWatcher();
 
-                var productEnvironment = CreateProductEnvironment();
+                _telemetryManager = CreateTelemetryManager();
 
-                var accountManager = CreateAccountManager(navigator);
-                
-                _telemetryManager = CreateTelemetryManager(accountManager, productEnvironment);
+                _regionProvider = new RegionProvider();
+                _regionProvider.Initialize();
 
                 // shell provider is used all the time, so pre-load. Leave legacy deployment
                 // service until a plugin asks for it.
                 InstantiateToolkitShellProviderService(dteVersion);
 
+                // Enable UIs to access VS-provided images
+                await InitializeImageProviderAsync();
+
+                _toolkitCredentialInitializer = new ToolkitCredentialInitializer(_telemetryManager.TelemetryLogger, _regionProvider, ToolkitShellProviderService);
+                _toolkitCredentialInitializer.AwsConnectionManager.ConnectionStateChanged += AwsConnectionManager_ConnectionStateChanged;
+
+                navigator = await CreateNavigatorControlAsync();
+
                 ToolkitEvent evnt = new ToolkitEvent();
                 evnt.AddProperty(AttributeKeys.VisualStudioIdentifier, string.Format("{0}/{1}", dteVersion, dteEdition));
                 SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
 
-                ThemeUtil.Initialize(dteVersion);
+                var serviceClientManager = new AwsServiceClientManager(
+                    _toolkitCredentialInitializer.CredentialManager,
+                    _regionProvider
+                );
 
+                _toolkitContext = new ToolkitContext()
+                {
+                    TelemetryLogger = _telemetryManager.TelemetryLogger,
+                    ServiceClientManager = serviceClientManager,
+                    RegionProvider = _regionProvider,
+                    ConnectionManager = _toolkitCredentialInitializer.AwsConnectionManager,
+                    CredentialManager = _toolkitCredentialInitializer.CredentialManager,
+                    CredentialSettingsManager = _toolkitCredentialInitializer.CredentialSettingsManager,
+                };
 
                 await ToolkitFactory.InitializeToolkit(
                     navigator,
-                    _telemetryManager.TelemetryLogger,
+                    _toolkitContext,
                     ToolkitShellProviderService as IAWSToolkitShellProvider,
-                    accountManager,
+                    _toolkitCredentialInitializer,
                     additionalPluginFolders,
                     () =>
                     {
@@ -616,39 +648,19 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        private static AccountManager CreateAccountManager(NavigatorControl navigator)
+        private void AwsConnectionManager_ConnectionStateChanged(object sender, ConnectionStateChangeArgs e)
         {
-            var accountManager = new AccountManager();
-
-            navigator.SelectedAccountChanged += async (sender, args) =>
+            if (sender is IAwsConnectionManager connectionManager)
             {
-                try
-                {
-                    var navigatorControl = sender as NavigatorControl;
-
-                    Debug.Assert(navigatorControl != null, "Event did not receive a NavigatorControl");
-
-                    var account = navigatorControl.SelectedAccount;
-
-                    // Handle the account processing on a background thread
-                    await TaskScheduler.Default;
-
-                    await accountManager.SetCurrentAccount(account);
-                }
-                catch (Exception e)
-                {
-                    LOGGER.Error(e);
-                }
-            };
-
-            return accountManager;
+                // Update the Telemetry system to use the new AccountId
+                _telemetryManager.SetAccountId(connectionManager.ActiveAccountId);
+            }
         }
 
-        private TelemetryManager CreateTelemetryManager(
-            AccountManager accountManager,
-            ProductEnvironment productEnvironment)
+        private TelemetryManager CreateTelemetryManager()
         {
-            var telemetryManager = new TelemetryManager(accountManager, productEnvironment);
+            var productEnvironment = CreateProductEnvironment();
+            var telemetryManager = new TelemetryManager(productEnvironment);
 
             // Get telemetry started in a background thread (don't block on obtaining credentials)
             ThreadPool.QueueUserWorkItem(state => { telemetryManager.Initialize(); });
@@ -674,6 +686,44 @@ namespace Amazon.AWSToolkit.VisualStudio
                     return ProductEnvironment.Default;
                 }
             });
+        }
+
+        /// <summary>
+        /// Initialize the system that allows Toolkit UIs to access
+        /// images served up through Visual Studio.
+        /// </summary>
+        private async Task InitializeImageProviderAsync()
+        {
+            try
+            {
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+                VsImages.Initialize(new VsImageProvider(this));
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to set up Image provider - portions of the Toolkit may not have icons", e);
+            }
+        }
+
+        private async Task<NavigatorControl> CreateNavigatorControlAsync()
+        {
+            try
+            {
+                await JoinableTaskFactory.SwitchToMainThreadAsync();
+
+                var navigator = new NavigatorControl(
+                    _regionProvider,
+                    _toolkitCredentialInitializer.CredentialManager,
+                    _toolkitCredentialInitializer.AwsConnectionManager,
+                    _toolkitCredentialInitializer.CredentialSettingsManager);
+
+                return navigator;
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Failed to set up the AWS Explorer. The Toolkit is in a bad state.", e);
+                return null;
+            }
         }
 
         private void InitializeLambdaTesterEventListener()
@@ -751,7 +801,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                     {
                         if (!ToolkitSettings.Instance.HasUserSeenFirstRunForm)
                         {
-                            var controller = new FirstRunController(this, _toolkitSettingsWatcher);
+                            var controller = new FirstRunController(this, _toolkitSettingsWatcher, _toolkitContext);
                             controller.Execute();
                         }
                     }
@@ -1561,12 +1611,10 @@ namespace Amazon.AWSToolkit.VisualStudio
                     var cfppi
                         = GetPersistedInfoForService(projectGuid, deployedToService, DeploymentTypeIdentifiers.VSToolkitDeployment) 
                             as CloudFormationProjectPersistenceInfo;
-                    var selectedAccount
-                        = wizardProperties[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
+                    var selectedAccount = CommonWizardProperties.AccountSelection.GetSelectedAccount(wizardProperties);
                     cfppi.AccountUniqueID = selectedAccount.SettingsUniqueKey;
 
-                    var region = (wizardProperties[CommonWizardProperties.AccountSelection.propkey_SelectedRegion]
-                                                as RegionEndPointsManager.RegionEndPoints).SystemName;
+                    var region = CommonWizardProperties.AccountSelection.GetSelectedRegion(wizardProperties).Id;
                     cfppi.LastRegionDeployedTo = region;
                     var cfdh = new CloudFormationDeploymentHistory(wizardProperties[DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName] as string);
                     cfppi.PreviousDeployments.AddDeployment(selectedAccount.SettingsUniqueKey,
@@ -1577,12 +1625,11 @@ namespace Amazon.AWSToolkit.VisualStudio
                 {
                     var bppi = GetPersistedInfoForService(projectGuid, deployedToService, DeploymentTypeIdentifiers.VSToolkitDeployment) 
                             as BeanstalkProjectPersistenceInfo;
-                    var selectedAccount = wizardProperties[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] as AccountViewModel;
+                    var selectedAccount = CommonWizardProperties.AccountSelection.GetSelectedAccount(wizardProperties);
 
                     bppi.AccountUniqueID = selectedAccount.SettingsUniqueKey;
 
-                    var region = (wizardProperties[CommonWizardProperties.AccountSelection.propkey_SelectedRegion]
-                                                as RegionEndPointsManager.RegionEndPoints).SystemName;
+                    var region = CommonWizardProperties.AccountSelection.GetSelectedRegion(wizardProperties).Id;
 
                     bppi.LastRegionDeployedTo = region;
 
@@ -2457,9 +2504,13 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         int IVsPackage.Close()
         {
-            _toolkitSettingsWatcher?.Dispose();
+            if (_toolkitCredentialInitializer != null)
+            {
+                _toolkitCredentialInitializer.AwsConnectionManager.ConnectionStateChanged -= AwsConnectionManager_ConnectionStateChanged;
+            }
+            _toolkitCredentialInitializer?.Dispose();
 
-            ToolkitFactory.Instance?.TelemetryLogger.RecordSessionEnd(new SessionEnd());
+            _telemetryManager?.TelemetryLogger?.RecordSessionEnd(new SessionEnd());
             _telemetryManager?.Dispose();
 
             _telemetryInfoBarManager?.Dispose();

@@ -21,7 +21,10 @@ using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
 using Amazon.AWSToolkit.Lambda.DeploymentWorkers;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using System.IO;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.AWSToolkit.Navigator;
+using Amazon.AWSToolkit.Regions;
 using Amazon.ECR;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
@@ -31,13 +34,15 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
         public enum Mode { Lambda, Serverless }
         ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionProgressPageController));
 
+        private readonly ToolkitContext _toolkitContext;
         private UploadFunctionProgressPage _pageUI;
 
         public Mode PublishMode { get; }
 
-        public UploadFunctionProgressPageController(Mode publishMode)
+        public UploadFunctionProgressPageController(Mode publishMode, ToolkitContext toolkitContext)
         {
             this.PublishMode = publishMode;
+            _toolkitContext = toolkitContext;
         }
 
         public IAWSWizard HostingWizard { get; set; }
@@ -139,16 +144,19 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
         {
             _pageUI.StartProgressBar();
 
-            var account = HostingWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
-            var region = HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
-
-            IAmazonCloudFormation cloudFormationClient = account.CreateServiceClient<AmazonCloudFormationClient>(region.GetEndpoint(RegionEndPointsManager.CLOUDFORMATION_SERVICE_NAME));
-            IAmazonS3 s3Client = account.CreateServiceClient<AmazonS3Client>(region.GetEndpoint(RegionEndPointsManager.S3_SERVICE_NAME));
-            IAmazonECR ecrClient = account.CreateServiceClient<AmazonECRClient>(region.GetEndpoint(RegionEndPointsManager.ECR_SERVICE_NAME));
+            var account = HostingWizard.GetSelectedAccount(UploadFunctionWizardProperties.UserAccount);
+            var region = HostingWizard.GetSelectedRegion(UploadFunctionWizardProperties.Region);
 
 
+            IAmazonCloudFormation cloudFormationClient = account.CreateServiceClient<AmazonCloudFormationClient>(region);
+            IAmazonS3 s3Client = account.CreateServiceClient<AmazonS3Client>(region);
+            IAmazonECR ecrClient = account.CreateServiceClient<AmazonECRClient>(region);
+
+
+            var credentials = _toolkitContext.CredentialManager.GetAwsCredentials(account.Identifier, region);
             var settings = new PublishServerlessApplicationWorkerSettings();
             settings.Account = account;
+            settings.Credentials = credentials;
             settings.Region = region;
             settings.SourcePath = HostingWizard[UploadFunctionWizardProperties.SourcePath] as string;
             settings.Configuration = HostingWizard[UploadFunctionWizardProperties.Configuration] as string;
@@ -177,7 +185,7 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
 
             var worker = new PublishServerlessApplicationWorker(this, s3Client, cloudFormationClient, ecrClient, settings,
-                ToolkitFactory.Instance.TelemetryLogger);
+                _toolkitContext.TelemetryLogger);
 
             ThreadPool.QueueUserWorkItem(x =>
             {
@@ -189,164 +197,185 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
 
         public void UploadFunction()
         {
-            _pageUI.StartProgressBar();
-
-            var account = HostingWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
-            var region = HostingWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
-
-            var runtime = HostingWizard[UploadFunctionWizardProperties.Runtime] as string;
-            var functionName = HostingWizard[UploadFunctionWizardProperties.FunctionName] as string;
-            var description = HostingWizard[UploadFunctionWizardProperties.Description] as string;
-            var configuration = HostingWizard[UploadFunctionWizardProperties.Configuration] as string;
-            var framework = HostingWizard[UploadFunctionWizardProperties.Framework] as string;
-
-            var kmsArn = HostingWizard[UploadFunctionWizardProperties.KMSKey] as string;
-
-            var memorySize = (int)HostingWizard[UploadFunctionWizardProperties.MemorySize];
-            var timeout = (int)HostingWizard[UploadFunctionWizardProperties.Timeout];
-            var handler = HostingWizard[UploadFunctionWizardProperties.Handler] as string;
-            var sourcePath = HostingWizard[UploadFunctionWizardProperties.SourcePath] as string;
-            var selectedRole = HostingWizard[UploadFunctionWizardProperties.Role] as Role;
-            var selectedManagedPolicy = HostingWizard[UploadFunctionWizardProperties.ManagedPolicy] as ManagedPolicy;
-
-            var selectedDeadLetterTargetArn = HostingWizard[UploadFunctionWizardProperties.DeadLetterTargetArn] as string;
-            var selectedTracingMode = HostingWizard[UploadFunctionWizardProperties.TracingMode] as string;
-
-            var subnets = HostingWizard[UploadFunctionWizardProperties.Subnets] as IEnumerable<SubnetWrapper>;
-            var securityGroups = HostingWizard[UploadFunctionWizardProperties.SecurityGroups] as IEnumerable<SecurityGroupWrapper>;
-
-            var packageType = HostingWizard[UploadFunctionWizardProperties.PackageType] as PackageType;
-            var imageRepo = HostingWizard[UploadFunctionWizardProperties.ImageRepo] as string;
-            var imageTag = HostingWizard[UploadFunctionWizardProperties.ImageTag] as string;
-            var imageCommand = HostingWizard[UploadFunctionWizardProperties.ImageCommand] as string;
-            var dockerfile = HostingWizard[UploadFunctionWizardProperties.Dockerfile] as string;
-
-            var environmentVariables = HostingWizard[UploadFunctionWizardProperties.EnvironmentVariables] as ICollection<EnvironmentVariable>;
-
-            bool saveSettings = false;
-            if (HostingWizard[UploadFunctionWizardProperties.SaveSettings] is bool)
+            try
             {
-                saveSettings = (bool)HostingWizard[UploadFunctionWizardProperties.SaveSettings];
-            }
+                _pageUI.StartProgressBar();
 
-            var originator = (UploadOriginator)HostingWizard[UploadFunctionWizardProperties.UploadOriginator];
-            ImageConfig imageConfig = null;
-            var imageCommandList = SplitByComma(imageCommand);
-            if (packageType.Equals(Amazon.Lambda.PackageType.Image))
-            {
-                imageConfig = new ImageConfig();
-                imageConfig.Command = imageCommandList;
-                imageConfig.IsCommandSet = imageCommandList != null;
-            }
+                var account = HostingWizard.GetSelectedAccount(UploadFunctionWizardProperties.UserAccount);
+                var region = HostingWizard.GetSelectedRegion(UploadFunctionWizardProperties.Region);
 
-            var request = new CreateFunctionRequest
-            {
-                Runtime = runtime,
-                FunctionName = functionName,
-                PackageType = packageType,
-                Description = description,
-                MemorySize = memorySize,
-                Timeout = timeout,
-                Handler = handler,
-                KMSKeyArn = kmsArn,
-                ImageConfig = imageConfig
-            };
+                var runtime = HostingWizard[UploadFunctionWizardProperties.Runtime] as string;
+                var functionName = HostingWizard[UploadFunctionWizardProperties.FunctionName] as string;
+                var description = HostingWizard[UploadFunctionWizardProperties.Description] as string;
+                var configuration = HostingWizard[UploadFunctionWizardProperties.Configuration] as string;
+                var framework = HostingWizard[UploadFunctionWizardProperties.Framework] as string;
 
-            if (!string.IsNullOrEmpty(selectedDeadLetterTargetArn))
-            {
-                request.DeadLetterConfig = new DeadLetterConfig { TargetArn = selectedDeadLetterTargetArn };
-            }
+                var kmsArn = HostingWizard[UploadFunctionWizardProperties.KMSKey] as string;
 
-            if (!string.IsNullOrEmpty(selectedTracingMode))
-            {
-                request.TracingConfig = new TracingConfig { Mode = selectedTracingMode };
-            }
+                var memorySize = (int) HostingWizard[UploadFunctionWizardProperties.MemorySize];
+                var timeout = (int) HostingWizard[UploadFunctionWizardProperties.Timeout];
+                var handler = HostingWizard[UploadFunctionWizardProperties.Handler] as string;
+                var sourcePath = HostingWizard[UploadFunctionWizardProperties.SourcePath] as string;
+                var selectedRole = HostingWizard[UploadFunctionWizardProperties.Role] as Role;
+                var selectedManagedPolicy =
+                    HostingWizard[UploadFunctionWizardProperties.ManagedPolicy] as ManagedPolicy;
 
-            if(environmentVariables != null)
-            {
-                request.Environment = new Amazon.Lambda.Model.Environment
+                var selectedDeadLetterTargetArn =
+                    HostingWizard[UploadFunctionWizardProperties.DeadLetterTargetArn] as string;
+                var selectedTracingMode = HostingWizard[UploadFunctionWizardProperties.TracingMode] as string;
+
+                var subnets = HostingWizard[UploadFunctionWizardProperties.Subnets] as IEnumerable<SubnetWrapper>;
+                var securityGroups =
+                    HostingWizard[UploadFunctionWizardProperties.SecurityGroups] as IEnumerable<SecurityGroupWrapper>;
+
+                var packageType = HostingWizard[UploadFunctionWizardProperties.PackageType] as PackageType;
+                var imageRepo = HostingWizard[UploadFunctionWizardProperties.ImageRepo] as string;
+                var imageTag = HostingWizard[UploadFunctionWizardProperties.ImageTag] as string;
+                var imageCommand = HostingWizard[UploadFunctionWizardProperties.ImageCommand] as string;
+                var dockerfile = HostingWizard[UploadFunctionWizardProperties.Dockerfile] as string;
+
+                var environmentVariables =
+                    HostingWizard[UploadFunctionWizardProperties.EnvironmentVariables] as
+                        ICollection<EnvironmentVariable>;
+
+                bool saveSettings = false;
+                if (HostingWizard[UploadFunctionWizardProperties.SaveSettings] is bool)
                 {
-                    Variables = new Dictionary<string, string>()
+                    saveSettings = (bool) HostingWizard[UploadFunctionWizardProperties.SaveSettings];
+                }
+
+                var originator = (UploadOriginator) HostingWizard[UploadFunctionWizardProperties.UploadOriginator];
+                ImageConfig imageConfig = null;
+                var imageCommandList = SplitByComma(imageCommand);
+                if (packageType.Equals(Amazon.Lambda.PackageType.Image))
+                {
+                    imageConfig = new ImageConfig();
+                    imageConfig.Command = imageCommandList;
+                    imageConfig.IsCommandSet = imageCommandList != null;
+                }
+
+                var request = new CreateFunctionRequest
+                {
+                    Runtime = runtime,
+                    FunctionName = functionName,
+                    PackageType = packageType,
+                    Description = description,
+                    MemorySize = memorySize,
+                    Timeout = timeout,
+                    Handler = handler,
+                    KMSKeyArn = kmsArn,
+                    ImageConfig = imageConfig
                 };
 
-                foreach(var env in environmentVariables)
+                if (!string.IsNullOrEmpty(selectedDeadLetterTargetArn))
                 {
-                    request.Environment.Variables[env.Variable] = env.Value;
-                }
-            }
-
-
-
-            if (subnets != null && subnets.Any())
-            {
-                request.VpcConfig = new VpcConfig();
-
-                request.VpcConfig.SubnetIds = new List<string>();
-                foreach (var subnet in subnets)
-                {
-                    request.VpcConfig.SubnetIds.Add(subnet.SubnetId);
+                    request.DeadLetterConfig = new DeadLetterConfig {TargetArn = selectedDeadLetterTargetArn};
                 }
 
-                request.VpcConfig.SecurityGroupIds = new List<string>();
-                foreach (var group in securityGroups)
+                if (!string.IsNullOrEmpty(selectedTracingMode))
                 {
-                    request.VpcConfig.SecurityGroupIds.Add(group.GroupId);
+                    request.TracingConfig = new TracingConfig {Mode = selectedTracingMode};
                 }
+
+                if (environmentVariables != null)
+                {
+                    request.Environment = new Amazon.Lambda.Model.Environment
+                    {
+                        Variables = new Dictionary<string, string>()
+                    };
+
+                    foreach (var env in environmentVariables)
+                    {
+                        request.Environment.Variables[env.Variable] = env.Value;
+                    }
+                }
+
+
+
+                if (subnets != null && subnets.Any())
+                {
+                    request.VpcConfig = new VpcConfig();
+
+                    request.VpcConfig.SubnetIds = new List<string>();
+                    foreach (var subnet in subnets)
+                    {
+                        request.VpcConfig.SubnetIds.Add(subnet.SubnetId);
+                    }
+
+                    request.VpcConfig.SecurityGroupIds = new List<string>();
+                    foreach (var group in securityGroups)
+                    {
+                        request.VpcConfig.SecurityGroupIds.Add(group.GroupId);
+                    }
+                }
+
+                var credentials = _toolkitContext.CredentialManager.GetAwsCredentials(account.Identifier, region);
+                var state = new UploadFunctionState
+                {
+                    Account = account,
+                    Credentials = credentials,
+                    Region = region,
+                    SourcePath = sourcePath,
+                    SaveSettings = saveSettings,
+                    Request = request,
+                    OpenView = _pageUI.OpenView,
+                    SelectedRole = selectedRole,
+                    SelectedManagedPolicy = selectedManagedPolicy,
+                    Configuration = configuration,
+                    Framework = framework,
+                    ImageRepo = imageRepo,
+                    ImageTag = imageTag,
+                    Dockerfile = dockerfile
+                };
+
+                IAmazonECR ecrClient;
+                IAmazonLambda lambdaClient;
+                if (originator == UploadOriginator.FromFunctionView)
+                {
+                    lambdaClient = HostingWizard[UploadFunctionWizardProperties.LambdaClient] as IAmazonLambda;
+                    ecrClient = HostingWizard[UploadFunctionWizardProperties.ECRClient] as IAmazonECR;
+                }
+                else
+                {
+                    lambdaClient = state.Account.CreateServiceClient<AmazonLambdaClient>(state.Region);
+                    ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region);
+                }
+
+                BaseUploadWorker worker;
+
+                if (DetermineDeploymentType(state.SourcePath) == DeploymentType.NETCore)
+                    worker = new UploadNETCoreWorker(this, lambdaClient, ecrClient, _toolkitContext.TelemetryLogger);
+                else
+                    worker = new UploadGenericWorker(this, lambdaClient, ecrClient, _toolkitContext.TelemetryLogger);
+
+                ThreadPool.QueueUserWorkItem(x =>
+                {
+                    var uploadState = state as UploadFunctionState;
+
+                    if (uploadState == null)
+                        return;
+
+                    worker.UploadFunction(uploadState);
+                    //this._results = worker.Results;
+                }, state);
             }
-
-            var state = new UploadFunctionState
+            catch (Exception e)
             {
-                Account = account,
-                Region = region,
-                SourcePath = sourcePath,
-                SaveSettings = saveSettings,
-                Request = request,
-                OpenView = _pageUI.OpenView,
-                SelectedRole = selectedRole,
-                SelectedManagedPolicy = selectedManagedPolicy,
-                Configuration = configuration,
-                Framework = framework,
-                ImageRepo = imageRepo,
-                ImageTag = imageTag,
-                Dockerfile = dockerfile
-            };
+                LOGGER.Error("Error uploading Lambda function.", e);
 
-            IAmazonECR ecrClient;
-            IAmazonLambda lambdaClient;
-            if (originator == UploadOriginator.FromFunctionView)
-            {
-                lambdaClient = HostingWizard[UploadFunctionWizardProperties.LambdaClient] as IAmazonLambda;
-                ecrClient = HostingWizard[UploadFunctionWizardProperties.ECRClient] as IAmazonECR;
+                var uploader = this as ILambdaFunctionUploadHelpers;
+
+                var message = $"Error uploading Lambda Function: {e.Message}";
+
+                uploader.AppendUploadStatus(e.Message);
+                uploader.AppendUploadStatus("Upload stopped.");
+                uploader.UploadFunctionAsyncCompleteError(message);
             }
-            else
-            {
-                lambdaClient = state.Account.CreateServiceClient<AmazonLambdaClient>(state.Region.GetEndpoint(RegionEndPointsManager.LAMBDA_SERVICE_NAME));
-                ecrClient = state.Account.CreateServiceClient<AmazonECRClient>(state.Region.GetEndpoint(RegionEndPointsManager.ECR_SERVICE_NAME));
-            }
-
-            BaseUploadWorker worker;
-
-            if (DetermineDeploymentType(state.SourcePath) == DeploymentType.NETCore)
-                worker = new UploadNETCoreWorker(this, lambdaClient, ecrClient, ToolkitFactory.Instance.TelemetryLogger);
-            else
-                worker = new UploadGenericWorker(this, lambdaClient, ecrClient, ToolkitFactory.Instance.TelemetryLogger);
-
-            ThreadPool.QueueUserWorkItem(x =>
-            {
-                var uploadState = state as UploadFunctionState;
-
-                if (uploadState == null)
-                    return;
-
-                worker.UploadFunction(uploadState);
-                //this._results = worker.Results;
-            }, state);
         }
 
-        string ILambdaFunctionUploadHelpers.CreateRole(AccountViewModel account, RegionEndPointsManager.RegionEndPoints regionEndPoints, string functionName, ManagedPolicy managedPolicy)
+        string ILambdaFunctionUploadHelpers.CreateRole(AccountViewModel account, ToolkitRegion region, string functionName, ManagedPolicy managedPolicy)
         {
-            var iamRegionEndpoint = regionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME);
-            var iamClient = account.CreateServiceClient<AmazonIdentityManagementServiceClient>(iamRegionEndpoint);
+            var iamClient = account.CreateServiceClient<AmazonIdentityManagementServiceClient>(region);
             Role newRole = null;
 
             try
@@ -387,29 +416,38 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 (this as UploadFunctionProgressPageController)._pageUI.StopProgressBar();
-
-                var navigator = ToolkitFactory.Instance.Navigator;
-                if (navigator.SelectedAccount != settings.Account)
-                    navigator.UpdateAccountSelection(new Guid(settings.Account.SettingsUniqueKey), false);
-                if (navigator.SelectedRegionEndPoints != settings.Region)
-                    navigator.UpdateRegionSelection(settings.Region);
-
-                var cloudFormationNode = settings.Account.Children.FirstOrDefault(x => x is ICloudFormationRootViewModel);
-                if(cloudFormationNode != null)
-                {
-                    cloudFormationNode.Refresh(false);
-
-                    var funcNode = cloudFormationNode.Children.FirstOrDefault(x => x.Name == settings.StackName) as ICloudFormationStackViewModel;
-                    if (funcNode != null)
-                    {
-                        var metaNode = funcNode.MetaNode as ICloudFormationStackViewMetaNode;
-                        metaNode.OnOpen(funcNode);
-                    }
-                }
-                
                 HostingWizard[UploadFunctionWizardProperties.WizardResult] = true;
                 if (_pageUI.AutoCloseWizard && !_pageUI.IsUnloaded)
                     HostingWizard.CancelRun();
+            }));
+            var navigator = ToolkitFactory.Instance.Navigator;
+            //sync up navigator connection settings with the deployment settings and check if they have been validated
+            var isConnectionValid = navigator.TryWaitForSelection(_toolkitContext.ConnectionManager, settings.Account, settings.Region);
+           
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action) (() =>
+            {
+                if (!isConnectionValid)
+                {
+                    ToolkitFactory.Instance.ShellProvider.OutputToHostConsole("Serverless application has been successfully deployed. You can view it under AWS CloudFormation.");
+                }
+                else
+                {
+                    var cloudFormationNode =
+                        settings.Account.Children.FirstOrDefault(x => x is ICloudFormationRootViewModel);
+                    if (cloudFormationNode != null)
+                    {
+                        cloudFormationNode.Refresh(false);
+
+                        var funcNode =
+                            cloudFormationNode.Children.FirstOrDefault(x => x.Name == settings.StackName) as
+                                ICloudFormationStackViewModel;
+                        if (funcNode != null)
+                        {
+                            var metaNode = funcNode.MetaNode as ICloudFormationStackViewMetaNode;
+                            metaNode.OnOpen(funcNode);
+                        }
+                    }
+                }
             }));
         }
 
@@ -419,30 +457,39 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 (this as UploadFunctionProgressPageController)._pageUI.StopProgressBar();
-
-                var navigator = ToolkitFactory.Instance.Navigator;
-                if (navigator.SelectedAccount != uploadState.Account)
-                    navigator.UpdateAccountSelection(new Guid(uploadState.Account.SettingsUniqueKey), false);
-                if (navigator.SelectedRegionEndPoints != uploadState.Region)
-                    navigator.UpdateRegionSelection(uploadState.Region);
-
-                var lambdaNode = uploadState.Account.FindSingleChild<LambdaRootViewModel>(false);
-                lambdaNode.Refresh(false);
-
-                var originator = (UploadOriginator)HostingWizard[UploadFunctionWizardProperties.UploadOriginator];
-                if (_pageUI.OpenView && originator != UploadOriginator.FromFunctionView)
-                {
-                    var funcNode = lambdaNode.Children.FirstOrDefault(x => x.Name == uploadState.Request.FunctionName) as LambdaFunctionViewModel;
-                    if (funcNode != null)
-                    {
-                        var metaNode = funcNode.MetaNode as LambdaFunctionViewMetaNode;
-                        metaNode.OnOpen(funcNode);
-                    }
-                }
-
                 HostingWizard[UploadFunctionWizardProperties.WizardResult] = true;
                 if (_pageUI.AutoCloseWizard && !_pageUI.IsUnloaded)
                     HostingWizard.CancelRun();
+            }));
+
+            var navigator = ToolkitFactory.Instance.Navigator;
+            //sync up navigator connection settings with the deployment settings and check if they have been validated
+            var isConnectionValid = navigator.TryWaitForSelection(_toolkitContext.ConnectionManager, uploadState.Account, uploadState.Region);
+            ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action) (() =>
+            {
+                if (!isConnectionValid)
+                {
+                    ToolkitFactory.Instance.ShellProvider.OutputToHostConsole("Lambda function has been successfully deployed. You can view it under AWS Lambda.");
+                }
+                else
+                {
+                    var lambdaNode = navigator.SelectedAccount.FindSingleChild<LambdaRootViewModel>(false);
+                    if (lambdaNode != null)
+                    {
+                        lambdaNode.Refresh(false);
+
+                        var originator = (UploadOriginator) HostingWizard[UploadFunctionWizardProperties.UploadOriginator];
+                        if (_pageUI.OpenView && originator != UploadOriginator.FromFunctionView)
+                        {
+                            var funcNode = lambdaNode.Children.FirstOrDefault(x => x.Name == uploadState.Request.FunctionName) as LambdaFunctionViewModel;
+                            if (funcNode != null)
+                            {
+                                var metaNode = funcNode.MetaNode as LambdaFunctionViewMetaNode;
+                                metaNode.OnOpen(funcNode);
+                            }
+                        }
+                    }
+                }
             }));
         }
 

@@ -5,12 +5,15 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
-
-using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Clients;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.PluginServices.Activators;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using log4net;
@@ -31,7 +34,9 @@ namespace Amazon.AWSToolkit
         readonly NavigatorControl _navigator;
         readonly IAWSToolkitShellProvider _shellProvider;
         private readonly ITelemetryLogger _telemetryLogger;
-        private readonly AccountManager _accountManager;
+        private readonly IRegionProvider _regionProvider;
+        private readonly ToolkitCredentialInitializer _toolkitCredentialInitializer;
+        private readonly ToolkitContext _toolkitContext;
 
         private readonly AWSViewMetaNode _rootViewMetaNode = new AWSViewMetaNode();
         AWSViewModel _rootViewModel;
@@ -40,13 +45,18 @@ namespace Amazon.AWSToolkit
             new Dictionary<string, IPluginActivator>();
 
         private ToolkitFactory(NavigatorControl navigator,
-            ITelemetryLogger telemetryLogger,
-            IAWSToolkitShellProvider shellProvider, AccountManager accountManager)
+            ToolkitContext toolkitContext,
+            IAWSToolkitShellProvider shellProvider,
+            ToolkitCredentialInitializer toolkitCredentialInitializer)
         {
+            this._toolkitContext = toolkitContext ?? throw new ArgumentNullException(nameof(toolkitContext));
             this._navigator = navigator;
             this._shellProvider = shellProvider;
-            this._telemetryLogger = telemetryLogger;
-            this._accountManager = accountManager;
+            this._telemetryLogger = toolkitContext.TelemetryLogger ??
+                                    throw new ArgumentNullException(nameof(toolkitContext.TelemetryLogger));
+            this._regionProvider = toolkitContext.RegionProvider ??
+                                   throw new ArgumentNullException(nameof(toolkitContext.RegionProvider));
+            this._toolkitCredentialInitializer = toolkitCredentialInitializer;
 
             if (ServicePointManager.DefaultConnectionLimit < 100)
             {
@@ -54,10 +64,10 @@ namespace Amazon.AWSToolkit
             }
         }
 
-        public static async Task InitializeToolkit(NavigatorControl navigator, 
-            ITelemetryLogger telemetryLogger,
+        public static async Task InitializeToolkit(NavigatorControl navigator,
+            ToolkitContext toolkitContext,
             IAWSToolkitShellProvider shellProvider,
-            AccountManager accountManager,
+            ToolkitCredentialInitializer toolkitCredentialInitializer,
             string additionalPluginPaths,
             Action initializeCompleteCallback)
         {
@@ -67,27 +77,24 @@ namespace Amazon.AWSToolkit
             Amazon.Util.Internal.InternalSDKUtils.SetUserAgent(shellProvider.HostInfo.Name, Constants.VERSION_NUMBER);
             ProxyUtilities.ApplyCurrentProxySettings();
 
-            // TODO : set up region provider when ready to integrate
-            // var regionProvider = new RegionProvider();
-            // regionProvider.Initialize();
-
             var pluginActivators = await PluginActivatorUtilities.LoadPluginActivators(
                 typeof(ToolkitFactory).Assembly.Location,
                 additionalPluginPaths);
 
-            INSTANCE = new ToolkitFactory(navigator, telemetryLogger, shellProvider, accountManager);
+            INSTANCE = new ToolkitFactory(navigator, toolkitContext, shellProvider,
+                toolkitCredentialInitializer);
 
-            INSTANCE.InitializePluginActivators(pluginActivators);
-
+            INSTANCE.InitializePluginActivators(pluginActivators, toolkitContext);
+            INSTANCE._toolkitCredentialInitializer.Initialize();
             INSTANCE.ShellProvider.ExecuteOnUIThread((Action) (() =>
             {
                 try
                 {
                     INSTANCE._rootViewModel = new AWSViewModel(
-                        INSTANCE._shellProvider,
-                        INSTANCE._rootViewMetaNode);
-                    INSTANCE._navigator.Initialize(INSTANCE._rootViewModel);
+                        INSTANCE._rootViewMetaNode,
+                        toolkitContext);
 
+                    INSTANCE._navigator.Initialize(INSTANCE._rootViewModel);
                     if (initializeCompleteCallback != null)
                     {
                         initializeCompleteCallback();
@@ -114,7 +121,7 @@ namespace Amazon.AWSToolkit
             }));
         }
 
-        private void InitializePluginActivators(IList<IPluginActivator> pluginActivators)
+        private void InitializePluginActivators(IList<IPluginActivator> pluginActivators, ToolkitContext toolkitContext)
         {
             this._pluginActivators.Clear();
 
@@ -127,6 +134,9 @@ namespace Amazon.AWSToolkit
             LOGGER.Debug("Registering Toolkit Plugins in the AWS Explorer...");
             foreach (var plugin in this._pluginActivators.Values)
             {
+                LOGGER.Debug($"... Initializing {plugin.PluginName}");
+                plugin.Initialize(toolkitContext);
+
                 LOGGER.Debug($"... registering {plugin.PluginName}");
                 plugin.RegisterMetaNodes();
             }
@@ -180,11 +190,22 @@ namespace Amazon.AWSToolkit
         /// </summary>
         public ITelemetryLogger TelemetryLogger => this._telemetryLogger;
 
+        /// <summary>
+        /// Resolves Region-Partition mappings
+        /// </summary>
+        public IRegionProvider RegionProvider => this._regionProvider;
+
+        public ToolkitContext ToolkitContext => this._toolkitContext;
+
         public AWSViewMetaNode RootViewMetaNode => this._rootViewMetaNode;
 
         public AWSViewModel RootViewModel => this._rootViewModel;
 
-        public AccountManager AccountManager => this._accountManager;
+        public IAwsConnectionManager AwsConnectionManager => this._toolkitCredentialInitializer?.AwsConnectionManager;
+
+        public ICredentialManager CredentialManager => this._toolkitCredentialInitializer?.CredentialManager;
+
+        public ICredentialSettingsManager CredentialSettingsManager => this._toolkitCredentialInitializer?.CredentialSettingsManager;
 
         public object QueryPluginService(Type serviceType)
         {

@@ -21,18 +21,14 @@ namespace Amazon.AWSToolkit.RDS.Controller
 
         public ActionResults Execute(RDSInstanceViewModel rdsInstanceViewModel)
         {
-            this._dbInstance = rdsInstanceViewModel.DBInstance;
-            if (this._dbInstance.NativeInstance.DBSecurityGroups.Count == 0 && this._dbInstance.NativeInstance.VpcSecurityGroups.Count == 0)
+            _dbInstance = rdsInstanceViewModel.DBInstance;
+            if (_dbInstance.NativeInstance.DBSecurityGroups.Count == 0 && _dbInstance.NativeInstance.VpcSecurityGroups.Count == 0)
                 return new ActionResults().WithSuccess(false);
 
-            this._rdsClient = rdsInstanceViewModel.RDSClient;
+            _rdsClient = rdsInstanceViewModel.RDSClient;
 
-            string region = rdsInstanceViewModel.InstanceRootViewModel.CurrentEndPoint.RegionSystemName;
-            RegionEndPointsManager.RegionEndPoints endPoints = RegionEndPointsManager.GetInstance().GetRegion(region);
-
-            var ec2Config = new AmazonEC2Config ();
-            endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME).ApplyToClientConfig(ec2Config);
-            this._ec2Client = new AmazonEC2Client(rdsInstanceViewModel.AccountViewModel.Credentials, ec2Config);
+            _ec2Client = rdsInstanceViewModel.AccountViewModel.CreateServiceClient<AmazonEC2Client>(
+                rdsInstanceViewModel.InstanceRootViewModel.Region);
 
 
             var control = new PromptAddCurrentCIDRControl(this);

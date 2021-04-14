@@ -62,7 +62,7 @@ namespace Amazon.AWSToolkit.SNS.Controller
         {
             try
             {
-                CreateSubscriptionModel model = new CreateSubscriptionModel(this._snsRootModel.CurrentEndPoint.RegionSystemName);
+                CreateSubscriptionModel model = new CreateSubscriptionModel(this._snsRootModel.Region.Id);
 
                 if (!string.IsNullOrEmpty(this._model.OwningTopicARN))
                 {
@@ -95,8 +95,9 @@ namespace Amazon.AWSToolkit.SNS.Controller
                             if (queueViewModel == null)
                                 continue;
 
+                            var url = queueViewModel.QueueUrl;
                             string arn = queueViewModel.QueueARN;
-                            model.PossibleSQSEndpoints.Add(arn);
+                            model.AddSqsEndpoint(url, arn);
                         }
 
                         var lambdaRootViewModel = accountViewModel.FindSingleChild<ILambdaRootViewModel>(false);

@@ -83,7 +83,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.Base
             set { _signUpLabel = value; this.RaisePropertyChanged(); }
         }
 
-        public void Initialize(IServiceProvider serviceProvider)
+        public virtual void Initialize(IServiceProvider serviceProvider)
         {
             TeamExplorerServiceProvider = serviceProvider;
         }

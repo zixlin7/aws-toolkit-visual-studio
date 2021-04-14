@@ -3,6 +3,7 @@ using System.Windows;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
 {
@@ -19,7 +20,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
             this._serviceModel = viewModel;
             this._application = application;
 
-            this.RegionSystemName = viewModel.CurrentEndPoint.RegionSystemName;
+            this.Region = viewModel.Region;
         }
 
         public ApplicationViewModel(ApplicationViewMetaNode metaNode, ElasticBeanstalkRootViewModel viewModel, ApplicationDescription application, IEnumerable<EnvironmentDescription> environments)
@@ -28,7 +29,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
             AddEnvironments(environments);
         }
 
-        public string RegionSystemName
+        public ToolkitRegion Region
         {
             get;
         }
@@ -66,7 +67,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Nodes
         {
             dndDataObjects.SetData(DataFormats.Text, this.Name);
             dndDataObjects.SetData("ARN", string.Format("arn:aws:elasticbeanstalk:{0}:{1}:application/{2}",
-                this.ElasticBeanstalkRootViewModel.CurrentEndPoint.RegionSystemName, this.AccountViewModel.AccountNumber, this.Name));
+                this.ElasticBeanstalkRootViewModel.Region.Id, ToolkitFactory.Instance.AwsConnectionManager.ActiveAccountId, this.Name));
         }
     }
 }

@@ -415,7 +415,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             Task.Run<List<string>>(() =>
             {
-                using (var client = CreateELBv2Client(this.PageController.HostingWizard))
+                using (var client = CreateServiceClient<AmazonElasticLoadBalancingV2Client>(this.PageController.HostingWizard))
                 {
                     var loadBalancers = new List<string>();
                     try
@@ -467,7 +467,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
             Task.Run<List<string>>(() =>
             {
-                using (var client = CreateELBv2Client(this.PageController.HostingWizard))
+                using (var client = CreateServiceClient<AmazonElasticLoadBalancingV2Client>(this.PageController.HostingWizard))
                 {
                     var listenerPorts = new List<string>();
                     try
@@ -521,7 +521,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
             string loadBalancerArn =  this._existingLoadBalancers[this.LoadBalancer].LoadBalancerArn;
             Task.Run<Tuple<List<string>, List<string>>>(() =>
             {
-                using (var client = CreateELBv2Client(this.PageController.HostingWizard))
+                using (var client = CreateServiceClient<AmazonElasticLoadBalancingV2Client>(this.PageController.HostingWizard))
                 {
                     var targetGroups = new List<string>();
                     try

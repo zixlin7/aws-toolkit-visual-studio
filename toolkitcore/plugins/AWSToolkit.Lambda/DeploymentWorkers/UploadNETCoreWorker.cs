@@ -37,7 +37,7 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
 
             try
             {
-                deploymentProperties.RegionId = uploadState.Region?.SystemName;
+                deploymentProperties.RegionId = uploadState.Region?.Id;
                 deploymentProperties.Runtime = uploadState.Request?.Runtime;
                 deploymentProperties.TargetFramework = uploadState.Framework;
                 deploymentProperties.NewResource = IsNewResource(uploadState);
@@ -48,8 +48,9 @@ namespace Amazon.AWSToolkit.Lambda.DeploymentWorkers
                 command.LambdaClient = this.LambdaClient;
                 command.ECRClient = this.ECRClient;
                 command.PersistConfigFile = uploadState.SaveSettings;
-                command.Profile = uploadState.Account.DisplayName;
-                command.Region = uploadState.Region.SystemName;
+                command.Profile = uploadState.Account.Identifier.ProfileName;
+                command.Credentials = uploadState.Credentials;
+                command.Region = uploadState.Region.Id;
 
                 command.FunctionName = uploadState.Request.FunctionName;
                 command.Description = uploadState.Request.Description;

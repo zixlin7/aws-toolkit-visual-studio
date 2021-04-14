@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using Amazon.S3;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
+
 using log4net;
 
 namespace Amazon.AWSToolkit.S3.Nodes
@@ -24,8 +26,9 @@ namespace Amazon.AWSToolkit.S3.Nodes
         string _bucketName;
         string _iconName;
         bool _isPendingDelete ;
+        private IRegionProvider _regionProvider;
 
-        public S3BucketViewModel(S3BucketViewMetaNode metaNode, S3RootViewModel viewModel, string bucketName)
+        public S3BucketViewModel(S3BucketViewMetaNode metaNode, S3RootViewModel viewModel, string bucketName, IRegionProvider regionProvider)
             : base(metaNode, viewModel, bucketName)
         {
             this._metaNode = metaNode;
@@ -33,7 +36,7 @@ namespace Amazon.AWSToolkit.S3.Nodes
             this._rootS3Client = viewModel.S3Client;
             this._bucketName = bucketName;
             this._iconName = BucketIcon;
-
+            this._regionProvider = regionProvider;
             // For consistency sake.
             _isPendingDelete=((S3RootViewMetaNode)_serviceModel.MetaNode).IsBucketBeingDeleted(this);            
         }
@@ -89,7 +92,7 @@ namespace Amazon.AWSToolkit.S3.Nodes
                     buildLocalSpecificS3Client();
                 }
 
-                return this._overrideRegion ?? ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints.SystemName;
+                return this._overrideRegion ?? ToolkitFactory.Instance.Navigator.SelectedRegion.Id;;
             }
         }
 
@@ -100,7 +103,7 @@ namespace Amazon.AWSToolkit.S3.Nodes
                 if (this._localSpecificS3Client != null)
                     return;
 
-                S3Utils.BuildS3ClientForBucket(this.AccountViewModel, this._rootS3Client, this.Name, out this._localSpecificS3Client, ref this._overrideRegion);
+                S3Utils.BuildS3ClientForBucket(this.AccountViewModel, this._rootS3Client, this.Name, this._regionProvider, out this._localSpecificS3Client,  ref this._overrideRegion);
             }
         }
 

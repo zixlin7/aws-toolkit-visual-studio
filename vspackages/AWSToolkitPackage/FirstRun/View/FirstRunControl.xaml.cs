@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Web.UI.WebControls;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Navigation;
 using System.Windows.Input;
+
+using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Model;
@@ -20,6 +24,8 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
         readonly FirstRunController _controller;
 
         readonly ILog LOGGER = LogManager.GetLogger(typeof(FirstRunControl));
+
+        private bool _saveFirstRunModel = true;
 
         public FirstRunControl()
             : this(null)
@@ -77,8 +83,10 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
 
             try
             {
-                Model.Save();
-
+                if (_saveFirstRunModel)
+                {
+                    Model.Save();
+                }
                 ToolkitEvent evnt = new ToolkitEvent();
                 evnt.AddProperty(AttributeKeys.FirstExperienceSaveCredentialsStatus, ToolkitEvent.COMMON_STATUS_SUCCESS);
                 SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
@@ -138,6 +146,20 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
             e.Handled = true;
         }
 
+        private void OnRequestCreateDialog(object sender, RequestNavigateEventArgs e)
+        {
+            var toolkitContext = this._controller.ToolkitContext;
+            var command = new RegisterAccountController(toolkitContext.CredentialManager,
+                toolkitContext.CredentialSettingsManager, toolkitContext.ConnectionManager,
+                toolkitContext.RegionProvider);
+            var results  = command.Execute();
+            if (results.Success)
+            {
+                _saveFirstRunModel = false;
+                SaveAndCloseButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+            }
+        }
+
         private void LaunchBrowserToUrl(Uri uri)
         {
             try
@@ -170,6 +192,16 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
                 return dlg.FileName;
 
             return null;
+        }
+
+        private void AccessKey_OnPasswordChanged(object sender, RoutedEventArgs e)
+        {
+            this._controller.Model.AccessKey = this.AccessKey.Password;
+        }
+
+        private void SecretKey_OnPasswordChanged(object sender, RoutedEventArgs e)
+        {
+            this._controller.Model.SecretKey = this.SecretKey.Password;
         }
     }
 

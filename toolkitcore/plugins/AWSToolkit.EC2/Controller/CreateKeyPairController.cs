@@ -47,7 +47,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
 
         public void PersistPrivateKey()
         {
-            KeyPairLocalStoreManager.Instance.SavePrivateKey(this._keyPairModel.AccountViewModel, this._keyPairModel.RegionSystemName,
+            KeyPairLocalStoreManager.Instance.SavePrivateKey(this._keyPairModel.AccountViewModel, this._keyPairModel.Region.Id,
                     this._model.KeyPairName, this._model.PrivateKey);
         }
     }

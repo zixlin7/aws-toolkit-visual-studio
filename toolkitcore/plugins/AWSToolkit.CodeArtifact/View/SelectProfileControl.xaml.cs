@@ -39,7 +39,7 @@ namespace Amazon.AWSToolkit.CodeArtifact.View
             if (ToolkitFactory.Instance.Navigator != null)
             {
                 string defaultProfile = Configuration.LoadInstalledConfiguration().DefaultProfile;
-                _accountSelector.SelectedAccount = Accounts.FirstOrDefault(a => a.Profile.Name == defaultProfile);
+                _accountSelector.SelectedAccount = Accounts.FirstOrDefault(a => a.Identifier.ProfileName == defaultProfile);
             }
 
         }

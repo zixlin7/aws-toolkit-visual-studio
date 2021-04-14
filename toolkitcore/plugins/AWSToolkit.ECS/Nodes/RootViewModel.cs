@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
-
+using Amazon.AWSToolkit.Regions;
 using Amazon.ECS;
 using Amazon.ECR;
 using Amazon.Runtime;
@@ -12,36 +12,21 @@ namespace Amazon.AWSToolkit.ECS.Nodes
 {
     public class RootViewModel : ServiceRootViewModel, IECSRootViewModel
     {
-        RootViewMetaNode _metaNode;
-        AccountViewModel _accountViewModel;
+        private readonly RootViewMetaNode _metaNode;
+        private readonly Lazy<IAmazonECS> _ecsClient;
+        private readonly Lazy<IAmazonECR> _ecrClient;
 
-        private IAmazonECS _ecsClient;
-        private IAmazonECR _ecrClient;
-        static ILog _logger = LogManager.GetLogger(typeof(ServiceRootViewModel));
-
-        public RootViewModel(AccountViewModel accountViewModel)
-            : base(accountViewModel.MetaNode.FindChild<RootViewMetaNode>(), accountViewModel, "Amazon Elastic Container Service")
+        public RootViewModel(AccountViewModel accountViewModel, ToolkitRegion region)
+            : base(accountViewModel.MetaNode.FindChild<RootViewMetaNode>(), accountViewModel, "Amazon Elastic Container Service", region)
         {
-            this._metaNode = base.MetaNode as RootViewMetaNode;
-            this._accountViewModel = accountViewModel;
+            _metaNode = base.MetaNode as RootViewMetaNode;
+            _ecsClient = new Lazy<IAmazonECS>(CreateEcsClient);
+            _ecrClient = new Lazy<IAmazonECR>(CreateEcrClient);
         }
 
-        public IAmazonECS ECSClient => this._ecsClient;
+        public IAmazonECS ECSClient => this._ecsClient.Value;
 
-        public IAmazonECR ECRClient => this._ecrClient;
-
-        protected override void BuildClient(AWSCredentials awsCredentials)
-        {
-            var ecsConfig = new AmazonECSConfig();
-            this.CurrentEndPoint.ApplyToClientConfig(ecsConfig);
-            this._ecsClient = new AmazonECSClient(awsCredentials, ecsConfig);
-
-            var ecrEndpoint = this.CurrentRegion.GetEndpoint(RootViewMetaNode.ECR_ENDPOINT_LOOKUP);
-            var ecrConfig = new AmazonECRConfig();
-            ecrEndpoint.ApplyToClientConfig(ecrConfig);
-            this._ecrClient = new AmazonECRClient(awsCredentials, ecrConfig);
-
-        }
+        public IAmazonECR ECRClient => this._ecrClient.Value;
 
         public override string ToolTip =>
             "Amazon Elastic Container Service (Amazon ECS) is a highly scalable, fast, container management service that makes it easy to run, stop, "
@@ -67,6 +52,16 @@ namespace Amazon.AWSToolkit.ECS.Nodes
             {
                 AddErrorChild(e);
             }
+        }
+
+        private IAmazonECS CreateEcsClient()
+        {
+            return AccountViewModel.CreateServiceClient<AmazonECSClient>(Region);
+        }
+
+        private IAmazonECR CreateEcrClient()
+        {
+            return AccountViewModel.CreateServiceClient<AmazonECRClient>(Region);
         }
     }
 }

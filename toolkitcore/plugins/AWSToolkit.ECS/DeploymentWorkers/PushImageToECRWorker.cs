@@ -1,11 +1,11 @@
-﻿using Amazon.AwsToolkit.Telemetry.Events.Core;
-using Amazon.AwsToolkit.Telemetry.Events.Generated;
+﻿using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.ECR;
 using Amazon.ECS.Tools.Commands;
 using log4net;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Amazon.AWSToolkit.Context;
 
 namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 {
@@ -14,19 +14,12 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         static readonly ILog Logger = LogManager.GetLogger(typeof(DeployTaskWorker));
 
         readonly IAmazonECR _ecrClient;
-        readonly ITelemetryLogger _telemetryLogger;
-
-        public PushImageToECRWorker(IDockerDeploymentHelper helper, IAmazonECR ecrClient)
-            : this(helper, ecrClient, ToolkitFactory.Instance.TelemetryLogger)
-        {
-        }
 
         public PushImageToECRWorker(IDockerDeploymentHelper helper, IAmazonECR ecrClient,
-            ITelemetryLogger telemetryLogger)
-            : base(helper, null)
+            ToolkitContext toolkitContext)
+            : base(helper, null, toolkitContext)
         {
             this._ecrClient = ecrClient;
-            this._telemetryLogger = telemetryLogger;
         }
 
         public void Execute(EcsDeployState state)
@@ -65,7 +58,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
             }
             finally
             {
-                EmitImageDeploymentMetric(state.Region.SystemName, deployResult);
+                EmitImageDeploymentMetric(state.Region.Id, deployResult);
             }
         }
 
@@ -73,7 +66,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
         {
             try
             {
-                _telemetryLogger.RecordEcrDeployImage(new EcrDeployImage()
+                ToolkitContext.TelemetryLogger.RecordEcrDeployImage(new EcrDeployImage()
                 {
                     Result = deployResult,
                     RegionId = region,
@@ -88,10 +81,13 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
 
         async Task<bool> IEcsDeploy.Deploy(EcsDeployState state)
         {
+            var credentials =
+                ToolkitContext.CredentialManager.GetAwsCredentials(state.Account.Identifier, state.Region);
             var command = new PushDockerImageCommand(new ECSToolLogger(this.Helper), state.WorkingDirectory, new string[0])
             {
-                Profile = state.Account.Name,
-                Region = state.Region.SystemName,
+                Profile = state.Account.Identifier.ProfileName,
+                Credentials = credentials,
+                Region = state.Region.Id,
 
                 DisableInteractive = true,
                 ECRClient = this._ecrClient,

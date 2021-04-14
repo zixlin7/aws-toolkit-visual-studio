@@ -53,7 +53,7 @@ namespace Amazon.AWSToolkit.CodeCommit.View.Controls
 
             try
             {
-                var client = Controller.Model.GetClientForRegion(Controller.Model.SelectedRegion.SystemName);
+                var client = Controller.Model.GetClientForRegion(Controller.Model.SelectedRegion);
                 var response = client.GetRepository(new GetRepositoryRequest {RepositoryName = Controller.Model.Name});
                 if (response.RepositoryMetadata != null)
                 {

@@ -14,8 +14,11 @@ using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageControllers;
 using Amazon.Lambda.Tools;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Lambda.WizardPages.PageUI;
+using Amazon.AWSToolkit.Regions;
 using Amazon.ECR;
+using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.Lambda.Controller
 {
@@ -30,6 +33,12 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         public const string ZIP_FILTER = @"-\.njsproj$;-\.sln$;-\.suo$;-.ntvs_analysis\.dat;-\.git;-\.svn;-_testdriver.js;-_sampleEvent\.json";
 
         ActionResults _results;
+        private readonly ToolkitContext _toolkitContext;
+
+        public UploadFunctionController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         public override ActionResults Execute(IViewModel model)
         {
@@ -208,17 +217,17 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         private void DisplayUploadWizard(Dictionary<string, object> seedProperties)
         {
             var navigator = ToolkitFactory.Instance.Navigator;
-            seedProperties[UploadFunctionWizardProperties.UserAccount] = navigator.SelectedAccount;
-            seedProperties[UploadFunctionWizardProperties.Region] = navigator.SelectedRegionEndPoints;
 
             IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Lambda.UploadFunction", seedProperties);
             wizard.Title = "Upload to AWS Lambda";
+            wizard.SetSelectedAccount(navigator.SelectedAccount, UploadFunctionWizardProperties.UserAccount);
+            wizard.SetSelectedRegion(navigator.SelectedRegion, UploadFunctionWizardProperties.Region);
 
             IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
             {
-                new UploadFunctionDetailsPageController(),
+                new UploadFunctionDetailsPageController(_toolkitContext),
                 new UploadFunctionAdvancedPageController(),
-                new UploadFunctionProgressPageController(UploadFunctionProgressPageController.Mode.Lambda)
+                new UploadFunctionProgressPageController(UploadFunctionProgressPageController.Mode.Lambda, _toolkitContext)
             };
 
             wizard.RegisterPageControllers(defaultPages, 0);
@@ -237,17 +246,17 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         private void DisplayServerlessWizard(Dictionary<string, object> seedProperties)
         {
             var navigator = ToolkitFactory.Instance.Navigator;
-            seedProperties[UploadFunctionWizardProperties.UserAccount] = navigator.SelectedAccount;
-            seedProperties[UploadFunctionWizardProperties.Region] = navigator.SelectedRegionEndPoints;
 
             IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.Lambda.PublishServerless", seedProperties);
             wizard.Title = "Publish AWS Serverless Application";
+            wizard.SetSelectedAccount(navigator.SelectedAccount, UploadFunctionWizardProperties.UserAccount);
+            wizard.SetSelectedRegion(navigator.SelectedRegion, UploadFunctionWizardProperties.Region);
 
             IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
             {
                 new PublishServerlessDetailsPageController(),
                 new ServerlessTemplateParametersPageController(),
-                new UploadFunctionProgressPageController(UploadFunctionProgressPageController.Mode.Serverless)
+                new UploadFunctionProgressPageController(UploadFunctionProgressPageController.Mode.Serverless, _toolkitContext)
             };
 
             wizard.RegisterPageControllers(defaultPages, 0);
@@ -291,7 +300,8 @@ namespace Amazon.AWSToolkit.Lambda.Controller
         public class UploadFunctionState
         {
             public AccountViewModel Account { get; set; }
-            public RegionEndPointsManager.RegionEndPoints Region { get; set; }
+            public AWSCredentials Credentials { get; set; }
+            public ToolkitRegion Region { get; set; }
             public string SourcePath { get; set; }
             public CreateFunctionRequest Request { get; set; }
             public bool OpenView { get; set; }

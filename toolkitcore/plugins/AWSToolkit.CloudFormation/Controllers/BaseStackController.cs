@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
+using Amazon.AWSToolkit.Regions;
+
 namespace Amazon.AWSToolkit.CloudFormation.Controllers
 {
     public abstract class BaseStackController : BaseContextCommand
@@ -27,7 +29,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             return new ActionResults().WithSuccess(true);
         }
 
-        protected ActionResults UpdateStack(Account.AccountViewModel account, RegionEndPointsManager.RegionEndPoints region, Dictionary<string, object> collectedProperties)
+        protected ActionResults UpdateStack(AccountViewModel account, ToolkitRegion region, Dictionary<string, object> collectedProperties)
         {
             var deployResult = Result.Failed;
 
@@ -119,11 +121,11 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             }
             finally
             {
-                RecordDeployMetric(deployResult, region.SystemName, initialDeploy: false);
+                RecordDeployMetric(deployResult, region.Id, initialDeploy: false);
             }
         }
 
-        protected ActionResults CreateStack(Account.AccountViewModel account, RegionEndPointsManager.RegionEndPoints region, Dictionary<string, object> collectedProperties)
+        protected ActionResults CreateStack(AccountViewModel account, ToolkitRegion region, Dictionary<string, object> collectedProperties)
         {
             var deployResult = Result.Failed;
 
@@ -218,7 +220,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             }
             finally
             {
-                RecordDeployMetric(deployResult, region.SystemName, initialDeploy: true);
+                RecordDeployMetric(deployResult, region.Id, initialDeploy: true);
             }
         }
 
@@ -264,7 +266,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
         }
 
         internal static DeployedTemplateData GatherPersistableDeploymentData(AccountViewModel account, 
-                                                                             RegionEndPointsManager.RegionEndPoints region, 
+                                                                             ToolkitRegion region, 
                                                                              DeployedTemplateData.DeploymentType deploymentType, 
                                                                              IDictionary<string, object> properties)
         {

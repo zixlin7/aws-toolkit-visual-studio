@@ -2,20 +2,22 @@
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
+using Amazon.CloudFormation;
 
 namespace Amazon.AWSToolkit.CloudFormation.Nodes
 {
     public class CloudFormationRootViewMetaNode : ServiceRootViewMetaNode, ICloudFormationRootViewMetaNode
     {
-        public const string CLOUDFORMATION_ENDPOINT_LOOKUP = "CloudFormation";
+        private static readonly string CloudformationServiceName = new AmazonCloudFormationConfig().RegionEndpointServiceName;
 
         public CloudFormationStackViewMetaNode CloudFormationStackViewMetaNode => this.FindChild<CloudFormationStackViewMetaNode>();
 
-        public override string EndPointSystemName => CLOUDFORMATION_ENDPOINT_LOOKUP;
+        public override string SdkEndpointServiceName => CloudformationServiceName;
 
-        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
+        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account, ToolkitRegion region)
         {
-            return new CloudFormationRootViewModel(account);
+            return new CloudFormationRootViewModel(account, region);
         }
 
 

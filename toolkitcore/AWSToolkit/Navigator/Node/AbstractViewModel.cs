@@ -143,7 +143,7 @@ namespace Amazon.AWSToolkit.Navigator.Node
                 AccountViewModel vm = this.AccountViewModel;
                 if (vm == null)
                     return string.Empty;
-                return vm.DisplayName;
+                return vm.Identifier.ProfileName;
             }
 
         }

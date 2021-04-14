@@ -836,7 +836,7 @@ namespace Amazon.AWSToolkit.S3.View
 
                 var listOfKeys = this._controller.GetListOfKeys(selectedItems, false);
 
-                var controller = new InvokeLambdaFunctionController(this._controller.S3Client, this.Model.BucketName, listOfKeys);
+                var controller = new InvokeLambdaFunctionController(this._controller.S3Client, this.Model.BucketName, listOfKeys, this._controller.RegionProvider);
                 controller.Execute();
             }
             catch (Exception ex)

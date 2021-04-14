@@ -1,46 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Linq;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.Notifications;
-using Amazon.AWSToolkit.Util;
-using Amazon.AWSToolkit.ElasticBeanstalk.Nodes;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.ElasticBeanstalk.View.Components;
-using Amazon.AWSToolkit.ElasticBeanstalk.Controller;
-using Amazon.AWSToolkit.EC2.Nodes;
-using Amazon.EC2;
-using Amazon.EC2.Model;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
-using Amazon.IdentityManagement;
-using Amazon.IdentityManagement.Model;
 using AWSDeployment;
-using log4net;
 using Amazon.AWSToolkit.MobileAnalytics;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
 {
     public class DeployNewApplicationCommand : BaseBeanstalkDeployCommand
     {
+        private readonly ToolkitContext _toolkitContext;
+
         public BeanstalkDeploymentEngine Deployment { get; protected set; }
 
-        public DeployNewApplicationCommand(string deploymentPackage, IDictionary<string, object> deploymentProperties)
+        public DeployNewApplicationCommand(string deploymentPackage, IDictionary<string, object> deploymentProperties, ToolkitContext toolkitContext)
             : base(deploymentProperties)
         {
+            _toolkitContext = toolkitContext;
+
             Deployment
-                = DeploymentEngineFactory.CreateEngine(DeploymentEngineFactory.ElasticBeanstalkServiceName)
+                = DeploymentEngineFactory.CreateEngine(DeploymentEngineFactory.ElasticBeanstalkServiceName,
+                        toolkitContext)
                     as BeanstalkDeploymentEngine;
 
-            Deployment.AWSProfileName = Account.AccountDisplayName;
+            var region = CommonWizardProperties.AccountSelection.GetSelectedRegion(DeploymentProperties);
+            var credentials = _toolkitContext.CredentialManager.GetAwsCredentials(Account.Identifier, region);
+
+            Deployment.AWSProfileName = Account.Identifier.ProfileName;
+            Deployment.Credentials = credentials;
             Deployment.Observer = Observer;
             Deployment.DeploymentPackage = deploymentPackage;
-            Deployment.Region =
-                (getValue<RegionEndPointsManager.RegionEndPoints>(CommonWizardProperties.AccountSelection
-                    .propkey_SelectedRegion)).SystemName;
+            Deployment.Region = region?.Id;
         }
 
         public override void Execute()
@@ -60,7 +59,18 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             };
             try
             {
-                ToolkitFactory.Instance.Navigator.UpdateAccountSelection(new Guid(Account.SettingsUniqueKey), false);
+                if (string.IsNullOrWhiteSpace(Deployment.Region))
+                {
+                    throw new Exception("Region was not provided to Beanstalk deployment");
+                }
+
+                if (Deployment.Credentials == null)
+                {
+                    throw new Exception("Credentials were not provided to Beanstalk deployment");
+                }
+
+                var region = _toolkitContext.RegionProvider.GetRegion(Deployment.Region);
+                _toolkitContext.ConnectionManager.ChangeCredentialProvider(Account.Identifier);
 
                 Deployment.ApplicationName =
                     getValue<string>(DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName);
@@ -101,7 +111,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 Deployment.KeyPairName = getValue<string>(DeploymentWizardProperties.AWSOptions.propkey_KeyPairName);
                 if (getValue<bool>(DeploymentWizardProperties.AWSOptions.propkey_CreateKeyPair))
                 {
-                    CreateKeyPair(Account, Deployment.RegionEndPoints, Deployment.KeyPairName);
+                    CreateKeyPair(Account, region, Deployment.KeyPairName);
                 }
 
 
@@ -109,7 +119,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                     getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_SolutionStack);
                 Deployment.CustomAmiID = getValue<string>(DeploymentWizardProperties.AWSOptions.propkey_CustomAMIID);
 
-                Deployment.RoleName = ConfigureIAMRole(Account, Deployment.RegionEndPoints);
+                Deployment.RoleName = ConfigureIAMRole(Account, region);
                 Deployment.ServiceRoleName =
                     getValue<string>(BeanstalkDeploymentWizardProperties.AWSOptionsProperties.propkey_ServiceRoleName);
 
@@ -161,7 +171,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 if (string.IsNullOrEmpty(Deployment.ELBSubnetId) && string.Equals(Deployment.EnvironmentType,
                     BeanstalkConstants.EnvType_LoadBalanced, StringComparison.OrdinalIgnoreCase))
                 {
-                    Deployment.ELBSubnetId = GetDefaultVPCSubnet(Account, Deployment.RegionEndPoints);
+                    Deployment.ELBSubnetId = GetDefaultVPCSubnet(Account, region);
                 }
 
                 Deployment.EnableConfigRollingDeployment = getValue<bool>(BeanstalkDeploymentWizardProperties
@@ -195,7 +205,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 }
                 else
                 {
-                    Deployment.UploadBucket = DetermineBucketName(Account, Deployment.RegionEndPoints);
+                    Deployment.UploadBucket = DetermineBucketName(Account, region);
                 }
 
                 Deployment.InstanceTypeID =
@@ -232,7 +242,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 try
                 {
                     deployMetric.Result = success ? Result.Succeeded : Result.Failed;
-                    ToolkitFactory.Instance.TelemetryLogger.RecordBeanstalkDeploy(deployMetric);
+                    _toolkitContext.TelemetryLogger.RecordBeanstalkDeploy(deployMetric);
 
                     ToolkitFactory.Instance.ShellProvider.UpdateStatus(string.Empty);
                     if (success)
@@ -321,7 +331,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
         }
 
 
-        static string DetermineBucketName(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
+        static string DetermineBucketName(AccountViewModel account, ToolkitRegion region)
         {
             string bucketName = null;
 
@@ -329,11 +339,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             // information we have at hand
             try
             {
-                var endpoint = region.GetEndpoint(RegionEndPointsManager.ELASTICBEANSTALK_SERVICE_NAME);
-                var config = new AmazonElasticBeanstalkConfig();
-                endpoint.ApplyToClientConfig(config);
-
-                var client = new AmazonElasticBeanstalkClient(account.Credentials, config);
+                var client = account.CreateServiceClient<AmazonElasticBeanstalkClient>(region);
                 var response = client.CreateStorageLocation();
                 bucketName = response.S3Bucket;
             }
@@ -347,7 +353,12 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             {
                 if (string.IsNullOrEmpty(bucketName))
                 {
-                    bucketName = string.Format("elasticbeanstalk-{0}-{1}", region.SystemName, account.UniqueIdentifier)
+                    var accountId = account.GetAccountId(region);
+                    if (string.IsNullOrWhiteSpace(accountId))
+                    {
+                        throw new Exception("Unable to determine account for use with S3 Buckets");
+                    }
+                    bucketName = string.Format("elasticbeanstalk-{0}-{1}", region.Id, accountId)
                         .ToLower();
                 }
             }

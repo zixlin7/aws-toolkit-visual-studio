@@ -19,8 +19,8 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
         private readonly HostedFilesResourceFetcher.Options _options = new HostedFilesResourceFetcher.Options();
         private readonly HostedFilesResourceFetcher _sut;
 
-        private readonly string ServiceEndpointsPath = "ServiceEndPoints.xml";
-        private readonly string ServiceEndpointsFragment = "<displayname>Africa (Cape Town)</displayname>";
+        private readonly string HostedFilesResourcePath = "VersionInfo.xml";
+        private readonly string HostedFilesResourceFragment = "<version number=\"1.18.1.0\"";
 
         public HostedFilesResourceFetcherTests()
         {
@@ -59,12 +59,12 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
             _options.CloudFrontBaseUrl = "";
             _options.S3BaseUrl = "";
 
-            var stream = _sut.Get(ServiceEndpointsPath);
-            AssertStreamIsServiceEndpoints(stream);
+            var stream = _sut.Get(HostedFilesResourcePath);
+            AssertStreamHasExpectedContents(stream);
             _telemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Once);
 
             // File gets cached
-            Assert.True(File.Exists(Path.Combine(_hostedFilesSettings.DownloadedCacheFolder, ServiceEndpointsPath)));
+            Assert.True(File.Exists(Path.Combine(_hostedFilesSettings.DownloadedCacheFolder, HostedFilesResourcePath)));
         }
 
         [Fact]
@@ -94,10 +94,10 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
         {
             // Setup: put a file in the download cache that is available in other sources (so that an alternate version is retrieved)
             _options.DownloadOncePerSession = true;
-            File.WriteAllText(Path.Combine(_hostedFilesSettings.DownloadedCacheFolder, ServiceEndpointsPath), _fixture.SampleData);
+            File.WriteAllText(Path.Combine(_hostedFilesSettings.DownloadedCacheFolder, HostedFilesResourcePath), _fixture.SampleData);
 
-            var stream = _sut.Get(ServiceEndpointsPath);
-            AssertStreamIsServiceEndpoints(stream);
+            var stream = _sut.Get(HostedFilesResourcePath);
+            AssertStreamHasExpectedContents(stream);
             _telemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Once);
         }
 
@@ -110,10 +110,13 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
             _options.CloudFrontBaseUrl = "";
             _options.S3BaseUrl = "";
 
-            File.WriteAllText(Path.Combine(_hostedFilesSettings.DownloadedCacheFolder, ServiceEndpointsPath), _fixture.SampleData);
+            File.WriteAllText(Path.Combine(_hostedFilesSettings.DownloadedCacheFolder, HostedFilesResourcePath), _fixture.SampleData);
 
-            var stream = _sut.Get(ServiceEndpointsPath);
-            AssertStreamIsServiceEndpoints(stream);
+            var stream = _sut.Get("endpoints.json");
+
+            Assert.NotNull(stream);
+            var text = _fixture.GetStreamContents(stream);
+            Assert.Contains("\"description\" : \"Africa (Cape Town)\"", text);
             _telemetryLogger.Verify(mock => mock.Record(It.IsAny<Metrics>()), Times.Never);
         }
 
@@ -122,12 +125,12 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
             _fixture?.Dispose();
         }
 
-        private void AssertStreamIsServiceEndpoints(Stream stream)
+        private void AssertStreamHasExpectedContents(Stream stream)
         {
             Assert.NotNull(stream);
 
             var text = _fixture.GetStreamContents(stream);
-            Assert.Contains(ServiceEndpointsFragment, text);
+            Assert.Contains(HostedFilesResourceFragment, text);
         }
     }
 }

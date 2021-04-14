@@ -1,4 +1,9 @@
-﻿namespace Amazon.AWSToolkit.CommonUI
+﻿using System;
+using System.Collections.Generic;
+using Amazon.AWSToolkit.Account;
+using Amazon.AWSToolkit.Regions;
+
+namespace Amazon.AWSToolkit.CommonUI
 {
     /// <summary>
     /// Definitions of wizard property keys used by pages that span multiple wizards or plugin contributors
@@ -28,9 +33,29 @@
             public static readonly string propkey_SelectedAccount = "selected_account";
 
             /// <summary>
-            /// RegionEndPointsManager.RegionEndPoints instance for the region to deploy into
+            /// ToolkitRegion instance for the region to deploy into
             /// </summary>
             public static readonly string propkey_SelectedRegion = "selectedRegion";
+
+            public static AccountViewModel GetSelectedAccount(IDictionary<string, object> properties)
+            {
+                if (properties.TryGetValue(propkey_SelectedAccount, out var value))
+                {
+                    return (AccountViewModel) Convert.ChangeType(value, typeof(AccountViewModel));
+                }
+
+                return null;
+            }
+
+            public static ToolkitRegion GetSelectedRegion(IDictionary<string, object> properties)
+            {
+                if (properties.TryGetValue(propkey_SelectedRegion, out var value))
+                {
+                    return (ToolkitRegion) Convert.ChangeType(value, typeof(ToolkitRegion));
+                }
+
+                return null;
+            }
         }
     }
 }

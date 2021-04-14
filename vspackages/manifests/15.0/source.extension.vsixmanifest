@@ -107,6 +107,8 @@
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SimpleDB.dll" AssemblyName="AWSSDK.SimpleDB, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SimpleNotificationService.dll" AssemblyName="AWSSDK.SimpleNotificationService, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SQS.dll" AssemblyName="AWSSDK.SQS, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
+        <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SSO.dll" AssemblyName="AWSSDK.SSOOIDC, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
+        <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="AWSSDK.SSOOIDC.dll" AssemblyName="AWSSDK.SSOOIDC, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604" />
 
     </Assets>
     <Prerequisites>

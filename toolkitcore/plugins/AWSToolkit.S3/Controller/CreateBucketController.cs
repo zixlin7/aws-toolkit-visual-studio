@@ -39,7 +39,7 @@ namespace Amazon.AWSToolkit.S3.Controller
                 PutBucketRequest request = new PutBucketRequest()
                 {
                     BucketName = this._control.Model.BucketName,
-                    BucketRegionName = this._rootModel.CurrentEndPoint.RegionSystemName
+                    BucketRegionName = this._rootModel.Region.Id
                 };
                 
                 this._rootModel.S3Client.PutBucket(request);

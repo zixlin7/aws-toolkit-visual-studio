@@ -6,17 +6,21 @@ using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.PluginServices.Deployment;
-using Amazon.CloudFormation;
 using System;
 using System.Collections.Generic;
+
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.CloudFormation.Controllers
 {
     public class DeployTemplateController : BaseStackController
     {
-        public DeployTemplateController(ITelemetryLogger telemetryLogger)
-            : base(telemetryLogger)
+        private readonly ToolkitContext _toolkitContext;
+        public DeployTemplateController(ToolkitContext toolkitContext)
+            : base(toolkitContext.TelemetryLogger)
         {
+            _toolkitContext = toolkitContext;
         }
 
         public DeployedTemplateData Execute(string templatePath, IDictionary<string, object> seedProperties, string templateName)
@@ -32,7 +36,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
 
             IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
             {
-                new SelectStackPageController(),
+                new SelectStackPageController(_toolkitContext),
                 new TemplateParametersController(),
                 new CreateStackReviewPageController()
             };
@@ -41,10 +45,9 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             if (wizard.Run() == true)
             {
                 var account = wizard.CollectedProperties[CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedAccount] as AccountViewModel;
-                var region = wizard.CollectedProperties[CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedRegion] as RegionEndPointsManager.RegionEndPoints;
+                var region = wizard.CollectedProperties[CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_SelectedRegion] as ToolkitRegion;
 
                 var createMode = Convert.ToBoolean(wizard.CollectedProperties[CloudFormationDeploymentWizardProperties.SelectStackProperties.propkey_CreateStackMode]);
-                var client = account.CreateServiceClient<AmazonCloudFormationClient>(region);
 
                 ActionResults results;
                 if (createMode)

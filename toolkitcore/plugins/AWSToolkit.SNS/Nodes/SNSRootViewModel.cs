@@ -6,36 +6,28 @@ using Amazon.SimpleNotificationService.Model;
 
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
 using Amazon.Runtime;
 
 namespace Amazon.AWSToolkit.SNS.Nodes
 {
     public class SNSRootViewModel : ServiceRootViewModel, ISNSRootViewModel
     {
-        SNSRootViewMetaNode _metaNode;
-        AccountViewModel _accountViewModel;
-        IAmazonSimpleNotificationService _snsClient;
-        Dictionary<string, DateTime> _removedChildren = new Dictionary<string, DateTime>();
+        private readonly SNSRootViewMetaNode _metaNode;
+        private readonly Lazy<IAmazonSimpleNotificationService> _snsClient;
 
-        public SNSRootViewModel(AccountViewModel accountViewModel)
-            : base(accountViewModel.MetaNode.FindChild <SNSRootViewMetaNode>(), accountViewModel, "Amazon SNS")
+        public SNSRootViewModel(AccountViewModel accountViewModel, ToolkitRegion region)
+            : base(accountViewModel.MetaNode.FindChild <SNSRootViewMetaNode>(), accountViewModel, "Amazon SNS", region)
         {
-            this._metaNode = base.MetaNode as SNSRootViewMetaNode;
-            this._accountViewModel = accountViewModel;
+            _metaNode = base.MetaNode as SNSRootViewMetaNode;
+            _snsClient = new Lazy<IAmazonSimpleNotificationService>(CreateSnsClient);
         }
 
         public override string ToolTip => "Amazon Simple Notification Service (Amazon SNS) is a web service that makes it easy to set up, operate, and send notifications from the cloud. It provides developers with a highly scalable, flexible, and cost-effective capability to publish messages from an application and immediately deliver them to subscribers or other applications. It is designed to make web-scale computing easier for developers.";
 
         protected override string IconName => "Amazon.AWSToolkit.SNS.Resources.EmbeddedImages.service-root-icon.png";
 
-        protected override void BuildClient(AWSCredentials awsCredentials)
-        {
-            var config = new AmazonSimpleNotificationServiceConfig();
-            this.CurrentEndPoint.ApplyToClientConfig(config);
-            this._snsClient = new AmazonSimpleNotificationServiceClient(awsCredentials, config);
-        }
-
-        public IAmazonSimpleNotificationService SNSClient => this._snsClient;
+        public IAmazonSimpleNotificationService SNSClient => this._snsClient.Value;
 
         public void AddTopic(string topicArn)
         {
@@ -93,7 +85,12 @@ namespace Amazon.AWSToolkit.SNS.Nodes
         public override void LoadDnDObjects(IDataObject dndDataObjects)
         {
             dndDataObjects.SetData("ARN", string.Format("arn:aws:sns:{0}:{1}:*",
-                this.CurrentEndPoint.RegionSystemName, this.AccountViewModel.AccountNumber));
+                this.Region.Id, ToolkitFactory.Instance.AwsConnectionManager.ActiveAccountId));
+        }
+
+        private IAmazonSimpleNotificationService CreateSnsClient()
+        {
+            return AccountViewModel.CreateServiceClient<AmazonSimpleNotificationServiceClient>(Region);
         }
     }
 }

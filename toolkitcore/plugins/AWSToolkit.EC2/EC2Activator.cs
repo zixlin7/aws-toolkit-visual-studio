@@ -3,6 +3,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.EC2.Nodes;
 using Amazon.AWSToolkit.EC2.Controller;
+using Amazon.AWSToolkit.Regions;
 using Amazon.EC2;
 
 namespace Amazon.AWSToolkit.EC2
@@ -69,7 +70,7 @@ namespace Amazon.AWSToolkit.EC2
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<LaunchController>().Execute);
 
             rootNode.FindChild<EC2AMIsViewMetaNode>().OnView =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<ViewAMIsController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new ViewAMIsController(ToolkitContext)).Execute);
 
             EC2InstancesViewMetaNode instancesNode = rootNode.FindChild<EC2InstancesViewMetaNode>();
             instancesNode.OnLaunch =
@@ -115,9 +116,9 @@ namespace Amazon.AWSToolkit.EC2
             return EC2Utilities.CheckForVpcOnlyMode(ec2Client);
         }
 
-        bool IAWSEC2.IsVpcOnly(AccountViewModel account, RegionEndpoint region)
+        bool IAWSEC2.IsVpcOnly(AccountViewModel account, ToolkitRegion region)
         {
-            var ec2Client = new AmazonEC2Client(account.Credentials, region);
+            var ec2Client = account.CreateServiceClient<AmazonEC2Client>(region);
             return EC2Utilities.CheckForVpcOnlyMode(ec2Client);
         }
 

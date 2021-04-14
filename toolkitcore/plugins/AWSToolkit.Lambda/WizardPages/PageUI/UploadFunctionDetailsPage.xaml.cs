@@ -16,8 +16,11 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using Amazon.AWSToolkit.Context;
+using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Util;
 using Amazon.Common.DotNetCli.Tools;
+using Amazon.Runtime;
 using static Amazon.AWSToolkit.Lambda.Controller.UploadFunctionController;
 
 namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
@@ -31,8 +34,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         const string HandlerTooltipDotNet = "For .NET, it is in the form: <assembly>::<type>::<method>";
         const string HandlerTooltipGeneric = "For Node.js, it is the module-name.export value of your function.";
         const string HandlerTooltipCustomRuntime = "For custom runtimes the handler field is optional. The value is made available to the Lambda function through the _HANDLER environment variable.";
+        private const int AccountRegionChangedDebounceMs = 250;
 
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionDetailsPage));
+        public static readonly string LambdaServiceName = new AmazonLambdaConfig().RegionEndpointServiceName;
+
         private static readonly IDictionary<string, RuntimeOption> RuntimeByFramework =
             new Dictionary<string, RuntimeOption>(StringComparer.OrdinalIgnoreCase)
             {
@@ -49,36 +55,41 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
 
         public IAWSWizardPageController PageController { get; }
         private IAWSToolkitShellProvider _shellProvider;
+        private readonly DebounceDispatcher _accountRegionChangeDebounceDispatcher = new DebounceDispatcher();
 
         public UploadOriginator UploadOriginator { get; }
         public UploadFunctionViewModel ViewModel { get; }
 
-        public UploadFunctionDetailsPage() : this(ToolkitFactory.Instance.ShellProvider)
+        public UploadFunctionDetailsPage() : this(ToolkitFactory.Instance.ShellProvider, ToolkitFactory.Instance.ToolkitContext)
         {
 
         }
 
-        public UploadFunctionDetailsPage(IAWSToolkitShellProvider shellProvider)
+        public UploadFunctionDetailsPage(IAWSToolkitShellProvider shellProvider, ToolkitContext toolkitContext)
         {
             _shellProvider = shellProvider;
             InitializeComponent();
-            DataContext = this;
-            ViewModel = new UploadFunctionViewModel(shellProvider)
+
+            ViewModel = new UploadFunctionViewModel(shellProvider, toolkitContext)
             {
                 PackageType = Amazon.Lambda.PackageType.Zip
             };
 
+            ViewModel.Connection.SetServiceFilter(new List<string>() {LambdaServiceName});
             ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+
+            DataContext = this;
         }
 
         public UploadFunctionDetailsPage(IAWSWizardPageController pageController)
-            : this(pageController, ToolkitFactory.Instance.ShellProvider)
+            : this(pageController, ToolkitFactory.Instance.ShellProvider, ToolkitFactory.Instance.ToolkitContext)
         {
         }
 
         public UploadFunctionDetailsPage(IAWSWizardPageController pageController, 
-            IAWSToolkitShellProvider shellProvider)
-            : this(shellProvider)
+            IAWSToolkitShellProvider shellProvider,
+            ToolkitContext toolkitContext)
+            : this(shellProvider, toolkitContext)
         {
             PageController = pageController;
             var hostWizard = PageController.HostingWizard;
@@ -101,11 +112,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 InitializeNETCoreFields();
             }
 
-            var userAccount = hostWizard[UploadFunctionWizardProperties.UserAccount] as AccountViewModel;
-            var regionEndpoints = hostWizard[UploadFunctionWizardProperties.Region] as RegionEndPointsManager.RegionEndPoints;
+            var userAccount = hostWizard.GetSelectedAccount(UploadFunctionWizardProperties.UserAccount);
+            var region = hostWizard.GetSelectedRegion(UploadFunctionWizardProperties.Region);
 
-            this._ctlAccountAndRegion.Initialize(userAccount, regionEndpoints, new string[] { LambdaRootViewMetaNode.LAMBDA_ENDPOINT_LOOKUP });
-            this._ctlAccountAndRegion.PropertyChanged += _ctlAccountAndRegion_PropertyChanged;
+            ViewModel.Connection.Account = userAccount;
+            ViewModel.Connection.Region = region;
 
             var buildConfiguration = hostWizard[UploadFunctionWizardProperties.Configuration] as string;
             if (!string.IsNullOrEmpty(buildConfiguration) && ViewModel.Configurations.Contains(buildConfiguration))
@@ -292,9 +303,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             }
         }
 
-        public AccountViewModel SelectedAccount => _ctlAccountAndRegion.SelectedAccount;
+        public AccountViewModel SelectedAccount => ViewModel.Connection.Account;
 
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion => _ctlAccountAndRegion.SelectedRegion;
+        public ToolkitRegion SelectedRegion => ViewModel.Connection.Region;
 
         private bool ShowDotNetHandlerComponents =>
             ViewModel.Runtime != null && ViewModel.Runtime.IsNetCore && !ViewModel.Runtime.IsCustomRuntime;
@@ -309,31 +320,38 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             return runtimeOption;
         }
 
-        void _ctlAccountAndRegion_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void AccountAndRegion_ConnectionChanged(object sender, EventArgs e)
         {
-            if (this._ctlAccountAndRegion.SelectedAccount == null || this._ctlAccountAndRegion.SelectedRegion == null)
+            if (!ViewModel.Connection.ConnectionIsValid)
+            {
                 return;
+            }
 
-            PageController.HostingWizard.SetProperty(UploadFunctionWizardProperties.UserAccount, this._ctlAccountAndRegion.SelectedAccount);
-            PageController.HostingWizard.SetProperty(UploadFunctionWizardProperties.Region, this._ctlAccountAndRegion.SelectedRegion);
+            PageController.HostingWizard.SetSelectedAccount(ViewModel.Connection.Account, UploadFunctionWizardProperties.UserAccount);
+            PageController.HostingWizard.SetSelectedRegion(ViewModel.Connection.Region, UploadFunctionWizardProperties.Region);
 
-            this.UpdateExistingFunctions();
-            this.UpdateImageRepos().LogExceptionAndForget();
-            this.UpdateImageTags().LogExceptionAndForget();
+            // Prevent multiple loads caused by property changed events in rapid succession
+            _accountRegionChangeDebounceDispatcher.Debounce(AccountRegionChangedDebounceMs, _ =>
+            {
+                _shellProvider.ExecuteOnUIThread(() =>
+                {
+                    this.UpdateExistingFunctions();
+                    this.UpdateImageRepos().LogExceptionAndForget();
+                    this.UpdateImageTags().LogExceptionAndForget();
+                });
+            });
         }
 
         private void UpdateExistingFunctions()
         {
             try
             {
-                if (_ctlAccountAndRegion.SelectedAccount == null ||
-                    _ctlAccountAndRegion.SelectedRegion == null)
+                if (!ViewModel.Connection.ConnectionIsValid)
                 {
                     return;
                 }
 
-                using (var lambdaClient =
-                    CreateServiceClient<AmazonLambdaClient>(RegionEndPointsManager.LAMBDA_SERVICE_NAME))
+                using (var lambdaClient = CreateServiceClient<AmazonLambdaClient>())
                 {
                     ViewModel.UpdateFunctionsList(lambdaClient).LogExceptionAndForget();
                 }
@@ -348,13 +366,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         {
             try
             {
-                if (_ctlAccountAndRegion.SelectedAccount == null ||
-                    _ctlAccountAndRegion.SelectedRegion == null)
+                if (!ViewModel.Connection.ConnectionIsValid)
                 {
                     return;
                 }
 
-                using (var ecrClient = CreateServiceClient<AmazonECRClient>(RegionEndPointsManager.ECR_SERVICE_NAME))
+                using (var ecrClient = CreateServiceClient<AmazonECRClient>())
                 {
                     // Reset ImageRepo to be re-selected or re-entered
                     _shellProvider.ExecuteOnUIThread(() => { ViewModel.ImageRepo = string.Empty; });
@@ -371,13 +388,12 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         {
             try
             {
-                if (_ctlAccountAndRegion.SelectedAccount == null ||
-                    _ctlAccountAndRegion.SelectedRegion == null)
+                if (!ViewModel.Connection.ConnectionIsValid)
                 {
                     return;
                 }
 
-                using (var ecrClient = CreateServiceClient<AmazonECRClient>(RegionEndPointsManager.ECR_SERVICE_NAME))
+                using (var ecrClient = CreateServiceClient<AmazonECRClient>())
                 {
                     // Reset ImageTag to be re-selected or re-entered
                     _shellProvider.ExecuteOnUIThread(() => { ViewModel.ImageTag = "latest"; });
@@ -394,6 +410,11 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
         {
             get
             {
+                if (!ViewModel.Connection.ConnectionIsValid || ViewModel.Connection.IsValidating)
+                {
+                    return false;
+                }
+
                 if (string.IsNullOrEmpty(this.ViewModel.FunctionName))
                 {
                     return false;
@@ -616,10 +637,10 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
             return true;
         }
 
-        private TServiceClient CreateServiceClient<TServiceClient>(string serviceName) where TServiceClient : class
+        private TServiceClient CreateServiceClient<TServiceClient>() where TServiceClient : class, IAmazonService
         {
-            return _ctlAccountAndRegion.SelectedAccount.CreateServiceClient<TServiceClient>(
-                _ctlAccountAndRegion.SelectedRegion.GetEndpoint(serviceName));
+            return ViewModel.Connection.Account 
+                .CreateServiceClient<TServiceClient>(ViewModel.Connection.Region);
         }
 
         /// <summary>

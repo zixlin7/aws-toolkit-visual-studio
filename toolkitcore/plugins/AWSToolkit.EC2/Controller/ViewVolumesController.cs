@@ -104,7 +104,7 @@ namespace Amazon.AWSToolkit.EC2.Controller
         public VolumeWrapper CreateVolume()
         {
             var controller = new CreateVolumeController();
-            var result = controller.Execute(this.EC2Client, this.RegionSystemName);
+            var result = controller.Execute(this.EC2Client, this.Region.Id);
             if (result.Success)
             {
                 RefreshVolumeList();

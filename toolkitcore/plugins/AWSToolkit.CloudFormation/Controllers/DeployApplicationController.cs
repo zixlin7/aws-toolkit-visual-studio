@@ -6,20 +6,23 @@ using Amazon.CloudFormation.Model;
 using Amazon.AWSToolkit.CloudFormation.View.Components;
 using Amazon.AWSToolkit.CommonUI.LegacyDeploymentWizard.Templating;
 using Amazon.AWSToolkit.CommonUI.Notifications;
-
+using Amazon.AWSToolkit.Context;
 using log4net;
 
 namespace Amazon.AWSToolkit.CloudFormation.Controllers
 {
     class DeployApplicationController : DeploymentControllerBase
     {
-        public DeployApplicationController(string deploymentPackage, IDictionary<string, object> deploymentProperties)
-            : base(deploymentPackage, deploymentProperties)
+        public DeployApplicationController(string deploymentPackage, IDictionary<string, object> deploymentProperties, ToolkitContext toolkitContext)
+            : base(deploymentPackage, deploymentProperties, toolkitContext)
         {
+            var credentials = toolkitContext.CredentialManager.GetAwsCredentials(_account.Identifier, Region);
+
             LOGGER = LogManager.GetLogger(typeof(DeployApplicationController));
             Observer = new DeploymentControllerBaseObserver(LOGGER);
             Deployment.Observer = Observer;
-            Deployment.AWSProfileName = _account.AccountDisplayName;
+            Deployment.AWSProfileName = _account.Identifier.ProfileName;
+            Deployment.Credentials = credentials;
         }
 
         public override void Execute()
@@ -31,10 +34,11 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                 if (_account == null)
                     return;
 
-                ToolkitFactory.Instance.Navigator.UpdateAccountSelection(new Guid(_account.SettingsUniqueKey), false);
+                ToolkitFactory.Instance.AwsConnectionManager.ChangeCredentialProvider(_account.Identifier);
+                var region = ToolkitContext.RegionProvider.GetRegion(Deployment.Region);
 
                 Deployment.StackName = getValue<string>(DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName);
-                Deployment.UploadBucket = DefaultBucketName(_account, Deployment.Region);
+                Deployment.UploadBucket = DefaultBucketName(_account, region);
 //                Deployment.ConfigFileKey = DefaultConfigFileKey(Deployment.StackName);
 
                 var wrapper = getValue<CloudFormationTemplateWrapper>(DeploymentWizardProperties.DeploymentTemplate.propkey_SelectedTemplate);
@@ -109,7 +113,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
                     // nicer to not switch navigator context if deployment failed!
                     try
                     {
-                        ToolkitFactory.Instance.Navigator.UpdateRegionSelection(RegionEndPoints);
+                        ToolkitFactory.Instance.AwsConnectionManager.ChangeRegion(Region);
                         SelectNewTreeItems(_account);
                     }
                     catch (Exception e)

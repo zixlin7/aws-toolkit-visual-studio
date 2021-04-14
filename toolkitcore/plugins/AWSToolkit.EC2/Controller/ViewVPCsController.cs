@@ -27,8 +27,6 @@ namespace Amazon.AWSToolkit.EC2.Controller
         {
             var response = this.EC2Client.DescribeVpcs(new DescribeVpcsRequest());
 
-            var account = this.FeatureViewModel.AccountViewModel;
-            var region = this.FeatureViewModel.RegionSystemName;
             ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this.Model.VPCs.Clear();

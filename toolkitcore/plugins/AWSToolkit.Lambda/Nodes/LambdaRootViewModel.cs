@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
 using Amazon.Runtime;
@@ -10,29 +11,21 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
 {
     public class LambdaRootViewModel : ServiceRootViewModel, ILambdaRootViewModel
     {
-        LambdaRootViewMetaNode _metaNode;
-        AccountViewModel _accountViewModel;
-        IAmazonLambda _lambdaClient;
+        private readonly LambdaRootViewMetaNode _metaNode;
+        private readonly Lazy<IAmazonLambda> _lambdaClient;
 
-        public LambdaRootViewModel(AccountViewModel accountViewModel)
-            : base(accountViewModel.MetaNode.FindChild < LambdaRootViewMetaNode>(), accountViewModel, "AWS Lambda")
+        public LambdaRootViewModel(AccountViewModel accountViewModel, ToolkitRegion region)
+            : base(accountViewModel.MetaNode.FindChild < LambdaRootViewMetaNode>(), accountViewModel, "AWS Lambda", region)
         {
-            this._metaNode = base.MetaNode as LambdaRootViewMetaNode;
-            this._accountViewModel = accountViewModel;
+            _metaNode = base.MetaNode as LambdaRootViewMetaNode;
+            _lambdaClient = new Lazy<IAmazonLambda>(CreateLambdaClient);
         }
 
         public override string ToolTip => "AWS Lambda is a compute service that runs your code in response to events and automatically manages the compute resources.";
 
         protected override string IconName => "Amazon.AWSToolkit.Lambda.Resources.EmbeddedImages.service-root.png";
 
-        protected override void BuildClient(AWSCredentials awsCredentials)
-        {
-            AmazonLambdaConfig config = new AmazonLambdaConfig();
-            this.CurrentEndPoint.ApplyToClientConfig(config);
-            this._lambdaClient = new AmazonLambdaClient(awsCredentials, config);
-        }
-
-        public IAmazonLambda LambdaClient => this._lambdaClient;
+        public IAmazonLambda LambdaClient => this._lambdaClient.Value;
 
         protected override void LoadChildren()
         {
@@ -72,6 +65,11 @@ namespace Amazon.AWSToolkit.Lambda.Nodes
         internal void RemoveFunction(string functionName)
         {
             this.RemoveChild(functionName);
+        }
+
+        private IAmazonLambda CreateLambdaClient()
+        {
+            return AccountViewModel.CreateServiceClient<AmazonLambdaClient>(Region);
         }
     }
 }

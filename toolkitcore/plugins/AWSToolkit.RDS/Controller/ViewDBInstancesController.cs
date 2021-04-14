@@ -217,18 +217,8 @@ namespace Amazon.AWSToolkit.RDS.Controller
 
         public AccountViewModel Account => this._instanceRootViewModel.AccountViewModel;
 
-        public string EndPointUniqueIdentifier => this._instanceRootViewModel.CurrentEndPoint.UniqueIdentifier;
+        public string EndPointUniqueIdentifier => this._instanceRootViewModel.Region.Id;
 
-        public string RegionDisplayName
-        {
-            get
-            {
-                var region = RegionEndPointsManager.GetInstance().GetRegion(this._instanceRootViewModel.CurrentEndPoint.RegionSystemName);
-                if (region == null)
-                    return string.Empty;
-
-                return region.DisplayName;
-            }
-        }
+        public string RegionDisplayName => _instanceRootViewModel.Region.DisplayName;
     }
 }

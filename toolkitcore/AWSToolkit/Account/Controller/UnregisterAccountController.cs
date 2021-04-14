@@ -1,31 +1,24 @@
-﻿using Amazon.AWSToolkit.Navigator;
+﻿using Amazon.AWSToolkit.Credentials.Core;
+using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
-using Amazon.Runtime.Internal.Settings;
-using Amazon.Runtime.CredentialManagement;
 
 namespace Amazon.AWSToolkit.Account.Controller
 {
     public class UnregisterAccountController : IContextCommand
     {
-        public UnregisterAccountController()
+        private ICredentialIdentifier _identifier;
+        private readonly ICredentialSettingsManager _credentialSettingsManager;
+
+        public UnregisterAccountController(ICredentialSettingsManager credentialSettingsManager)
         {
+            _credentialSettingsManager = credentialSettingsManager;
         }
 
         public ActionResults Execute(IViewModel model)
         {
             AccountViewModel account = model as AccountViewModel;
-            if (account.ProfileStore is NetSDKCredentialsFile)
-            {
-                var settings = PersistenceManager.Instance.GetSettings(ToolkitSettingsConstants.RegisteredProfiles);
-                settings.Remove(account.SettingsUniqueKey);
-                PersistenceManager.Instance.SaveSettings(ToolkitSettingsConstants.RegisteredProfiles, settings);
-            }
-            else
-            {
-                var profileStore = new SharedCredentialsFile();
-                profileStore.UnregisterProfile(account.Name);
-            }
-
+            _identifier = account?.Identifier;
+            _credentialSettingsManager.DeleteProfile(account?.Identifier);
             return new ActionResults().WithSuccess(true);
         }
     }

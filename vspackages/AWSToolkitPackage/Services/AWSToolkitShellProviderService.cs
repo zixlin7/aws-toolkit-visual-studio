@@ -105,13 +105,14 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 try
                 {
                     var uniqueId = editorControl.UniqueId;
+                    //TODO: Replace Navigator selected accounts with connection manager selected accounts
                     if (ToolkitFactory.Instance.Navigator.SelectedAccount != null)
                     {
                         uniqueId += ToolkitFactory.Instance.Navigator.SelectedAccount.SettingsUniqueKey;
                     }
-                    if (ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints != null)
+                    if (ToolkitFactory.Instance.Navigator.SelectedRegion != null)
                     {
-                        uniqueId += ToolkitFactory.Instance.Navigator.SelectedRegionEndPoints.SystemName;
+                        uniqueId += ToolkitFactory.Instance.Navigator.SelectedRegionId;
                     }
 
                     string filename;

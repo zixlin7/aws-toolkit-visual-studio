@@ -58,14 +58,12 @@ namespace Amazon.AWSToolkit.RDS.Controller
                 instanceRootViewModel = viewModel;
             }
 
-            if (rdsClient == null || account == null)
+            if (rdsClient == null || account == null || instanceRootViewModel == null)
+            {
                 return new ActionResults().WithSuccess(false);
+            }
 
-            var endPoints = RegionEndPointsManager.GetInstance().GetRegion(instanceRootViewModel.CurrentEndPoint.RegionSystemName);
-            var endPoint = endPoints.GetEndpoint(RegionEndPointsManager.EC2_SERVICE_NAME);
-            var config = new AmazonEC2Config();
-            endPoint.ApplyToClientConfig(config);
-            ec2Client = new AmazonEC2Client(account.Credentials, config);
+            ec2Client = account.CreateServiceClient<AmazonEC2Client>(instanceRootViewModel.Region);
 
             if (dbInstanceWrapper.DBInstanceStatus != DBInstanceWrapper.DbStatusAvailable)
             {
@@ -79,13 +77,13 @@ namespace Amazon.AWSToolkit.RDS.Controller
 
             Dictionary<string, object> seedProperties = new Dictionary<string, object>();
             seedProperties[CommonWizardProperties.propkey_NavigatorRootViewModel] = model;
-            seedProperties[CommonWizardProperties.AccountSelection.propkey_SelectedAccount] = account;
             seedProperties[RDSWizardProperties.SeedData.propkey_RDSClient] = rdsClient;
             seedProperties[RDSWizardProperties.SeedData.propkey_EC2Client] = ec2Client;
             seedProperties[RDSWizardProperties.SeedData.propkey_DBInstanceWrapper] = dbInstanceWrapper;
 
             IAWSWizard wizard = AWSWizardFactory.CreateStandardWizard("Amazon.AWSToolkit.RDS.View.ModifyDBInstance", seedProperties);
             wizard.Title = string.Format("Modify DB Instance - {0}", dbInstanceWrapper.DisplayName);
+            wizard.SetSelectedAccount(account);
 
             IAWSWizardPageController[] defaultPages = new IAWSWizardPageController[]
             {

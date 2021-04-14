@@ -2,20 +2,22 @@
 using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.Navigator.Node;
+using Amazon.AWSToolkit.Regions;
+using Amazon.CodeArtifact;
 
 namespace Amazon.AWSToolkit.CodeArtifact.Nodes
 {
     public class CodeArtifactRootViewMetaNode : ServiceRootViewMetaNode, ICodeArtifactRootViewMetaNode
     {
-        public const string CODEARTIFACT_ENDPOINT_LOOKUP = "CodeArtifact";
+        private static readonly string CodeArtifactServiceName = new AmazonCodeArtifactConfig().RegionEndpointServiceName;
 
-        public override string EndPointSystemName => CODEARTIFACT_ENDPOINT_LOOKUP;
+        public override string SdkEndpointServiceName => CodeArtifactServiceName;
 
         public DomainViewMetaNode DomainViewMetaNode => this.FindChild<DomainViewMetaNode>();
 
-        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account)
+        public override ServiceRootViewModel CreateServiceRootModel(AccountViewModel account, ToolkitRegion region)
         {
-            return new CodeArtifactRootViewModel(account);
+            return new CodeArtifactRootViewModel(account, region);
         }
 
         public ActionHandlerWrapper.ActionHandler SelectProfile

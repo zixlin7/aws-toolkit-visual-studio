@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using log4net;
 using Amazon.AWSToolkit.Account;
 using System.ComponentModel;
+using Amazon.AWSToolkit.Regions;
 using Amazon.IdentityManagement;
 using Amazon.IdentityManagement.Model;
 
@@ -23,15 +24,13 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageWorkers
         }
 
         public QueryInstanceProfilesWorker(AccountViewModel accountViewModel,
-                                           RegionEndPointsManager.RegionEndPoints regionEndPoints,
+                                           ToolkitRegion region,
                                            ILog logger,
                                            DataAvailableCallback callback)
         {
             _callback = callback;
 
-            var iamConfig = new AmazonIdentityManagementServiceConfig ();
-            regionEndPoints.GetEndpoint(RegionEndPointsManager.IAM_SERVICE_NAME).ApplyToClientConfig(iamConfig);
-            var iamClient = new AmazonIdentityManagementServiceClient(accountViewModel.Credentials, iamConfig);
+            var iamClient = accountViewModel.CreateServiceClient<AmazonIdentityManagementServiceClient>(region);
 
             var bw = new BackgroundWorker();
             bw.DoWork += Worker;

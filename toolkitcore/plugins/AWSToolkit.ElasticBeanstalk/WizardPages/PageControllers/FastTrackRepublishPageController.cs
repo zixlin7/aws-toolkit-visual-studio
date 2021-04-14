@@ -7,10 +7,12 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageUI.Deployment;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Persistence.Deployment;
 using Amazon.AWSToolkit.PluginServices.Deployment;
+using Amazon.AWSToolkit.Regions;
 using Amazon.ElasticBeanstalk;
 using Amazon.ElasticBeanstalk.Model;
 using log4net;
@@ -21,9 +23,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
     {
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(FastTrackRepublishPageController));
 
+        private readonly ToolkitContext _toolkitContext;
+
         FastTrackRepublishPage _pageUI = null;
         AccountViewModel _account;
-        RegionEndPointsManager.RegionEndPoints _region;
+        ToolkitRegion _region;
         readonly object _syncLock = new object();
 
         #region IAWSWizardPageController Members
@@ -39,6 +43,11 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
         public string ShortPageTitle => null;
 
         public string PageDescription => "Verify the details of the last deployment.";
+
+        public FastTrackRepublishPageController(ToolkitContext toolkitContext)
+        {
+            _toolkitContext = toolkitContext;
+        }
 
         public void ResetPage()
         {
@@ -65,7 +74,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                 _account = viewModel.AccountFromIdentityKey(accountGuid);
                 
                 var regionName = HostingWizard[DeploymentWizardProperties.SeedData.propkey_LastRegionDeployedTo] as string;
-                _region = RegionEndPointsManager.GetInstance().GetRegion(regionName);
+                _region = _toolkitContext.RegionProvider.GetRegion(regionName);
 
                 var projectType = HostingWizard[DeploymentWizardProperties.SeedData.propkey_ProjectType] as string;
                 if(projectType == DeploymentWizardProperties.NetCoreWebProject)
@@ -81,7 +90,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
                     _pageUI.CoreCLRVisible = System.Windows.Visibility.Collapsed;
                 }
 
-                var bdh = DeploymentWizardHelper.DeploymentHistoryForAccountAndRegion(_account, _region.SystemName, HostingWizard.CollectedProperties);
+                var bdh = DeploymentWizardHelper.DeploymentHistoryForAccountAndRegion(_account, _region.Id, HostingWizard.CollectedProperties);
 
                 // work around any loss of default location due to user switching between incremental/non-incremental (shouldn't
                 // happen, but...). Note that we always set a default; don't care if it's used or not :-)
@@ -96,8 +105,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
 
                 // now pass the whole seed data into the final properties the deployment engine will look at (except version,
                 // which the user can change in the dialog)
-                HostingWizard.SetProperty(CommonWizardProperties.AccountSelection.propkey_SelectedAccount, _account);
-                HostingWizard.SetProperty(CommonWizardProperties.AccountSelection.propkey_SelectedRegion, _region);
+                HostingWizard.SetSelectedAccount(_account);
+                HostingWizard.SetSelectedRegion(_region);
                 HostingWizard.SetProperty(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy, true);
                 
                 HostingWizard.SetProperty(DeploymentWizardProperties.DeploymentTemplate.propkey_DeploymentName, bdh.ApplicationName);
@@ -223,17 +232,14 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.WizardPages.PageControllers
         {
             var args = e.Argument as object[];
             var account = args[0] as AccountViewModel;
-            var region = args[1] as RegionEndPointsManager.RegionEndPoints;
+            var region = args[1] as ToolkitRegion;
             var bdh = args[2] as BeanstalkDeploymentHistory;
             var logger = args[3] as ILog;
 
             EnvironmentDescription envDescription = null;
             try
             {
-                var endpoint = region.GetEndpoint("ElasticBeanstalk");
-                var beanstalkConfig = new AmazonElasticBeanstalkConfig();
-                endpoint.ApplyToClientConfig(beanstalkConfig);
-                var beanstalkClient = new AmazonElasticBeanstalkClient(account.Credentials, beanstalkConfig);
+                var beanstalkClient = account.CreateServiceClient<AmazonElasticBeanstalkClient>(region);
 
                 var response = beanstalkClient.DescribeEnvironments(new DescribeEnvironmentsRequest
                 {

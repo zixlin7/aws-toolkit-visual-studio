@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.S3.Model
 {
@@ -7,13 +8,13 @@ namespace Amazon.AWSToolkit.S3.Model
     {
         public InvokeLambdaFunctionModel()
         {
-            this.Regions = new ObservableCollection<RegionEndPointsManager.RegionEndPoints>();
+            this.Regions = new ObservableCollection<ToolkitRegion>();
             this.Functions = new ObservableCollection<string>();
             this.EventTypes = new ObservableCollection<string>();
         }
 
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion { get; set; }
-        public ObservableCollection<RegionEndPointsManager.RegionEndPoints> Regions { get; set; }
+        public ToolkitRegion SelectedRegion { get; set; }
+        public ObservableCollection<ToolkitRegion> Regions { get; set; }
 
         private string _selectedFunction;
         public string SelectedFunction { 

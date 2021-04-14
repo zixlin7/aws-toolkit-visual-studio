@@ -47,9 +47,8 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Controller
             }
             else
             {
-                var region = RegionEndPointsManager.GetInstance().GetRegion(environmentModel.ApplicationViewModel.RegionSystemName);
                 vpcPropertyData = QueryVPCPropertiesWorker.QueryVPCProperties(environmentModel.AccountViewModel,
-                                                                              region,
+                                                                              environmentModel.ApplicationViewModel.Region,
                                                                               VPCId,
                                                                               LOGGER);
                 msg = string.Format("Are you sure you want to change the type of the environment named \"{0}\" to \"{1}\"?\r\n\r\n" +

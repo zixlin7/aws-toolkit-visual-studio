@@ -25,9 +25,6 @@ namespace Amazon.AWSToolkit.EC2.Controller
         public void RefreshInternetGateways()
         {
             var response = this.EC2Client.DescribeInternetGateways(new DescribeInternetGatewaysRequest());
-
-            var account = this.FeatureViewModel.AccountViewModel;
-            var region = this.FeatureViewModel.RegionSystemName;
             ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread((Action)(() =>
             {
                 this.Model.Gateways.Clear();

@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Lambda.Controller;
 
 using log4net;

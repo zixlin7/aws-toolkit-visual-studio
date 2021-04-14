@@ -1,10 +1,13 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Account.Controller;
+using Amazon.AWSToolkit.Settings;
 
 namespace Amazon.AWSToolkit.Account.View
 {
@@ -13,27 +16,13 @@ namespace Amazon.AWSToolkit.Account.View
     /// </summary>
     public partial class RegisterAccountControl : BaseAWSControl
     {
-        // optional callback to indicate to outer container when all mandatory fields
-        // have been completed (or not)
-        public delegate void MandatoryFieldsReadyCallback(bool fieldsCompleted);
-        MandatoryFieldsReadyCallback _fieldsReadyCallback = null;
-
         RegisterAccountController _controller;
-
-        public RegisterAccountControl()
-            : this(null)
-        {
-        }
-
-        public void SetMandatoryFieldsReadyCallback(MandatoryFieldsReadyCallback callback)
-        {
-            _fieldsReadyCallback = callback;
-        }
 
         public RegisterAccountControl(RegisterAccountController controller)
         {
             this._controller = controller;
             this.DataContext = this._controller.Model;
+            this._controller.Model.PropertyChanged += OnPropertyChanged;
             InitializeComponent();
         }
 
@@ -50,7 +39,7 @@ namespace Amazon.AWSToolkit.Account.View
 
         public override bool Validated()
         {
-            if (string.IsNullOrEmpty(this._controller.Model.DisplayName))
+            if (string.IsNullOrEmpty(this._controller.Model.ProfileName))
             {
                 ToolkitFactory.Instance.ShellProvider.ShowError("Profile Name is a required field");
                 return false;
@@ -82,6 +71,11 @@ namespace Amazon.AWSToolkit.Account.View
             return true;
         }
 
+        void OnRequestRegions(object sender, RequestNavigateEventArgs e)
+        {
+            this._controller.Model.IsPartitionEnabled = true;
+        }
+
         void onRequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             string url = this._ctlAWSLink.Text;
@@ -89,14 +83,38 @@ namespace Amazon.AWSToolkit.Account.View
             e.Handled = true;
         }
 
-        private void MandatoryFieldTextChanged(object sender, TextChangedEventArgs e)
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (_fieldsReadyCallback != null)
+            if (e.PropertyName == nameof(this._controller.Model.Partition))
             {
-                _fieldsReadyCallback(this._ctlDisplayName.Text.Length > 0
-                                        && this._ctlAccessKey.Text.Length > 0
-                                        && this._ctlSecretKey.Text.Length > 0);
+                OnPartitionChanged();
             }
+
+        }
+
+        private void OnPartitionChanged()
+        {
+            if (this._controller.Model.Partition == null)
+            {
+                return;
+            }
+            this._controller.Model.ShowRegionsForPartition(this._controller.Model.Partition.Id);
+
+            if (!this._controller.Model.Regions.Any())
+            {
+                return;
+            }
+
+            // When the Partition changes the list of Regions, the currently selected Region
+            // is likely cleared (from databinding).
+            // Make a reasonable region selection, if the currently selected region is not available.
+            var defaultRegion = RegionEndpoint.USEast1;
+
+            var selectedRegion = this._controller.Model.GetRegion(ToolkitSettings.Instance.LastSelectedRegion)??
+                                 this._controller.Model.GetRegion(defaultRegion.SystemName) ??
+                                 this._controller.Model.Regions.FirstOrDefault();
+
+            this._controller.Model.Region = selectedRegion;
         }
 
         private void OnClickImportFromCSV(object sender, RoutedEventArgs e)
@@ -114,6 +132,16 @@ namespace Amazon.AWSToolkit.Account.View
             {
                 _controller.Model.LoadAWSCredentialsFromCSV(dlg.FileName);
             }
+        }
+
+        private void CtlSecretKey_OnPasswordChanged(object sender, RoutedEventArgs e)
+        {
+            this._controller.Model.SecretKey = this._ctlSecretKey.Password;
+        }
+
+        private void CtlAccessKey_OnPasswordChanged(object sender, RoutedEventArgs e)
+        {
+            this._controller.Model.AccessKey = this._ctlAccessKey.Password;
         }
     }
 }

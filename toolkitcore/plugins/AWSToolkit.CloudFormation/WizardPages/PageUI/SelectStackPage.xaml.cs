@@ -1,17 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.CloudFormation.Model;
-using Amazon.AWSToolkit.CommonUI.WizardFramework;
+using Amazon.AWSToolkit.CommonUI.Components;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.SNS.Nodes;
 using Amazon.CloudFormation;
 using Amazon.CloudFormation.Model;
 using Amazon.AWSToolkit.PluginServices.Deployment;
-
 using Amazon.AWSToolkit.SimpleWorkers;
+using Amazon.AWSToolkit.Util;
+using Amazon.SimpleNotificationService;
 
 using log4net;
 
@@ -23,39 +25,44 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
     public partial class SelectStackPage : INotifyPropertyChanged
     {
         ILog LOGGER = LogManager.GetLogger(typeof(SelectStackPage));
+        private const int AccountRegionChangedDebounceMs = 250;
 
-        string _lastSeenAccount = string.Empty;
+        private readonly DebounceDispatcher _accountRegionChangeDebounceDispatcher = new DebounceDispatcher();
 
-        public SelectStackPage()
+        public AccountAndRegionPickerViewModel Connection { get; }
+
+        public SelectStackPage(ToolkitContext toolkitContext)
         {
+            Connection = new AccountAndRegionPickerViewModel(toolkitContext);
+            Connection.SetServiceFilter(new List<string>()
+            {
+                DeploymentServiceIdentifiers.ToolkitCloudFormationServiceName
+            });
+
             InitializeComponent();
-            
+
             DataContext = this;
             this._ctlCreationTimeout.SelectedIndex = 0;
         }
 
-        public SelectStackPage(IAWSWizardPageController controller)
-            : this()
+        void ConnectionChanged(object sender, EventArgs e)
         {
-            this.PageController = controller;
-        }
+            if (!Connection.ConnectionIsValid)
+            {
+                return;
+            }
 
-        public IAWSWizardPageController PageController { get; set; }
+            // Prevent multiple loads caused by property changed events in rapid succession
+            _accountRegionChangeDebounceDispatcher.Debounce(AccountRegionChangedDebounceMs, _ =>
+            {
+                ToolkitFactory.Instance.ShellProvider.ExecuteOnUIThread(() =>
+                {
+                    UpdateExistingStacks();
+                    loadTopicList();
 
-        public void Initialize(AccountViewModel account, RegionEndPointsManager.RegionEndPoints region)
-        {
-            this._ctlAccountAndRegionPicker.Initialize(account, region, new[] { DeploymentServiceIdentifiers.CloudFormationServiceName });
-            this._ctlAccountAndRegionPicker.PropertyChanged += new PropertyChangedEventHandler(_ctlAccountAndRegionPicker_PropertyChanged);
-            UpdateExistingStacks();
-            loadTopicList();
-        }
-
-        void _ctlAccountAndRegionPicker_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            UpdateExistingStacks();
-            loadTopicList();
-
-            NotifyPropertyChanged(e.PropertyName);
+                    NotifyPropertyChanged(nameof(Connection));
+                });
+            });
         }
 
         public string StackName
@@ -70,10 +77,6 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
         }
 
         public bool CreateStackMode => this._ctlCreateStack.IsChecked.GetValueOrDefault();
-
-        public AccountViewModel SelectedAccount => this._ctlAccountAndRegionPicker.SelectedAccount;
-
-        public RegionEndPointsManager.RegionEndPoints SelectedRegion => this._ctlAccountAndRegionPicker.SelectedRegion;
 
         public int CreationTimeout
         {
@@ -91,7 +94,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
 
         private void loadTopicList()
         {
-            if (this._ctlAccountAndRegionPicker.SelectedAccount == null)
+            if (!Connection.ConnectionIsValid)
             {
                 this._ctlSNSTopic.IsEnabled = false;
                 return;
@@ -99,7 +102,7 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
 
 
             var worker = new QueryTopicArnsWorker(
-               this._ctlAccountAndRegionPicker.SelectedAccount.CreateServiceClient<Amazon.SimpleNotificationService.AmazonSimpleNotificationServiceClient>(this._ctlAccountAndRegionPicker.SelectedRegion),
+               Connection.Account.CreateServiceClient<AmazonSimpleNotificationServiceClient>(Connection.Region),
                LOGGER,
                this.loadTopicListCallback);
         }
@@ -111,14 +114,14 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
 
         private void UpdateExistingStacks()
         {
-            if (this._ctlAccountAndRegionPicker.SelectedAccount == null)
+            if (!Connection.ConnectionIsValid)
             {
                 this._ctlSNSTopic.IsEnabled = false;
                 return;
             }
 
             var worker = new QueryCloudFormationStacksWorker(
-                this._ctlAccountAndRegionPicker.SelectedAccount.CreateServiceClient<AmazonCloudFormationClient>(this._ctlAccountAndRegionPicker.SelectedRegion),
+                Connection.Account.CreateServiceClient<AmazonCloudFormationClient>(Connection.Region),
                 LOGGER,
                 this.UpdateExistingStacksCallback);
         }
@@ -141,13 +144,13 @@ namespace Amazon.AWSToolkit.CloudFormation.WizardPages.PageUI
 
         private void onCreateTopicClick(object sender, RoutedEventArgs e)
         {
-            if (this._ctlAccountAndRegionPicker.SelectedAccount == null)
+            if (!Connection.ConnectionIsValid)
             {
-                ToolkitFactory.Instance.ShellProvider.ShowError("You must select an account first before creating a topic.");
+                ToolkitFactory.Instance.ShellProvider.ShowError("Valid AWS Credentials are required to create a SNS topic.");
                 return;
             }
 
-            ISNSRootViewModel model = this._ctlAccountAndRegionPicker.SelectedAccount.FindSingleChild<ISNSRootViewModel>(false);
+            ISNSRootViewModel model = Connection.Account.FindSingleChild<ISNSRootViewModel>(false);
             ISNSRootViewMetaNode meta = model.MetaNode as ISNSRootViewMetaNode;
             var results = meta.OnCreateTopic(model);
 

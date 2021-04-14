@@ -3,6 +3,7 @@ using Amazon.AWSToolkit.Navigator;
 
 using Amazon.AWSToolkit.DynamoDB.Nodes;
 using Amazon.AWSToolkit.DynamoDB.Controller;
+using Amazon.DynamoDBv2;
 
 
 namespace Amazon.AWSToolkit.DynamoDB
@@ -13,7 +14,7 @@ namespace Amazon.AWSToolkit.DynamoDB
 
         public override void RegisterMetaNodes()
         {
-            var rootMetaNode = new DynamoDBRootViewMetaNode();
+            var rootMetaNode = new DynamoDBRootViewMetaNode(ToolkitContext);
             var domainMetaNode = new DynamoDBTableViewMetaNode();
 
             rootMetaNode.Children.Add(domainMetaNode);
@@ -22,13 +23,13 @@ namespace Amazon.AWSToolkit.DynamoDB
             var accountMetaNode = ToolkitFactory.Instance.RootViewMetaNode.FindChild<AccountViewMetaNode>();
             accountMetaNode.Children.Add(rootMetaNode);
 
-            RegionEndPointsManager.GetInstance().LocalRegion.RegisterEndPoint(DynamoDBRootViewMetaNode.DYNAMODB_ENDPOINT_LOOKUP, "http://localhost:8000");
+            this.ToolkitContext.RegionProvider.SetLocalEndpoint(DynamoDBConstants.ServiceNames.DynamoDb, "http://localhost:8000");
         }
 
         void setupContextMenuHooks(DynamoDBRootViewMetaNode rootNode)
         {
             rootNode.OnTableCreate =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<CreateTableController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new CreateTableController(ToolkitContext)).Execute);
 
             rootNode.OnStartLocal = 
                 new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<StartLocalDynamoDBController>().Execute);

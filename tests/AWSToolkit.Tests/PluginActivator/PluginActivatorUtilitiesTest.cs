@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Amazon.AWSToolkit;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.PluginServices.Activators;
 using Xunit;
 
@@ -13,6 +14,11 @@ namespace AWSToolkit.Tests.PluginActivator
     {
         public static readonly string SamplePluginName = "SamplePlugin";
         public string PluginName { get; } = SamplePluginName;
+
+        public void Initialize(ToolkitContext toolkitContext)
+        {
+
+        }
 
         public void RegisterMetaNodes()
         {

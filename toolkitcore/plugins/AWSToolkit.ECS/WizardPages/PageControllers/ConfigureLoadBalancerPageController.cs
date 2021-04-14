@@ -4,6 +4,8 @@ using Amazon.EC2.Model;
 using Amazon.ECS.Model;
 using System;
 using System.Windows.Controls;
+using Amazon.EC2;
+using Amazon.ECS;
 
 namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
 {
@@ -226,8 +228,8 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageControllers
             }
             else
             {
-                using (var ec2Client = ECSWizardUtils.CreateEC2Client(this.HostingWizard))
-                using (var ecsClient = ECSWizardUtils.CreateECSClient(this.HostingWizard))
+                using (var ec2Client = ECSWizardUtils.CreateServiceClient<AmazonEC2Client>(this.HostingWizard))
+                using (var ecsClient = ECSWizardUtils.CreateServiceClient<AmazonECSClient>(this.HostingWizard))
                 {
                     var cluster = HostingWizard[PublishContainerToAWSWizardProperties.ExistingCluster] as Amazon.ECS.Model.Cluster;
                     var containerInstanceArns = ecsClient.ListContainerInstances(new ListContainerInstancesRequest

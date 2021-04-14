@@ -10,6 +10,7 @@ using Amazon.AWSToolkit.CodeCommit.Interface.Model;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers;
 using Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement;
+using Amazon.AWSToolkit.Commands;
 using EnvDTE;
 using log4net;
 using Microsoft.TeamFoundation.Controls;
@@ -29,31 +30,49 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
                 TeamExplorerConnection.ActiveConnection.PropertyChanged += ActiveConnectionOnPropertyChanged;
             }
 
-            _cloneCommand = new CommandHandler(OnClone, true);
-            _createCommand = new CommandHandler(OnCreate, true);
+            _cloneCommand = new RelayCommand(CanOperateOnActiveConnection, param => OnClone());
+            _createCommand = new RelayCommand(CanOperateOnActiveConnection, param => OnCreate());
             _signoutCommand = new CommandHandler(OnSignout, true);
+            RefreshConnection = new RelayCommand(CanRefreshConnection, param => OnRefreshConnection());
         }
 
         /// <summary>
         /// Monitors for changes in the active connection and wires up to receive
         /// repository list change events when a connection is established.
         /// </summary>
-        /// <param name="connection"></param>
-        private void OnTeamExplorerBindingChanged(TeamExplorerConnection connection)
+        private void OnTeamExplorerBindingChanged(TeamExplorerConnection oldConnection, TeamExplorerConnection newConnection)
         {
             LOGGER.InfoFormat("ConnectionSectionViewModel OnTeamExplorerBindingChanged");
-            if (connection != null)
+            if (oldConnection != null)
             {
-                connection.PropertyChanged += ActiveConnectionOnPropertyChanged;
+                oldConnection.PropertyChanged -= ActiveConnectionOnPropertyChanged;
             }
 
-            RaisePropertyChanged("Repositories");
-            RaisePropertyChanged("SignoutLabel");
+            if (newConnection != null)
+            {
+                newConnection.PropertyChanged += ActiveConnectionOnPropertyChanged;
+            }
+
+            RaisePropertyChanged(nameof(Repositories));
+            RaisePropertyChanged(nameof(SignoutLabel));
         }
 
         private void ActiveConnectionOnPropertyChanged(object o, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             RaisePropertyChanged(propertyChangedEventArgs.PropertyName);
+
+            if (propertyChangedEventArgs.PropertyName == nameof(TeamExplorerConnection.AwsConnectionState))
+            {
+                RaisePropertyChanged(nameof(IsAccountValid));
+                RaisePropertyChanged(nameof(AccountValidationMessage));
+
+                // Trigger a refresh of the enabled state of commands like Clone
+                Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
+                {
+                    await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                    CommandManager.InvalidateRequerySuggested();
+                });
+            }
         }
 
         public string SignoutLabel =>
@@ -65,13 +84,15 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
 
         public ICommand SignoutCommand => _signoutCommand;
 
-        private readonly CommandHandler _cloneCommand;
+        private readonly ICommand _cloneCommand;
 
         public ICommand CloneCommand => _cloneCommand;
 
-        private readonly CommandHandler _createCommand;
+        private readonly ICommand _createCommand;
 
         public ICommand CreateCommand => _createCommand;
+
+        public ICommand RefreshConnection { get; }
 
         public ObservableCollection<ICodeCommitRepository> Repositories =>
             TeamExplorerConnection.ActiveConnection != null
@@ -83,6 +104,19 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
         // enable access to the account here, so that if we ever need to support
         // multiple connections each panel can have its own without a larger refactor
         public AccountViewModel Account => TeamExplorerConnection.ActiveConnection?.Account;
+        public bool IsAccountValid => TeamExplorerConnection.ActiveConnection?.IsAccountValid ?? false;
+        public string AccountValidationMessage => TeamExplorerConnection.ActiveConnection?.AccountValidationMessage ?? string.Empty;
+
+        private bool CanOperateOnActiveConnection(object o)
+        {
+            if (TeamExplorerConnection.ActiveConnection == null)
+            {
+                return false;
+            }
+
+            return IsAccountValid &&
+                   !TeamExplorerConnection.ActiveConnection.IsValidatingAccount;
+        }
 
         private void OnClone()
         {
@@ -97,6 +131,22 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
         private void OnSignout()
         {
             TeamExplorerConnection.ActiveConnection.Signout();
+        }
+
+        private bool CanRefreshConnection(object param)
+        {
+            if (TeamExplorerConnection.ActiveConnection == null)
+            {
+                return false;
+            }
+
+            return !IsAccountValid &&
+                   TeamExplorerConnection.ActiveConnection.AwsConnectionState.IsTerminal;
+        }
+
+        private void OnRefreshConnection()
+        {
+            TeamExplorerConnection.ActiveConnection?.RevalidateConnection();
         }
 
         public void OpenRepository()

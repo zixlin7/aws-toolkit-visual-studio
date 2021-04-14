@@ -30,7 +30,7 @@ namespace Amazon.AWSToolkit.SimpleDB.Nodes
         {
             dndDataObjects.SetData(DataFormats.Text, this.Name);
             dndDataObjects.SetData("ARN", string.Format("arn:aws:sdb:{0}:{1}:domain/{2}",
-                this.SimpleDBRootViewModel.CurrentEndPoint.RegionSystemName, this.AccountViewModel.AccountNumber, this.Name));
+                this.SimpleDBRootViewModel.Region.Id, ToolkitFactory.Instance.AwsConnectionManager.ActiveAccountId, this.Name));
         }
     }
 }

@@ -44,8 +44,9 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
         {
             if (_pageUI == null)
             {
-                _pageUI = new PublishServerlessDetailsPage(this);
+                _pageUI = new PublishServerlessDetailsPage(this, ToolkitFactory.Instance.ToolkitContext);
                 _pageUI.PropertyChanged += _pageUI_PropertyChanged;
+                _pageUI.Connection.PropertyChanged += _pageUI_PropertyChanged;
             }
 
             return _pageUI;
@@ -99,8 +100,8 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageControllers
             if (_pageUI == null)
                 return false;
 
-            HostingWizard[UploadFunctionWizardProperties.UserAccount] = _pageUI.SelectedAccount;
-            HostingWizard[UploadFunctionWizardProperties.Region] = _pageUI.SelectedRegion;
+            HostingWizard.SetSelectedAccount(_pageUI.Connection.Account, UploadFunctionWizardProperties.UserAccount);
+            HostingWizard.SetSelectedRegion(_pageUI.Connection.Region, UploadFunctionWizardProperties.Region);
 
             var previousSetStackName = HostingWizard[UploadFunctionWizardProperties.StackName] as string;
 
