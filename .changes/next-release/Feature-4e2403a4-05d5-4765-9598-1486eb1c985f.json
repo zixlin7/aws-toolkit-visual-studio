@@ -1,4 +1,0 @@
-{
-    "Type": "Feature",
-    "Description": "The Toolkit now shows all supported credential profiles in the AWS Explorer. Previously, the Toolkit would list a subset of credentials based on a de-duplication of the access key."
-}

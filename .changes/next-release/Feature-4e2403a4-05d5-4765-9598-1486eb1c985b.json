@@ -1,4 +1,0 @@
-{
-    "Type": "Feature",
-    "Description": "Added support for AWS SSO based credential profiles. Selecting credentials based on AWS SSO will open a prompt to launch a browser-based SSO Login."
-}

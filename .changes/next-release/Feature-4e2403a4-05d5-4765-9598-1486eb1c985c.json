@@ -1,4 +1,0 @@
-{
-    "Type": "Feature",
-    "Description": "Added support for credential profiles that assume a role and use MFA. Selecting credentials that use MFA will prompt for an MFA code."
-}
