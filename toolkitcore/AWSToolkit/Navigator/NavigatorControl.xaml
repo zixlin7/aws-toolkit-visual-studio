@@ -85,7 +85,7 @@
                 Margin="5,3,5,3"
                 Foreground="{DynamicResource awsToolWindowTextBrushKey}"
                 Style="{DynamicResource awsLabelBoldStyle}"
-                Content="Profile:" />
+                Content="Credentials:" />
 
             <commoncomponents:CredentialsSelector 
                 Margin="5 3 5 3" 
