@@ -54,7 +54,7 @@
 
             <Label Grid.Column="0" 
                    Style="{DynamicResource awsLabelBaseStyle}">
-                _Profile:
+                _Credentials:
             </Label>
             <components:RegisteredProfilesPicker 
                 Margin="4,0" 

@@ -355,14 +355,14 @@ namespace Amazon.AWSToolkit.Credentials.Core
             catch (OperationCanceledException e)
             {
                 validationResult = Result.Cancelled;
-                LOGGER.Error($"Failed to switch to profile: {identifier?.DisplayName}", e);
+                LOGGER.Error($"Failed to switch to credentials: {identifier?.DisplayName}", e);
                 var connectionState = new ConnectionState.InvalidConnection("New connection settings chosen");
                 SetValidationResults(identifier, region, connectionState, null, string.Empty, token);
             }
             catch (Exception e)
             {
                 validationResult = Result.Failed;
-                LOGGER.Error($"Failed to switch to profile: {identifier?.DisplayName}", e);
+                LOGGER.Error($"Failed to switch to credentials: {identifier?.DisplayName}", e);
                 var connectionState = new ConnectionState.InvalidConnection(e.Message);
                 SetValidationResults(identifier, region, connectionState, null, string.Empty, token);
             }
