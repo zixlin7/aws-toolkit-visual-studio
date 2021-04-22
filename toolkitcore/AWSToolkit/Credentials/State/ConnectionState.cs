@@ -86,7 +86,7 @@ namespace Amazon.AWSToolkit.Credentials.State
                 }
 
                 throw new ArgumentException(
-                    $"Atleast one of regionId {region} or credential identifier {identifier} must be null");
+                    $"At least one of regionId {region} or credential identifier {identifier} must be null");
             }
         }
     }

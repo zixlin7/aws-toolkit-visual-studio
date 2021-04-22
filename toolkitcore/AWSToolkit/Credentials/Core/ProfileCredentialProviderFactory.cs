@@ -58,7 +58,9 @@ namespace Amazon.AWSToolkit.Credentials.Core
             var type = CredentialProfileTypeDetector.DetectProfileType(profile.Options);
 
 
-            return type.Equals(CredentialProfileType.SSO) || IsMFACredentialType(type);
+            return type.Equals(CredentialProfileType.SSO) ||
+                   type.Equals(CredentialProfileType.CredentialProcess) ||
+                   IsMFACredentialType(type);
         }
 
         public void LoadProfiles(bool initialLoad)

@@ -37,18 +37,10 @@ namespace AWSToolkit.Tests.Credentials.Core
         public void RaiseCredentialEventWithNoChanges()
         {
             var newProfiles = new Profiles();
-            newProfiles.ValidProfiles.Add(CredentialProfileTestHelper.BasicProfileName,
-                CredentialProfileTestHelper.BasicProfile);
-            newProfiles.ValidProfiles.Add(CredentialProfileTestHelper.SessionProfileName,
-                CredentialProfileTestHelper.SessionProfile);
-            newProfiles.ValidProfiles.Add(CredentialProfileTestHelper.MFAProfileName,
-                CredentialProfileTestHelper.MFAProfile);
-            newProfiles.ValidProfiles.Add(CredentialProfileTestHelper.MFAExternalSessionProfileName,
-                CredentialProfileTestHelper.MFAExternalSessionProfile);
-            newProfiles.ValidProfiles.Add(CredentialProfileTestHelper.SSOProfileName,
-                CredentialProfileTestHelper.SSOProfile);
-            newProfiles.ValidProfiles.Add(CredentialProfileTestHelper.AssumeRoleProfileName,
-                CredentialProfileTestHelper.AssumeRoleProfile);
+            foreach (var nameToProfile in _profiles)
+            {
+                newProfiles.ValidProfiles.Add(nameToProfile.Key, nameToProfile.Value);
+            }
 
             var receivedEvent = Assert.Raises<CredentialChangeEventArgs>(
                 a => _exposedTestFactory.CredentialsChanged += a,
@@ -135,7 +127,6 @@ namespace AWSToolkit.Tests.Credentials.Core
         [Theory]
         [InlineData(CredentialProfileTestHelper.BasicProfileName)]
         [InlineData(CredentialProfileTestHelper.SessionProfileName)]
-        [InlineData(CredentialProfileTestHelper.CredentialProcessProfileName)]
         [InlineData(CredentialProfileTestHelper.AssumeRoleProfileName)]
         [InlineData(CredentialProfileTestHelper.InvalidBasicProfileName)]
         [InlineData(CredentialProfileTestHelper.InvalidSessionProfileName)]
@@ -155,6 +146,9 @@ namespace AWSToolkit.Tests.Credentials.Core
             Assert.True(_factory.IsLoginRequired(identifier));
 
             identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.SSOProfileName);
+            Assert.True(_factory.IsLoginRequired(identifier));
+
+            identifier = new SDKCredentialIdentifier(CredentialProfileTestHelper.CredentialProcessProfileName);
             Assert.True(_factory.IsLoginRequired(identifier));
         }
 
@@ -225,6 +219,7 @@ namespace AWSToolkit.Tests.Credentials.Core
             _profiles[CredentialProfileTestHelper.MFAExternalSessionProfileName] = CredentialProfileTestHelper.MFAExternalSessionProfile;
             _profiles[CredentialProfileTestHelper.SSOProfileName] = CredentialProfileTestHelper.SSOProfile;
             _profiles[CredentialProfileTestHelper.AssumeRoleProfileName] = CredentialProfileTestHelper.AssumeRoleProfile;
+            _profiles[CredentialProfileTestHelper.CredentialProcessProfileName] = CredentialProfileTestHelper.CredentialProcessProfile;
         }
 
         public void Dispose()
