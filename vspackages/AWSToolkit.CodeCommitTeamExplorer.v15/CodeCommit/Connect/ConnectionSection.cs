@@ -35,7 +35,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
         public ConnectionSection()
         {
             Utility.ConfigureLog4Net();
-            LOGGER.Info("Creating CodeCommit ConnectionSection");
+            LOGGER.Debug("Creating CodeCommit ConnectionSection");
         }
 
         protected override ITeamExplorerSection CreateViewModel(SectionInitializeEventArgs e)
@@ -53,7 +53,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
 
         public override void Initialize(object sender, SectionInitializeEventArgs e)
         {
-            LOGGER.Info("CodeCommit Connect Initialize");
+            LOGGER.Debug("CodeCommit Connect Initialize");
             base.Initialize(sender, e);
 
             IsVisible = TeamExplorerConnection.ActiveConnection != null;
@@ -62,20 +62,20 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
 
         protected override object CreateView(SectionInitializeEventArgs e)
         {
-            LOGGER.Info("CodeCommit Connect CreateView");
+            LOGGER.Debug("CodeCommit Connect CreateView");
             return _view ?? (_view = new ConnectionSectionControl());
         }
 
         protected override void InitializeView(SectionInitializeEventArgs e)
         {
-            LOGGER.Info("CodeCommit Connect InitializeView");
+            LOGGER.Debug("CodeCommit Connect InitializeView");
             _view.DataContext = _viewModel;
         }
 
         // triggers a change of visibility of the section
         private void OnTeamExplorerBindingChanged(TeamExplorerConnection oldConnection, TeamExplorerConnection newConnection)
         {
-            LOGGER.Info("CodeCommit Connect OnTeamExplorerBindingChanged");
+            LOGGER.Debug("CodeCommit Connect OnTeamExplorerBindingChanged");
             IsVisible = newConnection != null;
         }
     }

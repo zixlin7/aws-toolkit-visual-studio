@@ -42,7 +42,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
         /// </summary>
         private void OnTeamExplorerBindingChanged(TeamExplorerConnection oldConnection, TeamExplorerConnection newConnection)
         {
-            LOGGER.InfoFormat("ConnectionSectionViewModel OnTeamExplorerBindingChanged");
+            LOGGER.Debug("ConnectionSectionViewModel OnTeamExplorerBindingChanged");
             if (oldConnection != null)
             {
                 oldConnection.PropertyChanged -= ActiveConnectionOnPropertyChanged;
@@ -151,7 +151,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
 
         public void OpenRepository()
         {
-            LOGGER.InfoFormat("ConnectionSectionViewModel OpenRepository");
+            LOGGER.Debug("ConnectionSectionViewModel OpenRepository");
             // there is no procedure to bind to a repo from within Team Explorer, so adopt
             // GitHub's approach of opening a transient solution in the repo, that we then
             // discard
@@ -169,7 +169,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Model
             var repoDir = SelectedRepository.LocalFolder;
             if (!Directory.Exists(repoDir))
             {
-                LOGGER.Info("Folder for the selected repo does not exist, abanding repository open.");
+                LOGGER.Info("Folder for the selected repo does not exist, abandoning repository open.");
                 return;
             }
 

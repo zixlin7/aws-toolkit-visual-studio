@@ -45,7 +45,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
         [ImportingConstructor]
         public InvitationSection()
         {
-            LOGGER.Info("Creating CodeCommit InvitationSection");
+            LOGGER.Debug("Creating CodeCommit InvitationSection");
 
             _packageLoadedTimer = new Timer()
             {
@@ -96,7 +96,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
 
         public override void Connect()
         {
-            LOGGER.Info("CodeCommit Connect");
+            LOGGER.Debug("CodeCommit Connect");
 
             if (!_toolkitPackageLoaded)
             {
@@ -129,7 +129,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
 
         public override void SignUp()
         {
-            LOGGER.Info("CodeCommit SignUp");
+            LOGGER.Debug("CodeCommit SignUp");
             try
             {
                 var u = new UriBuilder(_signUpUrl)

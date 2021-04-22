@@ -62,7 +62,8 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
         {
             get
             {
-                LOGGER.Info("TeamExplorerConnection: get_ActiveConnection");
+                // Don't log this getter to avoid log spam from this getter.
+                // It is frequently queried in RelayCommand CanExecute calls.
                 lock (_synclock)
                 {
                     return _activeConnection;
@@ -70,7 +71,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
             }
             private set
             {
-                LOGGER.Info("TeamExplorerConnection: set_ActiveConnection");
+                LOGGER.Debug("TeamExplorerConnection: set_ActiveConnection");
                 TeamExplorerConnection oldConnection = null;
                 lock (_synclock)
                 {
@@ -118,7 +119,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
 
         public void RefreshRepositories()
         {
-            LOGGER.Info("TeamExplorerConnection: RefreshRepositories");
+            LOGGER.Debug("TeamExplorerConnection: RefreshRepositories");
 
             if (CodeCommitPlugin == null)
             {
@@ -188,7 +189,7 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
 
         private async Task QueryNewlyAddedRepositoriesDataAsync(object state)
         {
-            LOGGER.Info("TeamExplorerConnection: QueryNewlyAddedRepositoriesDataAsync");
+            LOGGER.Debug("TeamExplorerConnection: QueryNewlyAddedRepositoriesDataAsync");
             if (CodeCommitPlugin == null)
                 return;
 
@@ -418,13 +419,13 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
 
         static TeamExplorerConnection()
         {
-            LOGGER.Info("TeamExplorerConnection: static TeamExplorerConnection");
+            LOGGER.Debug("TeamExplorerConnection: static TeamExplorerConnection");
             ToolkitFactory.AddToolkitInitializedDelegate(Initialize);
         }
 
         private static void Initialize()
         {
-            LOGGER.Info("TeamExplorerConnection: Initialize");
+            LOGGER.Debug("TeamExplorerConnection: Initialize");
             Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.Run(async () =>
             {
                 await Microsoft.VisualStudio.Shell.ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
