@@ -33,24 +33,40 @@ namespace Amazon.AWSToolkit.Credentials.IO
         {
             foreach (var credentialPath in credentialFilePaths)
             {
+                InitializeFileWatcher(credentialPath);
+            }
+        }
+
+        private void InitializeFileWatcher(string credentialPath)
+        {
+            try
+            {
                 var directoryName = Path.GetDirectoryName(credentialPath);
                 var fileName = Path.GetFileName(credentialPath);
 
                 if (string.IsNullOrWhiteSpace(directoryName) ||
                     string.IsNullOrWhiteSpace(fileName))
                 {
-                    continue;
+                    return;
+                }
+
+                //if directory does not exist yet, create it so that it can be watched as the toolkit is running
+                if (!Directory.Exists(directoryName))
+                {
+                    Directory.CreateDirectory(directoryName);
+                    LOGGER.Debug($"Creating directory for watching: {directoryName}");
                 }
 
                 if (this._sharedCredentialWatchers.ContainsKey(credentialPath))
                 {
-                    continue;
+                    return;
                 }
 
                 var watcher = new FileSystemWatcher(directoryName, fileName)
                 {
                     NotifyFilter = NotifyFilters.LastWrite |
                                    NotifyFilters.CreationTime |
+                                   NotifyFilters.FileName |
                                    NotifyFilters.LastAccess | NotifyFilters.Size
                 };
                 watcher.Changed += OnFileWatcherChanged;
@@ -60,6 +76,10 @@ namespace Amazon.AWSToolkit.Credentials.IO
                 watcher.EnableRaisingEvents = true;
 
                 this._sharedCredentialWatchers[credentialPath] = watcher;
+            }
+            catch (Exception ex)
+            {
+                LOGGER.Error($"Error initializing file watcher for: {credentialPath}", ex);
             }
         }
 
