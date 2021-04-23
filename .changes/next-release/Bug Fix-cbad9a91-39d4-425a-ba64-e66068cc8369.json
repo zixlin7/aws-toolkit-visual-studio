@@ -1,4 +1,0 @@
-﻿{
-  "Type": "Bug Fix",
-  "Description": "Fixed an issue where the toolkit would fail to start when the Shared Credentials file directory \"%USERPROFILE%/.aws\" was absent. The toolkit now creates the directory if absent on startup."
-}

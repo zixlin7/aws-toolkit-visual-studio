@@ -1,4 +1,0 @@
-{
-  "Type": "Feature",
-  "Description": "For performance reasons, the AWS Explorer no longer automatically connects to credential_process based credentials on startup. Instead, a link to log in is shown in the AWS Explorer."
-}

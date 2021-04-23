@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Fixed an issue introduced in the previous version where TeamExplorer events were excessively written to the Toolkit log"
-}

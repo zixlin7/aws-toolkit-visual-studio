@@ -1,0 +1,18 @@
+{
+  "Date": "2021-04-23",
+  "Version": "1.21.1.0",
+  "Entries": [
+    {
+      "Type": "Bug Fix",
+      "Description": "Fixed an issue introduced in the previous version where TeamExplorer events were excessively written to the Toolkit log"
+    },
+    {
+      "Type": "Bug Fix",
+      "Description": "Fixed an issue where the toolkit would fail to start when the Shared Credentials file directory \"%USERPROFILE%/.aws\" was absent. The toolkit now creates the directory if absent on startup."
+    },
+    {
+      "Type": "Feature",
+      "Description": "For performance reasons, the AWS Explorer no longer automatically connects to credential_process based credentials on startup. Instead, a link to log in is shown in the AWS Explorer."
+    }
+  ]
+}
