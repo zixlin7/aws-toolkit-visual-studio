@@ -18,7 +18,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 {
     public class TelemetryPublisherTests : IDisposable
     {
-        private const int WaitForPublishMs = 1500;
+        private const int WaitForEventMs = 1500;
 
         private readonly ITestOutputHelper _testOutput;
 
@@ -32,6 +32,10 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
         private int _currentProcessorLoop = 0;
         private readonly Dictionary<int, Action> _beforeProcessorLoopActions = new Dictionary<int, Action>();
         private readonly Dictionary<int, Action> _processorLoopActions = new Dictionary<int, Action>();
+
+        private readonly object _processorLoopSyncObj = new object();
+        private readonly ManualResetEvent _processorLoopThresholdEvent = new ManualResetEvent(false);
+        private int _processorLoopThreshold = int.MaxValue;
 
         private readonly object _timesPublishedSyncObj = new object();
         private readonly ManualResetEvent _timesPublishedThresholdEvent = new ManualResetEvent(false);
@@ -74,6 +78,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
                     _testOutput.WriteLine($"Completing processor loop {_currentProcessorLoop}");
                     var hasAction = _processorLoopActions.TryGetValue(_currentProcessorLoop, out var action);
                     _currentProcessorLoop++;
+                    UpdateProcessorLoopsEvent();
 
                     if (hasAction)
                     {
@@ -188,7 +193,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
             WaitForTimesPublished(1);
 
             _testOutput.WriteLine("Waiting for post processor loop to complete");
-            afterPublishEvent.WaitOne(WaitForPublishMs);
+            afterPublishEvent.WaitOne(WaitForEventMs);
 
             _testOutput.WriteLine("Verifying state");
             Assert.Equal(elementCount, queueCountAfterPublish);
@@ -235,7 +240,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
             _sut.Initialize(_telemetryClient.Object);
 
             _testOutput.WriteLine("Waiting for post processor loop to complete");
-            afterPublishEvent.WaitOne(WaitForPublishMs);
+            afterPublishEvent.WaitOne(WaitForEventMs);
 
             Assert.Equal(elementCount, queuedElementsAfterPublish);
 
@@ -258,10 +263,8 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
             _sut.IsTelemetryEnabled = false;
             _sut.Initialize(_telemetryClient.Object);
 
-            // Let a couple of publish loops occur, queue should not get emptied
-            while (_currentProcessorLoop < 5)
-            {
-            }
+            // allow some publish loops to take place before verifying nothing was transmitted
+            WaitForProcessorLoopThreshold(5);
 
             Assert.Single(_eventQueue);
             VerifyPostMetricsTimesCalled(Times.Never());
@@ -322,9 +325,9 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
             // Allow some processor loops to pass
             _currentTime = startTime + new TimeSpan(0, 0, 1);
-            while (_currentProcessorLoop < 10)
-            {
-            }
+
+            // allow some publish loops to take place before verifying
+            WaitForProcessorLoopThreshold(10);
 
             // Check that there weren't additional publish operations
             Assert.Equal(1, _timesPublished);
@@ -369,9 +372,23 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
                 _timesPublishedThresholdEvent.Reset();
             }
 
-            _timesPublishedThresholdEvent.WaitOne(WaitForPublishMs);
+            _timesPublishedThresholdEvent.WaitOne(WaitForEventMs);
             
             _testOutput.WriteLine($"Metrics were published at least {timesCalled} times (actual: {_timesPublished})");
+        }
+
+        private void WaitForProcessorLoopThreshold(int minimumProcessorLoop)
+        {
+            lock (_processorLoopSyncObj)
+            {
+                _testOutput.WriteLine($"Waiting for at least {minimumProcessorLoop} telemetry processor loop(s)");
+                _processorLoopThreshold = minimumProcessorLoop;
+                _processorLoopThresholdEvent.Reset();
+            }
+
+            _processorLoopThresholdEvent.WaitOne(WaitForEventMs);
+            
+            _testOutput.WriteLine($"At least {minimumProcessorLoop} processor loops have happened (actual: {_currentProcessorLoop})");
         }
 
         /// <summary>
@@ -398,6 +415,18 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
                 {
                     _testOutput.WriteLine("Times Published Threshold has been met");
                     _timesPublishedThresholdEvent.Set();
+                }
+            }
+        }
+
+        private void UpdateProcessorLoopsEvent()
+        {
+            lock (_processorLoopSyncObj)
+            {
+                if (_currentProcessorLoop >= _processorLoopThreshold)
+                {
+                    _testOutput.WriteLine("Telemetry Publishing Loop Threshold has been met");
+                    _processorLoopThresholdEvent.Set();
                 }
             }
         }

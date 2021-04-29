@@ -68,6 +68,10 @@ jobs:
         env:
             TEST_REPORT_HTML: TestResults/toolkit-test-results.html
 
+        strategy:
+            matrix:
+                configuration: [Debug, Release]
+
         steps:
             - uses: actions/checkout@v2
             - name: Add msbuild to PATH
@@ -76,19 +80,19 @@ jobs:
                   vs-version: "[16.0,17.0)"
 
             - name: Restore
-              run: msbuild buildtools\build.proj /t:restore
+              run: msbuild buildtools\build.proj /t:restore /p:Configuration=${{ matrix.configuration }}
 
             - name: Compile
               # DeployExtension=false skips installing the extension into an experimental instance of VS (we aren't going to debug it on CI machine)
               # This increases build time dramatically and prevents cryptic DEVENV warning spam.
-              run: msbuild buildtools\build.proj /t:compile /p:DeployExtension=false
+              run: msbuild buildtools\build.proj /t:compile /p:DeployExtension=false /p:Configuration=${{ matrix.configuration }}
 
             - name: Test
-              run: msbuild buildtools\build.proj /t:test
+              run: msbuild buildtools\build.proj /t:test /p:Configuration=${{ matrix.configuration }}
 
             - name: Attach Test Report as Build Artifact
               if: always()
               uses: actions/upload-artifact@v2
               with:
-                  name: test-reports-vs2019
+                  name: test-reports-vs2019-${{ matrix.configuration }}
                   path: ${{ env.TEST_REPORT_HTML }}
