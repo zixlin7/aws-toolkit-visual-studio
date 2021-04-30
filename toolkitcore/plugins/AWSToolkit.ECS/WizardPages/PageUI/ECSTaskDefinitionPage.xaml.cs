@@ -214,7 +214,7 @@ namespace Amazon.AWSToolkit.ECS.WizardPages.PageUI
 
                     this._ctlExecutionRole.Items.Clear();
                     this._ctlExecutionRole.Items.Add(ECSWizardUtils.CREATE_NEW_TEXT);
-                    foreach(var role in roles)
+                    foreach(var role in roles.OrderBy(r => r.RoleName))
                     {
                         this._ctlExecutionRole.Items.Add(role.RoleName);
                     }

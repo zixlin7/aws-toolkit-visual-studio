@@ -117,31 +117,37 @@ namespace Amazon.AWSToolkit.CommonUI.Components
                     this._ctlCombo.Items.Clear();
 
                     this._ctlCombo.Items.Add(new IAMPickerItem() { Description = "Existing IAM Roles" });
-                    foreach (var item in this._availableRoles)
-                    {
-                        var pickerItem = new IAMPickerItem() { ExistingRole = item };
-                        this._ctlCombo.Items.Add(pickerItem);
-                    }
+                    _availableRoles
+                        .Select(role => new IAMPickerItem() { ExistingRole = role })
+                        .OrderBy(item => item.DisplayName)
+                        .ToList()
+                        .ForEach(item => this._ctlCombo.Items.Add(item));
 
-                    var awsManaged = _availableManagedPolicies.Where(x => x.Arn.StartsWith(AWS_MANANGED_POLICY_ARN_PREFIX));
-                    if(awsManaged.Count() > 0)
+                    var awsManaged = _availableManagedPolicies
+                        .Where(x => x.Arn.StartsWith(AWS_MANANGED_POLICY_ARN_PREFIX))
+                        .ToList();
+                    if (awsManaged.Any())
                     {
                         this._ctlCombo.Items.Add(new IAMPickerItem() { Description = "New Role Based on AWS Managed Policy" });
-                        foreach (var policy in awsManaged)
-                        {
-                            this._ctlCombo.Items.Add(new IAMPickerItem() { Policy = policy });
-                        }
+                        awsManaged
+                            .Select(policy => new IAMPickerItem() { Policy = policy })
+                            .OrderBy(item => item.DisplayName)
+                            .ToList()
+                            .ForEach(item => this._ctlCombo.Items.Add(item));
                     }
 
-                    var accountManaged = _availableManagedPolicies.Where(x => !x.Arn.StartsWith(AWS_MANANGED_POLICY_ARN_PREFIX));
-                    if (accountManaged.Count() > 0)
+                    var accountManaged = _availableManagedPolicies
+                        .Where(x => !x.Arn.StartsWith(AWS_MANANGED_POLICY_ARN_PREFIX))
+                        .ToList();
+
+                    if (accountManaged.Any())
                     {
                         this._ctlCombo.Items.Add(new IAMPickerItem() { Description = "New Role Based on Customer Managed Policy" });
-                        foreach (var policy in accountManaged)
-                        {
-
-                            this._ctlCombo.Items.Add(new IAMPickerItem() { Policy = policy });
-                        }
+                        accountManaged
+                            .Select(policy => new IAMPickerItem() { Policy = policy })
+                            .OrderBy(item => item.DisplayName)
+                            .ToList()
+                            .ForEach(item => this._ctlCombo.Items.Add(item));
                     }
 
                     FormatDisplayValue();
