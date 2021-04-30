@@ -42,7 +42,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.Shell.Immutable.14.0, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <PackageReference Include="Microsoft.VisualStudio.Shell.15.0">
       <Version>15.0.26201</Version>
     </PackageReference>
@@ -82,15 +81,9 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="stdole">
-      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
-      <VersionMajor>2</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>primary</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-    </COMReference>
+	<Reference Include="stdole">
+	  <Private>False</Private>
+	</Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">

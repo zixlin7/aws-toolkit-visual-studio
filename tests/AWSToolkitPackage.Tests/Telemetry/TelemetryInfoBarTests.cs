@@ -21,6 +21,7 @@ namespace AWSToolkitPackage.Tests.Telemetry
             _fixture = fixture;
 
             _sut = new TelemetryInfoBar();
+            _element.Setup(x => x.Advise(It.IsAny<IVsInfoBarUIEvents>(), out It.Ref<uint>.IsAny));
             _sut.RegisterInfoBarEvents(_element.Object);
 
             _persistenceManager.Setup(mock => mock.GetString(TelemetryEnabledBackingFieldName))
