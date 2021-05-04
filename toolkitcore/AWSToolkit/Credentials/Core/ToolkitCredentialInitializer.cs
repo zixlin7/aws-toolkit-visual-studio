@@ -8,8 +8,8 @@ using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
-using Amazon.Runtime;
-using Amazon.SecurityToken;
+
+using log4net;
 
 namespace Amazon.AWSToolkit.Credentials.Core
 {
@@ -24,6 +24,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         public IAwsConnectionManager AwsConnectionManager => _awsConnectionManager;
         public ICredentialManager CredentialManager => _awsConnectionManager?.CredentialManager;
         public ICredentialSettingsManager CredentialSettingsManager => _awsConnectionManager?.CredentialManager?.CredentialSettingsManager;
+        private static readonly ILog LOGGER = LogManager.GetLogger(typeof(ToolkitCredentialInitializer));
 
         public ToolkitCredentialInitializer(ITelemetryLogger telemetryLogger, IRegionProvider regionProvider, IAWSToolkitShellProvider toolkitShell)
         {
@@ -54,13 +55,20 @@ namespace Amazon.AWSToolkit.Credentials.Core
 
         private void SetupFactories()
         {
-            _factoryMap.Add(SDKCredentialProviderFactory.SdkProfileFactoryId, new SDKCredentialProviderFactory(_toolkitShell));
-            _factoryMap.Add(SharedCredentialProviderFactory.SharedProfileFactoryId,
-                new SharedCredentialProviderFactory(_toolkitShell));
-            foreach (var factory in _factoryMap)
+            try
             {
-                Setup(factory.Value);
+                AddSDKCredentialsFactory();
+                AddSharedCredentialsFactory();
+                foreach (var factory in _factoryMap)
+                {
+                    Setup(factory.Value);
+                }
             }
+            catch (Exception ex)
+            {
+                LOGGER.Error("Unable to set up credentials properly, the Toolkit may not have access to all possible Credentials", ex);
+            }
+         
         }
 
         private void Setup(ICredentialProviderFactory factory)
@@ -79,5 +87,56 @@ namespace Amazon.AWSToolkit.Credentials.Core
 
             factory.Initialize();
         }
+
+        /// <summary>
+        /// Add <see cref="SDKCredentialProviderFactory"/> to the factory map if it can be successfully created,
+        /// else log the appropriate error message
+        /// </summary>
+        private void AddSDKCredentialsFactory()
+        {
+            try
+            {
+                if (SDKCredentialProviderFactory.TryCreateFactory(_toolkitShell,
+                    out var factory))
+                {
+                    _factoryMap.Add(SDKCredentialProviderFactory.SdkProfileFactoryId, factory);
+                }
+                else
+                {
+                    LOGGER.Error(
+                        "SDK Credentials Factory cannot be initialized: The encrypted store is not available. This may be due to use of a non - Windows operating system or Windows Nano Server, or the current user account may not have its profile loaded.");
+                }
+            }
+            catch (Exception ex)
+            {
+                LOGGER.Error("Error while setting up SDK credentials for the toolkit.", ex);
+            }
+        }
+
+        /// <summary>
+        /// Add <see cref="SharedCredentialProviderFactory"/> to the factory map if it can be successfully created,
+        /// else log the appropriate error message
+        /// </summary>
+        private void AddSharedCredentialsFactory()
+        {
+            try
+            {
+                if (SharedCredentialProviderFactory.TryCreateFactory(_toolkitShell,
+                    out var factory))
+                {
+                    _factoryMap.Add(SharedCredentialProviderFactory.SharedProfileFactoryId, factory);
+                }
+                else
+                {
+                    LOGGER.Error(
+                        "Shared Credentials Factory cannot be initialized.");
+                }
+            }
+            catch (Exception ex)
+            {
+                LOGGER.Error("Error while setting up Shared credentials for the toolkit.", ex);
+            }
+        }
+
     }
 }

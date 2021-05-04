@@ -22,7 +22,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         private SettingsWatcher _watcher;
         public override string Id => SdkProfileFactoryId;
 
-        public SDKCredentialProviderFactory(IAWSToolkitShellProvider toolkitShell)
+        private SDKCredentialProviderFactory(IAWSToolkitShellProvider toolkitShell)
             : this(new ProfileHolder(),
                 new SDKCredentialFileReader(),
                 new SDKCredentialFileWriter(),
@@ -47,6 +47,17 @@ namespace Amazon.AWSToolkit.Credentials.Core
                                  $"Profile {sdkIdentifierId.ProfileName} looks to be removed.");
 
             return CreateAwsCredential(sdkProfile, region);
+        }
+
+        /// <summary>
+        /// Instantiate and return true if an SDKCredentialProviderFactory can be created, else return false
+        /// </summary>
+        public static bool TryCreateFactory(IAWSToolkitShellProvider toolkitShell,
+            out SDKCredentialProviderFactory factory)
+        {
+            var usableFactory = CanUseFactory();
+            factory = usableFactory ? new SDKCredentialProviderFactory(toolkitShell) : null;
+            return usableFactory;
         }
 
         protected override void Dispose(bool disposing)
@@ -94,6 +105,15 @@ namespace Amazon.AWSToolkit.Credentials.Core
         private void DebounceAndHandleFileChange(object sender, EventArgs e)
         {
             _credentialsChangedDispatcher.Debounce(FileChangeDebounceInterval, _ => { HandleFileChangeEvent(sender, e); });
+        }
+
+        /// <summary>
+        /// Checks if encrypted store is available or not
+        /// If not, the factory cannot be used for credential resolution
+        /// </summary>
+        private static bool CanUseFactory()
+        {
+            return Runtime.Internal.Settings.UserCrypto.IsUserCryptAvailable;
         }
     }
 }

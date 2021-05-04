@@ -19,7 +19,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         private bool _disposed = false;
         private ProfileWatcher _watcher;
 
-        public SharedCredentialProviderFactory(IAWSToolkitShellProvider toolkitShell) : this(new ProfileHolder(),
+        private SharedCredentialProviderFactory(IAWSToolkitShellProvider toolkitShell) : this(new ProfileHolder(),
             new SharedCredentialFileReader(), new SharedCredentialFileWriter(), toolkitShell)
         {
         }
@@ -40,6 +40,15 @@ namespace Amazon.AWSToolkit.Credentials.Core
                                     $"Profile {sharedIdentifierId.ProfileName} looks to be removed.");
 
             return CreateAwsCredential(sharedProfile, region);
+        }
+
+        /// <summary>
+        /// Instantiate and return true if an SharedCredentialProviderFactory can be created, else return false
+        /// </summary>
+        public static bool TryCreateFactory(IAWSToolkitShellProvider toolkitShell, out SharedCredentialProviderFactory factory)
+        {
+            factory = new SharedCredentialProviderFactory(toolkitShell);
+            return true;
         }
 
         protected override void Dispose(bool disposing)
