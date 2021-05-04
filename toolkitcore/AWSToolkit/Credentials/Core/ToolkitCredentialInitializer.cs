@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 
 using Amazon.AWSToolkit.Credentials.IO;
+using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
@@ -81,7 +82,10 @@ namespace Amazon.AWSToolkit.Credentials.Core
                     Interlocked.Add(ref loadedCredentialsCount, args.Added.Count - args.Removed.Count);
                 _telemetryLogger.RecordAwsLoadCredentials(new AwsLoadCredentials()
                 {
-                    CredentialSourceId = factory.Id, Value = credentialsCount,
+                    AwsAccount = MetadataValue.NotApplicable,
+                    AwsRegion = MetadataValue.NotApplicable,
+                    CredentialSourceId = CredentialSource.FromCredentialFactoryId(factory.Id),
+                    Value = credentialsCount,
                 });
             };
 

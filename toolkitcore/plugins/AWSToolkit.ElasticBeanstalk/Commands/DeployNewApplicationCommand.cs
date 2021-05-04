@@ -55,7 +55,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
                 EnhancedHealthEnabled = false,
                 XrayEnabled = false,
                 InitialDeploy = !getValue<bool>(DeploymentWizardProperties.DeploymentTemplate.propkey_Redeploy),
-                RegionId = Deployment.Region,
+                AwsRegion = Deployment.Region,
             };
             try
             {

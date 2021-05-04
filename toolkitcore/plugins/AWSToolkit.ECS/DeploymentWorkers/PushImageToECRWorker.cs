@@ -69,7 +69,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 ToolkitContext.TelemetryLogger.RecordEcrDeployImage(new EcrDeployImage()
                 {
                     Result = deployResult,
-                    RegionId = region,
+                    AwsRegion = region,
                 });
             }
             catch (Exception e)

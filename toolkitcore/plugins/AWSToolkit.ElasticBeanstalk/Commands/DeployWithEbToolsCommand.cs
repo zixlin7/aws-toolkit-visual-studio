@@ -95,7 +95,7 @@ namespace Amazon.AWSToolkit.ElasticBeanstalk.Commands
             command.DeployEnvironmentOptions.WaitForUpdate = false;
             var region = CommonWizardProperties.AccountSelection.GetSelectedRegion(DeploymentProperties);
             command.Region = region.Id;
-            deployMetric.RegionId = command.Region;
+            deployMetric.AwsRegion = command.Region;
 
             command.IAMClient =
                 this.Account.CreateServiceClient<Amazon.IdentityManagement.AmazonIdentityManagementServiceClient>(

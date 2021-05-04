@@ -267,6 +267,9 @@ namespace Amazon.AWSToolkit.Credentials.Core
                     {
                         _telemetryLogger.RecordAwsSetCredentials(new AwsSetCredentials()
                         {
+                            AwsAccount = MetadataValue.NotApplicable,
+                            AwsRegion = MetadataValue.NotApplicable,
+                            CredentialSourceId = CredentialSource.FromCredentialFactoryId(identifier.FactoryId),
                             CredentialType = CredentialManager.CredentialSettingsManager.GetCredentialType(identifier)
                                 .AsTelemetryCredentialType(),
                         });
@@ -278,7 +281,10 @@ namespace Amazon.AWSToolkit.Credentials.Core
                     ActiveRegion = region;
                     if (region != null && oldRegion?.Id != region.Id)
                     {
-                        _telemetryLogger.RecordAwsSetRegion(new AwsSetRegion() { RegionId = region.Id, });
+                        _telemetryLogger.RecordAwsSetRegion(new AwsSetRegion()
+                        {
+                            AwsAccount = MetadataValue.NotApplicable, AwsRegion = region.Id,
+                        });
                     }
                 }
 
@@ -331,6 +337,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             CancellationToken token)
         {
             var validationResult = Result.Failed;
+            string accountId = string.Empty;
 
             try
             {
@@ -340,7 +347,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 }
 
                 var credentials = CredentialManager.GetAwsCredentials(identifier, region);
-                var accountId = await GetAccountId(credentials, region, token);
+                accountId = await GetAccountId(credentials, region, token);
                 var connectionState = new ConnectionState.ValidConnection(identifier, region);
 
                 if (token.IsCancellationRequested)
@@ -370,6 +377,8 @@ namespace Amazon.AWSToolkit.Credentials.Core
             {
                 _telemetryLogger.RecordAwsValidateCredentials(new AwsValidateCredentials()
                 {
+                    AwsAccount = string.IsNullOrEmpty(accountId) ? MetadataValue.NotSet : accountId,
+                    AwsRegion = region.Id,
                     Result = validationResult,
                     CredentialType = CredentialManager.CredentialSettingsManager
                         .GetCredentialType(identifier)

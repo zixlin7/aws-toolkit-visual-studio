@@ -32,7 +32,7 @@ namespace AWSToolkit.Tests.Lambda
                         
             Assert.Equal("lambda_deploy", datum.MetricName);
             Assert.Equal(expectedResult.ToString(), datum.Metadata["result"]);
-            Assert.Equal(expectedProperties.RegionId, datum.Metadata["regionId"]);
+            Assert.Equal(expectedProperties.RegionId, datum.Metadata["awsRegion"]);
             Assert.Equal(expectedProperties.NewResource ? "true" : "false", datum.Metadata["initialDeploy"]);
             Assert.Equal(expectedProperties.Runtime.Value, datum.Metadata["runtime"]);
 

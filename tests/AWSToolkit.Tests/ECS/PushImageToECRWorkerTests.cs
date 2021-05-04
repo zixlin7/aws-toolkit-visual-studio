@@ -64,7 +64,7 @@ namespace AWSToolkit.Tests.ECS
 
             Assert.Equal("ecr_deployImage", datum.MetricName);
             Assert.Equal(expectedResult.ToString(), datum.Metadata["result"]);
-            Assert.Equal(_fixture.EcsDeployState.Region.Id, datum.Metadata["regionId"]);
+            Assert.Equal(_fixture.EcsDeployState.Region.Id, datum.Metadata["awsRegion"]);
         }
     }
 }

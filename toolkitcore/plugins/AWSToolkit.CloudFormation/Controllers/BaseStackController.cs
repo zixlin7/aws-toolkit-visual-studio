@@ -317,7 +317,7 @@ namespace Amazon.AWSToolkit.CloudFormation.Controllers
             _telemetryLogger.RecordCloudformationDeploy(new CloudformationDeploy()
             {
                 Result = deployResult,
-                RegionId = regionId,
+                AwsRegion = regionId,
                 InitialDeploy = initialDeploy,
             });
         }

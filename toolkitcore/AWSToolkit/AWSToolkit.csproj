@@ -140,6 +140,7 @@
     <Compile Include="Credentials\Core\ICredentialSettingsManagerExtensionMethods.cs" />
     <Compile Include="Credentials\Core\ToolkitCredentialInitializer.cs" />
     <Compile Include="Credentials\Utils\CredentialProfileOptionsExtensionMethods.cs" />
+    <Compile Include="Credentials\Utils\CredentialSource.cs" />
     <Compile Include="Credentials\Utils\CredentialType.cs" />
     <Compile Include="Credentials\Utils\CredentialTypeExtensionMethods.cs" />
     <Compile Include="Credentials\Utils\ProfileProperties.cs" />

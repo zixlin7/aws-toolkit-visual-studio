@@ -29,7 +29,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
                     LambdaPackageType = new LambdaPackageType(lambdaDeploymentProperties.LambdaPackageType?.Value ?? "unknown"),
                     InitialDeploy = lambdaDeploymentProperties.NewResource,
                     Result = deployResult,
-                    RegionId = lambdaDeploymentProperties.RegionId ?? "unknown",
+                    AwsRegion = lambdaDeploymentProperties.RegionId ?? "unknown",
                     Runtime = new AwsToolkit.Telemetry.Events.Generated.Runtime(
                         lambdaDeploymentProperties.Runtime?.Value ?? "unknown"),
                     Platform = lambdaDeploymentProperties.TargetFramework,
@@ -49,7 +49,7 @@ namespace Amazon.AWSToolkit.Lambda.Util
                 telemetryLogger.RecordServerlessapplicationDeploy(new ServerlessapplicationDeploy()
                 {
                     Result = deployResult,
-                    RegionId = regionId,
+                    AwsRegion = regionId,
                 });
             }
             catch (Exception e)

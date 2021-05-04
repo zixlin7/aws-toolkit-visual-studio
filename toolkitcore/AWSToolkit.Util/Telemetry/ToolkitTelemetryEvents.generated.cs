@@ -43,7 +43,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 var datum = new MetricDatum();
                 datum.MetricName = "serverlessapplication_deploy";
                 datum.Unit = Unit.None;
-                datum.Passive = false;
+                datum.Passive = payload.Passive;
                 if (payload.Value.HasValue)
                 {
                     datum.Value = payload.Value.Value;
@@ -52,10 +52,10 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 {
                     datum.Value = 1;
                 }
+                datum.AddMetadata("awsAccount", payload.AwsAccount);
+                datum.AddMetadata("awsRegion", payload.AwsRegion);
 
                 datum.AddMetadata("result", payload.Result);
-
-                datum.AddMetadata("regionId", payload.RegionId);
 
                 metrics.Data.Add(datum);
                 telemetryLogger.Record(metrics);
@@ -87,7 +87,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 var datum = new MetricDatum();
                 datum.MetricName = "codeartifact_getRepoUrl";
                 datum.Unit = Unit.None;
-                datum.Passive = false;
+                datum.Passive = payload.Passive;
                 if (payload.Value.HasValue)
                 {
                     datum.Value = payload.Value.Value;
@@ -96,6 +96,8 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 {
                     datum.Value = 1;
                 }
+                datum.AddMetadata("awsAccount", payload.AwsAccount);
+                datum.AddMetadata("awsRegion", payload.AwsRegion);
 
                 datum.AddMetadata("result", payload.Result);
 
@@ -131,7 +133,7 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 var datum = new MetricDatum();
                 datum.MetricName = "codeartifact_setRepoCredentialProfile";
                 datum.Unit = Unit.None;
-                datum.Passive = false;
+                datum.Passive = payload.Passive;
                 if (payload.Value.HasValue)
                 {
                     datum.Value = payload.Value.Value;
@@ -140,6 +142,8 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
                 {
                     datum.Value = 1;
                 }
+                datum.AddMetadata("awsAccount", payload.AwsAccount);
+                datum.AddMetadata("awsRegion", payload.AwsRegion);
 
                 datum.AddMetadata("result", payload.Result);
 
@@ -163,8 +167,10 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         /// The result of the operation
         public Result Result;
         
-        /// The ID of the region that was selected
-        public string RegionId;
+        public ServerlessapplicationDeploy()
+        {
+            this.Passive = false;
+        }
     }
     
     /// Called when user selects a profile
@@ -176,6 +182,11 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         
         /// The CodeArtifact package type
         public string CodeartifactPackageType;
+        
+        public CodeartifactGetRepoUrl()
+        {
+            this.Passive = false;
+        }
     }
     
     /// Called when user get an endpoint url
@@ -187,5 +198,10 @@ namespace Amazon.AwsToolkit.Telemetry.Events.Generated
         
         /// The CodeArtifact package type
         public string CodeartifactPackageType;
+        
+        public CodeartifactSetRepoCredentialProfile()
+        {
+            this.Passive = false;
+        }
     }
 }

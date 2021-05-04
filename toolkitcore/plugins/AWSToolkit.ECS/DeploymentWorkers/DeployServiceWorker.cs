@@ -760,7 +760,7 @@ namespace Amazon.AWSToolkit.ECS.DeploymentWorkers
                 {
                     Result = deployResult,
                     EcsLaunchType = EcsTelemetryUtils.GetMetricsEcsLaunchType(awsWizard),
-                    RegionId = region,
+                    AwsRegion = region,
                 });
             }
             catch (Exception e)

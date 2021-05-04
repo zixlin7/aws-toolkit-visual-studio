@@ -69,7 +69,7 @@ namespace AWSToolkit.Tests.ECS
 
             Assert.Equal("ecs_deployService", datum.MetricName);
             Assert.Equal(expectedResult.ToString(), datum.Metadata["result"]);
-            Assert.Equal(_fixture.EcsDeployState.Region.Id, datum.Metadata["regionId"]);
+            Assert.Equal(_fixture.EcsDeployState.Region.Id, datum.Metadata["awsRegion"]);
             Assert.Equal(EcsLaunchType.Fargate.ToString(), datum.Metadata["ecsLaunchType"]);
         }
     }
