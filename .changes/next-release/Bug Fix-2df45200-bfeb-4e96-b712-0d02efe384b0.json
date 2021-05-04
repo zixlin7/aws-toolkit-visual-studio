@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fixed an issue where the toolkit had initialization failures when the development environment did not have access to Windows Encrypted Store."
+}
