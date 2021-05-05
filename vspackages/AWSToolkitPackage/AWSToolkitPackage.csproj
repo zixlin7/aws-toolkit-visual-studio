@@ -78,6 +78,8 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
+    <!-- WPFToolkit is used by System.Windows.Controls.DataVisualization.Toolkit.dll from thirdparty :(
+      Removing this will crash the IDE if you try to look at a chart (Beanstalk Environment Monitoring for example) -->
     <Reference Include="WPFToolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>$(BuildRoot)\thirdparty\WPFToolkit.dll</HintPath>
       <Private>False</Private>
