@@ -1,0 +1,12 @@
+﻿version: 0.2
+
+phases:
+    build:
+        commands:
+            - msbuild buildtools\build.proj /t:restore 
+            - msbuild buildtools\build.proj /t:compile /p:DeployExtension=false /p:Configuration=$env:BUILD_CONFIGURATION
+            - msbuild buildtools\build.proj /t:test /p:DeployExtension=false  /p:Configuration=$env:BUILD_CONFIGURATION
+artifacts:
+    discard-paths: yes
+    files:
+        - Deployment\**\*.vsix
