@@ -149,9 +149,7 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
         private void OnRequestCreateDialog(object sender, RequestNavigateEventArgs e)
         {
             var toolkitContext = this._controller.ToolkitContext;
-            var command = new RegisterAccountController(toolkitContext.CredentialManager,
-                toolkitContext.CredentialSettingsManager, toolkitContext.ConnectionManager,
-                toolkitContext.RegionProvider);
+            var command = new RegisterAccountController(toolkitContext);
             var results  = command.Execute();
             if (results.Success)
             {

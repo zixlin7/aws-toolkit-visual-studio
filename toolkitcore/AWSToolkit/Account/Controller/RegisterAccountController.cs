@@ -19,27 +19,13 @@ namespace Amazon.AWSToolkit.Account.Controller
         private RegisterAccountModel _model;
         protected RegisterAccountControl _control;
         protected bool DefaultProfileNameInUse;
-        protected ICredentialManager _credentialManager;
-        protected ICredentialSettingsManager _credentialSettingsManager;
-        protected IAwsConnectionManager _awsConnectionManager;
-        protected IRegionProvider _regionProvider;
         protected ActionResults _results;
-        protected ToolkitContext _toolkitContext;
+        protected readonly ToolkitContext ToolkitContext;
 
-        public RegisterAccountController()
+        public RegisterAccountController(ToolkitContext toolkitContext)
         {
-            this._model = new RegisterAccountModel();
-        }
-
-        public RegisterAccountController(ICredentialManager credentialManager,
-            ICredentialSettingsManager settingsManager, IAwsConnectionManager connectionManager, IRegionProvider regionProvider)
-        {
-            _regionProvider = regionProvider;
-            this._model = new RegisterAccountModel(regionProvider);
-
-            _credentialManager = credentialManager;
-            _credentialSettingsManager = settingsManager;
-            _awsConnectionManager = connectionManager;
+            ToolkitContext = toolkitContext;
+            this._model = new RegisterAccountModel(ToolkitContext.RegionProvider);
         }
 
         public RegisterAccountModel Model => this._model;
@@ -66,7 +52,7 @@ namespace Amazon.AWSToolkit.Account.Controller
         {
             // if this is the first account, seed the display name to 'default'
             // like the first-run experience
-            var identifiers = _credentialManager.GetCredentialIdentifiers();
+            var identifiers = ToolkitContext.CredentialManager.GetCredentialIdentifiers();
             if(identifiers.Count == 0)
             {
                 _model.ProfileName = "default";
@@ -92,11 +78,11 @@ namespace Amazon.AWSToolkit.Account.Controller
             ManualResetEvent mre = new ManualResetEvent(false);
             EventHandler<EventArgs> HandleCredentialUpdate = (sender, args) =>
             {
-                var ide = _credentialManager.GetCredentialIdentifierById(identifier?.Id);
+                var ide = ToolkitContext.CredentialManager.GetCredentialIdentifierById(identifier?.Id);
                 if (ide != null && region != null)
                 {
                     mre.Set();
-                    _awsConnectionManager.ChangeConnectionSettings(identifier, region);
+                    ToolkitContext.ConnectionManager.ChangeConnectionSettings(identifier, region);
                 }
             };
 
@@ -126,10 +112,10 @@ namespace Amazon.AWSToolkit.Account.Controller
                     Region = this.Model.Region?.Id
                 };
 
-                _credentialManager.CredentialManagerUpdated += HandleCredentialUpdate;
+                ToolkitContext.CredentialManager.CredentialManagerUpdated += HandleCredentialUpdate;
 
                 // create profile ensures profile has unique key and registers it
-                _credentialSettingsManager.CreateProfile(identifier, properties);
+                ToolkitContext.CredentialSettingsManager.CreateProfile(identifier, properties);
                 
 
                 mre.WaitOne(2000);
@@ -141,7 +127,7 @@ namespace Amazon.AWSToolkit.Account.Controller
             }
             finally
             {
-                _credentialManager.CredentialManagerUpdated -= HandleCredentialUpdate;
+                ToolkitContext.CredentialManager.CredentialManagerUpdated -= HandleCredentialUpdate;
             }
         }
     }

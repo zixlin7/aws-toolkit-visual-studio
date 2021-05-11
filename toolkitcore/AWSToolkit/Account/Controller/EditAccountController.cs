@@ -7,7 +7,7 @@ using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Navigator;
 
 using System.Threading;
-
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Regions;
 
 namespace Amazon.AWSToolkit.Account.Controller
@@ -19,10 +19,7 @@ namespace Amazon.AWSToolkit.Account.Controller
 
         AccountViewModel _accountViewModel;
 
-        public EditAccountController(ICredentialManager credentialManager,
-            ICredentialSettingsManager credentialSettingsManager, IAwsConnectionManager connectionManger,
-            IRegionProvider regionProvider) : base(
-            credentialManager, credentialSettingsManager, connectionManger, regionProvider)
+        public EditAccountController(ToolkitContext toolkitContext) : base(toolkitContext)
         {
         }
 
@@ -44,7 +41,7 @@ namespace Amazon.AWSToolkit.Account.Controller
                 throw new Exception("Failed to load an empty profile to edit");
             }
             var profileProperties =
-                _credentialSettingsManager.GetProfileProperties(this._accountViewModel
+                ToolkitContext.CredentialSettingsManager.GetProfileProperties(this._accountViewModel
                     .Identifier);
             if (profileProperties == null)
             {
@@ -73,12 +70,12 @@ namespace Amazon.AWSToolkit.Account.Controller
             ManualResetEvent mre = new ManualResetEvent(false);
             EventHandler<EventArgs> HandleCredentialUpdate = (sender, args) =>
             {
-                var ide = _credentialManager.GetCredentialIdentifierById(identifier?.Id);
+                var ide = ToolkitContext.CredentialManager.GetCredentialIdentifierById(identifier?.Id);
                 if (ide != null && region != null)
                 {
                     mre.Set();
                     this._accountViewModel.ReloadFromPersistence(this.Model.DisplayName.Trim());
-                    _awsConnectionManager.ChangeConnectionSettings(identifier, region);
+                    ToolkitContext.ConnectionManager.ChangeConnectionSettings(identifier, region);
                 }
             };
 
@@ -96,7 +93,7 @@ namespace Amazon.AWSToolkit.Account.Controller
                 }
 
                 var profileProperties =
-                    _credentialSettingsManager.GetProfileProperties(this._accountViewModel
+                    ToolkitContext.CredentialSettingsManager.GetProfileProperties(this._accountViewModel
                         .Identifier);
                 if (profileProperties == null)
                 {
@@ -124,18 +121,18 @@ namespace Amazon.AWSToolkit.Account.Controller
                     Region = this.Model.Region?.Id?.Trim()
                 };
                 region = this.Model.Region;
-                _credentialManager.CredentialManagerUpdated += HandleCredentialUpdate;
+                ToolkitContext.CredentialManager.CredentialManagerUpdated += HandleCredentialUpdate;
 
                 if (nameChange)
                 {
-                    _credentialSettingsManager.RenameProfile(
+                    ToolkitContext.CredentialSettingsManager.RenameProfile(
                         this._accountViewModel.Identifier,
                         identifier);
                 }
 
                 if (credentialsChange)
                 {
-                    _credentialSettingsManager.UpdateProfile(identifier, properties);
+                    ToolkitContext.CredentialSettingsManager.UpdateProfile(identifier, properties);
                 }
 
 
@@ -155,7 +152,7 @@ namespace Amazon.AWSToolkit.Account.Controller
             }
             finally
             {
-                _credentialManager.CredentialManagerUpdated -= HandleCredentialUpdate;
+                ToolkitContext.CredentialManager.CredentialManagerUpdated -= HandleCredentialUpdate;
             }
         }
     }

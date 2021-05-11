@@ -12,6 +12,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Account.Controller;
 using Amazon.AWSToolkit.Commands;
 using Amazon.AWSToolkit.CommonUI;
+using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
@@ -24,31 +25,17 @@ using log4net;
 namespace Amazon.AWSToolkit.Navigator
 {
     /// <summary>
-    /// Interaction logic for NavigatorControl.xaml
+    /// The "AWS Explorer" UI
     /// </summary>
     public partial class NavigatorControl
     {
-        ILog _logger = LogManager.GetLogger(typeof(NavigatorControl));
-        AWSViewModel _viewModel;
-        private readonly IAwsConnectionManager _awsConnectionManager;
-        private readonly ICredentialManager _credentialManager;
-        private readonly ICredentialSettingsManager _credentialSettingsManager;
-        private readonly IRegionProvider _regionProvider;
+        private readonly ILog _logger = LogManager.GetLogger(typeof(NavigatorControl));
+        private AWSViewModel _viewModel;
+        private readonly ToolkitContext _toolkitContext;
         private readonly NavigatorViewModel _navigatorViewModel;
-        private bool isInitialized = false;
+        private bool _isInitialized = false;
 
-        public NavigatorControl(IRegionProvider regionProvider, ICredentialManager credentialManager,
-            IAwsConnectionManager awsConnectionManager, ICredentialSettingsManager settingsManager) : this(
-            regionProvider)
-        {
-            _credentialManager = credentialManager;
-            _awsConnectionManager = awsConnectionManager;
-            _awsConnectionManager.ConnectionSettingsChanged += OnConnectionManagerSettingsChanged;
-            _awsConnectionManager.ConnectionStateChanged += OnConnectionStateChanged;
-            _credentialSettingsManager = settingsManager;
-        }
-
-        public NavigatorControl(IRegionProvider regionProvider)
+        public NavigatorControl(ToolkitContext toolkitContext)
         {
             // We currently aren't using an UnLoad event to de-register events
             // because closing the Navigator's ToolWindow triggers the control's unload.
@@ -58,20 +45,24 @@ namespace Amazon.AWSToolkit.Navigator
             // that you re-synchronize the explorer to the current credentials/region/resources
             // within the Load event.
 
-            _regionProvider = regionProvider;
-            _navigatorViewModel = new NavigatorViewModel(regionProvider);
+            _toolkitContext = toolkitContext;
+            _navigatorViewModel = new NavigatorViewModel(_toolkitContext.RegionProvider);
 
             InitializeComponent();
             this.DataContext = _navigatorViewModel;
+
             _navigatorViewModel.PropertyChanged += NavigatorViewModelOnPropertyChanged;
             _navigatorViewModel.AddAccountCommand = new RelayCommand(AddAccount);
             _navigatorViewModel.DeleteAccountCommand = new RelayCommand(DeleteAccount);
             _navigatorViewModel.EditAccountCommand = new RelayCommand(EditEnabledCallback, EditAccount);
+            
+            _toolkitContext.ConnectionManager.ConnectionSettingsChanged += OnConnectionManagerSettingsChanged;
+            _toolkitContext.ConnectionManager.ConnectionStateChanged += OnConnectionStateChanged;
         }
      
         private void OnConnectionManagerSettingsChanged(object sender, ConnectionSettingsChangeArgs e)
         {
-            if (isInitialized)
+            if (_isInitialized)
             {
                 UpdateNavigatorSelection(e.CredentialIdentifier, e.Region);
             }
@@ -81,8 +72,8 @@ namespace Amazon.AWSToolkit.Navigator
         {
             try
             {
-                _navigatorViewModel.IsConnectionValid = _awsConnectionManager.IsValidConnectionSettings();
-                UpdateViewModelConnectionProperties(_awsConnectionManager.ConnectionState);
+                _navigatorViewModel.IsConnectionValid = _toolkitContext.ConnectionManager.IsValidConnectionSettings();
+                UpdateViewModelConnectionProperties(_toolkitContext.ConnectionManager.ConnectionState);
             }
             catch (Exception ex)
             {
@@ -171,9 +162,9 @@ namespace Amazon.AWSToolkit.Navigator
                 var account = _navigatorViewModel.Account;
                 this._ctlResourceTree.DataContext = account;
                 this._ctlEditAccount.IsEnabled = IsAccountBasic();
-                if (!string.Equals(_awsConnectionManager.ActiveCredentialIdentifier?.Id, account?.Identifier.Id))
+                if (!string.Equals(_toolkitContext.ConnectionManager.ActiveCredentialIdentifier?.Id, account?.Identifier.Id))
                 {
-                    _awsConnectionManager.ChangeCredentialProvider(account?.Identifier);
+                    _toolkitContext.ConnectionManager.ChangeCredentialProvider(account?.Identifier);
                 }
                 _navigatorViewModel.PartitionId = account?.PartitionId;
                
@@ -193,10 +184,10 @@ namespace Amazon.AWSToolkit.Navigator
 
                 this._ctlResourceTree.MouseRightButtonDown += new MouseButtonEventHandler(OnContextMenuOpening);
                 this._ctlResourceTree.MouseDoubleClick += new MouseButtonEventHandler(OnDoubleClick);
-                isInitialized = true;
+                _isInitialized = true;
 
-                UpdateNavigatorSelection(_awsConnectionManager.ActiveCredentialIdentifier,
-                    _awsConnectionManager.ActiveRegion);
+                UpdateNavigatorSelection(_toolkitContext.ConnectionManager.ActiveCredentialIdentifier,
+                    _toolkitContext.ConnectionManager.ActiveRegion);
             }
             catch (Exception ex)
             {
@@ -283,9 +274,7 @@ namespace Amazon.AWSToolkit.Navigator
 
         void AddAccount(object parameter)
         {
-            RegisterAccountController command =
-                new RegisterAccountController(_credentialManager, _credentialSettingsManager, _awsConnectionManager,
-                    _regionProvider);
+            RegisterAccountController command = new RegisterAccountController(_toolkitContext);
             ActionResults results = command.Execute();
         }
 
@@ -326,7 +315,7 @@ namespace Amazon.AWSToolkit.Navigator
             //Resolve region in following order: Last selected, fallback, profile region, default region, or first 
             var defaultRegion = RegionEndpoint.USEast1;
 
-            var previousRegion = _regionProvider.GetRegion(ToolkitSettings.Instance.LastSelectedRegion);
+            var previousRegion = _toolkitContext.RegionProvider.GetRegion(ToolkitSettings.Instance.LastSelectedRegion);
             var accountRegion = _navigatorViewModel.Account?.Region;
 
             var selectedRegion =
@@ -356,7 +345,7 @@ namespace Amazon.AWSToolkit.Navigator
         {
             try
             {
-                updateActiveRegion();
+                UpdateActiveRegion();
             }
             catch (Exception ex)
             {
@@ -364,16 +353,16 @@ namespace Amazon.AWSToolkit.Navigator
             }
         }
 
-        void updateActiveRegion()
+        private void UpdateActiveRegion()
         {
             if (ToolkitFactory.Instance == null || ToolkitFactory.Instance.RootViewModel == null)
                 return;
 
             if (_navigatorViewModel.Region == null) { return; }
 
-            if (!string.Equals(_awsConnectionManager.ActiveRegion.Id, _navigatorViewModel.Region.Id))
+            if (!string.Equals(_toolkitContext.ConnectionManager.ActiveRegion.Id, _navigatorViewModel.Region.Id))
             {
-                _awsConnectionManager.ChangeRegion(_navigatorViewModel.Region);
+                _toolkitContext.ConnectionManager.ChangeRegion(_navigatorViewModel.Region);
             }
         }
 
@@ -398,8 +387,7 @@ namespace Amazon.AWSToolkit.Navigator
 
             try
             {
-                var command = new EditAccountController(_credentialManager, _credentialSettingsManager,
-                    _awsConnectionManager, _regionProvider);
+                var command = new EditAccountController(_toolkitContext);
                 var results = command.Execute(viewModel);
             }
             catch (Exception e)
@@ -421,13 +409,13 @@ namespace Amazon.AWSToolkit.Navigator
             }
 
             var command =
-                new UnregisterAccountController(_credentialSettingsManager);
+                new UnregisterAccountController(_toolkitContext.CredentialSettingsManager);
             var results = command.Execute(viewModel);
             if (results.Success)
             {
-                var ide = _credentialManager.GetCredentialIdentifiers()
+                var ide = _toolkitContext.CredentialManager.GetCredentialIdentifiers()
                     .FirstOrDefault(x => x.ProfileName.Equals("default"));
-                _awsConnectionManager.ChangeCredentialProvider(ide);
+                _toolkitContext.ConnectionManager.ChangeCredentialProvider(ide);
             }
         }
 
@@ -678,13 +666,13 @@ namespace Amazon.AWSToolkit.Navigator
 
         private bool IsAccountBasic(ICredentialIdentifier identifier)
         {
-            return _credentialSettingsManager.GetCredentialType(identifier) ==
+            return _toolkitContext.CredentialSettingsManager.GetCredentialType(identifier) ==
                    CredentialType.StaticProfile;
         }
 
         private void OnRetry()
         {
-            _awsConnectionManager.RefreshConnectionState();
+            _toolkitContext.ConnectionManager.RefreshConnectionState();
         }
 
         private void OnEditProfile()

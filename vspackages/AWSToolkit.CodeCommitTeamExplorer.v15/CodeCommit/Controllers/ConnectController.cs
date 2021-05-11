@@ -87,7 +87,12 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Controllers
 
         private ActionResults CreateNewProfile()
         {
-            var registrationController = new RegisterAccountController();
+            if (ToolkitFactory.Instance?.ToolkitContext == null)
+            {
+                return new ActionResults().WithSuccess(false);
+            }
+
+            var registrationController = new RegisterAccountController(ToolkitFactory.Instance.ToolkitContext);
             var results = registrationController.Execute();
             if (results.Success)
             {

@@ -596,8 +596,6 @@ namespace Amazon.AWSToolkit.VisualStudio
                 _toolkitCredentialInitializer = new ToolkitCredentialInitializer(_telemetryManager.TelemetryLogger, _regionProvider, ToolkitShellProviderService);
                 _toolkitCredentialInitializer.AwsConnectionManager.ConnectionStateChanged += AwsConnectionManager_ConnectionStateChanged;
 
-                navigator = await CreateNavigatorControlAsync();
-
                 ToolkitEvent evnt = new ToolkitEvent();
                 evnt.AddProperty(AttributeKeys.VisualStudioIdentifier, string.Format("{0}/{1}", dteVersion, dteEdition));
                 SimpleMobileAnalytics.Instance.QueueEventToBeRecorded(evnt);
@@ -616,6 +614,8 @@ namespace Amazon.AWSToolkit.VisualStudio
                     CredentialManager = _toolkitCredentialInitializer.CredentialManager,
                     CredentialSettingsManager = _toolkitCredentialInitializer.CredentialSettingsManager,
                 };
+
+                navigator = await CreateNavigatorControlAsync(_toolkitContext);
 
                 await ToolkitFactory.InitializeToolkit(
                     navigator,
@@ -705,17 +705,13 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
-        private async Task<NavigatorControl> CreateNavigatorControlAsync()
+        private async Task<NavigatorControl> CreateNavigatorControlAsync(ToolkitContext toolkitContext)
         {
             try
             {
                 await JoinableTaskFactory.SwitchToMainThreadAsync();
 
-                var navigator = new NavigatorControl(
-                    _regionProvider,
-                    _toolkitCredentialInitializer.CredentialManager,
-                    _toolkitCredentialInitializer.AwsConnectionManager,
-                    _toolkitCredentialInitializer.CredentialSettingsManager);
+                var navigator = new NavigatorControl(toolkitContext);
 
                 return navigator;
             }
