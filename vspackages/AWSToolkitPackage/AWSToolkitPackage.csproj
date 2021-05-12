@@ -102,13 +102,16 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\BaseCommand.cs" />
+    <Compile Include="Commands\Lambda\AddServerlessTemplateCommand.cs" />
+    <Compile Include="Commands\Lambda\DeployLambdaCommand.cs" />
     <Compile Include="Images\VsImageProvider.cs" />
     <Compile Include="NativeMethods.cs" />
   </ItemGroup>
   <ItemGroup>
-	<Reference Include="stdole">
-	  <Private>False</Private>
-	</Reference>
+    <Reference Include="stdole">
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuildProcessors\DotNetCLIWrapper.cs" />

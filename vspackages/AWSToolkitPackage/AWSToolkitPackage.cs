@@ -14,9 +14,7 @@ using Microsoft.Samples.VisualStudio.IDE.OptionsPage;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Threading;
 
-using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Navigator;
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.WizardFramework;
@@ -47,10 +45,8 @@ using Window = System.Windows.Window;
 using Amazon.AWSToolkit.Persistence.Deployment;
 using Amazon.AWSToolkit.VisualStudio.Shared;
 using Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation;
-using Amazon.AWSToolkit.Lambda;
 
 using ThirdParty.Json.LitJson;
-using Amazon.AWSToolkit.Lambda.WizardPages;
 using Amazon.AWSToolkit.CodeCommit.Interface;
 using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 using System.Threading;
@@ -63,16 +59,14 @@ using Amazon.AWSToolkit.Telemetry.Model;
 using Amazon.AWSToolkit.VisualStudio.Lambda;
 using Amazon.AWSToolkit.VisualStudio.Telemetry;
 using Amazon.AWSToolkit.VisualStudio.Utilities;
-using Amazon.AWSToolkit.VisualStudio.Utilities.DTE;
 using Amazon.AWSToolkit.VisualStudio.Utilities.VsAppId;
 using Amazon.AWSToolkit.CodeArtifact.Controller;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.VisualStudio.Commands.Lambda;
 using Amazon.AWSToolkit.VisualStudio.Images;
-using Amazon.Runtime;
-using Amazon.SecurityToken;
 using Task = System.Threading.Tasks.Task;
 using VsImages = Amazon.AWSToolkit.CommonUI.VsImages;
 
@@ -153,7 +147,6 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         private IAWSCloudFormation _cloudformationPlugin;
         private IAWSElasticBeanstalk _beanstalkPlugin;
-        private IAWSLambda _lambdaPlugin;
         private IAWSCodeCommit _codeCommitPlugin;
 
         internal readonly NavigatorVsUIHierarchy _navigatorVsUIHierarchy;
@@ -367,32 +360,6 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         internal bool BeanstalkPluginAvailable => AWSBeanstalkPlugin != null;
 
-        IAWSLambda LambdaPlugin
-        {
-            get
-            {
-                try
-                {
-                    if (_lambdaPlugin == null)
-                    {
-                        var shell = GetService(typeof(SAWSToolkitShellProvider)) as IAWSToolkitShellProvider;
-                        if (shell != null)
-                        {
-                            _lambdaPlugin = shell.QueryAWSToolkitPluginService(typeof(IAWSLambda)) as IAWSLambda;
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    LOGGER.ErrorFormat("Exception attempting to obtain IAWSLambda, {0}", e);
-                }
-
-                return _lambdaPlugin;
-            }
-        }
-
-        bool LambdaPluginAvailable => LambdaPlugin != null;
-
         IAWSCodeCommit CodeCommitPlugin
         {
             get
@@ -561,10 +528,6 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAddCloudFormationTemplate, AddCloudFormationTemplate, AddCloudFormationTemplate_BeforeQueryStatus);
 
-                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployToLambdaServerlessTemplate, UploadToLambda, UploadToLambdaMenuCommand_BeforeQueryStatus);
-                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidDeployToLambdaSolutionExplorer, UploadToLambda, UploadToLambdaMenuCommand_BeforeQueryStatus);
-                        SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidAddAWSServerlessTemplate, AddAWSServerlessTemplate, AddAWSServerlessTemplate_BeforeQueryStatus);
-
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidTeamExplorerConnect, AddTeamExplorerConnection, null);
 
                         SetupMenuCommand(mcs, GuidList.CommandSetGuid, PkgCmdIDList.cmdidPublishContainerToAWS, PublishContainerToAWS, PublishContainerToAWS_BeforeQueryStatus);
@@ -616,6 +579,20 @@ namespace Amazon.AWSToolkit.VisualStudio
                 };
 
                 navigator = await CreateNavigatorControlAsync(_toolkitContext);
+
+                await DeployLambdaCommand.InitializeAsync(
+                    ToolkitShellProviderService,
+                    GuidList.CommandSetGuid, (int) PkgCmdIDList.cmdidDeployToLambdaServerlessTemplate,
+                    this);
+                await DeployLambdaCommand.InitializeAsync(
+                    ToolkitShellProviderService,
+                    GuidList.CommandSetGuid, (int) PkgCmdIDList.cmdidDeployToLambdaSolutionExplorer,
+                    this);
+
+                await AddServerlessTemplateCommand.InitializeAsync(
+                    ToolkitShellProviderService,
+                    GuidList.CommandSetGuid, (int) PkgCmdIDList.cmdidAddAWSServerlessTemplate,
+                    this);
 
                 await ToolkitFactory.InitializeToolkit(
                     navigator,
@@ -2258,233 +2235,6 @@ namespace Amazon.AWSToolkit.VisualStudio
 
 #endregion
 
-#region Add Serverless Template
-
-        void AddAWSServerlessTemplate(object sender, EventArgs eventArgs)
-        {
-            try
-            {
-                var projectLocation = VSUtility.GetSelectedProjectLocation();
-                if (string.IsNullOrEmpty(projectLocation))
-                {
-                    return;
-                }
-
-                var destinationFile = Path.Combine(projectLocation, Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME);
-                using (var stream = new StreamReader(this.GetType().Assembly.GetManifestResourceStream("Amazon.AWSToolkit.VisualStudio.Resources.basic-serverless.template")))
-                using (var outputStream = new StreamWriter(File.Open(destinationFile, FileMode.Create)))
-                {
-                    outputStream.Write(stream.ReadToEnd());
-                }
-
-                JoinableTaskFactory.Run(async () =>
-                {
-                    await JoinableTaskFactory.SwitchToMainThreadAsync();
-                    if (await GetServiceAsync(typeof(DTE)) is DTE dte)
-                    {
-                        dte.ItemOperations.OpenFile(destinationFile);
-                    }
-                });
-            }
-            catch (Exception e)
-            {
-                LOGGER.Error($"Error creating {Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME}", e);
-            }
-        }
-
-        void AddAWSServerlessTemplate_BeforeQueryStatus(object sender, EventArgs e)
-        {
-            OleMenuCommand menuCommand = sender as OleMenuCommand;
-            if (menuCommand == null)
-                return;
-
-            menuCommand.Visible = false;
-
-            try
-            {
-                if (!this.LambdaPluginAvailable)
-                    return;
-
-                if (VSUtility.IsLambdaDotnetProject)
-                {
-                    var projectLocation = VSUtility.GetSelectedProjectLocation();
-                    if(!File.Exists(Path.Combine(projectLocation, Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME)))
-                        menuCommand.Visible = true;
-                }
-            }
-            catch { }
-        }
-
-#endregion
-
-#region Add Upload to Lambda Command
-
-        void UploadToLambda(object sender, EventArgs e)
-        {
-            if (!this.LambdaPluginAvailable)
-            {
-                return;
-            }
-
-            JoinableTaskFactory.Run(async () =>
-            {
-                await JoinableTaskFactory.SwitchToMainThreadAsync();
-
-                // selectedProject can be null if the user is right clicking on a serverless.template file.
-                var selectedProject = VSUtility.GetSelectedProject();
-
-                var fullPath = selectedProject?.FullName;
-                if (fullPath == null)
-                {
-                    var fileItem = VSUtility.GetSelectedProjectItem();
-                    if (string.Equals(fileItem?.Name, Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME))
-                    {
-                        fullPath = VSUtility.GetSelectedItemFullPath();
-                    }
-                }
-
-
-
-                if (fullPath == null || !File.Exists(fullPath))
-                {
-                    if (await GetServiceAsync(typeof(SAWSToolkitShellProvider)) is IAWSToolkitShellProvider shell)
-                    {
-                        shell.ShowError("The selected item is not a project that can be deployed to AWS Lambda");
-                    }
-
-                    return;
-                }
-
-                var rootDirectory = Path.GetDirectoryName(fullPath);
-
-                var seedProperties = new Dictionary<string, object>();
-                seedProperties[UploadFunctionWizardProperties.SelectedProjectFile] = fullPath;
-                seedProperties[UploadFunctionWizardProperties.PackageType] = Amazon.Lambda.PackageType.Zip;
-                var dockerfilePath = Path.Combine(rootDirectory, "Dockerfile");
-
-                if (selectedProject != null)
-                {
-                    IDictionary<string, IList<string>> suggestedMethods =
-                        VSLambdaUtility.SearchForLambdaFunctionSuggestions(selectedProject);
-                    seedProperties[UploadFunctionWizardProperties.SuggestedMethods] = suggestedMethods;
-                    seedProperties[UploadFunctionWizardProperties.SourcePath] = rootDirectory;
-                    if (File.Exists(dockerfilePath))
-                    {
-                        seedProperties[UploadFunctionWizardProperties.Dockerfile] = dockerfilePath;
-                        seedProperties[UploadFunctionWizardProperties.PackageType] = Amazon.Lambda.PackageType.Image;
-                    }
-                }
-                else if (File.Exists(fullPath))
-                {
-                    seedProperties[UploadFunctionWizardProperties.SourcePath] = rootDirectory;
-                    if (File.Exists(dockerfilePath))
-                    {
-                        seedProperties[UploadFunctionWizardProperties.Dockerfile] = dockerfilePath;
-                        seedProperties[UploadFunctionWizardProperties.PackageType] = Amazon.Lambda.PackageType.Image;
-                    }
-                }
-
-                // Look to see if there is a Javascript Lambda function StartupFile and seed that as the suggested function handler.
-                var startupFile = selectedProject?.Properties?.Item("StartupFile")?.Value as string;
-                if (!string.IsNullOrEmpty(startupFile))
-                {
-                    string relativePath;
-                    if (startupFile.StartsWith(rootDirectory))
-                        relativePath = startupFile.Substring(rootDirectory.Length + 1);
-                    else
-                        relativePath = Path.GetFileName(startupFile);
-
-                    if (!relativePath.StartsWith("_"))
-                    {
-                        seedProperties[UploadFunctionWizardProperties.Handler] =
-                            System.IO.Path.GetFileNameWithoutExtension(relativePath) + ".app.js";
-                    }
-                }
-
-                // Make sure all open editors are saved before deploying.
-                if (!TrySaveAllDocuments())
-                {
-                    LOGGER.Warn("Unable to save open documents, outdated code might get uploaded to Lambda");
-                }
-
-                if (selectedProject != null)
-                {
-                    var projectFrameworks = VSUtility.GetSelectedNetCoreProjectFrameworks();
-                    if (projectFrameworks != null && projectFrameworks.Count > 0)
-                    {
-                        seedProperties[UploadFunctionWizardProperties.ProjectTargetFrameworks] = projectFrameworks;
-                    }
-                }
-
-                this.LambdaPlugin.UploadFunctionFromPath(seedProperties);
-            });
-        }
-
-        private bool TrySaveAllDocuments()
-        {
-            try
-            {
-                ThreadHelper.ThrowIfNotOnUIThread();
-
-                if (!(GetService(typeof(EnvDTE.DTE)) is DTE dte))
-                {
-                    return false;
-                }
-
-                dte.Documents.SaveAll();
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                LOGGER.Warn("Error while saving all open documents", ex);
-                return false;
-            }
-        }
-
-        void UploadToLambdaMenuCommand_BeforeQueryStatus(object sender, EventArgs e)
-        {
-            OleMenuCommand menuCommand = sender as OleMenuCommand;
-            if (menuCommand == null)
-                return;
-
-            menuCommand.Visible = false;
-
-            try
-            {
-                if (!this.LambdaPluginAvailable)
-                    return;
-
-                if (VSUtility.IsLambdaDotnetProject || 
-                    (VSUtility.SelectedFileMatchesName(Amazon.AWSToolkit.Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME) && VSUtility.GetSelectedItemFullPath() != null))
-                {                    
-                    menuCommand.Visible = true;
-                }
-                // Check if it is a valid Node.js Lambda project.
-                else
-                {
-                    uint selectedItemId;
-                    var hierarchyNode = VSUtility.GetCurrentVSHierarchySelection(out selectedItemId);
-                    if (hierarchyNode == null)
-                        return;
-
-                    var ap = hierarchyNode as Microsoft.VisualStudio.Shell.Flavor.IVsAggregatableProjectCorrected;
-                    // even though we have a catch block, testing for non-null smooths debugging
-                    if (ap != null)
-                    {
-                        string projTypeGuids = string.Empty;
-                        ap.GetAggregateProjectTypeGuids(out projTypeGuids);
-                        if (string.Equals(GuidList.guidNodeJSConsoleProjectFactoryString, projTypeGuids, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            menuCommand.Visible = true;
-                        }
-                    }
-                }
-            }
-            catch { }
-        }
-
-#endregion
 
 #region Team Explorer Command
 
