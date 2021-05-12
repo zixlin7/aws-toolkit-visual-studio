@@ -27,18 +27,26 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
         private FirstRunControl _control;
         private readonly IToolkitSettingsWatcher _settingsWatcher;
         private readonly ToolkitContext _toolkitContext;
+        private readonly ToolkitSettings _toolkitSettings;
 
-        public FirstRunController(AWSToolkitPackage hostPackage, IToolkitSettingsWatcher toolkitSettingsWatcher, ToolkitContext toolkitContext)
-            : this(hostPackage, toolkitSettingsWatcher, ToolkitFactory.Instance.ShellProvider, toolkitContext)
+        public FirstRunController(AWSToolkitPackage hostPackage,
+            IToolkitSettingsWatcher toolkitSettingsWatcher,
+            ToolkitContext toolkitContext)
+            : this(hostPackage, toolkitSettingsWatcher, toolkitContext,
+                ToolkitFactory.Instance.ShellProvider,
+                ToolkitSettings.Instance)
         {
         }
 
         public FirstRunController(
             AWSToolkitPackage hostPackage,
             IToolkitSettingsWatcher toolkitSettingsWatcher,
-            IAWSToolkitShellProvider shellProvider, ToolkitContext toolkitContext)
+            ToolkitContext toolkitContext,
+            IAWSToolkitShellProvider shellProvider,
+            ToolkitSettings toolkitSettings)
         {
             _shellProvider = shellProvider;
+            _toolkitSettings = toolkitSettings;
             HostPackage = hostPackage;
             _toolkitContext = toolkitContext;
             Model = new FirstRunModel(_toolkitContext);
@@ -110,17 +118,17 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Controller
             if (propertyChangedEventArgs.PropertyName.Equals("CollectAnalytics", StringComparison.OrdinalIgnoreCase))
             {
                 // Update settings
-                ToolkitSettings.Instance.TelemetryEnabled = Model.CollectAnalytics;
+                _toolkitSettings.TelemetryEnabled = Model.CollectAnalytics;
             }
         }
 
         private void ToolkitSettingsChanged(object sender, EventArgs e)
         {
-            if (Model.CollectAnalytics != ToolkitSettings.Instance.TelemetryEnabled)
+            if (Model.CollectAnalytics != _toolkitSettings.TelemetryEnabled)
             {
                 _shellProvider.ExecuteOnUIThread(() =>
                 {
-                    Model.CollectAnalytics = ToolkitSettings.Instance.TelemetryEnabled;
+                    Model.CollectAnalytics = _toolkitSettings.TelemetryEnabled;
                 });
             }
         }

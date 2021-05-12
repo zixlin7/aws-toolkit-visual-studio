@@ -16,18 +16,17 @@ namespace AWSToolkitPackage.Tests.FirstRun
 
         private readonly Mock<IToolkitSettingsWatcher> _settingsWatcher = new Mock<IToolkitSettingsWatcher>();
         private readonly Mock<IAWSToolkitShellProvider> _shellProvider = new Mock<IAWSToolkitShellProvider>();
-        private readonly FakeSettingsPersistence _settingsPersistence = new FakeSettingsPersistence();
+        private readonly ToolkitSettings _toolkitSettings = FakeToolkitSettings.Create();
         private readonly ToolkitContext _toolkitContext = new ToolkitContext();
 
         public FirstRunControllerTests()
         {
-            ToolkitSettings.Initialize(_settingsPersistence);
-            ToolkitSettings.Instance.TelemetryEnabled = true;
+            _toolkitSettings.TelemetryEnabled = true;
 
             _shellProvider.Setup(mock => mock.ExecuteOnUIThread(It.IsAny<Action>()))
                 .Callback<Action>(action => action());
 
-            _sut = new FirstRunController(null, _settingsWatcher.Object, _shellProvider.Object, _toolkitContext);
+            _sut = new FirstRunController(null, _settingsWatcher.Object, _toolkitContext, _shellProvider.Object, _toolkitSettings);
         }
 
         [Fact]
@@ -35,11 +34,11 @@ namespace AWSToolkitPackage.Tests.FirstRun
         {
             _sut.Execute();
 
-            ToolkitSettings.Instance.TelemetryEnabled = true;
+            _toolkitSettings.TelemetryEnabled = true;
             RaiseSettingsChanged();
             Assert.True(_sut.Model.CollectAnalytics);
 
-            ToolkitSettings.Instance.TelemetryEnabled = false;
+            _toolkitSettings.TelemetryEnabled = false;
             RaiseSettingsChanged();
             Assert.False(_sut.Model.CollectAnalytics);
         }

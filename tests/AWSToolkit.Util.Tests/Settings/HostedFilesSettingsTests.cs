@@ -10,16 +10,12 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
     public class HostedFilesSettingsTests : IDisposable
     {
         private readonly TemporaryTestLocation _testLocation = new TemporaryTestLocation();
-        private readonly FakeSettingsPersistence _settingsPersistence = new FakeSettingsPersistence();
-        private readonly ToolkitSettings _toolkitSettings;
+        private readonly ToolkitSettings _toolkitSettings = FakeToolkitSettings.Create();
         private readonly string _downloadCacheFolder;
         private readonly HostedFilesSettings _sut;
 
         public HostedFilesSettingsTests()
         {
-            ToolkitSettings.Initialize(_settingsPersistence);
-            _toolkitSettings = ToolkitSettings.Instance;
-
             _downloadCacheFolder = _testLocation.InputFolder;
             _sut = new HostedFilesSettings(_toolkitSettings, _downloadCacheFolder);
         }

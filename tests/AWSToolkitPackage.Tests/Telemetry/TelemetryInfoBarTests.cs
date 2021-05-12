@@ -1,4 +1,4 @@
-﻿using Amazon.AWSToolkit.Settings;
+﻿using Amazon.AWSToolkit.Tests.Common.Settings;
 using Amazon.AWSToolkit.VisualStudio.Telemetry;
 using Microsoft.VisualStudio.Shell.Interop;
 using Moq;
@@ -13,28 +13,16 @@ namespace AWSToolkitPackage.Tests.Telemetry
         private readonly UIThreadFixture _fixture;
         private readonly TelemetryInfoBar _sut;
         private readonly Mock<IVsInfoBarUIElement> _element = new Mock<IVsInfoBarUIElement>();
-        private readonly Mock<SettingsPersistence> _persistenceManager = new Mock<SettingsPersistence>();
-        private string _telemetryEnabledSetting;
+        private readonly FakeToolkitSettings _fakeToolkitSettings = FakeToolkitSettings.Create();
 
         public TelemetryInfoBarTests(UIThreadFixture fixture)
         {
             _fixture = fixture;
 
-            _sut = new TelemetryInfoBar();
+            _sut = new TelemetryInfoBar(_fakeToolkitSettings);
             _element.Setup(x => x.Advise(It.IsAny<IVsInfoBarUIEvents>(), out It.Ref<uint>.IsAny));
             _sut.RegisterInfoBarEvents(_element.Object);
-
-            _persistenceManager.Setup(mock => mock.GetString(TelemetryEnabledBackingFieldName))
-                .Returns<string>(name => _telemetryEnabledSetting);
-
-            _persistenceManager.Setup(mock => mock.SetString(TelemetryEnabledBackingFieldName, It.IsAny<string>()))
-                .Callback<string, string>((name, value) =>
-                {
-                    _telemetryEnabledSetting = value;
-                });
-
-            ToolkitSettings.Initialize(_persistenceManager.Object);
-            ToolkitSettings.Instance.TelemetryEnabled = true;
+            _fakeToolkitSettings.TelemetryEnabled = true;
         }
 
         [Fact]
@@ -45,7 +33,7 @@ namespace AWSToolkitPackage.Tests.Telemetry
 
             _sut.OnActionItemClicked(_element.Object, actionItem.Object);
 
-            Assert.False(ToolkitSettings.Instance.TelemetryEnabled);
+            Assert.False(_fakeToolkitSettings.TelemetryEnabled);
             AssertInfoBarClosed();
         }
 
@@ -55,7 +43,7 @@ namespace AWSToolkitPackage.Tests.Telemetry
             var actionItem = new Mock<IVsInfoBarActionItem>();
             actionItem.Setup(mock => mock.ActionContext).Returns(TelemetryInfoBar.ActionContexts.DontShowAgain);
 
-            Assert.True(ToolkitSettings.Instance.TelemetryEnabled);
+            Assert.True(_fakeToolkitSettings.TelemetryEnabled);
             _sut.OnActionItemClicked(_element.Object, actionItem.Object);
             AssertInfoBarClosed();
         }

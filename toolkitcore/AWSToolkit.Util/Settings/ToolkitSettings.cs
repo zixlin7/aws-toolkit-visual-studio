@@ -47,7 +47,11 @@ namespace Amazon.AWSToolkit.Settings
             Instance = new ToolkitSettings(settingsPersistence);
         }
 
-        private ToolkitSettings(SettingsPersistenceBase settingsPersistence)
+        /// <summary>
+        /// Constructor is protected so that we can test this class
+        /// without using the singleton instance.
+        /// </summary>
+        protected ToolkitSettings(SettingsPersistenceBase settingsPersistence)
         {
             _settingsPersistence = settingsPersistence;
             _mobileAnalytics = new MobileAnalyticsSettings(_settingsPersistence);

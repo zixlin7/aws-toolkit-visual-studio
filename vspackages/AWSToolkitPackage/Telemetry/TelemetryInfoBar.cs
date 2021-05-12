@@ -21,6 +21,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
             DontShowAgain,
         }
 
+        private readonly ToolkitSettings _toolkitSettings;
+
         private readonly InfoBarHyperlink _infoBarMoreDetails = new InfoBarHyperlink("More details", ActionContexts.MoreDetails);
         private readonly InfoBarHyperlink _infoBarDisable = new InfoBarHyperlink("Disable", ActionContexts.Disable);
         private readonly InfoBarHyperlink _infoBarDontShowAgain = new InfoBarHyperlink("Don't show this again", ActionContexts.DontShowAgain);
@@ -30,8 +32,15 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
 
         public InfoBarModel InfoBarModel { get; }
 
-        public TelemetryInfoBar()
+        public TelemetryInfoBar() : this(ToolkitSettings.Instance)
         {
+
+        }
+
+        public TelemetryInfoBar(ToolkitSettings toolkitSettings)
+        {
+            _toolkitSettings = toolkitSettings;
+
             var imageMoniker = new ImageMoniker()
             {
                 Guid = GuidList.VsImageCatalog.ImageCatalogGuid,
@@ -89,7 +98,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
                     switch (actionContext)
                     {
                         case ActionContexts.Disable:
-                            ToolkitSettings.Instance.TelemetryEnabled = false;
+                            _toolkitSettings.TelemetryEnabled = false;
                             infoBarUiElement.Close();
                             break;
                         case ActionContexts.MoreDetails:

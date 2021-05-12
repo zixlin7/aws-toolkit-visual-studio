@@ -12,9 +12,8 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
     public class HostedFilesResourceFetcherTests : IDisposable
     {
         private readonly Mock<ITelemetryLogger> _telemetryLogger = new Mock<ITelemetryLogger>();
-        private readonly FakeSettingsPersistence _settingsPersistence = new FakeSettingsPersistence();
         private readonly ResourceFetchersFixture _fixture = new ResourceFetchersFixture();
-        private readonly ToolkitSettings _toolkitSettings;
+        private readonly ToolkitSettings _toolkitSettings = FakeToolkitSettings.Create();
         private readonly HostedFilesSettings _hostedFilesSettings;
         private readonly HostedFilesResourceFetcher.Options _options = new HostedFilesResourceFetcher.Options();
         private readonly HostedFilesResourceFetcher _sut;
@@ -24,9 +23,6 @@ namespace Amazon.AWSToolkit.Util.Tests.ResourceFetchers
 
         public HostedFilesResourceFetcherTests()
         {
-            ToolkitSettings.Initialize(_settingsPersistence);
-            _toolkitSettings = ToolkitSettings.Instance;
-
             _hostedFilesSettings = new HostedFilesSettings(_toolkitSettings, _fixture.TestLocation.OutputFolder);
             Directory.CreateDirectory(_hostedFilesSettings.DownloadedCacheFolder);
 
