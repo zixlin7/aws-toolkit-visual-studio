@@ -19,8 +19,10 @@ using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Navigator.Node;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Settings;
-
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using log4net;
+using CredentialType = Amazon.AWSToolkit.Credentials.Utils.CredentialType;
 
 namespace Amazon.AWSToolkit.Navigator
 {
@@ -34,6 +36,9 @@ namespace Amazon.AWSToolkit.Navigator
         private readonly ToolkitContext _toolkitContext;
         private readonly NavigatorViewModel _navigatorViewModel;
         private bool _isInitialized = false;
+
+        // Don't emit credentials metrics until after the Toolkit starts up
+        private bool _logMetrics = false;
 
         public NavigatorControl(ToolkitContext toolkitContext)
         {
@@ -157,6 +162,8 @@ namespace Amazon.AWSToolkit.Navigator
 
         private void OnAccountChanged()
         {
+            RecordAccountChanged();
+
             this.Dispatcher.Invoke(() =>
             {
                 var account = _navigatorViewModel.Account;
@@ -170,6 +177,39 @@ namespace Amazon.AWSToolkit.Navigator
                
                 setToolbarState(true);
             });
+        }
+
+        private string _lastRecordedCredentialId;
+        private void RecordAccountChanged()
+        {
+            try
+            {
+                // Only record metrics after Toolkit has started up
+                if (_logMetrics == false)
+                {
+                    return;
+                }
+
+                // Only record when there was a credential ID change (excluding null values)
+                var credentialIdentifier = _navigatorViewModel.Account?.Identifier;
+                if (credentialIdentifier != null && credentialIdentifier.Id != _lastRecordedCredentialId)
+                {
+                    _toolkitContext.TelemetryLogger.RecordAwsSetCredentials(new AwsSetCredentials()
+                    {
+                        AwsAccount = MetadataValue.NotApplicable,
+                        AwsRegion = MetadataValue.NotApplicable,
+                        CredentialSourceId = CredentialSource.FromCredentialFactoryId(credentialIdentifier.FactoryId),
+                        CredentialType = _toolkitContext.CredentialSettingsManager.GetCredentialType(credentialIdentifier)
+                            .AsTelemetryCredentialType(),
+                    });
+
+                    _lastRecordedCredentialId = credentialIdentifier.Id;
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e);
+            }
         }
 
         public void Initialize(AWSViewModel viewModel)
@@ -204,6 +244,14 @@ namespace Amazon.AWSToolkit.Navigator
             _navigatorViewModel.Region = region == null
                 ? null
                 : _navigatorViewModel.GetRegion(region?.Id);
+
+            // Don't record metrics until after the Toolkit starts up
+            // The credentials system pushes non-null values, signalling we have
+            // started up.
+            if (_logMetrics == false && (identifier != null || region != null))
+            {
+                _logMetrics = true;
+            }
         }
 
         private void _viewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -345,11 +393,42 @@ namespace Amazon.AWSToolkit.Navigator
         {
             try
             {
+                RecordRegionChanged();
                 UpdateActiveRegion();
             }
             catch (Exception ex)
             {
                 _logger.Error("Error handling region change", ex);
+            }
+        }
+
+        private ToolkitRegion _lastRecordedRegion;
+
+        private void RecordRegionChanged()
+        {
+            try
+            {
+                // Only record metrics after Toolkit has started up
+                if (_logMetrics == false)
+                {
+                    return;
+                }
+
+                // Only record when there was a region change (excluding null values)
+                var toolkitRegion = _navigatorViewModel.Region;
+                if (toolkitRegion != null && toolkitRegion != _lastRecordedRegion)
+                {
+                    _toolkitContext.TelemetryLogger.RecordAwsSetRegion(new AwsSetRegion()
+                    {
+                        AwsAccount = MetadataValue.NotApplicable, AwsRegion = toolkitRegion.Id,
+                    });
+
+                    _lastRecordedRegion = toolkitRegion;
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e);
             }
         }
 

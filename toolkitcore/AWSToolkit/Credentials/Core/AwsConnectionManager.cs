@@ -249,7 +249,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         {
             lock (_tokenCancellationSyncLock)
             {
-                //if an update job is already in progress, cancel it
+                // if an update job is already in progress, cancel it
                 _cancellationTokenSource?.Cancel();
                 _cancellationTokenSource?.Dispose();
                 _cancellationTokenSource = null;
@@ -263,38 +263,20 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 if (updateId)
                 {
                     ActiveCredentialIdentifier = identifier;
-                    if (identifier != null && oldCredentialId?.Id != identifier.Id)
-                    {
-                        _telemetryLogger.RecordAwsSetCredentials(new AwsSetCredentials()
-                        {
-                            AwsAccount = MetadataValue.NotApplicable,
-                            AwsRegion = MetadataValue.NotApplicable,
-                            CredentialSourceId = CredentialSource.FromCredentialFactoryId(identifier.FactoryId),
-                            CredentialType = CredentialManager.CredentialSettingsManager.GetCredentialType(identifier)
-                                .AsTelemetryCredentialType(),
-                        });
-                    }
                 }
 
                 if (updateRegion)
                 {
                     ActiveRegion = region;
-                    if (region != null && oldRegion?.Id != region.Id)
-                    {
-                        _telemetryLogger.RecordAwsSetRegion(new AwsSetRegion()
-                        {
-                            AwsAccount = MetadataValue.NotApplicable, AwsRegion = region.Id,
-                        });
-                    }
                 }
 
-                //Raise connection settings changed if identifier or region changes
+                // Raise connection settings changed if identifier or region changes
                 if (oldCredentialId?.Id != identifier?.Id || oldRegion?.Id != region?.Id)
                 {
                     RaiseConnectionSettingChanged(new ConnectionSettingsChangeArgs { CredentialIdentifier = identifier, Region = region });
                 }
             
-                //debounce to handle consecutive settings change
+                // debounce to handle consecutive settings change
                 _connectionChangedDispatcher.Debounce(ConnectionChangeDebounceInterval,
                     _ => UpdateConnectionSettings(isInitial));
             }

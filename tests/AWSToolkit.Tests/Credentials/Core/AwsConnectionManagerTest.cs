@@ -242,8 +242,6 @@ namespace AWSToolkit.Tests.Credentials.Core
             _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
             WaitUntilConnectionStateIsStable();
 
-            _telemetryLogger.Invocations.Clear();
-
             var receivedEvent = Assert.Raises<ConnectionStateChangeArgs>(
                 a => _awsConnectionManager.ConnectionStateChanged += a,
                 a => _awsConnectionManager.ConnectionStateChanged -= a,
@@ -251,7 +249,6 @@ namespace AWSToolkit.Tests.Credentials.Core
 
             Assert.NotNull(receivedEvent);
             Assert.IsType<ConnectionState.ValidatingConnection>(_awsConnectionManager.ConnectionState);
-            _telemetryLogger.Verify(mock => mock.Record(It.Is<Metrics>(m => HasSetCredentialsMetrics(m))), Times.Once);
         }
 
         [Fact]
@@ -265,15 +262,12 @@ namespace AWSToolkit.Tests.Credentials.Core
             _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
             WaitUntilConnectionStateIsStable();
 
-            _telemetryLogger.Invocations.Clear();
-
             var receivedEvent = Assert.Raises<ConnectionStateChangeArgs>(
                 a => _awsConnectionManager.ConnectionStateChanged += a,
                 a => _awsConnectionManager.ConnectionStateChanged -= a,
                 () => _awsConnectionManager.ChangeRegion(_sampleRegion));
 
             Assert.NotNull(receivedEvent);
-            _telemetryLogger.Verify(mock => mock.Record(It.Is<Metrics>(m => HasSetRegionMetrics(m))), Times.Once);
         }
 
         [Fact]
