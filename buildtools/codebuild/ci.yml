@@ -1,11 +1,28 @@
 ﻿version: 0.2
 
 phases:
+    pre_build:
+        commands:
+            - |
+             git clone https://github.com/awslabs/git-secrets /tmp/git-secrets/; cd /tmp/git-secrets/
+             echo "Installing git secrets.."
+             ./install.ps1
+             cd $Env:CODEBUILD_SRC_DIR
     build:
         commands:
-            - msbuild buildtools\build.proj /t:restore 
+            - echo "Building.."; msbuild buildtools\build.proj /t:restore 
             - msbuild buildtools\build.proj /t:compile /p:DeployExtension=false /p:Configuration=$env:BUILD_CONFIGURATION
-            - msbuild buildtools\build.proj /t:test /p:DeployExtension=false  /p:Configuration=$env:BUILD_CONFIGURATION
+            - echo "Running Tests.."; msbuild buildtools\build.proj /t:test /p:DeployExtension=false  /p:Configuration=$env:BUILD_CONFIGURATION
+    post_build:
+        commands:
+            - |
+             echo "Running git secrets check .."
+             $Env:Path += ";$($Env:USERPROFILE)\\.git-secrets"
+             git secrets --install
+             git secrets --register-aws
+             #allow secrets pattern
+             git secrets --add --allowed 'x:'
+             git secrets --scan
 artifacts:
     discard-paths: yes
     files:
