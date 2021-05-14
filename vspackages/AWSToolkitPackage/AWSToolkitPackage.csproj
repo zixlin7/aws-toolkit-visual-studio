@@ -147,6 +147,7 @@
     </Compile>
     <Compile Include="Telemetry\TelemetryManager.cs" />
     <Compile Include="Telemetry\TelemetryNotice.cs" />
+    <Compile Include="Utilities\DTE\DteVersion.cs" />
     <Compile Include="Utilities\DTE\WindowExtensionMethods.cs" />
     <Compile Include="Utilities\DTE\ProjectExtensionMethods.cs" />
     <Compile Include="Utilities\InfoBarUtils.cs" />

@@ -27,45 +27,13 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
 
     internal class AWSToolkitShellProviderService : SAWSToolkitShellProvider, IAWSToolkitShellProvider
     {
-        private AWSToolkitPackage _hostPackage;
-        private string _shellVersion;
+        private readonly AWSToolkitPackage _hostPackage;
         private readonly IToolkitHostInfo _toolkitHostInfo;
 
-        public AWSToolkitShellProviderService(AWSToolkitPackage hostPackage, string shellVersion)
+        public AWSToolkitShellProviderService(AWSToolkitPackage hostPackage, IToolkitHostInfo hostVersion)
         {
             _hostPackage = hostPackage;
-            _shellVersion = shellVersion;
-            _toolkitHostInfo = GetToolkitHostInfo(_shellVersion);
-        }
-
-        private static IToolkitHostInfo GetToolkitHostInfo(string shellVersion)
-        {
-            if (string.IsNullOrWhiteSpace(shellVersion))
-            {
-                return ToolkitHosts.VsMinimumSupportedVersion;
-            }
-
-            if (shellVersion.StartsWith("12"))
-            {
-                return ToolkitHosts.Vs2013;
-            }
-
-            if (shellVersion.StartsWith("14"))
-            {
-                return ToolkitHosts.Vs2015;
-            }
-
-            if (shellVersion.StartsWith("15"))
-            {
-                return ToolkitHosts.Vs2017;
-            }
-
-            if (shellVersion.StartsWith("16"))
-            {
-                return ToolkitHosts.Vs2019;
-            }
-
-            return ToolkitHosts.VsMinimumSupportedVersion;
+            _toolkitHostInfo = hostVersion;
         }
 
         #region IAWSToolkitShellProvider

@@ -65,8 +65,10 @@ using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.Commands.Lambda;
 using Amazon.AWSToolkit.VisualStudio.Images;
+using Amazon.AWSToolkit.VisualStudio.Utilities.DTE;
 using Task = System.Threading.Tasks.Task;
 using VsImages = Amazon.AWSToolkit.CommonUI.VsImages;
 
@@ -402,14 +404,14 @@ namespace Amazon.AWSToolkit.VisualStudio
             return null;
         }
 
-        void InstantiateToolkitShellProviderService(string shellVersion)
+        void InstantiateToolkitShellProviderService(IToolkitHostInfo hostVersion)
         {
             lock (this)
             {
                 if (ToolkitShellProviderService == null)
                 {
                     LOGGER.Debug("Creating SAWSToolkitShellProvider service");
-                    ToolkitShellProviderService = new AWSToolkitShellProviderService(this, shellVersion);
+                    ToolkitShellProviderService = new AWSToolkitShellProviderService(this, hostVersion);
                 }
             }
         }
@@ -540,6 +542,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                     }
                 });
 
+                var hostVersion = DteVersion.AsHostInfo(dteVersion);
                 ThemeUtil.Initialize(dteVersion);
 
                 _toolkitSettingsWatcher = new ToolkitSettingsWatcher();
@@ -551,7 +554,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 // shell provider is used all the time, so pre-load. Leave legacy deployment
                 // service until a plugin asks for it.
-                InstantiateToolkitShellProviderService(dteVersion);
+                InstantiateToolkitShellProviderService(hostVersion);
 
                 // Enable UIs to access VS-provided images
                 await InitializeImageProviderAsync();

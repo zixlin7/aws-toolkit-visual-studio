@@ -52,6 +52,7 @@
     <Compile Include="Lambda\LambdaTesterUsageEmitterTests.cs" />
     <Compile Include="Lambda\LambdaTesterUtilitiesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\DTE\DteVersionTests.cs" />
     <Compile Include="Utilities\DTE\ProjectExtensionMethodsTests.cs" />
   </ItemGroup>
   <ItemGroup>
