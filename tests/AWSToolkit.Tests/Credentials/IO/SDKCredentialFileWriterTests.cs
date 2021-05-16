@@ -9,6 +9,7 @@ using Xunit;
 
 namespace AWSToolkit.Tests.Credentials.IO
 {
+    [Collection(SdkCredentialCollectionDefinition.NonParallelTests)]
     public class SDKCredentialFileWriterTests : IDisposable
     {
 

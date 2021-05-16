@@ -7,6 +7,7 @@ using Xunit;
 
 namespace AWSToolkit.Tests.Credentials.IO
 {
+    [Collection(SdkCredentialCollectionDefinition.NonParallelTests)]
     public class SDKCredentialFileReaderTests : IDisposable
     {
         private const string SomeOtherKey = "SomeOtherKey";
