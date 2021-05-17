@@ -85,10 +85,11 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
         public void SetAvailableSecurityGroups(ICollection<SecurityGroup> existingGroups, string autoSelectGroup)
         {
             AvailableSecurityGroups.Clear();
-            foreach (var sg in existingGroups)
-            {
-                AvailableSecurityGroups.Add(new SecurityGroupWrapper(sg));
-            }
+            existingGroups
+                .Select(group => new SecurityGroupWrapper(group))
+                .OrderBy(group => group.DisplayName)
+                .ToList()
+                .ForEach(group => AvailableSecurityGroups.Add(group));
 
             if (string.IsNullOrEmpty(autoSelectGroup))
             {
@@ -97,10 +98,15 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
                 else
                 {
                     // preselect 'default' group so at least something is selected
-                    var defaultGroup 
-                        = AvailableSecurityGroups.FirstOrDefault((wrapper) => wrapper.DisplayName.Equals("default", StringComparison.OrdinalIgnoreCase));
+                    var defaultGroup
+                        = AvailableSecurityGroups.FirstOrDefault((wrapper) =>
+                              wrapper.DisplayName.Equals("default", StringComparison.OrdinalIgnoreCase)) ??
+                          AvailableSecurityGroups.FirstOrDefault((wrapper) =>
+                              wrapper.DisplayName.StartsWith("default", StringComparison.OrdinalIgnoreCase));
                     if (defaultGroup != null)
+                    {
                         _securityGroups.SelectedItem = defaultGroup;
+                    }
                 }
             }
             else
@@ -309,10 +315,11 @@ namespace Amazon.AWSToolkit.EC2.LaunchWizard.PageUI
                 InstanceProfileName = "None",
                 Arn = string.Empty
             });
-            foreach (var p in profiles)
-            {
-                IAMInstanceProfiles.Add(p);
-            }
+
+            profiles
+                .OrderBy(p => p.InstanceProfileName)
+                .ToList()
+                .ForEach(p => IAMInstanceProfiles.Add(p));
 
             _iamProfile.SelectedIndex = 0;
             _iamProfile.Cursor = Cursors.Arrow;

@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "The EC2 Quick Launch dialog dropdowns for Security Group and IAM Role are now sorted."
+}
