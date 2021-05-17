@@ -8,10 +8,12 @@ namespace AWSToolkit.Tests.Credentials
         public const string CredentialProcessProfileName = "process_profile";
         public const string SessionProfileName = "session_profile";
         public const string AssumeRoleProfileName = "assume_role_profile";
+        public const string SamlProfileName = "saml_profile";
         public const string InvalidSessionProfileName = "invalid_session_profile";
         public const string InvalidProcessProfileName = "invalid_process_profile";
         public const string InvalidBasicProfileName = "invalid_basic_profile";
         public const string InvalidSdkProfileName = "invalid_sdk_profile";
+        public const string InvalidSamlProfileName = "invalid_saml_profile";
         public const string InvalidAssumeRoleProfileNoSourceProfileName = "assume_role_no_source";
         public const string InvalidAssumeRoleProfileBadSourceProfileName = "assume_role_bad_source";
         public const string MFAProfileName = "mfa_profile";
@@ -36,6 +38,13 @@ namespace AWSToolkit.Tests.Credentials
                 AccessKey = "session_access_key", SecretKey = "session_secret_key", Token = "token"
             });
 
+        public static readonly CredentialProfile SamlCredentialProfile = new CredentialProfile(SamlProfileName,
+            new CredentialProfileOptions
+            {
+                RoleArn = "role_arn",
+                EndpointName = "endpoint_name",
+            });
+
         public static readonly CredentialProfile InvalidProfile = new CredentialProfile(InvalidProfileName,
             new CredentialProfileOptions {SecretKey = "secret_key"});
 
@@ -48,6 +57,10 @@ namespace AWSToolkit.Tests.Credentials
 
         public static readonly CredentialProfile InvalidSdkProfile = new CredentialProfile(InvalidSdkProfileName,
             new CredentialProfileOptions {AccessKey = "sdk_access_key", SecretKey = "sdk_secret_key"});
+
+        public static readonly CredentialProfile InvalidSamlProfile = new CredentialProfile(InvalidSamlProfileName,
+            new CredentialProfileOptions { EndpointName = "endpoint" });
+
 
         public static readonly CredentialProfile MFAProfile = new CredentialProfile(MFAProfileName,
             new CredentialProfileOptions

@@ -181,7 +181,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             catch (Exception e)
             {
                 LOGGER.Error($"Failed to create underlying AWSCredentials: {e.Message}");
-                throw new CredentialProviderNotFoundException("Failed to create underlying AWSCredentials: ", e);
+                throw new CredentialProviderNotFoundException($"Failed to create underlying AWSCredentials: {e.Message}", e);
             }
 
             return credentials;

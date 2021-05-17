@@ -11,6 +11,7 @@
         CredentialProcessProfile,
         AssumeRoleProfile,
         AssumeMfaRoleProfile,
+        AssumeSamlRoleProfile,
         SsoProfile,
         Unknown,
     }

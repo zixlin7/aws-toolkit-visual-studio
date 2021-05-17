@@ -142,6 +142,8 @@ namespace Amazon.AWSToolkit.Credentials.Core
 
         protected abstract ICredentialIdentifier CreateCredentialIdentifier(CredentialProfile profile);
 
+        protected abstract AWSCredentials CreateSaml(CredentialProfile profile);
+
         protected void HandleFileChangeEvent(object sender, EventArgs e)
         {
              LoadProfiles(false);
@@ -158,6 +160,11 @@ namespace Amazon.AWSToolkit.Credentials.Core
             if (profile.Options.ContainsSsoProperties())
             {
                 return CreateSso(profile);
+            }
+
+            if (!string.IsNullOrWhiteSpace(profile.Options.EndpointName))
+            {
+                return CreateSaml(profile);
             }
 
             if (!string.IsNullOrWhiteSpace(profile.Options.RoleArn))
@@ -235,7 +242,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             }
         }
 
-        private static void ValidateRequiredProperty(string propertyValue, string propertyName, string profileName)
+        protected static void ValidateRequiredProperty(string propertyValue, string propertyName, string profileName)
         {
             if (string.IsNullOrWhiteSpace(propertyValue))
             {

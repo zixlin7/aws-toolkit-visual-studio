@@ -20,6 +20,7 @@ namespace AWSToolkit.Tests.Credentials.Utils
                 {CredentialType.AssumeRoleProfile, TelemetryCredentialType.AssumeRoleProfile},
                 {CredentialType.AssumeMfaRoleProfile, TelemetryCredentialType.AssumeMfaRoleProfile},
                 {CredentialType.SsoProfile, TelemetryCredentialType.SsoProfile},
+                {CredentialType.AssumeSamlRoleProfile, TelemetryCredentialType.AssumeSamlRoleProfile},
                 {CredentialType.Unknown, TelemetryCredentialType.Other},
                 {CredentialType.Undefined, null},
             };

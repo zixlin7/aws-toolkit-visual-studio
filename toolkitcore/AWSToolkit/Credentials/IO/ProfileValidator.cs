@@ -73,6 +73,11 @@ namespace Amazon.AWSToolkit.Credentials.IO
                 return ValidateSso(profileOptions, profileName);
             }
 
+            if (!string.IsNullOrWhiteSpace(profileOptions.EndpointName))
+            {
+                return ValidateSaml(profileOptions, profileName);
+            }
+
             if (!string.IsNullOrWhiteSpace(profileOptions.RoleArn))
             {
                 return ValidateAssumeRole(profileOptions, profileName);
@@ -235,6 +240,24 @@ namespace Amazon.AWSToolkit.Credentials.IO
 
             var missingPropertiesStr = string.Join(", ", missingProperties.OrderBy(x => x));
             return $"SSO-based profile {profileName} is missing one or more properties: {missingPropertiesStr}";
+        }
+
+        private string ValidateSaml(CredentialProfileOptions profileOptions, string profileName)
+        {
+            var errorMessage = new StringBuilder();
+            if (string.IsNullOrWhiteSpace(profileOptions.EndpointName))
+            {
+                errorMessage.AppendLine(
+                    $"Profile {profileName} is missing required property {ProfilePropertyConstants.EndpointName}");
+            }
+
+            if (string.IsNullOrWhiteSpace(profileOptions.RoleArn))
+            {
+                errorMessage.AppendLine(
+                    $"Profile {profileName} is missing required property {ProfilePropertyConstants.RoleArn}");
+            }
+
+            return errorMessage.ToString();
         }
     }
 }

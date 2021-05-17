@@ -39,11 +39,7 @@ namespace Amazon.AWSToolkit.Credentials.IO
                 {ProfilePropertyConstants.SsoRoleName, "sso_role_name"},
                 {ProfilePropertyConstants.SsoStartUrl, "sso_start_url"}
             };
-
-        public SharedCredentialFileReader() : this(null)
-        {
-        }
-
+  
         public SharedCredentialFileReader(SharedCredentialsFile file)
         {
             _sharedCredentialsFile = file ?? new SharedCredentialsFile(FilePath);

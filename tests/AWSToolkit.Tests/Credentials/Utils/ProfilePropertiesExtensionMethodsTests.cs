@@ -56,6 +56,13 @@ namespace AWSToolkit.Tests.Credentials.Utils
         }
 
         [Fact]
+        public void GetCredentialType_Saml()
+        {
+            Assert.Equal(CredentialType.AssumeSamlRoleProfile,
+                CredentialProfileTestHelper.SamlCredentialProfile.AsProfileProperties().GetCredentialType());
+        }
+
+        [Fact]
         public void GetCredentialType_Sso()
         {
             Assert.Equal(CredentialType.SsoProfile,

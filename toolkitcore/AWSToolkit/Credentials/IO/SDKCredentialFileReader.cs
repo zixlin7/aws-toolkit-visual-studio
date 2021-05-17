@@ -34,7 +34,7 @@ namespace Amazon.AWSToolkit.Credentials.IO
                 {ProfilePropertyConstants.SsoStartUrl, "sso_start_url"}
             };
 
-        public SDKCredentialFileReader() : this(null, null)
+        public SDKCredentialFileReader(NetSDKCredentialsFile file) : this(file, null)
         {
         }
 

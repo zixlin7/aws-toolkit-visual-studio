@@ -14,6 +14,7 @@ namespace Amazon.AWSToolkit.Credentials.Utils
         public string CredentialProcess { get; set; }
         public string RoleArn { get; set; }
         public string MfaSerial { get; set; }
+        public string EndpointName { get; set; }
 
         /// <summary>
         /// The unique key for this CredentialProfile.

@@ -21,6 +21,8 @@ namespace Amazon.AWSToolkit.Credentials.Utils
                     return TelemetryCredentialType.AssumeRoleProfile;
                 case CredentialType.AssumeMfaRoleProfile:
                     return TelemetryCredentialType.AssumeMfaRoleProfile;
+                case CredentialType.AssumeSamlRoleProfile:
+                    return TelemetryCredentialType.AssumeSamlRoleProfile;
                 case CredentialType.SsoProfile:
                     return TelemetryCredentialType.SsoProfile;
                 case CredentialType.Undefined:

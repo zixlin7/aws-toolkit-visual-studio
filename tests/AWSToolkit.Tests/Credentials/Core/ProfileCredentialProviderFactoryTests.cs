@@ -127,6 +127,7 @@ namespace AWSToolkit.Tests.Credentials.Core
         [Theory]
         [InlineData(CredentialProfileTestHelper.BasicProfileName)]
         [InlineData(CredentialProfileTestHelper.SessionProfileName)]
+        [InlineData(CredentialProfileTestHelper.SamlProfileName)]
         [InlineData(CredentialProfileTestHelper.AssumeRoleProfileName)]
         [InlineData(CredentialProfileTestHelper.InvalidBasicProfileName)]
         [InlineData(CredentialProfileTestHelper.InvalidSessionProfileName)]
@@ -215,6 +216,7 @@ namespace AWSToolkit.Tests.Credentials.Core
         {
             _profiles[CredentialProfileTestHelper.BasicProfileName] = CredentialProfileTestHelper.BasicProfile;
             _profiles[CredentialProfileTestHelper.SessionProfileName] = CredentialProfileTestHelper.SessionProfile;
+            _profiles[CredentialProfileTestHelper.SamlProfileName] = CredentialProfileTestHelper.SamlCredentialProfile;
             _profiles[CredentialProfileTestHelper.MFAProfileName] = CredentialProfileTestHelper.MFAProfile;
             _profiles[CredentialProfileTestHelper.MFAExternalSessionProfileName] = CredentialProfileTestHelper.MFAExternalSessionProfile;
             _profiles[CredentialProfileTestHelper.SSOProfileName] = CredentialProfileTestHelper.SSOProfile;

@@ -18,16 +18,18 @@ namespace Amazon.AWSToolkit.Credentials.Core
         private const double FileChangeDebounceInterval = 300;
 
         private readonly DebounceDispatcher _credentialsChangedDispatcher;
+        private readonly NetSDKCredentialsFile _credentialsFile;
         private bool _disposed = false;
         private SettingsWatcher _watcher;
         public override string Id => SdkProfileFactoryId;
 
-        private SDKCredentialProviderFactory(IAWSToolkitShellProvider toolkitShell)
+        private SDKCredentialProviderFactory(IAWSToolkitShellProvider toolkitShell, NetSDKCredentialsFile credentialsFile)
             : this(new ProfileHolder(),
-                new SDKCredentialFileReader(),
-                new SDKCredentialFileWriter(),
+                new SDKCredentialFileReader(credentialsFile),
+                new SDKCredentialFileWriter(credentialsFile),
                 toolkitShell)
         {
+            _credentialsFile = credentialsFile;
             _credentialsChangedDispatcher = new DebounceDispatcher();
         }
 
@@ -56,7 +58,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             out SDKCredentialProviderFactory factory)
         {
             var usableFactory = CanUseFactory();
-            factory = usableFactory ? new SDKCredentialProviderFactory(toolkitShell) : null;
+            factory = usableFactory ? new SDKCredentialProviderFactory(toolkitShell, new NetSDKCredentialsFile()) : null;
             return usableFactory;
         }
 
@@ -102,6 +104,13 @@ namespace Amazon.AWSToolkit.Credentials.Core
             }
         }
 
+        protected override AWSCredentials CreateSaml(CredentialProfile profile)
+        {
+            ValidateRequiredProperty(profile.Options.EndpointName, ProfilePropertyConstants.EndpointName, profile.Name);
+            ValidateRequiredProperty(profile.Options.RoleArn, ProfilePropertyConstants.RoleArn, profile.Name);
+            return GetSamlCredentials(profile);
+        }
+
         private void DebounceAndHandleFileChange(object sender, EventArgs e)
         {
             _credentialsChangedDispatcher.Debounce(FileChangeDebounceInterval, _ => { HandleFileChangeEvent(sender, e); });
@@ -114,6 +123,27 @@ namespace Amazon.AWSToolkit.Credentials.Core
         private static bool CanUseFactory()
         {
             return Runtime.Internal.Settings.UserCrypto.IsUserCryptAvailable;
+        }
+
+        /// <summary>
+        /// Wrapper for surfacing relevant exception messages while retrieving credentials for SAML profiles using AWS SDK
+        /// </summary>
+        /// <param name="profile"></param>
+        private AWSCredentials GetSamlCredentials(CredentialProfile profile)
+        {
+            try
+            {
+                return profile.GetAWSCredentials(_credentialsFile);
+            }
+            catch (Exception e)
+            {
+                if (e.InnerException != null)
+                {
+                    LOGGER.Error(e);
+                    throw new Exception($"{e.Message}{Environment.NewLine}{e.InnerException.Message}", e);
+                }
+                throw;
+            }
         }
     }
 }

@@ -1087,10 +1087,10 @@
       <Version>3.5.1.21</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.SDK">
-      <Version>0.0.99</Version>
+      <Version>1.0.4</Version>
     </PackageReference>
     <PackageReference Include="AWS.Toolkit.Telemetry.Events">
-      <Version>0.0.99</Version>
+      <Version>1.0.4</Version>
     </PackageReference>
     <PackageReference Include="log4net">
       <Version>2.0.12</Version>

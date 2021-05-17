@@ -24,6 +24,7 @@ namespace Amazon.AWSToolkit.Credentials.Utils
                 CredentialProcess = profile.Options?.CredentialProcess ?? string.Empty,
                 RoleArn = profile.Options?.RoleArn ?? string.Empty,
                 MfaSerial = profile.Options?.MfaSerial ?? string.Empty,
+                EndpointName = profile.Options?.EndpointName ?? string.Empty,
                 Region = profile.Region?.SystemName ?? string.Empty,
                 SsoAccountId = profile.Options?.SsoAccountId ?? string.Empty,
                 SsoRegion = profile.Options?.SsoRegion ?? string.Empty,

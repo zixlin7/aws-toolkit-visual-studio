@@ -40,6 +40,7 @@ namespace AWSToolkit.Tests.Credentials.Utils
             Assert.Empty(properties.CredentialProcess);
             Assert.Empty(properties.RoleArn);
             Assert.Empty(properties.MfaSerial);
+            Assert.Empty(properties.EndpointName);
             Assert.Empty(properties.SsoAccountId);
             Assert.Empty(properties.SsoRegion);
             Assert.Empty(properties.SsoRoleName);
@@ -59,6 +60,7 @@ namespace AWSToolkit.Tests.Credentials.Utils
             Assert.Equal(profile.Options.CredentialProcess, properties.CredentialProcess);
             Assert.Empty(properties.RoleArn);
             Assert.Empty(properties.MfaSerial);
+            Assert.Empty(properties.EndpointName);
             Assert.Empty(properties.SsoAccountId);
             Assert.Empty(properties.SsoRegion);
             Assert.Empty(properties.SsoRoleName);
@@ -78,6 +80,7 @@ namespace AWSToolkit.Tests.Credentials.Utils
             Assert.Empty(properties.CredentialProcess);
             Assert.Equal(profile.Options.RoleArn, properties.RoleArn);
             Assert.Equal(profile.Options.MfaSerial, properties.MfaSerial);
+            Assert.Empty(properties.EndpointName);
             Assert.Empty(properties.SsoAccountId);
             Assert.Empty(properties.SsoRegion);
             Assert.Empty(properties.SsoRoleName);
@@ -97,10 +100,30 @@ namespace AWSToolkit.Tests.Credentials.Utils
             Assert.Empty(properties.CredentialProcess);
             Assert.Empty(properties.RoleArn);
             Assert.Empty(properties.MfaSerial);
+            Assert.Empty(properties.EndpointName);
             Assert.Equal(profile.Options.SsoAccountId, properties.SsoAccountId);
             Assert.Equal(profile.Options.SsoRegion, properties.SsoRegion);
             Assert.Equal(profile.Options.SsoRoleName, properties.SsoRoleName);
             Assert.Equal(profile.Options.SsoStartUrl, properties.SsoStartUrl);
+        }
+
+        [Fact]
+        public void AsProfileProperties_Saml()
+        {
+            var profile = CredentialProfileTestHelper.SamlCredentialProfile;
+            var properties = profile.AsProfileProperties();
+
+            Assert.NotNull(properties);
+            Assert.Empty(properties.AccessKey);
+            Assert.Empty(properties.SecretKey);
+            Assert.Empty(properties.Token);
+            Assert.Equal(profile.Options.EndpointName, properties.EndpointName);
+            Assert.Equal(profile.Options.RoleArn, properties.RoleArn);
+            Assert.Empty(properties.MfaSerial);
+            Assert.Empty(properties.SsoAccountId);
+            Assert.Empty(properties.SsoRegion);
+            Assert.Empty(properties.SsoRoleName);
+            Assert.Empty(properties.SsoStartUrl);
         }
 
         [Fact]

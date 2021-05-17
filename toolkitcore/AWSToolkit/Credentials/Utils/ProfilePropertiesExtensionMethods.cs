@@ -18,6 +18,11 @@
                 return CredentialType.SsoProfile;
             }
 
+            if (!string.IsNullOrWhiteSpace(properties.EndpointName))
+            {
+                return CredentialType.AssumeSamlRoleProfile;
+            }
+
             if (!string.IsNullOrWhiteSpace(properties.RoleArn))
             {
                 if (!string.IsNullOrWhiteSpace(properties.MfaSerial))

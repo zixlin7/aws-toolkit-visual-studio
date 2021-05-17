@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.RightsManagement;
-using System.Text;
-using Amazon.Runtime.CredentialManagement;
+﻿using Amazon.Runtime.CredentialManagement;
 using Amazon.Runtime.CredentialManagement.Internal;
 
 namespace Amazon.AWSToolkit.Credentials.IO
@@ -11,10 +6,6 @@ namespace Amazon.AWSToolkit.Credentials.IO
     public class SDKCredentialFileWriter: ICredentialFileWriter
     {
         private readonly NetSDKCredentialsFile _netSdkCredentialsFile;
-
-        public SDKCredentialFileWriter() : this(null)
-        {
-        }
 
         public SDKCredentialFileWriter(NetSDKCredentialsFile file)
         {

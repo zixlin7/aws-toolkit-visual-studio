@@ -62,6 +62,7 @@ namespace AWSToolkit.Tests.Credentials.IO
         [InlineData(CredentialProfileTestHelper.SessionProfileName)]
         [InlineData(CredentialProfileTestHelper.CredentialProcessProfileName)]
         [InlineData(CredentialProfileTestHelper.SSOProfileName)]
+        [InlineData(CredentialProfileTestHelper.SamlProfileName)]
         public void ValidCredentials(string profileName)
         {
             _availableProfiles.Add(profileName);
@@ -77,6 +78,7 @@ namespace AWSToolkit.Tests.Credentials.IO
         [InlineData(CredentialProfileTestHelper.InvalidProcessProfileName)]
         [InlineData("non_existing_profile")]
         [InlineData(CredentialProfileTestHelper.InvalidSdkProfileName)]
+        [InlineData(CredentialProfileTestHelper.InvalidSamlProfileName)]
         public void InvalidCredentials(string invalidProfileName)
         {
             _availableProfiles.Add(CredentialProfileTestHelper.BasicProfileName);
@@ -206,10 +208,12 @@ namespace AWSToolkit.Tests.Credentials.IO
                 CredentialProfileTestHelper.BasicProfile,
                 CredentialProfileTestHelper.SessionProfile,
                 CredentialProfileTestHelper.CredentialProcessProfile,
+                CredentialProfileTestHelper.SamlCredentialProfile,
                 CredentialProfileTestHelper.InvalidCredentialProcess,
                 CredentialProfileTestHelper.InvalidBasicProfile,
                 CredentialProfileTestHelper.InvalidSessionProfile,
                 CredentialProfileTestHelper.InvalidSdkProfile,
+                CredentialProfileTestHelper.InvalidSamlProfile,
                 CredentialProfileTestHelper.AssumeRoleProfile,
                 CredentialProfileTestHelper.InvalidAssumeRoleProfileNoSourceProfile,
                 CredentialProfileTestHelper.InvalidAssumeRoleProfileBadSourceProfile,

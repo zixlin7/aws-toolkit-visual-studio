@@ -12,10 +12,6 @@ namespace Amazon.AWSToolkit.Credentials.IO
         private readonly SharedCredentialsFile _sharedCredentialsFile;
         public string FilePath { get; set; }
 
-        public SharedCredentialFileWriter() : this(null)
-        {
-        }
-
         public SharedCredentialFileWriter(SharedCredentialsFile file)
         {
             _sharedCredentialsFile = file ?? new SharedCredentialsFile(FilePath);

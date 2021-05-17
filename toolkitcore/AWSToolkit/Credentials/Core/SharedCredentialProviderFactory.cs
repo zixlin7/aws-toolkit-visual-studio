@@ -16,12 +16,14 @@ namespace Amazon.AWSToolkit.Credentials.Core
         public const string SharedProfileFactoryId = "SharedProfileCredentialProviderFactory";
         public override string Id => SharedProfileFactoryId;
 
+        private readonly SharedCredentialsFile _credentialsFile;
         private bool _disposed = false;
         private ProfileWatcher _watcher;
 
-        private SharedCredentialProviderFactory(IAWSToolkitShellProvider toolkitShell) : this(new ProfileHolder(),
-            new SharedCredentialFileReader(), new SharedCredentialFileWriter(), toolkitShell)
+        private SharedCredentialProviderFactory(IAWSToolkitShellProvider toolkitShell, SharedCredentialsFile credentialsFile) : this(new ProfileHolder(),
+            new SharedCredentialFileReader(credentialsFile), new SharedCredentialFileWriter(credentialsFile), toolkitShell)
         {
+            _credentialsFile = credentialsFile;
         }
 
         public SharedCredentialProviderFactory(IProfileHolder holder, ICredentialFileReader fileReader,
@@ -47,7 +49,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         /// </summary>
         public static bool TryCreateFactory(IAWSToolkitShellProvider toolkitShell, out SharedCredentialProviderFactory factory)
         {
-            factory = new SharedCredentialProviderFactory(toolkitShell);
+            factory = new SharedCredentialProviderFactory(toolkitShell, new SharedCredentialsFile());
             return true;
         }
 
@@ -75,6 +77,11 @@ namespace Amazon.AWSToolkit.Credentials.Core
         protected override ICredentialIdentifier CreateCredentialIdentifier(CredentialProfile profile)
         {
             return new SharedCredentialIdentifier(profile.Name);
+        }
+
+        protected override AWSCredentials CreateSaml(CredentialProfile profile)
+        {
+            throw new InvalidOperationException($"Error creating credentials for {profile.Name}: SAML based profiles are not supported with a Shared Credentials File.");
         }
 
         protected override void SetupProfileWatcher()
