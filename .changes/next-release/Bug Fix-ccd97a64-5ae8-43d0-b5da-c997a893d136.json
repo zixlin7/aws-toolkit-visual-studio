@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fixed an issue introduced in the previous version where the Toolkit was unable to resolve SAML based profiles."
+}
