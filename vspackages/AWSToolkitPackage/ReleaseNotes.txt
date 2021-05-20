@@ -1,3 +1,9 @@
+v1.21.2.0 (2021-05-20)
+* Fixed an issue where the toolkit had initialization failures when the development environment did not have access to Windows Encrypted Store.
+* The EC2 Quick Launch dialog dropdowns for Security Group and IAM Role are now sorted.
+* IAM Role Dropdowns in the deployment dialogs for Lambda and ECS are now sorted.
+* Fixed an issue introduced in the previous version where the Toolkit was unable to resolve SAML based profiles.
+
 v1.21.1.0 (2021-04-23)
 * Fixed an issue introduced in the previous version where TeamExplorer events were excessively written to the Toolkit log
 * Fixed an issue where the toolkit would fail to start when the Shared Credentials file directory "%USERPROFILE%/.aws" was absent. The toolkit now creates the directory if absent on startup.

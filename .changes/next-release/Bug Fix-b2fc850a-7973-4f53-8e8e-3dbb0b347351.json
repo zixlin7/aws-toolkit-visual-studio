@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "IAM Role Dropdowns in the deployment dialogs for Lambda and ECS are now sorted."
-}
