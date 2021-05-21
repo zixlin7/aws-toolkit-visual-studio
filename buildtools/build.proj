@@ -120,6 +120,7 @@
             <TestAssemblies Include="..\tests\AWSToolkit.Tests\bin\$(Configuration)\AWSToolkit.Tests.dll" />
             <TestAssemblies Include="..\tests\AWSToolkit.Util.Tests\bin\$(Configuration)\AWSToolkit.Util.Tests.dll" />
             <TestAssemblies Include="..\tests\AWSToolkitPackage.Tests\bin\$(Configuration)\AWSToolkitPackage.Tests.dll" />
+            <TestAssemblies Include="..\tests\AWSToolkit.VisualStudio.Shared.Tests\bin\$(Configuration)\AWSToolkit.VisualStudio.Shared.Tests.dll" />
         </ItemGroup>        
 
         <MakeDir Directories="$(TestResults)" />

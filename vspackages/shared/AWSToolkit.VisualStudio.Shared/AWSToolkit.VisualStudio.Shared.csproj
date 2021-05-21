@@ -58,30 +58,31 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-	<PackageReference Include="EnvDTE">
-	  <Version>8.0.2</Version>
-	</PackageReference>
-	<PackageReference Include="EnvDTE80">
-	  <Version>8.0.3</Version>
-	</PackageReference>
-	<PackageReference Include="VSLangProj">
-	  <Version>7.0.3301</Version>
-	</PackageReference>
-	<PackageReference Include="VSLangProj80">
-	  <Version>8.0.50728</Version>
-	</PackageReference>
-	<PackageReference Include="Microsoft.VisualStudio.Shell.15.0">
-	  <Version>15.0.26201</Version>
-	</PackageReference>
-	<PackageReference Include="Microsoft.VisualStudio.Shell.Interop.10.0">
-	  <Version>10.0.30320</Version>
-	</PackageReference>
-	<PackageReference Include="Microsoft.VisualStudio.Designer.Interfaces">
-	  <Version>1.1.4323</Version>
-	</PackageReference>
+    <PackageReference Include="EnvDTE">
+      <Version>8.0.2</Version>
+    </PackageReference>
+    <PackageReference Include="EnvDTE80">
+      <Version>8.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="VSLangProj">
+      <Version>7.0.3301</Version>
+    </PackageReference>
+    <PackageReference Include="VSLangProj80">
+      <Version>8.0.50728</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Shell.15.0">
+      <Version>15.0.26201</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.10.0">
+      <Version>10.0.30320</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Designer.Interfaces">
+      <Version>1.1.4323</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IAWSLegacyDeploymentPersistence.cs" />
+    <Compile Include="IVsMonitorSelectionExtensionMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VSLambdaUtility.cs" />
     <Compile Include="VSUtility.cs" />

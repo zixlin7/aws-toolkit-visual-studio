@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -175,48 +175,14 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
 
         public static EnvDTE.ProjectItem GetSelectedProjectItem()
         {
-            IntPtr hierarchyPtr, selectionContainerPtr;
-            uint projectItemId;
-            IVsMultiItemSelect mis;
             var monitorSelection = (IVsMonitorSelection)Package.GetGlobalService(typeof(SVsShellMonitorSelection));
-            if (monitorSelection.GetCurrentSelection(out hierarchyPtr, out projectItemId, out mis, out selectionContainerPtr) == VSConstants.S_OK
-                && hierarchyPtr != IntPtr.Zero)
-            {
-                var projHier = Marshal.GetTypedObjectForIUnknown(hierarchyPtr, typeof(IVsHierarchy)) as IVsHierarchy;
-                Object prjItemObject = null;
-                projHier.GetProperty(projectItemId, (int)__VSHPROPID.VSHPROPID_ExtObject, out prjItemObject);
-                
-
-                var prjItem = prjItemObject as EnvDTE.ProjectItem;
-                if (prjItem != null)
-                {
-                    return prjItem;
-                }
-            }
-
-            return null;
+            return monitorSelection.GetCurrentSelection() as EnvDTE.ProjectItem;
         }
 
         public static EnvDTE.Project GetSelectedProject()
         {
-            IntPtr hierarchyPtr, selectionContainerPtr;
-            uint projectItemId;
-            IVsMultiItemSelect mis;
             var monitorSelection = (IVsMonitorSelection)Package.GetGlobalService(typeof(SVsShellMonitorSelection));
-            if (monitorSelection.GetCurrentSelection(out hierarchyPtr, out projectItemId, out mis, out selectionContainerPtr) == VSConstants.S_OK
-                && hierarchyPtr != IntPtr.Zero)
-            {
-                var projHier = Marshal.GetTypedObjectForIUnknown(hierarchyPtr, typeof(IVsHierarchy)) as IVsHierarchy;
-                Object prjItemObject = null;
-                projHier.GetProperty(projectItemId, (int)__VSHPROPID.VSHPROPID_ExtObject, out prjItemObject);
-
-                var prjItem = prjItemObject as EnvDTE.Project;
-                if (prjItem == null)
-                    return null;
-                return prjItem;
-            }
-
-            return null;
+            return monitorSelection.GetCurrentSelection() as EnvDTE.Project;
         }
 
         public static bool IsLambdaDotnetProject
@@ -305,16 +271,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Shared
 
         public static IVsHierarchy GetCurrentVSHierarchySelection(out uint projectItemId)
         {
-            IntPtr hierarchyPtr, selectionContainerPtr;
-            IVsMultiItemSelect mis;
             var monitorSelection = (IVsMonitorSelection)Package.GetGlobalService(typeof(SVsShellMonitorSelection));
-            if (monitorSelection.GetCurrentSelection(out hierarchyPtr,
-                                                     out projectItemId,
-                                                     out mis,
-                                                     out selectionContainerPtr) == VSConstants.S_OK && hierarchyPtr != IntPtr.Zero)
-                return Marshal.GetTypedObjectForIUnknown(hierarchyPtr, typeof(IVsHierarchy)) as IVsHierarchy;
-
-            return null;
+            return monitorSelection.GetCurrentSelectionVsHierarchy(out projectItemId);
         }
 
         public static IVsProject GetVsProjectForHierarchyNode(IVsHierarchy hierachyNode)
