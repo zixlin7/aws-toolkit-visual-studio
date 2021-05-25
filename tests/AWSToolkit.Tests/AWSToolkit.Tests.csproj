@@ -60,6 +60,7 @@
     <Compile Include="CodeArtifact\TelemetryFixture.cs" />
     <Compile Include="CommonUI\AccountAndRegionPickerViewModelTests.cs" />
     <Compile Include="CommonUI\AccountViewModelGroupConverterTests.cs" />
+    <Compile Include="CommonUI\BaseModelTests.cs" />
     <Compile Include="CommonUI\CloudFormationTemplateWrapperTests.cs" />
     <Compile Include="CommonUI\CommonWizardPropertiesTests.cs" />
     <Compile Include="CommonUI\GroupedAccountComparerTests.cs" />
