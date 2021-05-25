@@ -73,6 +73,8 @@ namespace Amazon.AWSToolkit.CommonUI
 
         public virtual string MetricId => this.GetType().FullName;
 
+        public virtual bool IsUniquePerAccountAndRegion => true;
+
         public virtual bool Validated()
         {
             return true;

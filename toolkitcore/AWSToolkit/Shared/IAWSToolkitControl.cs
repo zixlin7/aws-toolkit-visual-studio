@@ -9,6 +9,13 @@ namespace Amazon.AWSToolkit.Shared
         string UniqueId { get; }
         string MetricId { get; }
 
+        /// <summary>
+        /// Whether or not this control can be shown on
+        /// a per UniqueId-account-region basis (true) or
+        /// only per UniqueId (false)
+        /// </summary>
+        bool IsUniquePerAccountAndRegion { get; }
+
         UserControl UserControl { get; }
 
         bool SupportsBackGroundDataLoad { get; }
