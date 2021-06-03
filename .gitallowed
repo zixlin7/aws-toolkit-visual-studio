@@ -1,2 +1,8 @@
-﻿x:*.+
-account:*+
+﻿
+# Typical XAML Files with x:Key="foo" syntax
+.*\.xaml\:[0-9]*\:.*x\:Key=\"
+
+# A bunch of json files with sample data
+\"accountId\"\: \"123456789012\"
+\"accountId\"\: \"012345678912\"
+\"account\"\: \"123456789012\"
