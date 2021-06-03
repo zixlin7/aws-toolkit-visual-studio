@@ -55,7 +55,7 @@
     <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-	 <PackageReference Include="EnvDTE">
+    <PackageReference Include="EnvDTE">
       <Version>8.0.2</Version>
     </PackageReference>
     <Reference Include="Microsoft.VisualStudio.TemplateWizardInterface, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -73,7 +73,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Account.cs" />
     <Compile Include="Persistence\HashSet.cs" />
     <Compile Include="Persistence\PersistenceManager.cs" />
     <Compile Include="Persistence\SettingsCollection.cs" />
