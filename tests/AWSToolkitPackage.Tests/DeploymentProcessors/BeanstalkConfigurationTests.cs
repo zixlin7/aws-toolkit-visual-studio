@@ -12,11 +12,53 @@ using Xunit;
 
 namespace AWSToolkitPackage.Tests.DeploymentProcessors
 {
-    public class BeanstalkDeploymentProcessorTests
+    public class BeanstalkConfigurationTests
     {
 
         [Fact]
-        public void ShouldGetBeanstalkConfigurationFromTaskInfo()
+        public void ShouldCreateNewConfiguration()
+        {
+            // arrange.
+            string emptyFilePath = "";
+
+            var expectedConfiguration = new Dictionary<string, object>
+            {
+                { "comment", "This file is used to help set default values when using the dotnet CLI extension Amazon.ElasticBeanstalk.Tools. For more information run \"dotnet eb --help\" from the project root."}
+            };
+
+            // act.
+            var configuration = BeanstalkConfiguration.CreateOrGetFrom(emptyFilePath);
+
+            // assert.
+            AssertConfigurationsAreEqual(expectedConfiguration, configuration);
+        }
+
+        private void AssertConfigurationsAreEqual(Dictionary<string, object> expectedConfiguration, BeanstalkConfiguration configuration)
+        {
+            Assert.Equal(expectedConfiguration, ConvertToDictionary(configuration.ToJson()));
+        }
+
+        [Fact]
+        public void ShouldLoadExistingConfiguration()
+        {
+            // arrange.
+            string filePath = "../../DeploymentProcessors/simple-beanstalk-configuration.json";
+
+            var expectedConfiguration = new Dictionary<string, object>
+            {
+                ["application"] = "SampleASPApp",
+                ["environment"] = "SampleASPApp-dev"
+            };
+
+            // act.
+            var configuration = BeanstalkConfiguration.CreateOrGetFrom(filePath);
+
+            // assert.
+            AssertConfigurationsAreEqual(expectedConfiguration, configuration);
+        }
+
+        [Fact]
+        public void ShouldUpdateConfiguration()
         {
             // arrange.
             var deploymentTaskInfo = CreateDeploymentTaskInfoWith(CreateSampleOptions());
@@ -24,11 +66,11 @@ namespace AWSToolkitPackage.Tests.DeploymentProcessors
             Dictionary<string, object> expectedConfiguration = GetExpectedConfiguration();
 
             // act.
-            BeanstalkDeploymentProcessor processor = new BeanstalkDeploymentProcessor();
-            string configurationJson = processor.GetBeanstalkConfigurationFromTaskInfo(deploymentTaskInfo);
+            BeanstalkConfiguration configuration = BeanstalkConfiguration.CreateDefault();
+            configuration.UpdateConfigurationWith(deploymentTaskInfo);
 
             // assert.
-            Assert.Equal(expectedConfiguration, ConvertToDictionary(configurationJson));
+            AssertConfigurationsAreEqual(expectedConfiguration, configuration);
         }
 
         private Dictionary<string, object> CreateSampleOptions()
@@ -59,7 +101,7 @@ namespace AWSToolkitPackage.Tests.DeploymentProcessors
 
         private ToolkitRegion CreateUsWestToolkitRegion()
         {
-            return new ToolkitRegion() {PartitionId = "aws", Id = "us-west-2", DisplayName = "us west two"};
+            return new ToolkitRegion() { PartitionId = "aws", Id = "us-west-2", DisplayName = "us west two" };
         }
 
         private DeploymentTaskInfo CreateDeploymentTaskInfoWith(Dictionary<string, object> options)
@@ -79,7 +121,7 @@ namespace AWSToolkitPackage.Tests.DeploymentProcessors
         }
 
         [Fact]
-        public void ShouldGetBeanstalkConfigurationFromTaskInfoWithoutXRay()
+        public void ShouldUpdateConfigurationWithoutXRay()
         {
             // arrange.
             var options = CreateSampleOptions();
@@ -91,15 +133,15 @@ namespace AWSToolkitPackage.Tests.DeploymentProcessors
             expectedConfiguration["enable-xray"] = false;
 
             // act.
-            BeanstalkDeploymentProcessor processor = new BeanstalkDeploymentProcessor();
-            string configurationJson = processor.GetBeanstalkConfigurationFromTaskInfo(deploymentTaskInfo);
+            BeanstalkConfiguration configuration = BeanstalkConfiguration.CreateDefault();
+            configuration.UpdateConfigurationWith(deploymentTaskInfo);
 
             // assert.
-            Assert.Equal(expectedConfiguration, ConvertToDictionary(configurationJson));
+            AssertConfigurationsAreEqual(expectedConfiguration, configuration);
         }
 
         [Fact]
-        public void ShouldGetBeanstalkConfigurationFromTaskInfoWithComplicatedAppPath()
+        public void ShouldUpdateConfigurationWithComplicatedAppPath()
         {
             // arrange.
             var options = CreateSampleOptions();
@@ -112,11 +154,11 @@ namespace AWSToolkitPackage.Tests.DeploymentProcessors
             expectedConfiguration["app-path"] = "/my-app-path";
 
             // act.
-            BeanstalkDeploymentProcessor processor = new BeanstalkDeploymentProcessor();
-            string configurationJson = processor.GetBeanstalkConfigurationFromTaskInfo(deploymentTaskInfo);
+            BeanstalkConfiguration configuration = BeanstalkConfiguration.CreateDefault();
+            configuration.UpdateConfigurationWith(deploymentTaskInfo);
 
             // assert.
-            Assert.Equal(expectedConfiguration, ConvertToDictionary(configurationJson));
+            AssertConfigurationsAreEqual(expectedConfiguration, configuration);
         }
     }
 }

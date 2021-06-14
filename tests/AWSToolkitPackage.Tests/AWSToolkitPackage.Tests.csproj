@@ -44,7 +44,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeploymentProcessors\BeanstalkDeploymentProcessorTests.cs" />
+    <Compile Include="DeploymentProcessors\BeanstalkConfigurationTests.cs" />
     <Compile Include="FirstRun\FirstRunControllerTests.cs" />
     <Compile Include="Images\VsImageProviderTests.cs" />
     <Compile Include="Lambda\ProjectCreatorUtilitiesTests.cs" />
@@ -123,7 +123,10 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="DeploymentProcessors\expected-aws-beanstalk-configuration.json" />
+    <None Include="DeploymentProcessors\simple-beanstalk-configuration.json" />
+  </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
