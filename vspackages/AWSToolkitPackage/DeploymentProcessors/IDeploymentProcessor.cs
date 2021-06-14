@@ -9,7 +9,7 @@ namespace Amazon.AWSToolkit.VisualStudio.DeploymentProcessors
     /// Takes the output from a build processor and submits it
     /// to the Beanstalk engine
     /// </summary>
-    internal interface IDeploymentProcessor
+    public interface IDeploymentProcessor
     {
         /// <summary>
         /// Takes the built deployment archive and submits it to Beanstalk
@@ -29,7 +29,7 @@ namespace Amazon.AWSToolkit.VisualStudio.DeploymentProcessors
         bool Result { get; }
     }
 
-    internal class DeploymentTaskInfo
+    public class DeploymentTaskInfo
     {
         public DeploymentTaskInfo(BuildAndDeploymentControllerBase.ServiceProviderDelegate hostServiceProvider,
                                   object servicePlugin,

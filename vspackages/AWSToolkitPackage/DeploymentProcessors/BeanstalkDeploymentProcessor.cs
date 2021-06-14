@@ -13,7 +13,7 @@ namespace Amazon.AWSToolkit.VisualStudio.DeploymentProcessors
     /// 'Standard' deployment processor, routing the deployment package
     /// through S3 and onwards to Beanstalk.
     /// </summary>
-    internal class BeanstalkDeploymentProcessor : IDeploymentProcessor
+    public class BeanstalkDeploymentProcessor : IDeploymentProcessor
     {
         bool _deploymentResult;
 
@@ -56,9 +56,23 @@ namespace Amazon.AWSToolkit.VisualStudio.DeploymentProcessors
 
         private void ConfigureBeanstalkTools(DeploymentTaskInfo taskInfo)
         {
+            string defaultsFilePath = Path.Combine(taskInfo.ProjectInfo.VsProjectLocation, "aws-beanstalk-tools-defaults.json");
+            var json = GetBeanstalkConfiguration(taskInfo, defaultsFilePath);
+            File.WriteAllText(defaultsFilePath, json);
+            Utility.AddDotnetCliToolReference(taskInfo.ProjectInfo.VsProjectLocationAndName, "Amazon.ElasticBeanstalk.Tools");
+        }
+
+        private string GetBeanstalkConfiguration(DeploymentTaskInfo taskInfo, string defaultsFilePath)
+        {
+            var data = GetDefaultBeanstalkConfiguration(taskInfo, defaultsFilePath);
+            return GetBeanstalkConfigurationFromTaskInfo(taskInfo, data);
+        }
+
+        private JsonData GetDefaultBeanstalkConfiguration(DeploymentTaskInfo taskInfo, string defaultsFilePath)
+        {
             JsonData data;
-            var defaultsFilePath = Path.Combine(taskInfo.ProjectInfo.VsProjectLocation, "aws-beanstalk-tools-defaults.json");
-            if(File.Exists(defaultsFilePath))
+            
+            if (File.Exists(defaultsFilePath))
             {
                 data = JsonMapper.ToObject(File.ReadAllText(defaultsFilePath));
             }
@@ -68,10 +82,20 @@ namespace Amazon.AWSToolkit.VisualStudio.DeploymentProcessors
                 data["comment"] = "This file is used to help set default values when using the dotnet CLI extension Amazon.ElasticBeanstalk.Tools. For more information run \"dotnet eb --help\" from the project root.";
             }
 
+            return data;
+        }
+
+        public string GetBeanstalkConfigurationFromTaskInfo(DeploymentTaskInfo taskInfo)
+        {
+            return GetBeanstalkConfigurationFromTaskInfo(taskInfo, new JsonData());
+        }
+
+        private string GetBeanstalkConfigurationFromTaskInfo(DeploymentTaskInfo taskInfo, JsonData data)
+        {
             data["profile"] = CommonWizardProperties.AccountSelection.GetSelectedAccount(taskInfo.Options)?.Identifier?.ProfileName;
             data["region"] = CommonWizardProperties.AccountSelection.GetSelectedRegion(taskInfo.Options).Id;
-            
-            Action<string, string> copyValue = (jsonKey, wizardOption) => 
+
+            Action<string, string> copyValue = (jsonKey, wizardOption) =>
             {
                 if (taskInfo.Options.ContainsKey(wizardOption))
                     data[jsonKey] = taskInfo.Options[wizardOption] as string;
@@ -88,12 +112,12 @@ namespace Amazon.AWSToolkit.VisualStudio.DeploymentProcessors
             copyValue("instance-type", DeploymentWizardProperties.AWSOptions.propkey_InstanceTypeID);
             copyValue("key-pair", DeploymentWizardProperties.AWSOptions.propkey_KeyPairName);
 
-            if(taskInfo.Options.ContainsKey(DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath))
+            if (taskInfo.Options.ContainsKey(DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath))
             {
                 var fullIisAppPath = taskInfo.Options[DeploymentWizardProperties.AppOptions.propkey_DeployIisAppPath] as string;
 
                 int pos = fullIisAppPath.IndexOf('/');
-                if(pos == -1)
+                if (pos == -1)
                 {
                     data["app-path"] = "/" + fullIisAppPath;
                 }
@@ -104,22 +128,23 @@ namespace Amazon.AWSToolkit.VisualStudio.DeploymentProcessors
                 }
             }
 
-            if(taskInfo.Options.ContainsKey(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon) && taskInfo.Options[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon] is bool)
+            if (taskInfo.Options.ContainsKey(BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon) &&
+                taskInfo.Options[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon] is bool)
             {
-                data["enable-xray"] = (bool)taskInfo.Options[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon];
+                data["enable-xray"] = (bool) taskInfo.Options[BeanstalkDeploymentWizardProperties.ApplicationProperties.propkey_EnableXRayDaemon];
             }
 
+            return ConvertJSONToString(data);
+        }
+
+        private string ConvertJSONToString(JsonData data)
+        {
             StringBuilder sb = new StringBuilder();
             JsonWriter writer = new JsonWriter(sb);
             writer.PrettyPrint = true;
             JsonMapper.ToJson(data, writer);
 
-            var json = sb.ToString();
-            File.WriteAllText(defaultsFilePath, json);
-
-
-            Utility.AddDotnetCliToolReference(taskInfo.ProjectInfo.VsProjectLocationAndName, "Amazon.ElasticBeanstalk.Tools");
-
+            return sb.ToString();
         }
     }
 }
