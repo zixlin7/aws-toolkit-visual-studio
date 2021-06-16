@@ -1,20 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.ElasticBeanstalk;
 
-using TemplateWizard.ThirdParty.Json.LitJson;
+using Newtonsoft.Json;
 
 namespace Amazon.AWSToolkit.VisualStudio.DeploymentProcessors
 {
     public class BeanstalkConfiguration
     {
-        private readonly JsonData _configuration;
+        private readonly IDictionary<string, object> _configuration;
 
-        private BeanstalkConfiguration(JsonData configuration)
+        private BeanstalkConfiguration(IDictionary<string, object> configuration)
         {
             this._configuration = configuration;
         }
@@ -26,13 +26,14 @@ namespace Amazon.AWSToolkit.VisualStudio.DeploymentProcessors
 
         private static BeanstalkConfiguration LoadConfigurationFromFile(string filePath)
         {
-            var configuration = JsonMapper.ToObject(File.ReadAllText(filePath));
+            var json = File.ReadAllText(filePath);
+            var configuration = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
             return new BeanstalkConfiguration(configuration);
         }
 
         public static BeanstalkConfiguration CreateDefault()
         {
-            var configuration = new JsonData();
+            var configuration = new Dictionary<string, object>();
             configuration["comment"] = "This file is used to help set default values when using the dotnet CLI extension Amazon.ElasticBeanstalk.Tools. For more information run \"dotnet eb --help\" from the project root.";
             return new BeanstalkConfiguration(configuration);
         }
@@ -84,12 +85,7 @@ namespace Amazon.AWSToolkit.VisualStudio.DeploymentProcessors
 
         public string ToJson()
         {
-            StringBuilder sb = new StringBuilder();
-            JsonWriter writer = new JsonWriter(sb);
-            writer.PrettyPrint = true;
-            JsonMapper.ToJson(_configuration, writer);
-
-            return sb.ToString();
+            return JsonConvert.SerializeObject(_configuration, Formatting.Indented);
         }
     }
 }

@@ -1,4 +1,4 @@
 ﻿{
-    "application": "SampleASPApp",
-    "environment": "SampleASPApp-dev"
+  "application": "SampleASPApp",
+  "environment": "SampleASPApp-dev"
 }

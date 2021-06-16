@@ -33,17 +33,17 @@ namespace AWSToolkitPackage.Tests.DeploymentProcessors
             AssertConfigurationsAreEqual(expectedConfiguration, configuration);
         }
 
-        private void AssertConfigurationsAreEqual(Dictionary<string, object> expectedConfiguration, BeanstalkConfiguration configuration)
+        private void AssertConfigurationsAreEqual(IDictionary<string, object> expectedConfiguration, BeanstalkConfiguration configuration)
         {
             Assert.Equal(expectedConfiguration, ConvertToDictionary(configuration.ToJson()));
         }
+
+        private readonly string simpleConfigurationFilePath = "../../DeploymentProcessors/simple-beanstalk-configuration.json";
 
         [Fact]
         public void ShouldLoadExistingConfiguration()
         {
             // arrange.
-            string filePath = "../../DeploymentProcessors/simple-beanstalk-configuration.json";
-
             var expectedConfiguration = new Dictionary<string, object>
             {
                 ["application"] = "SampleASPApp",
@@ -51,10 +51,23 @@ namespace AWSToolkitPackage.Tests.DeploymentProcessors
             };
 
             // act.
-            var configuration = BeanstalkConfiguration.CreateOrGetFrom(filePath);
+            var configuration = BeanstalkConfiguration.CreateOrGetFrom(simpleConfigurationFilePath);
 
             // assert.
             AssertConfigurationsAreEqual(expectedConfiguration, configuration);
+        }
+
+        [Fact]
+        public void ShouldPrettyPrintExistingConfiguration()
+        {
+            // arrange.
+            var expectedString = "{\r\n  \"application\": \"SampleASPApp\",\r\n  \"environment\": \"SampleASPApp-dev\"\r\n}";
+
+            // act.
+            var configuration = BeanstalkConfiguration.CreateOrGetFrom(simpleConfigurationFilePath);
+
+            // assert.
+            Assert.Equal(expectedString, configuration.ToJson());
         }
 
         [Fact]
@@ -63,7 +76,7 @@ namespace AWSToolkitPackage.Tests.DeploymentProcessors
             // arrange.
             var deploymentTaskInfo = CreateDeploymentTaskInfoWith(CreateSampleOptions());
 
-            Dictionary<string, object> expectedConfiguration = GetExpectedConfiguration();
+            IDictionary<string, object> expectedConfiguration = GetExpectedConfiguration();
 
             // act.
             BeanstalkConfiguration configuration = BeanstalkConfiguration.CreateDefault();
@@ -73,7 +86,7 @@ namespace AWSToolkitPackage.Tests.DeploymentProcessors
             AssertConfigurationsAreEqual(expectedConfiguration, configuration);
         }
 
-        private Dictionary<string, object> CreateSampleOptions()
+        private IDictionary<string, object> CreateSampleOptions()
         {
             return new Dictionary<string, object>
             {
@@ -104,18 +117,18 @@ namespace AWSToolkitPackage.Tests.DeploymentProcessors
             return new ToolkitRegion() { PartitionId = "aws", Id = "us-west-2", DisplayName = "us west two" };
         }
 
-        private DeploymentTaskInfo CreateDeploymentTaskInfoWith(Dictionary<string, object> options)
+        private DeploymentTaskInfo CreateDeploymentTaskInfoWith(IDictionary<string, object> options)
         {
             return new DeploymentTaskInfo(null, null, null, null, options, null, null);
         }
 
-        private Dictionary<string, object> GetExpectedConfiguration()
+        private IDictionary<string, object> GetExpectedConfiguration()
         {
             string configurationJson = File.ReadAllText("../../DeploymentProcessors/expected-aws-beanstalk-configuration.json");
             return ConvertToDictionary(configurationJson);
         }
 
-        private Dictionary<string, object> ConvertToDictionary(string json)
+        private IDictionary<string, object> ConvertToDictionary(string json)
         {
             return JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
         }
@@ -129,7 +142,7 @@ namespace AWSToolkitPackage.Tests.DeploymentProcessors
 
             var deploymentTaskInfo = CreateDeploymentTaskInfoWith(options);
 
-            Dictionary<string, object> expectedConfiguration = GetExpectedConfiguration();
+            IDictionary<string, object> expectedConfiguration = GetExpectedConfiguration();
             expectedConfiguration["enable-xray"] = false;
 
             // act.
@@ -149,7 +162,7 @@ namespace AWSToolkitPackage.Tests.DeploymentProcessors
 
             var deploymentTaskInfo = CreateDeploymentTaskInfoWith(options);
 
-            Dictionary<string, object> expectedConfiguration = GetExpectedConfiguration();
+            IDictionary<string, object> expectedConfiguration = GetExpectedConfiguration();
             expectedConfiguration["iis-website"] = "dist";
             expectedConfiguration["app-path"] = "/my-app-path";
 

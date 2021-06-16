@@ -61,6 +61,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>$(BuildRoot)\thirdparty\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="YamlDotNet">
       <HintPath>$(BuildRoot)\thirdparty\YamlDotNet.dll</HintPath>
     </Reference>
