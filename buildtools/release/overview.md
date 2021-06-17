@@ -12,9 +12,9 @@ The AWS Toolkit provides Visual Studio project templates that you can use as sta
 
 * Using the Amazon EC2 Instance view you can quickly create new Windows instances and Remote Desktop into them simply by right clicking the instance and selecting "Open Remote Desktop".
 
-* You can browse the files stored in your S3 bucket and upload and download files.  You can create pre-signed URLs to objects to pass around and change the permissions of files. If the bucket is used with Amazon CloudFront you can perform invalidation requests from within the bucket browser.
+* You can browse the files stored in your S3 bucket and upload and download files. You can create pre-signed URLs to objects to pass around and change the permissions of files. If the bucket is used with Amazon CloudFront you can perform invalidation requests from within the bucket browser.
 
-* AWS IAM users and groups can be created and users can be assigned to groups.  Access keys can be generated for IAM users and access policies can created using the access policy editor for both users and groups.
+* AWS IAM users and groups can be created and users can be assigned to groups. Access keys can be generated for IAM users and access policies can created using the access policy editor for both users and groups.
 
 * Through the AWS Explorer, you can view, create, and delete Amazon DynamoDB tables. You can also add new items to tables, add new attributes to items, and edit attribute values. The AWS Toolkit also enables you to search your tables using Scan operations.
 

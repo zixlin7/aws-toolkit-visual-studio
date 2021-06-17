@@ -9,5 +9,6 @@
         "internalName": "AWSToolkitforVisualStudio2017"
     },
     "overview": "overview.md",
-    "publisher": "AmazonWebServices"
+    "publisher": "AmazonWebServices",
+    "repo": "https://github.com/aws/aws-toolkit-visual-studio"
 }
