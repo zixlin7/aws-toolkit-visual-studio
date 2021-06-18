@@ -468,7 +468,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
           
             var candidateRegionIds = new List<string>
             {
-                ToolkitSettings.Instance.LastSelectedRegion
+                GetLastSelectedRegion()
             };
 
             if (identifier != null)
@@ -487,6 +487,11 @@ namespace Amazon.AWSToolkit.Credentials.Core
             }
 
             return null;
+        }
+
+        protected virtual string GetLastSelectedRegion()
+        {
+            return ToolkitSettings.Instance.LastSelectedRegion;
         }
 
         private void RaiseConnectionStateChanged(ConnectionStateChangeArgs args)
