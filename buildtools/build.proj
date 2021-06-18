@@ -346,6 +346,16 @@
         <Exec Command="powershell.exe $(MSBuildThisFileDirectory)updateEndpoints.ps1 -configuration $(Configuration) -s3BucketName $(HostedFilesBucket) -s3BucketRegion $(HostedFilesBucketRegion) -hostedfilesFolder $(HostedFilesFolder)" />
     </Target>
     
+    <!-- Output the current VSIX file's contents to a text file -->
+    <Target Name="list-vsix-contents">
+        <PropertyGroup>
+            <VsixFileName>$(Deployment)\$(VisualStudioVersion)\$(Configuration)\AWSToolkitPackage.vsix</VsixFileName>
+            <OutputFileName>$(Deployment)\$(VisualStudioVersion)\$(Configuration)\_vsixContents.txt</OutputFileName>
+        </PropertyGroup>
+        <Message Text="Listing VSIX Contents..." />
+        <Exec Command="powershell.exe $(MSBuildThisFileDirectory)listZipContents.ps1 -vsixFileName $(VsixFileName) -outputFileName $(OutputFileName)" />
+    </Target>
+    
 	<Target Name="compare-hostedfiles-all" DependsOnTargets="compare-hostedfiles;compare-hostedfiles-bjs" />
 
 	<Target Name="compare-hostedfiles" DependsOnTargets="build-tools">
