@@ -88,12 +88,14 @@
     <Compile Include="ResourceFetchers\IResourceFetcher.cs" />
     <Compile Include="ResourceFetchers\RelativeFileResourceFetcher.cs" />
     <Compile Include="ResourceFetchers\RelativeHttpResourceFetcher.cs" />
+    <Compile Include="Settings\AppDataToolkitSettingsRepository.cs" />
     <Compile Include="Settings\DynamoDbSettings.cs" />
     <Compile Include="Settings\IToolkitSettingsWatcher.cs" />
     <Compile Include="Settings\MobileAnalyticsSettings.cs" />
     <Compile Include="Settings\SettingsPersistenceBase.cs" />
     <Compile Include="Settings\SettingsPersistence.cs" />
     <Compile Include="Settings\ToolkitSettings.cs" />
+    <Compile Include="Settings\IToolkitSettingsRepository.cs" />
     <Compile Include="Settings\ToolkitSettingsWatcher.cs" />
     <Compile Include="Tasks\TaskExtensionMethods.cs" />
     <Compile Include="Telemetry\ClientId.cs" />

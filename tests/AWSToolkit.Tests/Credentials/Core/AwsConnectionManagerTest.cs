@@ -57,20 +57,7 @@ namespace AWSToolkit.Tests.Credentials.Core
 
         private readonly List<ConnectionState> _stateList;
         private readonly AwsConnectionManager.GetStsClient _fnStsClient;
-        private AwsConnectionManager _awsConnectionManager;
-
-        public class TestableAwsConnectionManager : AwsConnectionManager
-        {
-            public TestableAwsConnectionManager(GetStsClient fnStsClient, ICredentialManager credentialManager, ITelemetryLogger telemetryLogger, IRegionProvider regionProvider) : base(fnStsClient, credentialManager, telemetryLogger, regionProvider)
-            {
-
-            }
-
-            protected override string GetLastSelectedRegion()
-            {
-                return null;
-            }
-        }
+        private readonly AwsConnectionManager _awsConnectionManager;
 
         public AwsConnectionManagerTest()
         {
@@ -118,7 +105,7 @@ namespace AWSToolkit.Tests.Credentials.Core
 
         private AwsConnectionManager CreateAwsConnectionManager()
         {
-            return new TestableAwsConnectionManager(_fnStsClient, _credentialManager.Object, _telemetryLogger.Object, _regionProvider.Object);
+            return new AwsConnectionManager(_fnStsClient, _credentialManager.Object, _telemetryLogger.Object, _regionProvider.Object, new NoopToolkitSettingsRepository());
         }
 
         [Fact]

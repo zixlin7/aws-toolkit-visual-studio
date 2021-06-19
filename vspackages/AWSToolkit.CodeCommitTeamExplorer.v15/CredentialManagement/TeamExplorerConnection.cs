@@ -15,6 +15,7 @@ using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Util;
 using Amazon.Runtime.Internal.Settings;
 using log4net;
@@ -441,7 +442,8 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CredentialManagement
                         AwsConnectionManager.DefaultStsClientCreator,
                         _toolkitContext.CredentialManager,
                         _toolkitContext.TelemetryLogger,
-                        _toolkitContext.RegionProvider
+                        _toolkitContext.RegionProvider,
+                        new AppDataToolkitSettingsRepository()
                     );
 
                     _fallbackRegion = _toolkitContext.RegionProvider.GetRegion(RegionEndpoint.USEast1.DisplayName);

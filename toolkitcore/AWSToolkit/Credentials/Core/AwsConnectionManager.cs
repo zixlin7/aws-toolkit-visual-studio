@@ -44,6 +44,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
         private ICredentialIdentifier _activeCredentialIdentifier;
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private ConnectionState _connectionState;
+        private readonly IToolkitSettingsRepository _toolkitSettingsRepository;
 
         public string ActiveAccountId { get; private set; }
         public ICredentialManager CredentialManager { get; }
@@ -101,16 +102,19 @@ namespace Amazon.AWSToolkit.Credentials.Core
         /// <param name="credentialManager">Credential retrieval</param>
         /// <param name="regionProvider">Region resolution</param>
         /// <param name="telemetryLogger">Metrics logging</param>
+        /// <param name="toolkitSettingsRepository">Repository for getting ToolkitSettings</param>
         public AwsConnectionManager(GetStsClient fnStsClient,
-            ICredentialManager credentialManager, 
+            ICredentialManager credentialManager,
             ITelemetryLogger telemetryLogger,
-            IRegionProvider regionProvider)
+            IRegionProvider regionProvider,
+            IToolkitSettingsRepository toolkitSettingsRepository)
         {
             _telemetryLogger = telemetryLogger;
             _connectionChangedDispatcher = new DebounceDispatcher();
             _getStsClient = fnStsClient;
             CredentialManager = credentialManager;
             _regionProvider = regionProvider;
+            _toolkitSettingsRepository = toolkitSettingsRepository;
         }
 
         /// <summary>
@@ -426,7 +430,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             }
 
             //look for previously selected credential id first
-            var lastSelectedCredentialId =  ToolkitSettings.Instance.LastSelectedCredentialId;
+            var lastSelectedCredentialId =  _toolkitSettingsRepository.GetLastSelectedCredentialId();
             if (!string.IsNullOrWhiteSpace(lastSelectedCredentialId))
             {
                 var identifier = CredentialManager.GetCredentialIdentifierById(lastSelectedCredentialId);
@@ -468,7 +472,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
           
             var candidateRegionIds = new List<string>
             {
-                GetLastSelectedRegion()
+                _toolkitSettingsRepository.GetLastSelectedRegion()
             };
 
             if (identifier != null)
@@ -487,11 +491,6 @@ namespace Amazon.AWSToolkit.Credentials.Core
             }
 
             return null;
-        }
-
-        protected virtual string GetLastSelectedRegion()
-        {
-            return ToolkitSettings.Instance.LastSelectedRegion;
         }
 
         private void RaiseConnectionStateChanged(ConnectionStateChangeArgs args)
