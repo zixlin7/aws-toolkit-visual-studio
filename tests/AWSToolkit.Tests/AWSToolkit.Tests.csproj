@@ -107,6 +107,7 @@
     <Compile Include="ElasticBeanstalk\BeanstalkDeploymentEngineTests.cs" />
     <Compile Include="ElasticBeanstalk\SolutionStackUtilsTests.cs" />
     <Compile Include="ElasticBeanstalk\WizardToEbToolsCommandTests.cs" />
+    <Compile Include="IntegrationTest.cs" />
     <Compile Include="Lambda\AddEventSourceControllerTests.cs" />
     <Compile Include="Lambda\LambdaTesterInstallerTests.cs" />
     <Compile Include="Lambda\LambdaModel.cs" />
