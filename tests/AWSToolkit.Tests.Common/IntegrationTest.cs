@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AWSToolkit.Tests
+namespace Amazon.AWSToolkit.Tests.Common
 {
     public class IntegrationTest : Attribute
     {

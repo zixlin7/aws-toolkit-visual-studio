@@ -48,6 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Context\ToolkitContextFixture.cs" />
+    <Compile Include="IntegrationTest.cs" />
     <Compile Include="IO\PlaceholderFile.cs" />
     <Compile Include="IO\ReflectionHelpers.cs" />
     <Compile Include="IO\TemporaryTestLocation.cs" />
