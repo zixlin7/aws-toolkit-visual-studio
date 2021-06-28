@@ -67,6 +67,11 @@
         <CallTarget Targets="run-tests"/>
 	</Target>
 
+    <!-- test-integ - runs the integration tests; does not compile first -->
+    <Target Name="test-integ">
+        <CallTarget Targets="run-integration-tests"/>
+    </Target>
+
     <!-- AWS VISUAL STUDIO TOOLKIT UTILITY TARGETS -->
 
     <Target Name="update-awssdk" DependsOnTargets="build-tools">
@@ -125,6 +130,19 @@
 
         <MakeDir Directories="$(TestResults)" />
         <xunit Assemblies="@(TestAssemblies)" Html="$(TestResults)\toolkit-test-results.html" Xml="$(TestResults)\toolkit-test-results.xml" Reporter="verbose" />
+    </Target>
+
+    <!-- Run integration tests with the current compiled code -->
+    <Target Name="run-integration-tests" DependsOnTargets="restore-test-runner">
+        <Message Text="$(Configuration) - running integration tests."/>
+
+        <ItemGroup>
+            <!-- Add projects to be tested with xunit here -->
+            <TestAssemblies Include="..\tests\Integration\AwsToolkit.Tests.Integration\bin\$(Configuration)\AwsToolkit.Tests.Integration.dll" />
+        </ItemGroup>        
+
+        <MakeDir Directories="$(TestResults)" />
+        <xunit Assemblies="@(TestAssemblies)" Html="$(TestResults)\toolkit-test-integ-results.html" Xml="$(TestResults)\toolkit-test-integ-results.xml" Reporter="verbose" />
     </Target>
 
     <!-- ======================================== END Test Related ======================================== -->

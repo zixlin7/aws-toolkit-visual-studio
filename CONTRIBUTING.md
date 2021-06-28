@@ -14,35 +14,32 @@ You might be interested in reading about the Toolkit's [architecture](./designs/
 
 Before you start, you will need the following:
 
--   Visual Studio 2017 or 2019
-    -   The following workloads need to be installed:
-        -   .NET desktop development
-        -   ASP.NET and web development
-        -   Visual Studio extension development
-    -   IDE Configuration adjustments:
-        -   Adhere to the repo's formatting conventions: **Tools** > **Options** > **Text Editor** > **General** > Check **Follow project coding conventions** ([Reference](https://docs.microsoft.com/en-us/visualstudio/ide/create-portable-custom-editor-options?view=vs-2017#troubleshoot-editorconfig-settings))
+- Visual Studio 2017 or 2019
+  - The following workloads need to be installed:
+    - .NET desktop development
+    - ASP.NET and web development
+    - Visual Studio extension development
+  - IDE Configuration adjustments:
+    - Adhere to the repo's formatting conventions: **Tools** > **Options** > **Text Editor** > **General** > Check **Follow project coding conventions** ([Reference](https://docs.microsoft.com/en-us/visualstudio/ide/create-portable-custom-editor-options?view=vs-2017#troubleshoot-editorconfig-settings))
 
 ### Build
 
--   Open a Developer Command Prompt for VS 2017 or 2019
--   change directories to the repo root
--   Typical command: `msbuild buildtools\build.proj /t:restore;compile;test`
--   More comprehensive rebuild: `msbuild buildtools\build.proj /t:build-tools;clean;build-vstoolkit`
+- Open a Developer Command Prompt for VS 2017 or 2019
+- change directories to the repo root
+- Typical command: `msbuild buildtools\build.proj /t:restore;compile;test`
+- More comprehensive rebuild: `msbuild buildtools\build.proj /t:build-tools;clean;build-vstoolkit`
+- Other handy build targets:
+  - `test`: Runs the main suite of unit/component tests using the currently compiled code
+  - `test-integ`: Runs the suite of integration tests using the currently compiled code
 
 ### Debug
 
 #### Visual Studio
 
--   Open `/solutions/AWSVisualStudioToolkit.sln` in VS 2017 or 2019
--   Locate the project **AWSToolkitPackage**
-    -   Right click -> Set as StartUp Project
-    -   Right click and open the project Properties
-        -   Click on the **Debug** tab
-        -   Click on **Start external program** and point this at the Visual Studio application (`devenv.exe`) that you'd like to launch the Toolkit with
-            -   example: `<program files>\Microsoft Visual Studio\2017\Professional\Common7\IDE\devenv.exe`
-        -   Set the **Command line arguments** to `/rootsuffix Exp`
--   Save and close the project properties
--   You can now debug the toolkit
+- Open `/solutions/AWSVisualStudioToolkit.sln` in VS 2017 or 2019
+- Locate the project **AWSToolkitPackage**
+  - Right click -> Set as StartUp Project
+- You can now debug the toolkit
 
 ### Writing Tests
 
@@ -62,28 +59,30 @@ To locally test hosted files changes, copy the hostedfiles folder to a temporary
 
 ### Known Issues
 
--   After compiling within VS 2017 or 2019, the Output tab will report `Build: 62 succeeded, 0 failed, 0 up-to-date, 0 skipped` but the Error List tab will show four errors with the text "AWSToolkit.CodeCommitTeamExplorer.v16 is not compatible with net46".
-    -   You can still run and debug the Toolkit
-    -   This is caused by the CodeCommit integration, which leverages TeamExplorer. Each version of Visual Studio uses a specific version of TeamExplorer, and the version for VS 2019 (TeamExplorer 16) targets .NET 4.7.2. The project responsible for producing the Toolkit VSIX targets .NET 4.6 (required for VS 2017), which results in this error.
--   In VS 2019, you might get an error around `IAsyncQuickInfoBroker` or `Microsoft.VisualStudio.Language`. The above issue may prevent VS from fully downloading NuGet packages. If this happens, open a VS 2019 Developer Command Prompt and run `msbuild buildtools\build.proj /t:restore` to download the NuGet packages.
+- After compiling within VS 2017 or 2019, the Output tab will report `Build: 62 succeeded, 0 failed, 0 up-to-date, 0 skipped` but the Error List tab will show four errors with the text "AWSToolkit.CodeCommitTeamExplorer.v16 is not compatible with net46".
+  - You can still run and debug the Toolkit
+  - This is caused by the CodeCommit integration, which leverages TeamExplorer. Each version of Visual Studio uses a specific version of TeamExplorer, and the version for VS 2019 (TeamExplorer 16) targets .NET 4.7.2. The project responsible for producing the Toolkit VSIX targets .NET 4.6 (required for VS 2017), which results in this error.
+- In VS 2019, you might get an error around `IAsyncQuickInfoBroker` or `Microsoft.VisualStudio.Language`. The above issue may prevent VS from fully downloading NuGet packages. If this happens, open a VS 2019 Developer Command Prompt and run `msbuild buildtools\build.proj /t:restore` to download the NuGet packages.
 
 ## Hosted Files
 
 "Hosted Files" refers to a bunch of different files that are hosted on S3, and that the Toolkit retrieves at runtime from S3 and/or CloudFront endpoints. This allows the Toolkit to retrieve updated manifests and content without releasing a new Toolkit version. These files are sourced from [the hostedfiles folder](hostedfiles).
 
 It is critical that we are mindful that past and present versions of the Toolkit are in use and accessing these files. We do not want to cause crashes or otherwise impact the stability of those Toolkits.
-* Backwards compatibility must be considered when changing existing files
-* Once published, files likely cannot be deleted, unless we know that all versions of the code that is/was accessing it will successfully handle its absence.
-* When adding new files, consider the long term impacts of maintaining these files (as listed above).
+
+- Backwards compatibility must be considered when changing existing files
+- Once published, files likely cannot be deleted, unless we know that all versions of the code that is/was accessing it will successfully handle its absence.
+- When adding new files, consider the long term impacts of maintaining these files (as listed above).
 
 ### Deprecated Hosted Files
 
 The following files are no longer referenced by the Toolkit, but were used in previous Toolkit releases. Care must be taken to not remove the following files from the repo:
-* AccountTypes.xml
-  * The changes to support MFA and SSO credentials in 2021 eliminated the use of this file. The Toolkit now uses Partition/Region details from the Credentials profile, previously users had to indicate if their account was based in the China or GovCloud partitions.
-* ServiceEndPoints.xml
-  * This file is published into the hosting location through internal pipelines. It is being listed here for completeness, but this file should not exist in the repo.
-  * The changes to support MFA and SSO credentials in 2021 migrated the Toolkit towards endpoints.json as the successor to this file.
+
+- AccountTypes.xml
+  - The changes to support MFA and SSO credentials in 2021 eliminated the use of this file. The Toolkit now uses Partition/Region details from the Credentials profile, previously users had to indicate if their account was based in the China or GovCloud partitions.
+- ServiceEndPoints.xml
+  - This file is published into the hosting location through internal pipelines. It is being listed here for completeness, but this file should not exist in the repo.
+  - The changes to support MFA and SSO credentials in 2021 migrated the Toolkit towards endpoints.json as the successor to this file.
 
 ## Reporting Bugs/Feature Requests
 
@@ -92,10 +91,10 @@ We welcome you to use the GitHub issue tracker to report bugs or suggest feature
 When filing an issue, please check [existing open](https://github.com/aws/aws-toolkit-visual-studio-staging/issues), or [recently closed](https://github.com/aws/aws-toolkit-visual-studio-staging/issues?utf8=%E2%9C%93&q=is%3Aissue%20is%3Aclosed%20), issues to make sure somebody else hasn't already
 reported the issue. Please try to include as much information as you can. Details like these are incredibly useful:
 
--   A reproducible test case or series of steps
--   The version of our code being used
--   Any modifications you've made relevant to the bug
--   Anything unusual about your environment or deployment
+- A reproducible test case or series of steps
+- The version of our code being used
+- Any modifications you've made relevant to the bug
+- Anything unusual about your environment or deployment
 
 ## Contributing via Pull Requests
 
