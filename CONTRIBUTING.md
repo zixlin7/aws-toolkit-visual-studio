@@ -8,7 +8,7 @@ information to effectively respond to your bug report or contribution.
 
 ## Getting Started
 
-You might be interested in reading about the Toolkit's [architecture](./designs/toolkit-architecture/README.md).
+You might be interested in reading about the Toolkit's [architecture](./designs/toolkit-architecture/README.md). Additional reference material related to developing Visual Studio extensions can be found in the [Reference](#reference) section of this page.
 
 ### Setup
 
@@ -136,3 +136,20 @@ If you discover a potential security issue in this project we ask that you notif
 See the [LICENSE](https://github.com/aws/aws-toolkit-visual-studio-staging/blob/master/LICENSE) file for our project's licensing. We will ask you to confirm the licensing of your contribution.
 
 We may ask you to sign a [Contributor License Agreement (CLA)](https://en.wikipedia.org/wiki/Contributor_License_Agreement) for larger changes.
+
+<a name="reference"></a>
+# Reference
+
+## Developing Visual Studio Extensions
+
+### Async / Multithreading
+
+Properly leveraging UI and Background threads reduces the chances of negatively impacting the IDE's overall performance and stability.
+* Definitive article on the subject: https://devblogs.microsoft.com/premier-developer/asynchronous-and-multithreaded-programming-within-vs-using-the-joinabletaskfactory/
+* Additional supporting material: https://github.com/microsoft/vs-threading/blob/main/doc/index.md
+
+### Extension examples and Prior Art
+
+[Mads Kristensen](https://twitter.com/mkristensen) is a PM on the Visual Studio team, and one of (if not) the most [prolific](https://marketplace.visualstudio.com/publishers/MadsKristensen) Visual Studio extension authors. He has a YouTube series [Writing Visual Studio Extensions with Mads](https://www.youtube.com/playlist?list=PLReL099Y5nRdG2n1PrY_tbCsUznoYvqkS), which covers many aspects (and undocumented concepts!) of extension development with the VS SDK. Source code for many of Mads' extensions can be found [on GitHub](https://github.com/madskristensen), which makes for great reference material.
+
+Older Visual Studio extensibility samples can be found at https://github.com/microsoft/VSSDK-Extensibility-Samples , however your mileage may vary.
