@@ -18,12 +18,7 @@ function List-Zip-Contents {
         $zip.Entries.FullName | Sort-Object | Out-File -FilePath $outputFileName
         $zip.Dispose()
     } catch {
-        if($configuration == "Release" -Or !(Test-Path $outputPath)) {
-            # if release mode or the local path doesn't exist
-            throw $_
-        } else {
-            Write-Host "Failed to look at VSIX contents"
-        }
+        throw $_
     }
 }
 

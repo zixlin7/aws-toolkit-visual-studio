@@ -366,6 +366,8 @@
     
     <!-- Output the current VSIX file's contents to a text file -->
     <Target Name="list-vsix-contents">
+        <Message Text="$(Configuration) - Listing VSIX Contents"/>
+
         <PropertyGroup>
             <VsixFileName>$(Deployment)\$(VisualStudioVersion)\$(Configuration)\AWSToolkitPackage.vsix</VsixFileName>
             <OutputFileName>$(Deployment)\$(VisualStudioVersion)\$(Configuration)\_vsixContents.txt</OutputFileName>
