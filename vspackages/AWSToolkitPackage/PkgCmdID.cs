@@ -26,6 +26,11 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         public const uint cmdidTeamExplorerConnect = 0x400;
 
+        public const uint cmdidViewUserGuide = 0x0601;
+        public const uint cmdidViewUserGuide2017 = 0x0602;
+        public const uint cmdidCreateIssue = 0x0603;
+        public const uint cmdidCreateIssue2017 = 0x0604;
+        
         // Groups
         public const uint IDG_AWS_CLOUDFORMATION_DEPLOYMENT = 0x1005;
         public const uint IDG_AWS_CLOUDFORMATION_EDIT = 0x1010;

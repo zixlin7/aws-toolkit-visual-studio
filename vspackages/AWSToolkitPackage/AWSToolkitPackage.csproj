@@ -108,6 +108,8 @@
     <Compile Include="Commands\BaseCommand.cs" />
     <Compile Include="Commands\Lambda\AddServerlessTemplateCommand.cs" />
     <Compile Include="Commands\Lambda\DeployLambdaCommand.cs" />
+    <Compile Include="Commands\Toolkit\CreateIssueCommand.cs" />
+    <Compile Include="Commands\Toolkit\ViewUserGuideCommand.cs" />
     <Compile Include="Images\VsImageProvider.cs" />
     <Compile Include="NativeMethods.cs" />
   </ItemGroup>

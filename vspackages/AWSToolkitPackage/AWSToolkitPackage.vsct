@@ -20,6 +20,8 @@
   <!--This header contains the command ids for the menus provided by the shell. -->
   <Extern href="vsshlids.h" />
 
+  <Include href="KnownImageIds.vsct" />
+
   <!--This header contains the command ids for the menus provided by the Venus (web) part of the shell.
       Unfortunately we can no longer rely on this header when building in VS2013; MSFT refactored the SDK files
       for the VS2013 SDK and no longer includes a former dependency, sharedvenusids.h. The ids we need are in
@@ -50,18 +52,36 @@
     -->
 
     <Menus>
-    <!-- top-level 'Template' menu for CloudFormation template editing -->
+      <!-- top-level 'Template' menu for CloudFormation template editing -->
       <Menu guid="guid_VSPackageCmdSet" id="IDM_AWS_MM_CLOUDFORMATION_TEMPLATE" priority="0x700" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
         <Strings>
           <ButtonText>Template</ButtonText>
         </Strings>
       </Menu>
+
+      <!-- Add an AWS Toolkit menu to a group under the Extensions menu -->
+      <Menu guid="guid_VSPackageCmdSet" id="IDM_AWS_TOOLKIT" priority="0x0100" type="Menu">
+        <Parent guid="guid_VSPackageCmdSet" id="IDG_EXTENSIONS_AWS_TOOLKIT" />
+        <Strings>
+          <ButtonText>AWS Toolkit</ButtonText>
+        </Strings>
+      </Menu>
+
+      <!-- The Extensions menu was added in VS 2019. For VS 2017, use the Tools menu -->
+      <!-- Add an AWS Toolkit menu to a group under the Tools menu -->
+      <Menu guid="guid_VSPackageCmdSet" id="IDM_AWS_TOOLKIT_2017" priority="0x0100" type="Menu">
+        <Parent guid="guid_VSPackageCmdSet" id="IDG_TOOLS_AWS_TOOLKIT" />
+        <Strings>
+          <ButtonText>AWS Toolkit</ButtonText>
+        </Strings>
+      </Menu>
+
     </Menus>
 
     <Groups>
       <!-- 
-      define cloudformation template editing commsands in terms of groups in the
+      define cloudformation template editing commands in terms of groups in the
       shell's item context menu; placements will be used to post these to the main menu etc
       -->
       <Group guid="guid_VSPackageCmdSet" id="IDG_AWS_CLOUDFORMATION_DEPLOYMENT_SOLUTION_EXPLORER" priority="0x0600">
@@ -90,6 +110,35 @@
 
       <Group guid="guid_VSPackageCmdSet" id="IDG_TEAMEXPLORER_MANAGECONNECTIONS" priority="0x0800">
         <Parent guid="guidManageConnections" id="idManageConnections" />
+      </Group>
+
+      <!-- Add a group to the Extensions menu -->
+      <Group guid="guid_VSPackageCmdSet" id="IDG_EXTENSIONS_AWS_TOOLKIT" priority="0x0001">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EXTENSIONS" />
+      </Group>
+
+      <!-- The Extensions menu was added in VS 2019. For VS 2017, use the Tools menu -->
+      <!-- Add a group to the Tools menu -->
+      <Group guid="guid_VSPackageCmdSet" id="IDG_TOOLS_AWS_TOOLKIT" priority="0x0001">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />
+      </Group>
+
+      <!-- This is the submenu group that we add action related menu items to -->
+      <Group guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_ACT" priority="0x0001">
+        <Parent guid="guid_VSPackageCmdSet" id="IDM_AWS_TOOLKIT" />
+      </Group>
+
+      <Group guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_ACT_2017" priority="0x0001">
+        <Parent guid="guid_VSPackageCmdSet" id="IDM_AWS_TOOLKIT_2017" />
+      </Group>
+
+      <!-- This is the submenu group that we add view related menu items to -->
+      <Group guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_VIEW" priority="0x0002">
+        <Parent guid="guid_VSPackageCmdSet" id="IDM_AWS_TOOLKIT" />
+      </Group>
+
+      <Group guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_VIEW_2017" priority="0x0002">
+        <Parent guid="guid_VSPackageCmdSet" id="IDM_AWS_TOOLKIT_2017" />
       </Group>
 
     </Groups>
@@ -297,6 +346,62 @@
         </Strings>
       </Button>
 
+      <!-- Menu items that will be added to the "AWS Toolkit" submenu group -->
+      <!-- Each menu has a second entry defined that is suffixed with 2017. We do this because the "Extensions" menu is new to VS 2019. -->
+      <!-- At runtime we conditionally register the appropriate menu, because they are added to two different menus. -->
+      <Button guid="guid_VSPackageCmdSet" id="cmdidViewUserGuide" priority="0x0000" type="Button">
+        <Icon guid="ImageCatalogGuid" id="F1Help" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.View.UserGuide</CommandName>
+          <ButtonText>View User Guide</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidViewUserGuide2017" priority="0x0000" type="Button">
+        <Icon guid="ImageCatalogGuid" id="F1Help" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.View.UserGuide</CommandName>
+          <ButtonText>View User Guide</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidCreateIssue" priority="0x0001" type="Button">
+        <Icon guid="ImageCatalogGuid" id="NewBug" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.Create.Issue</CommandName>
+          <ButtonText>File Issue or Feature Request</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidCreateIssue2017" priority="0x0001" type="Button">
+        <Icon guid="ImageCatalogGuid" id="NewBug" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.Create.Issue</CommandName>
+          <ButtonText>File Issue or Feature Request</ButtonText>
+        </Strings>
+      </Button>
+      <!-- END Menu items that will be added to the "AWS Toolkit" submenu group -->
+
     </Buttons>
     
     <Bitmaps>
@@ -372,7 +477,7 @@
     ***********************************************************************************************
     -->
 
-    <!-- Place mmediately after VS Publish on Web Application Project context menu -->
+    <!-- Place immediately after VS Publish on Web Application Project context menu -->
     <CommandPlacement Condition="!Defined(No_Publish_Commands)" guid="guid_VSPackageCmdSet" id="cmdidPublishContainerToAWS" priority="0x0601">
       <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_BUILD" />
     </CommandPlacement>
@@ -483,6 +588,29 @@
       <Parent guid="guid_VSPackageCmdSet" id="IDG_TEAMEXPLORER_MANAGECONNECTIONS"/>
     </CommandPlacement>
 
+    <!-- New Publish To Aws commands -->
+    <!-- TODO : PLACEHOLDER -->
+    <!-- END New Publish To Aws commands -->
+
+    <!-- AWS Toolkit Menu Command Placements -->
+    <!-- These commands are added to the same submenu group, and the appropriate command is registered at runtime. -->
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidViewUserGuide" priority="0x0001">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_VIEW" />
+    </CommandPlacement>
+
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidViewUserGuide2017" priority="0x0001">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_VIEW_2017" />
+    </CommandPlacement>
+
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidCreateIssue" priority="0x0001">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_ACT" />
+    </CommandPlacement>
+
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidCreateIssue2017" priority="0x0001">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_ACT_2017" />
+    </CommandPlacement>
+    <!-- END AWS Toolkit Menu Command Placements -->
+
   </CommandPlacements>
 
 
@@ -529,6 +657,19 @@
 
       <IDSymbol name="cmdidTeamExplorerConnect" value="0x0400"/>
 
+      <!-- New "Publish to AWS" commands -->
+      <!-- TODO : PLACEHOLDER -->
+      <!-- END New "Publish to AWS" commands -->
+
+      <!-- 0x06xx - Commands within the "AWS Toolkit" Menu -->
+      <!-- Each command has a second entry defined that is suffixed with 2017. We do this because the "Extensions" menu is new to VS 2019. -->
+      <!-- At runtime we conditionally register the appropriate menu, because they are added to two different menus. -->
+      <IDSymbol name="cmdidViewUserGuide" value="0x0601" />
+      <IDSymbol name="cmdidViewUserGuide2017" value="0x0602" />
+      <IDSymbol name="cmdidCreateIssue" value="0x0603" />
+      <IDSymbol name="cmdidCreateIssue2017" value="0x0604" />
+      <!-- END Commands within the "AWS Toolkit" Menu -->
+
       <IDSymbol name="IDM_AWS_MM_CLOUDFORMATION_TEMPLATE" value="0x1000" />
 
       <IDSymbol name="IDG_AWS_CLOUDFORMATION" value="0x1001"/>
@@ -543,6 +684,15 @@
       <IDSymbol name="IDG_TEAMEXPLORER_MANAGECONNECTIONS" value="0x01050" />
 
       <IDSymbol name="IDG_AWS_SERVERLESS_TEMPLATE_SOLUTION_EXPLORER" value="0x01060"/>
+
+      <IDSymbol name="IDG_EXTENSIONS_AWS_TOOLKIT" value="0x02000" />
+      <IDSymbol name="IDG_TOOLS_AWS_TOOLKIT" value="0x02001" />
+      <IDSymbol name="IDG_AWS_TOOLKIT_ACT" value="0x02002" />
+      <IDSymbol name="IDG_AWS_TOOLKIT_ACT_2017" value="0x02003" />
+      <IDSymbol name="IDG_AWS_TOOLKIT_VIEW" value="0x02004" />
+      <IDSymbol name="IDG_AWS_TOOLKIT_VIEW_2017" value="0x02005" />
+      <IDSymbol name="IDM_AWS_TOOLKIT" value="0x02100" />
+      <IDSymbol name="IDM_AWS_TOOLKIT_2017" value="0x02101" />
 
     </GuidSymbol>
 
@@ -575,7 +725,13 @@
     <GuidSymbol name="guidToolsGroup" value="{C0D88179-5D25-4982-BFE6-EC5FD59AC103}">
       <IDSymbol name="idToolsGroup" value="0x200" />
     </GuidSymbol>
-    
+
+    <!-- The VS "Extensions" menu isn't properly defined -->
+    <!-- Workaround: https://developercommunity.visualstudio.com/t/i-cant-add-a-menu-to-idm-vs-menu-extensions-1/936572 -->
+    <GuidSymbol name="guidSHLMainMenu" value="{d309f791-903f-11d0-9efc-00a0c911004f}">
+      <IDSymbol name="IDM_VS_MENU_EXTENSIONS" value="0x0091" />
+    </GuidSymbol>
+
   </Symbols>
 
 </CommandTable>
