@@ -3,10 +3,10 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Navigation;
-using Amazon.AWSToolkit.CommonUI;
+
 using Amazon.AWSToolkit.Account.Controller;
+using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Settings;
 
 namespace Amazon.AWSToolkit.Account.View
@@ -24,6 +24,8 @@ namespace Amazon.AWSToolkit.Account.View
             this.DataContext = this._controller.Model;
             this._controller.Model.PropertyChanged += OnPropertyChanged;
             InitializeComponent();
+
+            Unloaded += OnUnloaded;
         }
 
         public override string Title
@@ -76,6 +78,12 @@ namespace Amazon.AWSToolkit.Account.View
             this._controller.Model.IsPartitionEnabled = true;
         }
 
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            Unloaded -= OnUnloaded;
+            _controller.Model.PropertyChanged -= OnPropertyChanged;
+        }
+
         void onRequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             string url = this._ctlAWSLink.Text;
@@ -85,6 +93,16 @@ namespace Amazon.AWSToolkit.Account.View
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (e.PropertyName == nameof(_controller.Model.AccessKey))
+            {
+                _ctlAccessKey.Password = _controller.Model.AccessKey;
+            }
+
+            if (e.PropertyName == nameof(_controller.Model.SecretKey))
+            {
+                _ctlSecretKey.Password = _controller.Model.SecretKey;
+            }
+
             if (e.PropertyName == nameof(this._controller.Model.Partition))
             {
                 OnPartitionChanged();
