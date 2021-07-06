@@ -23,14 +23,16 @@ namespace Amazon.AWSToolkit.S3
 
         void setupContextMenuHooks(S3RootViewMetaNode rootNode)
         {
+            var shellProvider = ToolkitFactory.Instance.ShellProvider;
+
             rootNode.OnCreate =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<CreateBucketController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new CreateBucketController(ToolkitContext, shellProvider)).Execute);
 
             rootNode.S3BucketViewMetaNode.OnBrowse =
                 new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new BucketBrowserController(ToolkitContext)).Execute);
 
             rootNode.S3BucketViewMetaNode.OnDelete =
-                new ActionHandlerWrapper.ActionHandler(new CommandInstantiator<DeleteBucketController>().Execute);
+                new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new DeleteBucketController(ToolkitContext, shellProvider)).Execute);
 
             rootNode.S3BucketViewMetaNode.OnProperties =
                 new ActionHandlerWrapper.ActionHandler(new ContextCommandExecutor(() => new BucketPropertiesController(ToolkitContext)).Execute);
