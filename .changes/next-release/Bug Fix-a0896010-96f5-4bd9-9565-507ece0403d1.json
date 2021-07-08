@@ -1,0 +1,4 @@
+{
+  "Type": "Bug Fix",
+  "Description": "Fixed issue in the Create/Edit Profile dialog box where importing from a CSV file would not update the UI."
+}
