@@ -32,9 +32,9 @@ namespace Amazon.AWSToolkit.VisualStudio.Telemetry
 
         public ITelemetryLogger TelemetryLogger => _telemetryService;
 
-        public TelemetryManager(ProductEnvironment productEnvironment)
+        public TelemetryManager(ProductEnvironment productEnvironment, MetricsOutputWindow metricsOutputWindow)
         {
-            _telemetryService = new TelemetryService(productEnvironment);
+            _telemetryService = new TelemetryService(productEnvironment, metricsOutputWindow);
 
             SetupServiceEnabledState();
         }

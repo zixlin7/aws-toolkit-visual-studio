@@ -15,6 +15,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
     {
         private readonly Guid _clientId = Guid.NewGuid();
         private readonly ConcurrentQueue<Metrics> _eventQueue = new ConcurrentQueue<Metrics>();
+        private readonly Mock<IMetricsOutputWindow> _metricsOutputWindow = new Mock<IMetricsOutputWindow>();
         private readonly Mock<ITelemetryClient> _telemetryClient = new Mock<ITelemetryClient>();
         private readonly Mock<ITelemetryPublisher> _telemetryPublisher = new Mock<ITelemetryPublisher>();
 
@@ -28,7 +29,7 @@ namespace Amazon.AWSToolkit.Util.Tests.Telemetry
 
         public TelemetryServiceTests()
         {
-            _sut = new TelemetryService(_eventQueue, ProductEnvironment.Default);
+            _sut = new TelemetryService(_eventQueue, ProductEnvironment.Default, _metricsOutputWindow.Object);
         }
 
         [Fact]

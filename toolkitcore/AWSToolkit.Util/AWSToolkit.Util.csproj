@@ -99,6 +99,7 @@
     <Compile Include="Settings\ToolkitSettingsWatcher.cs" />
     <Compile Include="Tasks\TaskExtensionMethods.cs" />
     <Compile Include="Telemetry\ClientId.cs" />
+    <Compile Include="Telemetry\IMetricsOutputWindow.cs" />
     <Compile Include="Telemetry\Internal\ITelemetryClient.cs" />
     <Compile Include="Telemetry\Internal\ITelemetryPublisher.cs" />
     <Compile Include="Telemetry\ModelExtensionMethods.cs" />

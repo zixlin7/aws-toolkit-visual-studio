@@ -39,6 +39,7 @@ namespace Amazon.AWSToolkit.Telemetry
 
         private readonly ConcurrentQueue<Metrics> _eventQueue;
         private ProductEnvironment _productEnvironment;
+        private readonly IMetricsOutputWindow _metricsOutputWindow;
         private ITelemetryClient _telemetryClient;
         private ITelemetryPublisher _telemetryPublisher;
         private string _accountId = string.Empty;
@@ -46,15 +47,18 @@ namespace Amazon.AWSToolkit.Telemetry
         private bool _disposed = false;
         private bool _isTelemetryEnabled = false;
 
-        public TelemetryService(ProductEnvironment productEnvironment) :
-            this(new ConcurrentQueue<Metrics>(), productEnvironment)
+        public TelemetryService(ProductEnvironment productEnvironment, IMetricsOutputWindow metricsOutputWindow) :
+            this(new ConcurrentQueue<Metrics>(), productEnvironment, metricsOutputWindow)
         {
         }
 
-        public TelemetryService(ConcurrentQueue<Metrics> eventQueue, ProductEnvironment productEnvironment)
+        public TelemetryService(ConcurrentQueue<Metrics> eventQueue,
+            ProductEnvironment productEnvironment,
+            IMetricsOutputWindow metricsOutputWindow)
         {
             _eventQueue = eventQueue;
             _productEnvironment = productEnvironment;
+            _metricsOutputWindow = metricsOutputWindow;
         }
 
         /// <summary>
@@ -135,6 +139,7 @@ namespace Amazon.AWSToolkit.Telemetry
 
             ApplyMissingMetadata(telemetryMetric);
 
+            _metricsOutputWindow.Output(telemetryMetric);
             _eventQueue.Enqueue(telemetryMetric);
         }
 
