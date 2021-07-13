@@ -10,5 +10,6 @@
     },
     "overview": "overview.md",
     "publisher": "AmazonWebServices",
-    "repo": "https://github.com/aws/aws-toolkit-visual-studio"
+    "repo": "https://github.com/aws/aws-toolkit-visual-studio",
+    "qna": false
 }
