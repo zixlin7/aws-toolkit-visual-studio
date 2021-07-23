@@ -183,9 +183,9 @@ class ReleaseConfig:
 
     def __str__(self) -> str:
         out = ''
-        out += f'{dim_text("Version:")} {bright_text(str(self.version), "blue")}\n'
-        out += f'{dim_text("Commit:")} {bright_text(self.commit.hexsha, "blue")}\n'
-        out += f'{dim_text("Notes:")}\n{bright_text(self.notes, "blue")}\n' if self.notes != '' else ''
+        out += f'{dim_text("Version:")} {bright_text(str(self.version), "cyan")}\n'
+        out += f'{dim_text("Commit:")} {bright_text(self.commit.hexsha, "cyan")}\n'
+        out += f'{dim_text("Notes:")}\n{bright_text(self.notes, "cyan")}\n' if self.notes != '' else ''
 
         return out
 
@@ -373,7 +373,7 @@ class ProgressReporter(Thread):
 
 
 def fetch(remote: git.Remote, src: str) -> Commit:
-    print(dim_text(f'Fetching {colored(src, "blue")} '), end='')
+    print(dim_text(f'Fetching {colored(src, "cyan")} '), end='')
 
     reporter = ProgressReporter(freq=1.0)
     reporter.start()
@@ -447,7 +447,7 @@ def make_pr(version: str, head: str, remote: str):
     print(f'Reminder: {bright_text("Do not squash or rebase!", "yellow")}')
 
 def prompt_release_notes() -> str:
-    print(f'Type in release notes {colored("(Ctrl-D on newline to stop)", "blue")}')
+    print(f'Type in release notes {colored("(Ctrl-D on newline to stop)", "cyan")}')
 
     notes: list[str] = list()
 
@@ -483,7 +483,7 @@ def select_version(config: ReleaseConfig) -> Version:
         modes.append(f'Digit{len(modes) + 1}')
 
     mode_output = '\n'.join([f' {[i + 1]} {dim_text(mode)} -> {config.version.bump_highlight(i)}' for i, mode in enumerate(modes)])
-    print(f'{bright_text("Current version:")} {colored(str(config.version), "blue")}\nVersion increment mode:')
+    print(f'{bright_text("Current version:")} {colored(str(config.version), "cyan")}\nVersion increment mode:')
     print(mode_output + '\n')
 
     while True:
@@ -550,7 +550,7 @@ def select_commit(repo: git.Repo, config: ReleaseConfig) -> Commit:
 
     style = Style.from_dict({
         'hash': 'italic',
-        'message': 'fg:ansiblue',
+        'message': 'fg:ansicyan',
     })
 
     print('Select a target commit:\n')
@@ -616,7 +616,7 @@ def push_candidate(repo: git.Repo, hooks: list[str], config: ReleaseConfig) -> s
     reporter.complete()
     
     # Detached head push TODO: specify to where it is being pushed
-    print(dim_text(f'Pushing {colored(candidate_branch, "blue")} '), end='')
+    print(dim_text(f'Pushing {colored(candidate_branch, "cyan")} '), end='')
 
     reporter = ProgressReporter(freq=1.0)
     reporter.start()
