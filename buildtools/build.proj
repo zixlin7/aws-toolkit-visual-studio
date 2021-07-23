@@ -479,4 +479,18 @@
 		<EC2QuickLaunchGeneratorTask />
 	</Target>
 
+	<!-- Runs a guided script to generate a release candidate -->
+	<!-- Requires Python 3.9+ -->
+	<Target Name="queueCandidate">
+		<PropertyGroup>
+			<ReleaseScriptDirectory>$(MSBuildProjectDirectory)\release</ReleaseScriptDirectory>
+			<RepositoryDirectory>$([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))</RepositoryDirectory>
+		</PropertyGroup>
+
+		<Exec Command="pip install -r $(ReleaseScriptDirectory)\requirements.txt" />
+		
+		<!-- Script is ran in a new shell to prevent stdio from being mangled by msbuild -->
+		<Exec Command="start powershell.exe -NoExit iex \&quot; $(ReleaseScriptDirectory)\release.ps1 -repoRoot '$(RepositoryDirectory)' \&quot;" />
+	</Target>
+
 </Project>
