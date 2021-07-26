@@ -1,4 +1,4 @@
-Note: This edition of the toolkit is for Visual Studio 2017 and 2019 only. If you require the toolkit for Visual Studio 2013 and/or 2015, please use the installer available for download here.
+Note: This edition of the toolkit is for Visual Studio 2017 and 2019 only. If you require the toolkit for Visual Studio 2013 and/or 2015, please use the installer available for download [here](https://sdk-for-net.amazonwebservices.com/latest/AWSToolsAndSDKForNet.msi).
 
 For issues or questions about this extension please open a GitHub issue at https://github.com/aws/aws-sdk-net.
 
