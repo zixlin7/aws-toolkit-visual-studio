@@ -11,6 +11,7 @@ import git
 
 from typing import Callable, Optional
 from threading import Thread, Lock
+from github.Repository import Repository
 from termcolor import colored
 from git.diff import Diff
 from git.objects import Commit
@@ -51,48 +52,17 @@ if IS_WINDOWS:
     kernel32 = windll.kernel32
     kernel32.SetConsoleMode(kernel32.GetStdHandle(STD_OUTPUT_HANDLE), SETTINGS)
 
+# hmmmm
+BLUE = 'cyan' if IS_WINDOWS else 'blue'
+EOF_COMMAND = 'Ctrl-C' if IS_WINDOWS else 'Ctrl-D'
+
 PR_BODY = '### This PR must be merged by merge commit'
 CONFIG_NAME = 'config.json'
-
-# Is target reachable from source (is target a parent of source?)
-# Cache is constructed from parent chains
-cache = {}
-def is_reachable(target: Commit, source: Commit) -> bool:   
-    if not cache.get(source.hexsha, {}).get(target.hexsha, None) is None:
-        return cache.get(source.hexsha, {}).get(target.hexsha)
-
-    queue: list[list[Commit]] = list([[p] for p in source.parents])
-    visited = set()
-
-    while len(queue) > 0:
-        current: list[Commit] = queue.pop(0)
-        # small optimization: no need to store whole commit in the chain, only need hash
-        if current[-1] == target or cache.get(current[-1].hexsha, {}).get(target.hexsha):
-            for i in range(len(current) - 1):
-                for j in range(i, len(current)):
-                    c: dict = cache.get(current[i].hexsha, {})
-                    cache[current[i].hexsha] = c
-                    c[current[j].hexsha] = True
-
-            return True
-
-        for parent in current[-1].parents:
-            if parent.hexsha not in visited:
-                visited.add(parent.hexsha)
-                queue.append(list(current))
-                queue[-1].append(parent)
-
-    for sha in visited:
-        c: dict = cache.get(sha, {})
-        cache[sha] = c
-        c[target.hexsha] = False
-
-    return False
     
 class Version:
     slots: int
 
-    def __init__(self, version: str, parent: 'Version' = None):
+    def __init__(self, version: str):
         is_number: Callable[[str], bool] = lambda part: part.isnumeric()
         conv_number: Callable[[str], int] = lambda s: int(s)
 
@@ -106,14 +76,19 @@ class Version:
 
         self.slots = len(self._version)
 
+    def __len__(self) -> int:
+        return len(self._version)
+
     def __eq__ (self, other: 'Version') -> bool:
-        return not other is None and self._version == other._version
+        padded_left = self._version + [0] * (len(other) - len(self))
+        padded_right = other._version + [0] * (len(self) - len(other))
+        return not other is None and padded_left == padded_right
 
     def __gt__(self, other: 'Version') -> bool:
         if other is None:
             return False
 
-        return other._version < self._version and not other._version == self._version
+        return other < self and not other == self
 
     def __lt__(self, other: 'Version') -> bool:
         if other is None:
@@ -125,8 +100,10 @@ class Version:
 
             if (v1 > v2):
                 return False
+            if (v1 < v2):
+                return True
 
-        return True
+        return False
 
     def __str__(self) -> str:
         return '.'.join(map(str, self._version))
@@ -134,7 +111,7 @@ class Version:
     def _reduce(self, pos: int):
         for i in range(pos, len(self._version)):
             self._version[i] = 0
-
+    
     def bump(self, pos: int) -> 'Version':
         copy = self.copy()
         copy._version[pos] += 1
@@ -162,13 +139,14 @@ class ReleaseConfig:
     version: Version
     commit: Commit
     notes: str
+    path: str
 
     def __init__(self, path: str, repo: git.Repo):
         with open(path) as file:
             config = json.load(file)
 
         self._repo = repo
-        self._path = path
+        self.path = path
         self.version = Version(config['version'])
         self.notes = config['notes']
 
@@ -183,9 +161,9 @@ class ReleaseConfig:
 
     def __str__(self) -> str:
         out = ''
-        out += f'{dim_text("Version:")} {bright_text(str(self.version), "cyan")}\n'
-        out += f'{dim_text("Commit:")} {bright_text(self.commit.hexsha, "cyan")}\n'
-        out += f'{dim_text("Notes:")}\n{bright_text(self.notes, "cyan")}\n' if self.notes != '' else ''
+        out += f'{dim_text("Version:")} {bright_text(str(self.version), BLUE)}\n'
+        out += f'{dim_text("Commit:")} {bright_text(self.commit.hexsha, BLUE)}\n'
+        out += f'{dim_text("Notes:")}\n{bright_text(self.notes, BLUE)}\n' if self.notes != '' else ''
 
         return out
 
@@ -197,7 +175,7 @@ class ReleaseConfig:
         }
 
     def write(self, path: Optional[str] = None) -> str:
-        path = self._path if path is None else path
+        path = self.path if path is None else path
 
         with open(path, 'w+') as file:
             json.dump(self._jsonify(), file, indent=4)
@@ -221,10 +199,7 @@ class ReleaseConfig:
 class SelectionDialog():
     container_style: str = ""
     default_style: str = ""
-    selected_style: str = "fg:ansired"
-    checked_style: str = ""
-    multiple_selection: bool = False
-    show_scrollbar: bool = True
+    selected_style: str = "fg:ansibrightred"
     page_size = 10
 
     def __init__(self, values) -> None:
@@ -262,7 +237,7 @@ class SelectionDialog():
             
             return False
 
-        # keep building up keypresses -> if no match then dump buffer TODO
+        # keep building up keypresses -> if no match then dump buffer
         @kb.add(Keys.Any)
         def _find(event) -> None:
             self._search_str += event.data.lower()
@@ -349,9 +324,7 @@ class ProgressReporter(Thread):
             self.join()
             print(f'\u001b[?25h{message}', flush=True)
             del self.active_threads[self.native_id]
-
-            if not IS_WINDOWS:
-                os.system('stty echo')
+            set_echo(enabled=True)
 
             self.cleanupLock.release()
 
@@ -364,24 +337,70 @@ class ProgressReporter(Thread):
 
     def run(self):
         ProgressReporter.active_threads[self.native_id] = self
-        if not IS_WINDOWS:
-            os.system('stty -echo')
+        set_echo(enabled=False)
 
         while not self._done:
             self.update()
             time.sleep(0.025)
 
+def set_echo(enabled: bool):
+    if IS_WINDOWS or not sys.stdin.isatty():
+        return
+    
+    if enabled:
+        os.system('stty echo')
+    else:
+        os.system('stty -echo')
 
-def fetch(remote: git.Remote, src: str) -> Commit:
-    print(dim_text(f'Fetching {colored(src, "cyan")} '), end='')
+
+# Is target reachable from source (is target a parent of source?)
+# Cache is constructed from parent chains
+cache = {}
+def is_reachable(target: Commit, source: Commit) -> bool:   
+    if target.hexsha == source.hexsha:
+        return True
+
+    if not cache.get(source.hexsha, {}).get(target.hexsha, None) is None:
+        return cache.get(source.hexsha, {}).get(target.hexsha)
+
+    queue: list[list[Commit]] = list([[p] for p in source.parents])
+    visited = set()
+
+    while len(queue) > 0:
+        current: list[Commit] = queue.pop(0)
+        # small optimization: no need to store whole commit in the chain, only need hash
+        if current[-1] == target or cache.get(current[-1].hexsha, {}).get(target.hexsha):
+            for i in range(len(current) - 1):
+                for j in range(i, len(current)):
+                    c: dict = cache.get(current[i].hexsha, {})
+                    cache[current[i].hexsha] = c
+                    c[current[j].hexsha] = True
+
+            return True
+
+        for parent in current[-1].parents:
+            if parent.hexsha not in visited:
+                visited.add(parent.hexsha)
+                queue.append(list(current))
+                queue[-1].append(parent)
+
+    for sha in visited:
+        c: dict = cache.get(sha, {})
+        cache[sha] = c
+        c[target.hexsha] = False
+
+    return False
+
+def fetch(remote: git.Remote, src_branch: str) -> Commit:
+    print(dim_text(f'Fetching {colored(src_branch, BLUE)} '), end='')
 
     reporter = ProgressReporter(freq=1.0)
     reporter.start()
     try:
-        remote.fetch(f'refs/heads/{src}')
+        remote.fetch(f'refs/heads/{src_branch}')
         reporter.complete()
 
-        return remote.refs[src].commit
+        return remote.refs[src_branch].commit
     except Exception as err:
         reporter.complete(success=False)
         exit(reason=err)
@@ -390,14 +409,12 @@ def find_remote_repo(repo: git.Repo) -> str:
     remote = get_remote(repo)
     url = list(remote.urls)[0]
     
-    # this code sucks
     if url.find('github') == -1:
-        print('not github')
-        sys.exit(1)
+        exit(reason='Unable to find a remote GitHub repository')
 
     parts = url.split('/')
 
-    return parts[-1]
+    return '/'.join(parts[-2:])
 
 def run_hooks(hooks: list[str], config: ReleaseConfig):
     if len(hooks) == 0:
@@ -420,34 +437,42 @@ def run_hooks(hooks: list[str], config: ReleaseConfig):
             reporter.complete(success=False)
             exit(2, tips=dim_text(err.stdout))
 
+def login_github(remote: str) -> Repository:
+    while True:
+        username = input('Enter username [Skip if using token]: ')
+
+        if username == '':
+            token = prompt('Enter token: ', is_password=True)
+            gh = Github(token)
+        else:
+            password = prompt('Enter password: ', is_password=True)
+            gh = Github(username, password)
+        
+        token = None
+        password = None
+
+        try: # See if we have access
+            return gh.get_repo(remote)
+        except Exception as err:
+            # TODO: output err mesage if debug mode?
+            print(colored('Login failed. Try again.', 'red'))
+
 def make_pr(version: str, head: str, remote: str):
-    username = input('Enter username [Skip if using token]: ')
+    target = login_github(remote)
 
-    if username == '':
-        token = prompt('Enter token: ', is_password=True)
-        gh = Github(token)
-    else:
-        password = prompt('Enter password: ', is_password=True)
-        gh = Github(username, password)
-    
-    token = None
-    password = None
-
-    try: # We just use the first user we find for now
-        target = gh.get_user().get_repo(remote)
+    try:
         pr = target.create_pull(title=f'Merge release candidate for v{version}', body=PR_BODY, head=head, base='release/stable')
     except Exception as err:
-        # Ask for retry instead of failing? Does not matter too much
-        # TODO: may be possible that a duplicate candidate exists (so this failure is not always accurate)
-        exit(reason='Login failed.', tips=err)
+        exit(reason='PR creation failed.', tips=err)
 
-    print(colored('PR created successfully!', 'green'))
-    print(f'Link: {pr.html_url}')
+    print()
+    print(bright_text('PR created successfully!', 'green'))
+    print(bright_text(pr.html_url, BLUE))
     print('You can merge now or apply patches to the candidate branch as needed.')
     print(f'Reminder: {bright_text("Do not squash or rebase!", "yellow")}')
 
 def prompt_release_notes() -> str:
-    print(f'Type in release notes {colored("(Ctrl-D on newline to stop)", "cyan")}')
+    print(f'Type in release notes {colored(f"({EOF_COMMAND} on newline to stop)", BLUE)}')
 
     notes: list[str] = list()
 
@@ -473,23 +498,28 @@ def yes_no_prompt(question: str, default: str = 'yes') -> bool:
         else:
             continue
 
-def select_version(config: ReleaseConfig) -> Version:
+def select_version(previous_version: Version) -> Version:
+    """Prompts for a version increment mode and increments the previous version.
+
+    Modes are prompted as-needed depending on how many 'slots' the version has. If no mode is entered,
+    then 'Patch' is selected (or the smallest mode if 'Patch' does not exist).
+    """
     modes = ['Major', 'Minor', 'Patch', 'Build']
 
-    while len(modes) > config.version.slots:
+    while len(modes) > previous_version.slots:
         modes.pop()
 
-    while len(modes) < config.version.slots:
+    while len(modes) < previous_version.slots:
         modes.append(f'Digit{len(modes) + 1}')
 
-    mode_output = '\n'.join([f' {[i + 1]} {dim_text(mode)} -> {config.version.bump_highlight(i)}' for i, mode in enumerate(modes)])
-    print(f'{bright_text("Current version:")} {colored(str(config.version), "cyan")}\nVersion increment mode:')
+    mode_output = '\n'.join([f' {[i + 1]} {dim_text(mode)} -> {previous_version.bump_highlight(i)}' for i, mode in enumerate(modes)])
+    print(f'{bright_text("Current version:")} {colored(str(previous_version), BLUE)}\nVersion increment mode:')
     print(mode_output + '\n')
 
     while True:
         selection = input(f'Select a mode or enter a version [{dim_text("Patch")}]: ')
 
-        option_position = 2 if selection == '' else None
+        option_position = min(2, len(modes)) if selection == '' else None
 
         if selection.isnumeric():
             selection = int(selection) - 1
@@ -509,13 +539,13 @@ def select_version(config: ReleaseConfig) -> Version:
                 print(colored('Input is not parseable to a version.', 'red'))
                 continue
         else:
-            target_version = config.version.bump(option_position)
+            target_version = previous_version.bump(option_position)
 
-        if target_version < config.version:
+        if target_version < previous_version:
             print(colored('The next version must be greater than the previous version.', 'red'))
             continue
 
-        if target_version.slots != config.version.slots:
+        if target_version.slots != previous_version.slots:
             print('The entered version scheme is different from the previous version. This may cause issues.')
             useVersion = yes_no_prompt('Wouled you like to continue', 'no')
 
@@ -529,6 +559,7 @@ def select_version(config: ReleaseConfig) -> Version:
     return target_version
 
 def list_commits(target: Commit, source: Commit) -> 'list[Commit]':
+    """Lists commits between source and target, excluding both"""
     target_parents = set(target.iter_parents())
     commits: list[Commit] = []
 
@@ -539,6 +570,7 @@ def list_commits(target: Commit, source: Commit) -> 'list[Commit]':
     return commits    
 
 def select_commit(repo: git.Repo, config: ReleaseConfig) -> Commit:
+    """Prompts for a commit that is between the head of the development branch and the last release commit"""
     commits = list_commits(config.commit, repo.head.commit)
     commits.append(repo.head.commit)
     commits.sort(key=lambda commit: commit.committed_datetime, reverse=True)
@@ -550,7 +582,7 @@ def select_commit(repo: git.Repo, config: ReleaseConfig) -> Commit:
 
     style = Style.from_dict({
         'hash': 'italic',
-        'message': 'fg:ansicyan',
+        'message': f'fg:ansibright{BLUE}',
     })
 
     print('Select a target commit:\n')
@@ -564,6 +596,7 @@ def select_commit(repo: git.Repo, config: ReleaseConfig) -> Commit:
     return select_commit_app.run()
 
 def select_notes() -> str:
+    """Prompts for GitHub release notes, using either a file or manually entering notes. Markdown is expected."""
     use_notes = yes_no_prompt('Add additional release notes', 'no')
 
     if use_notes:
@@ -580,6 +613,7 @@ def select_notes() -> str:
     return ''
 
 def push_candidate(repo: git.Repo, hooks: list[str], config: ReleaseConfig) -> str:
+    """Runs the given hooks and commits all changes to the candidate branch specified by the release config."""
     version = str(config.version)
     candidate_branch = f'release/candidate/v{version}'
 
@@ -607,16 +641,17 @@ def push_candidate(repo: git.Repo, hooks: list[str], config: ReleaseConfig) -> s
             index.add(diff.b_path)
 
     notes = parse_changes(repo.working_tree_dir, version, config.notes)
-    with open(os.path.join(repo.working_tree_dir, 'buildtools', 'release', 'notes.md'), 'w+') as file:
+    notesPath = os.path.join(os.path.dirname(config.path), 'notes.md')
+    with open(notesPath, 'w+') as file:
         file.write(notes)
 
     index.add(config.write())
-    index.add(os.path.join(repo.working_tree_dir, 'buildtools', 'release', 'notes.md'))
+    index.add(notesPath)
     index.commit(f'Set release candidate for v{str(version)}')
     reporter.complete()
     
     # Detached head push TODO: specify to where it is being pushed
-    print(dim_text(f'Pushing {colored(candidate_branch, "cyan")} '), end='')
+    print(dim_text(f'Pushing {colored(candidate_branch, BLUE)} '), end='')
 
     reporter = ProgressReporter(freq=1.0)
     reporter.start()
@@ -630,17 +665,34 @@ def push_candidate(repo: git.Repo, hooks: list[str], config: ReleaseConfig) -> s
 
     return candidate_branch  
 
-# Parses changelog to add to the notes
+def normalize_dictionary(dictionary: dict) -> dict:
+    """Makes all keys in a dictionary lowercase, applied recursively."""
+    new_dictionary = dict()
+
+    if not isinstance(dictionary, dict):
+        return dictionary
+
+    for _, (key, value) in enumerate(dictionary.items()):
+        if isinstance(value, dict):
+            new_dictionary[key.lower()] = normalize_dictionary(value)
+        elif isinstance(value, list):
+            new_dictionary[key.lower()] = map(normalize_dictionary, value)
+        else:
+            new_dictionary[key.lower()] = value
+
+    return new_dictionary
+
 def parse_changes(root: str, version: str, body: str = '') -> str:
+    """Looks for a generated changelog JSON file in the .changes directory, parsing it into a notes.md file."""
     changelog = os.path.join(root, '.changes', f'{version}.json')
 
     try:
         with open(changelog) as file:
-            data = json.load(file)
+            data = normalize_dictionary(json.load(file))
 
         # TODO: make this not uppercase...
-        title = f'## {version} ({data["Date"]})'
-        changelog = '\n'.join(map(lambda entry: f'- **{entry["Type"]}** \u2013 {entry["Description"]}', data['Entries']))
+        title = f'## {version} ({data["date"]})'
+        changelog = '\n'.join(map(lambda entry: f'- **{entry["type"]}** - {entry["description"]}', data['entries']))
 
         return f'{title}\n{body}\n### Changelog\n{changelog}'
     except Exception as err:
@@ -651,6 +703,7 @@ def get_remote(repo: git.Repo) -> git.Remote:
     return repo.remote()
 
 def cleanup(original: str = None):
+    """Stops all running threads and checksout the original git branch if applicable."""
     thread: ProgressReporter
     for thread in ProgressReporter.active_threads.copy().values():
         thread.cancel()
@@ -679,6 +732,33 @@ def exit(code: int = None, reason: str = None, tips: str = None):
 def exception_hook(error, original):
     print(error)
     cleanup(original)
+
+def load_config(repo: git.Repo, config_path: str) -> ReleaseConfig:
+    """Loads and validate a release config from a past release. 
+    
+    The config can be located in two places: the path specified by 'config_path' or in the same directory
+    as the release script. Changes made to the config will always be written back to where it was found.
+    """
+    abs_path = os.path.join(repo.working_tree_dir, config_path)
+
+    if not os.path.isfile(abs_path):
+        # last ditch effort, look for it in the same directory as the script
+        abs_path = os.path.join(repo.working_tree_dir, os.path.dirname(os.path.relpath(__file__, repo.working_tree_dir)), os.path.basename(config_path))
+
+        if not os.path.isfile(abs_path):
+            exit(reason=f'Unable to locate "{config_path}"', tips=dim_text('Make sure the path is relative to the repository\'s root.'))
+
+    try:
+        config = ReleaseConfig(abs_path, repo)
+    except:
+        exit(reason='Failed to read release configuration.')
+
+    validation = config.pre_validate(release_commit)
+
+    if not validation is None:
+        exit(reason=validation)
+
+    return config
 
 if __name__ == '__main__':
     WORKING_DIR = os.path.dirname(os.path.relpath(__file__))
@@ -731,26 +811,9 @@ if __name__ == '__main__':
     for file in repo.untracked_files:
         os.remove(file)
 
-    abs_path = os.path.join(repo.working_tree_dir, config_path)
+    config = load_config(repo, config_path)
 
-    if not os.path.isfile(abs_path):
-        # last ditch effort, look for it in the same directory as the script
-        abs_path = os.path.join(repo.working_tree_dir, os.path.dirname(os.path.relpath(__file__, repo.working_tree_dir)), os.path.basename(config_path))
-
-        if not os.path.isfile(abs_path):
-            exit(reason=f'Unable to locate "{config_path}"', tips=dim_text('Make sure the path is relative to the repository\'s root.'))
-
-    try:
-        config = ReleaseConfig(abs_path, repo)
-    except:
-        exit(reason='Failed to read release configuration.')
-
-    validation = config.pre_validate(release_commit)
-
-    if not validation is None:
-        exit(reason=validation)
-
-    config.version = select_version(config)
+    config.version = select_version(config.version)
     config.commit = select_commit(repo, config)
     config.notes = select_notes()
 
@@ -768,5 +831,3 @@ if __name__ == '__main__':
     make_pr(str(config.version), candidate, find_remote_repo(repo))
 
     exit()
-
-
