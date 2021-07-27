@@ -176,7 +176,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="ReleaseNotes.txt">
+    <Content Include="..\AwsToolkitPackageResources\ReleaseNotes.txt">
+      <Link>ReleaseNotes.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
