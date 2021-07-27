@@ -272,13 +272,6 @@
     <Compile Include="ToolWindow\AWSNavigatorToolWindow.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\FirstRun\rightbluearrow.png" />
-    <EmbeddedResource Include="Resources\FirstRun\explorerlocation_light.png" />
-    <EmbeddedResource Include="Resources\FirstRun\publishbeanstalk_light.png" />
-    <EmbeddedResource Include="Resources\FirstRun\publishlambda_light.png" />
-    <EmbeddedResource Include="Resources\FirstRun\explorerlocation_dark.png" />
-    <EmbeddedResource Include="Resources\FirstRun\publishbeanstalk_dark.png" />
-    <EmbeddedResource Include="Resources\FirstRun\publishlambda_dark.png" />
     <Resource Include="Resources\CodeCommit32x32.png" />
     <Resource Include="Resources\CodeArtifact32x32.png" />
     <Resource Include="Resources\SignUp.png" />
