@@ -1,0 +1,26 @@
+{
+  "Date": "2021-07-28",
+  "Version": "1.21.3.0",
+  "Entries": [
+    {
+      "Type": "Bug Fix",
+      "Description": "Fixed issue in the Create/Edit Profile dialog box where importing from a CSV file would not update the UI."
+    },
+    {
+      "Type": "Bug Fix",
+      "Description": "Lambda Test tool is now set up when Visual Studio launches and immediately loads a solution"
+    },
+    {
+      "Type": "Deprecation",
+      "Description": "Removed the nodejs8.10 runtime from Lambda deployment dialogs. This runtime has reached end of support. See https://docs.aws.amazon.com/lambda/latest/dg/runtime-support-policy.html for more details."
+    },
+    {
+      "Type": "Feature",
+      "Description": "The Toolkit's User Guide can now be accessed from the \"AWS Toolkit\" menu, located in the \"Extensions\" menu (\"Tools\" menu in Visual Studio 2017)"
+    },
+    {
+      "Type": "Feature",
+      "Description": "Added a menu item to report a bug or make a feature request, available from the \"AWS Toolkit\" menu, located in the \"Extensions\" menu (\"Tools\" menu in Visual Studio 2017)"
+    }
+  ]
+}

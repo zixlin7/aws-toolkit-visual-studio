@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Lambda Test tool is now set up when Visual Studio launches and immediately loads a solution"
-}

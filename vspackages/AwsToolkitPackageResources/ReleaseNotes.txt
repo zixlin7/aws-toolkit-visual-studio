@@ -1,3 +1,10 @@
+v1.21.3.0 (2021-07-28)
+* Fixed issue in the Create/Edit Profile dialog box where importing from a CSV file would not update the UI.
+* Lambda Test tool is now set up when Visual Studio launches and immediately loads a solution
+* Removed the nodejs8.10 runtime from Lambda deployment dialogs. This runtime has reached end of support. See https://docs.aws.amazon.com/lambda/latest/dg/runtime-support-policy.html for more details.
+* The Toolkit's User Guide can now be accessed from the "AWS Toolkit" menu, located in the "Extensions" menu ("Tools" menu in Visual Studio 2017)
+* Added a menu item to report a bug or make a feature request, available from the "AWS Toolkit" menu, located in the "Extensions" menu ("Tools" menu in Visual Studio 2017)
+
 v1.21.2.0 (2021-05-20)
 * Fixed an issue where the toolkit had initialization failures when the development environment did not have access to Windows Encrypted Store.
 * The EC2 Quick Launch dialog dropdowns for Security Group and IAM Role are now sorted.
