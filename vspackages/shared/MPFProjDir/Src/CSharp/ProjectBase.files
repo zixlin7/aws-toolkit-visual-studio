@@ -4,12 +4,6 @@
     <AllowedAssemblyPrefix>$(AllowedAssemblyPrefix);Microsoft.Internal</AllowedAssemblyPrefix>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EnvDTE80">
-      <HintPath>EnvDTE80.dll</HintPath>
-      <Name>EnvDTE80</Name>
-      <SpecificVersion>False</SpecificVersion>
-      <Aliases>global</Aliases>
-    </Reference>
     <Reference Include="Microsoft.Build">
       <Aliases>global</Aliases>
     </Reference>
@@ -17,21 +11,6 @@
       <Aliases>global</Aliases>
     </Reference>
     <Reference Include="Microsoft.Build.Utilities.v4.0">
-      <Aliases>global</Aliases>
-    </Reference>
-    <Reference Include="VsLangProj">
-      <HintPath>VsLangProj.dll</HintPath>
-      <Aliases>global</Aliases>
-    </Reference>
-    <Reference Include="VSLangProj80">
-      <HintPath>VsLangProj80.dll</HintPath>
-      <Aliases>global</Aliases>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Shell.Interop.10.0">
-      <Aliases>global</Aliases>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Designer.Interfaces">
-      <HintPath>Microsoft.VisualStudio.Designer.Interfaces.dll</HintPath>
       <Aliases>global</Aliases>
     </Reference>
     <Reference Include="System.Design">

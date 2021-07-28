@@ -20,8 +20,6 @@ phases:
              $Env:Path += ";$($Env:USERPROFILE)\\.git-secrets"
              git secrets --install
              git secrets --register-aws
-             #allow secrets pattern
-             git secrets --add --allowed 'x:'
              git secrets --scan
 artifacts:
     discard-paths: yes

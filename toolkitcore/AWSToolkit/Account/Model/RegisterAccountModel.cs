@@ -77,8 +77,11 @@ namespace Amazon.AWSToolkit.Account.Model
             get => _accessKey;
             set
             {
-                _accessKey = value;
-                OnPropertyChanged();
+                if (_accessKey != value)
+                {
+                    _accessKey = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -89,8 +92,11 @@ namespace Amazon.AWSToolkit.Account.Model
             get => _secretKey;
             set
             {
-                _secretKey = value;
-                OnPropertyChanged();
+                if (_secretKey != value)
+                {
+                    _secretKey = value;
+                    OnPropertyChanged();
+                }
             }
         }
 

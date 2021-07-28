@@ -40,9 +40,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Shell.15.0">
-      <Version>15.0.26201</Version>
-    </PackageReference>
     <Reference Include="Microsoft.TeamFoundation.Client">
       <HintPath>$(BuildRoot)\thirdparty\TeamExplorer.v16\Microsoft.TeamFoundation.Client.dll</HintPath>
       <Private>False</Private>
@@ -61,13 +58,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <EmbedInteropTypes>False</EmbedInteropTypes>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="envdte80, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <EmbedInteropTypes>false</EmbedInteropTypes>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -77,11 +67,6 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="WindowsBase" />
     <Reference Include="System.Xaml" />
-  </ItemGroup>
-  <ItemGroup>
-	<Reference Include="stdole">
-	  <Private>False</Private>
-	</Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\AWSToolkit.CodeCommitTeamExplorer.v15\Resources.resx">
@@ -148,20 +133,15 @@
     <Resource Include="Resources\CodeCommit32x32.png" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.CoreUtility">
-      <Version>16.0.467</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.OLE.Interop">
-      <Version>7.10.6071</Version>
+    <PackageReference Include="Microsoft.VisualStudio.SDK">
+      <Version>15.0.1</Version>
+      <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Shell.Framework">
       <Version>16.1.28917.181</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Threading">
       <Version>16.0.102</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Utilities">
-      <Version>16.1.28917.181</Version>
     </PackageReference>
     <PackageReference Include="Nerdbank.Streams">
       <Version>2.1.37</Version>

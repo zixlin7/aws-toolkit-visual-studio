@@ -24,12 +24,14 @@ namespace Amazon.AWSToolkit.Settings
             public const string FirstRunFormShown = "FirstRunFormShown";
             public const string TelemetryClientId = "AnalyticsAnonymousCustomerId";
             public const string LastSelectedRegion = "lastselectedregion";
+            public const string ShowMetricsOutputWindow = "ShowMetricsOutputWindow";
         }
 
         public static class DefaultValues
         {
             public const bool TelemetryEnabled = true; // Opt-out model
             public const bool HasUserSeenFirstRunForm = false;
+            public const bool ShowMetricsOutputWindow = false;
         }
 
         static ToolkitSettings()
@@ -133,6 +135,24 @@ namespace Amazon.AWSToolkit.Settings
         {
             get => GetMiscSetting(ToolkitSettingsConstants.HostedFilesLocation);
             set => SetMiscSetting(ToolkitSettingsConstants.HostedFilesLocation, value);
+        }
+
+        /// <summary>
+        /// Used by Toolkit developers to easily see the generated metrics in a VS Output Window Pane
+        /// </summary>
+        public bool ShowMetricsOutputWindow
+        {
+            get
+            {
+                var valueStr = GetMiscSetting(SettingNames.ShowMetricsOutputWindow);
+                if (!bool.TryParse(valueStr, out var showWindow))
+                {
+                    showWindow = DefaultValues.ShowMetricsOutputWindow;
+                }
+
+                return showWindow;
+            }
+            set => SetMiscSetting(SettingNames.ShowMetricsOutputWindow, AsString(value));
         }
 
         /// <summary>

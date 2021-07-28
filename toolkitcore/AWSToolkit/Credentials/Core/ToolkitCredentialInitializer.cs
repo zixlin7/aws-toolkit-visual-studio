@@ -6,6 +6,7 @@ using System.Threading;
 using Amazon.AWSToolkit.Credentials.IO;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Settings;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AwsToolkit.Telemetry.Events.Core;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
@@ -34,7 +35,7 @@ namespace Amazon.AWSToolkit.Credentials.Core
             SetupFactories();
             _credentialManager = new CredentialManager(_factoryMap);
             _awsConnectionManager = new AwsConnectionManager(Core.AwsConnectionManager.DefaultStsClientCreator,
-                _credentialManager, _telemetryLogger, regionProvider);
+                _credentialManager, _telemetryLogger, regionProvider, new AppDataToolkitSettingsRepository());
             _persistConnectionSettings = new PersistConnectionSettings(_awsConnectionManager);
         }
 

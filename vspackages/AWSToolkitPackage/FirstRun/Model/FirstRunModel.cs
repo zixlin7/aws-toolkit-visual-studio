@@ -131,33 +131,6 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
             }
         }
 
-        public List<ShowMeHowToListItem> ShowMeHowToListItems
-        {
-            get
-            {
-                var l = new List<ShowMeHowToListItem>
-                {
-                    new ShowMeHowToListItem
-                    {
-                        Title = "View and explore my AWS resources",
-                        HintGraphicResourceName = "Amazon.AWSToolkit.VisualStudio.Resources.FirstRun.explorerlocation_light.png"
-                    },
-                    new ShowMeHowToListItem
-                    {
-                        Title = "Publish my C# Lambda function",
-                        HintGraphicResourceName = "Amazon.AWSToolkit.VisualStudio.Resources.FirstRun.publishlambda_light.png"
-                    },
-                    new ShowMeHowToListItem
-                    {
-                        Title = "Publish my ASP.NET application",
-                        HintGraphicResourceName = "Amazon.AWSToolkit.VisualStudio.Resources.FirstRun.publishbeanstalk_light.png"
-                    }
-                };
-
-                return l;
-            }
-        }
-
         internal bool AwsCredentialsFromCsv(string csvCredentialsFile)
         {
             string accessKey, secretKey;
@@ -224,20 +197,6 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.Model
         private bool _openAwsExplorerOnClose = true;
 
         internal static ILog LOGGER = LogManager.GetLogger(typeof(FirstRunModel));
-    }
-
-    public class ShowMeHowToListItem
-    {
-        public string Title { get; internal set; }
-
-        public string HintGraphicResourceName { get; internal set; }
-
-        public ImageSource HintGraphic => IconHelper.GetIcon(this.GetType().Assembly, HintGraphicResourceName).Source;
-
-        public ImageSource Arrow =>
-            IconHelper.GetIcon(this.GetType().Assembly,
-                    "Amazon.AWSToolkit.VisualStudio.Resources.FirstRun.rightbluearrow.png")
-                .Source;
     }
 
 }

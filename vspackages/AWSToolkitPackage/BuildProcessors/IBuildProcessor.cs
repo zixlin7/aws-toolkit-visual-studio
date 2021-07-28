@@ -10,7 +10,7 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
     /// Implemented by build processors to enable different build
     /// mechanisms for web site vs web application projects etc
     /// </summary>
-    internal interface IBuildProcessor
+    public interface IBuildProcessor
     {
         /// <summary>
         /// Perform a build of the selected project.
@@ -38,7 +38,7 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
     /// <summary>
     /// Wraps information needed by build processor subtask
     /// </summary>
-    internal class BuildTaskInfo
+    public class BuildTaskInfo
     {
         public BuildTaskInfo(BuildAndDeploymentControllerBase.ServiceProviderDelegate hostServiceProvider,
                             VSWebProjectInfo projectInfo,
@@ -92,7 +92,7 @@ namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
     /// <summary>
     /// Helper methods and properties for the various build processor implementations
     /// </summary>
-    internal class BuildProcessorBase
+    public class BuildProcessorBase
     {
         private readonly object _syncLock = new object();
 

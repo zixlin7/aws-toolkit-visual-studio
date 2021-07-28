@@ -144,8 +144,12 @@ Here is a brief summary of the projects contained within the Toolkit Solution:
     - Tests related to AWSToolkit or any of the Toolkit plugins
   - AWSToolkit.Util.Tests
     - Tests related to the AWSToolkit.Util project
+  - AWSToolkit.VisualStudio.Shared.Tests
+    - Tests related to AWSToolkit.VisualStudio.Shared
   - AWSToolkitPackage.Tests
     - Tests related to the AWSToolkitPackage project
+  - AwsToolkit.Tests.Integration
+    - Home of Integration tests for any aspect of the Toolkit
 
 [toolkitarchitecture]: architecture.svg
 [packagereferences]: package-references.svg

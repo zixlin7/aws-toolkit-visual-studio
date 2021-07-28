@@ -96,6 +96,18 @@ namespace Amazon.AWSToolkit.S3.Nodes
             }
         }
 
+        public void AddToBucketDeleteList()
+        {
+            var s3RootViewMetaNode = S3RootViewModel.MetaNode as S3RootViewMetaNode;
+            s3RootViewMetaNode.AddBucketToDeleteList(this);
+        }
+
+        public void RemoveFromBucketDeleteList()
+        {
+            var s3RootViewMetaNode = S3RootViewModel.MetaNode as S3RootViewMetaNode;
+            s3RootViewMetaNode.RemoveBucketFromDeleteList(this);
+        }
+
         private void buildLocalSpecificS3Client()
         {
             lock (CLIENT_CREATE_LOCK)

@@ -9,9 +9,11 @@ using Amazon.AWSToolkit.CommonUI.MessageBox;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
+using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Task = System.Threading.Tasks.Task;
 
 namespace Amazon.AWSToolkit.VisualStudio.Services
 {
@@ -61,81 +63,81 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
         {
             this._hostPackage.JoinableTaskFactory.Run(async () =>
             {
-                await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
-                var openShell = _hostPackage.GetVSShellService(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
+                await OpenInEditorAsync(editorControl);
+            });
+        }
 
-                var logicalView = VSConstants.LOGVIEWID_Primary;
-                var editorFactoryGuid = new Guid(GuidList.HostedEditorFactoryGuidString);
+        public async Task OpenInEditorAsync(IAWSToolkitControl editorControl)
+        {
+            await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+            var openShell = await _hostPackage.GetServiceAsync(typeof(IVsUIShellOpenDocument)) as IVsUIShellOpenDocument;
+            Assumes.Present(openShell);
 
-                var controlId = (uint)(Interlocked.Increment(ref _hostPackage.ControlCounter));
+            var logicalView = VSConstants.LOGVIEWID_Primary;
+            var editorFactoryGuid = new Guid(GuidList.HostedEditorFactoryGuidString);
 
-                _hostPackage.ControlCache[controlId] = new WeakReference(editorControl);
-                try
+            var controlId = (uint) (Interlocked.Increment(ref _hostPackage.ControlCounter));
+
+            _hostPackage.ControlCache[controlId] = new WeakReference(editorControl);
+            try
+            {
+                var uniqueId = editorControl.UniqueId;
+
+                if (editorControl.IsUniquePerAccountAndRegion)
                 {
-                    var uniqueId = editorControl.UniqueId;
-                    //TODO: Replace Navigator selected accounts with connection manager selected accounts
-                    if (ToolkitFactory.Instance.Navigator.SelectedAccount != null)
-                    {
-                        uniqueId += ToolkitFactory.Instance.Navigator.SelectedAccount.SettingsUniqueKey;
-                    }
-                    if (ToolkitFactory.Instance.Navigator.SelectedRegion != null)
-                    {
-                        uniqueId += ToolkitFactory.Instance.Navigator.SelectedRegionId;
-                    }
+                    uniqueId = CreateUniqueIdWithAccountAndRegion(uniqueId);
+                }
 
-                    string filename;
-                    if (!_hostPackage.ControlUniqueNameToFileName.TryGetValue(uniqueId, out filename))
+                if (!_hostPackage.ControlUniqueNameToFileName.TryGetValue(uniqueId, out var filename))
+                {
+                    filename = Guid.NewGuid() + ".hostedControl";
+                    _hostPackage.ControlUniqueNameToFileName[uniqueId] = filename;
+                    _hostPackage.OpenedEditors[filename] = new WeakReference(editorControl);
+                }
+                else if (_hostPackage.OpenedEditors.ContainsKey(filename))
+                {
+                    var wr = _hostPackage.OpenedEditors[filename];
+                    if (wr.IsAlive)
                     {
-                        filename = Guid.NewGuid() + ".hostedControl";
-                        _hostPackage.ControlUniqueNameToFileName[uniqueId] = filename;
-                        _hostPackage.OpenedEditors[filename] = new WeakReference(editorControl);
-                    }
-                    else if (_hostPackage.OpenedEditors.ContainsKey(filename))
-                    {
-                        var wr = _hostPackage.OpenedEditors[filename];
-                        if (wr.IsAlive)
-                        {
-                            var existingOpenEditor = wr.Target as IAWSToolkitControl;
-                            existingOpenEditor.RefreshInitialData(editorControl.GetInitialData());
-                        }
-                    }
-
-                    var documentMoniker = Path.Combine(_hostPackage.GetTempFileLocation(), filename);
-                    IVsWindowFrame frame;
-
-                    await _hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
-                    var result = openShell.OpenSpecificEditor(0,  // grfOpenSpecific 
-                                                                documentMoniker, // pszMkDocument 
-                                                                ref editorFactoryGuid,  // rGuidEditorType 
-                                                                null, // pszPhysicalView 
-                                                                ref logicalView, // rguidLogicalView +++
-                                                                editorControl.Title, // pszOwnerCaption 
-                                                                _hostPackage._navigatorVsUIHierarchy, // pHier 
-                                                                controlId, // itemid 
-                                                                new IntPtr(0), // punkDocDataExisting 
-                                                                null, // pSPHierContext 
-                                                                out frame);
-
-                    if (result != VSConstants.S_OK)
-                    {
-                        _hostPackage.ControlCache.Remove(controlId);
-                        Trace.WriteLine(result);
-                        editorControl.OnEditorOpened(false);
-                    }
-                    else
-                    {
-                        frame.Show();
-                        editorControl.OnEditorOpened(true);
+                        var existingOpenEditor = wr.Target as IAWSToolkitControl;
+                        existingOpenEditor.RefreshInitialData(editorControl.GetInitialData());
                     }
                 }
-                catch
+
+                var documentMoniker = Path.Combine(_hostPackage.GetTempFileLocation(), filename);
+
+                await _hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
+                var result = openShell.OpenSpecificEditor(0, // grfOpenSpecific 
+                    documentMoniker, // pszMkDocument 
+                    ref editorFactoryGuid, // rGuidEditorType 
+                    null, // pszPhysicalView 
+                    ref logicalView, // rguidLogicalView +++
+                    editorControl.Title, // pszOwnerCaption 
+                    _hostPackage._navigatorVsUIHierarchy, // pHier 
+                    controlId, // itemid 
+                    new IntPtr(0), // punkDocDataExisting 
+                    null, // pSPHierContext 
+                    out var frame);
+
+                if (result != VSConstants.S_OK)
                 {
                     _hostPackage.ControlCache.Remove(controlId);
+                    Trace.WriteLine(result);
                     editorControl.OnEditorOpened(false);
                 }
-                
-                ThreadPool.QueueUserWorkItem(_hostPackage.ClearDeadWeakReferences, null);
-            });
+                else
+                {
+                    frame.Show();
+                    editorControl.OnEditorOpened(true);
+                }
+            }
+            catch
+            {
+                _hostPackage.ControlCache.Remove(controlId);
+                editorControl.OnEditorOpened(false);
+            }
+
+            ThreadPool.QueueUserWorkItem(_hostPackage.ClearDeadWeakReferences, null);
         }
 
         public void OpenInEditor(string fileName)
@@ -478,5 +480,21 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
         #endregion
 
         private AWSToolkitShellProviderService() { }
+
+        private static string CreateUniqueIdWithAccountAndRegion(string uniqueId)
+        {
+            //TODO: Replace Navigator selected accounts with connection manager selected accounts
+            if (ToolkitFactory.Instance.Navigator.SelectedAccount != null)
+            {
+                uniqueId += ToolkitFactory.Instance.Navigator.SelectedAccount.SettingsUniqueKey;
+            }
+
+            if (ToolkitFactory.Instance.Navigator.SelectedRegion != null)
+            {
+                uniqueId += ToolkitFactory.Instance.Navigator.SelectedRegionId;
+            }
+
+            return uniqueId;
+        }
     }
 }

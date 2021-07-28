@@ -16,90 +16,6 @@
                 <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <Style x:Key="ShowMeHowToListBoxItemStyle" TargetType="ListBoxItem">
-                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-                <Setter Property="Margin" Value="4,8" />
-                <Setter Property="TextBlock.Foreground" Value="{DynamicResource awsDefaultControlForegroundBrushKey}" />
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="ListBoxItem">
-                            <Border
-                                x:Name="Root"
-                                Padding="4"
-                                Background="Transparent"
-                                BorderBrush="{DynamicResource awsListBoxPanelItemBackgroundBrushKey}"
-                                BorderThickness="2"
-                                CornerRadius="4">
-                                <ContentPresenter
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Center"
-                                    Content="{TemplateBinding Content}"
-                                    ContentTemplate="{TemplateBinding ContentTemplate}" />
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-
-            <DataTemplate x:Key="ShowMeHowToItemTemplate">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="2"
-                        Margin="0"
-                        VerticalAlignment="Center"
-                        FontSize="{DynamicResource {x:Static local:ThemeFontResources.Environment122PercentFontSizeKey}}"
-                        FontWeight="{DynamicResource {x:Static local:ThemeFontResources.EnvironmentBoldFontWeightKey}}"
-                        Foreground="{TemplateBinding TextBlock.Foreground}"
-                        Text="{Binding Title}"
-                        TextTrimming="WordEllipsis"
-                        TextWrapping="NoWrap" />
-
-                    <Image
-                        Grid.Row="1"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="2"
-                        Width="64"
-                        Height="64"
-                        Margin="0,8,0,0"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Panel.ZIndex="1"
-                        Source="{Binding Arrow}" />
-
-                    <Image
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        Width="260"
-                        Height="130"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center"
-                        Source="{Binding HintGraphic}" />
-
-                </Grid>
-            </DataTemplate>
-
-            <ControlTemplate x:Key="ShowMeHowToListControlTemplate" TargetType="ListBox">
-                <ScrollViewer
-                    Padding="{TemplateBinding Padding}"
-                    CanContentScroll="True"
-                    Focusable="false"
-                    HorizontalScrollBarVisibility="Hidden"
-                    VerticalScrollBarVisibility="Auto">
-                    <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                </ScrollViewer>
-            </ControlTemplate>
-
             <Style x:Key="flowDocumentStyle" TargetType="{x:Type FlowDocument}">
                 <Setter Property="FontFamily" Value="{DynamicResource {x:Static local:ThemeFontResources.EnvironmentFontFamilyKey}}" />
                 <Setter Property="FontSize" Value="{DynamicResource {x:Static local:ThemeFontResources.EnvironmentFontSizeKey}}" />
@@ -182,8 +98,6 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
                     <Grid Grid.Column="0" Margin="4,0" x:Name="_credentialsPanel">
@@ -414,38 +328,6 @@
                             </FlowDocumentScrollViewer>
 
                         </Grid>
-                    </Grid>
-
-                    <Border Grid.Column="3"
-                            Margin="2,2,2,0"
-                            Background="{DynamicResource awsDividerRuleBrushKey}"
-                            BorderBrush="{DynamicResource awsDividerRuleBrushKey}"
-                            BorderThickness="1" 
-                            Visibility="Collapsed"
-                            />
-
-                    <!-- 'show me how' graphics; width set here so we can currently collapse -->
-                    <Grid Grid.Column="4" 
-                          Margin="4,0" 
-                          x:Name="_showMePanel" 
-                          Width="320"
-                          Visibility="Collapsed">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-
-                        <TextBlock Margin="4,0" Style="{DynamicResource awsTextBlock155PercentStyle}">
-                        Show me how to...
-                        </TextBlock>
-
-                        <ListBox Grid.Row="1"
-                                 Margin="4"
-                                 HorizontalContentAlignment="Stretch"
-                                 ItemContainerStyle="{StaticResource ShowMeHowToListBoxItemStyle}"
-                                 ItemTemplate="{StaticResource ShowMeHowToItemTemplate}"
-                                 ItemsSource="{Binding ShowMeHowToListItems}"
-                                 Template="{StaticResource ShowMeHowToListControlTemplate}" />
                     </Grid>
 
                 </Grid>

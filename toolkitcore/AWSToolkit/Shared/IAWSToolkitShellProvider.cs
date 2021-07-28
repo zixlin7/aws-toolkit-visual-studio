@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.Shared
@@ -40,6 +41,12 @@ namespace Amazon.AWSToolkit.Shared
         /// </summary>
         /// <param name="editorControl"></param>
         void OpenInEditor(IAWSToolkitControl editorControl);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="editorControl"></param>
+        Task OpenInEditorAsync(IAWSToolkitControl editorControl);
 
         /// <summary>
         /// 

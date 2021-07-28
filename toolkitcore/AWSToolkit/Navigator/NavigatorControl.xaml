@@ -82,13 +82,13 @@
             <Label
                 Grid.Row="0"
                 Grid.Column="0"
-                Margin="5,3,5,3"
+                Margin="3 3 0 0"
                 Foreground="{DynamicResource awsToolWindowTextBrushKey}"
                 Style="{DynamicResource awsLabelBoldStyle}"
                 Content="Credentials:" />
 
             <commoncomponents:CredentialsSelector 
-                Margin="5 3 5 3" 
+                Margin="3 3 0 0" 
                 Grid.Row="0" Grid.Column="1"
                 Account="{Binding Account, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 Accounts="{Binding Accounts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
@@ -97,7 +97,7 @@
             <Button
                 Grid.Row="0"
                 Grid.Column="2"
-                Margin="0,3,0,3"
+                Margin="3 3 0 0"
                 Command="{Binding AddAccountCommand}"
                 ToolTip="Add AWS Credentials Profile"
                 AutomationProperties.AutomationId="AddProfileButton">
@@ -110,7 +110,7 @@
                 Name="_ctlEditAccount"
                 Grid.Row="0"
                 Grid.Column="3"
-                Margin="0,3,0,3"
+                Margin="3 3 0 0"
                 Command="{Binding EditAccountCommand}"
                 ToolTip="Edit AWS Credentials Profile"
                 AutomationProperties.AutomationId="EditProfileButton">
@@ -124,7 +124,7 @@
                 Name="_ctlDeleteAccount"
                 Grid.Row="0"
                 Grid.Column="4"
-                Margin="0,3,0,3"
+                Margin="3 3 3 0"
                 Command="{Binding DeleteAccountCommand}"
                 DockPanel.Dock="Right"
                 ToolTip="Delete AWS Credentials Profile"
@@ -138,7 +138,7 @@
             <Label
                 Grid.Row="1"
                 Grid.Column="0"
-                Margin="5,3,5,3"
+                Margin="3 3 0 3"
                 Foreground="{DynamicResource awsToolWindowTextBrushKey}"
                 Style="{DynamicResource awsLabelBoldStyle}"
                 Content="Region:"/>
@@ -147,7 +147,7 @@
                 Grid.Row="1"
                 Grid.Column="1"
                 Grid.ColumnSpan="3"
-                Margin="5,3,5,3"
+                Margin="3 3 0 3"
                 Style="{DynamicResource awsComboBoxStyle}"
                 AutomationProperties.AutomationId="RegionsPicker"
                 ItemsSource="{Binding Regions}"
@@ -171,7 +171,7 @@
             <Button
                 Grid.Row="1"
                 Grid.Column="4"
-                Margin="0,3,0,3"
+                Margin="3 3 3 3"
                 Click="onNavigatorRefreshClick"
                 ToolTip="Refresh"
                 AutomationProperties.AutomationId="RefreshButton">
@@ -185,7 +185,7 @@
                 Grid.Row="2"
                 Grid.Column="0"
                 Grid.ColumnSpan="4"
-                Margin="5,3,5,3"
+                Margin="3 0 3 3"
                 HorizontalAlignment="Center"
                 FontWeight="Bold"
                 Foreground="Red" 

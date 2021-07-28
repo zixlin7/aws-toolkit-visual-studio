@@ -56,8 +56,17 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
                 }
 
                 _solutionEvents = dte.Events.SolutionEvents;
+
+                // Set up the Lambda tester if a solution was opened before this was initialized
+                var handleCurrentSolution = dte.Solution.IsOpen;
+
                 _solutionEvents.Opened += OnSolutionOpened;
                 _solutionEvents.ProjectAdded += OnProjectAddedToSolution;
+
+                if (handleCurrentSolution)
+                {
+                    OnSolutionOpened();
+                }
             }
             catch (Exception e)
             {
@@ -67,27 +76,34 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
 
         private void OnSolutionOpened()
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
-
-            if (!(_hostPackage.GetVSShellService(typeof(EnvDTE.DTE)) is DTE dte))
+            try
             {
-                LOGGER.Error("Unable to get DTE");
-                return;
-            }
+                ThreadHelper.ThrowIfNotOnUIThread();
 
-            // Listen for Visual Studio Debugger Sessions
-            // We don't do this during Toolkit initialization, because it force loads the
-            // Debugger module if that hasn't been loaded already, which causes longer
-            // Toolkit activation times. Instead, we defer this to the first time a solution
-            // is loaded, since it is more likely that VS has loaded the Debugger by then.
-            if (!_debugHookRegistered)
+                if (!(_hostPackage.GetVSShellService(typeof(DTE)) is DTE dte))
+                {
+                    LOGGER.Error("Unable to get DTE");
+                    return;
+                }
+
+                // Listen for Visual Studio Debugger Sessions
+                // We don't do this during Toolkit initialization, because it force loads the
+                // Debugger module if that hasn't been loaded already, which causes longer
+                // Toolkit activation times. Instead, we defer this to the first time a solution
+                // is loaded, since it is more likely that VS has loaded the Debugger by then.
+                if (!_debugHookRegistered)
+                {
+                    RegisterDebuggerEvents(dte);
+                    _debugHookRegistered = true;
+                }
+
+                // Configure Lambda Tester usage in the Solution's Projects
+                LambdaTesterUtilities.EnsureLambdaTesterConfigured(dte.Solution, _lambdaPlugin.Value);
+            }
+            catch (Exception e)
             {
-                RegisterDebuggerEvents(dte);
-                _debugHookRegistered = true;
+                LOGGER.Error("Error trying to set up Lambda tester with solution", e);
             }
-
-            // Configure Lambda Tester usage in the Solution's Projects
-            LambdaTesterUtilities.EnsureLambdaTesterConfigured(dte.Solution, _lambdaPlugin.Value);
         }
 
         private void OnProjectAddedToSolution(Project project)

@@ -111,6 +111,31 @@ namespace Amazon.AWSToolkit.Util.Tests.Settings
         }
 
         [Theory]
+        [InlineData(null, ToolkitSettings.DefaultValues.ShowMetricsOutputWindow)]
+        [InlineData("garbage", ToolkitSettings.DefaultValues.ShowMetricsOutputWindow)]
+        [InlineData("true", true)]
+        [InlineData("false", false)]
+        public void GetShowMetricsOutputWindow(string persistedValue, bool expectedValue)
+        {
+            if (persistedValue != null)
+            {
+                _settingsPersistence.PersistenceData["ShowMetricsOutputWindow"] = persistedValue;
+            }
+
+            Assert.Equal(expectedValue, _sut.ShowMetricsOutputWindow);
+        }
+
+        [Theory]
+        [InlineData(true, "true")]
+        [InlineData(false, "false")]
+        public void SetShowMetricsOutputWindow(bool value, string persistedValue)
+        {
+            _sut.ShowMetricsOutputWindow = value;
+
+            Assert.Equal(persistedValue, _settingsPersistence.PersistenceData["ShowMetricsOutputWindow"]);
+        }
+
+        [Theory]
         [InlineData(null, true)]
         [InlineData("garbage", true)]
         [InlineData("316074D1-47A1-4154-A79C-B98723154B4E", false)]

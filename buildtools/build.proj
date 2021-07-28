@@ -67,6 +67,11 @@
         <CallTarget Targets="run-tests"/>
 	</Target>
 
+    <!-- test-integ - runs the integration tests; does not compile first -->
+    <Target Name="test-integ">
+        <CallTarget Targets="run-integration-tests"/>
+    </Target>
+
     <!-- AWS VISUAL STUDIO TOOLKIT UTILITY TARGETS -->
 
     <Target Name="update-awssdk" DependsOnTargets="build-tools">
@@ -120,10 +125,24 @@
             <TestAssemblies Include="..\tests\AWSToolkit.Tests\bin\$(Configuration)\AWSToolkit.Tests.dll" />
             <TestAssemblies Include="..\tests\AWSToolkit.Util.Tests\bin\$(Configuration)\AWSToolkit.Util.Tests.dll" />
             <TestAssemblies Include="..\tests\AWSToolkitPackage.Tests\bin\$(Configuration)\AWSToolkitPackage.Tests.dll" />
+            <TestAssemblies Include="..\tests\AWSToolkit.VisualStudio.Shared.Tests\bin\$(Configuration)\AWSToolkit.VisualStudio.Shared.Tests.dll" />
         </ItemGroup>        
 
         <MakeDir Directories="$(TestResults)" />
         <xunit Assemblies="@(TestAssemblies)" Html="$(TestResults)\toolkit-test-results.html" Xml="$(TestResults)\toolkit-test-results.xml" Reporter="verbose" />
+    </Target>
+
+    <!-- Run integration tests with the current compiled code -->
+    <Target Name="run-integration-tests" DependsOnTargets="restore-test-runner">
+        <Message Text="$(Configuration) - running integration tests."/>
+
+        <ItemGroup>
+            <!-- Add projects to be tested with xunit here -->
+            <TestAssemblies Include="..\tests\Integration\AwsToolkit.Tests.Integration\bin\$(Configuration)\AwsToolkit.Tests.Integration.dll" />
+        </ItemGroup>        
+
+        <MakeDir Directories="$(TestResults)" />
+        <xunit Assemblies="@(TestAssemblies)" Html="$(TestResults)\toolkit-test-integ-results.html" Xml="$(TestResults)\toolkit-test-integ-results.xml" Reporter="verbose" />
     </Target>
 
     <!-- ======================================== END Test Related ======================================== -->
@@ -247,16 +266,9 @@
 	</Target>
 	
 	<Target Name="update-version" DependsOnTargets="build-tools" Condition="$(UpdateVersions)">
-		<UpdateAssemblyInfoVersionTask
-			RepositoryRoot="$(MSBuildProjectDirectory)\.."
-            AssemblyInfoPaths="awsdeploy\host"
-			VersionNumber="$(AWSDeployVersionNumber)"
-			WaitForDebugger="false"
-			/>
-
 		<UpdateVSToolkitVersionTask
 			RepositoryRoot="$(MSBuildProjectDirectory)\.."
-			ExcludePaths="vspackages\templates\AWSProjectTemplates;vspackages\cloudformation\CloudFormationProjectTemplate;vspackages\cloudformation\CloudFormationTemplate;vspackages\lambda\LambdaFunctionProjectTemplate;vspackages\lambda\LambdaNETCoreFlourishProjectTemplate;vspackages\lambda\LambdaNETCoreFlourishProjectWithTestTemplate;vspackages\lambda\LambdaNETCoreFunctionProjectTemplate;vspackages\lambda\LambdaNETCoreFunctionProjectWithTestTemplate"
+			ExcludePaths="buildtasks;tests;toolkitcore\AWSToolkit.Studio;vspackages\templates\AWSProjectTemplates;vspackages\cloudformation\CloudFormationProjectTemplate;vspackages\cloudformation\CloudFormationTemplate;vspackages\lambda\LambdaFunctionProjectTemplate;vspackages\lambda\LambdaNETCoreFlourishProjectTemplate;vspackages\lambda\LambdaNETCoreFlourishProjectWithTestTemplate;vspackages\lambda\LambdaNETCoreFunctionProjectTemplate;vspackages\lambda\LambdaNETCoreFunctionProjectWithTestTemplate"
 			VersionNumber="$(AWSToolkitVersionNumber)"
 			WaitForDebugger="false"
 			/>
@@ -343,6 +355,18 @@
     <Target Name="get-latest-endpoint-data">
         <Message Text="Fetching latest endpoints manifest files..." />
         <Exec Command="powershell.exe $(MSBuildThisFileDirectory)updateEndpoints.ps1 -configuration $(Configuration) -s3BucketName $(HostedFilesBucket) -s3BucketRegion $(HostedFilesBucketRegion) -hostedfilesFolder $(HostedFilesFolder)" />
+    </Target>
+    
+    <!-- Output the current VSIX file's contents to a text file -->
+    <Target Name="list-vsix-contents">
+        <Message Text="$(Configuration) - Listing VSIX Contents"/>
+
+        <PropertyGroup>
+            <VsixFileName>$(Deployment)\$(VisualStudioVersion)\$(Configuration)\AWSToolkitPackage.vsix</VsixFileName>
+            <OutputFileName>$(Deployment)\$(VisualStudioVersion)\$(Configuration)\_vsixContents.txt</OutputFileName>
+        </PropertyGroup>
+        <Message Text="Listing VSIX Contents..." />
+        <Exec Command="powershell.exe $(MSBuildThisFileDirectory)listZipContents.ps1 -vsixFileName $(VsixFileName) -outputFileName $(OutputFileName)" />
     </Target>
     
 	<Target Name="compare-hostedfiles-all" DependsOnTargets="compare-hostedfiles;compare-hostedfiles-bjs" />
@@ -446,6 +470,20 @@
 
 	<Target Name="validate-ec2-quicklaunch" DependsOnTargets="build-tools">
 		<EC2QuickLaunchGeneratorTask />
+	</Target>
+
+	<!-- Runs a guided script to generate a release candidate -->
+	<!-- Requires Python 3.9+ -->
+	<Target Name="queueCandidate">
+		<PropertyGroup>
+			<ReleaseScriptDirectory>$(MSBuildProjectDirectory)\release</ReleaseScriptDirectory>
+			<RepositoryDirectory>$([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))</RepositoryDirectory>
+		</PropertyGroup>
+
+		<Exec Command="pip install -r $(ReleaseScriptDirectory)\requirements.txt" />
+		
+		<!-- Script is ran in a new shell to prevent stdio from being mangled by msbuild -->
+		<Exec Command="start powershell.exe -NoExit iex \&quot; $(ReleaseScriptDirectory)\release.ps1 -repoRoot '$(RepositoryDirectory)' \&quot;" />
 	</Target>
 
 </Project>

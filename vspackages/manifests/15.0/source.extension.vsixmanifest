@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
         <Identity Id="|%CurrentProject%;GetVsixGuid|" Version="|%CurrentProject%;GetVsixVersion|" Language="en-US" Publisher="Amazon Web Services" />
@@ -10,7 +10,7 @@
         <ReleaseNotes>ReleaseNotes.txt</ReleaseNotes>
         <Icon>Resources\Package.ico</Icon>
         <PreviewImage>Resources\aws.png</PreviewImage>
-        <Tags>AWS;Cloud;Web Services;Amazon</Tags>
+        <Tags>Amazon Web Services;AWS;Beanstalk;Cloud;CloudFormation;CodeArtifact;CodeCommit;DynamoDB;EC2;ECR;ECS;IAM;Lambda;S3;Serverless;SNS;SQS</Tags>
     </Metadata>
     <Installation InstalledByMsi="|%CurrentProject%;GetVsixInstalledByMsiFlag|" AllUsers="true">
         <InstallationTarget Version="|%CurrentProject%;GetVsixVSTarget|" Id="Microsoft.VisualStudio.Community" />
@@ -28,7 +28,6 @@
 
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="AWSToolkit.Lambda.TemplateWizards" Path="|AWSToolkit.Lambda.TemplateWizards|" AssemblyName="|AWSToolkit.Lambda.TemplateWizards;AssemblyName|" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="AWSToolkit.CloudFormation.TemplateWizards" Path="|AWSToolkit.CloudFormation.TemplateWizards|" AssemblyName="|AWSToolkit.CloudFormation.TemplateWizards;AssemblyName|" />
-        <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="Project" d:ProjectName="TemplateWizard" Path="|TemplateWizard|" AssemblyName="|TemplateWizard;AssemblyName|" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="Microsoft.WindowsAPICodePack.dll" AssemblyName="Microsoft.WindowsAPICodePack, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
         <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="Microsoft.WindowsAPICodePack.Shell.dll" AssemblyName="Microsoft.WindowsAPICodePack.Shell, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
 

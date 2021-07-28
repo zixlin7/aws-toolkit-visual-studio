@@ -36,6 +36,7 @@ namespace Amazon.AWSToolkit.Navigator
         private readonly ToolkitContext _toolkitContext;
         private readonly NavigatorViewModel _navigatorViewModel;
         private bool _isInitialized = false;
+        private bool _regionPassive = false;
 
         // Don't emit credentials metrics until after the Toolkit starts up
         private bool _logMetrics = false;
@@ -166,16 +167,29 @@ namespace Amazon.AWSToolkit.Navigator
 
             this.Dispatcher.Invoke(() =>
             {
-                var account = _navigatorViewModel.Account;
-                this._ctlResourceTree.DataContext = account;
-                this._ctlEditAccount.IsEnabled = IsAccountBasic();
-                if (!string.Equals(_toolkitContext.ConnectionManager.ActiveCredentialIdentifier?.Id, account?.Identifier.Id))
+                try
                 {
-                    _toolkitContext.ConnectionManager.ChangeCredentialProvider(account?.Identifier);
+                    var account = _navigatorViewModel.Account;
+                    this._ctlResourceTree.DataContext = account;
+                    this._ctlEditAccount.IsEnabled = IsAccountBasic();
+                    if (!string.Equals(_toolkitContext.ConnectionManager.ActiveCredentialIdentifier?.Id, account?.Identifier.Id))
+                    {
+                        _toolkitContext.ConnectionManager.ChangeCredentialProvider(account?.Identifier);
+                    }
+                    // emit set region metric as passive if it is a side-effect of partition change
+                    _regionPassive = true;
+                    _navigatorViewModel.PartitionId = account?.PartitionId;
+
+                    setToolbarState(true);
                 }
-                _navigatorViewModel.PartitionId = account?.PartitionId;
-               
-                setToolbarState(true);
+                catch (Exception ex)
+                {
+                    _logger.Error(ex);
+                }
+                finally
+                {
+                    _regionPassive = false; 
+                }
             });
         }
 
@@ -420,7 +434,7 @@ namespace Amazon.AWSToolkit.Navigator
                 {
                     _toolkitContext.TelemetryLogger.RecordAwsSetRegion(new AwsSetRegion()
                     {
-                        AwsAccount = MetadataValue.NotApplicable, AwsRegion = toolkitRegion.Id,
+                        AwsAccount = MetadataValue.NotApplicable, AwsRegion = toolkitRegion.Id, Passive = _regionPassive
                     });
 
                     _lastRecordedRegion = toolkitRegion;

@@ -14,7 +14,7 @@ namespace Amazon.AWSToolkit.VisualStudio
     /// Base class wrapping the processes of build and deployment 
     /// for Visual Studio web application and web site projects to AWS.
     /// </summary>
-    internal abstract class BuildAndDeploymentControllerBase
+    public abstract class BuildAndDeploymentControllerBase
     {
         protected BuildAndDeploymentControllerBase(Dispatcher dispatcher)
         {

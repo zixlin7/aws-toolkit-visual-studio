@@ -73,10 +73,6 @@
 
   <UsingTask
     AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
-    TaskName="BuildTasks.UpdateAssemblyInfoVersionTask" />
-
-  <UsingTask
-    AssemblyFile="BuildTasks\bin\$(Configuration)\BuildTasks.dll"
     TaskName="BuildTasks.UpdateVSToolkitVersionTask" />
 
   <UsingTask

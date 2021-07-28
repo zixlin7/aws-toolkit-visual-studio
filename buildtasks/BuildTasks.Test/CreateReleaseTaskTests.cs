@@ -24,7 +24,7 @@ namespace BuildTasks.Test
                 ChangeDirectoryPath = Path.Combine(_repositoryTestLocation.TestFolder, ".changes"),
                 NextReleasePath = _nextReleasePath,
                 ReleaseNotesPath = Path.Combine(_repositoryTestLocation.TestFolder, "vspackages",
-                    "AWSToolkitPackage", "ReleaseNotes.txt"),
+                    "AwsToolkitPackageResources", "ReleaseNotes.txt"),
                 ChangeLogPath = Path.Combine(_repositoryTestLocation.TestFolder, "CHANGELOG.md")
             };
             Directory.CreateDirectory(Directory.GetParent(_createReleaseTask.ReleaseNotesPath).FullName);

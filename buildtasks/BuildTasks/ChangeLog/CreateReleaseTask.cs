@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -53,7 +53,7 @@ namespace BuildTasks.ChangeLog
             ChangeDirectoryPath = Path.Combine(RepositoryRoot, ChangeDirectory);
             NextReleasePath = Path.Combine(ChangeDirectoryPath, "next-release");
             var releaseVersionFilePath = Path.Combine(ChangeDirectoryPath, $"{ReleaseVersion}.json");
-            ReleaseNotesPath = Path.Combine(RepositoryRoot, "vspackages", "AWSToolkitPackage", "ReleaseNotes.txt");
+            ReleaseNotesPath = Path.Combine(RepositoryRoot, "vspackages", "AwsToolkitPackageResources", "ReleaseNotes.txt");
             ChangeLogPath = Path.Combine(RepositoryRoot, "CHANGELOG.md");
 
             //validate files for release

@@ -4,7 +4,7 @@
     /// Interface declaration for pluggable loggers into the build/deployment
     /// process.
     /// </summary>
-    internal interface IBuildAndDeploymentLogger
+    public interface IBuildAndDeploymentLogger
     {
         /// <summary>
         /// Requests the host to display a message; the host window that

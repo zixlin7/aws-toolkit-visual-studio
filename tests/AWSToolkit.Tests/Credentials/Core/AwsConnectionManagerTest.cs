@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Amazon;
-using Amazon.AWSToolkit;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.State;
 using Amazon.AWSToolkit.Credentials.Utils;
@@ -58,7 +57,7 @@ namespace AWSToolkit.Tests.Credentials.Core
 
         private readonly List<ConnectionState> _stateList;
         private readonly AwsConnectionManager.GetStsClient _fnStsClient;
-        private AwsConnectionManager _awsConnectionManager;
+        private readonly AwsConnectionManager _awsConnectionManager;
 
         public AwsConnectionManagerTest()
         {
@@ -101,15 +100,18 @@ namespace AWSToolkit.Tests.Credentials.Core
                 });
 
             _stateList = new List<ConnectionState>();
+            _awsConnectionManager = CreateAwsConnectionManager();
+        }
+
+        private AwsConnectionManager CreateAwsConnectionManager()
+        {
+            return new AwsConnectionManager(_fnStsClient, _credentialManager.Object, _telemetryLogger.Object, _regionProvider.Object, new NoopToolkitSettingsRepository());
         }
 
         [Fact]
         public void IncompleteConfiguration_WhenInitiallyLoaded()
         {
             _credentialManager.Setup(x => x.GetCredentialIdentifiers()).Returns(new List<ICredentialIdentifier>());
-            _awsConnectionManager = new AwsConnectionManager( _fnStsClient, _credentialManager.Object,
-                _telemetryLogger.Object,
-                _regionProvider.Object);
             _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
             _connectionStateIsTerminalEvent.Reset();
             _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
@@ -124,8 +126,6 @@ namespace AWSToolkit.Tests.Credentials.Core
         public void DefaultSettingsChosen_WhenInitiallyLoaded()
         {
             _availableCredentials.Add(_defaultSampleIdentifier.Id);
-            _awsConnectionManager = new AwsConnectionManager(_fnStsClient,
-                _credentialManager.Object, _telemetryLogger.Object, _regionProvider.Object);
             _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
             _connectionStateIsTerminalEvent.Reset();
             _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
@@ -139,22 +139,21 @@ namespace AWSToolkit.Tests.Credentials.Core
         [Fact]
         public void CredentialRegionChosen_WhenInitiallyLoaded()
         {
+            // arrange.
             _availableCredentials.Add(_defaultSampleIdentifier.Id);
             var properties = new ProfileProperties { Region = _sampleRegion.Id };
             _credentialSettingsManager.Setup(x => x.GetProfileProperties(_defaultSampleIdentifier))
                 .Returns(properties);
             _credentialManager.Setup(x => x.CredentialSettingsManager).Returns(_credentialSettingsManager.Object);
 
-            _awsConnectionManager = new AwsConnectionManager(_fnStsClient,
-                _credentialManager.Object, _telemetryLogger.Object, _regionProvider.Object);
+            // act.
             _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
             _connectionStateIsTerminalEvent.Reset();
-            _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
+            _awsConnectionManager.Initialize(new List<ICredentialProviderFactory>());
             WaitUntilConnectionStateIsStable();
 
-
-            Assert.Equal(_defaultSampleIdentifier.Id,
-                _awsConnectionManager.ActiveCredentialIdentifier.Id);
+            // assert.
+            Assert.Equal(_defaultSampleIdentifier.Id, _awsConnectionManager.ActiveCredentialIdentifier.Id);
             Assert.Equal(_sampleRegion.Id, _awsConnectionManager.ActiveRegion.Id);
         }
 
@@ -163,8 +162,6 @@ namespace AWSToolkit.Tests.Credentials.Core
         {
             _availableCredentials.Add(_defaultSampleIdentifier.Id);
             _credentialManager.Setup(x => x.IsLoginRequired(_defaultSampleIdentifier)).Returns(true);
-            _awsConnectionManager = new AwsConnectionManager(_fnStsClient,
-                _credentialManager.Object, _telemetryLogger.Object, _regionProvider.Object);
             _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
             _connectionStateIsTerminalEvent.Reset();
             _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
@@ -181,8 +178,6 @@ namespace AWSToolkit.Tests.Credentials.Core
         {
             _availableCredentials.Add(_sampleIdentifier.Id);
             _availableCredentials.Add(_sampleIdentifier2.Id);
-            _awsConnectionManager = new AwsConnectionManager(_fnStsClient,
-                _credentialManager.Object, _telemetryLogger.Object, _regionProvider.Object);
             _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
             _connectionStateIsTerminalEvent.Reset();
             _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
@@ -207,8 +202,6 @@ namespace AWSToolkit.Tests.Credentials.Core
         public void ActiveRegionChosen_WhenRegionSpecified()
         {
             _availableCredentials.Add(_defaultSampleIdentifier.Id);
-            _awsConnectionManager = new AwsConnectionManager(_fnStsClient,
-                _credentialManager.Object, _telemetryLogger.Object, _regionProvider.Object);
             _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
             _connectionStateIsTerminalEvent.Reset();
             _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
@@ -235,8 +228,6 @@ namespace AWSToolkit.Tests.Credentials.Core
         [Fact]
         public void ConnectionStateEventFired_WhenCredentialChanged()
         {
-            _awsConnectionManager = new AwsConnectionManager(_fnStsClient,
-                _credentialManager.Object, _telemetryLogger.Object, _regionProvider.Object);
             _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
             _connectionStateIsTerminalEvent.Reset();
             _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
@@ -255,8 +246,6 @@ namespace AWSToolkit.Tests.Credentials.Core
         public void ConnectionStateEventFired_WhenRegionChanged()
         {
             _availableCredentials.Add(_defaultSampleIdentifier.Id);
-            _awsConnectionManager = new AwsConnectionManager(_fnStsClient,
-                _credentialManager.Object, _telemetryLogger.Object, _regionProvider.Object);
             _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
             _connectionStateIsTerminalEvent.Reset();
             _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
@@ -275,8 +264,6 @@ namespace AWSToolkit.Tests.Credentials.Core
         {
             _availableCredentials.Add(_sampleIdentifier.Id);
             _factoryMap.Add(SharedCredentialProviderFactory.SharedProfileFactoryId, _sharedFactory.Object);
-            _awsConnectionManager = new AwsConnectionManager(_fnStsClient,
-                _credentialManager.Object, _telemetryLogger.Object, _regionProvider.Object);
             _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
             _connectionStateIsTerminalEvent.Reset();
             _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
@@ -307,8 +294,6 @@ namespace AWSToolkit.Tests.Credentials.Core
         {
             _availableCredentials.Add(_sampleIdentifier.Id);
             _factoryMap.Add(SharedCredentialProviderFactory.SharedProfileFactoryId, _sharedFactory.Object);
-            _awsConnectionManager = new AwsConnectionManager(_fnStsClient,
-                _credentialManager.Object, _telemetryLogger.Object, _regionProvider.Object);
             _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
             _connectionStateIsTerminalEvent.Reset();
             _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
@@ -344,8 +329,6 @@ namespace AWSToolkit.Tests.Credentials.Core
                     x.GetCallerIdentityAsync(It.IsAny<GetCallerIdentityRequest>(), It.IsAny<CancellationToken>()))
                 .Throws(new ArgumentException());
 
-            _awsConnectionManager = new AwsConnectionManager(_fnStsClient,
-                _credentialManager.Object, _telemetryLogger.Object, _regionProvider.Object);
             _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
             _connectionStateIsTerminalEvent.Reset();
             _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
@@ -360,8 +343,6 @@ namespace AWSToolkit.Tests.Credentials.Core
         public void UpdateCancelled_WhenSettingsChangedConsecutively()
         {
             _availableCredentials.Add(_defaultSampleIdentifier.Id);
-            _awsConnectionManager = new AwsConnectionManager(_fnStsClient,
-                _credentialManager.Object, _telemetryLogger.Object, _regionProvider.Object);
             _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
             _connectionStateIsTerminalEvent.Reset();
             _awsConnectionManager.Initialize(_factoryMap.Values.ToList());
@@ -385,8 +366,6 @@ namespace AWSToolkit.Tests.Credentials.Core
         public void AccountIdEmpty_WhenLocalRegionSelected()
         {
             _availableCredentials.Add(_defaultSampleIdentifier.Id);
-            _awsConnectionManager = new AwsConnectionManager(_fnStsClient,
-                _credentialManager.Object, _telemetryLogger.Object, _regionProvider.Object);
             _awsConnectionManager.ConnectionStateChanged += CheckTerminalState;
             _connectionStateIsTerminalEvent.Reset();
             _awsConnectionManager.Initialize(_factoryMap.Values.ToList());

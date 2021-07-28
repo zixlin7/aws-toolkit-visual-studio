@@ -6,6 +6,7 @@ using Amazon.AWSToolkit.Account;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Settings;
 
 namespace Amazon.AWSToolkit.CommonUI.Components
 {
@@ -221,7 +222,7 @@ namespace Amazon.AWSToolkit.CommonUI.Components
 
         public AwsConnectionManager CreateConnectionManager()
         {
-            return new AwsConnectionManager(AwsConnectionManager.DefaultStsClientCreator, _toolkitContext.CredentialManager, _toolkitContext.TelemetryLogger, _toolkitContext.RegionProvider);
+            return new AwsConnectionManager(AwsConnectionManager.DefaultStsClientCreator, _toolkitContext.CredentialManager, _toolkitContext.TelemetryLogger, _toolkitContext.RegionProvider, new AppDataToolkitSettingsRepository());
         }
     }
 }

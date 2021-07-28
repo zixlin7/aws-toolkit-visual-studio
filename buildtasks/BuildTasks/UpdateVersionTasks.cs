@@ -171,17 +171,6 @@ namespace BuildTasks
     /// <summary>
     /// General purpose update task for assemblyinfo files
     /// </summary>
-    public class UpdateAssemblyInfoVersionTask : BaseUpdateVersionTask
-    {
-        protected override bool PerformExecute()
-        {
-            this.Log.LogMessage("Updating AssemblyInfo files for version {0}", this.VersionNumber);
-            base.UpdateAssemblyInfoFiles();
-
-            return true;
-        }
-    }
-
     public class UpdateVSToolkitVersionTask : BaseUpdateVersionTask
     {
         protected override bool PerformExecute()

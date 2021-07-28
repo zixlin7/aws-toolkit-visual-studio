@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+
+using IAsyncServiceProvider = Microsoft.VisualStudio.Shell.IAsyncServiceProvider;
 using IServiceProvider = System.IServiceProvider;
 
 namespace Microsoft.VisualStudio.Project

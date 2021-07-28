@@ -40,6 +40,7 @@ using Amazon.AWSToolkit.PluginServices.Deployment;
 
 using log4net;
 
+using Microsoft;
 using Microsoft.VisualStudio.Project;
 using Window = System.Windows.Window;
 using Amazon.AWSToolkit.Persistence.Deployment;
@@ -67,6 +68,7 @@ using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.Commands.Lambda;
+using Amazon.AWSToolkit.VisualStudio.Commands.Toolkit;
 using Amazon.AWSToolkit.VisualStudio.Images;
 using Amazon.AWSToolkit.VisualStudio.Utilities.DTE;
 using Task = System.Threading.Tasks.Task;
@@ -143,6 +145,8 @@ namespace Amazon.AWSToolkit.VisualStudio
         private TelemetryManager _telemetryManager;
         private TelemetryInfoBarManager _telemetryInfoBarManager;
         private DateTime _startInitializeOn;
+
+        private MetricsOutputWindow _metricsOutputWindow;
 
         internal AWSToolkitShellProviderService ToolkitShellProviderService { get; private set; }
         internal AWSLegacyDeploymentPersistenceService LegacyDeploymentPersistenceService { get; private set; }
@@ -547,6 +551,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 _toolkitSettingsWatcher = new ToolkitSettingsWatcher();
 
+                _metricsOutputWindow = await CreateMetricsOutputWindow();
                 _telemetryManager = CreateTelemetryManager();
 
                 _regionProvider = new RegionProvider();
@@ -582,6 +587,8 @@ namespace Amazon.AWSToolkit.VisualStudio
                 };
 
                 navigator = await CreateNavigatorControlAsync(_toolkitContext);
+
+                await InitializeAwsToolkitMenuCommandsAsync(hostVersion);
 
                 await DeployLambdaCommand.InitializeAsync(
                     ToolkitShellProviderService,
@@ -637,10 +644,35 @@ namespace Amazon.AWSToolkit.VisualStudio
             }
         }
 
+        private async Task<MetricsOutputWindow> CreateMetricsOutputWindow()
+        {
+            try
+            {
+                await JoinableTaskFactory.SwitchToMainThreadAsync(DisposalToken);
+
+                var outputWindowManager = await GetServiceAsync(typeof(SVsOutputWindow)) as IVsOutputWindow;
+                Assumes.Present(outputWindowManager);
+
+                var outputWindow = new MetricsOutputWindow(outputWindowManager);
+
+                if (ToolkitSettings.Instance.ShowMetricsOutputWindow)
+                {
+                    await outputWindow.CreatePane();
+                }
+
+                return outputWindow;
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Unable to set up Metrics Output window", e);
+                return null;
+            }
+        }
+
         private TelemetryManager CreateTelemetryManager()
         {
             var productEnvironment = CreateProductEnvironment();
-            var telemetryManager = new TelemetryManager(productEnvironment);
+            var telemetryManager = new TelemetryManager(productEnvironment, _metricsOutputWindow);
 
             // Get telemetry started in a background thread (don't block on obtaining credentials)
             ThreadPool.QueueUserWorkItem(state => { telemetryManager.Initialize(); });
@@ -700,6 +732,37 @@ namespace Amazon.AWSToolkit.VisualStudio
                 Logger.Error("Failed to set up the AWS Explorer. The Toolkit is in a bad state.", e);
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Set up the commands that appear in the "AWS Toolkit" menu
+        /// </summary>
+        private async Task InitializeAwsToolkitMenuCommandsAsync(IToolkitHostInfo hostVersion)
+        {
+            var tasks = new List<Task>();
+
+            // VS 2019 and newer have an "Extensions" menu, which is an ideal location for these commands.
+            // In VS 2017, we use the "Tools" menu instead, so we have to register (enable) the appropriate set of commands based
+            // on which Visual Studio version is running.
+            var useVs2017Commands = hostVersion == ToolkitHosts.Vs2017;
+
+            tasks.Add(
+                ViewUserGuideCommand.InitializeAsync(
+                    ToolkitShellProviderService, _toolkitContext,
+                    GuidList.CommandSetGuid,
+                    (int) (useVs2017Commands ? PkgCmdIDList.cmdidViewUserGuide2017 : PkgCmdIDList.cmdidViewUserGuide),
+                    this)
+            );
+
+            tasks.Add(
+                CreateIssueCommand.InitializeAsync(
+                    ToolkitShellProviderService, _toolkitContext,
+                    GuidList.CommandSetGuid,
+                    (int) (useVs2017Commands ? PkgCmdIDList.cmdidCreateIssue2017 : PkgCmdIDList.cmdidCreateIssue),
+                    this)
+            );
+
+            await Task.WhenAll(tasks);
         }
 
         private void InitializeLambdaTesterEventListener()
@@ -2263,6 +2326,7 @@ namespace Amazon.AWSToolkit.VisualStudio
             _telemetryManager?.Dispose();
 
             _telemetryInfoBarManager?.Dispose();
+            _metricsOutputWindow?.Dispose();
 
             SimpleMobileAnalytics.Instance.StopMainSession();
             return Microsoft.VisualStudio.VSConstants.S_OK;
