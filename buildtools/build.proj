@@ -474,7 +474,7 @@
 
 	<!-- Runs a guided script to generate a release candidate -->
 	<!-- Requires Python 3.9+ -->
-	<Target Name="queueCandidate">
+	<Target Name="queueRelease">
 		<PropertyGroup>
 			<ReleaseScriptDirectory>$(MSBuildProjectDirectory)\release</ReleaseScriptDirectory>
 			<RepositoryDirectory>$([System.IO.Path]::GetDirectoryName($(MSBuildProjectDirectory)))</RepositoryDirectory>
