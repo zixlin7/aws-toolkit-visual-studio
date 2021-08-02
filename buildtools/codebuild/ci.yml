@@ -10,6 +10,7 @@ phases:
              cd $Env:CODEBUILD_SRC_DIR
     build:
         commands:
+            - git init
             - echo "Building.."; msbuild buildtools\build.proj /t:restore 
             - msbuild buildtools\build.proj /t:compile /p:DeployExtension=false /p:Configuration=$env:BUILD_CONFIGURATION
             - echo "Running Tests.."; msbuild buildtools\build.proj /t:test /p:DeployExtension=false  /p:Configuration=$env:BUILD_CONFIGURATION
@@ -20,7 +21,7 @@ phases:
              $Env:Path += ";$($Env:USERPROFILE)\\.git-secrets"
              git secrets --install
              git secrets --register-aws
-             git secrets --scan
+             git secrets --scan --untracked
 artifacts:
     discard-paths: yes
     files:
