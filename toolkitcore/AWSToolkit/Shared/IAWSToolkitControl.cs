@@ -30,5 +30,7 @@ namespace Amazon.AWSToolkit.Shared
         bool SupportsDynamicOKEnablement { get; }
 
         void OnEditorOpened(bool success);
+
+        bool CanClose();
     }
 }

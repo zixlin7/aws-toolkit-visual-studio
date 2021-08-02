@@ -112,6 +112,7 @@
     <Compile Include="Commands\Toolkit\ViewUserGuideCommand.cs" />
     <Compile Include="Images\VsImageProvider.cs" />
     <Compile Include="NativeMethods.cs" />
+    <Compile Include="Utilities\WindowFrameNotificationController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuildProcessors\DotNetCLIWrapper.cs" />

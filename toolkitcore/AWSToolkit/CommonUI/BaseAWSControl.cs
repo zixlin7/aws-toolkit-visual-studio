@@ -98,6 +98,11 @@ namespace Amazon.AWSToolkit.CommonUI
         {
         }
 
+        public virtual bool CanClose()
+        {
+            return true;
+        }
+
         public virtual bool SupportsBackGroundDataLoad => false;
 
         public void ExecuteBackGroundLoadDataLoad()

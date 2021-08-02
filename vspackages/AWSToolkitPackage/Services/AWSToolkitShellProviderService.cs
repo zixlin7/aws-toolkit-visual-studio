@@ -9,6 +9,8 @@ using Amazon.AWSToolkit.CommonUI.MessageBox;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
+using Amazon.AWSToolkit.VisualStudio.Utilities;
+
 using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -128,6 +130,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 else
                 {
                     frame.Show();
+                    var notificationController = new WindowFrameNotificationController(editorControl);
+                    frame.SetProperty((int) __VSFPROPID.VSFPROPID_ViewHelper, notificationController);
                     editorControl.OnEditorOpened(true);
                 }
             }
