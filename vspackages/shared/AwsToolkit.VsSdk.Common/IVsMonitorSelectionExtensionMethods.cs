@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Amazon.AWSToolkit.VisualStudio.Shared
+namespace Amazon.AwsToolkit.VsSdk.Common
 {
     /// <summary>
     /// Convenience wrappers relating to the Solution Explorer's selected item.

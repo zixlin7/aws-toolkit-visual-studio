@@ -11,8 +11,8 @@
     <ProjectGuid>{81552EFA-46B0-4EBE-BC29-5BA6A7628207}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Amazon.AWSToolkit.VisualStudio.Shared</RootNamespace>
-    <AssemblyName>AWSToolkit.VisualStudio.Shared</AssemblyName>
+    <RootNamespace>Amazon.AwsToolkit.VsSdk.Common</RootNamespace>
+    <AssemblyName>AwsToolkit.VsSdk.Common</AssemblyName>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

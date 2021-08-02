@@ -13,7 +13,7 @@ using EnvDTEProject = EnvDTE.Project;
 using Amazon.AWSToolkit.MobileAnalytics;
 
 using ServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
-using Amazon.AWSToolkit.VisualStudio.Shared;
+using Amazon.AwsToolkit.VsSdk.Common;
 
 namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
 {

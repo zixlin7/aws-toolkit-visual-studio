@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
+using Amazon.AwsToolkit.VsSdk.Common;
 using Amazon.AWSToolkit.Lambda;
 using Amazon.AWSToolkit.Lambda.WizardPages;
 using Amazon.AWSToolkit.Shared;
-using Amazon.AWSToolkit.VisualStudio.Shared;
 
 using EnvDTE;
 

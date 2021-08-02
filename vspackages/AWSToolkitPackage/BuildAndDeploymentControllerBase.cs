@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Threading;
 
+using Amazon.AwsToolkit.VsSdk.Common;
 using Amazon.AWSToolkit.VisualStudio.BuildProcessors;
 using Amazon.AWSToolkit.VisualStudio.DeploymentProcessors;
 using Amazon.AWSToolkit.VisualStudio.Loggers;
-using Amazon.AWSToolkit.VisualStudio.Shared;
 
 namespace Amazon.AWSToolkit.VisualStudio
 {

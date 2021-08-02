@@ -1,17 +1,21 @@
 ﻿using System;
-using System.Runtime.InteropServices;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Shell;
+using System.Collections.Generic;
 using System.IO;
-using Microsoft.VisualStudio.Project;
+using System.Runtime.InteropServices;
 using System.Xml;
 
-using MSBuildProject = Microsoft.Build.Evaluation.Project;
-using System.Collections.Generic;
+using Amazon.AWSToolkit;
+
 using log4net;
 
-namespace Amazon.AWSToolkit.VisualStudio.Shared
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Project;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+
+using Constants = Amazon.AWSToolkit.Constants;
+
+namespace Amazon.AwsToolkit.VsSdk.Common
 {
     public static class VSUtility
     {

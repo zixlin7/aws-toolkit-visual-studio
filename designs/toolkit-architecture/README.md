@@ -132,20 +132,18 @@ Here is a brief summary of the projects contained within the Toolkit Solution:
   - MsbuildServerlessWithTestsTemplate
   - MsbuildServerlessWithTestsTemplateFSharp
   - TemplateWizard
-- AWSToolkit.VisualStudio.Shared
-  - ???
-  - Appears to be some older code relating to Visual Studio Extension support, and Solution Explorer integration
+- AwsToolkit.VsSdk.Common
+  - Functionality that leverages portions of the VS SDK that is reusable between projects that do access the VS SDK
+  - Also contains some older code relating to Visual Studio Extension support, and Solution Explorer integration
 - Tests
   - AmazonCLIExtensions.Tests
     - Tests related to the AmazonCLIExtensions project
   - AWSToolkit.Tests.Common
     - Common testing utilities for any of the testing projects
   - AWSToolkit.Tests
-    - Tests related to AWSToolkit or any of the Toolkit plugins
+    - Tests related to AWSToolkit, the Toolkit plugins, and supporting code
   - AWSToolkit.Util.Tests
     - Tests related to the AWSToolkit.Util project
-  - AWSToolkit.VisualStudio.Shared.Tests
-    - Tests related to AWSToolkit.VisualStudio.Shared
   - AWSToolkitPackage.Tests
     - Tests related to the AWSToolkitPackage project
   - AwsToolkit.Tests.Integration

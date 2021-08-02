@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.CloudFormation;
 using Amazon.AWSToolkit.PluginServices.Deployment;
 using Amazon.AWSToolkit.Persistence.Deployment;
-using Amazon.AWSToolkit.VisualStudio.Shared;
+using Amazon.AwsToolkit.VsSdk.Common;
 using Microsoft.VisualStudio.Shell;
 using System.IO;
+
 using Microsoft.VisualStudio.Project;
 
 namespace Amazon.AWSToolkit.VisualStudio.Services

@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Amazon.AWSToolkit.CommonUI.DeploymentWizard;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Util;
-using Amazon.AWSToolkit.VisualStudio.Shared;
+using Amazon.AwsToolkit.VsSdk.Common;
 using ThirdParty.Json.LitJson;
 
 namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors

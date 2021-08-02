@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+
+using Amazon.AwsToolkit.VsSdk.Common;
 using Amazon.AWSToolkit.VisualStudio.Loggers;
-using Amazon.AWSToolkit.VisualStudio.Shared;
 
 namespace Amazon.AWSToolkit.VisualStudio.DeploymentProcessors
 {

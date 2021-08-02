@@ -1,9 +1,11 @@
-﻿using EnvDTE;
-using System;
+﻿using System;
 using System.Collections.Generic;
+
+using EnvDTE;
+
 using log4net;
 
-namespace Amazon.AWSToolkit.VisualStudio.Shared
+namespace Amazon.AwsToolkit.VsSdk.Common
 {
     public static class VSLambdaUtility
     {

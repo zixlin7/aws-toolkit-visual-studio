@@ -71,9 +71,9 @@
       <Project>{783E4198-A8F1-4E74-AF3E-0001B0AD516B}</Project>
       <Name>AWSToolkit.Lambda.TemplateWizards</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\vspackages\shared\AWSToolkit.VisualStudio.Shared\AWSToolkit.VisualStudio.Shared.csproj">
+    <ProjectReference Include="..\..\vspackages\shared\AwsToolkit.VsSdk.Common\AwsToolkit.VsSdk.Common.csproj">
       <Project>{81552EFA-46B0-4EBE-BC29-5BA6A7628207}</Project>
-      <Name>AWSToolkit.VisualStudio.Shared</Name>
+      <Name>AwsToolkit.VsSdk.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj">
       <Project>{aa57cb1d-f511-4bf5-9410-72a49d063365}</Project>

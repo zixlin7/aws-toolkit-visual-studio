@@ -44,7 +44,6 @@ using Microsoft;
 using Microsoft.VisualStudio.Project;
 using Window = System.Windows.Window;
 using Amazon.AWSToolkit.Persistence.Deployment;
-using Amazon.AWSToolkit.VisualStudio.Shared;
 using Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation;
 
 using ThirdParty.Json.LitJson;
@@ -71,6 +70,8 @@ using Amazon.AWSToolkit.VisualStudio.Commands.Lambda;
 using Amazon.AWSToolkit.VisualStudio.Commands.Toolkit;
 using Amazon.AWSToolkit.VisualStudio.Images;
 using Amazon.AWSToolkit.VisualStudio.Utilities.DTE;
+using Amazon.AwsToolkit.VsSdk.Common;
+
 using Task = System.Threading.Tasks.Task;
 using VsImages = Amazon.AWSToolkit.CommonUI.VsImages;
 

@@ -922,9 +922,9 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <IncludeOutputGroupsInVSIX>TemplateProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
     </ProjectReference>
-    <ProjectReference Include="$(BuildRoot)\vspackages\shared\AWSToolkit.VisualStudio.Shared\AWSToolkit.VisualStudio.Shared.csproj">
+    <ProjectReference Include="$(BuildRoot)\vspackages\shared\AwsToolkit.VsSdk.Common\AwsToolkit.VsSdk.Common.csproj">
       <Project>{81552efa-46b0-4ebe-bc29-5ba6a7628207}</Project>
-      <Name>AWSToolkit.VisualStudio.Shared</Name>
+      <Name>AwsToolkit.VsSdk.Common</Name>
     </ProjectReference>
     <ProjectReference Include="$(BuildRoot)\vspackages\AWSToolkit.CodeCommitTeamExplorer.v15\AWSToolkit.CodeCommitTeamExplorer.v15.csproj">
       <Project>{94f578fb-afeb-4c67-bd0d-c5797e50e9e8}</Project>

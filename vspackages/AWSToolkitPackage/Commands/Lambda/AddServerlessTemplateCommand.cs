@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Lambda;
 using Amazon.AWSToolkit.Shared;
-using Amazon.AWSToolkit.VisualStudio.Shared;
+using Amazon.AwsToolkit.VsSdk.Common;
 
 using EnvDTE;
 

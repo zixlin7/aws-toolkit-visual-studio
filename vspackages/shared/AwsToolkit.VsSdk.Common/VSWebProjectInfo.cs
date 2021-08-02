@@ -17,7 +17,7 @@ using EnvDTEProject = EnvDTE.Project;
 
 using log4net;
 
-namespace Amazon.AWSToolkit.VisualStudio.Shared
+namespace Amazon.AwsToolkit.VsSdk.Common
 {
     /// <summary>
     /// Wrapper around VS web site and web app projects carrying info

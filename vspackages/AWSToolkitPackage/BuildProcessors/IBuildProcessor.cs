@@ -2,7 +2,7 @@
 using System.Threading;
 using Microsoft.VisualStudio.Shell.Interop;
 using Amazon.AWSToolkit.VisualStudio.Loggers;
-using Amazon.AWSToolkit.VisualStudio.Shared;
+using Amazon.AwsToolkit.VsSdk.Common;
 
 namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors
 {

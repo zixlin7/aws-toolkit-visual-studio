@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-using Amazon.AWSToolkit.Persistence.Deployment;
 using Amazon.AWSToolkit.CloudFormation;
+using Amazon.AWSToolkit.Persistence.Deployment;
+using Amazon.AWSToolkit.Shared;
 
-namespace Amazon.AWSToolkit.Shared
+namespace Amazon.AwsToolkit.VsSdk.Common
 {
     public abstract class AWSLegacyDeploymentPersistenceGuids
     {
