@@ -166,9 +166,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integration", "Integration"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsToolkit.Tests.Integration", "..\tests\Integration\AwsToolkit.Tests.Integration\AwsToolkit.Tests.Integration.csproj", "{9A41545D-CA6E-4591-9B80-64A2EE76B85A}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AwsToolkitPackage.Shared", "..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.shproj", "{CC1B2316-C330-410C-A3F3-097CA45713D8}"
+EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AwsToolkit.VsSdk.Common.Shared", "..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.shproj", "{A27787ED-5A7A-455A-9E90-CAEB9030F850}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{038b2cf8-0089-4ed1-beba-a7d64390190e}*SharedItemsImports = 4
+		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{cc1b2316-c330-410c-a3f3-097ca45713d8}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{81552efa-46b0-4ebe-bc29-5ba6a7628207}*SharedItemsImports = 4
 		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{a27787ed-5a7a-455a-9e90-caeb9030f850}*SharedItemsImports = 13
@@ -501,6 +507,7 @@ Global
 		{F1A54C06-A4A8-4E6B-B7FA-8469105408B3} = {62237430-5212-4823-924E-344007109D14}
 		{E0E38AB7-4BF7-4BF8-B2E6-2774F9349B99} = {73718FA9-C78C-4459-A1C0-E5964EE5F420}
 		{9A41545D-CA6E-4591-9B80-64A2EE76B85A} = {E0E38AB7-4BF7-4BF8-B2E6-2774F9349B99}
+		{CC1B2316-C330-410C-A3F3-097CA45713D8} = {7C126B63-12FD-4829-A22A-EB2A93815ACD}
 		{A27787ED-5A7A-455A-9E90-CAEB9030F850} = {BDF238D0-23E9-4131-861C-47C94F5D6018}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

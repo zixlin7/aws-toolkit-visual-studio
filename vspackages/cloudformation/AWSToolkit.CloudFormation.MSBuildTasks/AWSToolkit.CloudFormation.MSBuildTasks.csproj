@@ -63,11 +63,11 @@
        we should be able to do this bundling work here and have it be picked up automatically
        when the package builds.
   <ItemGroup Condition="'$(VisualStudioVersion)' == '15.0'">
-    <Content Include="$(BuildRoot)\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationProject.ico">
+    <Content Include="$(BuildRoot)\vspackages\AwsToolkitPackageResources\AWSCloudFormationProject.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>AWSCloudFormationProject.ico</Link>
     </Content>
-    <Content Include="$(BuildRoot)\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationTemplate.ico">
+    <Content Include="$(BuildRoot)\vspackages\AwsToolkitPackageResources\AWSCloudFormationTemplate.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>AWSCloudFormationTemplate.ico</Link>
     </Content>

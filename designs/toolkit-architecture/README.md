@@ -111,6 +111,10 @@ Here is a brief summary of the projects contained within the Toolkit Solution:
     - Supports VS 2019
 - AWSToolkitPackage
   - The Toolkit's main entrypoint; contains most VSSDK interactions
+- AwsToolkitPackage.Shared
+  - Contains the code and resources that AWSToolkitPackage projects use as a symbolic link
+  - This is a [shared project](https://docs.microsoft.com/en-us/xamarin/cross-platform/app-fundamentals/shared-projects?tabs=windows). Projects that reference a shared project act as if they naturally contain the same files and resources.
+  - This allows the one codebase to service extensions for multiple major versions of Visual Studio: https://docs.microsoft.com/en-us/visualstudio/extensibility/migration/update-visual-studio-extension?view=vs-2022#use-shared-projects-for-multi-targeting
 - CloudFormation specific
   - ???
   - AWSToolkit.CloudFormation.EditorExtensions
@@ -135,6 +139,10 @@ Here is a brief summary of the projects contained within the Toolkit Solution:
 - AwsToolkit.VsSdk.Common
   - Functionality that leverages portions of the VS SDK that is reusable between projects that do access the VS SDK
   - Also contains some older code relating to Visual Studio Extension support, and Solution Explorer integration
+- AwsToolkit.VsSdk.Common.Shared
+  - Contains the code used by AwsToolkit.VsSdk.Common
+  - This is a [shared project](https://docs.microsoft.com/en-us/xamarin/cross-platform/app-fundamentals/shared-projects?tabs=windows). Projects that reference a shared project act as if they naturally contain the same files and resources.
+  - This allows the one codebase to service extensions for multiple major versions of Visual Studio: https://docs.microsoft.com/en-us/visualstudio/extensibility/migration/update-visual-studio-extension?view=vs-2022#use-shared-projects-for-multi-targeting
 - Tests
   - AmazonCLIExtensions.Tests
     - Tests related to the AmazonCLIExtensions project

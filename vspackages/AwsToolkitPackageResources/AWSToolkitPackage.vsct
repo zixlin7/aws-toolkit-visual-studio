@@ -412,7 +412,7 @@
       inside a button definition. An important aspect of this declaration is that the element id
       must be the actual index (1-based) of the bitmap inside the bitmap strip. 
       -->
-      <Bitmap guid="guidImages" href="Resources\VsctImages_32bit.png" usedList="bmpAWSExplorer,bmpPublishToAWSEB,bmpRepublishToAWS,bmpDeployTemplate,bmpEstimateTemplateCost,bmpFormatTemplate,bmpTemplate,bmpPublishToAWSLambda,bmpCodeCommit,bmpPublishToAWSECS" />
+      <Bitmap guid="guidImages" href="..\AwsToolkitPackageResources\VsctImages_32bit.png" usedList="bmpAWSExplorer,bmpPublishToAWSEB,bmpRepublishToAWS,bmpDeployTemplate,bmpEstimateTemplateCost,bmpFormatTemplate,bmpTemplate,bmpPublishToAWSLambda,bmpCodeCommit,bmpPublishToAWSECS" />
 
     </Bitmaps>
 

@@ -29,8 +29,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
 
         static CloudFormationTemplateProjectNode()
         {
-            projectNodeImageList = VSProjectUtilities.GetImageList(typeof(CloudFormationTemplateProjectNode).Assembly.GetManifestResourceStream("Amazon.AWSToolkit.VisualStudio.CloudFormationEditor.Resources.CloudFormationTemplateProjectNode.png"));
-            templateFileNodeImageList = VSProjectUtilities.GetImageList(typeof(CloudFormationTemplateProjectNode).Assembly.GetManifestResourceStream("Amazon.AWSToolkit.VisualStudio.CloudFormationEditor.Resources.CloudFormationTemplateNode.png"));
+            projectNodeImageList = VSProjectUtilities.GetImageList(typeof(CloudFormationTemplateProjectNode).Assembly.GetManifestResourceStream("Amazon.AWSToolkit.VisualStudio.Resources.CloudFormationTemplateProjectNode.png"));
+            templateFileNodeImageList = VSProjectUtilities.GetImageList(typeof(CloudFormationTemplateProjectNode).Assembly.GetManifestResourceStream("Amazon.AWSToolkit.VisualStudio.Resources.CloudFormationTemplateNode.png"));
         }
 
         public CloudFormationTemplateProjectNode(AWSToolkitPackage package)

@@ -169,10 +169,10 @@
 		<MakeDir Directories="$(IconsDest)" />
 
 		<Copy
-			SourceFiles="..\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationProject.ico"
+			SourceFiles="..\vspackages\AwsToolkitPackageResources\AWSCloudFormationProject.ico"
 			DestinationFiles="$(IconsDest)\AWSCloudFormationProject.ico" />
 		<Copy
-			SourceFiles="..\vspackages\AWSToolkitPackage\Resources\AWSCloudFormationTemplate.ico"
+			SourceFiles="..\vspackages\AwsToolkitPackageResources\AWSCloudFormationTemplate.ico"
 			DestinationFiles="$(IconsDest)\AWSCloudFormationTemplate.ico" />
     </Target>
 

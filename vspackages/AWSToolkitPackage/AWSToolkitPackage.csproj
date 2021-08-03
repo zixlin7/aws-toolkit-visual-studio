@@ -105,75 +105,75 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\BaseCommand.cs" />
-    <Compile Include="Commands\Lambda\AddServerlessTemplateCommand.cs" />
-    <Compile Include="Commands\Lambda\DeployLambdaCommand.cs" />
-    <Compile Include="Commands\Toolkit\CreateIssueCommand.cs" />
-    <Compile Include="Commands\Toolkit\ViewUserGuideCommand.cs" />
-    <Compile Include="Images\VsImageProvider.cs" />
-    <Compile Include="NativeMethods.cs" />
-    <Compile Include="Utilities\WindowFrameNotificationController.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="BuildProcessors\DotNetCLIWrapper.cs" />
-    <Compile Include="NuGet\CodeArtifactNuGetCredentialProvider.cs" />
-    <Compile Include="Editors\CloudFormation\CloudFormationTemplateProjectFactory.cs" />
-    <Compile Include="Editors\CloudFormation\CloudFormationTemplateProjectNode.cs" />
-    <Compile Include="Editors\CloudFormation\TemplateEditorFactory.cs" />
-    <Compile Include="Editors\CloudFormation\TemplateFileNode.cs" />
-    <Compile Include="FirstRun\Controller\FirstRunController.cs" />
-    <Compile Include="FirstRun\Model\FirstRunModel.cs" />
-    <Compile Include="FirstRun\View\FirstRunControl.xaml.cs">
-      <DependentUpon>FirstRunControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Lambda\LambdaTesterEventListener.cs" />
-    <Compile Include="Lambda\LambdaTesterUsageEmitter.cs" />
-    <Compile Include="Lambda\LambdaTesterUtilities.cs" />
-    <Compile Include="CustomProvideEditorFactoryAttribute.cs" />
-    <Compile Include="Registration\AWSCommandLineRegistrationAttribute.cs" />
-    <Compile Include="Guids.cs" />
-    <Compile Include="Messaging.cs" />
-    <Compile Include="Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="AWSToolkitPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Telemetry\MetricsOutputWindow.cs" />
-    <Compile Include="Telemetry\TelemetryInfoBar.cs" />
-    <Compile Include="Telemetry\TelemetryInfoBarManager.cs" />
-    <Compile Include="Telemetry\TelemetryInformationDialog.xaml.cs">
-      <DependentUpon>TelemetryInformationDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Telemetry\TelemetryManager.cs" />
-    <Compile Include="Telemetry\TelemetryNotice.cs" />
-    <Compile Include="Utilities\DTE\DteVersion.cs" />
-    <Compile Include="Utilities\DTE\WindowExtensionMethods.cs" />
-    <Compile Include="Utilities\DTE\ProjectExtensionMethods.cs" />
-    <Compile Include="Utilities\InfoBarUtils.cs" />
-    <Compile Include="Utilities\ToolkitProductEnvironment.cs" />
-    <Compile Include="Utilities\VsAppId\IVsAppId.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="..\AwsToolkitPackageResources\templates\basic-serverless.template">
+      <Link>Resources\basic-serverless.template</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="AWSToolkitPackage.resx">
-      <MergeWithCTO>true</MergeWithCTO>
-      <ManifestResourceName>VSPackage</ManifestResourceName>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources\basic-serverless.template" />
     <Resource Include="$(BuildRoot)\hostedfiles\endpoints.json">
       <Link>HostedFiles\endpoints.json</Link>
     </Resource>
-    <Content Include="log4net.config">
+    <Resource Include="..\AwsToolkitPackageResources\CodeCommit32x32.png">
+      <Link>Resources\CodeCommit32x32.png</Link>
+    </Resource>
+    <Resource Include="..\AwsToolkitPackageResources\CodeCommit16x16.png">
+      <Link>Resources\CodeCommit16x16.png</Link>
+    </Resource>
+    <Resource Include="..\AwsToolkitPackageResources\CodeArtifact32x32.png">
+      <Link>Resources\CodeArtifact32x32.png</Link>
+    </Resource>
+    <EmbeddedResource Include="..\AwsToolkitPackageResources\AWSCloudFormationProject.ico">
+      <Link>Resources\AWSCloudFormationProject.ico</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\AwsToolkitPackageResources\AWSCloudFormationTemplate.ico">
+      <Link>Resources\AWSCloudFormationTemplate.ico</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\AwsToolkitPackageResources\CloudFormationTemplateNode.png">
+      <Link>Resources\CloudFormationTemplateNode.png</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\AwsToolkitPackageResources\CloudFormationTemplateProjectNode.png">
+      <Link>Resources\CloudFormationTemplateProjectNode.png</Link>
+    </EmbeddedResource>
+    <Content Include="..\AwsToolkitPackageResources\aws-icon.png">
+      <Link>Resources\aws-icon.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\AwsToolkitPackageResources\aws.png">
+      <Link>Resources\aws.png</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <VSCTCompile Include="..\AwsToolkitPackageResources\AWSToolkitPackage.15.0.vsct">
+      <Link>AWSToolkitPackage.15.0.vsct</Link>
+      <ResourceName>Menus.ctmenu</ResourceName>
+      <SubType>Designer</SubType>
+    </VSCTCompile>
+    <Content Include="..\AwsToolkitPackageResources\AWSToolkitPackage.vsct">
+      <Link>AWSToolkitPackage.vsct</Link>
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="..\AwsToolkitPackageResources\File.ico">
+      <Link>Resources\File.ico</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\AwsToolkitPackageResources\License.txt">
+      <Link>License.txt</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\AwsToolkitPackageResources\Package.ico">
+      <Link>Resources\Package.ico</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Resource Include="..\AwsToolkitPackageResources\SignUp.png">
+      <Link>Resources\SignUp.png</Link>
+    </Resource>
+    <Content Include="..\AwsToolkitPackageResources\log4net.config">
+      <Link>log4net.config</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -182,10 +182,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Resources\aws-icon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
+    <None Include="..\AwsToolkitPackageResources\VsctImages_32bit.png">
+      <Link>Resources\VsctImages_32bit.png</Link>
+    </None>
     <Content Include="$(BuildRoot)\toolkitcore\AmazonCLIExtensions\Amazon.Lambda.Tools\Resources\build-lambda-zip.exe">
       <Link>Resources\build-lambda-zip.exe</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -199,115 +198,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\vsctimages_32bit.png" />
-    <EmbeddedResource Include="Resources\CloudFormationTemplateProjectNode.png" />
-    <EmbeddedResource Include="Resources\CloudFormationTemplateNode.png" />
-    <EmbeddedResource Include="Resources\AWSCloudFormationTemplate.ico" />
-    <EmbeddedResource Include="Resources\AWSCloudFormationProject.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <VSCTCompile Include="AWSToolkitPackage.15.0.vsct">
-      <ResourceName>Menus.ctmenu</ResourceName>
-      <SubType>Designer</SubType>
-    </VSCTCompile>
-    <Content Include="AWSToolkitPackage.vsct">
-      <SubType>Designer</SubType>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="BeanstalkBuildAndDeployController.cs" />
-    <Compile Include="BeanstalkProjectPersistenceInfo.cs" />
-    <Compile Include="BuildAndDeploymentControllerBase.cs" />
-    <Compile Include="CloudFormationBuildAndDeployController.cs" />
-    <Compile Include="BuildProcessors\CoreCLRWebAppProjectBuildProcessor.cs" />
-    <Compile Include="BuildProcessors\IBuildProcessor.cs" />
-    <Compile Include="BuildProcessors\MSDeployWrapper.cs" />
-    <Compile Include="BuildProcessors\WebAppProjectBuildProcessor.cs" />
-    <Compile Include="BuildProcessors\WebSiteProjectBuildProcessor.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="DeploymentProcessors\*.cs" />
-    <Compile Include="Loggers\*.cs" />
-    <Compile Include="Services\AWSLegacyDeploymentPersistenceService.cs" />
-    <Compile Include="Services\AWSToolkitShellProviderService.cs" />
-    <Compile Include="Themes\ThemeFontResources.cs" />
-    <Compile Include="IEditor.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="HostedEditor\HostedEditorFactory.cs" />
-    <Compile Include="HostedEditor\HostedEditorPane.cs" />
-    <Compile Include="HostedEditor\HostedUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="HostedEditor\HostedUserControl.Designer.cs">
-      <DependentUpon>HostedUserControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HostedEditor\NavigatorVsUIHierarchy.cs" />
-    <EmbeddedResource Include="HostedEditor\HostedUserControl.resx">
-      <DependentUpon>HostedUserControl.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ShellOptions\GeneralOptionsPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ShellOptions\GeneralOptionsPageControl.xaml.cs">
-      <DependentUpon>GeneralOptionsPageControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ShellOptions\ProxyOptionsPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ShellOptions\ProxyOptionsPageForm.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ShellOptions\ProxyOptionsPageForm.Designer.cs">
-      <DependentUpon>ProxyOptionsPageForm.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="ShellOptions\ProxyOptionsPageForm.resx">
-      <DependentUpon>ProxyOptionsPageForm.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ToolWindow\AWSNavigatorToolControl.xaml.cs">
-      <DependentUpon>AWSNavigatorToolControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ToolWindow\AWSNavigatorToolWindow.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\CodeCommit32x32.png" />
-    <Resource Include="Resources\CodeArtifact32x32.png" />
-    <Resource Include="Resources\SignUp.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="PkgCmdID.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="FirstRun\View\FirstRunControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ShellOptions\GeneralOptionsPageControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Telemetry\TelemetryInformationDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\_AWSToolkitDefaultTheme.15.0.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ToolWindow\AWSNavigatorToolControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="License.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="$(BuildRoot)\thirdparty\License.JsonChecker.txt">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>License.JsonChecker.txt</Link>
@@ -344,19 +234,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\aws.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Resource Include="Resources\CodeCommit16x16.png" />
-    <Content Include="Resources\File.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="Resources\Package.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="$(OutputRoot)\AmazonCLIExtensions.dll">
       <Link>AmazonCLIExtensions.dll</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -751,7 +628,7 @@
        the IncludeOutputGroupsInVSIX setting on the msbuildtasks project reference.
   -->
   <ItemGroup>
-    <Content Include="Resources\AWSCloudFormationProject.ico">
+    <Content Include="..\AwsToolkitPackageResources\AWSCloudFormationProject.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>AWSCloudFormationProject.ico</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -759,7 +636,7 @@
       <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
       <Visible>false</Visible>
     </Content>
-    <Content Include="Resources\AWSCloudFormationTemplate.ico">
+    <Content Include="..\AwsToolkitPackageResources\AWSCloudFormationTemplate.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>AWSCloudFormationTemplate.ico</Link>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -1107,6 +984,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup />
+  <Import Project="..\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems" Label="Shared" />
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>
