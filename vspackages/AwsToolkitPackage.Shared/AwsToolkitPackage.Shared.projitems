@@ -95,6 +95,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Telemetry\TelemetryManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Telemetry\TelemetryNotice.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Themes\ThemeFontResources.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Themes\ThemeResourceKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Themes\ToolkitThemeBrushKeys.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Themes\ToolkitThemeProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ToolWindow\AWSNavigatorToolControl.xaml.cs">
       <DependentUpon>AWSNavigatorToolControl.xaml</DependentUpon>
     </Compile>
@@ -121,6 +124,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Themes\_AWSToolkitDefaultTheme.15.0.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Themes\ControlStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

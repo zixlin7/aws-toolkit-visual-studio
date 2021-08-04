@@ -65,6 +65,7 @@ using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Credentials.Core;
 using Amazon.AWSToolkit.Credentials.Utils;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AWSToolkit.Themes;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.Commands.Lambda;
 using Amazon.AWSToolkit.VisualStudio.Commands.Toolkit;
@@ -549,6 +550,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
                 var hostVersion = DteVersion.AsHostInfo(dteVersion);
                 ThemeUtil.Initialize(dteVersion);
+                ToolkitThemes.Initialize(new ToolkitThemeProvider());
 
                 _toolkitSettingsWatcher = new ToolkitSettingsWatcher();
 

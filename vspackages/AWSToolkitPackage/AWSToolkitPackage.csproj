@@ -198,6 +198,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="$(BuildRoot)\thirdparty\License.Community.VisualStudio.Toolkit.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>License.Community.VisualStudio.Toolkit.txt</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="$(BuildRoot)\thirdparty\License.JsonChecker.txt">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <Link>License.JsonChecker.txt</Link>
@@ -981,6 +986,14 @@
     </PackageReference>
     <PackageReference Include="System.Threading.Tasks.Extensions">
       <Version>4.3.0</Version>
+    </PackageReference>
+    <!-- Community.VisualStudio.Toolkit - This package is versioned based on the major version of 
+      Visual Studio that it supports.
+      The version referenced MUST be no higher than the version that corresponds with the lowest 
+      Major version of Visual Studio supported by this Toolkit. 
+      (For a Toolkit that supports VS 2017, the version must be 15.0.*.*) -->
+    <PackageReference Include="Community.VisualStudio.Toolkit" ExcludeAssets="Runtime">
+      <Version>15.0.75.103</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup />
