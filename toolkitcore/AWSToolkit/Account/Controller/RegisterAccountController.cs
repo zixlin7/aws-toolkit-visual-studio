@@ -11,6 +11,7 @@ using System.Threading;
 using Amazon.AWSToolkit.Regions;
 using Amazon.AWSToolkit.Context;
 using System.Linq;
+using System.Windows;
 
 namespace Amazon.AWSToolkit.Account.Controller
 {
@@ -36,7 +37,7 @@ namespace Amazon.AWSToolkit.Account.Controller
             this._control = new RegisterAccountControl(this);
             this.LoadModel();
             CustomizeControl(this._control);
-            if (ToolkitFactory.Instance.ShellProvider.ShowModal(this._control))
+            if (ToolkitFactory.Instance.ShellProvider.ShowInModalDialogWindow(this._control, MessageBoxButton.OKCancel))
             {
                 return this._results;
             }

@@ -4,159 +4,151 @@
     xmlns:commonui="clr-namespace:Amazon.AWSToolkit.CommonUI"
     xmlns:view="clr-namespace:Amazon.AWSToolkit.Account.View"
     xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters"
-    Height="400" Width="500"
-    Background="Transparent">
+    xmlns:themes="clr-namespace:Amazon.AWSToolkit.Themes"
+    Height="450" Width="600"
+    themes:ToolkitThemes.UseToolkitTheme="True">
 
     <commonui:BaseAWSControl.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-
             <BooleanToVisibilityConverter x:Key="bool2VisConverter" />
             <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
         </ResourceDictionary>
     </commonui:BaseAWSControl.Resources>
 
-    <Grid>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="120"/>
-            <ColumnDefinition Width="1*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-        </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="6"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
 
-        <Label Grid.Column="0" Grid.Row="0" Target="{Binding ElementName=_ctlDisplayName}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Bottom">Profile _Name:</Label>
-        <TextBox Margin="4" Name="_ctlDisplayName" Grid.Column="1" Grid.Row="0" 
-                 Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" 
-                 Style="{DynamicResource awsTextBoxStyle}"
-                 Tag="Required"/>
+            <Label Grid.Column="0" Grid.Row="0" Target="{Binding ElementName=_ctlDisplayName}" 
+                   VerticalAlignment="Center">Profile _Name:</Label>
+            <TextBox Name="_ctlDisplayName" Grid.Column="2" Grid.Row="0" 
+                     Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" 
+                     Tag="Required"/>
 
-        <TextBlock Grid.Row="1" Grid.Column="1" 
-                   Style="{DynamicResource awsInfoTextStyle}" 
-                   FontStyle="Italic"
-                   TextWrapping="Wrap"
-                   Margin="4,0,4,2"
-                   Visibility="{Binding Path=PromptToUseDefaultName, 
-                                    RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=view:RegisterAccountControl}, 
-                                    Converter={StaticResource bool2VisConverter}}">
-            A profile name of 'default' allows the SDK to find credentials when no explicit profile name is 
-            specified in your code or application configuration settings.
-        </TextBlock>
+            <TextBlock Grid.Row="1" Grid.Column="2" 
+                       Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}"
+                       TextWrapping="Wrap"
+                       Margin="0 3 0 3"
+                       Visibility="{Binding Path=PromptToUseDefaultName, 
+                                        RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=view:RegisterAccountControl}, 
+                                        Converter={StaticResource bool2VisConverter}}">
+                A profile name of 'default' allows the SDK to find credentials when no explicit profile name is 
+                specified in your code or application configuration settings.
+            </TextBlock>
 
-        <Label Grid.Column="0" Grid.Row="2" Visibility="{Binding StorageLocationVisibility}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Center">Storage Location:</Label>
-        <ComboBox Margin="4" Grid.Column="1" Grid.Row="2" Visibility="{Binding StorageLocationVisibility}" 
-                  x:Name="_ctlProfileStorage" 
-                  SelectedItem="{Binding SelectedStorageType}" 
-                  ItemsSource="{Binding AllStorageTypes}"
-                  DisplayMemberPath="DisplayName"
-                  Style="{DynamicResource awsComboBoxStyle}"/>
-        <TextBlock Grid.Row="3" Grid.Column="1" Visibility="{Binding StorageLocationVisibility}" 
-                   Style="{DynamicResource awsInfoTextStyle}" 
-                   FontStyle="Italic"
-                   TextWrapping="Wrap"
-                   Margin="4,0,4,2"
-                   Text="{Binding SelectedStorageType.Description}"
-                   />
-
-
-
-        <Label Grid.Column="0" Grid.Row="4" Target="{Binding ElementName=_ctlAccessKey}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Bottom">_Access Key ID:</Label>
-        <PasswordBox Margin="4" Grid.Column="1" Grid.Row="4" x:Name="_ctlAccessKey" 
-                     PasswordChanged="CtlAccessKey_OnPasswordChanged"
-                     Style="{DynamicResource awsPasswordBoxStyle}"/>
-
-        <Label Grid.Column="0" Grid.Row="5" Target="{Binding ElementName=_ctlSecretKey}" Style="{DynamicResource awsLabelBaseStyle}" VerticalAlignment="Bottom">_Secret Access Key:</Label>
-        <PasswordBox Margin="4" Grid.Column="1" Grid.Row="5" x:Name="_ctlSecretKey" 
-                     PasswordChanged="CtlSecretKey_OnPasswordChanged"
-                     Style="{DynamicResource awsPasswordBoxStyle}"/>
-
-        <Button Grid.Column="1" Grid.Row="6" 
-                HorizontalAlignment="Right"
-                Style="{DynamicResource awsButtonBaseStyle}"
-                Margin="0,2,4,8"
-                Padding="2,0"
-                Click="OnClickImportFromCSV">
-            Import from csv file...
-        </Button>
-
-        <!-- Partition -->
-        <Label
-            Grid.Row="7" Grid.Column="0"
-            Content="Partition:"
-            Visibility="{Binding IsPartitionEnabled, Converter={StaticResource bool2VisConverter}}"
-            Style="{DynamicResource awsLabelBaseStyle}"
-            VerticalAlignment="Center"
-            ToolTip="Partitions are a collection of regions.&#x0a;If your account is based in a different partition, select a different partition to see its associated regions."
-            Target="{Binding ElementName=Partition}"
-        />
-
-        <ComboBox
-            Name="Partition" x:FieldModifier="private"
-            Grid.Row="7" Grid.Column="1"
-            Margin="4" 
-            Visibility="{Binding IsPartitionEnabled, Converter={StaticResource bool2VisConverter}}"
-            Style="{DynamicResource awsComboBoxStyle}"
-            IsEditable="False"
-            ItemsSource="{Binding Partitions}"
-            SelectedItem="{Binding Partition, UpdateSourceTrigger=PropertyChanged}"
-            DisplayMemberPath="DisplayName"
-        />
-        <!-- Region -->
-        <Label
-            Grid.Row="8" Grid.Column="0"
-            Content="Region:"
-            Style="{DynamicResource awsLabelBaseStyle}"
-            VerticalAlignment="Center"
-            Target="{Binding ElementName=Region}"
-        />
-
-        <ComboBox
-            Name="Region" x:FieldModifier="private"
-            Grid.Row="8" Grid.Column="1"
-            Margin="4" 
-            Style="{DynamicResource awsComboBoxStyle}"
-            IsEditable="False"
-            ItemsSource="{Binding Regions}"
-            SelectedItem="{Binding Region, UpdateSourceTrigger=PropertyChanged}"
-            DisplayMemberPath="DisplayName">
-        </ComboBox>
+            <Label Grid.Column="0" Grid.Row="2" Margin="0 6 0 0"  Visibility="{Binding StorageLocationVisibility}" VerticalAlignment="Center">Storage Location:</Label>
+            <ComboBox Margin="0 6 0 0" Grid.Column="2" Grid.Row="2" Visibility="{Binding StorageLocationVisibility}" 
+                      x:Name="_ctlProfileStorage" 
+                      SelectedItem="{Binding SelectedStorageType}" 
+                      ItemsSource="{Binding AllStorageTypes}"
+                      DisplayMemberPath="DisplayName"
+                      />
+            <TextBlock Grid.Row="3" Grid.Column="2" Visibility="{Binding StorageLocationVisibility}" 
+                       Foreground="{DynamicResource {x:Static themes:ToolkitThemes.HintTextBrushKey}}"
+                       TextWrapping="Wrap"
+                       Margin="0 3 0 0"
+                       Text="{Binding SelectedStorageType.Description}"
+                       />
 
 
-        <WrapPanel Grid.Column="1" Grid.Row="9" Margin="4,4,0,0" Visibility="{Binding IsPartitionEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
-            <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}">Don't see your region?</TextBlock>
-            <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}" Margin="8,0,0,0">
-            <Hyperlink NavigateUri="https://aws.amazon.com/developers/access-keys/" RequestNavigate="OnRequestRegions">
-                <TextBlock Style="{DynamicResource awsUrlTextFieldStyle}" 
-                           Text="Show more regions"
-                           />
-            </Hyperlink></TextBlock>
 
-        </WrapPanel>
+            <Label Grid.Column="0" Grid.Row="4" Margin="0 12 0 0" Target="{Binding ElementName=_ctlAccessKey}" VerticalAlignment="Center">_Access Key ID:</Label>
+            <PasswordBox Margin="0 12 0 0" Grid.Column="2" Grid.Row="4" x:Name="_ctlAccessKey" 
+                         PasswordChanged="CtlAccessKey_OnPasswordChanged" />
 
-        <WrapPanel Grid.Column="0" Grid.Row="10" Grid.ColumnSpan="2" Margin="6,15,0,0" VerticalAlignment="Bottom">
-            <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}">Account information can found at:</TextBlock>
-            <TextBlock Style="{DynamicResource awsTextBlockBaseStyle}" Margin="4,0,0,0">
-                <Hyperlink NavigateUri="https://aws.amazon.com/developers/access-keys/" RequestNavigate="onRequestNavigate">
-                    <TextBlock Style="{DynamicResource awsUrlTextFieldStyle}" 
-                               Name="_ctlAWSLink" 
-                               Text="https://aws.amazon.com/developers/access-keys/"
-                     />
+            <Label Grid.Column="0" Grid.Row="5" Margin="0 6 0 0" Target="{Binding ElementName=_ctlSecretKey}" VerticalAlignment="Center">_Secret Access Key:</Label>
+            <PasswordBox Margin="0 6 0 0" Grid.Column="2" Grid.Row="5" x:Name="_ctlSecretKey" 
+                         PasswordChanged="CtlSecretKey_OnPasswordChanged" />
+
+            <Button Grid.Column="2" Grid.Row="6" 
+                    HorizontalAlignment="Right"
+                    Margin="0 6 0 3"
+                    Click="OnClickImportFromCSV">
+                Import from CSV file...
+            </Button>
+
+            <!-- Partition -->
+            <Label
+                Grid.Row="8" Grid.Column="0"
+                Margin="0 6 0 0"
+                Content="Partition:"
+                Visibility="{Binding IsPartitionEnabled, Converter={StaticResource bool2VisConverter}}"
+                VerticalAlignment="Center"
+                ToolTip="Partitions are a collection of regions.&#x0a;If your account is based in a different partition, select a different partition to see its associated regions."
+                Target="{Binding ElementName=Partition}"
+                />
+
+            <ComboBox
+                Name="Partition" x:FieldModifier="private"
+                Grid.Row="8" Grid.Column="2"
+                Margin="0 6 0 0"
+                Visibility="{Binding IsPartitionEnabled, Converter={StaticResource bool2VisConverter}}"
+                IsEditable="False"
+                ItemsSource="{Binding Partitions}"
+                SelectedItem="{Binding Partition, UpdateSourceTrigger=PropertyChanged}"
+                DisplayMemberPath="DisplayName"
+                />
+            <!-- Region -->
+            <Label
+                Grid.Row="9" Grid.Column="0"
+                Margin="0 6 0 0"
+                Content="Region:"
+                VerticalAlignment="Center"
+                Target="{Binding ElementName=Region}"
+                />
+
+            <ComboBox
+                Name="Region" x:FieldModifier="private"
+                Grid.Row="9" Grid.Column="2"
+                Margin="0 6 0 0"
+                IsEditable="False"
+                ItemsSource="{Binding Regions}"
+                SelectedItem="{Binding Region, UpdateSourceTrigger=PropertyChanged}"
+                DisplayMemberPath="DisplayName">
+            </ComboBox>
+
+
+            <WrapPanel Grid.Column="2" Grid.Row="10" Margin="0 6 0 0" Visibility="{Binding IsPartitionEnabled, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                <TextBlock>Don't see your region?</TextBlock>
+                <TextBlock Margin="6 0 0 0">
+                <Hyperlink NavigateUri="https://aws.amazon.com/developers/access-keys/" RequestNavigate="OnRequestRegions">
+                    <TextBlock Text="Show more regions" />
                 </Hyperlink></TextBlock>
-        </WrapPanel>
 
-    </Grid>
+            </WrapPanel>
+
+            <WrapPanel Grid.Column="0" Grid.Row="11" Grid.ColumnSpan="3" Margin="0 9 0 0" VerticalAlignment="Bottom">
+                <TextBlock>Account information can found at:</TextBlock>
+                <TextBlock Margin="3 0 0 0">
+                    <Hyperlink NavigateUri="https://aws.amazon.com/developers/access-keys/" RequestNavigate="onRequestNavigate">
+                        <TextBlock 
+                            Name="_ctlAWSLink" 
+                            Text="https://aws.amazon.com/developers/access-keys/"
+                            />
+                    </Hyperlink>
+                </TextBlock>
+            </WrapPanel>
+
+        </Grid>
+    </ScrollViewer>
 </commonui:BaseAWSControl>

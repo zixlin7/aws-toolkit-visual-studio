@@ -9,10 +9,20 @@
     <Import_RootNamespace>AwsToolkit.VsSdk.Common</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\DialogWindowHost.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CommonUI\OkCancelDialogWindowHost.xaml.cs">
+      <DependentUpon>OkCancelDialogWindowHost.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)IAWSLegacyDeploymentPersistence.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IVsMonitorSelectionExtensionMethods.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VSLambdaUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VSUtility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VSWebProjectInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)CommonUI\OkCancelDialogWindowHost.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>

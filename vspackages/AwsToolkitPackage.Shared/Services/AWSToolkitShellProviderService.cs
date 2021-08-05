@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
+
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.MessageBox;
 using Amazon.AWSToolkit.MobileAnalytics;
@@ -11,10 +12,14 @@ using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.Utilities;
 
+using AwsToolkit.VsSdk.Common.CommonUI;
+
 using Microsoft;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+
 using Task = System.Threading.Tasks.Task;
 
 namespace Amazon.AWSToolkit.VisualStudio.Services
@@ -157,6 +162,14 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             }
         }
 
+        public bool ShowInModalDialogWindow(IAWSToolkitControl hostedControl, MessageBoxButton buttons)
+        {
+            var dialogWindow = DialogWindowHost.CreateDialogHost(buttons, hostedControl, this);
+
+            QueueOpenViewMetric(hostedControl.MetricId);
+            return dialogWindow.ShowModal() ?? false;
+        }
+
         public bool ShowModal(IAWSToolkitControl hostedControl)
         {
             return ShowModal(hostedControl, MessageBoxButton.OKCancel);
@@ -179,9 +192,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             return this._hostPackage.JoinableTaskFactory.Run<bool>(async () =>
             {
                 await this._hostPackage.JoinableTaskFactory.SwitchToMainThreadAsync();
-                ToolkitEvent toolkitEvent = new ToolkitEvent();
-                toolkitEvent.AddProperty(AttributeKeys.OpenViewFullIdentifier, metricId);
-                _hostPackage.AnalyticsRecorder.QueueEventToBeRecorded(toolkitEvent);
+                QueueOpenViewMetric(metricId);
 
                 var uiShell = (IVsUIShell)_hostPackage.GetVSShellService(typeof(SVsUIShell));
                 IntPtr parent;
@@ -213,6 +224,13 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                     uiShell.EnableModeless(1);
                 }
             });
+        }
+
+        private void QueueOpenViewMetric(string metricId)
+        {
+            ToolkitEvent toolkitEvent = new ToolkitEvent();
+            toolkitEvent.AddProperty(AttributeKeys.OpenViewFullIdentifier, metricId);
+            _hostPackage.AnalyticsRecorder.QueueEventToBeRecorded(toolkitEvent);
         }
 
         public void ShowError(string message)

@@ -82,6 +82,21 @@ namespace Amazon.AWSToolkit.Shared
         bool ShowModalFrameless(IAWSToolkitControl hostedControl);
 
         /// <summary>
+        /// Hosts a control within a modal dialog.
+        /// The modal dialog used is a VS SDK based DialogWindow, which accounts
+        /// for modal state within Visual Studio properly.
+        /// <seealso cref="https://docs.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.platformui.dialogwindow"/>
+        /// </summary>
+        /// <remarks>
+        /// Hosted controls should migrate from <see cref="ShowModal"/> calls to
+        /// <see cref="ShowInModalDialogWindow"/> as they are set up with the new Toolkit Theming.
+        /// </remarks>
+        /// <param name="hostedControl">Control to host in a DialogWindow</param>
+        /// <param name="buttons">Buttons to show in the dialog</param>
+        /// <returns>true if dialog was accepted (eg: Ok/Yes button), false if cancelled</returns>
+        bool ShowInModalDialogWindow(IAWSToolkitControl hostedControl, MessageBoxButton buttons);
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="window"></param>
