@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Navigation;
 
 using Amazon.AWSToolkit.Account.Controller;
@@ -95,12 +96,12 @@ namespace Amazon.AWSToolkit.Account.View
         {
             if (e.PropertyName == nameof(_controller.Model.AccessKey))
             {
-                _ctlAccessKey.Password = _controller.Model.AccessKey;
+                UpdatePassword(_ctlAccessKey, _controller.Model.AccessKey);
             }
 
             if (e.PropertyName == nameof(_controller.Model.SecretKey))
             {
-                _ctlSecretKey.Password = _controller.Model.SecretKey;
+                UpdatePassword(_ctlSecretKey, _controller.Model.SecretKey);
             }
 
             if (e.PropertyName == nameof(this._controller.Model.Partition))
@@ -108,6 +109,18 @@ namespace Amazon.AWSToolkit.Account.View
                 OnPartitionChanged();
             }
 
+        }
+
+        /// <summary>
+        /// Updates the password value if it is different.
+        /// Avoid assigning the same value, because this resets the control's cursor position.
+        /// </summary>
+        private void UpdatePassword(PasswordBox passwordBox, string password)
+        {
+            if (passwordBox.Password != password)
+            {
+                passwordBox.Password = password;
+            }
         }
 
         private void OnPartitionChanged()
