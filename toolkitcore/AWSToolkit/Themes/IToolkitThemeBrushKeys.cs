@@ -11,5 +11,8 @@
         /// Brush used for Hint Text in a UI (Foreground color)
         /// </summary>
         object HintText { get; }
+        object ToolTipBorder { get; }
+        object ToolTipBackground { get; }
+        object ToolTipText { get; }
     }
 }

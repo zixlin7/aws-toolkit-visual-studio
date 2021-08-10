@@ -165,8 +165,11 @@
     <Compile Include="Navigator\NavigatorViewModel.cs" />
     <Compile Include="Navigator\NavigatorControlExtensionMethods.cs" />
     <Compile Include="Themes\DesignTimeToolkitThemeBrushKeys.cs" />
+    <Compile Include="Themes\DesignTimeToolkitThemeFontKeys.cs" />
     <Compile Include="Themes\IToolkitThemeBrushKeys.cs" />
+    <Compile Include="Themes\IToolkitThemeFontKeys.cs" />
     <Compile Include="Themes\IToolkitThemeProvider.cs" />
+    <Compile Include="Themes\ToolkitThemeResourceKeys.cs" />
     <Compile Include="Themes\ToolkitThemes.cs" />
     <Compile Include="Util\MruList.cs" />
     <Compile Include="Credentials\Utils\ProfileHolder.cs" />

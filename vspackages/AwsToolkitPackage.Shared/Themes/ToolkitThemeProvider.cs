@@ -22,6 +22,22 @@ namespace Amazon.AWSToolkit.VisualStudio
         private static readonly Collection<ResourceDictionary> ThemeResources = BuildThemeResources();
 
         private readonly IToolkitThemeBrushKeys _themeBrushKeys = new ToolkitThemeBrushKeys();
+        private readonly IToolkitThemeFontKeys _themeFontKeys = new ToolkitThemeFontKeys();
+
+        public void Initialize()
+        {
+            try
+            {
+                // Place base-level styles in the Application Resources so that controls can
+                // reference and extend them.
+                var baseToolkitStyles = LoadBaseToolkitStyles();
+                Application.Current.Resources.MergedDictionaries.Add(baseToolkitStyles);
+            }
+            catch (Exception e)
+            {
+                Logger.Error(e);
+            }
+        }
 
         public void UseToolkitThemePropertyChanged(DependencyObject target, DependencyPropertyChangedEventArgs eventArgs)
         {
@@ -71,6 +87,11 @@ namespace Amazon.AWSToolkit.VisualStudio
             return _themeBrushKeys;
         }
 
+        public IToolkitThemeFontKeys GetToolkitThemeFontKeys()
+        {
+            return _themeFontKeys;
+        }
+        
         private static void OnElementInitialized(object sender, EventArgs args)
         {
             var element = (FrameworkElement) sender;
@@ -124,14 +145,27 @@ namespace Amazon.AWSToolkit.VisualStudio
             return dictionaries;
         }
 
+        private static ResourceDictionary LoadBaseToolkitStyles()
+        {
+            var assemblyName = GetAssemblyName();
+            var uriString = $"/{assemblyName};component/Themes/BaseToolkitStyles.xaml";
+            return LoadResourceDictionary(uriString);
+        }
+
         private static ResourceDictionary LoadControlStyles()
+        {
+            var assemblyName = GetAssemblyName();
+            var uriString = $"/{assemblyName};component/Themes/ControlStyles.xaml";
+            return LoadResourceDictionary(uriString);
+        }
+
+        private static ResourceDictionary LoadResourceDictionary(string uriString)
         {
             ResourceDictionary resources = new ResourceDictionary();
 
             try
             {
-                var assemblyName = GetAssemblyName();
-                var uri = new Uri($"/{assemblyName};component/Themes/ControlStyles.xaml", UriKind.RelativeOrAbsolute);
+                var uri = new Uri(uriString, UriKind.RelativeOrAbsolute);
                 resources = new ResourceDictionary()
                 {
                     Source = uri

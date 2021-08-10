@@ -31,6 +31,7 @@ namespace Amazon.AWSToolkit.Themes
         public static void Initialize(IToolkitThemeProvider toolkitThemeProvider)
         {
             _toolkitThemeProvider = toolkitThemeProvider;
+            _toolkitThemeProvider.Initialize();
         }
 
         /// <summary>
