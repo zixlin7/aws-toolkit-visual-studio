@@ -48,6 +48,16 @@ namespace Amazon.AWSToolkit.Telemetry
             request.ParentProduct = productEnvironment.ParentProduct;
             request.ParentProductVersion = productEnvironment.ParentProductVersion;
         }
+        public static void ApplyTo(this ProductEnvironment productEnvironment,
+            PostFeedbackRequest request)
+        {
+            request.AWSProduct = productEnvironment.AwsProduct;
+            request.AWSProductVersion = productEnvironment.AwsProductVersion;
+            request.OS = productEnvironment.OperatingSystem;
+            request.OSVersion = productEnvironment.OperatingSystemVersion;
+            request.ParentProduct = productEnvironment.ParentProduct;
+            request.ParentProductVersion = productEnvironment.ParentProductVersion;
+        }
 
         /// <summary>
         /// Cleans up properties on the given metric.

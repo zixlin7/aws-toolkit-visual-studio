@@ -25,5 +25,12 @@ namespace Amazon.AWSToolkit.Telemetry.Internal
             PostMetricsRequest request,
             CancellationToken cancellationToken = default(CancellationToken)
         );
+
+        /// <summary>
+        /// Sends feedback information
+        /// </summary>
+        /// <param name="sentiment">feedback sentiment eg. positive/negative</param>
+        /// <param name="comment">feedback comment</param>
+        Task SendFeedback(Sentiment sentiment, string comment);
     }
 }
