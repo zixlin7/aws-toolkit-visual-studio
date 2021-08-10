@@ -587,6 +587,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                     ConnectionManager = _toolkitCredentialInitializer.AwsConnectionManager,
                     CredentialManager = _toolkitCredentialInitializer.CredentialManager,
                     CredentialSettingsManager = _toolkitCredentialInitializer.CredentialSettingsManager,
+                    ToolkitHost = ToolkitShellProviderService
                 };
 
                 navigator = await CreateNavigatorControlAsync(_toolkitContext);
