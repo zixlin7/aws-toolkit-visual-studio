@@ -25,7 +25,12 @@ namespace Amazon.AWSToolkit.Themes
     /// <remarks>Should only be referenced from within .xaml files.</remarks>
     public static class ToolkitThemes
     {
-        private static readonly IToolkitThemeBrushKeys DesignTimeToolkitThemeBrushKeys = new DesignTimeToolkitThemeBrushKeys();
+        private static readonly IToolkitThemeBrushKeys DesignTimeToolkitThemeBrushKeys =
+            new DesignTimeToolkitThemeBrushKeys();
+
+        private static readonly IToolkitThemeFontKeys DesignTimeToolkitThemeFontKeys =
+            new DesignTimeToolkitThemeFontKeys();
+
         private static IToolkitThemeProvider _toolkitThemeProvider;
 
         public static void Initialize(IToolkitThemeProvider toolkitThemeProvider)
@@ -56,6 +61,16 @@ namespace Amazon.AWSToolkit.Themes
         /// each UI does not need to reference specific colors.
         /// </summary>
         public static object HintTextBrushKey => GetThemeBrushKeys().HintText;
+        public static object ToolTipBackgroundBrushKey => GetThemeBrushKeys().ToolTipBackground;
+        public static object ToolTipBorderBrushKey => GetThemeBrushKeys().ToolTipBorder;
+        public static object ToolTipTextBrushKey => GetThemeBrushKeys().ToolTipText;
+
+        public static object Heading1FontSizeKey => GetThemeFontKeys().Heading1FontSize;
+        public static object Heading1FontWeightKey => GetThemeFontKeys().Heading1FontWeight;
+        public static object Heading2FontSizeKey => GetThemeFontKeys().Heading2FontSize;
+        public static object Heading2FontWeightKey => GetThemeFontKeys().Heading2FontWeight;
+        public static object Heading3FontSizeKey => GetThemeFontKeys().Heading3FontSize;
+        public static object Heading3FontWeightKey => GetThemeFontKeys().Heading3FontWeight;
 
         /// <summary>
         /// Obtains the source of Brush Keys to be used by the Toolkit
@@ -66,6 +81,17 @@ namespace Amazon.AWSToolkit.Themes
         private static IToolkitThemeBrushKeys GetThemeBrushKeys()
         {
             return _toolkitThemeProvider?.GetToolkitThemeBrushKeys() ?? DesignTimeToolkitThemeBrushKeys;
+        }
+
+        /// <summary>
+        /// Obtains the source of Font Keys to be used by the Toolkit
+        /// As a fall back, it routes to a simplified source. This is
+        /// necessary at design time, so that the XAML Designer is capable of
+        /// displaying controls while developing the Toolkit.
+        /// </summary>
+        private static IToolkitThemeFontKeys GetThemeFontKeys()
+        {
+            return _toolkitThemeProvider?.GetToolkitThemeFontKeys() ?? DesignTimeToolkitThemeFontKeys;
         }
     }
 }
