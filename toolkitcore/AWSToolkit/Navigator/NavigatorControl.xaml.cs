@@ -733,11 +733,6 @@ namespace Amazon.AWSToolkit.Navigator
         }
 
 
-        private void onFeedback(object sender, RequestNavigateEventArgs e)
-        {
-            ToolkitFactory.Instance.ShellProvider.ShowModal(new Feedback(), MessageBoxButton.OK);
-        }
-
         private void onLink(object sender, RequestNavigateEventArgs e)
         {
             try

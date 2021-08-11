@@ -100,6 +100,7 @@
       <DependentUpon>CredentialsSelector.xaml</DependentUpon>
     </Compile>
     <Compile Include="CommonUI\Components\GroupedAccountComparer.cs" />
+    <Compile Include="CommonUI\Converters\NullableInverseBooleanConverter.cs" />
     <Compile Include="CommonUI\VsImages.cs" />
     <Compile Include="CommonUI\Components\AccountAndRegionPickerViewModel.cs" />
     <Compile Include="CommonUI\Components\AccountAndRegionPickerViewModelDesignerData.cs" />
@@ -159,6 +160,11 @@
     <Compile Include="Credentials\Utils\CredentialProviderNotFoundException.cs" />
     <Compile Include="Credentials\Utils\IProfileHolder.cs" />
     <Compile Include="Credentials\Utils\ProfilePropertiesExtensionMethods.cs" />
+    <Compile Include="Feedback\FeedbackPanel.xaml.cs">
+      <DependentUpon>FeedbackPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Feedback\FeedbackPanelViewModel.cs" />
+    <Compile Include="Feedback\SendFeedbackCommand.cs" />
     <Compile Include="Navigator\NavigatorAccountConnectionStatus.cs" />
     <Compile Include="Navigator\ContextCommandExecutor.cs" />
     <Compile Include="Navigator\NavigatorCommand.cs" />
@@ -311,9 +317,6 @@
     <Compile Include="CommonValidators\IntegerValidator.cs" />
     <Compile Include="CommonValidators\StringHasValueValidator.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Feedback.xaml.cs">
-      <DependentUpon>Feedback.xaml</DependentUpon>
-    </Compile>
     <Compile Include="IPluginActivator.cs" />
     <Compile Include="IRegisterDataConnectionService.cs" />
     <Compile Include="Navigator\Node\AbstractViewModel.cs" />
@@ -501,6 +504,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Feedback\FeedbackPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Navigator\NavigatorControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -664,10 +671,6 @@
     <Page Include="CommonUI\LegacyDeploymentWizard\PageUI\DeploymentReviewPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Feedback.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Primitives\DateTimePickerControl.xaml">
       <SubType>Designer</SubType>

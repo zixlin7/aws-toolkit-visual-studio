@@ -400,6 +400,32 @@
           <ButtonText>File Issue or Feature Request</ButtonText>
         </Strings>
       </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidSubmitFeedback" priority="0x0001" type="Button">
+        <Icon guid="ImageCatalogGuid" id="Feedback" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.Submit.Feedback</CommandName>
+          <ButtonText>Submit Quick Feedback</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guid_VSPackageCmdSet" id="cmdidSubmitFeedback2017" priority="0x0001" type="Button">
+        <Icon guid="ImageCatalogGuid" id="Feedback" />
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <CommandName>AWS.Submit.Feedback</CommandName>
+          <ButtonText>Submit Quick Feedback</ButtonText>
+        </Strings>
+      </Button>
       <!-- END Menu items that will be added to the "AWS Toolkit" submenu group -->
 
     </Buttons>
@@ -609,6 +635,14 @@
     <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidCreateIssue2017" priority="0x0001">
       <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_ACT_2017" />
     </CommandPlacement>
+    
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidSubmitFeedback" priority="0x0002">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_ACT" />
+    </CommandPlacement>
+
+    <CommandPlacement guid="guid_VSPackageCmdSet" id="cmdidSubmitFeedback2017" priority="0x0002">
+      <Parent guid="guid_VSPackageCmdSet" id="IDG_AWS_TOOLKIT_ACT_2017" />
+    </CommandPlacement>
     <!-- END AWS Toolkit Menu Command Placements -->
 
   </CommandPlacements>
@@ -668,6 +702,8 @@
       <IDSymbol name="cmdidViewUserGuide2017" value="0x0602" />
       <IDSymbol name="cmdidCreateIssue" value="0x0603" />
       <IDSymbol name="cmdidCreateIssue2017" value="0x0604" />
+      <IDSymbol name="cmdidSubmitFeedback" value="0x0605" />
+      <IDSymbol name="cmdidSubmitFeedback2017" value="0x0606" />
       <!-- END Commands within the "AWS Toolkit" Menu -->
 
       <IDSymbol name="IDM_AWS_MM_CLOUDFORMATION_TEMPLATE" value="0x1000" />
@@ -693,7 +729,6 @@
       <IDSymbol name="IDG_AWS_TOOLKIT_VIEW_2017" value="0x02005" />
       <IDSymbol name="IDM_AWS_TOOLKIT" value="0x02100" />
       <IDSymbol name="IDM_AWS_TOOLKIT_2017" value="0x02101" />
-
     </GuidSymbol>
 
     <GuidSymbol name="guid_VSPackageEditorFactory" value="{7b907bed-beab-4f29-b133-3bc88632e45a}" />

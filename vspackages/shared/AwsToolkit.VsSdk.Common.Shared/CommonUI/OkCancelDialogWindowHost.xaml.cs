@@ -47,10 +47,24 @@ namespace AwsToolkit.VsSdk.Common.CommonUI
 
             hostedControl.UserControl.IsEnabledChanged += HostedControlIsEnabledChanged;
 
+            SetButtonText(buttons);
+        }
+
+        private void SetButtonText(MessageBoxButton buttons)
+        {
             if (buttons == MessageBoxButton.YesNo)
             {
                 _ctlAcceptButton.Content = "Yes";
                 _ctlRejectButton.Content = "No";
+            }
+            else
+            {
+                _ctlAcceptButton.Content = !string.IsNullOrWhiteSpace(_hostedControl.AcceptButtonText)
+                    ? _hostedControl.AcceptButtonText
+                    : "OK";
+                _ctlRejectButton.Content = !string.IsNullOrWhiteSpace(_hostedControl.RejectButtonText)
+                    ? _hostedControl.RejectButtonText
+                    : "Cancel";
             }
         }
 

@@ -766,6 +766,14 @@ namespace Amazon.AWSToolkit.VisualStudio
                     this)
             );
 
+            tasks.Add(
+                ViewFeedbackPanelCommand.InitializeAsync(
+                    _toolkitContext,
+                    GuidList.CommandSetGuid,
+                    (int) (useVs2017Commands ? PkgCmdIDList.cmdidSubmitFeedback2017 : PkgCmdIDList.cmdidSubmitFeedback),
+                    this)
+            );
+
             await Task.WhenAll(tasks);
         }
 

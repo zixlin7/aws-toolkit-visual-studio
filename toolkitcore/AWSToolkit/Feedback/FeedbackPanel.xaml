@@ -1,0 +1,95 @@
+﻿<commonUi:BaseAWSControl x:Class="Amazon.AWSToolkit.Feedback.FeedbackPanel"
+                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                         xmlns:local="clr-namespace:Amazon.AWSToolkit.Feedback"
+                         xmlns:commonUi="clr-namespace:Amazon.AWSToolkit.CommonUI"
+                         xmlns:converters="clr-namespace:Amazon.AWSToolkit.CommonUI.Converters"
+                         mc:Ignorable="d"
+                         Height="300" Width="500">
+    <commonUi:BaseAWSControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/AWSToolkit;component/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converters:NullableInverseBooleanConverter x:Key="NullableInverseBooleanConverter" />
+            <commonUi:VsImages x:Key="VsImages" />
+        </ResourceDictionary>
+    </commonUi:BaseAWSControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+
+
+        <TextBlock Margin="5" Grid.Row="0">
+            Have an issue or feature request?
+            <Hyperlink
+                NavigateUri="https://github.com/aws/aws-toolkit-visual-studio"
+                RequestNavigate="OnRequestNavigate">
+                Talk to us on Github instead!
+            </Hyperlink>
+        </TextBlock>
+
+        <TextBlock 
+            Margin="5,0,5,0" 
+            Grid.Row="1" 
+            FontWeight="SemiBold" 
+            Text="How is your experience with the AWS Toolkit?" 
+            />
+
+        <StackPanel 
+            Name="FeedbackSentiment" x:FieldModifier="private"
+            Grid.Row="2" 
+            Margin="5" 
+            Orientation="Horizontal" 
+            HorizontalAlignment="Left">
+            <RadioButton Name="PositiveButton" x:FieldModifier="private"
+                         VerticalContentAlignment="Center"
+                         IsChecked="{Binding FeedbackSentiment,UpdateSourceTrigger=PropertyChanged}">
+                <Image Width="16"
+                       Height="16"
+                       VerticalAlignment="Top"
+                       Margin="0 0 9 0"
+                       Source="{Binding Source={StaticResource VsImages}, Path=FeedbackSmile}" />
+            </RadioButton>
+            <RadioButton Name="NegativeButton" x:FieldModifier="private"
+                         VerticalContentAlignment="Center"
+                         IsChecked="{Binding FeedbackSentiment, Converter={StaticResource NullableInverseBooleanConverter}, UpdateSourceTrigger=PropertyChanged}">
+                <Image Width="16"
+                       Height="16"
+                       VerticalAlignment="Top"
+                       Margin="0 0 9 0"
+                       Source="{Binding Source={StaticResource VsImages}, Path=FeedbackFrown}" />
+            </RadioButton>
+        </StackPanel>
+
+        <TextBlock 
+            Margin="5" 
+            Grid.Row="3" 
+            FontWeight="SemiBold" 
+            Text="Please enter your feedback"   
+            />
+
+        <TextBox   
+            Name="FeedbackComment" x:FieldModifier="private"
+            Margin="5" 
+            Grid.Row="4"
+            VerticalAlignment="Stretch"
+            Text="{Binding FeedbackComment, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+            AcceptsReturn="True" />
+
+        <TextBlock 
+            Margin="5" 
+            Grid.Row="5"
+            VerticalAlignment="Stretch"
+            Text="{Binding RemainingCharacters, StringFormat={}{0} characters remaining}" />
+    </Grid>
+</commonUi:BaseAWSControl>

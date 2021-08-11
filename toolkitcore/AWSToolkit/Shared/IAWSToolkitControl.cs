@@ -32,5 +32,9 @@ namespace Amazon.AWSToolkit.Shared
         void OnEditorOpened(bool success);
 
         bool CanClose();
+
+        string AcceptButtonText { get; }
+
+        string RejectButtonText { get; }
     }
 }

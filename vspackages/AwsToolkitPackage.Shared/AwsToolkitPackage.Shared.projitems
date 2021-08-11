@@ -24,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Commands\Lambda\AddServerlessTemplateCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\Lambda\DeployLambdaCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\Toolkit\CreateIssueCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Commands\Toolkit\ViewFeedbackPanelCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Commands\Toolkit\ViewUserGuideCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CustomProvideEditorFactoryAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DeploymentProcessors\BeanstalkConfiguration.cs" />
