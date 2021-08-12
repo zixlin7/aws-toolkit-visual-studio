@@ -964,7 +964,8 @@ namespace Amazon.AWSToolkit.S3.View
                 if (!string.IsNullOrEmpty(downloadLocation))
                 {
                     List<BucketBrowserModel.ChildItem> childItems = getSelectedItemsAsList();
-                    DownloadFilesJob job = new DownloadFilesJob(this._controller, this._controller.BucketName, this._model.Path, childItems.ToArray(), downloadLocation);
+                    DownloadFilesJob job = new DownloadFilesJob(this._controller, this._controller.BucketName,
+                        this._model.Path, childItems.ToArray(), downloadLocation);
                     this._ctlJobTracker.AddJob(job);
                 }
             }

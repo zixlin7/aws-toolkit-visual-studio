@@ -15,6 +15,8 @@ using Amazon.AWSToolkit.S3.Clipboard;
 using Amazon.AWSToolkit.CloudFront.Nodes;
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Regions;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
@@ -30,19 +32,21 @@ namespace Amazon.AWSToolkit.S3.Controller
         static ILog _logger = LogManager.GetLogger(typeof(BucketBrowserController));
         private readonly ToolkitContext _toolkitContext;
 
+        private readonly string _accountId;
+
         IAmazonS3 _s3Client;
         string _bucketName;
         BucketBrowserControl _control;
         BucketBrowserModel _browserModel;
+        S3BucketViewModel _bucketViewModel;
         Dispatcher _uiDispatcher;
         IS3ClipboardContainer _clipboardContainer = new DefaultS3ClipboardContainer();
-        S3RootViewModel _s3RootViewModel;
         Thread _loadingThread;
-      
 
         public BucketBrowserController(ToolkitContext toolkitContext)
         {
             _toolkitContext = toolkitContext;
+            _accountId = _toolkitContext.ConnectionManager.ActiveAccountId;
         }
 
         public BucketBrowserController(IAmazonS3 s3Client, BucketBrowserModel model)
@@ -54,15 +58,14 @@ namespace Amazon.AWSToolkit.S3.Controller
 
         public override ActionResults Execute(IViewModel model)
         {
-            S3BucketViewModel bucketModel = model as S3BucketViewModel;
-            if (bucketModel == null)
+            this._bucketViewModel = model as S3BucketViewModel;
+            if (_bucketViewModel == null)
                 return new ActionResults().WithSuccess(false);
 
-            this._s3RootViewModel = bucketModel.S3RootViewModel;
             // Make sure the manifest watcher has started so DnD to explorer will work.
             ManifestWatcher.Instance.Start(_toolkitContext); 
-            this._clipboardContainer = bucketModel.S3RootViewModel;
-            return Execute(bucketModel.S3Client, new BucketBrowserModel(bucketModel.Name));
+            this._clipboardContainer = _bucketViewModel.S3RootViewModel;
+            return Execute(_bucketViewModel.S3Client, new BucketBrowserModel(_bucketViewModel.Name));
         }
 
         public ActionResults Execute(IAmazonS3 s3Client, BucketBrowserModel bucketModel)
@@ -95,7 +98,7 @@ namespace Amazon.AWSToolkit.S3.Controller
 
         public IAmazonS3 S3Client => this._s3Client;
 
-        public S3RootViewModel S3RootViewModel => this._s3RootViewModel;
+        public S3RootViewModel S3RootViewModel => this._bucketViewModel.S3RootViewModel;
 
         public IS3ClipboardContainer ClipboardContainer => this._clipboardContainer;
 
@@ -385,7 +388,7 @@ namespace Amazon.AWSToolkit.S3.Controller
         private IList<ICloudFrontDistributionViewModel> connectedCloudFrontDistributions()
         {
             var list = new List<ICloudFrontDistributionViewModel>();
-            var cfRootModel = this._s3RootViewModel.AccountViewModel.FindSingleChild<ICloudFrontRootViewModel>(false);
+            var cfRootModel = this._bucketViewModel.S3RootViewModel.AccountViewModel.FindSingleChild<ICloudFrontRootViewModel>(false);
             if (cfRootModel != null)
             {
                 foreach (IViewModel cfModel in cfRootModel.Children)
@@ -414,6 +417,39 @@ namespace Amazon.AWSToolkit.S3.Controller
                 }
             }
             return list;
+        }
+
+        public void RecordDownloadObjectsMetric(long count, Result downloadResult)
+        {
+            try
+            {
+                this._toolkitContext.TelemetryLogger.RecordS3DownloadObjects(new S3DownloadObjects()
+                {
+                    AwsAccount = this.GetAccountId(),
+                    AwsRegion = this.GetRegion(),
+                    Result = downloadResult,
+                    Value = count,
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e);
+            }
+        }
+
+        private string GetRegion()
+        {
+            return this._bucketViewModel.OverrideRegion;
+        }
+
+        private string GetAccountId()
+        {
+            if (string.IsNullOrWhiteSpace(_accountId))
+            {
+                return MetadataValue.Invalid;
+            }
+
+            return _accountId;
         }
 
         class DefaultS3ClipboardContainer : IS3ClipboardContainer
