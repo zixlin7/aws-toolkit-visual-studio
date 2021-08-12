@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Feedback;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Common.Context;
@@ -21,35 +24,65 @@ namespace AWSToolkitPackage.Tests.Feedback
             _sut = new SendFeedbackCommand(_toolkitContextFixture.ToolkitContext);
         }
 
-        [Fact]
-        public void Execute_Submit()
+        [StaFact]
+        public void Execute_SubmitSuccessful()
         {
-            _toolkitContextFixture.ToolkitHost.Setup(x =>
-                x.ShowInModalDialogWindow(It.IsAny<IAWSToolkitControl>(), It.IsAny<MessageBoxButton>())).Returns(true);
+            SetupHostModalDialog(true);
+
             _sut.Execute(null);
 
-            _toolkitContextFixture.ToolkitHost.Verify(x => x.OutputToHostConsole(It.IsAny<string>()), Times.Never);
+            AssertTelemetryFeedbackCall(Result.Succeeded);
         }
 
-        [Fact]
+        [StaFact]
+        public void Execute_SubmitFailed()
+        {
+            SetupHostModalDialog(true);
+            _toolkitContextFixture.TelemetryLogger.Setup(x => x.SendFeedback(It.IsAny<Sentiment>(), It.IsAny<string>()))
+                .Throws<Exception>();
+
+            _sut.Execute(null);
+
+            AssertTelemetryFeedbackCall(Result.Failed);
+        }
+
+        [StaFact]
         public void Execute_Cancel()
         {
-            _toolkitContextFixture.ToolkitHost.Setup(x =>
-                x.ShowInModalDialogWindow(It.IsAny<IAWSToolkitControl>(), It.IsAny<MessageBoxButton>())).Returns(false);
+            SetupHostModalDialog(false);
+
             _sut.Execute(null);
 
-            _toolkitContextFixture.ToolkitHost.Verify(x => x.OutputToHostConsole(It.IsAny<string>()), Times.Never);
+            AssertTelemetryFeedbackCall(Result.Cancelled);
         }
 
-        [Fact]
+        [StaFact]
         public void Execute_Throws()
         {
             _toolkitContextFixture.ToolkitHost.Setup(x =>
                     x.ShowInModalDialogWindow(It.IsAny<IAWSToolkitControl>(), It.IsAny<MessageBoxButton>()))
                 .Throws<Exception>();
+
             _sut.Execute(null);
 
-            _toolkitContextFixture.ToolkitHost.Verify(x => x.ShowError(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+            AssertTelemetryFeedbackCall(Result.Failed);
+
+            _toolkitContextFixture.ToolkitHost.Verify(x => x.ShowError(It.IsAny<string>(), It.IsAny<string>()),
+                Times.Once);
+        }
+
+        private void SetupHostModalDialog(bool returnValue)
+        {
+            _toolkitContextFixture.ToolkitHost.Setup(x =>
+                    x.ShowInModalDialogWindow(It.IsAny<IAWSToolkitControl>(), It.IsAny<MessageBoxButton>()))
+                .Returns(returnValue);
+        }
+
+        private void AssertTelemetryFeedbackCall(Result result)
+        {
+            _toolkitContextFixture.TelemetryLogger.Verify(
+                mock => mock.Record(It.Is<Metrics>(m =>
+                    m.Data.Any(p => p.Metadata.Values.Contains(result.ToString())))), Times.Once);
         }
     }
 }

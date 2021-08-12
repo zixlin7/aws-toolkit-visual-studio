@@ -1,12 +1,14 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
 using Amazon.AWSToolkit.Context;
 using Amazon.AWSToolkit.Tasks;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 using log4net;
+
+using Task = System.Threading.Tasks.Task;
 
 namespace Amazon.AWSToolkit.Feedback
 {
@@ -51,22 +53,33 @@ namespace Amazon.AWSToolkit.Feedback
 
         private async Task SubmitFeedbackAsync(object parameter)
         {
+            var feedbackResult = Result.Failed;
             try
             {
                 var feedbackViewModel = new FeedbackPanelViewModel();
-                var dialog = new FeedbackPanel(parameter as string) { DataContext = feedbackViewModel };
+                var sourceMarker = parameter as string;
+
+                var dialog = new FeedbackPanel(sourceMarker) {DataContext = feedbackViewModel};
 
                 var result = _toolkitContext.ToolkitHost.ShowInModalDialogWindow(dialog, MessageBoxButton.OKCancel);
                 if (result)
                 {
-                    await feedbackViewModel.SubmitFeedbackAsync(_toolkitContext);
+                    feedbackResult = await feedbackViewModel.SubmitFeedbackAsync(_toolkitContext, sourceMarker);
                 }
+                else
+                {
+                    feedbackResult = Result.Cancelled;
+                }
+                
             }
             catch (Exception ex)
             {
                 Logger.Error($"Error launching feedback form", ex);
                 _toolkitContext.ToolkitHost.ShowError("Failed to open the feedback form", ex.Message);
-
+            }
+            finally
+            {
+                _toolkitContext.TelemetryLogger.RecordFeedbackResult(new FeedbackResult() {Result = feedbackResult});
             }
         }
     }

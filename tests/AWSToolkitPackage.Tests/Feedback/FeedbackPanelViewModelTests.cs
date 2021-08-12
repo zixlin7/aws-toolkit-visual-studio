@@ -1,6 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.Feedback;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 using Amazon.AWSToolkit.Tests.Common.Context;
 
 using Moq;
@@ -11,6 +16,14 @@ namespace AWSToolkitPackage.Tests.Feedback
 {
     public class FeedbackPanelViewModelTests
     {
+
+        public static IEnumerable<object[]> SentimentData = new List<object[]>
+        {
+            new object[] {true, Sentiment.Positive},
+            new object[] {null, Sentiment.Negative},
+            new object[] {false, Sentiment.Negative}
+        };
+
         private readonly ToolkitContextFixture _toolkitContextFixture = new ToolkitContextFixture();
         private readonly FeedbackPanelViewModel _sut;
 
@@ -39,12 +52,49 @@ namespace AWSToolkitPackage.Tests.Feedback
             Assert.Equal(expectedLimit, _sut.RemainingCharacters);
         }
 
-        [Fact]
-        public async Task SubmitFeedback()
+        [Theory]
+        [MemberData(nameof(SentimentData))]
+        public async Task SubmitFeedback_Success(bool sentiment, Sentiment expectedSentiment)
         {
-            await _sut.SubmitFeedbackAsync(_toolkitContextFixture.ToolkitContext);
+            _sut.FeedbackSentiment = sentiment;
 
-            _toolkitContextFixture.ToolkitHost.Verify(host => host.OutputToHostConsole(It.IsAny<string>(), It.IsAny<bool>()), Times.Once);
+            var result  = await _sut.SubmitFeedbackAsync(_toolkitContextFixture.ToolkitContext,null);
+
+            Assert.Equal(Result.Succeeded, result);
+            AssertTelemetryFeedbackCall(expectedSentiment, null);
+            _toolkitContextFixture.ToolkitHost.Verify(host => host.OutputToHostConsole(It.Is<string>(s => s.Contains("Thanks")), It.IsAny<bool>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task SubmitFeedback_Fail()
+        {
+            _sut.FeedbackSentiment = true;
+            _toolkitContextFixture.TelemetryLogger
+                .Setup(mock => mock.SendFeedback(It.IsAny<Sentiment>(), It.IsAny<string>())).Throws<Exception>();
+
+            var result = await _sut.SubmitFeedbackAsync(_toolkitContextFixture.ToolkitContext, null);
+
+            Assert.Equal(Result.Failed, result);
+            AssertTelemetryFeedbackCall(Sentiment.Positive, null);
+            _toolkitContextFixture.ToolkitHost.Verify(host => host.ShowError(It.IsAny<string>()), Times.Once);
+        }
+
+        [Fact]
+        public async Task SubmitFeedback_SendsSourceMarker()
+        {
+            _sut.FeedbackSentiment = true;
+            _sut.FeedbackComment = "good";
+
+            var result = await _sut.SubmitFeedbackAsync(_toolkitContextFixture.ToolkitContext, "publish to beanstalk");
+
+            Assert.Equal(Result.Succeeded, result);
+            AssertTelemetryFeedbackCall(Sentiment.Positive, $"System: publish to beanstalk{Environment.NewLine}good");
+            _toolkitContextFixture.ToolkitHost.Verify(host => host.OutputToHostConsole(It.Is<string>(s => s.Contains("Thanks")), It.IsAny<bool>()), Times.Once);
+        }
+
+        private void AssertTelemetryFeedbackCall(Sentiment sentiment, string comment)
+        {
+            _toolkitContextFixture.TelemetryLogger.Verify(mock => mock.SendFeedback(sentiment, comment), Times.Once);
         }
     }
 }

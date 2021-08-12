@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 
 using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.Context;
+using Amazon.AwsToolkit.Telemetry.Events.Core;
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.Feedback
 {
@@ -44,26 +46,35 @@ namespace Amazon.AWSToolkit.Feedback
             return FeedbackComment != null  && FeedbackComment.Length > MAX_CHAR_LIMIT;
         }
 
-        public async Task SubmitFeedbackAsync(ToolkitContext toolkitContext)
+        public async Task<Result> SubmitFeedbackAsync(ToolkitContext toolkitContext, string sourceMarker)
         {
             try
             {
-                // TODO: Post feedback and record telemetry here
+                await toolkitContext.TelemetryLogger.SendFeedback(GetSentiment(), CreateFeedbackComment(sourceMarker));
+
                 toolkitContext.ToolkitHost.OutputToHostConsole("Thanks for the feedback!", true);
+                return Result.Succeeded;
             }
             catch (Exception ex)
             {
                 toolkitContext.ToolkitHost.ShowError($"Failed to submit {FeedbackSentiment} feedback: {ex.Message}");
+                return Result.Failed;
             }
         }
-        private string CreateFeedbackComment(string comment, string marker)
+
+        private string CreateFeedbackComment(string marker)
         {
             if (!string.IsNullOrWhiteSpace(marker))
             {
-                return $"System: {marker}{Environment.NewLine}{comment}";
+                return $"System: {marker}{Environment.NewLine}{FeedbackComment}";
             }
 
-            return comment;
+            return FeedbackComment;
+        }
+
+        private Sentiment GetSentiment()
+        {
+            return FeedbackSentiment == true ? Sentiment.Positive : Sentiment.Negative;
         }
     }
 }
