@@ -437,6 +437,24 @@ namespace Amazon.AWSToolkit.S3.Controller
             }
         }
 
+        public void RecordUploadObjectsMetric(long count, Result uploadResult)
+        {
+            try
+            {
+                this._toolkitContext.TelemetryLogger.RecordS3UploadObjects(new S3UploadObjects()
+                {
+                    AwsAccount = this.GetAccountId(),
+                    AwsRegion = this.GetRegion(),
+                    Result = uploadResult,
+                    Value = count,
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e);
+            }
+        }
+
         private string GetRegion()
         {
             return this._bucketViewModel.OverrideRegion;

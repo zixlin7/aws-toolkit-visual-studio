@@ -10,7 +10,7 @@ using Amazon.AWSToolkit.S3.Controller;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
-
+using Amazon.AwsToolkit.Telemetry.Events.Generated;
 
 namespace Amazon.AWSToolkit.S3.Jobs
 {
@@ -72,6 +72,8 @@ namespace Amazon.AWSToolkit.S3.Jobs
 
         protected override void ExecuteJob()
         {
+            long successCount = 0;
+            long failCount = 0;
             try
             {
                 TransferUtilityConfig config = new TransferUtilityConfig();
@@ -79,6 +81,7 @@ namespace Amazon.AWSToolkit.S3.Jobs
                 int index = this._completedFiles.Count;
                 foreach (string filepath in this._filepaths)
                 {
+                    
                     if (this._completedFiles.Contains(filepath))
                         continue;
 
@@ -88,58 +91,15 @@ namespace Amazon.AWSToolkit.S3.Jobs
                     string key = determineKey(filepath);
 
                     updateFileProgressBar(index);
-                    var request = new TransferUtilityUploadRequest()
+
+                    if (UploadFile(filepath, utility, key))
                     {
-                        FilePath = filepath,
-                        BucketName = this._bucket,
-                        Key = key,
-                        StorageClass = S3StorageClass.Standard
-                    };
-                    request.UploadProgressEvent += this.uploadTransferredBytesProgressCallback;
-
-
-                    foreach (var name in this._nvcMetadata.AllKeys)
-                        request.Metadata[name] = this._nvcMetadata[name];
-                    foreach (var name in this._nvcHeaders.AllKeys)
-                        request.Headers[name] = this._nvcHeaders[name];
-
-                    if (this._uploadSettingsModel.UseServerSideEncryption)
-                        request.ServerSideEncryptionMethod = ServerSideEncryptionMethod.AES256;
-                    if (this._uploadSettingsModel.MakePublic)
-                        request.CannedACL = S3CannedACL.PublicRead;
-
-
-                    utility.Upload(request);
-
-                    if(this._tags != null && this._tags.Count > 0)
-                    {
-                        this._s3Client.PutObjectTagging(new PutObjectTaggingRequest
-                        {
-                            BucketName = this._bucket,
-                            Key = key,
-                            Tagging = new Tagging
-                            {
-                                TagSet = this._tags
-                            }
-                        });
+                        successCount++;
                     }
-
-                    long fileSize = new FileInfo(filepath).Length;
-                    var childItem = new BucketBrowserModel.ChildItem(key, fileSize, DateTime.Now, request.StorageClass);
-                    this._newChildItems.Add(childItem);
-
-                    if (this._accessList != null && this._accessList.Grants.Count > 0)
+                    else
                     {
-                        this._accessList.Owner = getBucketOwner();
-                        utility.S3Client.PutACL(new PutACLRequest()
-                        {
-                            AccessControlList = this._accessList,
-                            BucketName = this._bucket,
-                            Key = key
-                        });
+                        failCount++;
                     }
-
-                    this._completedFiles.Add(filepath);
                     index++;
                 }
                 updateFileProgressBar(index);
@@ -150,7 +110,77 @@ namespace Amazon.AWSToolkit.S3.Jobs
             {
                 this.IsComplete = true;
                 this._controller.AddChildItemsToModel(this._newChildItems);
+                if (successCount != 0)
+                {
+                    this._controller.RecordUploadObjectsMetric(successCount, Result.Succeeded);
+                }
+                if (failCount != 0)
+                {
+                    this._controller.RecordUploadObjectsMetric(failCount, Result.Failed);
+                }
             }
+        }
+
+        public bool UploadFile(string filepath, TransferUtility utility, string key)
+        {
+            try
+            {
+                var request = new TransferUtilityUploadRequest()
+                {
+                    FilePath = filepath,
+                    BucketName = this._bucket,
+                    Key = key,
+                    StorageClass = S3StorageClass.Standard
+                };
+                request.UploadProgressEvent += this.uploadTransferredBytesProgressCallback;
+
+                foreach (var name in this._nvcMetadata.AllKeys)
+                    request.Metadata[name] = this._nvcMetadata[name];
+                foreach (var name in this._nvcHeaders.AllKeys)
+                    request.Headers[name] = this._nvcHeaders[name];
+
+                if (this._uploadSettingsModel.UseServerSideEncryption)
+                    request.ServerSideEncryptionMethod = ServerSideEncryptionMethod.AES256;
+                if (this._uploadSettingsModel.MakePublic)
+                    request.CannedACL = S3CannedACL.PublicRead;
+
+            
+                utility.Upload(request);
+
+                if (this._tags != null && this._tags.Count > 0)
+                {
+                    this._s3Client.PutObjectTagging(new PutObjectTaggingRequest
+                    {
+                        BucketName = this._bucket,
+                        Key = key,
+                        Tagging = new Tagging
+                        {
+                            TagSet = this._tags
+                        }
+                    });
+                }
+
+                long fileSize = new FileInfo(filepath).Length;
+                var childItem = new BucketBrowserModel.ChildItem(key, fileSize, DateTime.Now, request.StorageClass);
+                this._newChildItems.Add(childItem);
+
+                if (this._accessList != null && this._accessList.Grants.Count > 0)
+                {
+                    this._accessList.Owner = getBucketOwner();
+                    utility.S3Client.PutACL(new PutACLRequest()
+                    {
+                        AccessControlList = this._accessList,
+                        BucketName = this._bucket,
+                        Key = key
+                    });
+                }
+                this._completedFiles.Add(filepath);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
         }
 
         private Owner getBucketOwner()
