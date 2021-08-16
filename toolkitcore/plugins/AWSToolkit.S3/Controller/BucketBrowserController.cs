@@ -455,6 +455,24 @@ namespace Amazon.AWSToolkit.S3.Controller
             }
         }
 
+        public void RecordDeleteObjectMetric(Result deleteResult)
+        {
+            try
+            {
+                this._toolkitContext.TelemetryLogger.RecordS3DeleteObject(new S3DeleteObject()
+                {
+                    AwsAccount = this.GetAccountId(),
+                    AwsRegion = this.GetRegion(),
+                    Result = deleteResult,
+                    Value = 1,
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e);
+            }
+        }
+
         private string GetRegion()
         {
             return this._bucketViewModel.OverrideRegion;
