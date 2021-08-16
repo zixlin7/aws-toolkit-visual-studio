@@ -29,8 +29,7 @@ from prompt_toolkit.keys import Keys
 from prompt_toolkit.formatted_text.utils import fragment_list_to_text
 
 
-# TODO: figure out better way to handle global state
-original = None
+original_branch = None
 
 def dim_text(text: str, color: str = "white") -> str:
     return f'{colorama.Style.DIM}{colored(text, color)}{colorama.Style.NORMAL}'
@@ -105,6 +104,12 @@ class Version:
 
         return False
 
+    def __le__(self, other: 'Version') -> bool:
+        return self < other or self == other
+
+    def __ge__(self, other: 'Version') -> bool:
+        return not (self < other)
+
     def __str__(self) -> str:
         return '.'.join(map(str, self._version))
 
@@ -156,8 +161,7 @@ class ReleaseConfig:
             if self.commit.type != 'commit':
                 raise Exception('not a commit')
         except:
-            # make this better
-            exit(reason='Bad commit in config.')
+            exit(reason='Bad commit in config. Does it exist on the development branch?')
 
     def __str__(self) -> str:
         out = ''
@@ -405,8 +409,9 @@ def fetch(remote: git.Remote, src_branch: str) -> Commit:
         reporter.complete(success=False)
         exit(reason=err)
 
-def find_remote_repo(repo: git.Repo) -> str:
-    remote = get_remote(repo)
+def find_remote_repo(repo: git.Repo, remote_name: str) -> str:
+    """Attempts to locate a remote GitHub repository using a git remote URL"""
+    remote = get_remote(repo, remote_name)
     url = list(remote.urls)[0]
     
     if url.find('github') == -1:
@@ -454,8 +459,7 @@ def login_github(remote: str) -> Repository:
         try: # See if we have access
             return gh.get_repo(remote)
         except Exception as err:
-            # TODO: output err mesage if debug mode?
-            print(colored('Login failed. Try again.', 'red'))
+            print(colored(f'Login failed: {err}', 'red'))
 
 def make_pr(version: str, head: str, remote: str):
     target = login_github(remote)
@@ -541,7 +545,7 @@ def select_version(previous_version: Version) -> Version:
         else:
             target_version = previous_version.bump(option_position)
 
-        if target_version < previous_version:
+        if target_version <= previous_version:
             print(colored('The next version must be greater than the previous version.', 'red'))
             continue
 
@@ -661,7 +665,7 @@ def push_candidate(repo: git.Repo, hooks: list[str], config: ReleaseConfig) -> s
         reporter.complete()
     except Exception as err:
         reporter.complete(success=False)
-        exit(reason=err) # TODO: log stacktrace?
+        exit(reason=f'Failed to push candidate: {err}')
 
     return candidate_branch  
 
@@ -690,19 +694,17 @@ def parse_changes(root: str, version: str, body: str = '') -> str:
         with open(changelog) as file:
             data = normalize_dictionary(json.load(file))
 
-        # TODO: make this not uppercase...
         title = f'## {version} ({data["date"]})'
         changelog = '\n'.join(map(lambda entry: f'- **{entry["type"]}** - {entry["description"]}', data['entries']))
 
         return f'{title}\n{body}\n### Changelog\n{changelog}'
     except Exception as err:
-        exit(reason='Failed to read changelog', tips=err)
+        exit(reason='Failed to read changelog from ".changes" directory', tips=err)
 
-# TODO: this is currently hard-coded to 'origin'
-def get_remote(repo: git.Repo) -> git.Remote:
-    return repo.remote()
+def get_remote(repo: git.Repo, name: str = None) -> git.Remote:
+    return repo.remote(name)
 
-def cleanup(original: str = None):
+def cleanup(original_branch: str = None):
     """Stops all running threads and checksout the original git branch if applicable."""
     thread: ProgressReporter
     for thread in ProgressReporter.active_threads.copy().values():
@@ -711,12 +713,13 @@ def cleanup(original: str = None):
     print(colorama.Style.RESET_ALL, end='')
     print(flush=True)
 
-    if not original is None:
-        back: git.Head = repo.branches[original]
+    if not original_branch is None:
+        back: git.Head = repo.branches[original_branch]
         back.checkout(force=True)
 
 def exit(code: int = None, reason: str = None, tips: str = None):
-    cleanup(original)
+    """General clean-up code for when the script terminates."""
+    cleanup(original_branch)
 
     if not reason is None:
         code = 1 if code is None else code
@@ -729,9 +732,9 @@ def exit(code: int = None, reason: str = None, tips: str = None):
 
     sys.exit(code)
 
-def exception_hook(error, original):
+def exception_hook(error, original_branch):
     print(error)
-    cleanup(original)
+    cleanup(original_branch)
 
 def load_config(repo: git.Repo, config_path: str) -> ReleaseConfig:
     """Loads and validate a release config from a past release. 
@@ -769,16 +772,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Creates release candidate branches from a target commit.')
     parser.add_argument('--hooks', metavar='cmd', type=str, required=False, nargs='+', help='Shell commands to be executed prior to pushing the release candidate', default=[])
     parser.add_argument('--config', metavar='path', type=str, required=False, help='Relative path to config file from the root of the repository', default=os.path.join(WORKING_DIR, CONFIG_NAME))
-    parser.add_argument('--source', metavar='branch', type=str, required=False, help='Development branch to source commits from (default: master)', default=DEFAULT_DEVELOPMENT_BRANCH)
-    parser.add_argument('--target', metavar='branch', type=str, required=False, help='Release branch to make a PR against (default: release/stable)', default=DEFAULT_RELEASE_BRANCH)
-    parser.add_argument('--remote', metavar='ref', type=str, required=False, help='Remote reference to fetch from and push to (default: origin)', default=DEFAULT_REMOTE)
-    parser.add_argument('--debug', metavar='', type=bool, required=False, help='Outputs debugging information', default=False)
+    parser.add_argument('--source', metavar='branch', type=str, required=False, help=f'Development branch to source commits from (default: {DEFAULT_DEVELOPMENT_BRANCH})', default=DEFAULT_DEVELOPMENT_BRANCH)
+    parser.add_argument('--target', metavar='branch', type=str, required=False, help=f'Release branch to make a PR against (default: {DEFAULT_RELEASE_BRANCH})', default=DEFAULT_RELEASE_BRANCH)
+    parser.add_argument('--remote', metavar='ref', type=str, required=False, help=f'Remote reference to fetch from and push to (default: {DEFAULT_REMOTE})', default=DEFAULT_REMOTE)
 
     args = parser.parse_args()
     pre_commit_hooks = args.hooks
     config_path: str = args.config
     development_branch: str = args.source
     release_branch: str = args.target
+    remote_name: str = args.remote
 
     try:
         repo = git.Repo(search_parent_directories=True)
@@ -789,16 +792,17 @@ if __name__ == '__main__':
         exit(reason='Working branch has unsaved changes.', tips=colored('Commit or stash any changes before running this script.', 'yellow'))
 
     if repo.head.is_detached:
+        # Ideally we would check for 'new' commits in this state, but if someone is starting this script
+        # in a detached state they probably know what they're doing
         print(dim_text('Warning: starting in detached HEAD', 'yellow'))
-        # TODO: check for commits on top of detached HEAD then abort
     else:
-        original = str(repo.head.ref)
+        original_branch = str(repo.head.ref)
         repo.head.reference = repo.head.commit
 
     signal.signal(signal.SIGINT, lambda sig, frame: exit())
-    sys.excepthook = lambda exctype, value, traceback: exception_hook(value, original)
-
-    remote = get_remote(repo)
+    sys.excepthook = lambda exctype, value, traceback: exception_hook(value, original_branch)
+    
+    remote = get_remote(repo, remote_name)
     development_commit = fetch(remote, development_branch)
     release_commit = fetch(remote, release_branch)
 
@@ -828,6 +832,6 @@ if __name__ == '__main__':
     candidate = push_candidate(repo, pre_commit_hooks, config)
 
     print('Creating PR...')
-    make_pr(str(config.version), candidate, find_remote_repo(repo))
+    make_pr(str(config.version), candidate, find_remote_repo(repo, remote_name))
 
     exit()
