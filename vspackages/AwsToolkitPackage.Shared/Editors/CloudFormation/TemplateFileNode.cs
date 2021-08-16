@@ -1,6 +1,6 @@
-﻿using Microsoft.VisualStudio.Project;
-using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
-using VsCommands = Microsoft.VisualStudio.VSConstants.VSStd97CmdID;
+﻿using Amazon.AWSToolkit.AwsServices;
+
+using Microsoft.VisualStudio.Project;
 
 namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
 {
@@ -19,7 +19,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
         {
             get
             {
-                if (this.FileName.ToLower().EndsWith(Amazon.AWSToolkit.CloudFormation.EditorExtensions.TemplateContentType.Extension))
+                if (this.FileName.ToLower().EndsWith(ToolkitFileTypes.CloudFormationTemplateExtension))
                 {
                     return CloudFormationTemplateProjectNode.templateFileNodeImageIndex;
                 }

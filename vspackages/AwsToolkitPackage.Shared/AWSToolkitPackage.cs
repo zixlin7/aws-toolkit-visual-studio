@@ -52,6 +52,7 @@ using Amazon.AWSToolkit.VisualStudio.FirstRun.Controller;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Amazon.AWSToolkit.AwsServices;
 using Amazon.AWSToolkit.Clients;
 using Amazon.AWSToolkit.Settings;
 using Amazon.AwsToolkit.Telemetry.Events.Generated;
@@ -1979,8 +1980,12 @@ namespace Amazon.AWSToolkit.VisualStudio
                         {
                             var fullName = dte.ActiveDocument.FullName;
                             // Don't show commands for a serverless template because it needs to be deployed with code.
-                            if(!string.Equals(Path.GetFileName(fullName), Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME, StringComparison.OrdinalIgnoreCase))                                
-                                menuCommand.Visible = fullName.EndsWith(CloudFormation.EditorExtensions.TemplateContentType.Extension);
+                            if (!string.Equals(Path.GetFileName(fullName),
+                                Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME, StringComparison.OrdinalIgnoreCase))
+                            {
+                                menuCommand.Visible =
+                                    fullName.EndsWith(ToolkitFileTypes.CloudFormationTemplateExtension);
+                            }
                         }
                     }
                     else
@@ -1989,7 +1994,7 @@ namespace Amazon.AWSToolkit.VisualStudio
                         if(item != null && item.Name != null)
                         {
                             if (!string.Equals(Path.GetFileName(item.Name), Constants.AWS_SERVERLESS_TEMPLATE_DEFAULT_FILENAME, StringComparison.OrdinalIgnoreCase) &&
-                                item.Name.EndsWith(CloudFormation.EditorExtensions.TemplateContentType.Extension))
+                                item.Name.EndsWith(ToolkitFileTypes.CloudFormationTemplateExtension))
                             {
                                 menuCommand.Visible = true;
                             }

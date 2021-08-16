@@ -1,18 +1,18 @@
 ﻿using System;
-using System.IO;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
-using VsCommands2K = Microsoft.VisualStudio.VSConstants.VSStd2KCmdID;
-using VsCommands = Microsoft.VisualStudio.VSConstants.VSStd97CmdID;
-using VSConstants = Microsoft.VisualStudio.VSConstants;
+using Amazon.AWSToolkit.AwsServices;
+using Amazon.AWSToolkit.CloudFormation.EditorExtensions;
 
 using Microsoft.VisualStudio.Project;
-using VSProjectUtilities = Microsoft.VisualStudio.Project.Utilities;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-using Amazon.AWSToolkit.CloudFormation.EditorExtensions;
-using Microsoft.VisualStudio.Shell;
+using VsCommands2K = Microsoft.VisualStudio.VSConstants.VSStd2KCmdID;
+using VSConstants = Microsoft.VisualStudio.VSConstants;
+using VSProjectUtilities = Microsoft.VisualStudio.Project.Utilities;
 
 namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
 {
@@ -141,8 +141,10 @@ namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
         /// <returns></returns>
         public override FileNode CreateFileNode(ProjectElement item)
         {
-            if (item.GetMetadata("Include").EndsWith(Amazon.AWSToolkit.CloudFormation.EditorExtensions.TemplateContentType.Extension))
+            if (item.GetMetadata("Include").EndsWith(ToolkitFileTypes.CloudFormationTemplateExtension))
+            {
                 return new TemplateFileNode(this, item);
+            }
 
             return new FileNode(this, item);
         }
@@ -154,7 +156,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Editors.CloudFormation
         /// <returns></returns>
         public override bool IsCodeFile(string fileName)
         {
-            return fileName.EndsWith(Amazon.AWSToolkit.CloudFormation.EditorExtensions.TemplateContentType.Extension);
+            return fileName.EndsWith(ToolkitFileTypes.CloudFormationTemplateExtension);
         }
 
         /// <summary>
