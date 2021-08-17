@@ -30,10 +30,6 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
     /// </summary>
     public partial class UploadFunctionDetailsPage : INotifyPropertyChanged
     {
-        const string HandlerTooltipBase = "The function within your code that Lambda calls to begin execution.";
-        const string HandlerTooltipDotNet = "For .NET, it is in the form: <assembly>::<type>::<method>";
-        const string HandlerTooltipGeneric = "For Node.js, it is the module-name.export value of your function.";
-        const string HandlerTooltipCustomRuntime = "For custom runtimes the handler field is optional. The value is made available to the Lambda function through the _HANDLER environment variable.";
         private const int AccountRegionChangedDebounceMs = 250;
 
         static readonly ILog LOGGER = LogManager.GetLogger(typeof(UploadFunctionDetailsPage));
@@ -548,38 +544,14 @@ namespace Amazon.AWSToolkit.Lambda.WizardPages.PageUI
                 ViewModel.SetFrameworkIfExists(framework);
             }
 
-            ViewModel.HandlerTooltip = CreateHandlerTooltip();
-            ViewModel.DotNetHandlerVisibility = ShowDotNetHandlerComponents ? Visibility.Visible : Visibility.Collapsed;
-            ViewModel.HandlerVisibility = !ShowDotNetHandlerComponents ? Visibility.Visible : Visibility.Collapsed;
+            ViewModel.HandlerHelpText = ViewModel.CreateHandlerHelpText();
+            ViewModel.HandlerTooltip = ViewModel.CreateHandlerTooltip();
             
             // Toggle control visibilities
             var showConfigAndFramework = ViewModel.Runtime?.IsNetCore ?? false;
             ViewModel.ConfigurationVisibility = showConfigAndFramework ? Visibility.Visible : Visibility.Collapsed;
             ViewModel.FrameworkVisibility = showConfigAndFramework ? Visibility.Visible : Visibility.Collapsed;
             ViewModel.ShowSaveSettings = showConfigAndFramework;
-        }
-
-        private string CreateHandlerTooltip()
-        {
-            var tooltipText = "";
-            if (ViewModel.Runtime == RuntimeOption.PROVIDED)
-            {
-                tooltipText = HandlerTooltipCustomRuntime;
-            }
-            else if (ViewModel.Runtime?.IsNetCore ?? false)
-            {
-                tooltipText = HandlerTooltipDotNet;
-            }
-            else
-            {
-                tooltipText = HandlerTooltipGeneric;
-            }
-
-            return string.Format("{1}{0}{0}{2}",
-                Environment.NewLine,
-                HandlerTooltipBase,
-                tooltipText
-            );
         }
 
         private bool AllRequiredFieldsForZipAreSet()

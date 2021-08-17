@@ -25,6 +25,11 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
 {
     public class UploadFunctionViewModel : BaseModel, IDataErrorInfo
     {
+        public const string HandlerTooltipBase = "The function within your code that Lambda calls to begin execution.";
+        public const string HandlerTooltipDotNet = "For .NET runtimes, the Lambda handler format is: <assembly>::<type>::<method>";
+        public const string HandlerTooltipGeneric = "For Node.js, the Lambda handler format is: <module-name>.<export value of your function>";
+        public const string HandlerTooltipCustomRuntime = "For custom runtimes the Lambda handler field is optional. The value is made available to the Lambda function through the _HANDLER environment variable.";
+
         private static readonly ILog Logger = LogManager.GetLogger(typeof(UploadFunctionViewModel));
 
         private readonly AccountAndRegionPickerViewModel _connectionViewModel;
@@ -45,13 +50,12 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         private string _configuration;
         private Visibility _configurationVisibility = Visibility.Visible;
         private string _description;
-        private Visibility _dotNetHandlerVisibility = Visibility.Visible;
         private string _framework;
         private Visibility _frameworkVisibility = Visibility.Visible;
         private string _functionName;
         private string _handler;
+        private string _handlerHelpText;
         private string _handlerTooltip;
-        private Visibility _handlerVisibility = Visibility.Visible;
         private string _handlerAssembly;
         private string _handlerMethod;
         private string _handlerType;
@@ -70,7 +74,8 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         private string _imageTag = "latest";
         private bool _loadingImageTags;
 
-        public UploadFunctionViewModel() : this(ToolkitFactory.Instance.ShellProvider, ToolkitFactory.Instance.ToolkitContext)
+        public UploadFunctionViewModel() : this(ToolkitFactory.Instance.ShellProvider,
+            ToolkitFactory.Instance.ToolkitContext)
         {
         }
 
@@ -126,12 +131,6 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
             set { SetProperty(ref _description, value, () => Description); }
         }
 
-        public Visibility DotNetHandlerVisibility
-        {
-            get => _dotNetHandlerVisibility;
-            set { SetProperty(ref _dotNetHandlerVisibility, value, () => DotNetHandlerVisibility); }
-        }
-
         public string Framework
         {
             get => _framework;
@@ -152,7 +151,8 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
             set { SetProperty(ref _functionName, value, () => FunctionName); }
         }
 
-        public string FunctionNameTooltip => "Enter a name for your AWS Lambda function. This name will display in the AWS Management Console.";
+        public string FunctionNameTooltip =>
+            "Enter a name for your AWS Lambda function. This name will display in the AWS Management Console.";
 
         public bool FunctionExists => !string.IsNullOrEmpty(FunctionName) && _functionConfigs.ContainsKey(FunctionName);
 
@@ -162,16 +162,16 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
             set { SetProperty(ref _handler, value, () => Handler); }
         }
 
+        public string HandlerHelpText
+        {
+            get => _handlerHelpText;
+            set => SetProperty(ref _handlerHelpText, value);
+        }
+
         public string HandlerTooltip
         {
             get => _handlerTooltip;
             set { SetProperty(ref _handlerTooltip, value, () => HandlerTooltip); }
-        }
-
-        public Visibility HandlerVisibility
-        {
-            get => _handlerVisibility;
-            set { SetProperty(ref _handlerVisibility, value, () => HandlerVisibility); }
         }
 
         public string HandlerAssembly
@@ -215,11 +215,11 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
 
         public ObservableCollection<PackageType> PackageTypes { get; } = new ObservableCollection<PackageType>()
         {
-            PackageType.Image,
-            PackageType.Zip,
+            PackageType.Image, PackageType.Zip,
         };
 
-        public string PackageTypeTooltip => $"Zip based packages run code in the selected runtime environment.{Environment.NewLine}{Environment.NewLine}Image based packages define both the runtime environment and code.";
+        public string PackageTypeTooltip =>
+            $"Zip based packages run code in the selected runtime environment.{Environment.NewLine}{Environment.NewLine}Image based packages define both the runtime environment and code.";
 
         public RuntimeOption Runtime
         {
@@ -277,7 +277,8 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
             set { SetProperty(ref _imageCommand, value, () => ImageCommand); }
         }
 
-        public string ImageCommandTooltip => "Optional. Specify the fully-qualified name of your Lambda method, or specify it using CMD in the dockerfile.";
+        public string ImageCommandTooltip =>
+            "Optional. Specify the fully-qualified name of your Lambda method, or specify it using CMD in the dockerfile.";
 
 
         public string ImageRepo
@@ -296,7 +297,8 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
             private set { SetProperty(ref _loadingImageRepos, value, () => LoadingImageRepos); }
         }
 
-        public string ImageRepoTooltip => $"ECR repository to store image.{Environment.NewLine}{Environment.NewLine}Select an existing repo or enter a name to create a new container registry.";
+        public string ImageRepoTooltip =>
+            $"ECR repository to store image.{Environment.NewLine}{Environment.NewLine}Select an existing repo or enter a name to create a new container registry.";
 
         public ObservableCollection<string> ImageRepos { get; } = new ObservableCollection<string>();
 
@@ -306,7 +308,8 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
             set { SetProperty(ref _imageTag, value, () => ImageTag); }
         }
 
-        public string ImageTagTooltip => $"Label to tag the image with.{Environment.NewLine}{Environment.NewLine}Select an existing label or type in a new one.";
+        public string ImageTagTooltip =>
+            $"Label to tag the image with.{Environment.NewLine}{Environment.NewLine}Select an existing label or type in a new one.";
 
         public ObservableCollection<string> ImageTags { get; } = new ObservableCollection<string>();
 
@@ -319,7 +322,8 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
             private set { SetProperty(ref _loadingImageTags, value, () => LoadingImageTags); }
         }
 
-        public string SourceCodeLocationTooltip => $"The source location can reference a file or folder.{Environment.NewLine}{Environment.NewLine}The file can be a zip file or a single javascript file{Environment.NewLine}The folder will be zipped before being uploaded.";
+        public string SourceCodeLocationTooltip =>
+            $"The source location can reference a file or folder.{Environment.NewLine}{Environment.NewLine}The file can be a zip file or a single javascript file{Environment.NewLine}The folder will be zipped before being uploaded.";
 
         /// <summary>
         /// Prompts user to select a folder containing lambda files to publish
@@ -424,7 +428,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
             handler = handler?.Trim();
 
             var tokens = handler?
-                .Split(new[] {"::"}, StringSplitOptions.None)
+                .Split(new[] { "::" }, StringSplitOptions.None)
                 .Select(text => text.Trim())
                 .ToArray();
 
@@ -589,10 +593,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
                 }
 
                 var imageDetails = new List<ImageDetail>();
-                var request = new DescribeImagesRequest()
-                {
-                    RepositoryName = ImageRepo
-                };
+                var request = new DescribeImagesRequest() { RepositoryName = ImageRepo };
 
                 do
                 {
@@ -661,6 +662,30 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
                     UiThreadFunctionName = currentFunctionName;
                 }
             }
+        }
+
+        public string CreateHandlerHelpText()
+        {
+            if (Runtime == RuntimeOption.PROVIDED)
+            {
+                return HandlerTooltipCustomRuntime;
+            }
+
+            if (Runtime?.IsNetCore ?? false)
+            {
+                return HandlerTooltipDotNet;
+            }
+
+            return HandlerTooltipGeneric;
+        }
+
+        public string CreateHandlerTooltip()
+        {
+            return string.Format("{1}{0}{0}{2}",
+                Environment.NewLine,
+                HandlerTooltipBase,
+                CreateHandlerHelpText()
+            );
         }
 
         private void BrowseSourceCodeFolder(object parameter)

@@ -1,16 +1,20 @@
-﻿using Amazon.AWSToolkit.Lambda.ViewModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Amazon.AWSToolkit.Lambda.Model;
+using Amazon.AWSToolkit.Lambda.ViewModel;
 using Amazon.AWSToolkit.Shared;
 using Amazon.AWSToolkit.Tests.Common.Context;
 using Amazon.ECR;
 using Amazon.ECR.Model;
 using Amazon.Lambda;
 using Amazon.Lambda.Model;
+
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+
 using Xunit;
 
 namespace AWSToolkit.Tests.Lambda
@@ -19,6 +23,17 @@ namespace AWSToolkit.Tests.Lambda
     {
         const string SampleFunctionName = "someFunction";
         private static readonly string[] SampleRepositoryNames = new string[] {"somerepo", "somerepo2"};
+
+        public static readonly IEnumerable<object[]> DotNetRuntimes = RuntimeOption.ALL_OPTIONS
+            .Where(r => r.IsNetCore)
+            .Where(r => !r.IsCustomRuntime)
+            .Select(r => Enumerable.Repeat(r, 1).ToArray())
+            .ToArray();
+
+        public static readonly IEnumerable<object[]> JsRuntimes = RuntimeOption.ALL_OPTIONS
+            .Where(r => r.IsNode)
+            .Select(r => Enumerable.Repeat(r, 1).ToArray())
+            .ToArray();
 
         private readonly Mock<IAWSToolkitShellProvider> _shellProvider = new Mock<IAWSToolkitShellProvider>();
         public readonly ToolkitContextFixture ToolkitContextFixture = new ToolkitContextFixture();
@@ -175,6 +190,61 @@ namespace AWSToolkit.Tests.Lambda
 
             Assert.False(_sut.TryGetFunctionConfig("fakeFunction", out _));
             Assert.True(_sut.TryGetFunctionConfig(SampleFunctionName, out _));
+        }
+
+        [Theory]
+        [MemberData(nameof(DotNetRuntimes))]
+        public void CreateHandlerHelpText_DotNetRuntime(RuntimeOption runtime)
+        {
+            _sut.Runtime = runtime;
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipDotNet, _sut.CreateHandlerHelpText());
+        }
+
+        [Theory]
+        [MemberData(nameof(JsRuntimes))]
+        public void CreateHandlerHelpText_NodeRuntime(RuntimeOption runtime)
+        {
+            _sut.Runtime = runtime;
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipGeneric, _sut.CreateHandlerHelpText());
+        }
+
+        [Fact]
+        public void CreateHandlerHelpText_CustomRuntime()
+        {
+            _sut.Runtime = RuntimeOption.PROVIDED;
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipCustomRuntime, _sut.CreateHandlerHelpText());
+        }
+
+        [Theory]
+        [MemberData(nameof(DotNetRuntimes))]
+        public void CreateHandlerTooltip_DotNetRuntime(RuntimeOption runtime)
+        {
+            _sut.Runtime = runtime;
+            var handlerTooltip = _sut.CreateHandlerTooltip();
+
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipBase, handlerTooltip);
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipDotNet, handlerTooltip);
+        }
+
+        [Theory]
+        [MemberData(nameof(JsRuntimes))]
+        public void CreateHandlerTooltip_NodeRuntime(RuntimeOption runtime)
+        {
+            _sut.Runtime = runtime;
+            var handlerTooltip = _sut.CreateHandlerTooltip();
+
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipBase, handlerTooltip);
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipGeneric, handlerTooltip);
+        }
+
+        [Fact]
+        public void CreateHandlerTooltip_CustomRuntime()
+        {
+            _sut.Runtime = RuntimeOption.PROVIDED;
+            var handlerTooltip = _sut.CreateHandlerTooltip();
+
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipBase, handlerTooltip);
+            Assert.Contains(UploadFunctionViewModel.HandlerTooltipCustomRuntime, handlerTooltip);
         }
 
         private void SetupEcrClient()

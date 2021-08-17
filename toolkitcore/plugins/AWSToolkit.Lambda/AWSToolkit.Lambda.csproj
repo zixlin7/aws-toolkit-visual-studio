@@ -142,9 +142,6 @@
     <Compile Include="WizardPages\Controls\UploadImageFunctionControl.xaml.cs">
       <DependentUpon>UploadImageFunctionControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WizardPages\Controls\UploadNetFunctionHandlerControl.xaml.cs">
-      <DependentUpon>UploadNetFunctionHandlerControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="WizardPages\Controls\UploadZipFunctionControl.xaml.cs">
       <DependentUpon>UploadZipFunctionControl.xaml</DependentUpon>
     </Compile>
@@ -267,10 +264,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="WizardPages\Controls\UploadImageFunctionControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="WizardPages\Controls\UploadNetFunctionHandlerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

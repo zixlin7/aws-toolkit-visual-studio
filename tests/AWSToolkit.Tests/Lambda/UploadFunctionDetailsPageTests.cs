@@ -175,27 +175,6 @@ namespace AWSToolkit.Tests.Lambda
             AssertRuntimeAffectsFramework(RuntimeOption.NetCore_v3_1, Frameworks.NetCoreApp31);
         }
 
-        /// <summary>
-        /// Either the DotNet Handler or the normal Handler are shown depending on Runtime.
-        /// DotNet handler has the Assembly/Type/Method components.
-        /// </summary>
-        [StaFact]
-        public void RuntimeAffectsHandlerVisibility()
-        {
-            var runtimesShowingDotNetHandler = new RuntimeOption[]
-            {
-                RuntimeOption.NetCore_v2_1,
-                RuntimeOption.NetCore_v3_1,
-            };
-
-            UploadFunctionDetailsPageFixture.RuntimeOptions
-                .ToList()
-                .ForEach(runtime =>
-                {
-                    AssertRuntimeAffectsHandlerVisibility(runtime, runtimesShowingDotNetHandler.Contains(runtime));
-                });
-        }
-
         [StaFact]
         public void RuntimeAffectsConfigFrameworkSettingsVisibility()
         {
@@ -246,15 +225,6 @@ namespace AWSToolkit.Tests.Lambda
         {
             Fixture.Page.ViewModel.Runtime = runtime;
             Assert.Equal(expectedFramework, Fixture.Page.ViewModel.Framework);
-        }
-
-        private void AssertRuntimeAffectsHandlerVisibility(RuntimeOption runtime, bool expectedDotNetHandlerVisibility)
-        {
-            Fixture.Page.ViewModel.Runtime = runtime;
-            Assert.Equal(expectedDotNetHandlerVisibility ? Visibility.Visible : Visibility.Collapsed,
-                Fixture.Page.ViewModel.DotNetHandlerVisibility);
-            Assert.Equal(!expectedDotNetHandlerVisibility ? Visibility.Visible : Visibility.Collapsed,
-                Fixture.Page.ViewModel.HandlerVisibility);
         }
 
         private void AssertRuntimeAffectsConfigFrameworkSettingsVisibility(RuntimeOption runtime, bool expectedShow)
