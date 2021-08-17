@@ -1,4 +1,4 @@
-<Project ToolsVersion="14.0" DefaultTargets="full-build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="14.0" DefaultTargets="full-build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
     <PropertyGroup>
         <InternalBuildTools Condition="'$(InternalBuildTools)'==''">$(MSBuildProjectDirectory)\..\buildtasks</InternalBuildTools>
@@ -23,8 +23,9 @@
         <UpdateVersions Condition="'$(UpdateVersions)'==''">false</UpdateVersions>
         <AWSToolkitVersionNumber Condition="'$(AWSToolkitVersion)'==''"></AWSToolkitVersionNumber>
         <AWSDeployVersionNumber Condition="'$(AWSDeployVersion)'==''"></AWSDeployVersionNumber>
+        <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
 
-    	<AWSToolkitPackageOutput>$(Deployment)\AWSToolkitPackage</AWSToolkitPackageOutput>
+        <AWSToolkitPackageOutput>$(Deployment)\AWSToolkitPackage</AWSToolkitPackageOutput>
 
 		<PushHostedFiles Condition="'$(PushHostedFiles)'==''">true</PushHostedFiles>
         <HostedFilesBucket Condition="'$(HostedFilesBucket)'==''">aws-vs-toolkit</HostedFilesBucket>
@@ -56,6 +57,12 @@
         <Message Text="Fetching endpoints manifest"/>
         <CallTarget Targets="get-latest-endpoint-data"/>
     </Target>
+	<!-- verify - Verifies nuget packages for the Visual Studio Toolkit solution are signed -->
+	<Target Name="verify">
+		<Message Text="Verifying nuget packages"/>
+		<Exec IgnoreExitCode="false" Command="$(BuildRoot)\solutions\.nuget\NuGet.exe verify -All $(NuGetPackageRoot)**\*.nupkg" />
+	</Target>
+
 
     <!-- compile - compiles the Visual Studio Toolkit solution; does not restore, does not run tests -->
     <Target Name="compile">

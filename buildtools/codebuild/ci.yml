@@ -12,6 +12,7 @@ phases:
         commands:
             - git init
             - echo "Building.."; msbuild buildtools\build.proj /t:restore 
+            - echo "Verifying.."; msbuild buildtools\build.proj /t:verify
             - msbuild buildtools\build.proj /t:compile /p:DeployExtension=false /p:Configuration=$env:BUILD_CONFIGURATION
             - echo "Running Tests.."; msbuild buildtools\build.proj /t:test /p:DeployExtension=false  /p:Configuration=$env:BUILD_CONFIGURATION
     post_build:

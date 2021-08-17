@@ -1,4 +1,4 @@
-name: CI
+﻿name: CI
 
 on:
     push:
@@ -47,6 +47,9 @@ jobs:
             - name: Restore
               run: msbuild buildtools\build.proj /t:restore
 
+            - name: Verify
+              run: msbuild buildtools\build.proj /t:verify
+              
             - name: Compile
               # DeployExtension=false skips installing the extension into an experimental instance of VS (we aren't going to debug it on CI machine)
               # This increases build time dramatically and prevents cryptic DEVENV warning spam.
@@ -81,6 +84,9 @@ jobs:
 
             - name: Restore
               run: msbuild buildtools\build.proj /t:restore /p:Configuration=${{ matrix.configuration }}
+
+            - name: Verify
+              run: msbuild buildtools\build.proj /t:verify
 
             - name: Compile
               # DeployExtension=false skips installing the extension into an experimental instance of VS (we aren't going to debug it on CI machine)
