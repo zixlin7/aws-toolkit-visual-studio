@@ -309,6 +309,11 @@ namespace Amazon.AWSToolkit.S3.Controller
 
                 var childItem = new BucketBrowserModel.ChildItem(folderPath, BucketBrowserModel.ChildType.Folder);
                 this._browserModel.ChildItems.Add(childItem);
+                RecordCreateFolderMetric(Result.Succeeded);
+            }
+            else
+            {
+                RecordCreateFolderMetric(Result.Failed);
             }
         }
 
@@ -424,7 +429,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             return list;
         }
 
-        public void RecordDownloadObjectsMetric(long count, Result downloadResult)
+        public void RecordDownloadObjectsMetric(long count, Result result)
         {
             try
             {
@@ -432,7 +437,7 @@ namespace Amazon.AWSToolkit.S3.Controller
                 {
                     AwsAccount = this.GetAccountId(),
                     AwsRegion = this.GetRegion(),
-                    Result = downloadResult,
+                    Result = result,
                     Value = count,
                 });
             }
@@ -442,7 +447,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             }
         }
 
-        public void RecordUploadObjectsMetric(long count, Result uploadResult)
+        public void RecordUploadObjectsMetric(long count, Result result)
         {
             try
             {
@@ -450,7 +455,7 @@ namespace Amazon.AWSToolkit.S3.Controller
                 {
                     AwsAccount = this.GetAccountId(),
                     AwsRegion = this.GetRegion(),
-                    Result = uploadResult,
+                    Result = result,
                     Value = count,
                 });
             }
@@ -460,7 +465,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             }
         }
 
-        public void RecordDeleteObjectMetric(Result deleteResult)
+        public void RecordDeleteObjectMetric(Result result)
         {
             try
             {
@@ -468,7 +473,7 @@ namespace Amazon.AWSToolkit.S3.Controller
                 {
                     AwsAccount = this.GetAccountId(),
                     AwsRegion = this.GetRegion(),
-                    Result = deleteResult,
+                    Result = result,
                     Value = 1,
                 });
             }
@@ -478,7 +483,7 @@ namespace Amazon.AWSToolkit.S3.Controller
             }
         }
 
-        public void RecordRenameObjectMetric(Result renameResult)
+        public void RecordRenameObjectMetric(Result result)
         {
             try
             {
@@ -486,7 +491,25 @@ namespace Amazon.AWSToolkit.S3.Controller
                 {
                     AwsAccount = this.GetAccountId(),
                     AwsRegion = this.GetRegion(),
-                    Result = renameResult,
+                    Result = result,
+                    Value = 1,
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e);
+            }
+        }
+
+        public void RecordCreateFolderMetric(Result result)
+        {
+            try
+            {
+                this._toolkitContext.TelemetryLogger.RecordS3CreateFolder(new S3CreateFolder()
+                {
+                    AwsAccount = this.GetAccountId(),
+                    AwsRegion = this.GetRegion(),
+                    Result = result,
                     Value = 1,
                 });
             }
