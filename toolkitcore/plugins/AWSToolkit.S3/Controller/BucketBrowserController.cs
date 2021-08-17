@@ -287,6 +287,11 @@ namespace Amazon.AWSToolkit.S3.Controller
             if (controller.Execute())
             {
                 childItem.FullPath = controller.Model.NewFullPathKey;
+                RecordRenameObjectMetric(Result.Succeeded);
+            }
+            else
+            {
+                RecordRenameObjectMetric(Result.Failed);
             }
         }
 
@@ -370,13 +375,13 @@ namespace Amazon.AWSToolkit.S3.Controller
                 postRequest.InvalidationBatch.Paths = new Paths();
                 foreach(var key in keys)
                 {
-                    string formmattedKey;
+                    string item;
                     if (key.StartsWith("/"))
-                        formmattedKey = key;
+                        item = key;
                     else
-                        formmattedKey = "/" + key;
+                        item = "/" + key;
 
-                    postRequest.InvalidationBatch.Paths.Items.Add(formmattedKey);
+                    postRequest.InvalidationBatch.Paths.Items.Add(item);
                 }
                 postRequest.InvalidationBatch.Paths.Quantity = postRequest.InvalidationBatch.Paths.Items.Count;
                 cfViewModel.CFClient.CreateInvalidation(postRequest);
@@ -464,6 +469,24 @@ namespace Amazon.AWSToolkit.S3.Controller
                     AwsAccount = this.GetAccountId(),
                     AwsRegion = this.GetRegion(),
                     Result = deleteResult,
+                    Value = 1,
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e);
+            }
+        }
+
+        public void RecordRenameObjectMetric(Result renameResult)
+        {
+            try
+            {
+                this._toolkitContext.TelemetryLogger.RecordS3RenameObject(new S3RenameObject()
+                {
+                    AwsAccount = this.GetAccountId(),
+                    AwsRegion = this.GetRegion(),
+                    Result = renameResult,
                     Value = 1,
                 });
             }
