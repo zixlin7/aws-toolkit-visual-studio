@@ -117,6 +117,8 @@
     <Compile Include="ToolkitAMIManifest.cs" />
     <Compile Include="ToolkitGlobalContants.cs" />
     <Compile Include="UserCrypto.cs" />
+    <Compile Include="Solutions\Project.cs" />
+    <Compile Include="Solutions\ProjectType.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="Util\DebounceDispatcher.cs" />
     <Compile Include="Util\HttpStatusCodeExtensionMethods.cs" />

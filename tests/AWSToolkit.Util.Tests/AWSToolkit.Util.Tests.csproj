@@ -82,6 +82,7 @@
     <Compile Include="Telemetry\TelemetryServiceTests.cs" />
     <Compile Include="Telemetry\TestHelper.cs" />
     <Compile Include="Resources\TestResources.cs" />
+    <Compile Include="Solutions\ProjectTests.cs" />
     <Compile Include="Util\ListExtensionMethodsTests.cs" />
     <Compile Include="Util\ZipUtilTests.cs" />
   </ItemGroup>
