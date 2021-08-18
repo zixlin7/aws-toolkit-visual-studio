@@ -429,6 +429,23 @@ namespace Amazon.AWSToolkit.S3.Controller
             return list;
         }
 
+        public void RecordOpenEditorMetric(Result result)
+        {
+            try
+            {
+                this._toolkitContext.TelemetryLogger.RecordS3OpenEditor(new S3OpenEditor()
+                {
+                    AwsAccount = this.GetAccountId(),
+                    AwsRegion = this.GetRegion(),
+                    Result = result,
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e);
+            }
+        }
+
         public void RecordDownloadObjectsMetric(long count, Result result)
         {
             try
@@ -474,7 +491,6 @@ namespace Amazon.AWSToolkit.S3.Controller
                     AwsAccount = this.GetAccountId(),
                     AwsRegion = this.GetRegion(),
                     Result = result,
-                    Value = 1,
                 });
             }
             catch (Exception e)
@@ -492,7 +508,6 @@ namespace Amazon.AWSToolkit.S3.Controller
                     AwsAccount = this.GetAccountId(),
                     AwsRegion = this.GetRegion(),
                     Result = result,
-                    Value = 1,
                 });
             }
             catch (Exception e)
@@ -510,7 +525,24 @@ namespace Amazon.AWSToolkit.S3.Controller
                     AwsAccount = this.GetAccountId(),
                     AwsRegion = this.GetRegion(),
                     Result = result,
-                    Value = 1,
+                });
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e);
+            }
+        }
+
+        public void RecordCopyUrlMetric(Result result, bool presigned)
+        {
+            try
+            {
+                this._toolkitContext.TelemetryLogger.RecordS3CopyUrl(new S3CopyUrl()
+                {
+                    AwsAccount = this.GetAccountId(),
+                    AwsRegion = this.GetRegion(),
+                    Result = result,
+                    Presigned = presigned,
                 });
             }
             catch (Exception e)

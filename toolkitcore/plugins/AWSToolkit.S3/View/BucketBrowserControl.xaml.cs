@@ -80,10 +80,7 @@ namespace Amazon.AWSToolkit.S3.View
 
         public override void OnEditorOpened(bool success)
         {
-            ToolkitFactory.Instance.TelemetryLogger.RecordS3OpenEditor(new S3OpenEditor()
-            {
-                Result = success ? Result.Succeeded : Result.Failed,
-            });
+            this._controller.RecordOpenEditorMetric(success ? Result.Succeeded : Result.Failed);
         }
 
         public BucketBrowserModel Model => this.DataContext as BucketBrowserModel;
@@ -742,11 +739,13 @@ namespace Amazon.AWSToolkit.S3.View
                 {
                     var url = this._controller.S3Client.GetPublicURL(this._controller.Model.BucketName, item.FullPath);
                     System.Windows.Clipboard.SetText(url.ToString());
+                    this._controller.RecordCopyUrlMetric(Result.Succeeded, false);
                 }
                 catch (Exception ex)
                 {
                     _logger.Error("Error copying URL to clipboard", ex);
                     ToolkitFactory.Instance.ShellProvider.ShowError("Error copying URL to clipboard: " + ex.Message);
+                    this._controller.RecordCopyUrlMetric(Result.Failed, false);
                 }
             };
             clipboardMenuItems.Add(copyUrl);
@@ -855,11 +854,13 @@ namespace Amazon.AWSToolkit.S3.View
                     return;
 
                 this._controller.GeneratePreSignedURL(selectedItems[0].FullPath);
+                this._controller.RecordCopyUrlMetric(Result.Succeeded, true);
             }
             catch (Exception ex)
             {
                 this._logger.Error("Error generating pre-signed URL", ex);
                 ToolkitFactory.Instance.ShellProvider.ShowError("Error generating pre-signed URL: " + ex.Message);
+                this._controller.RecordCopyUrlMetric(Result.Failed, true);
             }
         }
 
