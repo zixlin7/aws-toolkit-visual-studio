@@ -9,8 +9,10 @@ using Amazon.AWSToolkit.CommonUI;
 using Amazon.AWSToolkit.CommonUI.MessageBox;
 using Amazon.AWSToolkit.MobileAnalytics;
 using Amazon.AWSToolkit.Shared;
+using Amazon.AWSToolkit.Solutions;
 using Amazon.AWSToolkit.Util;
 using Amazon.AWSToolkit.VisualStudio.Utilities;
+using Amazon.AwsToolkit.VsSdk.Common;
 
 using AwsToolkit.VsSdk.Common.CommonUI;
 
@@ -443,6 +445,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
             });
         }
 
+        public Project GetSelectedProject() => VSUtility.SelectedWebProject.AsProject();
+
         public void CloseEditor(IAWSToolkitControl editorControl)
         {
             var uniqueId = editorControl.UniqueId;
@@ -498,7 +502,6 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
                 }
             }
         }
-
         #endregion
 
         private AWSToolkitShellProviderService() { }

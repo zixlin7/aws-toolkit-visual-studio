@@ -57,6 +57,7 @@
     <Compile Include="Images\VsImageProviderTests.cs" />
     <Compile Include="Lambda\ProjectCreatorUtilitiesTests.cs" />
     <Compile Include="Navigator\NavigatorViewModelTests.cs" />
+    <Compile Include="Shared\Services\VsWebProjectInfoExtensionsTests.cs" />
     <Compile Include="Telemetry\TelemetryInfoBarTests.cs" />
     <Compile Include="UIThreadFixture.cs" />
     <Compile Include="Lambda\LambdaTesterUsageEmitterTests.cs" />
@@ -131,9 +132,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-	<PackageReference Include="Xunit.StaFact">
-	  <Version>0.3.18</Version>
-	</PackageReference>
+    <PackageReference Include="Xunit.StaFact">
+      <Version>0.3.18</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="DeploymentProcessors\expected-aws-beanstalk-configuration.json" />

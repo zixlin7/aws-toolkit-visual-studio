@@ -2,6 +2,8 @@
 using System.Windows;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+
+using Amazon.AWSToolkit.Solutions;
 using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.Shared
@@ -217,6 +219,12 @@ namespace Amazon.AWSToolkit.Shared
         /// to the system default browser (in a separate process) if necessary.
         /// </param>
         void OpenInBrowser(string url, bool preferInternalBrowser);
+
+        /// <summary>
+        /// Get the User's current selected Project in the IDE.
+        /// </summary>
+        /// <returns>The current selected project.</returns>
+        Project GetSelectedProject();
 
         /// <summary>
         /// Uses the unique id of the supplied control to find an opened editor window

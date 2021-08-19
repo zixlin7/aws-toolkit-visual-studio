@@ -58,7 +58,7 @@ namespace Amazon.AwsToolkit.VsSdk.Common
         }
 
         // guids identifying different types of web project that VS supports
-        private const string guidWebApplicationProject = "{349C5851-65DF-11DA-9384-00065B846F21}"; // has project file
+        public const string guidWebApplicationProject = "{349C5851-65DF-11DA-9384-00065B846F21}"; // has project file
         private const string guidWebSiteProject = "{E24C65DC-7377-472B-9ABA-BC803B73C61A}"; // no project file, settings in sln file
 
         // this makes our handling work more seamlessly across traditional web projects
