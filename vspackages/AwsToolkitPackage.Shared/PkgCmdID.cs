@@ -32,6 +32,8 @@ namespace Amazon.AWSToolkit.VisualStudio
         public const uint cmdidCreateIssue2017 = 0x0604;
         public const uint cmdidSubmitFeedback = 0x0605;
         public const uint cmdidSubmitFeedback2017 = 0x0606;
+        public const uint cmdidViewGettingStarted = 0x0607;
+        public const uint cmdidViewGettingStarted2017 = 0x0608;
 
         // Groups
         public const uint IDG_AWS_CLOUDFORMATION_DEPLOYMENT = 0x1005;

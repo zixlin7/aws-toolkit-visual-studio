@@ -760,6 +760,14 @@ namespace Amazon.AWSToolkit.VisualStudio
             );
 
             tasks.Add(
+                ViewGettingStartedCommand.InitializeAsync(
+                    this, _toolkitContext, _toolkitSettingsWatcher,
+                    GuidList.CommandSetGuid,
+                    (int) (useVs2017Commands ? PkgCmdIDList.cmdidViewGettingStarted2017 : PkgCmdIDList.cmdidViewGettingStarted),
+                    this)
+            );
+
+            tasks.Add(
                 CreateIssueCommand.InitializeAsync(
                     ToolkitShellProviderService, _toolkitContext,
                     GuidList.CommandSetGuid,
