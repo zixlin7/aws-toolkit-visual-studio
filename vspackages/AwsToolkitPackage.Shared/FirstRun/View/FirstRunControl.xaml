@@ -192,7 +192,7 @@
                                 Tag="default"
                                 Text="{Binding ProfileName, Mode=TwoWay}" />
 
-                            <Label Grid.Row="2" Style="{DynamicResource awsLabelBaseStyle}">
+                            <Label Grid.Row="2" Target="{Binding ElementName=AccessKey}" Style="{DynamicResource awsLabelBaseStyle}">
                                 _Access Key:
                             </Label>
                             <PasswordBox  x:Name="AccessKey" 
@@ -202,7 +202,7 @@
                                           PasswordChanged="AccessKey_OnPasswordChanged"
                                           Style="{DynamicResource awsPasswordBoxStyle}"/>
 
-                            <Label Grid.Row="3" Style="{DynamicResource awsLabelBaseStyle}">
+                            <Label Grid.Row="3" Target="{Binding ElementName=SecretKey}" Style="{DynamicResource awsLabelBaseStyle}">
                                 _Secret Key:
                             </Label>
                             <PasswordBox  x:Name="SecretKey" 

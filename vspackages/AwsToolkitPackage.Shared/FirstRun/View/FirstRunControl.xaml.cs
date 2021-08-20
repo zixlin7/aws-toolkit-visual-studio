@@ -1,6 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Web.UI.WebControls;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Navigation;
 using System.Windows.Input;
@@ -36,14 +38,15 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
         {
             this._controller = controller;
             this.DataContext = this._controller.Model;
-
+            this._controller.Model.PropertyChanged += OnPropertyChanged;
             this.Loaded += FirstRunControl_Loaded;
-            
+
             InitializeComponent();
             ThemeUtil.ThemeChange += ThemeUtilOnThemeChange;
 
             // match the logo header 'text' to the theme on startup
             ThemeUtilOnThemeChange(null, null);
+            Unloaded += OnUnloaded;
         }
 
         private void FirstRunControl_Loaded(object sender, RoutedEventArgs e)
@@ -190,6 +193,33 @@ namespace Amazon.AWSToolkit.VisualStudio.FirstRun.View
                 return dlg.FileName;
 
             return null;
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            Unloaded -= OnUnloaded;
+            _controller.Model.PropertyChanged -= OnPropertyChanged;
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(_controller.Model.AccessKey))
+            {
+                UpdatePassword(AccessKey, _controller.Model.AccessKey);
+            }
+
+            if (e.PropertyName == nameof(_controller.Model.SecretKey))
+            {
+                UpdatePassword(SecretKey, _controller.Model.SecretKey);
+            }
+        }
+
+        private void UpdatePassword(PasswordBox passwordBox, string password)
+        {
+            if (passwordBox.Password != password)
+            {
+                passwordBox.Password = password;
+            }
         }
 
         private void AccessKey_OnPasswordChanged(object sender, RoutedEventArgs e)
