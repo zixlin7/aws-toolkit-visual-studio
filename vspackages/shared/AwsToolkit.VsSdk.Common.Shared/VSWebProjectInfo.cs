@@ -340,7 +340,7 @@ namespace Amazon.AwsToolkit.VsSdk.Common
         }
 
         [Browsable(false)]
-        public EnvDTEProject DTEProject
+        public virtual EnvDTEProject DTEProject
         {
             get
             {

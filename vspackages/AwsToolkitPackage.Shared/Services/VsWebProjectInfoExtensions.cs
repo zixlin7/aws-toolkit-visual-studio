@@ -7,7 +7,8 @@ namespace Amazon.AWSToolkit.VisualStudio.Services
     {
         public static Project AsProject(this VSWebProjectInfo projectInfo)
         {
-            return new Project(GetProjectTypeFrom(projectInfo));
+            var project = projectInfo.DTEProject;
+            return new Project(project?.Name, project?.FileName, GetProjectTypeFrom(projectInfo));
         }
 
         private static ProjectType GetProjectTypeFrom(VSWebProjectInfo projectInfo)

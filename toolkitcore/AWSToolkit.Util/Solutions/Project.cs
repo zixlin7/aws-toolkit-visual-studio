@@ -4,10 +4,14 @@ namespace Amazon.AWSToolkit.Solutions
 {
     public class Project : IEquatable<Project>
     {
+        public string Name { get; }
+        public string Path { get; }
         public ProjectType Type { get; }
 
-        public Project(ProjectType type)
+        public Project(string name, string path, ProjectType type)
         {
+            Name = name;
+            Path = path;
             Type = type;
         }
 
@@ -30,7 +34,7 @@ namespace Amazon.AWSToolkit.Solutions
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Type == other.Type;
+            return Name == other.Name && Path == other.Path && Type == other.Type;
         }
 
         public override bool Equals(object obj)
@@ -43,7 +47,13 @@ namespace Amazon.AWSToolkit.Solutions
 
         public override int GetHashCode()
         {
-            return (int)Type;
+            unchecked
+            {
+                var hashCode = (Name != null ? Name.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Path != null ? Path.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (int)Type;
+                return hashCode;
+            }
         }
 
         public static bool operator ==(Project left, Project right)
