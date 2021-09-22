@@ -12,11 +12,11 @@ namespace AWSToolkitPackage.Tests.Utilities.DTE
         public static IEnumerable<object[]> AsHostInfoData =>
             new List<object[]>
             {
-                new object[] {string.Empty, ToolkitHosts.VsMinimumSupportedVersion},
-                new object[] {null, ToolkitHosts.VsMinimumSupportedVersion},
-                new object[] {"1", ToolkitHosts.VsMinimumSupportedVersion},
-                new object[] {"999", ToolkitHosts.VsMinimumSupportedVersion},
-                new object[] {"X", ToolkitHosts.VsMinimumSupportedVersion},
+                new object[] {string.Empty, DteVersion.MinimumVersion},
+                new object[] {null, DteVersion.MinimumVersion},
+                new object[] {"1", DteVersion.MinimumVersion},
+                new object[] {"999", DteVersion.MinimumVersion},
+                new object[] {"X", DteVersion.MinimumVersion},
                 new object[] {"12", ToolkitHosts.Vs2013},
                 new object[] {"14", ToolkitHosts.Vs2015},
                 new object[] {"15", ToolkitHosts.Vs2017},
@@ -25,6 +25,9 @@ namespace AWSToolkitPackage.Tests.Utilities.DTE
                 new object[] {"16", ToolkitHosts.Vs2019},
                 new object[] {"16.9", ToolkitHosts.Vs2019},
                 new object[] {"16,9", ToolkitHosts.Vs2019},
+                new object[] {"17", ToolkitHosts.Vs2022},
+                new object[] {"17.0", ToolkitHosts.Vs2022},
+                new object[] {"17,0", ToolkitHosts.Vs2022},
             };
 
         [Theory]

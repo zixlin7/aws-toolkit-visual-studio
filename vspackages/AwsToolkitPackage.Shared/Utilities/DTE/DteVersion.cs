@@ -11,6 +11,20 @@ namespace Amazon.AWSToolkit.VisualStudio.Utilities.DTE
         static readonly ILog Logger = LogManager.GetLogger(typeof(DteVersion));
 
         /// <summary>
+        /// Represents the minimum VS version supported by the Toolkit
+        /// </summary>
+        public static readonly IToolkitHostInfo MinimumVersion = GetMinimumSupportedVsVersion();
+
+        private static IToolkitHostInfo GetMinimumSupportedVsVersion()
+        {
+#if VS2022
+            return ToolkitHosts.Vs2022;
+#elif VS2017_OR_LATER
+            return ToolkitHosts.Vs2017;
+#endif
+        }
+
+        /// <summary>
         /// Converts the Visual Studio shell's version (<see cref="EnvDTE.DTE.Version"/>)
         /// to a strongly typed version.
         /// </summary>
@@ -22,7 +36,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Utilities.DTE
             {
                 if (string.IsNullOrWhiteSpace(shellVersion))
                 {
-                    return ToolkitHosts.VsMinimumSupportedVersion;
+                    return MinimumVersion;
                 }
 
                 if (shellVersion.StartsWith("12"))
@@ -45,12 +59,17 @@ namespace Amazon.AWSToolkit.VisualStudio.Utilities.DTE
                     return ToolkitHosts.Vs2019;
                 }
 
-                return ToolkitHosts.VsMinimumSupportedVersion;
+                if (shellVersion.StartsWith("17"))
+                {
+                    return ToolkitHosts.Vs2022;
+                }
+
+                return MinimumVersion;
             }
             catch (Exception e)
             {
                 Logger.Error("Unable to determine Host version, assuming minimum supported version.", e);
-                return ToolkitHosts.VsMinimumSupportedVersion;
+                return MinimumVersion;
             }
         }
     }
