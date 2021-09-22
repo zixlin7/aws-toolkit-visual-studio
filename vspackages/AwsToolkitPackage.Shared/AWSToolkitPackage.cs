@@ -2398,17 +2398,34 @@ namespace Amazon.AWSToolkit.VisualStudio
             return VSConstants.S_OK;
         }
 
-#endregion
+        #endregion
 
-#region IAWSToolkitShellThemeService
+        #region IAWSToolkitShellThemeService
 
         // platformui namespace reference in the xaml file needs to be to a specific
         // shell version, and you can't just include references to prior shell version
         // assemblies at the project level otherwise package attribute definitions collide,
         // so we include a specific named copy of each file with just the namespace
         // changed (oh for nested xaml files!)
-        static readonly Uri _vsshellThemeOverridesUri = new Uri("/AWSToolkitPackage;component/Themes/_AWSToolkitDefaultTheme.15.0.xaml",
+        static readonly Uri _vsshellThemeOverridesUri = new Uri(GetDefaultThemeUri(),
                                                                 UriKind.RelativeOrAbsolute);
+
+        static string GetDefaultThemeUri()
+        {
+            try
+            {
+                //Example: /AWSToolkitPackage;component/Themes/_AWSToolkitDefaultTheme.15.0.xaml;
+                var assemblyName = typeof(AWSToolkitPackage).Assembly.GetName().Name;
+                return $"/{assemblyName};component/Themes/_AWSToolkitDefaultTheme.15.0.xaml";
+            }
+            catch (Exception e)
+            {
+                LOGGER.Error("Unable to determine the assembly hosting Theme details. Toolkit may not be functional.", e);
+
+                // Make an attempt at returning what worked for VS 2017/2019
+                return "/AWSToolkitPackage;component/Themes/_AWSToolkitDefaultTheme.15.0.xaml";
+            }
+        }
 
         public void QueryShellThemeOverrides(out IEnumerable<Uri> apply, out IEnumerable<Uri> remove)
         {
@@ -2457,7 +2474,7 @@ namespace Amazon.AWSToolkit.VisualStudio
 
         public object Environment375PercentFontWeightKey => ThemeFontResources.Environment375PercentFontWeightKey;
 
-        #endregion
+#endregion
 
 #region IRegisterDataConnectionService
 
