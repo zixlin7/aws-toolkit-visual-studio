@@ -22,6 +22,7 @@
       - VS 2013: 9510184f-8135-4f8a-ab8a-23be77c345e2
       - VS 2015: f2884b07-5122-4e23-acd7-4d93df18709e
       - VS 2017 (current Toolkit): 12ed248b-6d4a-47eb-be9e-8eabea0ff119
+      - VS 2022: 0B82CB16-0E52-4363-9BC0-61E758689176
     -->
     <VsixGuid>12ed248b-6d4a-47eb-be9e-8eabea0ff119</VsixGuid>
   </PropertyGroup>

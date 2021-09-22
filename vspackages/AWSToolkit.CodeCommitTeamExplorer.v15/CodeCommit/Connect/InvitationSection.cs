@@ -161,7 +161,10 @@ namespace Amazon.AWSToolkit.CodeCommitTeamExplorer.CodeCommit.Connect
             {
                 if (_vsShell == null) { return; }
 
-                var packageGuid = Constants.ToolkitPackageGuid;
+                // TODO : VS2022_TeamExplorerPackageDetection : Once the TeamExplorer projects are
+                // set up to leverage Shared Projects, update this code to (ifdef) conditionally
+                // reference the appropriate Toolkit Package Guid (IDE-5965)
+                var packageGuid = Constants.ToolkitPackageGuids.Vs20172019;
                 var isLoaded = _vsShell.IsPackageLoaded(ref packageGuid, out var _);
                 if (isLoaded != VSConstants.S_OK)
                 {

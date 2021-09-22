@@ -27,7 +27,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
+    <DefineConstants>$(BuildConstants);DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CreateVsixContainer>True</CreateVsixContainer>

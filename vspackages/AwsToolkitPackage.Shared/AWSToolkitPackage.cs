@@ -110,7 +110,7 @@ namespace Amazon.AWSToolkit.VisualStudio
               DefaultName = "Amazon.AWSToolkit.VisualStudio")]
     [ProvideKeyBindingTable(GuidList.HostedEditorFactoryGuidString, 102)]
     [ProvideEditorLogicalView(typeof(HostedEditorFactory), EnvDTEConstants.vsViewKindTextView)]
-    [Guid(GuidList.guidPackageString)]
+    [Guid(GuidList.AwsToolkitPackageGuidString)]
     [AWSCommandLineRegistration(CommandLineToken = awsToolkitPluginsParam, DemandLoad = false, Arguments = 1)]
     [ProvideService(typeof(SAWSToolkitShellProvider))]
     [CustomProvideEditorFactory(typeof(TemplateEditorFactory), 113)]

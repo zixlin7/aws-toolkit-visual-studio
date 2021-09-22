@@ -16,10 +16,13 @@ namespace Amazon.AWSToolkit.VisualStudio
         /// VS 2013: 9510184f-8135-4f8a-ab8a-23be77c345e2
         /// VS 2015: f2884b07-5122-4e23-acd7-4d93df18709e
         /// VS 2017 (current Toolkit): 12ed248b-6d4a-47eb-be9e-8eabea0ff119
+        /// VS 2022: 0B82CB16-0E52-4363-9BC0-61E758689176
         /// </summary>
-        public const string guidPackageString = Constants.ToolkitPackageGuidStr;
-
-        public static readonly Guid guidPackage = Constants.ToolkitPackageGuid;
+#if VS2022
+        public const string AwsToolkitPackageGuidString = Constants.ToolkitPackageGuids.Vs2022AsString;
+#elif VS2017_OR_LATER
+        public const string AwsToolkitPackageGuidString = Constants.ToolkitPackageGuids.Vs20172019AsString;
+#endif
 
         public const string CommandSetGuidString = "8ba6f49c-ca32-4bc4-a71c-77b8503b93c2";
         public static readonly Guid CommandSetGuid = new Guid(CommandSetGuidString);
@@ -61,7 +64,7 @@ namespace Amazon.AWSToolkit.VisualStudio
         // code uses 4.6.x (to support VS2017).
         // Instead, we'll place the values of interest here.
         // TODO : Get Microsoft.VisualStudio.ImageCatalog NuGet references working in-solution somehow
-        #region KnownImageIds
+#region KnownImageIds
 
         public static class VsImageCatalog
         {
@@ -69,6 +72,6 @@ namespace Amazon.AWSToolkit.VisualStudio
             public const int StatusInformation = 2933;
         }
 
-        #endregion
+#endregion
     };
 }

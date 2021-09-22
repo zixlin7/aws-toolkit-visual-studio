@@ -25,7 +25,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Registration
                     awsToolkitPluginsKey.SetValue("HelpString", string.IsNullOrEmpty(HelpString) ? string.Empty : HelpString);
 
                     // needs to be in B format
-                    awsToolkitPluginsKey.SetValue("Package", "{" + GuidList.guidPackageString + "}");
+                    awsToolkitPluginsKey.SetValue("Package", "{" + GuidList.AwsToolkitPackageGuidString + "}");
 
                     awsToolkitPluginsKey.Close();
                 }
