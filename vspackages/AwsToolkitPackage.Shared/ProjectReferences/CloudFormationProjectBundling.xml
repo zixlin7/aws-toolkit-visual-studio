@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  Bundling for use by CloudFormation Projects that is common to AWSToolkitPackage.xxx Projects.
+  If you have the solution open in Visual Studio and make changes to this file, you will need to close the 
+  solution and re-open it in order to pick up your changes.
+-->
+<Project ToolsVersion="15.0" DefaultTargets="Build"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
+
+  <!-- This section defines the files that are installed by the extension into a folder that is referenced by CloudFormation projects. -->
+  <ItemGroup>
+    <Content Include="$(BuildRoot)\thirdparty\License.JsonChecker.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>License.JsonChecker.txt</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <InstallRoot>MSBuild</InstallRoot>
+      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+    </Content>
+    <Content Include="$(BuildRoot)\thirdparty\License.log4net.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>License.log4net.txt</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <InstallRoot>MSBuild</InstallRoot>
+      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+    </Content>
+    <ProjectReference Include="$(BuildRoot)\vspackages\cloudformation\AWSToolkit.CloudFormation.MSBuildTasks\AWSToolkit.CloudFormation.MSBuildTasks.csproj">
+      <Project>{fe98588c-7fee-414e-9eab-f36bf64c88c0}</Project>
+      <Name>AWSToolkit.CloudFormation.MSBuildTasks</Name>
+      <InstallRoot>MSBuild</InstallRoot>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3b</IncludeOutputGroupsInVSIX>
+      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+    </ProjectReference>
+
+    <!-- Additional dependency content for the tasks, which we handle in the package project 
+       right now, as trying to flag this as 'content' in the cloudformation.msbuldtasks project
+       triggers the content to also be placed at the vsix root, causing load errors due to 
+       multiple copies of awssdk.core. When we figure out output groups we should be able to do 
+       this bundling work in the right project and have it be picked up automatically when the 
+       package builds. Note that direct build dependencies get picked up automatically due to
+       the IncludeOutputGroupsInVSIX setting on the msbuildtasks project reference.
+    -->
+    <Content Include="..\AwsToolkitPackageResources\AWSCloudFormationProject.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>AWSCloudFormationProject.ico</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <InstallRoot>MSBuild</InstallRoot>
+      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="..\AwsToolkitPackageResources\AWSCloudFormationTemplate.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>AWSCloudFormationTemplate.ico</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <InstallRoot>MSBuild</InstallRoot>
+      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\AWSSDK.Core.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>AWSSDK.Core.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <InstallRoot>MSBuild</InstallRoot>
+      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+      <Visible>false</Visible>
+    </Content>
+    <Content Include="$(OutputRoot)\log4net.dll">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>log4net.dll</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <InstallRoot>MSBuild</InstallRoot>
+      <VSIXSubPath>Amazon Web Services LLC\AWSToolkit.VS2010</VSIXSubPath>
+      <Visible>false</Visible>
+    </Content>
+  </ItemGroup>
+
+</Project>

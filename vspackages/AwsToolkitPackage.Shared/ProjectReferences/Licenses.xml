@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  Common License file links for AWSToolkitPackage.xxx Projects
+  If you have the solution open in Visual Studio and make changes to this file, you will need to close the 
+  solution and re-open it in order to pick up your changes.
+-->
+<Project ToolsVersion="15.0" DefaultTargets="Build"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BuildRoot Condition="'$(BuildRoot)' == ''">$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), root))</BuildRoot>
+  </PropertyGroup>
+
+  <!-- Copy License files into the VSIX -->
+  <ItemGroup>
+    <Content Include="..\AwsToolkitPackageResources\License.txt">
+      <Link>License.txt</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="$(BuildRoot)\thirdparty\License.Community.VisualStudio.Toolkit.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>License.Community.VisualStudio.Toolkit.txt</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="$(BuildRoot)\thirdparty\License.JsonChecker.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>License.JsonChecker.txt</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="$(BuildRoot)\thirdparty\License.log4net.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>License.log4net.txt</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="$(BuildRoot)\thirdparty\License.libgit2sharp.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>License.libgit2sharp.txt</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="$(BuildRoot)\thirdparty\License.Newtonsoft.Json.txt">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <Link>License.Newtonsoft.Json.txt</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+  </ItemGroup>
+
+</Project>
