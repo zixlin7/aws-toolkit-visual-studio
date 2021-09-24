@@ -27,7 +27,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>$(BuildConstants);DEBUG</DefineConstants>
+    <DefineConstants>$(BuildConstants);DEBUG;VS2017_OR_LATER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CreateVsixContainer>True</CreateVsixContainer>
@@ -40,8 +40,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DeployExtension>True</DeployExtension>
-    <DeployVSTemplates>True</DeployVSTemplates>
+    <!-- Only deploy into Experimental VS instance if the solution is loaded in VS 2017 or 2019 -->
+    <DeployExtension>False</DeployExtension>
+    <DeployExtension Condition=" '$(VisualStudioVersion)' == '15.0' Or '$(VisualStudioVersion)' == '16.0' ">True</DeployExtension>
+    <DeployVSTemplates>False</DeployVSTemplates>
+    <DeployVSTemplates Condition=" '$(VisualStudioVersion)' == '15.0' Or '$(VisualStudioVersion)' == '16.0' ">True</DeployVSTemplates>
     <IncludeDebugSymbolsInVSIXContainer>True</IncludeDebugSymbolsInVSIXContainer>
     <VSSDKTargetPlatformRegRootSuffix>Exp</VSSDKTargetPlatformRegRootSuffix>
   </PropertyGroup>
@@ -49,7 +52,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>$(OutputRoot)</OutputPath>
-    <DefineConstants>$(BuildConstants)</DefineConstants>
+    <DefineConstants>$(BuildConstants);VS2017_OR_LATER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
@@ -349,7 +352,7 @@
       <Version>4.9.4</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">
-      <Version>15.9.3043</Version>
+      <Version>16.10.1055</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
