@@ -157,10 +157,11 @@ namespace Amazon.AWSToolkit.DynamoDB.Controller
         {
             try
             {
-                _toolkitContext.TelemetryLogger.RecordDynamodbScan(new DynamodbScan
+                _toolkitContext.TelemetryLogger.RecordDynamodbFetchRecords(new DynamodbFetchRecords()
                 {
                     AwsAccount = GetAccountId(),
                     AwsRegion = this._rootModel?.DynamoDBRootViewModel?.Region?.Id ?? MetadataValue.Invalid,
+                    DynamoDbFetchType = DynamoDbFetchType.Scan,
                     Result = result,
                 });
             }
