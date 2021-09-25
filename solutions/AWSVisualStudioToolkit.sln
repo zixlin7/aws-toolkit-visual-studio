@@ -172,11 +172,16 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AwsToolkit.VsSdk.Common.Sha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsToolkit.VsSdk.Common.v17", "..\vspackages\shared\AwsToolkit.VsSdk.Common.v17\AwsToolkit.VsSdk.Common.v17.csproj", "{260EB803-0C5D-4000-B920-4E8AF84820CA}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AWSToolkit.CodeCommitTeamExplorer.Shared", "..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.shproj", "{98FC1018-A866-4B34-90D8-C432EFEF5D2A}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{038b2cf8-0089-4ed1-beba-a7d64390190e}*SharedItemsImports = 4
 		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{260eb803-0c5d-4000-b920-4e8af84820ca}*SharedItemsImports = 4
+		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{5739ee0e-1e8c-4ac6-9aaa-f58c7345b9a8}*SharedItemsImports = 4
 		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{81552efa-46b0-4ebe-bc29-5ba6a7628207}*SharedItemsImports = 4
+		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{94f578fb-afeb-4c67-bd0d-c5797e50e9e8}*SharedItemsImports = 4
+		..\vspackages\AWSToolkit.CodeCommitTeamExplorer.Shared\AWSToolkit.CodeCommitTeamExplorer.Shared.projitems*{98fc1018-a866-4b34-90d8-c432efef5d2a}*SharedItemsImports = 13
 		..\vspackages\shared\AwsToolkit.VsSdk.Common.Shared\AwsToolkit.VsSdk.Common.Shared.projitems*{a27787ed-5a7a-455a-9e90-caeb9030f850}*SharedItemsImports = 13
 		..\vspackages\AwsToolkitPackage.Shared\AwsToolkitPackage.Shared.projitems*{cc1b2316-c330-410c-a3f3-097ca45713d8}*SharedItemsImports = 13
 	EndGlobalSection
@@ -515,6 +520,7 @@ Global
 		{CC1B2316-C330-410C-A3F3-097CA45713D8} = {7C126B63-12FD-4829-A22A-EB2A93815ACD}
 		{A27787ED-5A7A-455A-9E90-CAEB9030F850} = {BDF238D0-23E9-4131-861C-47C94F5D6018}
 		{260EB803-0C5D-4000-B920-4E8AF84820CA} = {BDF238D0-23E9-4131-861C-47C94F5D6018}
+		{98FC1018-A866-4B34-90D8-C432EFEF5D2A} = {7C126B63-12FD-4829-A22A-EB2A93815ACD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50B40085-A3FF-4E79-90F0-ECAA786ECF93}
