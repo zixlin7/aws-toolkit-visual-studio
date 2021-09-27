@@ -7,12 +7,9 @@ using log4net;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Build.Framework;
-using MSBuildProject = Microsoft.Build.Evaluation.Project;
-using EnvDTEProject = EnvDTE.Project;
 
 using Amazon.AWSToolkit.MobileAnalytics;
 
-using ServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 using Amazon.AwsToolkit.VsSdk.Common;
 
 namespace Amazon.AWSToolkit.VisualStudio.BuildProcessors

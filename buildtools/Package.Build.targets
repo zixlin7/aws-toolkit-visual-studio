@@ -1,4 +1,5 @@
-﻿<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project ToolsVersion="14.0"
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <Import Project="$(MSBuildThisFileDirectory)\Common.Build.targets" />
 
@@ -25,6 +26,7 @@
       - VS 2022: 0B82CB16-0E52-4363-9BC0-61E758689176
     -->
     <VsixGuid>12ed248b-6d4a-47eb-be9e-8eabea0ff119</VsixGuid>
+    <VsixGuid2022>0B82CB16-0E52-4363-9BC0-61E758689176</VsixGuid2022>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -33,9 +35,11 @@
       - 12.0 / VS 2013: AWS Toolkit for Visual Studio 2013
       - 14.0 / VS 2015: AWS Toolkit for Visual Studio 2015
       - VS 2017 (current Toolkit): AWS Toolkit for Visual Studio 2017 and 2019
-     -->
+    -->
     <VsixDisplayName Condition="'$(Configuration)' == 'Release'">AWS Toolkit for Visual Studio 2017 and 2019</VsixDisplayName>
-	  <VsixDisplayName Condition="'$(Configuration)' == 'Debug'">AWSToolkitDev</VsixDisplayName>
+    <VsixDisplayName Condition="'$(Configuration)' == 'Debug'">AWSToolkitDev</VsixDisplayName>
+    <VsixDisplayName2022 Condition="'$(Configuration)' == 'Release'">AWS Toolkit for Visual Studio 2022</VsixDisplayName2022>
+    <VsixDisplayName2022 Condition="'$(Configuration)' == 'Debug'">AWSToolkitDev 2022</VsixDisplayName2022>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -48,10 +52,10 @@
       - 12.0 / VS 2013: [12.0]
       - 14.0 / VS 2015: [14.0,)   (I think this was inadvertently open-ended)
       - VS 2017 (current Toolkit): [15.0, 17.0)
-     -->
+    -->
     <VsixVsTarget>[15.0,17.0)</VsixVsTarget>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <ExperimentalBuild>true</ExperimentalBuild>
     <!-- Prior to VS2017, the Toolkit was installed via MSI -->
@@ -63,14 +67,16 @@
     <!-- Prior to VS2017, the Toolkit was installed via MSI -->
     <InstalledByMsi>false</InstalledByMsi>
   </PropertyGroup>
-  
+
   <!-- Returns the current build version metadata. Used in .vsixmanifests to substitute our build version
-       and other version or configuration specific settings.
+      and other version or configuration specific settings.
   -->
   <Target Name="GetVsixVersion" Outputs="$(Build_Version)" />
   <Target Name="GetVsixVSTarget" Outputs="$(VsixVsTarget)" />
   <Target Name="GetVsixGuid" Outputs="$(VsixGuid)" />
+  <Target Name="GetVsixGuid2022" Outputs="$(VsixGuid2022)" />
   <Target Name="GetVsixDisplayName" Outputs="$(VsixDisplayName)" />
+  <Target Name="GetVsixDisplayName2022" Outputs="$(VsixDisplayName2022)" />
   <Target Name="GetVsixExperimentalBuildFlag" Outputs="$(ExperimentalBuild)" />
   <Target Name="GetVsixInstalledByMsiFlag" Outputs="$(InstalledByMsi)" />
 </Project>

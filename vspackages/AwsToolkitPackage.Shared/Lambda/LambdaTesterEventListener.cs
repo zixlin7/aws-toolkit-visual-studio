@@ -1,6 +1,9 @@
 ﻿using System;
 using Amazon.AWSToolkit.Lambda;
 using EnvDTE;
+
+using EnvDTE80;
+
 using log4net;
 using Microsoft.VisualStudio.Shell;
 
@@ -80,7 +83,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
             {
                 ThreadHelper.ThrowIfNotOnUIThread();
 
-                if (!(_hostPackage.GetVSShellService(typeof(DTE)) is DTE dte))
+                if (!(_hostPackage.GetVSShellService(typeof(DTE)) is DTE2 dte))
                 {
                     LOGGER.Error("Unable to get DTE");
                     return;
@@ -114,7 +117,7 @@ namespace Amazon.AWSToolkit.VisualStudio.Lambda
             LambdaTesterUtilities.EnsureLambdaTesterConfigured(project, _lambdaPlugin.Value);
         }
 
-        private void RegisterDebuggerEvents(_DTE dte)
+        private void RegisterDebuggerEvents(DTE2 dte)
         {
             LOGGER.Debug("Registering Debugger events");
             ThreadHelper.ThrowIfNotOnUIThread();
