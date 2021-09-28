@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>0ed4af1c-27cc-4ba8-8333-f941d45246c9</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Amazon.AWSToolkit.Lambda.TemplateWizards</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Model\Blueprint.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Msbuild\BaseNetCoreMsbuildWizard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Msbuild\NETCoreFunctionFSharpWizard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Msbuild\NETCoreFunctionWithTestsFSharpWizard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Msbuild\NETCoreFunctionWithTestsWizard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Msbuild\NETCoreFunctionWizard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Msbuild\ServerlessNETCoreFunctionFSharpWizard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Msbuild\ServerlessNETCoreFunctionWithTestsFSharpWizard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Msbuild\ServerlessNETCoreFunctionWithTestsWizard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Msbuild\ServerlessNETCoreFunctionWizard.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NodeProjectWizardImplementation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ProjectCreatorUtilities.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WizardPages\PageControllers\CSharpProjectTypeController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WizardPages\PageControllers\NodeProjectTypeController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)WizardPages\PageUI\CSharpProjectTypePage.xaml.cs">
+      <DependentUpon>CSharpProjectTypePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)WizardPages\PageUI\NodeProjectTypePage.xaml.cs">
+      <DependentUpon>NodeProjectTypePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)WizardPages\WizardPropertyNameConstants.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)WizardPages\PageUI\CSharpProjectTypePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)WizardPages\PageUI\NodeProjectTypePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\basic-startupfile.js" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Resources\basic-startupfiles.zip" />
+  </ItemGroup>
+</Project>
