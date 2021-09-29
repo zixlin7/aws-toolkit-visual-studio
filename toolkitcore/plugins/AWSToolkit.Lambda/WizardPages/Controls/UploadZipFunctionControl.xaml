@@ -20,9 +20,11 @@
 
             <Style TargetType="TextBox" BasedOn="{StaticResource awsTextBoxStyle}">
                 <Setter Property="MinHeight" Value="23" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
             </Style>
             <Style x:Key="controlComboBoxStyle" TargetType="ComboBox" BasedOn="{StaticResource awsComboBoxStyle}">
                 <Setter Property="MinHeight" Value="23" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
             </Style>
         </ResourceDictionary>
     </commonUi:BaseAWSUserControl.Resources>

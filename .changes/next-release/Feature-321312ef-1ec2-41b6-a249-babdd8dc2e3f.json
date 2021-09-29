@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Lambda ARM Support: Deploy .NET Core 3.1 Lambda ARM functions to AWS Lambda."
+}

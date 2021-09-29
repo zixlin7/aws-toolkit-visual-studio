@@ -390,11 +390,12 @@ namespace Amazon.AWSToolkit.Credentials.Core
                 SecretKey = properties.SecretKey
             };
 
-            var profile = new CredentialProfile(name, profileOptions)
+            var profile = new CredentialProfile(name, profileOptions);
+            if (!string.IsNullOrEmpty(properties.Region))
             {
-                Region = RegionEndpoint.GetBySystemName(properties.Region ?? string.Empty)
-            };
-           
+                profile.Region = RegionEndpoint.GetBySystemName(properties.Region);
+            }
+
             SetUniqueKey(profile, properties.UniqueKey);
             return profile;
         }

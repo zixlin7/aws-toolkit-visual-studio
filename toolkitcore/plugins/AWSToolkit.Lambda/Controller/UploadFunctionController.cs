@@ -162,6 +162,8 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                             seedValues[UploadFunctionWizardProperties.FunctionName] = defaults.FunctionName;
                         if (!string.IsNullOrEmpty(defaults.FunctionRole))
                             seedValues[UploadFunctionWizardProperties.Role] = defaults.FunctionRole;
+                        if (!string.IsNullOrEmpty(defaults.FunctionArchitecture))
+                            seedValues[UploadFunctionWizardProperties.Architecture] = defaults.FunctionArchitecture;
                         if (defaults.FunctionMemory.HasValue)
                             seedValues[UploadFunctionWizardProperties.MemorySize] = defaults.FunctionMemory.Value;
                         if (defaults.FunctionTimeout.HasValue)
@@ -176,6 +178,8 @@ namespace Amazon.AWSToolkit.Lambda.Controller
                             seedValues[UploadFunctionWizardProperties.Configuration] = defaults.Configuration;
                         if (!string.IsNullOrEmpty(defaults.Framework))
                             seedValues[UploadFunctionWizardProperties.Framework] = defaults.Framework;
+                        if (!string.IsNullOrEmpty(defaults.FunctionRuntime))
+                            seedValues[UploadFunctionWizardProperties.Runtime] = defaults.FunctionRuntime;
                         if (!string.IsNullOrEmpty(defaults.DeadLetterTargetArn))
                             seedValues[UploadFunctionWizardProperties.DeadLetterTargetArn] = defaults.DeadLetterTargetArn;
                         if (!string.IsNullOrEmpty(defaults.TracingMode))
@@ -314,9 +318,11 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             public string ImageRepo { get; set; }
             public string ImageTag { get; set; }
             public string Dockerfile { get; set; }
+
+            public List<string> GetRequestArchitectures()
+            {
+                return Request?.Architectures ?? new List<string>();
+            } 
         }
-
     }
-
-    
 }

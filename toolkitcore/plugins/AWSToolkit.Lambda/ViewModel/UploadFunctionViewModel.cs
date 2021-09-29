@@ -32,6 +32,11 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
 
         private static readonly ILog Logger = LogManager.GetLogger(typeof(UploadFunctionViewModel));
 
+        private static readonly ICollection<RuntimeOption> RuntimesWithoutArmSupport = new List<RuntimeOption>()
+        {
+            RuntimeOption.NetCore_v2_1, RuntimeOption.PROVIDED, RuntimeOption.PROVIDED_AL2
+        };
+
         private readonly AccountAndRegionPickerViewModel _connectionViewModel;
 
         private readonly Dictionary<string, FunctionConfiguration> _functionConfigs =
@@ -66,6 +71,8 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
 
         private bool _loadingFunctions;
         private RuntimeOption _runtime;
+        private LambdaArchitecture _architecture = LambdaArchitecture.X86;
+        private bool _supportsArmArchitecture = true;
         private string _sourceCodeLocation;
         private string _dockerfile;
         private string _imageCommand;
@@ -228,6 +235,18 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
         }
 
         public ObservableCollection<RuntimeOption> Runtimes { get; } = new ObservableCollection<RuntimeOption>();
+
+        public LambdaArchitecture Architecture
+        {
+            get => _architecture;
+            set => SetProperty(ref _architecture, value);
+        }
+
+        public bool SupportsArmArchitecture
+        {
+            get => _supportsArmArchitecture;
+            private set => SetProperty(ref _supportsArmArchitecture, value);
+        }
 
         /// <summary>
         /// Whether or not to save the Deploy Wizard settings into a json file (aws-lambda-tools-defaults.json)
@@ -666,7 +685,7 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
 
         public string CreateHandlerHelpText()
         {
-            if (Runtime == RuntimeOption.PROVIDED)
+            if (Runtime?.IsCustomRuntime ?? false)
             {
                 return HandlerTooltipCustomRuntime;
             }
@@ -686,6 +705,50 @@ namespace Amazon.AWSToolkit.Lambda.ViewModel
                 HandlerTooltipBase,
                 CreateHandlerHelpText()
             );
+        }
+
+        public LambdaArchitecture GetArchitectureOrDefault(string architectureValue, LambdaArchitecture defaultValue)
+        {
+            return LambdaArchitecture.All.FirstOrDefault(x => x.Value == architectureValue) ?? defaultValue;
+        }
+
+        public void UpdateArchitectureState()
+        {
+            UpdateArmEnabledState();
+            EnsureValidArchitectureValue();
+        }
+
+        private void UpdateArmEnabledState()
+        {
+            var supportsArm = SupportsArm(Runtime);
+            if (SupportsArmArchitecture != supportsArm)
+            {
+                _shellProvider.ExecuteOnUIThread(() =>
+                {
+                    SupportsArmArchitecture = supportsArm;
+                });
+            }
+        }
+
+        private void EnsureValidArchitectureValue()
+        {
+            if (!SupportsArm(Runtime) && Architecture == LambdaArchitecture.Arm)
+            {
+                _shellProvider.ExecuteOnUIThread(() =>
+                {
+                    Architecture = LambdaArchitecture.X86;
+                });
+            }
+        }
+
+        private bool SupportsArm(RuntimeOption runtime)
+        {
+            if (runtime == null || RuntimesWithoutArmSupport.Contains(runtime))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void BrowseSourceCodeFolder(object parameter)

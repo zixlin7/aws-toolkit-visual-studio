@@ -35,6 +35,11 @@ namespace AWSToolkit.Tests.Lambda
             .Select(r => Enumerable.Repeat(r, 1).ToArray())
             .ToArray();
 
+        public static readonly IEnumerable<object[]> CustomRuntimes = RuntimeOption.ALL_OPTIONS
+            .Where(r => r.IsCustomRuntime)
+            .Select(r => Enumerable.Repeat(r, 1).ToArray())
+            .ToArray();
+
         private readonly Mock<IAWSToolkitShellProvider> _shellProvider = new Mock<IAWSToolkitShellProvider>();
         public readonly ToolkitContextFixture ToolkitContextFixture = new ToolkitContextFixture();
         private readonly UploadFunctionViewModel _sut;
@@ -208,10 +213,11 @@ namespace AWSToolkit.Tests.Lambda
             Assert.Contains(UploadFunctionViewModel.HandlerTooltipGeneric, _sut.CreateHandlerHelpText());
         }
 
-        [Fact]
-        public void CreateHandlerHelpText_CustomRuntime()
+        [Theory]
+        [MemberData(nameof(CustomRuntimes))]
+        public void CreateHandlerHelpText_CustomRuntime(RuntimeOption runtime)
         {
-            _sut.Runtime = RuntimeOption.PROVIDED;
+            _sut.Runtime = runtime;
             Assert.Contains(UploadFunctionViewModel.HandlerTooltipCustomRuntime, _sut.CreateHandlerHelpText());
         }
 
@@ -237,14 +243,77 @@ namespace AWSToolkit.Tests.Lambda
             Assert.Contains(UploadFunctionViewModel.HandlerTooltipGeneric, handlerTooltip);
         }
 
-        [Fact]
-        public void CreateHandlerTooltip_CustomRuntime()
+        [Theory]
+        [MemberData(nameof(CustomRuntimes))]
+        public void CreateHandlerTooltip_CustomRuntime(RuntimeOption runtime)
         {
-            _sut.Runtime = RuntimeOption.PROVIDED;
+            _sut.Runtime = runtime;
             var handlerTooltip = _sut.CreateHandlerTooltip();
 
             Assert.Contains(UploadFunctionViewModel.HandlerTooltipBase, handlerTooltip);
             Assert.Contains(UploadFunctionViewModel.HandlerTooltipCustomRuntime, handlerTooltip);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetRuntimesWithoutArmSupport))]
+        public void UpdateArchitectureState_WithoutArmSupport(RuntimeOption runtime)
+        {
+            _sut.Architecture = LambdaArchitecture.Arm;
+            _sut.Runtime = runtime;
+            _sut.UpdateArchitectureState();
+
+            Assert.False(_sut.SupportsArmArchitecture);
+            Assert.Equal(LambdaArchitecture.X86, _sut.Architecture);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetRuntimesWithArmSupport))]
+        public void UpdateArchitectureState_WithArmSupport(RuntimeOption runtime)
+        {
+            _sut.Architecture = LambdaArchitecture.Arm;
+            _sut.Runtime = runtime;
+            _sut.UpdateArchitectureState();
+
+            Assert.True(_sut.SupportsArmArchitecture);
+            Assert.Equal(LambdaArchitecture.Arm, _sut.Architecture);
+        }
+
+        public static IEnumerable<object[]> GetRuntimesWithoutArmSupport()
+        {
+            return new List<RuntimeOption[]>
+            {
+                new RuntimeOption[] { null },
+                new RuntimeOption[] { RuntimeOption.NetCore_v2_1 },
+                new RuntimeOption[] { RuntimeOption.PROVIDED },
+                new RuntimeOption[] {RuntimeOption.PROVIDED_AL2},
+            };
+        }
+
+        public static IEnumerable<object[]> GetRuntimesWithArmSupport()
+        {
+            var noArmSupport = GetRuntimesWithoutArmSupport().SelectMany(x => x).OfType<RuntimeOption>();
+            return RuntimeOption.ALL_OPTIONS
+                .Except(noArmSupport)
+                .Select(x => new object[] { x })
+                .ToList();
+        }
+
+        [Theory]
+        [MemberData(nameof(CreateGetArchitectureOrDefaultTestData))]
+        public void GetArchitectureOrDefault(string architectureValue, LambdaArchitecture expectedArchitecture)
+        {
+            Assert.Equal(expectedArchitecture,
+                _sut.GetArchitectureOrDefault(architectureValue, LambdaArchitecture.X86));
+        }
+
+        public static IEnumerable<object[]> CreateGetArchitectureOrDefaultTestData()
+        {
+            return new List<object[]>
+            {
+                new object[] { LambdaArchitecture.Arm.Value, LambdaArchitecture.Arm },
+                new object[] { "garbage-value", LambdaArchitecture.X86 },
+                new object[] { null, LambdaArchitecture.X86 },
+            };
         }
 
         private void SetupEcrClient()

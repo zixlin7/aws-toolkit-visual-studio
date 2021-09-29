@@ -1,0 +1,4 @@
+{
+  "Type": "Feature",
+  "Description": "Lambda ARM Support: Deploy Zip-based Node.js 12 Lambda ARM functions to AWS Lambda."
+}

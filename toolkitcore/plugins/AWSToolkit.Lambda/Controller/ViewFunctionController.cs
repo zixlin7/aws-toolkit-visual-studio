@@ -300,6 +300,7 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             this._model.FunctionArn = response.FunctionArn;
             this._model.Handler = response.Handler;
             this._model.Runtime = response.Runtime;
+            this._model.Architectures = GetArchitectures(response);
             this._model.LastModified = DateTime.Parse(response.LastModified);
             this._model.MemorySize = response.MemorySize;
             this._model.Role = response.Role;
@@ -331,6 +332,17 @@ namespace Amazon.AWSToolkit.Lambda.Controller
             }
 
             this._model.IsDirty = false;
+        }
+
+        private string GetArchitectures(GetFunctionConfigurationResponse response)
+        {
+            var architectureList = response.Architectures;
+            if (architectureList?.Any() ?? false)
+            {
+                return string.Join(",", architectureList);
+            }
+
+            return "None Found";
         }
 
         public void RefreshAdvancedSettings()

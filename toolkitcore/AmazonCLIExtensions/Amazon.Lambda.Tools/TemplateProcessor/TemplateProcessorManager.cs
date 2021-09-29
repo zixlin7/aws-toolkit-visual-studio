@@ -12,6 +12,7 @@ using Amazon.S3;
 using Amazon.S3.Transfer;
 using Newtonsoft.Json.Schema;
 using Amazon.Lambda.Tools.Commands;
+using Amazon.Common.DotNetCli.Tools.Options;
 
 namespace Amazon.Lambda.Tools.TemplateProcessor
 {    
@@ -65,8 +66,11 @@ namespace Amazon.Lambda.Tools.TemplateProcessor
         /// <param name="templateBody">The template to search for updatable resources. The file isn't just read from
         /// templateDirectory because template substitutions might have occurred before this was executed.</param>
         /// <returns></returns>
-        public async Task<string> TransformTemplateAsync(string templateDirectory, string templateBody)
+        public async Task<string> TransformTemplateAsync(string templateDirectory, string templateBody, string[] args)
         {
+            // Remove Project Location switch from arguments list since this should not be used for code base.
+            string[] modifiedArguments = RemoveProjectLocationArgument(args);
+
             // If templateDirectory is actually pointing the CloudFormation template then grab its root.
             if (File.Exists(templateDirectory))
                 templateDirectory = Path.GetDirectoryName(templateDirectory);
@@ -92,7 +96,7 @@ namespace Amazon.Lambda.Tools.TemplateProcessor
                     {
                         this.Logger?.WriteLine(
                             $"Initiate packaging of {field.GetLocalPath()} for resource {updatableResource.Name}");
-                        updateResults = await ProcessUpdatableResourceAsync(templateDirectory, field);
+                        updateResults = await ProcessUpdatableResourceAsync(templateDirectory, field, modifiedArguments);
                         cacheOfLocalPathsToS3Keys[localPath] = updateResults;
                     }
                     else
@@ -125,7 +129,6 @@ namespace Amazon.Lambda.Tools.TemplateProcessor
             return newTemplate;
         }
 
-
         /// <summary>
         /// Determine the action to be done for the local path, like building a .NET Core package, then uploading the
         /// package to S3. The S3 key is returned to be updated in the template.
@@ -134,7 +137,7 @@ namespace Amazon.Lambda.Tools.TemplateProcessor
         /// <param name="field"></param>
         /// <returns></returns>
         /// <exception cref="LambdaToolsException"></exception>
-        private async Task<UpdateResourceResults> ProcessUpdatableResourceAsync(string templateDirectory, IUpdateResourceField field)
+        private async Task<UpdateResourceResults> ProcessUpdatableResourceAsync(string templateDirectory, IUpdateResourceField field, string[] args)
         {
             UpdateResourceResults results;
             var localPath = field.GetLocalPath();
@@ -180,7 +183,7 @@ namespace Amazon.Lambda.Tools.TemplateProcessor
                 // could be in a sub folder or be a self contained Docker build.
                 if (IsDotnetProjectDirectory(localPath) || field.Resource.UploadType == CodeUploadType.Image)
                 {
-                    results = await PackageDotnetProjectAsync(field, localPath);
+                    results = await PackageDotnetProjectAsync(field, localPath, args);
                 }
                 else
                 {
@@ -227,11 +230,11 @@ namespace Amazon.Lambda.Tools.TemplateProcessor
         /// <param name="location"></param>
         /// <returns></returns>
         /// <exception cref="LambdaToolsException"></exception>
-        private async Task<UpdateResourceResults> PackageDotnetProjectAsync(IUpdateResourceField field, string location)
+        private async Task<UpdateResourceResults> PackageDotnetProjectAsync(IUpdateResourceField field, string location, string[] args)
         {
             if (field.Resource.UploadType == CodeUploadType.Zip)
             {
-                var command = new Commands.PackageCommand(this.Logger, location, null);
+                var command = new Commands.PackageCommand(this.Logger, location, args);
 
                 command.LambdaClient = this.OriginatingCommand?.LambdaClient;
                 command.S3Client = this.OriginatingCommand?.S3Client;
@@ -244,6 +247,7 @@ namespace Amazon.Lambda.Tools.TemplateProcessor
                 command.TargetFramework =
                     LambdaUtilities.DetermineTargetFrameworkFromLambdaRuntime(field.Resource.LambdaRuntime, location);
 
+                command.Architecture = field.Resource.LambdaArchitecture;
                 command.LayerVersionArns = field.Resource.LambdaLayers;
 
                 // If the project is in the same directory as the CloudFormation template then use any parameters
@@ -278,7 +282,7 @@ namespace Amazon.Lambda.Tools.TemplateProcessor
             else if (field.Resource.UploadType == CodeUploadType.Image)
             {
                 this.Logger.WriteLine($"Building Docker image for {location}");
-                var pushCommand = new PushDockerImageCommand(Logger, location, new string[0]);
+                var pushCommand = new PushDockerImageCommand(Logger, location, args);
                 pushCommand.ECRClient = OriginatingCommand.ECRClient;
                 pushCommand.IAMClient = OriginatingCommand.IAMClient;
                 pushCommand.DisableInteractive = true;
@@ -299,6 +303,29 @@ namespace Amazon.Lambda.Tools.TemplateProcessor
                 throw new LambdaToolsException($"Unknown upload type for packaging: {field.Resource.UploadType}", LambdaToolsException.LambdaErrorCode.ServerlessTemplateParseError);
             }
 
+        }
+
+        private string[] RemoveProjectLocationArgument(string[] args)
+        {
+            List<string> argumentList;
+            if (args == null || args.Length == 0) return args;
+
+            argumentList = new List<string>();
+            for (int counter = 0; counter < args.Length; counter++)
+            {
+                // Skip project location switch and it's value.
+                if (string.Equals(args[counter], CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION.ShortSwitch, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(args[counter], CommonDefinedCommandOptions.ARGUMENT_PROJECT_LOCATION.Switch, StringComparison.OrdinalIgnoreCase))
+                {
+                    counter += 1;
+                }
+                else
+                {
+                    argumentList.Add(args[counter]);
+                }
+            }
+
+            return argumentList.ToArray();
         }
 
         private static string GenerateOutputZipFilename(IUpdateResourceField field)

@@ -23,7 +23,7 @@ namespace Amazon.Common.DotNetCli.Tools.Options
                 ShortSwitch = "-f",
                 Switch = "--framework",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = "Target framework to compile, for example netcoreapp2.1.",
+                Description = "Target framework to compile, for example netcoreapp3.1.",
             };
         public static readonly CommandOption ARGUMENT_SELF_CONTAINED =
             new CommandOption
@@ -190,7 +190,7 @@ namespace Amazon.Common.DotNetCli.Tools.Options
                 ShortSwitch = "-df",
                 Switch = "--dockerfile",
                 ValueType = CommandOption.CommandOptionValueType.StringValue,
-                Description = $"The docker file used build image. Default value is \"{Constants.DEFAULT_DOCKERFILE}\".",
+                Description = $"The docker file used to build the image. Default value is \"{Constants.DEFAULT_DOCKERFILE}\".",
             };
         public static readonly CommandOption ARGUMENT_LOCAL_DOCKER_IMAGE =
             new CommandOption

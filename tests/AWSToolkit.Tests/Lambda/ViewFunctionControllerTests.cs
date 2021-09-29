@@ -10,6 +10,8 @@ using Moq;
 using Xunit;
 using static System.Windows.Visibility;
 
+using Architecture = Amazon.Lambda.Architecture;
+
 namespace AWSToolkit.Tests.Lambda
 {
     public class ViewFunctionControllerTests
@@ -23,6 +25,14 @@ namespace AWSToolkit.Tests.Lambda
         private readonly GetFunctionConfigurationResponse _getInitialResponse;
         private readonly GetFunctionConfigurationResponse _packageTypeImageResponse;
         private readonly UpdateFunctionConfigurationResponse _updateProgressResponse;
+
+        public static IEnumerable<object[]> ArchitectureData = new List<object[]>
+        {
+            new object[] {new List<string>{Architecture.Arm64, Architecture.X86_64}, $"{Architecture.Arm64},{Architecture.X86_64}"},
+            new object[] {new List<string>{Architecture.Arm64}, $"{Architecture.Arm64}"},
+            new object[] {new List<string>(), "None Found"},
+            new object[] {null, "None Found"}
+        };
 
         public ViewFunctionControllerTests()
         {
@@ -99,6 +109,22 @@ namespace AWSToolkit.Tests.Lambda
             Assert.Equal(State.Pending.Value, _controller.Model.State);
             Assert.Null(this._controller.Model.LastUpdateStatus);
             Assert.False(_controller.Model.CanInvoke);
+        }
+
+        [Theory]
+        [MemberData(nameof(ArchitectureData))]
+        public void ValidateArchitecturesOnRefresh(List<string> architectureList, string expectedArchitectures)
+        {
+            var response = new GetFunctionConfigurationResponse()
+            {
+                Architectures = architectureList,
+                LastModified = "2015-12-11T12:28:30.45Z"
+            };
+            _lambda.Setup(mock => mock.GetFunctionConfiguration(It.IsAny<String>()))
+                .Returns(response);
+            _controller.RefreshFunctionConfiguration(this._lambda.Object);
+
+            Assert.Equal(expectedArchitectures, _controller.Model.Architectures);
         }
 
         [Fact]
