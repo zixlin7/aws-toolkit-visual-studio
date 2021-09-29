@@ -73,7 +73,6 @@
     <Compile Include="Settings\HostedFilesSettingsTests.cs" />
     <Compile Include="Settings\MobileAnalyticsSettingsTest.cs" />
     <Compile Include="Settings\SettingsPersistenceBaseTests.cs" />
-    <Compile Include="Settings\TemplateParserTests.cs" />
     <Compile Include="Settings\ToolkitSettingsTests.cs" />
     <Compile Include="Tasks\TaskExtensionMethodsTests.cs" />
     <Compile Include="Telemetry\ModelExtensionMethodsTests.cs" />
@@ -102,10 +101,6 @@
     <ProjectReference Include="..\..\toolkitcore\plugins\AWSToolkit.Lambda.Interface\AWSToolkit.Lambda.Interface.csproj">
       <Project>{7e4c1857-240e-4bd2-b4ce-d37bf0e41df6}</Project>
       <Name>AWSToolkit.Lambda.Interface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\vspackages\cloudformation\AWSToolkit.CloudFormation.Parser\AWSToolkit.CloudFormation.Parser.csproj">
-      <Project>{4CEE1A45-E01E-4BCC-8145-5C593ADF28BC}</Project>
-      <Name>AWSToolkit.CloudFormation.Parser</Name>
     </ProjectReference>
     <ProjectReference Include="..\AWSToolkit.Tests.Common\AWSToolkit.Tests.Common.csproj">
       <Project>{aa57cb1d-f511-4bf5-9410-72a49d063365}</Project>

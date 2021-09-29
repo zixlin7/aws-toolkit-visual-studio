@@ -7,7 +7,7 @@ using Amazon.AWSToolkit.Util;
 
 namespace Amazon.AWSToolkit.CloudFormation.Parser
 {
-    public class JsonDocument
+    internal class JsonDocument
     {
         int _position;
         string _document;
@@ -197,11 +197,10 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
         }
 
 
-        public JsonToken ReadToken()
+        private JsonToken ReadToken()
         {
             JsonToken ret = new JsonToken();
             int nextChar = this.ReadStream();
-
             if (nextChar == -1)
             {
                 return ret;
@@ -236,13 +235,34 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
                 case '"':
                     ret.Type = JsonTokenType.Text;
                     StringBuilder sb = new StringBuilder();
-
-                    while ((nextChar = this.ReadStream()) != '"' && IsTokenChar(nextChar))
+                    bool escaped = false;
+                    while ((((nextChar = this.ReadStream()) != '"') || (escaped)) && (nextChar != -1))
                     {
-                        sb.Append((char)nextChar);
+                        if ((char)nextChar == '\\')
+                        {
+                            if (escaped)
+                            {
+                                sb.Append((char)nextChar); // not calling GetEscapedChar, it would simply return \
+                            }
+                            escaped = !escaped;
+                        }
+                        else
+                        {
+                            if (escaped)
+                            {
+                                char escapedChar = GetEscapedChar(nextChar);
+                                sb.Append(escapedChar);
+                            }
+                            else
+                            {
+                                sb.Append((char)nextChar);
+                            }
+                            escaped = false;
+                        }
                     }
                     ret.Text = sb.ToString();
                     ret.Length = (int)(this.Position - ret.Position);
+
                     break;
                 case ':':
                     ret.Type = JsonTokenType.KeyValueSeperator;
@@ -302,6 +322,34 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
                     throw new ParseException("Invalid JSON data");
             }
             return ret;
+        }
+
+        private static char GetEscapedChar(int character)
+        {
+            switch (character)
+            {
+                case 'n':
+                    return '\n';
+
+                case 't':
+                    return '\t';
+
+                case 'r':
+                    return '\r';
+
+                case 'b':
+                    return '\b';
+
+                case 'f':
+                    return '\f';
+
+                //case '"':
+                //case '\'':
+                //case '\\':
+                //case '/':
+                default:
+                    return Convert.ToChar(character);
+            }
         }
 
         /// <summary>
@@ -426,20 +474,6 @@ namespace Amazon.AWSToolkit.CloudFormation.Parser
             }
         }
 
-        public bool IsTokenChar(int nextChar)
-        {
-            return nextChar != -1 && !IsSeparator(nextChar) && !IsNewLine(nextChar);
-        }
-
-        public bool IsSeparator(int nextChar)
-        {
-            return nextChar == ':' || nextChar == ',' || nextChar == '{' || nextChar == '}' || nextChar == '[' || nextChar == ']';
-        }
-
-        public bool IsNewLine(int nextChar)
-        {
-            return nextChar == '\n' || nextChar == '\r';
-        }
         #region Data Structures
         /// <summary>
         /// Represents a token in the json document, with the TokenType and value if applicable.

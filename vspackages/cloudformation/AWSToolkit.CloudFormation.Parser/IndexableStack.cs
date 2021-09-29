@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Amazon.AWSToolkit.CloudFormation.Parser
 {
-    public class IndexableStack<T> : IEnumerable<T>
+    internal class IndexableStack<T> : IEnumerable<T>
     {
         IList<T> _data = new List<T>();
 
