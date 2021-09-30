@@ -1,0 +1,38 @@
+{
+  "Date": "2021-09-29",
+  "Version": "1.22.0.0",
+  "Entries": [
+    {
+      "Type": "Bug Fix",
+      "Description": "Fixed an issue where the Import CSV button on the Getting Started page showed no results  "
+    },
+    {
+      "Type": "Bug Fix",
+      "Description": "Fix issue of only showing one page of IAM resources in AWS explorer"
+    },
+    {
+      "Type": "Deprecation",
+      "Description": "Removed the nodejs10.x runtime from Lambda deployment dialogs. This runtime has reached end of support. See https://docs.aws.amazon.com/lambda/latest/dg/runtime-support-policy.html for more details."
+    },
+    {
+      "Type": "Feature",
+      "Description": "Added a menu item to submit quick toolkit feedback, available from the \"AWS Toolkit\" menu, located in the \"Extensions\" menu (\"Tools\" menu in Visual Studio 2017)"
+    },
+    {
+      "Type": "Feature",
+      "Description": "Lambda ARM Support: Deploy .NET Core 3.1 Lambda ARM functions to AWS Lambda."
+    },
+    {
+      "Type": "Feature",
+      "Description": "Added support for Lambda Custom Runtime (AL2) deployment."
+    },
+    {
+      "Type": "Feature",
+      "Description": "Lambda ARM Support: Deploy Zip-based Node.js 12 Lambda ARM functions to AWS Lambda."
+    },
+    {
+      "Type": "Feature",
+      "Description": "The Toolkit's Getting Started Guide can now be accessed from the \"AWS Toolkit\" menu, located in the \"Extensions\" menu (\"Tools\" menu in Visual Studio 2017)"
+    }
+  ]
+}

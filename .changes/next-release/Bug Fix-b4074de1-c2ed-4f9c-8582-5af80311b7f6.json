@@ -1,4 +1,0 @@
-{
-  "Type": "Bug Fix",
-  "Description": "Fix issue of only showing one page of IAM resources in AWS explorer"
-}
