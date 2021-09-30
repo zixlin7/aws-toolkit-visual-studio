@@ -1,4 +1,0 @@
-{
-  "Type": "Deprecation",
-  "Description": "Removed the nodejs10.x runtime from Lambda deployment dialogs. This runtime has reached end of support. See https://docs.aws.amazon.com/lambda/latest/dg/runtime-support-policy.html for more details."
-}
