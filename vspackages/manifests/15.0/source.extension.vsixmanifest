@@ -8,8 +8,8 @@
         <License>License.txt</License>
         <GettingStartedGuide>https://docs.aws.amazon.com/AWSToolkitVS/latest/UserGuide/welcome.html</GettingStartedGuide>
         <ReleaseNotes>ReleaseNotes.txt</ReleaseNotes>
-        <Icon>..\AwsToolkitPackageResources\Package.ico</Icon>
-        <PreviewImage>..\AwsToolkitPackageResources\aws.png</PreviewImage>
+        <Icon>Resources\Package.ico</Icon>
+        <PreviewImage>Resources\aws.png</PreviewImage>
         <Tags>Amazon Web Services;AWS;Beanstalk;Cloud;CloudFormation;CodeArtifact;CodeCommit;DynamoDB;EC2;ECR;ECS;IAM;Lambda;S3;Serverless;SNS;SQS</Tags>
     </Metadata>
     <Installation InstalledByMsi="|%CurrentProject%;GetVsixInstalledByMsiFlag|" AllUsers="true">
